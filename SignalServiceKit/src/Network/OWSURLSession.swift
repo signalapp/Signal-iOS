@@ -216,6 +216,27 @@ public class OWSURLSession: NSObject {
         return configuration
     }
 
+    private let maxResponseSize: Int?
+
+    public init(baseUrl: URL? = nil,
+                securityPolicy: AFSecurityPolicy,
+                configuration: URLSessionConfiguration,
+                censorshipCircumventionHost: String? = nil,
+                extraHeaders: [String: String] = [:],
+                maxResponseSize: Int? = nil) {
+        self.baseUrl = baseUrl
+        self.securityPolicy = securityPolicy
+        self.configuration = configuration
+        self.censorshipCircumventionHost = censorshipCircumventionHost
+        self.extraHeaders = extraHeaders
+        self.maxResponseSize = maxResponseSize
+
+        super.init()
+
+        // Ensure this is set so that we don't try to create it in deinit().
+        _ = self.delegateBox
+    }
+
     @objc
     public init(baseUrl: URL? = nil,
                 securityPolicy: AFSecurityPolicy,
@@ -227,6 +248,7 @@ public class OWSURLSession: NSObject {
         self.configuration = configuration
         self.censorshipCircumventionHost = censorshipCircumventionHost
         self.extraHeaders = extraHeaders
+        self.maxResponseSize = nil
 
         super.init()
 
@@ -515,7 +537,7 @@ public class OWSURLSession: NSObject {
     }
 
     private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, responseData: Data?) {
-        guard let taskState = removeCompletedTaskState(task) as? UploadTaskState else {
+        guard let taskState = removeCompletedTaskState(task) as? UploadOrDataTaskState else {
             owsFailDebug("Missing TaskState.")
             return
         }
@@ -617,6 +639,16 @@ extension OWSURLSession: URLSessionTaskDelegate {
 extension OWSURLSession: URLSessionDownloadDelegate {
 
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        if let maxResponseSize = maxResponseSize {
+            guard let fileSize = OWSFileSystem.fileSize(of: location) else {
+                taskDidFail(downloadTask, error: OWSAssertionError("Unknown download size."))
+                return
+            }
+            guard fileSize.intValue <= maxResponseSize else {
+                taskDidFail(downloadTask, error: OWSAssertionError("Oversize download."))
+                return
+            }
+        }
         do {
             // Download locations are cleaned up quickly, so we
             // need to move the file synchronously.
@@ -631,7 +663,18 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    public func urlSession(_ session: URLSession,
+                           downloadTask: URLSessionDownloadTask,
+                           didWriteData bytesWritten: Int64,
+                           totalBytesWritten: Int64,
+                           totalBytesExpectedToWrite: Int64) {
+        if let maxResponseSize = maxResponseSize {
+            guard totalBytesWritten <= maxResponseSize,
+                  totalBytesExpectedToWrite <= maxResponseSize else {
+                downloadTask.cancel()
+                return
+            }
+        }
         guard let progressBlock = self.progressBlock(forTask: downloadTask) else {
             return
         }
@@ -641,7 +684,17 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         progressBlock(downloadTask, progress)
     }
 
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
+    public func urlSession(_ session: URLSession,
+                           downloadTask: URLSessionDownloadTask,
+                           didResumeAtOffset fileOffset: Int64,
+                           expectedTotalBytes: Int64) {
+        if let maxResponseSize = maxResponseSize {
+            guard fileOffset <= maxResponseSize,
+                  expectedTotalBytes <= maxResponseSize else {
+                downloadTask.cancel()
+                return
+            }
+        }
         guard let progressBlock = self.progressBlock(forTask: downloadTask) else {
             return
         }
@@ -649,6 +702,37 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         progress.totalUnitCount = expectedTotalBytes
         progress.completedUnitCount = fileOffset
         progressBlock(downloadTask, progress)
+    }
+
+    public func urlSession(_ session: URLSession,
+                    dataTask: URLSessionDataTask,
+                    didReceive response: URLResponse,
+                    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        guard let maxResponseSize = maxResponseSize else {
+            completionHandler(.allow)
+            return
+        }
+        if response.expectedContentLength == NSURLSessionTransferSizeUnknown {
+            completionHandler(.allow)
+            return
+        }
+        guard response.expectedContentLength <= maxResponseSize else {
+            owsFailDebug("Oversize response: \(response.expectedContentLength) > \(maxResponseSize)")
+            completionHandler(.cancel)
+            return
+        }
+        completionHandler(.allow)
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        guard let maxResponseSize = maxResponseSize else {
+            return
+        }
+        guard dataTask.countOfBytesReceived <= maxResponseSize else {
+            owsFailDebug("Oversize response: \(dataTask.countOfBytesReceived) > \(maxResponseSize)")
+            dataTask.cancel()
+            return
+        }
     }
 }
 
@@ -677,7 +761,7 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let taskState = UploadTaskState(progressBlock: progressBlock)
+        let taskState = UploadOrDataTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, from: requestData) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
@@ -719,7 +803,7 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let taskState = UploadTaskState(progressBlock: progressBlock)
+        let taskState = UploadOrDataTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, fromFile: dataUrl) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
@@ -760,14 +844,25 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let taskState = UploadTaskState(progressBlock: nil)
+        let taskState = UploadOrDataTaskState(progressBlock: nil)
         var requestConfig: RequestConfig?
         let task = session.dataTask(with: request) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
+            guard let self = self else {
+                owsFailDebug("Missing session.")
+                return
+            }
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
+            if let responseData = responseData,
+               let maxResponseSize = self.maxResponseSize {
+                guard responseData.count <= maxResponseSize else {
+                    self.taskDidFail(requestConfig.task, error: OWSAssertionError("Oversize download."))
+                    return
+                }
+            }
+            self.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task)
@@ -938,7 +1033,7 @@ private class DownloadTaskState: TaskState {
 
 // MARK: - TaskState
 
-private class UploadTaskState: TaskState {
+private class UploadOrDataTaskState: TaskState {
     let progressBlock: ProgressBlock?
     let promise: Promise<(URLSessionTask, Data?)>
     let resolver: Resolver<(URLSessionTask, Data?)>
@@ -1073,4 +1168,24 @@ private class URLSessionDelegateBox: NSObject {
                                  newRequest: newRequest,
                                  completionHandler: completionHandler)
     }
-}
+
+    func urlSession(_ session: URLSession,
+                    dataTask: URLSessionDataTask,
+                    didReceive response: URLResponse,
+                    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        guard let delegate = weakDelegate else {
+            completionHandler(.cancel)
+            return
+        }
+        delegate.urlSession(session,
+                            dataTask: dataTask,
+                            didReceive: response,
+                            completionHandler: completionHandler)
+    }
+
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        weakDelegate?.urlSession(session,
+                                 dataTask: dataTask,
+                                 didReceive: data)
+    }
+ }

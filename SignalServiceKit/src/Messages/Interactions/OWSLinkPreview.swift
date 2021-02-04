@@ -391,56 +391,47 @@ public class OWSLinkPreviewManager: NSObject {
 
     // MARK: - Private, Networking
 
-    private func createSessionManager() -> AFHTTPSessionManager {
+    private func buildOWSURLSession() -> OWSURLSession {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
 
-        let sessionManager = AFHTTPSessionManager(sessionConfiguration: sessionConfig)
-        sessionManager.requestSerializer = AFHTTPRequestSerializer()
-        sessionManager.responseSerializer = AFHTTPResponseSerializer()
+        // Twitter doesn't return OpenGraph tags to Signal
+        // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
+        // If this ever changes, we can switch back to our default User-Agent
+        let userAgentString = "WhatsApp/2"
+        let extraHeaders: [String: String] = ["User-Agent": userAgentString]
 
-        sessionManager.setDataTaskDidReceiveResponseBlock { (_, _, response) -> URLSession.ResponseDisposition in
-            let anticipatedSize = response.expectedContentLength
-            if anticipatedSize == NSURLSessionTransferSizeUnknown || anticipatedSize < Self.maxFetchedContentSize {
-                return .allow
-            } else {
-                return .cancel
-            }
-        }
-        sessionManager.setDataTaskDidReceiveDataBlock { (_, task, _) in
-            let fetchedBytes = task.countOfBytesReceived
-            if fetchedBytes >= Self.maxFetchedContentSize {
-                task.cancel()
-            }
-        }
-        sessionManager.setTaskWillPerformHTTPRedirectionBlock { (_, _, _, request) -> URLRequest? in
-            if request.url?.isPermittedLinkPreviewUrl() == true {
-                return request
-            } else {
+        let urlSession = OWSURLSession(baseUrl: nil,
+                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
+                                       configuration: sessionConfig,
+                                       censorshipCircumventionHost: nil,
+                                       extraHeaders: extraHeaders,
+                                       maxResponseSize: Self.maxFetchedContentSize)
+        urlSession.allowRedirects = true
+        urlSession.customRedirectHandler = { request in
+            guard request.url?.isPermittedLinkPreviewUrl() == true else {
                 return nil
             }
+            return request
         }
-        sessionManager.requestSerializer.setValue(Self.userAgentString, forHTTPHeaderField: "User-Agent")
-        return sessionManager
-
+        return urlSession
     }
 
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
-        firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
-            self.createSessionManager()
-                .getPromise(url.absoluteString)
+        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+            self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> (URL, String) in
+        }.map(on: Self.workQueue) { (httpResponse: OWSHTTPResponse) -> (URL, String) in
+            let task = httpResponse.task
             guard let response = task.response as? HTTPURLResponse,
                   let respondingUrl = response.url,
                   response.statusCode >= 200 && response.statusCode < 300 else {
                 Logger.warn("Invalid response: \(type(of: task.response)).")
                 throw LinkPreviewError.fetchFailure
             }
-
-            guard let data = responseObject as? Data,
+            guard let data = httpResponse.responseData,
                   let string = String(data: data, urlResponse: response),
                   string.count > 0 else {
                 Logger.warn("Response object could not be parsed")
@@ -452,19 +443,19 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     private func fetchImageResource(from url: URL) -> Promise<Data> {
-        firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
-            self.createSessionManager()
-                .getPromise(url.absoluteString)
+        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+            self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> Data in
+        }.map(on: Self.workQueue) { (httpResponse: OWSHTTPResponse) -> Data in
             try autoreleasepool {
+                let task = httpResponse.task
                 guard let response = task.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode < 300 else {
                     Logger.warn("Invalid response: \(type(of: task.response)).")
                     throw LinkPreviewError.fetchFailure
                 }
-                guard let rawData = responseObject as? Data,
+                guard let rawData = httpResponse.responseData,
                       rawData.count < Self.maxFetchedContentSize else {
                     Logger.warn("Response object could not be parsed")
                     throw LinkPreviewError.invalidPreview
@@ -478,11 +469,6 @@ public class OWSLinkPreviewManager: NSObject {
 
     private static let maxFetchedContentSize = 2 * 1024 * 1024
     private static let allowedMIMETypes: Set = [OWSMimeTypeImagePng, OWSMimeTypeImageJpeg]
-
-    // Twitter doesn't return OpenGraph tags to Signal
-    // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
-    // If this ever changes, we can switch back to our default User-Agent
-    private static let userAgentString = "WhatsApp/2"
 
     // MARK: - Preview Thumbnails
 
