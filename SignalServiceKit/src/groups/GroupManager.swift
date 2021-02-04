@@ -128,7 +128,8 @@ public class GroupManager: NSObject {
         RemoteConfig.groupsV2MigrationBlockingMigrations
     }
 
-    public static let maxGroupNameCharactersCount: Int = 32
+    public static let maxGroupNameEncryptedByteCount: Int = 1024
+    public static let maxGroupNameGlyphCount: Int = 32
 
     // Epoch 1: Group Links
     public static let changeProtoEpoch: UInt32 = 1

@@ -350,7 +350,7 @@ extension ProfileBioViewController: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
             maxByteCount: OWSUserProfile.kMaxBioLengthBytes,
-            maxCharacterCount: OWSUserProfile.kMaxBioLengthChars
+            maxGlyphCount: OWSUserProfile.kMaxBioLengthChars
         )
     }
 

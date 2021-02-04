@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -435,6 +435,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 // Redundant change, not a conflict.
             } else {
                 let encryptedData = try groupV2Params.encryptGroupName(newTitle)
+                guard newTitle.glyphCount <= GroupManager.maxGroupNameGlyphCount else {
+                    throw OWSAssertionError("groupTitle is too long.")
+                }
+                guard encryptedData.count <= GroupManager.maxGroupNameEncryptedByteCount else {
+                    throw OWSAssertionError("Encrypted groupTitle is too long.")
+                }
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
