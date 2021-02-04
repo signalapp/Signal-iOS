@@ -253,6 +253,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     @objc
     public var canQuickLook: Bool {
+        guard #available(iOS 13, *) else { return false }
         guard let url = attachmentStream?.originalMediaURL else {
             return false
         }
