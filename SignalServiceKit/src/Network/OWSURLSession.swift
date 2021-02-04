@@ -194,18 +194,26 @@ public class OWSURLSession: NSObject {
     }()
 
     @objc
-    public static func defaultSecurityPolicy() -> AFSecurityPolicy {
+    public static var defaultSecurityPolicy: AFSecurityPolicy {
         AFSecurityPolicy.default()
     }
 
     @objc
-    public static func signalServiceSecurityPolicy() -> AFSecurityPolicy {
+    public static var signalServiceSecurityPolicy: AFSecurityPolicy {
         OWSHTTPSecurityPolicy.shared()
     }
 
     @objc
-    public static func defaultURLSessionConfiguration() -> URLSessionConfiguration {
-        URLSessionConfiguration.ephemeral
+    public static var defaultConfigurationWithCaching: URLSessionConfiguration {
+        .ephemeral
+    }
+
+    @objc
+    public static var defaultConfigurationWithoutCaching: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        return configuration
     }
 
     @objc

@@ -13,6 +13,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let searchText: String?
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
+        let hasPendingMessageRequest: Bool
 
         public var canUseDedicatedCell: Bool {
             if hasTapForMore || searchText != nil {
@@ -48,6 +49,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
     private var hasTapForMore: Bool {
         bodyTextState.hasTapForMore
+    }
+    private var hasPendingMessageRequest: Bool {
+        bodyTextState.hasPendingMessageRequest
     }
     public var shouldUseAttributedText: Bool {
         bodyTextState.shouldUseAttributedText
@@ -104,10 +108,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private static let unfairLock = UnfairLock()
 
     private static func shouldUseAttributedText(text: String,
+                                                hasPendingMessageRequest: Bool,
                                                 shouldAllowLinkification: Bool) -> Bool {
         // Use a lock to ensure that measurement on and off the main thread
         // don't conflict.
         unfairLock.withLock {
+            guard !hasPendingMessageRequest else {
+                // Do not linkify if there is a pending message request.
+                return false
+            }
             // NSDataDetector and UIDataDetector behavior should be aligned.
             //
             // TODO: We might want to move this detection logic into
@@ -117,14 +126,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 owsFailDebug("Could not build dataDetector.")
                 return true
             }
-            return !detector.matches(in: text, options: [], range: text.entireRange).isEmpty
+            let hasLinks = !detector.matches(in: text, options: [], range: text.entireRange).isEmpty
+            return hasLinks
         }
     }
 
     static func buildState(interaction: TSInteraction,
                            bodyText: CVComponentState.BodyText,
                            viewStateSnapshot: CVViewStateSnapshot,
-                           hasTapForMore: Bool) -> State {
+                           hasTapForMore: Bool,
+                           hasPendingMessageRequest: Bool) -> State {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
@@ -147,6 +158,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 } else {
                     let shouldAllowLinkification = displayableText.shouldAllowLinkification
                     shouldUseAttributedText = self.shouldUseAttributedText(text: text,
+                                                                           hasPendingMessageRequest: hasPendingMessageRequest,
                                                                            shouldAllowLinkification: shouldAllowLinkification)
                 }
             case .attributedText:
@@ -158,7 +170,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                      isTextExpanded: isTextExpanded,
                      searchText: searchText,
                      hasTapForMore: hasTapForMore,
-                     shouldUseAttributedText: shouldUseAttributedText)
+                     shouldUseAttributedText: shouldUseAttributedText,
+                     hasPendingMessageRequest: hasPendingMessageRequest)
     }
 
     static func buildComponentState(message: TSMessage,
@@ -300,7 +313,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             }
             textView.shouldIgnoreEvents = shouldIgnoreEvents
 
-            textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
+            if hasPendingMessageRequest {
+                // Do not linkify text if there is a pending message request for this conversation.
+                textView.dataDetectorTypes = []
+            } else {
+                textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
+            }
 
             textViewConfig.applyForRendering(textView: textView)
 

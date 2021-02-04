@@ -45,10 +45,17 @@ public class GroupMigrationActionSheet: UIView {
             return GroupMigrationActionSheet(groupThread: groupThread,
                                              mode: .migrationComplete(oldGroupModel: oldGroupModel,
                                                                       newGroupModel: newGroupModel))
-        } else {
-            return GroupMigrationActionSheet(groupThread: groupThread,
-                                             mode: .reAddDroppedMembers(members: Set(droppedMembers)))
         }
+
+        guard let droppedMembersInfo = Self.buildDroppedMembersInfo(thread: groupThread),
+              !droppedMembersInfo.addableMembers.isEmpty else {
+            return GroupMigrationActionSheet(groupThread: groupThread,
+                                             mode: .migrationComplete(oldGroupModel: oldGroupModel,
+                                                                      newGroupModel: newGroupModel))
+        }
+
+        return GroupMigrationActionSheet(groupThread: groupThread,
+                                         mode: .reAddDroppedMembers(members: droppedMembersInfo.addableMembers))
     }
 
     required init(coder: NSCoder) {
@@ -645,5 +652,46 @@ private extension GroupMigrationActionSheet {
                                         comment: "Message for error alert indicating the group update failed.")
         }
         OWSActionSheets.showActionSheet(title: title, message: message, fromViewController: actionSheetController)
+    }
+}
+
+// MARK: -
+
+public extension GroupMigrationActionSheet {
+
+    struct DroppedMembersInfo {
+        let groupThread: TSGroupThread
+        let addableMembers: Set<SignalServiceAddress>
+    }
+
+    static func buildDroppedMembersInfo(thread: TSThread) -> DroppedMembersInfo? {
+        guard let groupThread = thread as? TSGroupThread else {
+            return nil
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return nil
+        }
+        guard groupThread.isLocalUserFullMember else {
+            return nil
+        }
+
+        var addableMembers = Set<SignalServiceAddress>()
+        Self.databaseStorage.read { transaction in
+            for address in groupModel.droppedMembers {
+                guard address.uuid != nil else {
+                    continue
+                }
+                guard GroupsV2Migration.doesUserHaveBothCapabilities(address: address, transaction: transaction) else {
+                    continue
+                }
+                addableMembers.insert(address)
+            }
+        }
+        guard !addableMembers.isEmpty else {
+            return nil
+        }
+        let droppedMembersInfo = DroppedMembersInfo(groupThread: groupThread,
+                                                    addableMembers: addableMembers)
+        return droppedMembersInfo
     }
 }

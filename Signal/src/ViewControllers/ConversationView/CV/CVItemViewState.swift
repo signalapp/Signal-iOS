@@ -159,6 +159,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                                         previousItem: previousItem,
                                         nextItem: nextItem,
                                         thread: thread,
+                                        threadViewModel: threadViewModel,
                                         viewStateSnapshot: viewStateSnapshot,
                                         transaction: transaction)
         }
@@ -170,6 +171,7 @@ struct CVItemModelBuilder: CVItemBuilding {
 
     public static func buildStandaloneItem(interaction: TSInteraction,
                                            thread: TSThread,
+                                           threadViewModel: ThreadViewModel,
                                            itemBuildingContext: CVItemBuildingContext,
                                            transaction: SDSAnyReadTransaction) -> CVItemModel? {
         AssertIsOnMainThread()
@@ -188,6 +190,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                                previousItem: nil,
                                nextItem: nil,
                                thread: thread,
+                               threadViewModel: threadViewModel,
                                viewStateSnapshot: viewStateSnapshot,
                                transaction: transaction)
 
@@ -198,6 +201,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                                                previousItem: ItemBuilder?,
                                                nextItem: ItemBuilder?,
                                                thread: TSThread,
+                                               threadViewModel: ThreadViewModel,
                                                viewStateSnapshot: CVViewStateSnapshot,
                                                transaction: SDSAnyReadTransaction) {
         let itemViewState = item.itemViewState
@@ -231,7 +235,8 @@ struct CVItemModelBuilder: CVItemBuilding {
             itemViewState.bodyTextState = CVComponentBodyText.buildState(interaction: interaction,
                                                                          bodyText: bodyText,
                                                                          viewStateSnapshot: viewStateSnapshot,
-                                                                         hasTapForMore: hasTapForMore)
+                                                                         hasTapForMore: hasTapForMore,
+                                                                         hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest)
         }
 
         itemViewState.isShowingSelectionUI = viewStateSnapshot.isShowingSelectionUI

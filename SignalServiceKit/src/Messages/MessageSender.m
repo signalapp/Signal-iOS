@@ -195,6 +195,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
+        OWSFailDebug(@"Precondition failure: %@.", error);
         return error;
     }
 
@@ -208,9 +209,16 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
                 }
 
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                OWSAssertDebug(attachmentStream);
-                OWSAssertDebug(attachmentStream.serverId || attachmentStream.cdnKey.length > 0);
-                OWSAssertDebug(attachmentStream.isUploaded);
+                if (!attachmentStream.serverId && attachmentStream.cdnKey.length < 1) {
+                    OWSFailDebug(@"Attachment missing upload state.");
+                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    break;
+                }
+                if (!attachmentStream.isUploaded) {
+                    OWSFailDebug(@"Attachment not uploaded.");
+                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    break;
+                }
             }
         }];
     }

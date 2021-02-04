@@ -121,7 +121,7 @@ public extension ConversationViewController {
     // MARK: - Dropped Group Members Banner
 
     func createDroppedGroupMembersBannerIfNecessary(viewState: CVViewState) -> UIView? {
-        guard let droppedMembersInfo = buildDroppedMembersInfo() else {
+        guard let droppedMembersInfo = GroupMigrationActionSheet.buildDroppedMembersInfo(thread: thread) else {
             return nil
         }
         return createDroppedGroupMembersBanner(viewState: viewState,
@@ -165,41 +165,7 @@ public extension ConversationViewController {
 
 fileprivate extension ConversationViewController {
 
-    struct DroppedMembersInfo {
-        let groupThread: TSGroupThread
-        let addableMembers: Set<SignalServiceAddress>
-    }
-
-    func buildDroppedMembersInfo() -> DroppedMembersInfo? {
-        guard let groupThread = thread as? TSGroupThread else {
-            return nil
-        }
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            return nil
-        }
-        guard groupThread.isLocalUserFullMember else {
-            return nil
-        }
-
-        var addableMembers = Set<SignalServiceAddress>()
-        Self.databaseStorage.read { transaction in
-            for address in groupModel.droppedMembers {
-                guard address.uuid != nil else {
-                    continue
-                }
-                guard GroupsV2Migration.doesUserHaveBothCapabilities(address: address, transaction: transaction) else {
-                    continue
-                }
-                addableMembers.insert(address)
-            }
-        }
-        guard !addableMembers.isEmpty else {
-            return nil
-        }
-        let droppedMembersInfo = DroppedMembersInfo(groupThread: groupThread,
-                                                    addableMembers: addableMembers)
-        return droppedMembersInfo
-    }
+    typealias DroppedMembersInfo = GroupMigrationActionSheet.DroppedMembersInfo
 
     func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {

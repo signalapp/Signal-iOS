@@ -68,9 +68,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let albumView = componentView.albumView
         albumView.configure(mediaCache: self.mediaCache,
                             items: self.items,
-                            isOutgoing: self.isOutgoing,
+                            interaction: self.interaction,
                             isBorderless: self.isBorderless,
-                            isFromLinkedDevice: self.isFromLinkedDevice,
                             cellMeasurement: cellMeasurement,
                             conversationStyle: conversationStyle)
 

@@ -231,6 +231,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let internalLogging = build.includes(.qa)
 
+    @objc
+    public static let betaLogging = build.includes(.beta)
+
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //

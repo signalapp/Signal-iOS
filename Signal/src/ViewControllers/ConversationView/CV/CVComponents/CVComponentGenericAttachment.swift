@@ -173,26 +173,31 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private func tryToBuildDownloadView() -> UIView? {
 
-        guard let attachmentPointer = self.attachmentPointer else {
+        let direction: CVAttachmentProgressView.Direction
+        switch CVAttachmentProgressView.progressType(forAttachment: attachment,
+                                                     interaction: interaction) {
+        case .none:
             return nil
-        }
-
-        switch attachmentPointer.pointerType {
+        case .uploading:
+            // We currently only show progress for downloads here.
+            return nil
+        case .pendingDownload(let attachmentPointer):
+            direction = .download(attachmentPointer: attachmentPointer)
+        case .downloading(let attachmentPointer):
+            direction = .download(attachmentPointer: attachmentPointer)
         case .restoring:
-            // TODO: Show "restoring" indicator and possibly progress.
+            // TODO: We could easily show progress for restores.
+            owsFailDebug("Restoring progress type.")
             return nil
-        case .unknown, .incoming:
-            break
-        @unknown default:
-            owsFailDebug("Invalid value.")
+        case .unknown:
+            owsFailDebug("Unknown progress type.")
             return nil
         }
 
         let downloadViewSize = min(iconSize.width, iconSize.height)
-        let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                    style: .withoutCircle(diameter: downloadViewSize),
-                                                    conversationStyle: conversationStyle)
-        return progressView
+        return CVAttachmentProgressView(direction: direction,
+                                        style: .withoutCircle(diameter: downloadViewSize),
+                                        conversationStyle: conversationStyle)
     }
 
     private let hSpacing: CGFloat = 8

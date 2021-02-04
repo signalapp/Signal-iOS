@@ -68,13 +68,28 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             containerView.addArrangedSubview(mediaView)
             componentView.layoutConstraints.append(contentsOf: mediaView.autoSetDimensions(to: .square(stickerSize)))
 
-            if isOutgoing, !attachmentStream.isUploaded, !isFromLinkedDevice {
+            switch CVAttachmentProgressView.progressType(forAttachment: attachmentStream,
+                                                         interaction: interaction) {
+            case .none:
+                break
+            case .uploading:
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)
                 containerView.addSubview(progressView)
                 progressView.autoAlignAxis(.horizontal, toSameAxisOf: mediaView)
                 progressView.autoAlignAxis(.vertical, toSameAxisOf: mediaView)
+            case .pendingDownload:
+                break
+            case .downloading:
+                break
+            case .restoring:
+                // TODO: We could easily show progress for restores.
+                owsFailDebug("Restoring progress type.")
+                break
+            case .unknown:
+                owsFailDebug("Unknown progress type.")
+                break
             }
         } else if let attachmentPointer = self.attachmentPointer {
             let placeholderView = UIView()

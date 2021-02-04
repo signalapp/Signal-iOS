@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,6 +23,7 @@ extern const NSUInteger kLargeAvatarSize;
                               transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(buildImage(thread:diameter:transaction:));
 
 + (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
++ (nullable UIImage *)buildNoiseAvatarWithDiameter:(NSUInteger)diameter;
 
 - (nullable UIImage *)buildSavedImage;
 - (nullable UIImage *)buildSavedImageWithTransaction:(SDSAnyReadTransaction *)transaction;

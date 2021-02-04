@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -89,6 +89,24 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
                                                     textColor:self.avatarForegroundColor
                                                          font:[self avatarTextFontForDiameter:diameter]
                                                      diameter:diameter];
+                               }];
+}
+
++ (nullable UIImage *)buildNoiseAvatarWithDiameter:(NSUInteger)diameter
+{
+    UIColor *backgroundColor = [UIColor colorWithRGBHex:0xaca6633];
+    return [self avatarImageWithDiameter:diameter
+                         backgroundColor:backgroundColor
+                               drawBlock:^(CGContextRef context) {
+                                   const NSUInteger stride = 1;
+                                   for (NSUInteger x = 0; x < diameter; x += stride) {
+                                       for (NSUInteger y = 0; y < diameter; y += stride) {
+                                           UIColor *color = [UIColor ows_randomColorWithIsAlphaRandom:NO];
+                                           CGContextSetFillColorWithColor(context, color.CGColor);
+                                           CGRect frame = CGRectMake(x, y, stride, stride);
+                                           CGContextFillRect(context, frame);
+                                       }
+                                   }
                                }];
 }
 

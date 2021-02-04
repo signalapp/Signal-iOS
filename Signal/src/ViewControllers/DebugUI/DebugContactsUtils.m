@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugContactsUtils.h"
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(count > 0);
 
     NSUInteger remainder = count;
-    const NSUInteger kMaxBatchSize = 20;
+    const NSUInteger kMaxBatchSize = 10;
     NSUInteger batch = MIN(kMaxBatchSize, remainder);
     remainder -= batch;
     [self createRandomContactsBatch:batch
@@ -105,18 +105,28 @@ NS_ASSUME_NONNULL_BEGIN
 
                                 // 50% chance of fake contact having an avatar
                                 const NSUInteger kPercentWithAvatar = 50;
+                                const NSUInteger kPercentWithLargeAvatar = 25;
                                 const NSUInteger kMinimumAvatarDiameter = 200;
                                 const NSUInteger kMaximumAvatarDiameter = 800;
                                 OWSAssertDebug(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
-                                if (arc4random_uniform(100) < kPercentWithAvatar) {
-                                    NSUInteger avatarDiameter
-                                        = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
-                                        + kMinimumAvatarDiameter;
+                                uint32_t avatarSeed = arc4random_uniform(100);
+                                if (avatarSeed < kPercentWithAvatar) {
+                                    BOOL shouldUseLargeAvatar = avatarSeed < kPercentWithLargeAvatar;
+                                    NSUInteger avatarDiameter;
+                                    if (shouldUseLargeAvatar) {
+                                        avatarDiameter = kMaximumAvatarDiameter;
+                                    } else {
+                                        avatarDiameter
+                                            = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
+                                            + kMinimumAvatarDiameter;
+                                    }
                                     // Note this doesn't work on iOS9, since iOS9 doesn't generate the
                                     // imageThumbnailData from programmatically assigned imageData. We could make our
                                     // own thumbnail in Contact.m, but it's not worth it for the sake of debug UI.
-                                    contact.imageData = UIImageJPEGRepresentation(
-                                        [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter], (CGFloat)0.9);
+                                    UIImage *avatarImage = (shouldUseLargeAvatar
+                                            ? [OWSAvatarBuilder buildNoiseAvatarWithDiameter:avatarDiameter]
+                                            : [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter]);
+                                    contact.imageData = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
                                     OWSLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
                                 }
 
@@ -129,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                         NSError *saveError = nil;
                         if (![store executeSaveRequest:request error:&saveError]) {
-                            OWSLogError(@"Error saving fake contacts: %@", saveError);
+                            OWSFailDebug(@"Error saving fake contacts: %@", saveError);
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [OWSActionSheets showActionSheetWithTitle:@"Error"
                                                                   message:saveError.localizedDescription];
