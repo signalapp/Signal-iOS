@@ -291,6 +291,7 @@ public class CVLoader: NSObject {
                                                             avatarBuilder: avatarBuilder)
         guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
                                                                      thread: thread,
+                                                                     threadViewModel: threadViewModel,
                                                                      itemBuildingContext: itemBuildingContext,
                                                                      transaction: transaction) else {
             owsFailDebug("Couldn't build item model.")
