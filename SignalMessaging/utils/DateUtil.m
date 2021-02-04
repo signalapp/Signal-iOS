@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DateUtil.h"
@@ -362,7 +362,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
-+ (NSDateFormatter *)thisWeekMessageFormatter
++ (NSDateFormatter *)thisWeekMessageFormatterShort
 {
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
@@ -374,7 +374,20 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
++ (NSDateFormatter *)thisWeekMessageFormatterLong
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:@"EEEE"];
+    });
+    return formatter;
+}
+
 + (NSString *)formatMessageTimestamp:(uint64_t)timestamp
+                 shouldUseLongFormat:(BOOL)shouldUseLongFormat
 {
     NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
     uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
@@ -416,7 +429,10 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     } else if (daysDiff > 0) {
         // "Day of week" + locale-specific "short" time format.
-        NSString *dayOfWeek = [self.thisWeekMessageFormatter stringFromDate:date];
+        NSDateFormatter *thisWeekMessageFormatter = (shouldUseLongFormat
+                                                     ? self.thisWeekMessageFormatterLong
+                                                     : self.thisWeekMessageFormatterShort);
+        NSString *dayOfWeek = [thisWeekMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
         return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     } else {
