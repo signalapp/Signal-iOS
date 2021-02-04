@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -143,6 +143,11 @@ public class OWSAttachmentUploadV2: NSObject {
 
             self.encryptionKey = encryptionKey
             self.digest = digest
+
+            guard attachmentData.count <= OWSMediaUtils.kMaxFileSizeGeneric,
+                  encryptedAttachmentData.count <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
+                throw OWSAssertionError("Data is too large: \(encryptedAttachmentData.count).").asUnretryableError
+            }
 
             return encryptedAttachmentData
         }
