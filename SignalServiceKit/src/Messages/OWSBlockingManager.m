@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBlockingManager.h"
@@ -86,10 +86,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     OWSSingletonAssert();
-    
-    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
-        [self ensureLazyInitializationOnLaunch];
-    }];
+
+    AppReadinessRunNowOrWhenAppWillBecomeReady(^{ [self ensureLazyInitializationOnLaunch]; });
 
     return self;
 }
@@ -834,12 +832,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         @synchronized(self)
         {
             [self syncBlockListIfNecessary];
         }
-    }];
+    });
 }
 
 @end

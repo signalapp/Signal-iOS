@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncManager.h"
@@ -68,7 +68,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         [self addObservers];
         
         if ([self.tsAccountManager isRegisteredAndReady]) {
@@ -86,7 +86,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 });
             }
         }
-    }];
+    });
 
     return self;
 }
@@ -209,7 +209,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 }
 
 - (void)sendConfigurationSyncMessage {
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (!self.tsAccountManager.isRegisteredAndReady) {
             return;
         }
@@ -217,7 +217,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         dispatch_async(dispatch_get_main_queue(), ^{
             [self sendConfigurationSyncMessage_AppReady];
         });
-    }];
+    });
 }
 
 - (void)sendConfigurationSyncMessage_AppReady {
@@ -394,7 +394,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
             dispatch_async(self.serialQueue, ^{
                 if (debounce && self.isRequestInFlight) {
                     // De-bounce.  It's okay if we ignore some new changes;
@@ -488,7 +488,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                         });
                                                     }];
             });
-        }];
+        });
     }];
     return promise;
 }

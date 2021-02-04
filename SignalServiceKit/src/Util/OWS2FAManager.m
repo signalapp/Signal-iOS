@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FAManager.h"
@@ -67,7 +67,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (self.mode == OWS2FAMode_V1) {
             OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
 
@@ -79,7 +79,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                     OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.localizedDescription);
                 });
         }
-    }];
+    });
 
     return self;
 }

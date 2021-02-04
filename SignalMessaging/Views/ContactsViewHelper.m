@@ -77,10 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
     _observers = [NSHashTable weakObjectsHashTable];
     _blockListCache = [OWSBlockListCache new];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         // setup() - especially updateContacts() - can
         // be expensive, so we don't want to run that
-        // directly in runNowOrWhenAppDidBecomeReady().
+        // directly in runNowOrWhenAppDidBecomeReadySync().
         // That could cause 0x8badf00d crashes.
         //
         // On the other hand, the user might quickly
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         // this helper. If the helper hasn't completed
         // setup, that view won't be able to display a
         // list of users to pick from. Therefore, we
-        // can't use runNowOrWhenAppDidBecomeReadyPolite()
+        // can't use runNowOrWhenAppDidBecomeReadyAsync()
         // which might not run for many seconds after
         // the app becomes ready.
         //
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
         // without introducing the risk of a 0x8badf00d
         // crash.
         dispatch_async(dispatch_get_main_queue(), ^{ [self setup]; });
-    }];
+    });
 
     return self;
 }

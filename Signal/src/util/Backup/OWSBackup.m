@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackup.h"
@@ -136,9 +136,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self setup];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self setup]; });
 
     return self;
 }

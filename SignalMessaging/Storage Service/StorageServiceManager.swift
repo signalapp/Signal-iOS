@@ -36,7 +36,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             self.cleanUpUnknownData()
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(self.willResignActive),
@@ -45,7 +45,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             )
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             guard self.tsAccountManager.isRegisteredAndReady else { return }
 
             // Schedule a restore. This will do nothing unless we've never

@@ -168,7 +168,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                                                    object: nil)
         case .uiRead:
             // uiRead caches are evacuated by observing storage changes.
-            AppReadiness.runNowOrWhenAppDidBecomeReady {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
                 AssertIsOnMainThread()
 
                 self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)

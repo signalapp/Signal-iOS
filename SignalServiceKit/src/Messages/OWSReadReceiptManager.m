@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptManager.h"
@@ -66,9 +66,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSSingletonAssert();
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        [self scheduleProcessing];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self scheduleProcessing]; });
 
     return self;
 }

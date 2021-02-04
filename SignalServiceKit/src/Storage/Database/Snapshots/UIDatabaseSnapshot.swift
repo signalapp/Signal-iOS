@@ -174,7 +174,7 @@ public class UIDatabaseObserver: NSObject {
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.ensureDisplayLink()
         }
     }

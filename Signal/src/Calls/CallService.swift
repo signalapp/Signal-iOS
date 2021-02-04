@@ -155,7 +155,7 @@ public final class CallService: NSObject {
             name: .reachabilityChanged,
             object: nil)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
         }
     }

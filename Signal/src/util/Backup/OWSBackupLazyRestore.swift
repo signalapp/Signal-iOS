@@ -34,7 +34,7 @@ public class BackupLazyRestore: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.runIfNecessary()
         }
 

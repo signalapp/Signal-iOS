@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -65,7 +65,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         // IOS-782: +[Theme shared] re-enterant initialization
         // AppReadiness will invoke the block synchronously if the app is already ready.
         // This doesn't work here, because we'll end up reenterantly calling +shared
@@ -78,7 +78,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
         dispatch_async(dispatch_get_main_queue(), ^{
             [self notifyIfThemeModeIsNotDefault];
         });
-    }];
+    });
 
     return self;
 }

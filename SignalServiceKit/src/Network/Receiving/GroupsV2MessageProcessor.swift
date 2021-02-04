@@ -67,7 +67,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                                                name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.pipelineSupervisor.register(pipelineStage: self)
         }
     }
@@ -132,7 +132,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             DispatchQueue.global().async {
                 self.drainQueues()
             }
@@ -289,7 +289,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
                                                name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.pipelineSupervisor.register(pipelineStage: self)
         }
     }

@@ -188,7 +188,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }

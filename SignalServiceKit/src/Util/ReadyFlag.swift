@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,12 +26,37 @@ import Foundation
 public class ReadyFlag: NSObject {
 
     // All instances can share a single queue.
-    private static let serialQueue = DispatchQueue(label: "ReadyFlag")
+    private static let serialQueue = DispatchQueue(label: "ReadyFlag",
+                                                   qos: .utility,
+                                                   autoreleaseFrequency: .workItem)
+
+    private let unfairLock = UnfairLock()
 
     public typealias ReadyBlock = () -> Void
+    public typealias Priority = Int
 
-    // This class supports three thread modes.
-    // The mode how we use queues to isolate access to
+    private struct ReadyTask {
+        let label: String?
+        let priority: Priority
+        let block: ReadyBlock
+
+        var displayLabel: String {
+            label ?? "unknown"
+        }
+
+        static func sort(_ tasks: [ReadyTask]) -> [ReadyTask] {
+            tasks.sorted { (left, right) -> Bool in
+                // TODO: Verify correctness.
+                left.priority <= right.priority
+            }
+        }
+    }
+
+    private static let defaultPriority: Priority = 0
+
+    // This class supports two thread modes.
+    // The mode determines which queue the tasks are
+    // performed on.
     // the local properties _and_ which queue the blocks
     // are performed on.
     @objc
@@ -40,18 +65,24 @@ public class ReadyFlag: NSObject {
         //
         // * The flag should only be set on the main thread.
         // * All blocks are performed on the main thread.
-        // * The non-polite blocks are performed sync when
-        //   the flag is set.
-        case mainThreadOnly
+        // * The sync blocks are performed sync when the flag is set.
+        // * The async blocks are performed async after the flag is set.
+        case mainThread
         // * The flag can be set from any thread.
-        // * All blocks are performed _sync_ on the serial thread
-        //   except "polite" blocks which are performed async.
-        // * There is the risk of deadlock if any block
-        //   accesses the flag.
-        case serialQueueSync
-        // * The flag can be set from any thread.
-        // * All blocks are performed _async_ on the serial thread.
-        case serialQueueAsync
+        // * Sync blocks are performed on the thread on which the flag is set.
+        // * Async blocks are performed on the serial queue.
+        // * The sync blocks are performed sync when the flag is set.
+        // * The async blocks are performed async after the flag is set.
+        case serialQueue
+
+        fileprivate var dispatchQueue: DispatchQueue {
+            switch self {
+            case .mainThread:
+                return .main
+            case .serialQueue:
+                return ReadyFlag.serialQueue
+            }
+        }
     }
 
     private let queueMode: QueueMode
@@ -61,18 +92,18 @@ public class ReadyFlag: NSObject {
     private static let blockLogDuration: TimeInterval = 0.01
     private static let groupLogDuration: TimeInterval = 0.1
 
-    // This property should only be set on serialQueue.
+    // This property should only be set with unfairLock.
     // It can be read from any queue.
     private let flag = AtomicBool(false)
 
-    // This property should only be accessed on serialQueue.
-    private var willBecomeReadyBlocks = [ReadyBlock]()
+    // This property should only be accessed with unfairLock.
+    private var willBecomeReadyTasks = [ReadyTask]()
 
-    // This property should only be accessed on serialQueue.
-    private var didBecomeReadyBlocks = [ReadyBlock]()
+    // This property should only be accessed with unfairLock.
+    private var didBecomeReadySyncTasks = [ReadyTask]()
 
-    // This property should only be accessed on serialQueue.
-    private var didBecomeReadyPoliteBlocks = [ReadyBlock]()
+    // This property should only be accessed with unfairLock.
+    private var didBecomeReadyAsyncTasks = [ReadyTask]()
 
     @objc
     public required init(name: String, queueMode: QueueMode) {
@@ -82,122 +113,199 @@ public class ReadyFlag: NSObject {
 
     @objc
     public var isSet: Bool {
-        return self.flag.get()
+        flag.get()
     }
 
-    @objc
-    public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock) {
-        performInternal {
-            if self.isSet {
-                readyBlock()
-            } else {
-                self.willBecomeReadyBlocks.append(readyBlock)
+    public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock,
+                                            label: String? = nil,
+                                            priority: Priority? = nil) {
+        if queueMode == .mainThread {
+            AssertIsOnMainThread()
+        }
+
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
+                }
+                willBecomeReadyTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            BenchManager.bench(title: self.name + ".willBecomeReady " + task.displayLabel,
+                               logIfLongerThan: Self.blockLogDuration,
+                               logInProduction: true) {
+                autoreleasepool {
+                    task.block()
+                }
             }
         }
     }
 
-    @objc
-    public func runNowOrWhenDidBecomeReady(_ readyBlock: @escaping ReadyBlock) {
-        performInternal {
-            if self.isSet {
-                readyBlock()
-            } else {
-                self.didBecomeReadyBlocks.append(readyBlock)
+    public func runNowOrWhenDidBecomeReadySync(_ readyBlock: @escaping ReadyBlock,
+                                               label: String? = nil,
+                                               priority: Priority? = nil) {
+        if queueMode == .mainThread {
+            AssertIsOnMainThread()
+        }
+
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
+                }
+                didBecomeReadySyncTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            BenchManager.bench(title: self.name + ".didBecomeReady " + task.displayLabel,
+                               logIfLongerThan: Self.blockLogDuration,
+                               logInProduction: true) {
+                autoreleasepool {
+                    task.block()
+                }
             }
         }
     }
 
-    @objc
-    public func runNowOrWhenDidBecomeReadyPolite(_ readyBlock: @escaping ReadyBlock) {
-        performInternal {
-            if self.isSet {
-                readyBlock()
-            } else {
-                self.didBecomeReadyPoliteBlocks.append(readyBlock)
+    public func runNowOrWhenDidBecomeReadyAsync(_ readyBlock: @escaping ReadyBlock,
+                                                label: String? = nil,
+                                                priority: Priority? = nil) {
+        if queueMode == .mainThread {
+            AssertIsOnMainThread()
+        }
+
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
+                }
+                didBecomeReadyAsyncTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            //
+            // Always perform async blocks async.
+            let dispatchQueue = queueMode.dispatchQueue
+            dispatchQueue.async { () -> Void in
+                BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
+                                   logIfLongerThan: Self.blockLogDuration,
+                                   logInProduction: true) {
+                    autoreleasepool {
+                        task.block()
+                    }
+                }
             }
         }
     }
 
     @objc
     public func setIsReady() {
-        performInternal {
-            guard !self.isSet else {
-                assert(self.willBecomeReadyBlocks.isEmpty)
-                assert(self.didBecomeReadyBlocks.isEmpty)
-                assert(self.didBecomeReadyPoliteBlocks.isEmpty)
-                return
-            }
-            self.flag.set(true)
-
-            let willBecomeReadyBlocks = self.willBecomeReadyBlocks
-            let didBecomeReadyBlocks = self.didBecomeReadyBlocks
-            let didBecomeReadyPoliteBlocks = self.didBecomeReadyPoliteBlocks
-            self.willBecomeReadyBlocks = []
-            self.didBecomeReadyBlocks = []
-            self.didBecomeReadyPoliteBlocks = []
-
-            // We bench the blocks individually and as a group.
-            BenchManager.bench(title: self.name + ".willBecomeReady group",
-                               logIfLongerThan: Self.groupLogDuration,
-                               logInProduction: true) {
-                                for block in willBecomeReadyBlocks {
-                                    BenchManager.bench(title: self.name + ".willBecomeReady",
-                                                       logIfLongerThan: Self.blockLogDuration,
-                                                       logInProduction: true,
-                                                       block: block)
-                                }
-            }
-            BenchManager.bench(title: self.name + ".didBecomeReady group",
-                               logIfLongerThan: Self.groupLogDuration,
-                               logInProduction: true) {
-                                for block in didBecomeReadyBlocks {
-                                    BenchManager.bench(title: self.name + ".didBecomeReady",
-                                                       logIfLongerThan: Self.blockLogDuration,
-                                                       logInProduction: true,
-                                                       block: block)
-                                }
-            }
-            self.performDidBecomeReadyPoliteBlocks(didBecomeReadyPoliteBlocks)
-        }
-    }
-
-    private func performInternal(_ block: @escaping () -> Void) {
-        switch queueMode {
-        case .mainThreadOnly:
+        if queueMode == .mainThread {
             AssertIsOnMainThread()
+        }
 
-            block()
-        case .serialQueueSync:
-            Self.serialQueue.sync(execute: block)
-        case .serialQueueAsync:
-            Self.serialQueue.async(execute: block)
+        guard let tasksToPerform = tryToSetFlag() else {
+            return
+        }
+
+        let willBecomeReadyTasks = ReadyTask.sort(tasksToPerform.willBecomeReadyTasks)
+        let didBecomeReadySyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadySyncTasks)
+        let didBecomeReadyAsyncTasks = ReadyTask.sort(tasksToPerform.didBecomeReadyAsyncTasks)
+
+        // We bench the blocks individually and as a group.
+        BenchManager.bench(title: self.name + ".willBecomeReady group",
+                           logIfLongerThan: Self.groupLogDuration,
+                           logInProduction: true) {
+            for task in willBecomeReadyTasks {
+                BenchManager.bench(title: self.name + ".willBecomeReady " + task.displayLabel,
+                                   logIfLongerThan: Self.blockLogDuration,
+                                   logInProduction: true) {
+                    autoreleasepool {
+                        task.block()
+                    }
+                }
+            }
+        }
+
+        BenchManager.bench(title: self.name + ".didBecomeReady group",
+                           logIfLongerThan: Self.groupLogDuration,
+                           logInProduction: true) {
+            for task in didBecomeReadySyncTasks {
+                BenchManager.bench(title: self.name + ".didBecomeReady " + task.displayLabel,
+                                   logIfLongerThan: Self.blockLogDuration,
+                                   logInProduction: true) {
+                    autoreleasepool {
+                        task.block()
+                    }
+                }
+            }
+        }
+
+        self.performDidBecomeReadyAsyncTasks(didBecomeReadyAsyncTasks)
+    }
+
+    private struct TasksToPerform {
+        let willBecomeReadyTasks: [ReadyTask]
+        let didBecomeReadySyncTasks: [ReadyTask]
+        let didBecomeReadyAsyncTasks: [ReadyTask]
+    }
+
+    private func tryToSetFlag() -> TasksToPerform? {
+        unfairLock.withLock {
+            guard flag.tryToSetFlag() else {
+                // We can only set the flag once.  If it's already set,
+                // ensure that
+                owsAssertDebug(willBecomeReadyTasks.isEmpty)
+                owsAssertDebug(didBecomeReadySyncTasks.isEmpty)
+                owsAssertDebug(didBecomeReadyAsyncTasks.isEmpty)
+                return nil
+            }
+
+            let tasksToPerform = TasksToPerform(willBecomeReadyTasks: self.willBecomeReadyTasks,
+                                                didBecomeReadySyncTasks: self.didBecomeReadySyncTasks,
+                                                didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks)
+            self.willBecomeReadyTasks = []
+            self.didBecomeReadySyncTasks = []
+            self.didBecomeReadyAsyncTasks = []
+            return tasksToPerform
         }
     }
 
-    private func performDidBecomeReadyPoliteBlocks(_ blocks: [ReadyBlock]) {
-        let dispatchQueue: DispatchQueue
-        switch queueMode {
-        case .mainThreadOnly:
-            dispatchQueue = .main
-        case .serialQueueSync, .serialQueueAsync:
-            dispatchQueue = Self.serialQueue
-        }
-
+    private func performDidBecomeReadyAsyncTasks(_ tasks: [ReadyTask]) {
+        let dispatchQueue = queueMode.dispatchQueue
         dispatchQueue.asyncAfter(deadline: DispatchTime.now() + 0.025) { [weak self] in
             guard let self = self else {
                 return
             }
-            guard let block = blocks.first else {
+            guard let task = tasks.first else {
                 return
             }
-            BenchManager.bench(title: self.name + ".didBecomeReadyPolite",
+            BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
                                logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true,
-                               block: block)
+                               block: task.block)
 
-            var blocksCopy = blocks
-            blocksCopy.removeFirst(1)
-            self.performDidBecomeReadyPoliteBlocks(blocksCopy)
+            let remainder = Array(tasks.suffix(from: 1))
+            self.performDidBecomeReadyAsyncTasks(remainder)
         }
     }
 }

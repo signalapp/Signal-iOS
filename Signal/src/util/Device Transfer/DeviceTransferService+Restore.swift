@@ -237,7 +237,7 @@ extension DeviceTransferService {
     func launchCleanup() -> Bool {
         Logger.info("hasBeenRestored: \(hasBeenRestored)")
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.tsAccountManager.isTransferInProgress = false
 
             if self.pendingWasTransferredClear {

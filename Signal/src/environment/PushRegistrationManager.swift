@@ -102,7 +102,7 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("")
         assert(type == .voIP)
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
             if let preauthChallengeResolver = self.preauthChallengeResolver,
                 let challenge = payload.dictionaryPayload["challenge"] as? String {

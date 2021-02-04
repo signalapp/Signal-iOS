@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "YDBLegacyMigration.h"
@@ -40,9 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(errorHandle != nil);
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self appDidBecomeReady];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self appDidBecomeReady]; });
 
     if ([OWSPreferences isReadyForAppExtensions]) {
         return YES;

@@ -31,7 +31,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.setup()
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScreenLockUI.h"
@@ -138,11 +138,11 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // It's not safe to access OWSScreenLock.isScreenLockEnabled
     // until the app is ready.
-    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
+    AppReadinessRunNowOrWhenAppWillBecomeReady(^{
         self.isScreenLockLocked = OWSScreenLock.shared.isScreenLockEnabled;
 
         [self ensureUI];
-    }];
+    });
 }
 
 #pragma mark - Methods
@@ -251,9 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     if (!AppReadiness.isAppReady) {
-        [AppReadiness runNowOrWhenAppWillBecomeReady:^{
-            [self ensureUI];
-        }];
+        AppReadinessRunNowOrWhenAppWillBecomeReady(^{ [self ensureUI]; });
         return;
     }
 

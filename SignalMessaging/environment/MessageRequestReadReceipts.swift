@@ -9,7 +9,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
 
     override init() {
         super.init()
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(self.profileWhitelistDidChange(notification:)),
                                                    name: .profileWhitelistDidChange,

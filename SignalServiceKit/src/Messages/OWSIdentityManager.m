@@ -641,9 +641,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        [self syncQueuedVerificationStates];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self syncQueuedVerificationStates]; });
 }
 
 - (void)syncQueuedVerificationStates

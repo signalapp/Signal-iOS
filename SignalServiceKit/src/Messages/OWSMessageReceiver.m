@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageReceiver.h"
@@ -296,10 +296,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         [self.pipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
-    }];
+    });
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -353,7 +353,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self drainQueue]; });
 }
 
 #pragma mark - Instance methods
@@ -507,7 +507,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)supervisorDidResumeMessageProcessing:(OWSMessagePipelineSupervisor *)supervisor
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self drainQueue]; });
 }
 
 @end
@@ -538,7 +538,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     _yapProcessingQueue = yapProcessingQueue;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self.yapProcessingQueue drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self.yapProcessingQueue drainQueue]; });
 
     return self;
 }
