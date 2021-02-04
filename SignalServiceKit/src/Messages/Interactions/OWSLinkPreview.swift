@@ -396,16 +396,26 @@ public class OWSLinkPreviewManager: NSObject {
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
 
-        let httpRedirectionBlock: OWSURLSession.HTTPRedirectionBlock = { request in
-            request.url?.isPermittedLinkPreviewUrl() == true
-        }
+        // Twitter doesn't return OpenGraph tags to Signal
+        // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
+        // If this ever changes, we can switch back to our default User-Agent
+        let userAgentString = "WhatsApp/2"
+        let extraHeaders: [String: String] = ["User-Agent": userAgentString]
 
-        return OWSURLSession(baseUrl: nil,
-                             securityPolicy: OWSURLSession.defaultSecurityPolicy(),
-                             configuration: sessionConfig,
-                             censorshipCircumventionHost: nil,
-                             httpRedirectionBlock: httpRedirectionBlock,
-                             maxResponseSize: Self.maxFetchedContentSize)
+        let urlSession = OWSURLSession(baseUrl: nil,
+                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
+                                       configuration: sessionConfig,
+                                       censorshipCircumventionHost: nil,
+                                       extraHeaders: extraHeaders,
+                                       maxResponseSize: Self.maxFetchedContentSize)
+        urlSession.allowRedirects = true
+        urlSession.customRedirectHandler = { request in
+            guard request.url?.isPermittedLinkPreviewUrl() == true else {
+                return nil
+            }
+            return request
+        }
+        return urlSession
     }
 
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
@@ -459,11 +469,6 @@ public class OWSLinkPreviewManager: NSObject {
 
     private static let maxFetchedContentSize = 2 * 1024 * 1024
     private static let allowedMIMETypes: Set = [OWSMimeTypeImagePng, OWSMimeTypeImageJpeg]
-
-    // Twitter doesn't return OpenGraph tags to Signal
-    // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
-    // If this ever changes, we can switch back to our default User-Agent
-    private static let userAgentString = "WhatsApp/2"
 
     // MARK: - Preview Thumbnails
 

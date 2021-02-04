@@ -216,9 +216,6 @@ public class OWSURLSession: NSObject {
         return configuration
     }
 
-    public typealias HTTPRedirectionBlock = (URLRequest) -> Bool
-    private let httpRedirectionBlock: HTTPRedirectionBlock?
-
     private let maxResponseSize: Int?
 
     public init(baseUrl: URL? = nil,
@@ -226,14 +223,12 @@ public class OWSURLSession: NSObject {
                 configuration: URLSessionConfiguration,
                 censorshipCircumventionHost: String? = nil,
                 extraHeaders: [String: String] = [:],
-                httpRedirectionBlock: HTTPRedirectionBlock? = nil,
                 maxResponseSize: Int? = nil) {
         self.baseUrl = baseUrl
         self.securityPolicy = securityPolicy
         self.configuration = configuration
         self.censorshipCircumventionHost = censorshipCircumventionHost
         self.extraHeaders = extraHeaders
-        self.httpRedirectionBlock = httpRedirectionBlock
         self.maxResponseSize = maxResponseSize
 
         super.init()
@@ -247,14 +242,12 @@ public class OWSURLSession: NSObject {
                 securityPolicy: AFSecurityPolicy,
                 configuration: URLSessionConfiguration,
                 censorshipCircumventionHost: String? = nil,
-                extraHeaders: [String: String] = [:],
-                httpRedirectionBlock: HTTPRedirectionBlock? = nil) {
+                extraHeaders: [String: String] = [:]) {
         self.baseUrl = baseUrl
         self.securityPolicy = securityPolicy
         self.configuration = configuration
         self.censorshipCircumventionHost = censorshipCircumventionHost
         self.extraHeaders = extraHeaders
-        self.httpRedirectionBlock = httpRedirectionBlock
         self.maxResponseSize = nil
 
         super.init()
@@ -608,13 +601,6 @@ extension OWSURLSession: URLSessionDelegate {
                            newRequest: URLRequest,
                            completionHandler: @escaping (URLRequest?) -> Void) {
         guard allowRedirects else { return completionHandler(nil) }
-
-        if let httpRedirectionBlock = httpRedirectionBlock {
-            guard httpRedirectionBlock(newRequest) else {
-                completionHandler(nil)
-                return
-            }
-        }
 
         if let customRedirectHandler = customRedirectHandler {
             completionHandler(customRedirectHandler(newRequest))
