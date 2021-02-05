@@ -1651,8 +1651,12 @@ public class GroupManager: NSObject {
             if thread.isGroupV1Thread,
                let avatarData = groupModel.groupAvatarData,
                avatarData.count > 0 {
-                if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "jpg") {
-                    let attachment = GroupUpdateMessageAttachment(contentType: OWSMimeTypeImageJpeg, dataSource: dataSource)
+                let imageFormat = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil).imageFormat
+                let fileExtension = (imageFormat == .png) ? "png" : "jpg"
+                let mimeType = (imageFormat == .png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg
+
+                if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: fileExtension) {
+                    let attachment = GroupUpdateMessageAttachment(contentType: mimeType, dataSource: dataSource)
                     return self.sendGroupUpdateMessage(message, thread: thread, attachment: attachment)
                 }
             }

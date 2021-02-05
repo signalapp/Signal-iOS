@@ -8,6 +8,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -78,7 +79,10 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 
         OWSAssertDebug([TSGroupModel isValidGroupAvatarData:group.groupAvatarData]);
-        [avatarBuilder setContentType:OWSMimeTypeImageJpeg];
+        ImageFormat format = [group.groupAvatarData imageMetadataWithPath:nil mimeType:nil].imageFormat;
+        NSString *mimeType = (format == ImageFormat_Png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg;
+
+        [avatarBuilder setContentType:mimeType];
         groupAvatarData = group.groupAvatarData;
         [avatarBuilder setLength:(uint32_t)groupAvatarData.length];
 

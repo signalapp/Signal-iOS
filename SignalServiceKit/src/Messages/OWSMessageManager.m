@@ -45,6 +45,7 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -2011,14 +2012,18 @@ NS_ASSUME_NONNULL_BEGIN
         groupAvatarData = groupThread.groupModel.groupAvatarData;
         OWSAssertDebug(groupAvatarData.length > 0);
     }
+    ImageFormat format = [groupAvatarData imageMetadataWithPath:nil mimeType:nil].imageFormat;
+    NSString *mimeType = (format == ImageFormat_Png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg;
+    NSString *extension = (format == ImageFormat_Png) ? @"png" : @"jpg";
+
     _Nullable id<DataSource> groupAvatarDataSource;
     if (groupAvatarData.length > 0) {
-        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"jpg"];
+        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:extension];
     }
     if (groupAvatarDataSource != nil) {
         [self.messageSenderJobQueue addMediaMessage:message
                                          dataSource:groupAvatarDataSource
-                                        contentType:OWSMimeTypeImageJpeg
+                                        contentType:mimeType
                                      sourceFilename:nil
                                             caption:nil
                                      albumMessageId:nil
