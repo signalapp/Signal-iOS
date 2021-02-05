@@ -120,6 +120,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
         componentView.rootView.accessibilityLabel = titleLabelConfig.stringValue
         componentView.rootView.isAccessibilityElement = true
+        componentView.rootView.accessibilityTraits = .header
     }
 
     static func buildState(interaction: TSInteraction) -> State {
