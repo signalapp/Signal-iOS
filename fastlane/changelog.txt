@@ -1,12 +1,6 @@
-• Chat wallpapers have arrived! Choose unique wallpapers for individual chats (you may as well type on a heart-filled wallpaper if they're your type on paper) or just set one default background for everyone if your patience is wallpaper thin.
-• This update includes support for animated stickers along with the first official animated Signal sticker pack, "Day by Day" by Miguel Ángel Camprubí. You can create your own APNG animated sticker packs in Signal Desktop, and now you can share sticker packs with multiple chats too!
-• Optionally tell your friends what's going on or share something new "About" yourself in your Signal Profile.
-• If they're a big deal to you, tap on their profile photo to see them in a full-screen view.
-• New setting to lower data usage for calls.
-• Automatically pause attachment downloads while a call is in progress. Deciding to wait doesn't need to feel like such a weight because you can pause and resume attachment downloads whenever you want.
-• We improved image compression and quality so larger-than-life memories are always just the right size.
-• Expanded chat list previews display the sender's name in group chats so it's easier to decide which threads to look at first.
-• Signal chats can now be displayed as suggestions when sharing from other apps. This setting can be enabled or disabled at any time.
-• We fixed a few bugs that were reported to us by the beta community and people who are really fast at downloading new things.
+• This update introduces a few major accessibility enhancements, including VoiceOver descriptions of conversation messages.
+• Even if your thumbs are slow, sending messages will still be faster whenever you tap the send button in large groups.
+• The new design for the attachment upload and download progress indicators might look even better than the attachment that they sent you.
+• Several low-memory crashes have become distant-memory crashes, so you can forget about them.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
