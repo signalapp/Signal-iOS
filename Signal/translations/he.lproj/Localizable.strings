@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "הודעה קולית";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "הודעה קולית %@ שניות";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "שיחת Signal";
@@ -2080,9 +2080,6 @@
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ אישר/ה בקשה להצטרף אל הקבוצה מאת %1$@.";
 
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "בקשה להצטרף אל הקבוצה מאת %@ אושרה.";
-
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ביטל/ה את בקשתו/בקשתה להצטרף אל הקבוצה.";
 
@@ -3287,7 +3284,7 @@
 "OPEN_SETTINGS_BUTTON" = "הגדרות";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ השבית הודעות נעלמות.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ השבית/ה הודעות נעלמות.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ הגדיר את זמן ההודעות הנעלמות אל %@.";
@@ -4331,7 +4328,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "עקיפת צנזורה הופעלה על סמך מספר הטלפון של החשבון שלך.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "הִשְׁבַּת באופן ידני עקיפת צנזורה.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "הִשְׁבַּתָּ באופן ידני עקיפת צנזורה.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "עקיפת צנזורה יכולה להיפעל בעת התחברות אל האינטרנט.";
@@ -5252,7 +5249,7 @@
 "YOU_DELETED_THIS_MESSAGE" = "מחקת הודעה זו.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִשְׁבַּת הודעות נעלמות.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִשְׁבַּתָּ הודעות נעלמות.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "אתה חייב להשלים הכנה לפני שתמשיך.";

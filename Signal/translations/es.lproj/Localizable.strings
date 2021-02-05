@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Nota de voz";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Nota de voz de %@ segundos";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Llamada de Signal";
@@ -1715,58 +1715,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Se han retirado invitaciones inválidas.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Se ha desactivado el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_DISABLED" = "Se ha desactivado el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Has desactivado el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Has desactivado el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ha desactivado el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ha desactivado el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Se ha activado el enlace para compartir el grupo tras confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Se ha activado el enlace para unirse al grupo tras confirmación de admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Has activado el enlace para compartir el grupo tras confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Has activado el enlace para unirse al grupo tras confirmación de admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado el enlace para compartir el grupo tras confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado el enlace para unirse al grupo tras confirmación de admin.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Se ha activado el enlace para compartir el grupo sin necesitar confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Se ha activado el enlace para unirse al grupo sin confirmación de admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Has activado el enlace para compartir el grupo sin necesitar confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Has activado el enlace para unirse al grupo sin confirmación de admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado el enlace para compartir el grupo sin necesitar confirmación de admin.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado el enlace para unirse al grupo sin confirmación de admin.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Se ha restablecido el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_RESET" = "Se ha restablecido el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Has restablecido el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Has restablecido el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ha restablecido el enlace para compartir el grupo.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ha restablecido el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Se ha desactivado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Se ha desactivado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has desactivado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has desactivado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha desactivado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha desactivado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Se ha activado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Se ha activado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has activado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has activado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado la confirmación de admin para compartir el grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ha activado la confirmación de admin para unirse al grupo vía enlace.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "No se puede añadir automáticamente a %@ al grupo. Ha recibido una invitación y no podrá ver ningún mensaje hasta que la acepte.";
@@ -1817,7 +1817,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualiza Signal en este dispositivo para poder unirte al grupo.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Al seguir el enlace se genera una solicitud de acceso que debe ser aprobada.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Con esta opción activa, un(a) admin de este grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Aprobar solicitudes";
@@ -1859,7 +1859,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Gestionar y compartir";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Al seguir el enlace se genera una solicitud de acceso que debe ser aprobada.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Con esta opción activa, un(a) admin de este grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Solicitudes de participantes";
@@ -1868,7 +1868,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Restablecer enlace";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "¿Deseas restablecer el enlace para compartir el grupo? Si lo restableces, nadie podrá unirse al grupo usando el enlace actual.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "¿Deseas restablecer el enlace para unirse al grupo? Si lo restableces, nadie podrá unirse al grupo usando el enlace actual.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Compartir";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ha aprobado la solicitud de %1$@ para unirse al grupo.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Se ha aprobado la solicitud de %@ para unirse al grupo.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ha retirado su solicitud de unirse al grupo.";

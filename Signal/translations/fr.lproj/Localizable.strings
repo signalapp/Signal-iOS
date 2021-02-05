@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Message vocal";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Message vocal de %@ secondes.";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Appel Signal";
@@ -632,7 +632,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus recevoir ni envoyer de messages dans ce groupe.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus ni recevoir ni envoyer de messages dans ce groupe.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
@@ -1925,7 +1925,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Vous vous êtes joint au groupe.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Vous êtes joint au groupe grâce au lien de groupe.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Vous vous êtes joint au groupe grâce au lien de groupe.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "Votre suppression du groupe provient de %@.";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ a approuvé une demande de %1$@ de se joindre au groupe.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Une demande de %@ de se joindre au groupe a été approuvée.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ a annulé sa demande de se joindre au groupe.";

@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رسالة صوتية %@ ثانية";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -1496,7 +1496,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "إدخال البحث الخاص بك";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "إذهب للإعدادات";
+"GO_TO_SETTINGS_BUTTON" = "الانتقال إلى الإعدادات";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "يتضمن هذا الإصدار من Signal تنظيم لقاعدة البيانات وتحسينات في الأداء. قد تحتاج إلى فتح التطبيق لإكمال العملية.";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ قد وافق على طلب إنضمام للمجموعة من طرف %1$@";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "تمت الموافقة على طلب انضمام %@ إلى المجموعة.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@  ألغى طلبه للإنضمام للمجموعة.";
@@ -2954,58 +2951,58 @@
 "MISSED_CALL" = "مُكالمة فائتة";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "يمكنك تفعيل الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بالمكالمة المرئية في Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في Signal.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal للوصول للكاميرا";
+"MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal الوصول إلى الكاميرا الخاصة بك";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "يمكنك تفعيل هذا الإذن في تطبيق إعدادات iOS.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "يطلب منك Signal الوصول إلى موقعك لتشغيل هذه الميزة.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى موقعك لهذه الميزة.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يمكنك تفعيل هذا الإذن في تطبيق إعدادات iOS.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يطلب منك Signal الوصول إلى صورك لتشغيل هذه الميزة. ";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى الصوة الخاصة بك لهذه الميزة.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط أجهزة أخرى إضافية.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط أي أجهزة أُخرى إضافية.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "لقد وصلت للحد الأقصى المسموح به لعدد الأجهزة المرتبطة بحسابك. يُرجى إزالة أحد الأجهزة ثم حاول مرة أخرى.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "لقد وصلتَ للحد الأقصى المسموح به للأجهزة المُرتبطة بحسابك حالياً. يُرجى إزالة أحد الأجهزة ثم المُحاولة مرة أُخرى.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "لن يتم تسليمك تنبيهات من المحادثات التي تم كتمها.";
+"MUTE_BEHAVIOR_EXPLANATION" = "أنت لن تستلم أي إشعارات للمُحادثات المكتومة.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "تخطى";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "تخطي";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "يُرجى التأكد من اتصالك بالانترنت ثم حاول مرة أخرى.";
+"NETWORK_ERROR_RECOVERY" = "يُرجى التأكد من اتصالك بالانترنت ثم حاول مرة أُخرى.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "الشبكة الخلوية فقط";
+"NETWORK_INTERFACE_SET_CELLULAR" = "الخلوية فقط";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "أبداً";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "شبكة Wi-Fi فقط";
+"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi فقط";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "شبكة Wi-Fi والشبكة الخلوية";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi والخلوية";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "البحث عن طريق رقم الهاتف";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "إيجاد عن طريق رقم الهاتف";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "ضع صورة للمجموعة";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "تعيين صورة للمجموعة";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "مجموعة جديدة";
@@ -3014,16 +3011,16 @@
 "NEW_GROUP_CREATE_BUTTON" = "إنشاء";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "لا يمكن إنشاء مجموعة جديدة.";
+"NEW_GROUP_CREATION_FAILED" = "يتعذّر إنشاء مجموعة جديدة.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "لا يمكن إنشاء مجموعة جديدة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "يتعذّر إنشاء مجموعة جديدة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
 
 /* Indicates that a group member does not support New Groups. */
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "ﻻ يدعم المجموعات الجديدة";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "اسم المجموعة مطلوب.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "مطلوب اسم للمجموعة.";
 
 /* Title for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "ينقصك اسم المجموعة";
@@ -3032,7 +3029,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "مجموعة جديدة";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ لـ %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ إلى %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "تسمية المجموعة";
@@ -3041,58 +3038,58 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "مستخدمين آخرين";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "حدد الأعضاء";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "حدِّد أعضاء";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "هل تريد تجاهل هذه التغييرات؟";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "التغييرات غير المحفوظة";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "تغييرات غير المحفوظة";
 
 /* No comment provided by engineer. */
 "new_message" = "رسالة جديدة";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "بحث";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "البحث";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "البحث عن مستخدم";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "البحث عن مُستخدم";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "العثور على أسماء من يتم الاتصال بهم عن طريق رقم الهاتف";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "إيجاد جهات الاتصال بواسطة رقم الهاتف";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "لا يوجد مجموعات مشتركة";
+"NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "اختر جهة اتصال او مجموعة لبدء محادثه.";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "حدِّد جهة اتصال أو مجموعة لبدء المُحادثة.";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "مرحبا الى سيجنال Signal";
+"NO_SELECTED_CONVERSATION_TITLE" = "مرحبًا بِكَ فِي Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "رسالة جديدة إلى :";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "رسالة جديدة إلى:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "لم يعثر على المستخدم. هل تود دعوته بواسطة SMS ؟";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "لم يتم العثور على المُستخدم. دعوته عبر SMS؟";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون هناك رسائل وصلتك خلال إعادة تشغيلك %@.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون قد استلمت رسائل اثناء إعادة تشغيل %@ الخاص بك.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "حتى تتمكن من استقبال إشعارات بالرسائل الجديدة.";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "لتلقي إشعارات بالرسائل الجديدة:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "إضغط \"إذهب إلى الإعدادات\" في الأسفل";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "فعّل \"السماح بالإشعارات\". ";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\". ";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "انقر الإشعارات";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "انقر على الإشعارات";
 
 /* Title for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "تفعيل الإشعارات";
@@ -3104,16 +3101,16 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "شغِّل";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "لا تفوّت رسالة من وجهات أصدقائك ومجموعاتك.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "عدم تفويت أي رسالة من جهات الاتصال والمجموعات الخاصة بك.";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "تفعيل الإشعارات؟";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"وسم كمقروء\"، \"أجب\"، و \"أعد الاتصال.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"تعليم كمقروء\"، \"الرد\"، و \"إعادة الاتصال.\"";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "لا يوجد اسم أو محتوى";
+"NOTIFICATIONS_NONE" = "لا اسم ولا مُحتوى";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "التشغيل أثناء فتح التطبيق";
@@ -3122,34 +3119,34 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "اﻷصوات";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة رنة مخصصة…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة صوت مُخصصة…";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم والمحتوى والإجراءات";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم، المُحتوى والإجراءات";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "الاسم فقط";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "عرض";
+"NOTIFICATIONS_SHOW" = "إظهار";
 
 /* Label for the 'ok' button. */
-"OK" = "على ما يرام";
+"OK" = "حسنًا";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "الرقم التعريفي الشخصي غير صحيح. انتهت المحاولات.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN غير صحيح. انتهت المُحاولات.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء رمز شخصي جديد";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء إنشاء رقم تعريفي شخصي جديد";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخل الرقم التعريفي الشخصي الأبجدي الرقمي";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل رقما تعريفيا شخصيا أبجدي رقمي";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخل الرقم التعريفي الشخصي الرقمي";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقما تعريفيا شخصيا أبجدي رقمي";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "أتريد مساعدة ؟";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هل تُريد مُساعدة؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "الرقم التعريفي الشخصي غير صحيح";
@@ -3158,25 +3155,25 @@
 "ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "الرقم التعريفي الشخصي غير صحيح. بقيت %lu محاولة.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "الرقم التعريفي الشخصي غير صحيح. بقيت محاولة أخيرة.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "الرقم التعريفي الشخصي غير صحيح. بقيت محاولة واحدة.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "تجاهل ثم أنشيء رقما تعريفيا شخصيا جديدا.";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "التجاهل وإنشاء إنشاء رقم تعريفي شخصي جديد";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنت لا تتذكر رقمك التعريفي الشخصي، يمكنك إنشاء واحد جديد. يمكنك التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر إنشاء رقمك التعريفي الشخصي، يُمكنك إنشاء واحد جديد. كما يمكنك التسجيل واستخدام حسابك لكن سوف تضيع بعض إعداداتك المحفوظة، مثل معلومات حسابك الشخصي.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهل إدخال الرقم التعريفي الشخصي ؟";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال الرقم التعريفي الشخصي ؟";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "أضف لمسة إنسانية إلى رسائلك";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "سَجِّل iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "اربط الآيفون";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "إن لمس \"سجِّل iPad\" سوف ينشيء لك حسابا جديدا في Signal أو ينقل حسابا موجودا إلى هذا الجهاز. سوف يلغي ذلك اشتغال Signal في أي أجهزة أخرى مسجلة حاليا بنفس رقم الهاتف.";

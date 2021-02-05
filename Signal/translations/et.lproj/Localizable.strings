@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Häälsõnum";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Häälsõnum %@ sekundit";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signali kõne";
@@ -140,7 +140,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Tundmatu andmebaasi versioon.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei saanud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signali uuesti paigaldamist võib sõnumite ajalugu kaduda.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei õnnestunud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signali uuesti paigaldamist võib sõnumite ajalugu kaduda.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Andmete ülekandmine ei õnnestunud";
@@ -530,7 +530,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Vaigista";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saab sinult sõnumisoovi. Saad talle helista, kui sinu sõnumisoov on tema poolt vastu võetud. ";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saab sinult sõnumitaotluse. Saad talle helista, kui sinu sõnumitaotlus on tema poolt kinnitatud. ";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vaheta kaamera suunda";
@@ -752,7 +752,7 @@
 "CONTACT_SUPPORT" = "Võta ühendust kasutajatoega";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalil ei õnnestunud su kasutajatoesoovi täita.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalil ei õnnestunud su kasutajatoetaotlust täita.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Proovi uuesti";
@@ -866,13 +866,13 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Kõik liikmed";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kes saab liikmeid lisada";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kes saavad liikmeid lisada";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Ainult administraatorid";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Vali, kes saab sellesse gruppi liikmeid lisada:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Vali, kes saavad sellesse gruppi liikmeid lisada:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Kõik liikmed";
@@ -884,13 +884,13 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Tee administraatoriks";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ saab muuta seda gruppi ja selle liikmeid ";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ saab muuta seda gruppi ja selle liikmeid.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Liikmelisuse kutsed";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Liikmekutsed";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Liikmelisuse soovid ja kutsed";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Liikmetaotlused ja -kutsed";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Liikmed";
@@ -1211,7 +1211,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Selle vestluse sõnumid kaovad %@ pärast.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kui lubatud, siis kaovad saadetud ja saadud sõnumid pärast nende nägemist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kui lubatud, siis kaovad selle vestluse saadetud ja saadud sõnumid pärast nende nägemist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Hetkel kaovad sõnumid pärast %@";
@@ -1268,7 +1268,7 @@
 "EMAIL_INVITE_SUBJECT" = "Lülitume Signalile";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Sinu seade pole seadistatud e-kirjasid saatma. Kasutajatoesoovi saatmiseks seadista oma seadmes e-kirjade saatmine või saada kiri aadressile support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Sinu seade pole seadistatud e-kirjasid saatma. Kasutajatoetaotluse saatmiseks seadista oma seadmes e-kirjade saatmine või saada kiri aadressile support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "E-post pole saadaval";
@@ -1328,7 +1328,7 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "E-posti rakenduse avamine ei õnnestunud";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Kasutajatoesoovi loomine ei õnnestunud";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Kasutajatoetaotluse loomine ei õnnestunud";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Logide üleslaadimine ei õnnestunud.";
@@ -1862,7 +1862,7 @@
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Nõua grupilingi kaudu liituvate uute liikmete kinnitamist administraatori poolt.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Liikmelisuse soovid";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Liikmetaotlused";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Lähtesta link";
@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaga Signali kaudu";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Igaüks saab selle lingi kaudu vestlusega liituda või saata sooviavaldust liitumiseks. Jaga seda isikutega, keda usaldad.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Igaüks saab selle lingi kaudu vestlusega liituda või saata taotluse liitumiseks. Jaga seda isikutega, keda usaldad.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Grupilink";
@@ -1934,13 +1934,13 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Sind eemaldati grupist.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ kinnitas sinu grupiga liitumise soovi.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ kinnitas sinu grupiga liitumise taotluse.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Sa katkestasid enda grupiga liitumise soovi.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Sa tühistasid enda grupiga liitumise taotluse.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Sinu grupiga liitumise soovist keelduti.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Sinu grupiga liitumise taotlusest keelduti.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Sa saatsid grupiga liitumise soovi.";
@@ -2075,28 +2075,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ eemaldas kasutaja %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Sa kinnitasid isiku %@ soovi grupiga liituda.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Sa kinnitasid isiku %@ taotluse grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ soovi grupiga liituda.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Isiku %@ soov grupiga liituda kinnitati.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ taotluse grupiga liituda.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ loobus enda grupiga liitumise soovist.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ tühistas enda grupiga liitumise taotluse.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Sa keeldusid kasutaja %@ soovist grupiga liituda.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Sa keeldusid kasutaja %@ grupiga liitumise taotlusest.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ tühistas kasutaja %1$@ soovi grupiga liituda.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ keeldus kasutaja %1$@ grupiga liitumise taotlusest.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Kasutaja %@ soovist grupiga liituda keelduti.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Kasutaja %@ grupiga liitumise taotlusest keelduti.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ esitas grupilingi kaudu soovi grupiga liituda.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ esitas grupilingi kaudu taotluse grupiga liituda.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Kasutaja %@ administraatoriõigused tühistati.";
@@ -2108,13 +2105,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ tühistas kasutaja %2$@ administraatoriõigused.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Liikmelisuse soovid";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Liikmetaotlused";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Ootel kutsed";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Liikmelisuse soovid ja kutsed";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Liikmetaotlused ja -kutsed";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupp uuendatud.";
@@ -2384,10 +2381,10 @@
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Kas ikkagi lisada liige?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "Näita soovi";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Näita taotlust";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "Näita soove";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Näita taotlusi";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Võta meiega ühendust";
@@ -2423,7 +2420,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ lisas sind gruppi";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Sõnumisoov";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Sõnumitaotlus";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Otsingule '%@' ei leitud vasteid";
@@ -2828,13 +2825,13 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Kas kustutada ja lahkuda grupist?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Kontrolli soovi hoolega. Signal leidis ka teise sama nimega kontakti.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Kontrolli taotlust hoolega. Signal leidis ka teise samanimelise kontakti.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Sinu kontakt";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Kui sa pole kindel, kellelt soov on, siis kontrolli allpool kontakte ja tegutse vastavalt.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Kui sa pole kindel, kellelt taotlus on, siis kontrolli allpool kontakte ja tegutse vastavalt.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Taotlus";
@@ -2888,13 +2885,13 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Eemalda blokeering";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Tühista soov";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Tühista taotlus";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Kas tühistada sinu soov selle grupiga liituda?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Kas tühistada selle grupiga liitumise taotlus?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Sinu soov grupiga liituda on saadetud grupi administraatoritele. Sulle antakse teada, kui pead midagi tegema.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Sinu taotlus grupiga liituda on grupi administraatoritele saadetud. Sulle antakse teada, kui nad vastavad.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Edastatud";
@@ -3218,7 +3215,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signali konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on lõppenud, kuid pääsed siiski oma Signali konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -3305,10 +3302,10 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Kas lisada “%@” gruppi?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Keeldu soovist";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Keeldu taotlusest";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Kas keelduda isiku “%@” soovist?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Kas keelduda isiku “%@” taotlusest?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ kutsus 1 isiku";
@@ -3317,7 +3314,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ kutsus %2$@ inimest";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Ootel liikmelisuse soove pole.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Ootel liikmetaotlusi pole.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Kutseid pole.";
@@ -3326,13 +3323,13 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Lisati isik “%@“.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ ootel liikmelisuse soovi.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ ootel liikmetaotlust.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Näita soove";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Näita taotlusi";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Isiku “%@“ liikmelisuse soovist keelduti.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Isiku “%@“ liikmetaotlusest keelduti.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Tühista vigane kutse";
@@ -3347,7 +3344,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Kas tühistada “%@“ poolt saadetud kutse?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Kas tühistada kasutaja  “%2$@“ poolt saadetud %1$@ grupiga liitumise kutset?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Kas tühistada %1$@ isiku  “%2$@“ poolt saadetud  grupiga liitumise kutset?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Tühista kutsed";
@@ -3356,10 +3353,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Kas tühistada kasutaja “%@“  grupiga liitumise kutse?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Teiste grupiliikmete poolt kutsutud inimeste üksikasju ei kuvata. Kui kutsutud soovivad liituda, jagatakse nende kohta grupile teavet pärast liitumist. Enne liitumist ei näe nad ühtegi grupi sõnumit.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Teiste grupiliikmete poolt kutsutud inimeste üksikasju ei kuvata. Kui kutsutud otsustavad liituda, jagatakse nende kohta grupile teavet pärast liitumist. Enne liitumist ei näe nad ühtegi grupi sõnumit.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Selles nimekirjas olevad isikud soovivad grupilingi kaudu liituda grupiga “%@”.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Selles nimekirjas olevad isikud püüavad grupilingi kaudu grupiga “%@” liituda.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Vigased kutsed";
@@ -3368,7 +3365,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Kutsed teiste grupi liikmete poolt";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Ootel liikmelisuse soovid";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Ootel liikmetaotlused";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Sinu kutsutud inimesed";
@@ -4859,7 +4856,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Räägi meile oma probleemist: ";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Palun saada kasutajatoesoov aadressile support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Palun saada kasutajatoetaotlus aadressile support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
@@ -4886,7 +4883,7 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signali versioon: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signali IOS versiooni kasutajatoesoov";
+"SUPPORT_EMAIL_SUBJECT" = "Signali IOS kasutajatoetaotlus";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Kuidas sa end tunned? (valikuline)";
@@ -5168,7 +5165,7 @@
 "VIDEO_CALL_LABEL" = "Videokõne";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Sa juba vaatasid seda sõnumit.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Sa vaatasid juba seda sõnumit.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Koputa siia, et muuta see sõnum haihtuvaks pärast selle vaatamist.";

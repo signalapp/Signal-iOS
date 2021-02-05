@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Μήνυμα φωνής";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Μήνυμα φωνής %@ δευτερόλεπτα";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Κλήση Signal";
@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Απενεργοποιημένο";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Διάλεξε ποιος θα μπορεί να επεξεργάζεται το όνομα της ομάδας, τη φωτογραφία, και το χρόνο εξαφάνισης μηνυμάτων.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Διάλεξε ποιοί θα μπορούν να επεξεργάζονται το όνομα της ομάδας, τη φωτογραφία, και το χρόνο εξαφάνισης μηνυμάτων.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτόν τον/την χρήστη.";
@@ -1736,7 +1736,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Ενεργοποιήθηκε ο σύνδεσμος της ομάδας με απενεργοποιημένη την έγκριση διαχειριστή.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Απνεργοποίησες το σύνδεσμο της ομάδας με έγκριση διαχειριστή.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Ενεργοποίησες το σύνδεσμο της ομάδας με απενεργοποιημένη την έγκριση διαχειριστή.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ ενεργοποίησε το σύνδεσμο της ομάδας με απενεργοποιημένη την έγκριση διαχειριστή.";
@@ -1754,7 +1754,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Η έγκριση διαχειριστή για το σύνδεσμο της ομάδας απενεργοποιήθηκε.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Απενεργοποίησες την έγκριση από διαχειριστή για τον σύνδεσμο της ομάδας.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Απενεργοποίησες την έγκριση διαχειριστή για τον σύνδεσμο της ομάδας.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ απενεργοποίησε την έγκριση διαχειριστή για το σύνδεσμο της ομάδας.";
@@ -1763,7 +1763,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Η έγκριση διαχειριστή για το σύνδεσμο της ομάδας ενεργοποιήθηκε.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Ενεργοποίησες την έγκριση από διαχειριστή για τον σύνδεσμο της ομάδας.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Ενεργοποίησες την έγκριση διαχειριστή για τον σύνδεσμο της ομάδας.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ ενεργοποίησε την έγκριση διαχειριστή για το σύνδεσμο της ομάδας.";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "Ο/Η %2$@ ενέκρινε το αίτημα του/της %1$@ να μπει στην ομάδα.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Το αίτημα του/της %@ να μπει στην ομάδα εγκρίθηκε.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ ακύρωσε το αίτημά του/της για είσοδο στην ομάδα.    ";

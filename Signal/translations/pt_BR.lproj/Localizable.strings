@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Contato";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Detalhes do contato %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Mídia";
@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Mensagem de voz";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Mensagem de voz %@ segundos";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Chamada Signal";
@@ -530,7 +530,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Mudo";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ receberá um pedido seu. Você poderá ligar assim que seu pedido for aceito.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ receberá um pedido para conversar com você. Você poderá ligar assim que seu pedido for aceito.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Mudar a direção da câmera";
@@ -1925,7 +1925,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Você entrou no grupo.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Você entrou no grupo via o link do grupo.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Você entrou no grupo via link do grupo.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ suprimiu você.";
@@ -2063,7 +2063,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ entrou no grupo.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ entrou no grupo através do link do grupo.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ entrou no grupo via link do grupo.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ saiu do grupo.";
@@ -2075,28 +2075,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ suprimiu %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Você aprovou o pedido de participação no grupo de %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Você aprovou o pedido de %@ para entrar no grupo.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ aprovou o pedido de participação no grupo de %1$@.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "O pedido de participação no grupo de %@ foi aprovado.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ aprovou o pedido de %1$@ para entrar no grupo.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ cancelou o pedido de participação no grupo.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ cancelou o pedido para entrar no grupo.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Você recusou o pedido para entrar no grupo de %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Você recusou o pedido de %@ para entrar no grupo.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ recusou o pedido para entrar no grupo de %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ recusou o pedido de %1$@ para entrar no grupo.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "O pedido de participação no grupo de %@ foi recusado.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "O pedido de %@ para entrar no grupo foi recusado.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ solicitou entrar via o link do grupo.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ solicitou entrar via link do grupo.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ teve seus privilégios de admin revogados.";
@@ -2891,10 +2888,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancelar Pedido";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancelar seu pedido para entrar nesse grupo?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancelar o seu pedido para entrar nesse grupo?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Seu pedido de participação foi enviado ao administrador do grupo. Você será notificado quando a decisão for tomada.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "O seu pedido para entrar no grupo foi enviado ao admin. Você será notificado quando a decisão for tomada.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Recebido";
@@ -3359,7 +3356,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Os detalhes das pessoas convidadas por outros membros do grupo não vão aparecer. Se elas optarem por entrar, suas informações serão compartilhadas com o grupo naquele momento. Elas não verão nenhuma mensagem no grupo antes de entrarem.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "As pessoas desta lista estão tentando entrar em “%@” através do link do grupo.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "As pessoas nessa lista estão tentando entrar em “%@” através do link do grupo.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Convites Inválidos";

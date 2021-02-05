@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Sprachnachricht";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Sprachnachricht %@ Sekunden";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal-Anruf";
@@ -1751,22 +1751,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppen-Link zurückgesetzt.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin-Bestätigungen für den Gruppen-Link wurden ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast Admin-Bestätigungen für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat Admin-Bestätigungen für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin-Bestätigungen für den Gruppen-Link wurden eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast Admin-Bestätigungen für den Gruppen-Link eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat Admin-Bestätigungen für den Gruppen-Link eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Nutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ hat eine Gruppenbeitrittsanfrage von %1$@ bestätigt.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Eine Gruppenbeitrittsanfrage von %@ wurde bestätigt.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppenbeitrittsanfrage abgebrochen.";
@@ -3359,7 +3356,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Du kannst keine Details zu von anderen Gruppenmitgliedern eingeladenen Personen ansehen. Erst wenn die Eingeladenen der Gruppe beitreten, sind ihre Details für dich und die anderen Gruppenmitglieder einsehbar. Bis zum Beitritt erhalten die Eingeladenen auch keine Gruppennachrichten.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen auf dieser Liste möchten der Gruppe »%@« über den Gruppen-Link beizutreten.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen auf dieser Liste möchten der Gruppe »%@« über den Gruppen-Link beitreten.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ungültige Einladungen";

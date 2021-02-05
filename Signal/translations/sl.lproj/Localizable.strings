@@ -1784,7 +1784,7 @@
 "GROUP_INVITES_VIEW_TITLE" = "Povabila za članstvo";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Povezava do skupine ni več veljavna.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
@@ -1808,10 +1808,10 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Neveljavna povezava do skupine. Pred poskusom pridružitve poskrbite, da bo povezava ostala nespremenjena.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Neveljavna povezava";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
@@ -2891,7 +2888,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Preklic prošnje";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Želite preklicati prošnjo za pridružitev skupini?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";

@@ -2080,9 +2080,6 @@
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ கோரிக்கையை அங்கீகரித்தது சேர தி குழு இருந்து %1$@.";
 
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "ஒரு கோரிக்கை சேர தி குழு இருந்து %@ இருந்தது அங்கீகரிக்கப்பட்டது.";
-
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ குழுவில் சேர அவர்களின் கோரிக்கையை ரத்து செய்தது.";
 

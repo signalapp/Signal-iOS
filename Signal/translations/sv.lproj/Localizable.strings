@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Röstmeddelande";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Röstmeddelande %@ sekunder";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Ring med Signal";
@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Inaktiverad";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppnamn, foto och meddelandetidtagare.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppnamnet, fotot och tidsgränsen för de försvinnande meddelandena.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du kommer inte längre att få meddelanden eller uppdateringar från denna användare.";
@@ -860,7 +860,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Endast administratörer";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Välj vem som kan ändra gruppnamn, foto och försvinnande meddelanden:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Välj vem som kan ändra gruppnamnet, fotot och de försvinnande meddelandena:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alla medlemmar";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ godkände en förfrågan om att gå med i gruppen från %1$@.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "En förfrågan om att gå med i gruppen från %@ godkändes..";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ avbröt sin förfrågan om att gå med i gruppen.";

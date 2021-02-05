@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Audiobericht";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Audiobericht %@ seconden";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal-oproep";
@@ -884,7 +884,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Beheerder maken";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ zal deze groep en lidmaatschap van anderen kunnen aanpassen";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ zal de groepsinformatie en groepslidmaatschap kunnen aanpassen";
 
 /* Label for 'member invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Lidmaatschap uitnodigingen";
@@ -1724,22 +1724,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing uitgeschakeld.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "De groepsverwijzing met beheerderstoestemming is ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "De groepsverwijzing is ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepsverwijzing met beheerderstoestemming ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepsverwijzing ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing met beheerderstoestemming ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing ingeschakeld met beheerderstoestemming-vereiste om lid te mogen worden ook ingeschakeld.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "De groepsverwijzing zonder beheerderstoestemming is ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "De groepsverwijzing is ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepsverwijzing ingeschakeld,  beheerderstoestemming is uitgeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Je hebt de groepsverwijzingen ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing zonder beheerderstoestemming ingeschakeld.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing ingeschakeld zonder beheerderstoestemming-vereiste om lid te mogen worden.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "De groepsverwijzing is vernieuwd.";
@@ -1751,25 +1751,25 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ heeft de groepsverwijzing vernieuwd.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Beheerderstoestemming is uitgeschakeld voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "De beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden van de groep is uitgeschakeld.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je schakelde beheerderstoestemming uit voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt de beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden uitgeschakeld.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@heeft beheerderstoestemming uitgeschakeld voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden van de groep uitgeschakeld.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Beheerderstoestemming is ingeschakeld voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "De beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden van de groep is uitgeschakeld.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je schakelde beheerderstoestemming in voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Je hebt de beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden van de groep ingeschakeld.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@heeft beheerderstoestemming ingeschakeld voor de groepsverwijzing.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ heeft de beheerderstoestemming-vereiste om via de groepsverwijzing lid te mogen worden van de groep uitgeschakeld.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ personen kunnen door jou niet direct worden toegevoegd aan de groep, vanwege de voorkeuren welke zij voor zichzelf hebben ingesteld. Ze hebben een uitnodiging ontvangen om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen voordat ze de uitnodiging hebben aanvaard.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Uitnodiging verzonden";
@@ -1781,7 +1781,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Lidmaatschap uitnodigingen";
+"GROUP_INVITES_VIEW_TITLE" = "Lidmaatschap-uitnodigingen";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "De groepsverwijzing is niet langer geldig.";
@@ -1820,7 +1820,7 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Vereis voor iedere persoon wie via de groepsverwijzing lid wil worden eerst toestemming van een beheerder.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden goedkeuren";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden toelaten";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Groepsverwijzing inschakelen en delen";
@@ -1838,7 +1838,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Nodig vrienden en kennissen uit voor deze groep via een groepsverwijzing.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Beheerders moeten deze personen nog steeds goedkeuren als deze instelling aan staat.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Als de optie ‘Beheerderstoestemming vereisen’ is ingeschakeld moet een beheerder eerst nog toestemming geven voor iemand lid mag worden van de groep.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Deel code";
@@ -1847,7 +1847,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR-code";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden goedkeuren";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden toelaten";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Verwijzing kopiëren";
@@ -1859,7 +1859,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Beheren en delen";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vereis dat een beheerder nodig is om nieuwe leden goed te keuren.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vereis voor iedere persoon wie via de groepsverwijzing lid wil worden eerst toestemming van een beheerder.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Lidmaatschapsverzoeken";
@@ -2075,13 +2075,10 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft %2$@ verwijderd van de groep.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %@ om lid te worden van de groep toegestaan.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Je hebt het verzoek van %@ om lid te worden van de groep gehonoreerd.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft het verzoek van %1$@ om lid te worden van de groep toegestaan.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Een verzoek van %@ om lid te worden van de groep is toegestaan.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ heeft het verzoek van %1$@ om lid te worden van de groep gehonoreerd.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ heeft het verzoek om lid te worden van de groep ingetrokken.";
@@ -3359,7 +3356,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen wie zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te aanvaarden, dan zullen op dat moment zijn of haar profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben aanvaard.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepsverwijzing lid te worden van \"%@\".";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepsverwijzing lid te worden van “%@”.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ongeldige uitnodigingen";

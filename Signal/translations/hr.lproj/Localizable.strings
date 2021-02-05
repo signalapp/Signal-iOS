@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Glasovna poruka";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Glasovna poruka od %@ sekundi";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal poziv";
@@ -2080,9 +2080,6 @@
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ je prihvatio/la zahtjev za pridruživanje u grupu od %1$@.";
 
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Prihvatili ste zahtjev za pridruživanje u grupu od %@.";
-
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ je odbio njihov zahtjev za pridruživanje ovoj grupi.";
 
@@ -3680,7 +3677,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Budite ljubazni";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Ljubitelj kave";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Ljubitelj/ica kave";
 
 /* The 'Encrypted' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Šifrirano";

@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Голосовое сообщение";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Голосовое сообщение %@ секунд";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Звонок Signal";
@@ -1727,7 +1727,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Была включена ссылка на группу со включённым одобрением администратора.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу с включённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу со включённым одобрением администратора.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) ссылку на группу со включённым одобрением администратора.";
@@ -1868,7 +1868,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Сбросить ссылку";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Вы уверены, что хотите сбросить ссылку на группу? Люди больше не смогут присоединиться к группе, используя текущую ссылку.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Вы уверены, что хотите сбросить ссылку на группу? Больше никто не сможет присоединиться к группе по текущей ссылке.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Поделиться";
@@ -2079,9 +2079,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ принял(-а) запрос на присоединение к группе от %1$@.";
-
-/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Запрос на присоединение к группе от %@ был принят.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ отменил(-а) свой запрос на присоединение к группе.";
