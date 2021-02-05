@@ -388,8 +388,8 @@ public class OWSURLSession: NSObject {
 
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaders(headers, overwriteOnConflict: false)
-        httpHeaders.addHeaders(extraHeaders, overwriteOnConflict: false)
         httpHeaders.addHeader(Self.kUserAgentHeader, value: Self.signalIosUserAgent, overwriteOnConflict: true)
+        httpHeaders.addHeaders(extraHeaders, overwriteOnConflict: true)
         request.add(httpHeaders: httpHeaders)
 
         request.httpBody = body
