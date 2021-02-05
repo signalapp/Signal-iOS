@@ -173,12 +173,19 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     return [[NSUserDefaults standardUserDefaults] boolForKey:kSignalPreferNicknamesPreference];
 }
 
-- (nullable NSString *)contactPreferredDisplayName {
+- (NSPersonNameComponents *)contactPersonNameComponents
+{
     NSPersonNameComponents *components = [NSPersonNameComponents new];
     components.givenName = self.contact.firstName;
     components.familyName = self.contact.lastName;
     components.nickname = self.contact.nickname;
-    
+    return components;
+}
+
+- (nullable NSString *)contactPreferredDisplayName
+{
+    NSPersonNameComponents *components = self.contactPersonNameComponents;
+
     NSString *result = nil;
     // If we have a nickname check what the user prefers.
     if (components.nickname.length && self.shouldUseNicknames) {
