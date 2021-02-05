@@ -4,6 +4,8 @@
 
 import Foundation
 
+#if DEBUG
+
 @objc
 public extension DebugContactsUtils {
 
@@ -37,3 +39,5 @@ public extension DebugContactsUtils {
         }
     }
 }
+
+#endif
