@@ -785,6 +785,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     owsFailDebug("Empty avatarData.")
                     continue
                 }
+                guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
+                    owsFailDebug("Invalid group avatar")
+                    continue
+                }
                 downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
             }
             return downloadedAvatars

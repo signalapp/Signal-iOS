@@ -454,6 +454,10 @@ public struct GroupV2DownloadedAvatars {
             // No avatar.
             return .empty
         }
+        guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
+            owsFailDebug("Invalid group avatar")
+            return .empty
+        }
         // Avatar found, add it to the result set.
         var downloadedAvatars = GroupV2DownloadedAvatars()
         downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)

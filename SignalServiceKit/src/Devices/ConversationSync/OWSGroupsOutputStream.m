@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupsOutputStream.h"
@@ -8,6 +8,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -77,7 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (group.groupAvatarData.length > 0) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 
-        [avatarBuilder setContentType:OWSMimeTypeImagePng];
+        OWSAssertDebug([TSGroupModel isValidGroupAvatarData:group.groupAvatarData]);
+        ImageFormat format = [group.groupAvatarData imageMetadataWithPath:nil mimeType:nil].imageFormat;
+        NSString *mimeType = (format == ImageFormat_Png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg;
+
+        [avatarBuilder setContentType:mimeType];
         groupAvatarData = group.groupAvatarData;
         [avatarBuilder setLength:(uint32_t)groupAvatarData.length];
 
