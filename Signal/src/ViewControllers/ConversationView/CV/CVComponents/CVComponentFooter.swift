@@ -24,7 +24,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
     private let footerState: State
 
-    private var timestampText: String {
+    public var timestampText: String {
         footerState.timestampText
     }
     private var isFailedOutgoingMessage: Bool {
@@ -149,16 +149,18 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         innerStack.addArrangedSubviews(innerViews)
     }
 
-    static func buildState(interaction: TSInteraction,
-                           hasTapForMore: Bool) -> State {
+    static func isFailedOutgoingMessage(interaction: TSInteraction) -> Bool {
+        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
+            return false
+        }
+        let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
+        return messageStatus == .failed
+    }
 
-        let isFailedOutgoingMessage: Bool = {
-            guard let outgoingMessage = interaction as? TSOutgoingMessage else {
-                return false
-            }
-            let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
-            return messageStatus == .failed
-        }()
+    public static func timestampText(forInteraction interaction: TSInteraction,
+                                     shouldUseLongFormat: Bool) -> String {
+
+        let isFailedOutgoingMessage = Self.isFailedOutgoingMessage(interaction: interaction)
         let wasSentToAnyRecipient: Bool = {
             guard let outgoingMessage = interaction as? TSOutgoingMessage else {
                 return false
@@ -166,17 +168,25 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             return outgoingMessage.wasSentToAnyRecipient
         }()
 
-        let timestampText: String
         if isFailedOutgoingMessage {
-            timestampText = (wasSentToAnyRecipient
-                                ? NSLocalizedString(
-                                    "MESSAGE_STATUS_PARTIALLY_SENT",
-                                    comment: "Label indicating that a message was only sent to some recipients.")
-                                : NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
-                                                    comment: "Label indicating that a message failed to send."))
+            if wasSentToAnyRecipient {
+                return NSLocalizedString("MESSAGE_STATUS_PARTIALLY_SENT",
+                                         comment: "Label indicating that a message was only sent to some recipients.")
+            } else {
+                return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+                                         comment: "Label indicating that a message failed to send.")
+            }
         } else {
-            timestampText = DateUtil.formatMessageTimestamp(interaction.timestamp)
+            return DateUtil.formatMessageTimestamp(interaction.timestamp, shouldUseLongFormat: shouldUseLongFormat)
         }
+    }
+
+    static func buildState(interaction: TSInteraction,
+                           hasTapForMore: Bool) -> State {
+
+        let isFailedOutgoingMessage = Self.isFailedOutgoingMessage(interaction: interaction)
+        let timestampText = Self.timestampText(forInteraction: interaction,
+                                               shouldUseLongFormat: false)
 
         var statusIndicatorImageName: String?
         var isStatusIndicatorAnimated: Bool = false

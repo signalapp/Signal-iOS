@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,9 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatTimestampAsDate:(uint64_t)timestamp;
 + (NSString *)formatDateAsDate:(NSDate *)date;
 
-+ (NSString *)formatMessageTimestamp:(uint64_t)timestamp;
++ (NSString *)formatMessageTimestamp:(uint64_t)timestamp
+                 shouldUseLongFormat:(BOOL)shouldUseLongFormat;
 
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp;
+
 // These two "exemplary" values can be used by views to measure
 // the likely size for recent values formatted using isTimestampFromLastHour:.
 + (NSString *)exemplaryNowTimeFormat;

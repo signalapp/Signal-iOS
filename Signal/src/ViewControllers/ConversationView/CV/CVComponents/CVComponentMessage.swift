@@ -685,13 +685,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
             }
         }
+
+        let timestampText = CVComponentFooter.timestampText(forInteraction: interaction,
+                                                            shouldUseLongFormat: true)
+        contents.append(timestampText)
+
         elements.append(contents.joined(separator: ", "))
 
         // NOTE: In the interest of keeping the accessibility label short,
         // we do not include information that is usually presented in the
         // following components:
         //
-        // * footer (message send status, disappearing message status, date/time).
+        // * footer (message send status, disappearing message status).
+        //   We _do_ include time but not date. Dates are in the date headers.
         // * senderName
         // * senderAvatar
         // * quotedReply

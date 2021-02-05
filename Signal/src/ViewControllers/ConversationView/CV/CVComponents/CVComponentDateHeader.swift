@@ -117,6 +117,10 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             titleLabel.autoPinWidthToSuperview(withMargin: titleHMargin)
             titleLabel.autoPinHeightToSuperview(withMargin: titleVMargin)
         }
+
+        componentView.rootView.accessibilityLabel = titleLabelConfig.stringValue
+        componentView.rootView.isAccessibilityElement = true
+        componentView.rootView.accessibilityTraits = .header
     }
 
     static func buildState(interaction: TSInteraction) -> State {
