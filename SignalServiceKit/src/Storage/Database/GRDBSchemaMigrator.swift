@@ -1095,7 +1095,7 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _) in
+            TSGroupThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _) in
                 guard let groupThread = thread as? TSGroupThread else { return }
                 guard let avatarData = groupThread.groupModel.groupAvatarData else { return }
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
@@ -1108,7 +1108,7 @@ public class GRDBSchemaMigrator: NSObject {
                     let newGroupModel = try builder.build(transaction: transaction.asAnyWrite)
                     groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
                 } catch {
-                    owsFailDebug("Failed to remove invalid group avatar during migration: \(error)")
+                    owsFail("Failed to remove invalid group avatar during migration: \(error)")
                 }
             }
         }

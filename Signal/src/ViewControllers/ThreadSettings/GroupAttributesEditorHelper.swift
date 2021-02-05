@@ -230,11 +230,7 @@ struct GroupAvatar {
             owsFailDebug("Invalid image.")
             return nil
         }
-        guard TSGroupModel.isValidGroupAvatarData(imageData) else {
-            owsFailDebug("Invalid image.")
-            return nil
-        }
-        return GroupAvatar(imageData: imageData, image: image)
+        return build(imageData: imageData)
     }
 }
 
