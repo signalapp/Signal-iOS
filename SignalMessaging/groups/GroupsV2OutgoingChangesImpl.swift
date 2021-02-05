@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,7 +37,7 @@ import ZKGroup
 //   GroupsV2Error.redundantChange when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
 @objc
-public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
+public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
 
     // MARK: - Dependencies
 
@@ -176,10 +176,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         for uuid in oldUserUuids.intersection(newUserUuids) {
             if oldGroupMembership.isInvitedMember(uuid),
-                newGroupMembership.isFullMember(uuid) {
+               newGroupMembership.isFullMember(uuid) {
                 addMember(uuid, role: .normal)
             } else if oldGroupMembership.isRequestingMember(uuid),
-                newGroupMembership.isFullMember(uuid) {
+                      newGroupMembership.isFullMember(uuid) {
                 // We only currently support accepting join requests
                 // with "normal" role.
                 addMember(uuid, role: .normal)
@@ -311,8 +311,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             inviteLinkPasswordMode = .ignore
         case .enabledWithoutApproval, .enabledWithApproval:
             accessForAddFromInviteLink = (linkMode == .enabledWithoutApproval
-                ? .any
-                : .administrator)
+                                            ? .any
+                                            : .administrator)
             inviteLinkPasswordMode = .ensureValid
         }
     }
@@ -435,6 +435,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 // Redundant change, not a conflict.
             } else {
                 let encryptedData = try groupV2Params.encryptGroupName(newTitle)
+                guard newTitle.glyphCount <= GroupManager.maxGroupNameGlyphCount else {
+                    throw OWSAssertionError("groupTitle is too long.")
+                }
+                guard encryptedData.count <= GroupManager.maxGroupNameEncryptedByteCount else {
+                    throw OWSAssertionError("Encrypted groupTitle is too long.")
+                }
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
@@ -467,7 +473,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()
             case .ensureValid:
                 if let oldInviteLinkPassword = currentGroupModel.inviteLinkPassword,
-                    !oldInviteLinkPassword.isEmpty {
+                   !oldInviteLinkPassword.isEmpty {
                     newInviteLinkPassword = oldInviteLinkPassword
                 } else {
                     newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()

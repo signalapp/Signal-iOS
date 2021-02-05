@@ -19,16 +19,16 @@ public class TextFieldHelper: NSObject {
                        shouldChangeCharactersInRange: editingRange,
                        replacementString: replacementString,
                        maxByteCount: maxByteCount,
-                       maxCharacterCount: nil)
+                       maxGlyphCount: nil)
     }
 
     public class func textField(_ textField: UITextField,
                                 shouldChangeCharactersInRange editingRange: NSRange,
                                 replacementString: String,
                                 maxByteCount: Int? = nil,
-                                maxCharacterCount: Int? = nil) -> Bool {
+                                maxGlyphCount: Int? = nil) -> Bool {
         // At least one must be set.
-        owsAssertDebug(maxByteCount != nil || maxCharacterCount != nil)
+        owsAssertDebug(maxByteCount != nil || maxGlyphCount != nil)
 
         func hasValidLength(_ string: String) -> Bool {
             if let maxByteCount = maxByteCount {
@@ -37,9 +37,9 @@ public class TextFieldHelper: NSObject {
                     return false
                 }
             }
-            if let maxCharacterCount = maxCharacterCount {
-                let characterCount = string.glyphCount
-                guard characterCount <= maxCharacterCount else {
+            if let maxGlyphCount = maxGlyphCount {
+                let glyphCount = string.glyphCount
+                guard glyphCount <= maxGlyphCount else {
                     return false
                 }
             }

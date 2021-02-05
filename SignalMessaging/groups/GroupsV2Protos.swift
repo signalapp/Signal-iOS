@@ -100,7 +100,16 @@ public class GroupsV2Protos {
         groupBuilder.setRevision(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
-        groupBuilder.setTitle(try groupV2Params.encryptGroupName(groupModel.groupName?.stripped ?? " "))
+
+        let groupTitle = groupModel.groupName?.stripped ?? " "
+        let groupTitleEncrypted = try groupV2Params.encryptGroupName(groupTitle)
+        guard groupTitle.glyphCount <= GroupManager.maxGroupNameGlyphCount else {
+            throw OWSAssertionError("groupTitle is too long.")
+        }
+        guard groupTitleEncrypted.count <= GroupManager.maxGroupNameEncryptedByteCount else {
+            throw OWSAssertionError("Encrypted groupTitle is too long.")
+        }
+        groupBuilder.setTitle(groupTitleEncrypted)
 
         let hasAvatarUrl = groupModel.avatarUrlPath != nil
         let hasAvatarData = groupModel.groupAvatarData != nil

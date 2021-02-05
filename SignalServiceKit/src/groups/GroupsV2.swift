@@ -107,15 +107,15 @@ public protocol GroupsV2Swift: GroupsV2 {
                         newGroupModel: TSGroupModelV2,
                         oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                         newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                        transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet
+                        transaction: SDSAnyReadTransaction) throws -> GroupsV2OutgoingChanges
 
     // On success returns a group thread model that reflects the
     // latest state in the service, which (due to races) might
     // reflect changes after the change set.
-    func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread>
+    func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread>
 
     func updateGroupV2(groupModel: TSGroupModelV2,
-                       changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread>
+                       changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
@@ -162,8 +162,7 @@ public protocol GroupsV2Swift: GroupsV2 {
 
 // MARK: -
 
-// TODO: Rename to GroupsV2ProposedChanges or GroupsV2OutgoingChanges.
-public protocol GroupsV2ChangeSet: AnyObject {
+public protocol GroupsV2OutgoingChanges: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }
 
@@ -389,11 +388,11 @@ public class GroupInviteLinkPreview: NSObject {
     public override func isEqual(_ object: Any?) -> Bool {
         guard let otherRecipient = object as? GroupInviteLinkPreview else { return false }
         return (title == otherRecipient.title &&
-            avatarUrlPath == otherRecipient.avatarUrlPath &&
-            memberCount == otherRecipient.memberCount &&
-            addFromInviteLinkAccess == otherRecipient.addFromInviteLinkAccess &&
-            revision == otherRecipient.revision &&
-            isLocalUserRequestingMember == otherRecipient.isLocalUserRequestingMember)
+                    avatarUrlPath == otherRecipient.avatarUrlPath &&
+                    memberCount == otherRecipient.memberCount &&
+                    addFromInviteLinkAccess == otherRecipient.addFromInviteLinkAccess &&
+                    revision == otherRecipient.revision &&
+                    isLocalUserRequestingMember == otherRecipient.isLocalUserRequestingMember)
     }
 }
 
@@ -438,8 +437,8 @@ public struct GroupV2DownloadedAvatars {
         return from(avatarData: groupModel.groupAvatarData, avatarUrlPath: groupModel.avatarUrlPath)
     }
 
-    public static func from(changeSet: GroupsV2ChangeSet) -> GroupV2DownloadedAvatars {
-        return from(avatarData: changeSet.newAvatarData, avatarUrlPath: changeSet.newAvatarUrlPath)
+    public static func from(changes: GroupsV2OutgoingChanges) -> GroupV2DownloadedAvatars {
+        return from(avatarData: changes.newAvatarData, avatarUrlPath: changes.newAvatarUrlPath)
     }
 
     private static func from(avatarData: Data?, avatarUrlPath: String?) -> GroupV2DownloadedAvatars {
@@ -451,9 +450,9 @@ public struct GroupV2DownloadedAvatars {
             return .empty
         }
         guard let avatarData = avatarData,
-            let avatarUrlPath = avatarUrlPath else {
-                // No avatar.
-                return .empty
+              let avatarUrlPath = avatarUrlPath else {
+            // No avatar.
+            return .empty
         }
         // Avatar found, add it to the result set.
         var downloadedAvatars = GroupV2DownloadedAvatars()
@@ -545,16 +544,16 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
                                newGroupModel: TSGroupModelV2,
                                oldDMConfiguration: OWSDisappearingMessagesConfiguration,
                                newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               transaction: SDSAnyReadTransaction) throws -> GroupsV2ChangeSet {
+                               transaction: SDSAnyReadTransaction) throws -> GroupsV2OutgoingChanges {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
+    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
     public func updateGroupV2(groupModel: TSGroupModelV2,
-                              changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
+                              changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

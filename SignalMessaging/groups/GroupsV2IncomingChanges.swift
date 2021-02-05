@@ -29,8 +29,7 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
-// TODO: Rename to GroupsV2IncomingChanges
-public class GroupsV2Changes {
+public class GroupsV2IncomingChanges {
 
     // MARK: - Dependencies
 
@@ -40,7 +39,7 @@ public class GroupsV2Changes {
 
     // MARK: -
 
-    // GroupsV2Changes has one responsibility: applying incremental
+    // GroupsV2IncomingChanges has one responsibility: applying incremental
     // changes to group models. It should exactly mimic the behavior
     // of the service. Applying these "diffs" allow us to do two things:
     //
@@ -340,8 +339,8 @@ public class GroupsV2Changes {
                 }
 
                 guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
-                    oldGroupMembership.isInvitedMember(uuid) else {
-                        throw OWSAssertionError("Invalid membership.")
+                        oldGroupMembership.isInvitedMember(uuid) else {
+                    throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
                 groupMembershipBuilder.remove(uuid)
@@ -352,7 +351,7 @@ public class GroupsV2Changes {
                 }
 
                 guard oldGroupMembership.hasInvalidInvite(forUserId: userId) else {
-                        throw OWSAssertionError("Invalid membership.")
+                    throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
             }
@@ -488,7 +487,7 @@ public class GroupsV2Changes {
             }
 
             if let avatarUrl = action.avatar,
-                !avatarUrl.isEmpty {
+               !avatarUrl.isEmpty {
                 do {
                     newAvatarData = try downloadedAvatars.avatarData(for: avatarUrl)
                     newAvatarUrlPath = avatarUrl
