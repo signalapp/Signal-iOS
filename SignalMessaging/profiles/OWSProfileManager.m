@@ -1918,6 +1918,9 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 {
     OWSAssertIsOnMainThread();
 
+    if (profileName.glyphCount > OWSUserProfile.maxNameLengthGlyphs) {
+        return YES;
+    }
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
     return nameData.length > (NSUInteger)OWSUserProfile.maxNameLengthBytes;
 }
