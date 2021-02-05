@@ -16,6 +16,7 @@
 #import "ConversationListViewController.h"
 #import "ConversationViewController.h"
 #import "DateUtil.h"
+#import "DebugContactsUtils.h"
 #import "DebugUIMessages.h"
 #import "DebugUIPage.h"
 #import "DebugUIScreenshots.h"
