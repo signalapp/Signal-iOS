@@ -21,10 +21,10 @@ pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', bra
 pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
 # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
 
-pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit-Private', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
+pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-pod 'SignalMetadataKit', git: 'ssh://git@github.com/signalapp/SignalMetadataKit-Private', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
+pod 'SignalMetadataKit', git: 'ssh://git@github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'

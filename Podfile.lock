@@ -249,8 +249,8 @@ DEPENDENCIES:
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
-  - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit-Private`, branch `feature/SignalClient-adoption`)"
-  - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit-Private`, branch `feature/SignalClient-adoption`)"
+  - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
+  - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`, branch `mkirk/1.0.2t`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
@@ -267,8 +267,8 @@ DEPENDENCIES:
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit-Private`, branch `feature/SignalClient-adoption`)"
-  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit-Private`, branch `feature/SignalClient-adoption`)"
+  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
+  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
@@ -307,7 +307,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :branch: feature/SignalClient-adoption
-    :git: "ssh://git@github.com/signalapp/Curve25519Kit-Private"
+    :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   GRKOpenSSLFramework:
     :branch: mkirk/1.0.2t
     :git: https://github.com/signalapp/GRKOpenSSLFramework
@@ -328,7 +328,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :branch: feature/SignalClient-adoption
-    :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
+    :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   SignalRingRTC:
     :path: ThirdParty/SignalRingRTC.podspec
   SignalServiceKit:
@@ -355,7 +355,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :commit: 87bfaf0748ecbac417fe90219b529d4f6f0eb272
-    :git: "ssh://git@github.com/signalapp/Curve25519Kit-Private"
+    :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   GRKOpenSSLFramework:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
     :git: https://github.com/signalapp/GRKOpenSSLFramework
@@ -380,7 +380,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: c0b114797a31a5e87d03b92d4563f90effbc397c
-    :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
+    :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
@@ -430,6 +430,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: d20eddb8232ac7cedb10b690c408b402895804b5
+PODFILE CHECKSUM: 58b0dcf90e54a3d6d59eebe376b19dc5606b4419
 
 COCOAPODS: 1.9.2
