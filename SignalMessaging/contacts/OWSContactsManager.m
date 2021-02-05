@@ -683,19 +683,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         // Update cached SignalAccounts on disk
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            if (signalAccountsToUpsert.count > 0) {
-                OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
-                for (SignalAccount *signalAccount in signalAccountsToUpsert) {
-                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount.recipientAddress);
-                    [signalAccount anyUpsertWithTransaction:transaction];
-                }
-            }
-
             if (signalAccountsToRemove.count > 0) {
                 OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)signalAccountsToRemove.count);
                 for (SignalAccount *signalAccount in signalAccountsToRemove) {
                     OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount.recipientAddress);
                     [signalAccount anyRemoveWithTransaction:transaction];
+                }
+            }
+
+            if (signalAccountsToUpsert.count > 0) {
+                OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
+                for (SignalAccount *signalAccount in signalAccountsToUpsert) {
+                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount.recipientAddress);
+                    [signalAccount anyUpsertWithTransaction:transaction];
                 }
             }
 
@@ -852,8 +852,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             return nil;
         }
         nameComponents.givenName = nonSignalContact.firstName;
-        nameComponents.nickname = nonSignalContact.nickname;
         nameComponents.familyName = nonSignalContact.lastName;
+        // TODO: Should we honor shouldUseNicknames here?
+        nameComponents.nickname = nonSignalContact.nickname;
         return nameComponents;
     }
 
@@ -861,6 +862,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (signalAccount.contactFirstName.length > 0 || signalAccount.contactLastName.length > 0) {
         nameComponents.givenName = signalAccount.contactFirstName;
         nameComponents.familyName = signalAccount.contactLastName;
+        nameComponents.nickname = signalAccount.contactNicknameIfAvailable;
     } else if (signalAccount.contactFullName.length > 0) {
         // If we don't have a first name or last name, but we *do* have a full name,
         // try our best to create appropriate components to represent it.
@@ -874,6 +876,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         } else {
             nameComponents.givenName = signalAccount.contactFullName;
         }
+        nameComponents.nickname = signalAccount.contactNicknameIfAvailable;
     } else {
         return nil;
     }
