@@ -856,28 +856,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nameComponents;
     }
 
-    // Check if we have a first name or last name, if we do we can use them directly.
-    if (signalAccount.contactFirstName.length > 0 || signalAccount.contactLastName.length > 0) {
-        return signalAccount.contactPersonNameComponents;
-    } else if (signalAccount.contactFullName.length > 0) {
-        // If we don't have a first name or last name, but we *do* have a full name,
-        // try our best to create appropriate components to represent it.
-        NSArray<NSString *> *components = [signalAccount.contactFullName componentsSeparatedByString:@" "];
-
-        // If there are only two words separated by a space, this is probably a given
-        // and family name.
-        NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
-        if (components.count <= 2) {
-            nameComponents.givenName = components.firstObject;
-            nameComponents.familyName = components.lastObject;
-        } else {
-            nameComponents.givenName = signalAccount.contactFullName;
-        }
-        nameComponents.nickname = signalAccount.contactNicknameIfAvailable;
-        return nameComponents;
-    }
-
-    return nil;
+    return signalAccount.contactPersonNameComponents;
 }
 
 - (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address

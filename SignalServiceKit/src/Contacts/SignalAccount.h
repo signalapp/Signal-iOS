@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)contactFirstName;
 - (nullable NSString *)contactLastName;
 - (nullable NSString *)contactNicknameIfAvailable;
-- (NSPersonNameComponents *)contactPersonNameComponents;
+- (nullable NSPersonNameComponents *)contactPersonNameComponents;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
