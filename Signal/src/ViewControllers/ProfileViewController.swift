@@ -741,7 +741,8 @@ extension ProfileViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            maxByteCount: OWSUserProfile.maxNameLengthBytes
+            maxByteCount: OWSUserProfile.maxNameLengthBytes,
+            maxGlyphCount: OWSUserProfile.maxNameLengthGlyphs
         )
     }
 

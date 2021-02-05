@@ -7,14 +7,15 @@ import Foundation
 @objc
 public extension OWSUserProfile {
 
+    static var maxNameLengthGlyphs: Int = 26
     // The max bytes for a user's profile name, encoded in UTF8.
     // Before encrypting and submitting we NULL pad the name data to this length.
     static var maxNameLengthBytes: Int = 128
 
-    static let kMaxBioLengthChars: Int = 140
+    static let kMaxBioLengthGlyphs: Int = 140
     static let kMaxBioLengthBytes: Int = 512
 
-    static let kMaxBioEmojiLengthChars: Int = 1
+    static let kMaxBioEmojiLengthGlyphs: Int = 1
     static let kMaxBioEmojiLengthBytes: Int = 32
 
     // MARK: - Bio
@@ -25,11 +26,11 @@ public extension OWSUserProfile {
     static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
         // TODO: We could use EmojiWithSkinTones to check for availability of the emoji.
-        if let emoji = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthChars).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
+        if let emoji = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthGlyphs).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
            !emoji.isEmpty {
             components.append(emoji)
         }
-        if let bioText = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthChars).trimToUtf8ByteCount(kMaxBioLengthBytes),
+        if let bioText = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthGlyphs).trimToUtf8ByteCount(kMaxBioLengthBytes),
            !bioText.isEmpty {
             components.append(bioText)
         }
@@ -102,8 +103,9 @@ public extension OWSUserProfile {
 
     @objc(encryptProfileNameComponents:profileKey:)
     class func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> ProfileValue? {
-        guard var paddedNameData = profileNameComponents.givenName?.data(using: .utf8) else { return nil }
-        if let familyName = profileNameComponents.familyName {
+        let givenName: String? = profileNameComponents.givenName?.trimToGlyphCount(maxNameLengthGlyphs)
+        guard var paddedNameData = givenName?.data(using: .utf8) else { return nil }
+        if let familyName = profileNameComponents.familyName?.trimToGlyphCount(maxNameLengthGlyphs) {
             // Insert a null separator
             paddedNameData.count += 1
             guard let familyNameData = familyName.data(using: .utf8) else { return nil }
