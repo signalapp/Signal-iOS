@@ -9,6 +9,8 @@ extension Storage {
     }
 
     private static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
+    
+    private static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
 
     public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
         let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
@@ -43,6 +45,18 @@ extension Storage {
     
     public func removeClosedGroupPublicKey(_ groupPublicKey: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: groupPublicKey, inCollection: Storage.closedGroupPublicKeyCollection)
+    }
+    
+    public func getClosedGroupFormationTimestamp(for groupPublicKey: String) -> UInt64? {
+        var result: UInt64?
+        Storage.read { transaction in
+            result = transaction.object(forKey: groupPublicKey, inCollection: Storage.closedGroupFormationTimestampCollection) as? UInt64
+        }
+        return result
+    }
+    
+    public func setClosedGroupFormationTimestamp(to timestamp: UInt64, for groupPublicKey: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(timestamp, forKey: groupPublicKey, inCollection: Storage.closedGroupFormationTimestampCollection)
     }
     
     
