@@ -438,9 +438,11 @@ public enum OnionRequestAPI {
                         OnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
                     }
                 } else {
-                    handleUnspecificError()
+                    // Do nothing
                 }
             } else if let message = json?["result"] as? String, message == "Loki Server error" {
+                // Do nothing
+            } else if statusCode == 0 { // Timeout
                 // Do nothing
             } else {
                 handleUnspecificError()
