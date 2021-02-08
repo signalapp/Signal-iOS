@@ -10,23 +10,22 @@ import PromiseKit
 public enum ProfileViewMode: UInt {
     case appSettings
     case registration
-    case experienceUpgrade
+
+    fileprivate var isFullScreenStyle: Bool {
+        switch self {
+        case .appSettings:
+            return false
+        case .registration:
+            return true
+        }
+    }
 
     fileprivate var hasBio: Bool {
         switch self {
         case .appSettings:
             return true
-        case .registration, .experienceUpgrade:
+        case .registration:
             return false
-        }
-    }
-
-    fileprivate var hasSaveButton: Bool {
-        switch self {
-        case .appSettings:
-            return false
-        case .registration, .experienceUpgrade:
-            return true
         }
     }
 }
@@ -35,20 +34,68 @@ public enum ProfileViewMode: UInt {
 
 @objc
 public class ProfileViewController: OWSTableViewController {
+    static private let standardMargin: CGFloat = UIDevice.current.isIPhone5OrShorter ? 16 : 32
 
     private let avatarViewHelper = AvatarViewHelper()
 
     private lazy var givenNameTextField = OWSTextField()
-
     private lazy var familyNameTextField = OWSTextField()
-
-    private let profileNamePreviewLabel = UILabel()
+    private lazy var nameFieldStrokes: [UIView] = [givenNameTextField, familyNameTextField].map {
+        $0.addBottomStroke(color: Theme.cellSeparatorColor, strokeWidth: CGHairlineWidth())
+    }
 
     private let usernameLabel = UILabel()
 
     private let avatarView = AvatarImageView()
 
-    private var saveButton: OWSFlatButton?
+    private let cameraImageView: UIImageView = {
+        let viewSize = CGSize(square: 32)
+
+        let cameraImageView = UIImageView.withTemplateImageName("camera-outline-24", tintColor: Theme.secondaryTextAndIconColor)
+        cameraImageView.autoSetDimensions(to: viewSize)
+        cameraImageView.contentMode = .center
+        cameraImageView.backgroundColor = Theme.backgroundColor
+        cameraImageView.layer.cornerRadius = viewSize.largerAxis / 2
+
+        // Setup shadows
+        let finerShadowLayer = cameraImageView.layer
+        let broaderShadowLayer = CALayer()
+        finerShadowLayer.addSublayer(broaderShadowLayer)
+
+        let shadowColor = (Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : UIColor.ows_black).cgColor
+        let shadowPath = UIBezierPath(ovalIn: CGRect(origin: .zero, size: viewSize)).cgPath
+        [finerShadowLayer, broaderShadowLayer].forEach {
+            $0.shadowColor = shadowColor
+            $0.shadowPath = shadowPath
+        }
+        finerShadowLayer.shadowRadius = 4
+        finerShadowLayer.shadowOffset = CGSize(width: 0, height: 2)
+        finerShadowLayer.shadowOpacity = 0.2
+        broaderShadowLayer.shadowRadius = 16
+        broaderShadowLayer.shadowOffset = CGSize(width: 0, height: 4)
+        broaderShadowLayer.shadowOpacity = 0.12
+        return cameraImageView
+    }()
+
+    private let saveButtonBackdrop = UIView()
+    private let saveButtonGradient = GradientView(colors: [])
+    private var saveButton: OWSFlatButton = {
+        let button = OWSFlatButton.button(
+            title: NSLocalizedString(
+                "PROFILE_VIEW_SAVE_BUTTON",
+                comment: "Button to save the profile view in the profile view."),
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .ows_white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(updateProfile))
+
+        button.accessibilityIdentifier = "save_button"
+        button.enableMultilineLabel()
+        button.button.layer.cornerRadius = 14
+        button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
+        return button
+    }()
 
     private var username: String?
     private var profileBio: String?
@@ -58,6 +105,7 @@ public class ProfileViewController: OWSTableViewController {
     private var hasUnsavedChanges = false {
         didSet {
             updateNavigationItem()
+            saveButton.setEnabled(hasUnsavedChanges)
         }
     }
 
@@ -75,6 +123,7 @@ public class ProfileViewController: OWSTableViewController {
         super.init()
 
         self.shouldAvoidKeyboard = true
+        self.layoutMarginsRelativeTableContent = true
     }
 
     // MARK: - Orientation
@@ -90,8 +139,8 @@ public class ProfileViewController: OWSTableViewController {
 
     public override func loadView() {
         super.loadView()
-
-        self.useThemeBackgroundColors = true
+        view.layoutMargins = UIEdgeInsets(hMargin: Self.standardMargin, vMargin: 0)
+        view.insetsLayoutMarginsFromSafeArea = false
 
         self.title = NSLocalizedString("PROFILE_VIEW_TITLE", comment: "Title for the profile view.")
 
@@ -105,7 +154,7 @@ public class ProfileViewController: OWSTableViewController {
         self.username = profileSnapshot.username
         self.avatarData = profileSnapshot.avatarData
 
-        createViews()
+        configureViews()
         updateNavigationItem()
 
         if mode == .registration {
@@ -120,8 +169,29 @@ public class ProfileViewController: OWSTableViewController {
                 hasUnsavedChanges = true
             }
         }
-
         updateTableContents()
+        tableView.alwaysBounceVertical = false
+
+        if mode.isFullScreenStyle {
+            saveButton.setEnabled(hasUnsavedChanges)
+            view.addSubview(saveButtonGradient)
+            view.addSubview(saveButtonBackdrop)
+            saveButtonGradient.isUserInteractionEnabled = false
+
+            saveButtonBackdrop.addSubview(saveButton)
+            saveButtonBackdrop.preservesSuperviewLayoutMargins = true
+            saveButtonBackdrop.layoutMargins = UIEdgeInsets(top: 8, leading: 0, bottom: Self.standardMargin, trailing: 0)
+            saveButton.autoPinEdgesToSuperviewMargins()
+
+            saveButtonGradient.autoPinWidthToSuperview()
+            saveButtonBackdrop.autoPinWidthToSuperview()
+
+            saveButtonGradient.autoSetDimension(.height, toSize: 30)
+            saveButtonGradient.autoPinEdge(.bottom, to: .top, of: saveButtonBackdrop)
+
+            // tableView will automatically avoid the keyboard
+            saveButtonBackdrop.autoPinEdge(.bottom, to: .bottom, of: tableView)
+        }
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -132,13 +202,9 @@ public class ProfileViewController: OWSTableViewController {
         switch mode {
         case .appSettings:
             break
-        case .registration, .experienceUpgrade:
+        case .registration:
             givenNameTextField.becomeFirstResponder()
-        @unknown default:
-            owsFailDebug("Unknown value.")
         }
-
-        updateUsername()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -147,178 +213,199 @@ public class ProfileViewController: OWSTableViewController {
         updateNavigationItem()
     }
 
-    private func createViews() {
-        avatarView.autoSetDimensions(to: CGSize.square(96))
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let bottomInsetHeight = saveButtonBackdrop.height + (saveButtonGradient.height / 4)
+        if tableView.contentInset.bottom < bottomInsetHeight {
+            tableView.contentInset.bottom = bottomInsetHeight
+        }
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        [givenNameTextField, familyNameTextField].forEach { $0.textColor = Theme.primaryTextColor }
+
+        cameraImageView.tintColor = Theme.secondaryTextAndIconColor
+        cameraImageView.backgroundColor = Theme.backgroundColor
+
+        nameFieldStrokes.forEach { $0.backgroundColor = Theme.cellSeparatorColor }
+
+        let backgroundColor = view.backgroundColor ?? Theme.backgroundColor
+        saveButtonBackdrop.backgroundColor = backgroundColor
+        saveButtonGradient.colors = [(backgroundColor.withAlphaComponent(0), 0.0), (backgroundColor, 1.0)]
+
+        updateTableContents()
+    }
+
+    private func configureViews() {
+        avatarView.autoSetDimensions(to: CGSize.square(avatarSize))
         avatarView.accessibilityIdentifier = "avatar_view"
+        let avatarTapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapAvatar))
+        avatarView.addGestureRecognizer(avatarTapGesture)
+        avatarView.isUserInteractionEnabled = true
 
-        givenNameTextField.returnKeyType = .next
-        givenNameTextField.autocorrectionType = .no
-        givenNameTextField.spellCheckingType = .no
-        givenNameTextField.placeholder = NSLocalizedString("PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
-                                                           comment: "Default text for the given name field of the profile view.")
-        givenNameTextField.delegate = self
-        givenNameTextField.textAlignment = .right
+        [givenNameTextField, familyNameTextField].forEach {
+            $0.font = .ows_dynamicTypeBodyClamped
+            $0.delegate = self
+            $0.textAlignment = .natural
+            $0.autocorrectionType = .no
+            $0.spellCheckingType = .no
+            $0.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+
+            $0.autoSetDimension(.height, toSize: 50, relation: .greaterThanOrEqual)
+        }
+        firstTextField.returnKeyType = .next
+        secondTextField.returnKeyType = .done
+
         givenNameTextField.accessibilityIdentifier = "given_name_textfield"
-        givenNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-
-        familyNameTextField.returnKeyType = .done
-        familyNameTextField.autocorrectionType = .no
-        familyNameTextField.spellCheckingType = .no
-        familyNameTextField.placeholder = NSLocalizedString("PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
-                                                            comment: "Default text for the family name field of the profile view.")
-        familyNameTextField.delegate = self
-        familyNameTextField.textAlignment = .right
+        givenNameTextField.placeholder = NSLocalizedString(
+            "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
+            comment: "Default text for the given name field of the profile view.")
         familyNameTextField.accessibilityIdentifier = "family_name_textfield"
-        familyNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        familyNameTextField.placeholder = NSLocalizedString(
+            "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
+            comment: "Default text for the family name field of the profile view.")
 
-        profileNamePreviewLabel.textAlignment = .center
-        profileNamePreviewLabel.textColor = Theme.secondaryTextAndIconColor
-        profileNamePreviewLabel.font = .ows_dynamicTypeSubheadlineClamped
+        usernameLabel.numberOfLines = 0
+        usernameLabel.font = .ows_dynamicTypeBody
+        usernameLabel.textAlignment = .natural
     }
 
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let givenNameTextField = self.givenNameTextField
-        let familyNameTextField = self.familyNameTextField
+        let mode = self.mode
+        let firstTextField = self.firstTextField
+        let secondTextField = self.secondTextField
         let avatarView = self.avatarView
-        let profileNamePreviewLabel = self.profileNamePreviewLabel
+        let cameraImageView = self.cameraImageView
 
         updateAvatarView()
-        updateProfileNamePreview()
 
-        let avatarSection = OWSTableSection()
-        avatarSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-            let cell = OWSTableItem.newCell()
+        if mode.isFullScreenStyle {
+            contents.addSection(OWSTableSection(header: { () -> UIView? in
+                let label = UILabel()
+                label.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
+                label.textAlignment = .center
+                label.text = "Your Profile"
+                label.numberOfLines = 0
 
-            let stackView = UIStackView(arrangedSubviews: [avatarView, profileNamePreviewLabel])
-            stackView.axis = .vertical
-            stackView.alignment = .center
-            stackView.spacing = 16
-            stackView.layoutMargins = UIEdgeInsets(top: 24, leading: 0, bottom: 32, trailing: 0)
-            stackView.isLayoutMarginsRelativeArrangement = true
-            cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewMargins()
+                let view = UIView()
+                view.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: Self.standardMargin)
+                view.preservesSuperviewLayoutMargins = true
+                view.addSubview(label)
+                label.autoPinEdgesToSuperviewMargins()
+                return view
+            }, items: []))
+        }
 
-            let cameraImageView = UIImageView.withTemplateImageName("camera-outline-24", tintColor: Theme.secondaryTextAndIconColor)
-            cameraImageView.autoSetDimensions(to: CGSize.square(32))
-            cameraImageView.contentMode = .center
-            cameraImageView.backgroundColor = Theme.backgroundColor
-            cameraImageView.layer.cornerRadius = 16
-            cameraImageView.layer.shadowColor = (Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor).cgColor
-            cameraImageView.layer.shadowOffset = CGSize.square(1)
-            cameraImageView.layer.shadowOpacity = 0.5
-            cameraImageView.layer.shadowRadius = 4
-            stackView.addSubview(cameraImageView)
-            cameraImageView.autoPinTrailing(toEdgeOf: avatarView)
+        contents.addSection(OWSTableSection(header: { () -> UIView? in
+            let view = UIView()
+            view.preservesSuperviewLayoutMargins = true
+            // Setup stack views. For CJKV locales, display family name field first.
+            let vStack = UIStackView(arrangedSubviews: [firstTextField, secondTextField])
+            let hStack = UIStackView(arrangedSubviews: [avatarView, vStack])
+            vStack.axis = .vertical
+            vStack.spacing = 0
+            vStack.alignment = .fill
+            vStack.distribution = .equalSpacing
+            hStack.axis = .horizontal
+            hStack.spacing = 24
+            hStack.alignment = .center
+            vStack.distribution = .fill
+
+            view.addSubview(hStack)
+            view.addSubview(cameraImageView)
             cameraImageView.autoPinEdge(.bottom, to: .bottom, of: avatarView)
-
-            return cell
-        },
-        actionBlock: { [weak self] in
-            self?.didTapAvatar()
+            cameraImageView.autoPinEdge(.trailing, to: .trailing, of: avatarView)
+            hStack.autoPinEdgesToSuperviewMargins()
+            return view
         }))
-        contents.addSection(avatarSection)
-
-        let namesSection = OWSTableSection()
-        func addGivenNameRow() {
-            namesSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-
-                givenNameTextField.font = .ows_dynamicTypeBodyClamped
-                givenNameTextField.textColor = Theme.primaryTextColor
-
-                return Self.buildNameCell(title: NSLocalizedString("PROFILE_VIEW_GIVEN_NAME_FIELD",
-                                                                   comment: "Label for the given name field of the profile view."),
-                                          valueView: givenNameTextField,
-                                          accessibilityIdentifier: "given_name")
-            },
-            actionBlock: {
-                givenNameTextField.becomeFirstResponder()
-            }))
-        }
-        func addFamilyNameRow() {
-            namesSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-
-                familyNameTextField.font = .ows_dynamicTypeBodyClamped
-                familyNameTextField.textColor = Theme.primaryTextColor
-
-                return Self.buildNameCell(title: NSLocalizedString("PROFILE_VIEW_FAMILY_NAME_FIELD",
-                                                                   comment: "Label for the family name field of the profile view."),
-                                          valueView: familyNameTextField,
-                                          accessibilityIdentifier: "given_name")
-            },
-            actionBlock: {
-                familyNameTextField.becomeFirstResponder()
-            }))
-        }
-        // For CJKV locales, display family name field first.
-        if NSLocale.current.isCJKV {
-            addFamilyNameRow()
-            addGivenNameRow()
-
-            // Otherwise, display given name field first.
-        } else {
-            addGivenNameRow()
-            addFamilyNameRow()
-        }
-        if shouldShowUsernameRow {
-            namesSection.add(buildUsernameItem())
-        }
-        contents.addSection(namesSection)
-
-        var lastSection = namesSection
 
         if mode.hasBio {
-            let aboutSection = OWSTableSection()
-            aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
-                                                         comment: "Header for the 'bio' section of the profile view.")
             let profileBio = self.normalizedProfileBio
             let profileBioEmoji = self.normalizedProfileBioEmoji
-            if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
-                aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+
+            contents.addSection(
+                OWSTableSection(
+                    title: NSLocalizedString(
+                        "PROFILE_VIEW_BIO_SECTION_HEADER",
+                        comment: "Header for the 'bio' section of the profile view."),
+
+                    items: [OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                        let cell = OWSTableItem.newCell()
+                        cell.preservesSuperviewLayoutMargins = true
+                        cell.contentView.preservesSuperviewLayoutMargins = true
+
+                        let label = UILabel()
+
+                        if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
+                            label.textColor = Theme.primaryTextColor
+                            label.text = bioForDisplay
+                        } else {
+                            label.textColor = Theme.accentBlueColor
+                            label.text = NSLocalizedString(
+                                "PROFILE_VIEW_ADD_BIO_TO_PROFILE",
+                                comment: "Button to add a 'bio' to the user's profile in the profile view.")
+                        }
+
+                        label.font = UIFont.ows_dynamicTypeBody
+                        label.numberOfLines = 0
+                        label.lineBreakMode = .byWordWrapping
+                        cell.contentView.addSubview(label)
+                        label.autoPinEdgesToSuperviewMargins()
+
+                        cell.accessoryType = .disclosureIndicator
+                        cell.accessibilityIdentifier = "profile_bio"
+                        return cell
+                    }, actionBlock: { [weak self] in
+                        self?.didTapBio()
+                    })
+                ])
+            )
+        }
+
+        if shouldShowUsernameRow {
+            let username = self.username
+            let usernameLabel = self.usernameLabel
+
+            contents.addSection(OWSTableSection(
+                title: "Username",
+                items: [OWSTableItem(customCellBlock: { () -> UITableViewCell in
                     let cell = OWSTableItem.newCell()
+                    cell.preservesSuperviewLayoutMargins = true
+                    cell.contentView.preservesSuperviewLayoutMargins = true
 
-                    let label = UILabel()
-                    label.text = bioForDisplay
-                    label.textColor = Theme.primaryTextColor
-                    label.font = .ows_dynamicTypeBodyClamped
-                    label.numberOfLines = 0
-                    label.lineBreakMode = .byWordWrapping
-                    cell.contentView.addSubview(label)
-                    label.autoPinEdgesToSuperviewMargins()
+                    if let username = username {
+                        usernameLabel.textColor = Theme.primaryTextColor
+                        usernameLabel.text = CommonFormats.formatUsername(username)
+                    } else {
+                        usernameLabel.textColor = Theme.accentBlueColor
+                        usernameLabel.text = NSLocalizedString(
+                            "PROFILE_VIEW_CREATE_USERNAME",
+                            comment: "A string indicating that the user can create a username on the profile view.")
+                    }
 
+                    cell.contentView.addSubview(usernameLabel)
+                    usernameLabel.autoPinEdgesToSuperviewMargins()
                     cell.accessoryType = .disclosureIndicator
-
-                    cell.accessibilityIdentifier = "profile_bio"
-
+                    cell.accessibilityIdentifier = "username"
                     return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.didTapBio()
-                }))
-            } else {
-                aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
-                                                                           comment: "Button to add a 'bio' to the user's profile in the profile view."),
-                                                   textColor: Theme.accentBlueColor,
-                                                   accessoryType: .disclosureIndicator,
-                                                   accessibilityIdentifier: "profile_bio") { [weak self] in
-                    self?.didTapBio()
-                })
-            }
-            contents.addSection(aboutSection)
 
-            lastSection = aboutSection
+                }, actionBlock: { [weak self] in
+                    self?.didTapUsername()
+                })]
+            ))
         }
 
         // Information Footer
-
-        let infoGestureRecognizer = UITapGestureRecognizer(target: self,
-                                                           action: #selector(didTapInfo))
-        lastSection.customFooterView = { () -> UIView in
-
+        let infoGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapInfo))
+        contents.sections.last?.customFooterView = { () -> UIView in
             let label = UILabel()
             label.textColor = Theme.secondaryTextAndIconColor
-            label.font = .ows_dynamicTypeCaption1Clamped
+            label.font = .ows_dynamicTypeCaption1
             let attributedText = NSMutableAttributedString()
             attributedText.append(NSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION",
                                                     comment: "Description of the user profile."))
@@ -331,117 +418,21 @@ public class ProfileViewController: OWSTableViewController {
             label.attributedText = attributedText
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
-
-            label.backgroundColor = Theme.tableViewBackgroundColor
+            label.backgroundColor = tableView.backgroundColor
 
             label.isUserInteractionEnabled = true
             label.addGestureRecognizer(infoGestureRecognizer)
 
             let footer = UIView()
-            footer.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 12)
+            footer.preservesSuperviewLayoutMargins = true
+            footer.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 12)
             footer.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 
             return footer
         }()
 
-        // Big Button
-
-        if mode.hasSaveButton {
-            let buttonSection = OWSTableSection()
-            let target = self
-            let selector = #selector(updateProfile)
-            buttonSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                let cell = OWSTableItem.newCell()
-
-                let buttonHeight: CGFloat = 47
-                let button = OWSFlatButton.button(title: NSLocalizedString("PROFILE_VIEW_SAVE_BUTTON",
-                                                                           comment: "Button to save the profile view in the profile view."),
-                                                  font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                  titleColor: UIColor.ows_white,
-                                                  backgroundColor: UIColor.ows_accentBlue,
-                                                  target: target,
-                                                  selector: selector)
-                button.accessibilityIdentifier = "save_button"
-                button.autoSetDimension(.height, toSize: buttonHeight)
-                cell.contentView.addSubview(button)
-                button.autoPinEdgesToSuperviewMargins()
-
-                cell.backgroundColor = Theme.tableViewBackgroundColor
-                cell.contentView.backgroundColor = Theme.tableViewBackgroundColor
-
-                return cell
-            },
-            actionBlock: { [weak self] in
-                self?.updateProfile()
-            }))
-            contents.addSection(buttonSection)
-        }
-
         self.contents = contents
-    }
-
-    private func buildUsernameItem() -> OWSTableItem {
-        updateUsername()
-
-        let usernameLabel = self.usernameLabel
-        return OWSTableItem(customCellBlock: { () -> UITableViewCell in
-            let title = NSLocalizedString("PROFILE_VIEW_USERNAME_FIELD",
-                                          comment: "Label for the username field of the profile view.")
-
-            usernameLabel.font = .ows_dynamicTypeBodyClamped
-            usernameLabel.textAlignment = .right
-
-            let cell = Self.buildNameCell(title: title,
-                                          valueView: usernameLabel,
-                                          accessibilityIdentifier: "username")
-
-            cell.accessoryType = .disclosureIndicator
-
-            return cell
-        },
-        actionBlock: { [weak self] in
-            self?.didTapUsername()
-        })
-    }
-
-    private static func buildNameLabel(title: String) -> UILabel {
-        let label = UILabel()
-        label.text = title
-        label.textColor = Theme.primaryTextColor
-        label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-        label.setCompressionResistanceHorizontalHigh()
-        label.setContentHuggingHorizontalHigh()
-        return label
-    }
-
-    private static func buildNameCell(title: String,
-                                      valueView: UIView,
-                                      accessibilityIdentifier: String,
-                                      accessoryView: UIView? = nil) -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
-
-        let titleLabel = buildNameLabel(title: title)
-
-        valueView.setCompressionResistanceHorizontalLow()
-        valueView.setContentHuggingHorizontalLow()
-
-        var subviews = [titleLabel, valueView]
-        if let accessoryView = accessoryView {
-            accessoryView.setCompressionResistanceHorizontalHigh()
-            accessoryView.setContentHuggingHorizontalHigh()
-            subviews.append(accessoryView)
-        }
-        let stackView = UIStackView(arrangedSubviews: subviews)
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 10
-        cell.contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        cell.accessibilityIdentifier = accessibilityIdentifier
-
-        return cell
     }
 
     // MARK: - Event Handling
@@ -462,61 +453,20 @@ public class ProfileViewController: OWSTableViewController {
     }
 
     private func updateNavigationItem() {
-        guard let navigationController = navigationController else {
-            return
-        }
-        // The navigation bar is hidden in the registration workflow.
-        if navigationController.isNavigationBarHidden {
-            navigationController.setNavigationBarHidden(false, animated: true)
-        }
-
-        var forceSaveButtonEnabled = false
-
-        switch mode {
-        case .appSettings:
-            if hasUnsavedChanges {
-                // If we have a unsaved changes, right item should be a "save" button.
-                let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
-                                                 target: self,
-                                                 action: #selector(updateProfile),
-                                                 accessibilityIdentifier: "save_button")
-                navigationItem.rightBarButtonItem = saveButton
-            } else {
-                navigationItem.rightBarButtonItem = nil
-            }
-        case .registration:
+        if mode.isFullScreenStyle {
+            navigationController?.isNavigationBarHidden = true
             navigationItem.hidesBackButton = true
             navigationItem.rightBarButtonItem = nil
 
-            // During registration, if you have a name pre-populatd we want
-            // to enable the save button even if you haven't edited anything.
-            if let givenName = givenNameTextField.text,
-               !givenName.isEmpty {
-                forceSaveButtonEnabled = true
-            }
-        case .experienceUpgrade:
-            navigationItem.rightBarButtonItem = nil
+        } else if hasUnsavedChanges {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .save,
+                target: self,
+                action: #selector(updateProfile),
+                accessibilityIdentifier: "save_button")
 
-            // During the experience upgrade, if you have a name we want
-            // to enable the save button even if you haven't edited anything.
-            if let givenName = givenNameTextField.text,
-               !givenName.isEmpty {
-                forceSaveButtonEnabled = true
-            }
-        @unknown default:
-            owsFailDebug("Unknown mode.")
+        } else {
             navigationItem.rightBarButtonItem = nil
-        }
-
-        if let saveButton = saveButton {
-            if hasUnsavedChanges || forceSaveButtonEnabled {
-                saveButton.setEnabled(true)
-                saveButton.setBackgroundColors(upColor: .ows_accentBlue)
-            } else {
-                saveButton.setEnabled(false)
-                saveButton.setBackgroundColors(upColor: UIColor.ows_accentBlue.blended(with: Theme.backgroundColor,
-                                                                                       alpha: 0.5))
-            }
         }
     }
 
@@ -615,38 +565,13 @@ public class ProfileViewController: OWSTableViewController {
         updateAvatarView()
     }
 
-    private let avatarSize: UInt = 96
+    private let avatarSize: CGFloat = 80.0
 
     private func updateAvatarView() {
         if let avatarData = avatarData {
             avatarView.image = UIImage(data: avatarData)
         } else {
-            avatarView.image = OWSContactAvatarBuilder(forLocalUserWithDiameter: avatarSize).buildDefaultImage()
-        }
-    }
-
-    private func updateProfileNamePreview() {
-        var components = PersonNameComponents()
-        components.givenName = normalizedGivenName
-        components.familyName = normalizedFamilyName
-
-        let previewText = PersonNameComponentsFormatter.localizedString(from: components,
-                                                                        style: .`default`)
-        if previewText.isEmpty {
-            profileNamePreviewLabel.text = " "
-        } else {
-            profileNamePreviewLabel.text = previewText
-        }
-    }
-
-    private func updateUsername() {
-        if let username = username {
-            usernameLabel.text = CommonFormats.formatUsername(username)
-            usernameLabel.textColor = Theme.primaryTextColor
-        } else {
-            usernameLabel.text = NSLocalizedString("PROFILE_VIEW_CREATE_USERNAME",
-                                                   comment: "A string indicating that the user can create a username on the profile view.")
-            usernameLabel.textColor = Theme.accentBlueColor
+            avatarView.image = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarSize)).buildDefaultImage()
         }
     }
 
@@ -670,16 +595,14 @@ public class ProfileViewController: OWSTableViewController {
 
     private var shouldShowUsernameRow: Bool {
         switch mode {
-        case .experienceUpgrade, .registration:
+        case .registration:
             return false
         case .appSettings:
             return RemoteConfig.usernames
-        @unknown default:
-            owsFailDebug("Unknown value.")
-            return false
         }
     }
 
+    @objc
     private func didTapAvatar() {
         avatarViewHelper.showChangeAvatarUI()
     }
@@ -758,9 +681,6 @@ extension ProfileViewController: UITextFieldDelegate {
     @objc
     func textFieldDidChange(_ textField: UITextField) {
         hasUnsavedChanges = true
-
-        updateProfileNamePreview()
-
         // TODO: Update length warning.
     }
 }
