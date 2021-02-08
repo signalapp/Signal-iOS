@@ -253,6 +253,7 @@ extension MessageReceiver {
         case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
         case .membersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
         case .memberLeft: handleClosedGroupMemberLeft(message, using: transaction)
+        case .encryptionKeyPairRequest: handleClosedGroupEncryptionKeyPairRequest(message, using: transaction)
         }
     }
     
@@ -294,7 +295,8 @@ extension MessageReceiver {
 
     private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
-        guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
+        guard case let .encryptionKeyPair(explicitGroupPublicKey, wrappers) = message.kind,
+            let groupPublicKey = explicitGroupPublicKey?.toHexString() ?? message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userPublicKey = getUserHexEncodedPublicKey()
         guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
@@ -305,8 +307,8 @@ extension MessageReceiver {
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
             return SNLog("Ignoring closed group encryption key pair for nonexistent group.")
         }
-        guard thread.groupModel.groupAdminIds.contains(message.sender!) else {
-            return SNLog("Ignoring closed group encryption key pair from non-admin.")
+        guard thread.groupModel.groupMemberIds.contains(message.sender!) else {
+            return SNLog("Ignoring closed group encryption key pair from non-member.")
         }
         // Find our wrapper and decrypt it if possible
         guard let wrapper = wrappers.first(where: { $0.publicKey == userPublicKey }), let encryptedKeyPair = wrapper.encryptedKeyPair else { return }
@@ -329,7 +331,11 @@ extension MessageReceiver {
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
-        // Store it
+        // Store it if needed
+        let closedGroupEncryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: groupPublicKey)
+        guard !closedGroupEncryptionKeyPairs.contains(keyPair) else {
+            return SNLog("Ignoring duplicate closed group encryption key pair.")
+        }
         Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: groupPublicKey, using: transaction)
         SNLog("Received a new closed group encryption key pair.")
     }
@@ -447,6 +453,30 @@ extension MessageReceiver {
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
             infoMessage.save(with: transaction)
+        }
+    }
+    
+    private static func handleClosedGroupEncryptionKeyPairRequest(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        guard case .encryptionKeyPairRequest = message.kind else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let groupPublicKey = message.groupPublicKey else { return }
+        performIfValid(for: message, using: transaction) { groupID, _, group in
+            let publicKey = message.sender!
+            // Guard against self-sends
+            guard publicKey != getUserHexEncodedPublicKey() else {
+                return SNLog("Ignoring invalid closed group update.")
+            }
+            // Get the latest encryption key pair
+            guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { return }
+            // Send it
+            guard let proto = try? SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey,
+                privateKey: encryptionKeyPair.privateKey).build(), let plaintext = try? proto.serializedData() else { return }
+            let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+            guard let ciphertext = try? MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey) else { return }
+            SNLog("Responding to closed group encryption key pair request from: \(publicKey).")
+            let wrapper = ClosedGroupControlMessage.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
+            let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(publicKey: Data(hex: groupPublicKey), wrappers: [ wrapper ]))
+            MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
         }
     }
     
