@@ -144,7 +144,7 @@ extension MessageReceiver {
     }
     
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
-        guard message.sender == getUserHexEncodedPublicKey() else { return }
+        guard message.sender == getUserHexEncodedPublicKey(), !UserDefaults.standard[.hasSyncedConfiguration] else { return }
         let storage = SNMessagingKitConfiguration.shared.storage
         let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
         for closedGroup in message.closedGroups {
@@ -157,6 +157,7 @@ extension MessageReceiver {
             guard !allOpenGroups.contains(openGroupURL) else { continue }
             OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
         }
+        UserDefaults.standard[.hasSyncedConfiguration] = true
     }
 
     @discardableResult

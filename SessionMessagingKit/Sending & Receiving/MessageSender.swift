@@ -364,6 +364,7 @@ public final class MessageSender : NSObject {
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         // Sync the message if:
         // • it's a visible message
+        // • the destination was a contact
         // • we didn't sync it already
         let userPublicKey = getUserHexEncodedPublicKey()
         if case .contact(let publicKey) = destination, !isSyncMessage, let message = message as? VisibleMessage {

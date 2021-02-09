@@ -5,6 +5,7 @@ public enum SNUserDefaults {
     public enum Bool : Swift.String {
         case hasLaunchedOnce
         case hasSeenGIFMetadataWarning
+        case hasSyncedConfiguration
         case hasViewedSeed
         case isUsingFullAPNs
         case isMigratingToV2KeyPair
