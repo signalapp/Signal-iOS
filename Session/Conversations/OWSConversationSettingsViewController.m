@@ -939,7 +939,7 @@ static CGRect oldframe;
     if (gThread.isClosedGroup) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];
+            [SNMessageSender v2_leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];
         }];
     }
 
