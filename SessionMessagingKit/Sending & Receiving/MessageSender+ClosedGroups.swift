@@ -68,7 +68,7 @@ extension MessageSender {
             let ciphertext = try MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey)
             return ClosedGroupControlMessage.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
         }
-        let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(wrappers))
+        let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(publicKey: nil, wrappers: wrappers))
         let _ = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).done { // FIXME: It'd be great if we could make this a durable operation
             // Store it * after * having sent out the message to the group
             SNMessagingKitConfiguration.shared.storage.write { transaction in
@@ -231,6 +231,21 @@ extension MessageSender {
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
         infoMessage.save(with: transaction)
+    }
+    
+    public static func requestEncryptionKeyPair(for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
+        // Get the group, check preconditions & prepare
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
+        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
+            SNLog("Can't request encryption key pair for nonexistent closed group.")
+            throw Error.noThread
+        }
+        let group = thread.groupModel
+        guard group.groupMemberIds.contains(getUserHexEncodedPublicKey()) else { return }
+        // Send the request to the group
+        let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPairRequest)
+        MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
     }
     
     

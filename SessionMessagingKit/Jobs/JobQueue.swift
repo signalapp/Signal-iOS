@@ -76,15 +76,14 @@ public final class JobQueue : NSObject, JobDelegate {
 
     private func getRetryInterval(for job: Job) -> TimeInterval {
         // Arbitrary backoff factor...
-        // try  1 delay:  0.00s
-        // try  2 delay:  0.19s
+        // try  1 delay: 0.5s
+        // try  2 delay: 1s
         // ...
-        // try  5 delay:  1.30s
+        // try  5 delay: 16s
         // ...
-        // try 11 delay: 61.31s
-        let backoffFactor = 1.9
-        let maxBackoff: Double = 60 * 60 * 1000
-        return 0.1 * min(maxBackoff, pow(backoffFactor, Double(job.failureCount)))
+        // try 11 delay: 512s
+        let maxBackoff: Double = 10 * 60 // 10 minutes
+        return 0.25 * min(maxBackoff, pow(2, Double(job.failureCount)))
     }
 
     @objc private func retry(_ timer: Timer) {

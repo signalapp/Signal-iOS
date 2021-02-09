@@ -57,15 +57,17 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
         let (promise, seal) = Promise<Void>.pending()
         SNMessagingKitConfiguration.shared.storage.write(with: { transaction in // Intentionally capture self
             do {
-                let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, using: transaction)
+                let isRetry = (self.failureCount != 0)
+                let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, isRetry: isRetry, using: transaction)
                 try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, isBackgroundPoll: self.isBackgroundPoll, using: transaction)
                 self.handleSuccess()
                 seal.fulfill(())
             } catch {
-                SNLog("Couldn't receive message due to error: \(error).")
                 if let error = error as? MessageReceiver.Error, !error.isRetryable {
+                    SNLog("Message receive job permanently failed due to error: \(error).")
                     self.handlePermanentFailure(error: error)
                 } else {
+                    SNLog("Couldn't receive message due to error: \(error).")
                     self.handleFailure(error: error)
                 }
                 seal.fulfill(()) // The promise is just used to keep track of when we're done
