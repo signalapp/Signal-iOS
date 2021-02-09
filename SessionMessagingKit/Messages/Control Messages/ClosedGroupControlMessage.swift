@@ -23,11 +23,15 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data])
         /// - Note: Deprecated in favor of more explicit group updates.
         case update(name: String, members: [Data])
-        case encryptionKeyPair([KeyPairWrapper]) // The new encryption key pair encrypted for each member individually
+        /// An encryption key pair encrypted for each member individually.
+        ///
+        /// - Note: `publicKey` is only set when an encryption key pair is sent in a one-to-one context (i.e. not in a group).
+        case encryptionKeyPair(publicKey: Data?, wrappers: [KeyPairWrapper])
         case nameChange(name: String)
         case membersAdded(members: [Data])
         case membersRemoved(members: [Data])
         case memberLeft
+        case encryptionKeyPairRequest
 
         public var description: String {
             switch self {
@@ -38,6 +42,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
             case .membersAdded: return "membersAdded"
             case .membersRemoved: return "membersRemoved"
             case .memberLeft: return "memberLeft"
+            case .encryptionKeyPairRequest: return "encryptionKeyPairRequest"
             }
         }
     }
@@ -103,6 +108,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case .membersAdded(let members): return !members.isEmpty
         case .membersRemoved(let members): return !members.isEmpty
         case .memberLeft: return true
+        case .encryptionKeyPairRequest: return true
         }
     }
 
@@ -123,8 +129,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
             self.kind = .update(name: name, members: members)
         case "encryptionKeyPair":
+            let publicKey = coder.decodeObject(forKey: "publicKey") as? Data
             guard let wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper] else { return nil }
-            self.kind = .encryptionKeyPair(wrappers)
+            self.kind = .encryptionKeyPair(publicKey: publicKey, wrappers: wrappers)
         case "nameChange":
             guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
             self.kind = .nameChange(name: name)
@@ -136,6 +143,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
             self.kind = .membersRemoved(members: members)
         case "memberLeft":
             self.kind = .memberLeft
+        case "encryptionKeyPairRequest":
+            self.kind = .encryptionKeyPairRequest
         default: return nil
         }
     }
@@ -155,8 +164,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
             coder.encode("update", forKey: "kind")
             coder.encode(name, forKey: "name")
             coder.encode(members, forKey: "members")
-        case .encryptionKeyPair(let wrappers):
+        case .encryptionKeyPair(let publicKey, let wrappers):
             coder.encode("encryptionKeyPair", forKey: "kind")
+            coder.encode(publicKey, forKey: "publicKey")
             coder.encode(wrappers, forKey: "wrappers")
         case .nameChange(let name):
             coder.encode("nameChange", forKey: "kind")
@@ -169,6 +179,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
             coder.encode(members, forKey: "members")
         case .memberLeft:
             coder.encode("memberLeft", forKey: "kind")
+        case .encryptionKeyPairRequest:
+            coder.encode("encryptionKeyPairRequest", forKey: "kind")
         }
     }
 
@@ -192,8 +204,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
             guard let name = closedGroupControlMessageProto.name else { return nil }
             kind = .update(name: name, members: closedGroupControlMessageProto.members)
         case .encryptionKeyPair:
+            let publicKey = closedGroupControlMessageProto.publicKey
             let wrappers = closedGroupControlMessageProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
-            kind = .encryptionKeyPair(wrappers)
+            kind = .encryptionKeyPair(publicKey: publicKey, wrappers: wrappers)
         case .nameChange:
             guard let name = closedGroupControlMessageProto.name else { return nil }
             kind = .nameChange(name: name)
@@ -203,6 +216,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
             kind = .membersRemoved(members: closedGroupControlMessageProto.members)
         case .memberLeft:
             kind = .memberLeft
+        case .encryptionKeyPairRequest:
+            kind = .encryptionKeyPairRequest
         }
         return ClosedGroupControlMessage(kind: kind)
     }
@@ -232,8 +247,11 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .update)
                 closedGroupControlMessage.setName(name)
                 closedGroupControlMessage.setMembers(members)
-            case .encryptionKeyPair(let wrappers):
+            case .encryptionKeyPair(let publicKey, let wrappers):
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .encryptionKeyPair)
+                if let publicKey = publicKey {
+                    closedGroupControlMessage.setPublicKey(publicKey)
+                }
                 closedGroupControlMessage.setWrappers(wrappers.compactMap { $0.toProto() })
             case .nameChange(let name):
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .nameChange)
@@ -246,6 +264,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 closedGroupControlMessage.setMembers(members)
             case .memberLeft:
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .memberLeft)
+            case .encryptionKeyPairRequest:
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .encryptionKeyPairRequest)
             }
             let contentProto = SNProtoContent.builder()
             let dataMessageProto = SNProtoDataMessage.builder()
