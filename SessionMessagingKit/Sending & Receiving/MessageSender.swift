@@ -137,8 +137,12 @@ public final class MessageSender : NSObject {
         }
         // Validate the message
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // Stop here if this is a self-send (unless it's a configuration message or a sync message)
-        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage else {
+        // Stop here if this is a self-send, unless it's:
+        // • a configuration message
+        // • a sync message
+        // • a closed group control message of type `new`
+        let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) { if case .new = $0.kind { return true } else { return false } } ?? false
+        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())

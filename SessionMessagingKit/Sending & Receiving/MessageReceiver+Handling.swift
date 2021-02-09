@@ -279,6 +279,9 @@ extension MessageReceiver {
         } else {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
+            // Notify the user
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
+            infoMessage.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
@@ -288,9 +291,6 @@ extension MessageReceiver {
         Storage.shared.setClosedGroupFormationTimestamp(to: messageSentTimestamp, for: groupPublicKey, using: transaction)
         // Notify the PN server
         let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
-        // Notify the user
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
-        infoMessage.save(with: transaction)
     }
 
     private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupControlMessage, using transaction: Any) {
@@ -418,10 +418,6 @@ extension MessageReceiver {
             let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
             let userPublicKey = getUserHexEncodedPublicKey()
             let isCurrentUserAdmin = group.groupAdminIds.contains(userPublicKey)
-            // Guard against self-sends
-            guard message.sender != getUserHexEncodedPublicKey() else {
-                return SNLog("Ignoring invalid closed group update.")
-            }
             // If a regular member left:
             // • Distribute a new encryption key pair if we're the admin of the group
             // If the admin left:

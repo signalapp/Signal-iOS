@@ -11,12 +11,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
         }
     }
     
-    public override var isSelfSendValid: Bool {
-        switch kind {
-        case .new: return false
-        default: return true
-        }
-    }
+    public override var isSelfSendValid: Bool { true }
     
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
