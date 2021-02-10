@@ -218,16 +218,17 @@ final class VisibleMessageCell : MessageCell {
         switch viewItem.messageCellType {
         case .textOnlyMessage:
             guard let message = viewItem.interaction as? TSMessage else { return }
+            let inset: CGFloat = 12
             // Stack view
             let stackView = UIStackView(arrangedSubviews: [])
             stackView.axis = .vertical
             stackView.spacing = 2
             // Quote label
             if viewItem.quotedReply != nil {
-                let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
+                let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
                 let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
                 let hInset: CGFloat = 2
-                let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxMessageWidth: maxMessageWidth)
+                let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
                 let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
                 stackView.addArrangedSubview(quoteViewContainer)
             }
@@ -241,7 +242,7 @@ final class VisibleMessageCell : MessageCell {
             stackView.addArrangedSubview(bodyLabel)
             // Constraints
             snContentView.addSubview(stackView)
-            stackView.pin(to: snContentView, withInset: 12)
+            stackView.pin(to: snContentView, withInset: inset)
         case .mediaMessage:
             guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
             let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)

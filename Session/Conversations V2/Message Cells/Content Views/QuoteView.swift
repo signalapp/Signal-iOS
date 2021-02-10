@@ -3,7 +3,14 @@ final class QuoteView : UIView {
     private let mode: Mode
     private let direction: Direction
     private let hInset: CGFloat
-    private let maxMessageWidth: CGFloat
+    private let maxWidth: CGFloat
+
+    private var maxBodyLabelHeight: CGFloat {
+        switch mode {
+        case .regular: return 60
+        case .draft: return 40
+        }
+    }
 
     private var attachments: [OWSAttachmentInfo] {
         switch mode {
@@ -54,7 +61,8 @@ final class QuoteView : UIView {
 
     private var lineColor: UIColor {
         switch (mode, AppModeManager.shared.currentAppMode) {
-        case (.regular, _), (.draft, .light): return .black
+        case (.regular, .light), (.draft, .light): return .black
+        case (.regular, .dark): return (direction == .outgoing) ? .black : Colors.accent
         case (.draft, .dark): return Colors.accent
         }
     }
@@ -80,20 +88,21 @@ final class QuoteView : UIView {
     static let thumbnailSize: CGFloat = 48
     static let iconSize: CGFloat = 24
     static let labelStackViewSpacing: CGFloat = 2
+    static let labelStackViewVMargin: CGFloat = 4
 
     // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxMessageWidth: CGFloat) {
+    init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
         self.mode = .regular(viewItem)
-        self.maxMessageWidth = maxMessageWidth
+        self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
 
-    init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxMessageWidth: CGFloat) {
+    init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
         self.mode = .draft(model)
-        self.maxMessageWidth = maxMessageWidth
+        self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
         super.init(frame: CGRect.zero)
@@ -113,12 +122,15 @@ final class QuoteView : UIView {
         let thumbnailSize = QuoteView.thumbnailSize
         let iconSize = QuoteView.iconSize
         let labelStackViewSpacing = QuoteView.labelStackViewSpacing
+        let labelStackViewVMargin = QuoteView.labelStackViewVMargin
         let smallSpacing = Values.smallSpacing
         let availableWidth: CGFloat
+        // Subtract smallSpacing twice; once for the spacing in between the stack view elements and
+        // once for the trailing margin.
         if !hasAttachments {
-            availableWidth = maxMessageWidth - 2 * hInset - Values.accentLineThickness - 2 * smallSpacing
+            availableWidth = maxWidth - 2 * hInset - Values.accentLineThickness - 2 * smallSpacing
         } else {
-            availableWidth = maxMessageWidth - 2 * hInset - thumbnailSize - 2 * smallSpacing
+            availableWidth = maxWidth - 2 * hInset - thumbnailSize - 2 * smallSpacing
         }
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         var body = self.body
@@ -159,10 +171,10 @@ final class QuoteView : UIView {
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
         let isOutgoing = (direction == .outgoing)
+        bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: threadID, attributes: [:]) }
             ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
         bodyLabel.textColor = textColor
-        bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         if hasAttachments {
             bodyLabel.numberOfLines = 1
         }
@@ -179,6 +191,8 @@ final class QuoteView : UIView {
             labelStackView.axis = .vertical
             labelStackView.spacing = labelStackViewSpacing
             labelStackView.set(.width, to: max(bodyLabelSize.width, authorLabelSize.width))
+            labelStackView.isLayoutMarginsRelativeArrangement = true
+            labelStackView.layoutMargins = UIEdgeInsets(top: labelStackViewVMargin, left: 0, bottom: labelStackViewVMargin, right: 0)
             mainStackView.addArrangedSubview(labelStackView)
         } else {
             mainStackView.addArrangedSubview(bodyLabel)
@@ -189,17 +203,19 @@ final class QuoteView : UIView {
         if !isGroupThread {
             bodyLabel.set(.width, to: bodyLabelSize.width)
         }
-        let maxBodyLabelHeight: CGFloat = 72
         let bodyLabelHeight = bodyLabelSize.height.clamp(0, maxBodyLabelHeight)
         let authorLabelHeight: CGFloat = 14.33
-        let isAuthorShown = isGroupThread
         let contentViewHeight: CGFloat
         if hasAttachments {
-            contentViewHeight = thumbnailSize + 8
+            contentViewHeight = thumbnailSize + 8 // Add a small amount of spacing above and below the thumbnail
         } else {
-            contentViewHeight = bodyLabelHeight + 2 * smallSpacing + (isAuthorShown ? (authorLabelHeight + labelStackViewSpacing) : 0)
+            if isGroupThread {
+                contentViewHeight = bodyLabelHeight + (authorLabelHeight + labelStackViewSpacing) + 2 * labelStackViewVMargin
+            } else {
+                contentViewHeight = bodyLabelHeight + 2 * smallSpacing
+            }
         }
         contentView.set(.height, to: contentViewHeight)
-        lineView.set(.height, to: contentViewHeight - 8)
+        lineView.set(.height, to: contentViewHeight - 8) // Add a small amount of spacing above and below the line
     }
 }

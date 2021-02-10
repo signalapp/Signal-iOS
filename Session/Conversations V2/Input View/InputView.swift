@@ -21,7 +21,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
 
     private lazy var quoteDraftContainer: UIView = {
         let result = UIView()
-        result.heightAnchor.constraint(greaterThanOrEqualToConstant: 12).isActive = true
+        result.heightAnchor.constraint(greaterThanOrEqualToConstant: 4).isActive = true
         return result
     }()
     
@@ -74,6 +74,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         let bottomStackView = UIStackView(arrangedSubviews: [ inputTextView, container(for: sendButton) ])
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = Values.smallSpacing
+        bottomStackView.alignment = .center
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, quoteDraftContainer, bottomStackView ])
         mainStackView.axis = .vertical
@@ -83,7 +84,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         addSubview(mainStackView)
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
-        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -12)
+        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
     }
     
     // MARK: Updating
@@ -96,13 +97,13 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         guard let quoteDraftInfo = quoteDraftInfo else { return }
         let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
         let hInset: CGFloat = 6
-        let maxMessageWidth = quoteDraftContainer.bounds.width - 2 * hInset
-        let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxMessageWidth: maxMessageWidth)
+        let maxWidth = quoteDraftContainer.bounds.width
+        let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxWidth: maxWidth)
         quoteDraftContainer.addSubview(quoteView)
         quoteView.pin(.left, to: .left, of: quoteDraftContainer, withInset: hInset)
         quoteView.pin(.top, to: .top, of: quoteDraftContainer, withInset: 12)
         quoteView.pin(.right, to: .right, of: quoteDraftContainer, withInset: -hInset)
-        quoteView.pin(.bottom, to: .bottom, of: quoteDraftContainer, withInset: -12)
+        quoteView.pin(.bottom, to: .bottom, of: quoteDraftContainer, withInset: -6)
     }
     
     // MARK: Interaction

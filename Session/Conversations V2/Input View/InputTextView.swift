@@ -14,7 +14,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     
     // MARK: Settings
     private let minHeight: CGFloat = 22
-    private let maxHeight: CGFloat = 120
+    private let maxHeight: CGFloat = 80
 
     // MARK: Lifecycle
     init(delegate: InputTextViewDelegate) {

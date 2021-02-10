@@ -3,12 +3,13 @@
 // • Tapping replies
 // • Mentions
 // • Remaining send logic
-// • Paging
+// • Paging glitch
 // • Blocking
 // • Subtitle
 // • Resending failed messages
 // • Linkification
 // • Link previews
+// • Canceling replies
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
