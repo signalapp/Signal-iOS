@@ -19,22 +19,23 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     var contextMenuWindow: ContextMenuWindow?
     var contextMenuVC: ContextMenuVC?
     // Scrolling & paging
-    private var isUserScrolling = false { didSet { autoLoadMoreIfNeeded() } }
+    private var isUserScrolling = false
     private var hasPerformedInitialScroll = false
     private var isLoadingMore = false
-    private var contentOffsetYBeforeUpdate: CGFloat?
-    private var contentHeightBeforeUpdate: CGFloat?
-    
+    private var scrollDistanceToBottomBeforeUpdate: CGFloat?
     
     private var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
     func conversationStyle() -> ConversationStyle { return ConversationStyle(thread: thread) }
     override var inputAccessoryView: UIView? { snInputView }
     override var canBecomeFirstResponder: Bool { true }
-    
+
+    private var tableViewUnobscuredHeight: CGFloat {
+        let bottomInset = messagesTableView.adjustedContentInset.bottom + ConversationVC.bottomInset
+        return messagesTableView.bounds.height - bottomInset
+    }
+
     private var lastPageTop: CGFloat {
-        let bottomInset = -messagesTableView.adjustedContentInset.bottom - ConversationVC.bottomInset
-        let tableViewUnobscuredHeight = messagesTableView.bounds.height + bottomInset
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
@@ -250,14 +251,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     func conversationViewModelWillLoadMoreItems() {
-        contentHeightBeforeUpdate = messagesTableView.contentSize.height
-        contentOffsetYBeforeUpdate = messagesTableView.contentOffset.y
+        view.layoutIfNeeded()
+        scrollDistanceToBottomBeforeUpdate = messagesTableView.contentSize.height - messagesTableView.contentOffset.y
     }
     
     func conversationViewModelDidLoadMoreItems() {
-        guard let contentHeightBeforeUpdate = contentHeightBeforeUpdate, let contentOffsetYBeforeUpdate = contentOffsetYBeforeUpdate else { return }
+        guard let scrollDistanceToBottomBeforeUpdate = scrollDistanceToBottomBeforeUpdate else { return }
         view.layoutIfNeeded()
-        messagesTableView.contentOffset.y = (messagesTableView.contentSize.height - contentHeightBeforeUpdate + contentOffsetYBeforeUpdate)
+        messagesTableView.contentOffset.y = messagesTableView.contentSize.height - scrollDistanceToBottomBeforeUpdate
         isLoadingMore = false
     }
     
@@ -274,6 +275,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     // MARK: General
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
     func getMediaCache() -> NSCache<NSString, AnyObject> {
         return mediaCache
     }
@@ -291,9 +300,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         // Ensure the view is fully up to date before we try to scroll to the bottom, since
         // we use the table view's bounds to determine where the bottom is.
         view.layoutIfNeeded()
-        let firstContentPageTop = -messagesTableView.adjustedContentInset.top
-        let destinationY = max(firstContentPageTop, lastPageTop)
-        messagesTableView.setContentOffset(CGPoint(x: 0, y: destinationY), animated: isAnimated)
+        let firstContentPageTop: CGFloat = 0
+        let contentOffsetY = max(firstContentPageTop, lastPageTop)
+        messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
         // TODO: Did scroll to bottom
     }
     
@@ -315,7 +324,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         guard isMainAppAndActive && viewModel.canLoadMoreItems() && !isLoadingMore
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
         isLoadingMore = true
-        print("[Test] LOAD MORE")
         viewModel.loadAnotherPageOfMessages()
     }
     
