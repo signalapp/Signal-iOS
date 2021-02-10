@@ -197,4 +197,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func handleScrollToBottomButtonTapped() {
         scrollToBottom(isAnimated: true)
     }
+
+    func handleQuoteViewCancelButtonTapped() {
+        snInputView.quoteDraftInfo = nil
+    }
 }

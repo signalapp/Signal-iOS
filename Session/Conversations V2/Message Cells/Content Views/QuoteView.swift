@@ -4,6 +4,7 @@ final class QuoteView : UIView {
     private let direction: Direction
     private let hInset: CGFloat
     private let maxWidth: CGFloat
+    private let delegate: QuoteViewDelegate?
 
     private var maxBodyLabelHeight: CGFloat {
         switch mode {
@@ -89,6 +90,7 @@ final class QuoteView : UIView {
     static let iconSize: CGFloat = 24
     static let labelStackViewSpacing: CGFloat = 2
     static let labelStackViewVMargin: CGFloat = 4
+    static let cancelButtonSize: CGFloat = 32
 
     // MARK: Lifecycle
     init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
@@ -96,15 +98,17 @@ final class QuoteView : UIView {
         self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
+        self.delegate = nil
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
 
-    init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
+    init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxWidth: CGFloat, delegate: QuoteViewDelegate) {
         self.mode = .draft(model)
         self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
+        self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -124,13 +128,17 @@ final class QuoteView : UIView {
         let labelStackViewSpacing = QuoteView.labelStackViewSpacing
         let labelStackViewVMargin = QuoteView.labelStackViewVMargin
         let smallSpacing = Values.smallSpacing
-        let availableWidth: CGFloat
+        let cancelButtonSize = QuoteView.cancelButtonSize
+        var availableWidth: CGFloat
         // Subtract smallSpacing twice; once for the spacing in between the stack view elements and
         // once for the trailing margin.
         if !hasAttachments {
             availableWidth = maxWidth - 2 * hInset - Values.accentLineThickness - 2 * smallSpacing
         } else {
             availableWidth = maxWidth - 2 * hInset - thumbnailSize - 2 * smallSpacing
+        }
+        if case .draft = mode {
+            availableWidth -= cancelButtonSize
         }
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         var body = self.body
@@ -197,6 +205,12 @@ final class QuoteView : UIView {
         } else {
             mainStackView.addArrangedSubview(bodyLabel)
         }
+        // Cancel button
+        let cancelButton = UIButton(type: .custom)
+        cancelButton.setImage(UIImage(named: "X"), for: UIControl.State.normal)
+        cancelButton.set(.width, to: cancelButtonSize)
+        cancelButton.set(.height, to: cancelButtonSize)
+        cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
         // Constraints
         contentView.addSubview(mainStackView)
         mainStackView.pin(to: contentView)
@@ -217,5 +231,21 @@ final class QuoteView : UIView {
         }
         contentView.set(.height, to: contentViewHeight)
         lineView.set(.height, to: contentViewHeight - 8) // Add a small amount of spacing above and below the line
+        if case .draft = mode {
+            addSubview(cancelButton)
+            cancelButton.center(.vertical, in: self)
+            cancelButton.pin(.right, to: .right, of: self)
+        }
     }
+
+    // MARK: Interaction
+    @objc private func cancel() {
+        delegate?.handleQuoteViewCancelButtonTapped()
+    }
+}
+
+// MARK: Delegate
+protocol QuoteViewDelegate {
+
+    func handleQuoteViewCancelButtonTapped()
 }

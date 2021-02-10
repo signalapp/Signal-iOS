@@ -1,5 +1,5 @@
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
+final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate {
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     
@@ -98,7 +98,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
         let hInset: CGFloat = 6
         let maxWidth = quoteDraftContainer.bounds.width
-        let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxWidth: maxWidth)
+        let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxWidth: maxWidth, delegate: self)
         quoteDraftContainer.addSubview(quoteView)
         quoteView.pin(.left, to: .left, of: quoteDraftContainer, withInset: hInset)
         quoteView.pin(.top, to: .top, of: quoteDraftContainer, withInset: 12)
@@ -114,7 +114,11 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         if inputViewButton == documentButton { delegate.handleDocumentButtonTapped() }
         if inputViewButton == sendButton { delegate.handleSendButtonTapped() }
     }
-    
+
+    func handleQuoteViewCancelButtonTapped() {
+        delegate.handleQuoteViewCancelButtonTapped()
+    }
+
     override func resignFirstResponder() -> Bool {
         inputTextView.resignFirstResponder()
     }
@@ -128,4 +132,5 @@ protocol InputViewDelegate {
     func handleGIFButtonTapped()
     func handleDocumentButtonTapped()
     func handleSendButtonTapped()
+    func handleQuoteViewCancelButtonTapped()
 }
