@@ -5,6 +5,7 @@ final class VisibleMessageCell : MessageCell {
     var mediaTextOverlayView: MediaTextOverlayView?
     // Constraints
     private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
+    private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
     private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
     private lazy var bubbleViewLeftConstraint1 = bubbleView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
@@ -79,6 +80,7 @@ final class VisibleMessageCell : MessageCell {
     private static let authorLabelBottomSpacing: CGFloat = 4
     private static let groupThreadHSpacing: CGFloat = 12
     private static let profilePictureSize = Values.verySmallProfilePictureSize
+    private static let authorLabelInset: CGFloat = 12
     static let smallCornerRadius: CGFloat = 4
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing
@@ -108,6 +110,7 @@ final class VisibleMessageCell : MessageCell {
         headerView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
         // Author label
         addSubview(authorLabel)
+        authorLabelHeightConstraint.isActive = true
         authorLabel.pin(.top, to: .bottom, of: headerView)
         // Profile picture view
         addSubview(profilePictureView)
@@ -130,7 +133,7 @@ final class VisibleMessageCell : MessageCell {
         messageStatusImageViewWidthConstraint.isActive = true
         messageStatusImageViewHeightConstraint.isActive = true
         // Remaining constraints
-        authorLabel.pin(.left, to: .left, of: bubbleView, withInset: 12)
+        authorLabel.pin(.left, to: .left, of: bubbleView, withInset: VisibleMessageCell.authorLabelInset)
     }
     
     override func setUpGestureRecognizers() {
@@ -179,6 +182,10 @@ final class VisibleMessageCell : MessageCell {
         authorLabel.textColor = Colors.text
         authorLabel.isHidden = (viewItem.senderName == nil)
         authorLabel.text = viewItem.senderName?.string // Will only be set if it should be shown
+        let authorLabelAvailableWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * VisibleMessageCell.authorLabelInset
+        let authorLabelAvailableSpace = CGSize(width: authorLabelAvailableWidth, height: .greatestFiniteMagnitude)
+        let authorLabelSize = authorLabel.sizeThatFits(authorLabelAvailableSpace)
+        authorLabelHeightConstraint.constant = (viewItem.senderName != nil) ? authorLabelSize.height : 0
         // Message status image view
         let (image, backgroundColor) = getMessageStatusImage(for: message)
         messageStatusImageView.image = image

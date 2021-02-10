@@ -188,6 +188,7 @@ final class QuoteView : UIView {
         }
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         // Label stack view
+        var authorLabelHeight: CGFloat?
         if isGroupThread {
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
@@ -195,6 +196,8 @@ final class QuoteView : UIView {
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
             let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)
+            authorLabel.set(.height, to: authorLabelSize.height)
+            authorLabelHeight = authorLabelSize.height
             let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
             labelStackView.axis = .vertical
             labelStackView.spacing = labelStackViewSpacing
@@ -207,7 +210,8 @@ final class QuoteView : UIView {
         }
         // Cancel button
         let cancelButton = UIButton(type: .custom)
-        cancelButton.setImage(UIImage(named: "X")?.withTint(Colors.text), for: UIControl.State.normal)
+        let tint: UIColor = isLightMode ? .black : .white
+        cancelButton.setImage(UIImage(named: "X")?.withTint(tint), for: UIControl.State.normal)
         cancelButton.set(.width, to: cancelButtonSize)
         cancelButton.set(.height, to: cancelButtonSize)
         cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
@@ -218,12 +222,11 @@ final class QuoteView : UIView {
             bodyLabel.set(.width, to: bodyLabelSize.width)
         }
         let bodyLabelHeight = bodyLabelSize.height.clamp(0, maxBodyLabelHeight)
-        let authorLabelHeight: CGFloat = 14.33
         let contentViewHeight: CGFloat
         if hasAttachments {
             contentViewHeight = thumbnailSize + 8 // Add a small amount of spacing above and below the thumbnail
         } else {
-            if isGroupThread {
+            if let authorLabelHeight = authorLabelHeight { // Group thread
                 contentViewHeight = bodyLabelHeight + (authorLabelHeight + labelStackViewSpacing) + 2 * labelStackViewVMargin
             } else {
                 contentViewHeight = bodyLabelHeight + 2 * smallSpacing

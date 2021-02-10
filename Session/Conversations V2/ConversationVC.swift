@@ -9,7 +9,6 @@
 // • Resending failed messages
 // • Linkification
 // • Link previews
-// • Fix constraints and warnings
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
