@@ -221,11 +221,15 @@ final class VisibleMessageCell : MessageCell {
             // Stack view
             let stackView = UIStackView(arrangedSubviews: [])
             stackView.axis = .vertical
+            stackView.spacing = 2
             // Quote label
             if viewItem.quotedReply != nil {
                 let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
-                let quoteView = QuoteView(for: viewItem, maxMessageWidth: maxMessageWidth)
-                stackView.addArrangedSubview(quoteView)
+                let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
+                let hInset: CGFloat = 2
+                let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxMessageWidth: maxMessageWidth)
+                let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
+                stackView.addArrangedSubview(quoteViewContainer)
             }
             // Body label
             let bodyLabel = UILabel()

@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *thumbnailAttachmentPointer;
 @property (nonatomic, readonly) BOOL thumbnailDownloadFailed;
+@property (nonatomic, readonly) NSString *threadId;
 
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
@@ -50,9 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;
-
-// Loki
-@property (nonatomic, readonly) NSString *threadId;
 
 @end
 

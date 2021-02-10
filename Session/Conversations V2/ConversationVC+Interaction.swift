@@ -148,7 +148,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func reply(_ viewItem: ConversationViewItem) {
-        // TODO: Implement
+        var quoteDraftOrNil: OWSQuotedReplyModel?
+        Storage.read { transaction in
+            quoteDraftOrNil = OWSQuotedReplyModel.quotedReplyForSending(with: viewItem, threadId: viewItem.interaction.uniqueThreadId, transaction: transaction)
+        }
+        guard let quoteDraft = quoteDraftOrNil else { return }
+        let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
+        snInputView.quoteDraftInfo = (model: quoteDraft, isOutgoing: isOutgoing)
+        snInputView.becomeFirstResponder()
     }
     
     func copy(_ viewItem: ConversationViewItem) {

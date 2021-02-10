@@ -1,6 +1,7 @@
 
 final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
     private let delegate: InputViewDelegate
+    var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     
     var text: String {
         get { inputTextView.text }
@@ -17,6 +18,12 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
     private lazy var sendButton = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
     
     private lazy var inputTextView = InputTextView(delegate: self)
+
+    private lazy var quoteDraftContainer: UIView = {
+        let result = UIView()
+        result.heightAnchor.constraint(greaterThanOrEqualToConstant: 12).isActive = true
+        return result
+    }()
     
     // MARK: Lifecycle
     init(delegate: InputViewDelegate) {
@@ -68,9 +75,8 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = Values.smallSpacing
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, bottomStackView ])
+        let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, quoteDraftContainer, bottomStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = 12
         mainStackView.isLayoutMarginsRelativeArrangement = true
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, leading: Values.largeSpacing, bottom: Values.smallSpacing, trailing: Values.largeSpacing - adjustment)
@@ -83,6 +89,20 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate {
     // MARK: Updating
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView) {
         invalidateIntrinsicContentSize()
+    }
+
+    private func handleQuoteDraftChanged() {
+        quoteDraftContainer.subviews.forEach { $0.removeFromSuperview() }
+        guard let quoteDraftInfo = quoteDraftInfo else { return }
+        let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
+        let hInset: CGFloat = 6
+        let maxMessageWidth = quoteDraftContainer.bounds.width - 2 * hInset
+        let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxMessageWidth: maxMessageWidth)
+        quoteDraftContainer.addSubview(quoteView)
+        quoteView.pin(.left, to: .left, of: quoteDraftContainer, withInset: hInset)
+        quoteView.pin(.top, to: .top, of: quoteDraftContainer, withInset: 12)
+        quoteView.pin(.right, to: .right, of: quoteDraftContainer, withInset: -hInset)
+        quoteView.pin(.bottom, to: .bottom, of: quoteDraftContainer, withInset: -12)
     }
     
     // MARK: Interaction

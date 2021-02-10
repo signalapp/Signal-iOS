@@ -763,11 +763,7 @@ static NSTimeInterval launchStartedAt;
 
 - (LKAppMode)getCurrentAppMode
 {
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    if (window == nil) { return LKAppModeLight; }
-    UIUserInterfaceStyle userInterfaceStyle = window.traitCollection.userInterfaceStyle;
-    BOOL isLightMode = userInterfaceStyle == UIUserInterfaceStyleLight || userInterfaceStyle == UIUserInterfaceStyleUnspecified;
-    return isLightMode ? LKAppModeLight : LKAppModeDark;
+    return [NSUserDefaults.standardUserDefaults integerForKey:@"appMode"];
 }
 
 - (void)setCurrentAppMode:(LKAppMode)appMode

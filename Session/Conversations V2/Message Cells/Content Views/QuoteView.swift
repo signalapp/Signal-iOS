@@ -1,48 +1,101 @@
 
 final class QuoteView : UIView {
-    private let viewItem: ConversationViewItem
+    private let mode: Mode
+    private let direction: Direction
+    private let hInset: CGFloat
     private let maxMessageWidth: CGFloat
 
-    private var direction: Direction {
-        guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
-        switch message {
-        case is TSIncomingMessage: return .incoming
-        case is TSOutgoingMessage: return .outgoing
-        default: preconditionFailure()
+    private var attachments: [OWSAttachmentInfo] {
+        switch mode {
+        case .regular(let viewItem): return (viewItem.interaction as? TSMessage)?.quotedMessage!.quotedAttachments ?? []
+        case .draft(let model): return given(model.attachmentStream) { [ OWSAttachmentInfo(attachmentStream: $0) ] } ?? []
+        }
+    }
+
+    private var thumbnail: UIImage? {
+        switch mode {
+        case .regular(let viewItem): return viewItem.quotedReply!.thumbnailImage
+        case .draft(let model): return model.thumbnailImage
+        }
+    }
+
+    private var body: String? {
+        switch mode {
+        case .regular(let viewItem): return (viewItem.interaction as? TSMessage)?.quotedMessage!.body
+        case .draft(let model): return model.body
+        }
+    }
+
+    private var threadID: String {
+        switch mode {
+        case .regular(let viewItem): return viewItem.interaction.uniqueThreadId
+        case .draft(let model): return model.threadId
+        }
+    }
+
+    private var isGroupThread: Bool {
+        switch mode {
+        case .regular(let viewItem): return viewItem.isGroupThread
+        case .draft(let model):
+            var result = false
+            Storage.read { transaction in
+                result = TSThread.fetch(uniqueId: model.threadId, transaction: transaction)?.isGroupThread() ?? false
+            }
+            return result
+        }
+    }
+
+    private var authorID: String {
+        switch mode {
+        case .regular(let viewItem): return viewItem.quotedReply!.authorId
+        case .draft(let model): return model.authorId
         }
     }
 
     private var lineColor: UIColor {
-        return .black
+        switch (mode, AppModeManager.shared.currentAppMode) {
+        case (.regular, _), (.draft, .light): return .black
+        case (.draft, .dark): return Colors.accent
+        }
     }
 
     private var textColor: UIColor {
+        if case .draft = mode { return Colors.text }
         switch (direction, AppModeManager.shared.currentAppMode) {
-        case (.outgoing, .dark), (.incoming, .light): return .white
-        default: return .black
+        case (.outgoing, .dark), (.incoming, .light): return .black
+        default: return .white
         }
     }
 
-    private var snBackgroundColor: UIColor {
-        switch direction {
-        case .outgoing: return Colors.receivedMessageBackground
-        case .incoming: return Colors.sentMessageBackground
-        }
+    // MARK: Mode
+    enum Mode {
+        case regular(ConversationViewItem)
+        case draft(OWSQuotedReplyModel)
     }
 
     // MARK: Direction
     enum Direction { case incoming, outgoing }
 
     // MARK: Settings
-    static let inset = Values.smallSpacing
     static let thumbnailSize: CGFloat = 48
     static let iconSize: CGFloat = 24
     static let labelStackViewSpacing: CGFloat = 2
 
     // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem, maxMessageWidth: CGFloat) {
-        self.viewItem = viewItem
+    init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxMessageWidth: CGFloat) {
+        self.mode = .regular(viewItem)
         self.maxMessageWidth = maxMessageWidth
+        self.direction = direction
+        self.hInset = hInset
+        super.init(frame: CGRect.zero)
+        setUpViewHierarchy()
+    }
+
+    init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxMessageWidth: CGFloat) {
+        self.mode = .draft(model)
+        self.maxMessageWidth = maxMessageWidth
+        self.direction = direction
+        self.hInset = hInset
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -56,21 +109,19 @@ final class QuoteView : UIView {
     }
 
     private func setUpViewHierarchy() {
-        guard let quote = (viewItem.interaction as? TSMessage)?.quotedMessage else { return }
-        let hasAttachments = !quote.quotedAttachments.isEmpty
+        let hasAttachments = !attachments.isEmpty
         let thumbnailSize = QuoteView.thumbnailSize
         let iconSize = QuoteView.iconSize
         let labelStackViewSpacing = QuoteView.labelStackViewSpacing
         let smallSpacing = Values.smallSpacing
-        let inset = QuoteView.inset
         let availableWidth: CGFloat
         if !hasAttachments {
-            availableWidth = maxMessageWidth - 2 * inset - Values.accentLineThickness - 2 * smallSpacing
+            availableWidth = maxMessageWidth - 2 * hInset - Values.accentLineThickness - 2 * smallSpacing
         } else {
-            availableWidth = maxMessageWidth - 2 * inset - thumbnailSize - 2 * smallSpacing
+            availableWidth = maxMessageWidth - 2 * hInset - thumbnailSize - 2 * smallSpacing
         }
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        var body = quote.body
+        var body = self.body
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [])
         mainStackView.axis = .horizontal
@@ -80,11 +131,9 @@ final class QuoteView : UIView {
         mainStackView.alignment = .center
         // Content view
         let contentView = UIView()
-        contentView.backgroundColor = snBackgroundColor
-        contentView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
-        contentView.layer.masksToBounds = true
         addSubview(contentView)
-        contentView.pin(to: self, withInset: inset)
+        contentView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: self)
+        contentView.rightAnchor.constraint(lessThanOrEqualTo: self.rightAnchor).isActive = true
         // Line view
         let lineView = UIView()
         lineView.backgroundColor = lineColor
@@ -92,21 +141,26 @@ final class QuoteView : UIView {
         if !hasAttachments {
             mainStackView.addArrangedSubview(lineView)
         } else {
-            let image = viewItem.quotedReply?.thumbnailImage
-            let fallbackImage = UIImage(named: "actionsheet_document_black")?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
-            let imageView = UIImageView(image: image ?? fallbackImage)
-            imageView.contentMode = (image != nil) ? .scaleAspectFill : .center
+            let isAudio = MIMETypeUtil.isAudio(attachments.first!.contentType!)
+            let fallbackImageName = isAudio ? "attachment_audio" : "actionsheet_document_black"
+            let fallbackImage = UIImage(named: fallbackImageName)?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
+            let imageView = UIImageView(image: thumbnail ?? fallbackImage)
+            imageView.contentMode = (thumbnail != nil) ? .scaleAspectFill : .center
             imageView.backgroundColor = lineColor
+            imageView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
+            imageView.layer.masksToBounds = true
             imageView.set(.width, to: thumbnailSize)
             imageView.set(.height, to: thumbnailSize)
             mainStackView.addArrangedSubview(imageView)
-            body = (image != nil) ? "Image" : "Document"
+            body = (thumbnail != nil) ? "Image" : (isAudio ? "Audio" : "Document")
         }
         // Body label
         let bodyLabel = UILabel()
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
-        bodyLabel.text = given(body) { MentionUtilities.highlightMentions(in: $0, threadID: viewItem.interaction.uniqueThreadId) } ?? "Document"
+        let isOutgoing = (direction == .outgoing)
+        bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: threadID, attributes: [:]) }
+            ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
         bodyLabel.textColor = textColor
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         if hasAttachments {
@@ -114,10 +168,10 @@ final class QuoteView : UIView {
         }
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         // Label stack view
-        if viewItem.isGroupThread {
+        if isGroupThread {
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
-            authorLabel.text = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: quote.authorId, avoidingWriteTransaction: true)
+            authorLabel.text = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: authorID, avoidingWriteTransaction: true)
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
             let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)
@@ -132,19 +186,20 @@ final class QuoteView : UIView {
         // Constraints
         contentView.addSubview(mainStackView)
         mainStackView.pin(to: contentView)
-        if !viewItem.isGroupThread {
+        if !isGroupThread {
             bodyLabel.set(.width, to: bodyLabelSize.width)
         }
-        let bodyLabelHeight = bodyLabelSize.height
+        let maxBodyLabelHeight: CGFloat = 72
+        let bodyLabelHeight = bodyLabelSize.height.clamp(0, maxBodyLabelHeight)
         let authorLabelHeight: CGFloat = 14.33
-        let isAuthorShown = viewItem.isGroupThread
+        let isAuthorShown = isGroupThread
         let contentViewHeight: CGFloat
         if hasAttachments {
-            contentViewHeight = thumbnailSize
+            contentViewHeight = thumbnailSize + 8
         } else {
             contentViewHeight = bodyLabelHeight + 2 * smallSpacing + (isAuthorShown ? (authorLabelHeight + labelStackViewSpacing) : 0)
         }
         contentView.set(.height, to: contentViewHeight)
-        lineView.set(.height, to: contentViewHeight)
+        lineView.set(.height, to: contentViewHeight - 8)
     }
 }
