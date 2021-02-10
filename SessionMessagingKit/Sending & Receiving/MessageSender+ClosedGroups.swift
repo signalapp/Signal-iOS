@@ -24,7 +24,6 @@ extension MessageSender {
         // Send a closed group update message to all members individually
         var promises: [Promise<Void>] = []
         for member in members {
-            guard member != userPublicKey else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
