@@ -32,7 +32,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = text
-        // TODO: Quotes
+        message.quote = VisibleMessage.Quote.from(snInputView.quoteDraftInfo?.model)
         // TODO: Link previews
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
@@ -48,6 +48,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             }
             // TODO: Sent handling
             self?.snInputView.text = ""
+            self?.snInputView.quoteDraftInfo = nil
             // TODO: Reset mentions
         })
     }
