@@ -13,11 +13,11 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 @interface OWSTableContents : NSObject
 
-@property (nonatomic) NSString *title;
+@property (nonatomic, nullable) NSString *title;
+@property (nonatomic, readonly) NSArray<OWSTableSection *> *sections;
 @property (nonatomic, nullable) NSInteger (^sectionForSectionIndexTitleBlock)(NSString *title, NSInteger index);
 @property (nonatomic, nullable) NSArray<NSString *> * (^sectionIndexTitlesForTableViewBlock)(void);
 
-@property (nonatomic, readonly) NSArray<OWSTableSection *> *sections;
 - (void)addSection:(OWSTableSection *)section;
 
 @end
@@ -37,11 +37,19 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @property (nonatomic, nullable) NSNumber *customHeaderHeight;
 @property (nonatomic, nullable) NSNumber *customFooterHeight;
 
+@property (nonatomic) BOOL hasBackground;
+
+@property (nonatomic) BOOL hasSeparators;
+@property (nonatomic) CGFloat separatorInsetLeading;
+@property (nonatomic) CGFloat separatorInsetTrailing;
+
+@property (nonatomic, readonly) NSArray<OWSTableItem *> *items;
+
 + (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
-- (void)addItem:(OWSTableItem *)item;
+- (void)addItem:(OWSTableItem *)item NS_SWIFT_NAME(add(_:));
 
-- (void)addItems:(NSArray<OWSTableItem *> *)items;
+- (void)addItems:(NSArray<OWSTableItem *> *)items NS_SWIFT_NAME(add(items:));
 
 - (NSUInteger)itemCount;
 
@@ -70,6 +78,8 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 @property (nonatomic, weak) UIViewController *tableViewController;
 @property (nonatomic, nullable) OWSTableItemEditAction *deleteAction;
 @property (nonatomic, nullable) NSNumber *customRowHeight;
+@property (nonatomic, nullable, readonly) OWSTableActionBlock actionBlock;
+@property (nonatomic, nullable, readonly) NSString *title;
 
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;
@@ -168,7 +178,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                               target:(id)target
                             selector:(SEL)selector;
 
-- (nullable UITableViewCell *)customCell;
+- (nullable UITableViewCell *)getOrBuildCustomCell;
 
 @end
 

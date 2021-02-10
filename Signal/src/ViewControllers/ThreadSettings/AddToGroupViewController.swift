@@ -84,7 +84,7 @@ public class AddToGroupViewController: OWSTableViewController {
             title: NSLocalizedString("ADD_TO_GROUP_RECENTS_TITLE",
                                      comment: "The title for the 'add to group' view's recents section")
         )
-        recentsSection.add(recentGroups.map(item(for:)))
+        recentsSection.add(items: recentGroups.map(item(forGroupThread:)))
         contents.addSection(recentsSection)
 
         if let additionalGroups = groupThreads.count > maxRecentGroups ? Array(groupThreads[maxRecentGroups..<groupThreads.count]) : nil {
@@ -100,10 +100,9 @@ public class AddToGroupViewController: OWSTableViewController {
 
                 let section = OWSTableSection()
                 section.customHeaderView = sectionHeader(title: title)
-                section.add(
-                    sectionGroups
+                section.add(items: sectionGroups
                         .sorted { $0.groupNameOrDefault.localizedCaseInsensitiveCompare($1.groupNameOrDefault) == .orderedAscending }
-                        .map(item(for:))
+                        .map(item(forGroupThread:))
                 )
 
                 contents.addSection(section)
@@ -285,7 +284,7 @@ public class AddToGroupViewController: OWSTableViewController {
         return textView
     }
 
-    private func item(for groupThread: TSGroupThread) -> OWSTableItem {
+    private func item(forGroupThread  groupThread: TSGroupThread) -> OWSTableItem {
         return OWSTableItem(
             customCellBlock: {
                 let cell = GroupTableViewCell()

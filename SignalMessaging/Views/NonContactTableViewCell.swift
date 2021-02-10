@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ public class NonContactTableViewCell: UITableViewCell {
     private let headerLabel = UILabel()
     private let accessoryLabel = UILabel()
 
-    @objc var accessoryMessage: String?
+    @objc
+    public var accessoryMessage: String?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
