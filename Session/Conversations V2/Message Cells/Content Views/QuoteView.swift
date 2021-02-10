@@ -207,7 +207,7 @@ final class QuoteView : UIView {
         }
         // Cancel button
         let cancelButton = UIButton(type: .custom)
-        cancelButton.setImage(UIImage(named: "X"), for: UIControl.State.normal)
+        cancelButton.setImage(UIImage(named: "X")?.withTint(Colors.text), for: UIControl.State.normal)
         cancelButton.set(.width, to: cancelButtonSize)
         cancelButton.set(.height, to: cancelButtonSize)
         cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
