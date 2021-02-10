@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "சிக்னல் Signal வழியாக பகிரவும்";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "இதைக் கொண்ட எவரும் இணைப்பு முடியும் சேர தி குழு, அல்லது அனுப்பு ஒரு கோரிக்கை சேர. இதை பகிர்ந்து கொள்ளுங்கள்மக்கள் நீங்கள் நம்புகிறீர்கள்.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "குழு இணைப்பு";

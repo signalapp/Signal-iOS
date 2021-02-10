@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Dela via Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Alla med denna länk kan gå med i gruppen eller skicka en förfrågan om att gå med. Dela det med personer du litar på.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Grupplänk";
@@ -3032,7 +3032,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ till %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Namngrupp";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Namnge grupp";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andra användare";

@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal के ज़रिये शेयर करें ";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "इस लिंक के साथ कोई भी इस ग्रुप में शामिल हो सकता है, या शामिल होने के लिए अनुरोध भेज सकता है। अपने भरोसेमंद लोगों के साथ इसे शेयर करें।";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "ग्रुप लिंक";

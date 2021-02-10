@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "المشاركة عبر Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "كل من لديه هذا الرابط يستطيع الانضمام للمجموعة، أو إرسال طلب إنضمام. شاركه مع أشخاص تثق بهم فقط.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "رابط المجموعة";
@@ -3176,256 +3176,256 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "إن لمس \"سجِّل iPad\" سوف ينشيء لك حسابا جديدا في Signal أو ينقل حسابا موجودا إلى هذا الجهاز. سوف يلغي ذلك اشتغال Signal في أي أجهزة أخرى مسجلة حاليا بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "بالنقر على \"تسجيل iPad\" سوف ينشيء لك حساباً جديداً في Signal أو ينقل حساباً حالياً إلى هذا الـiPad. هذا سوف يلغي Signal في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "إن لمس \"سجِّل الآيفون\" سوف ينشيء لك حسابا جديدا في Signal أو ينقل حسابا موجودا إلى هذا الجهاز. سوف يلغي ذلك اشتغال Signal في أي أجهزة أخرى مسجلة حاليا بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "بالنقر على \"ربط iPhone\" سوف يتيح لك ربط الـiPhone الخاص بك مع حساب حالي. لا يُنصح عمومًا بربط الـiPhone الخاص بك وسيحدُّ هذا من بعض الوظائفن، مثل إجراء الاتصالات.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "سَجِّل iPad هذا";
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "تسجيل هذا الـiPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "اربط هذا الآيفون";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ربط هذا الـiPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "إن تسجيل iPad هذا سوف يلغي اشتغال Signal في أي أجهزة أخرى مسجلة حاليا بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الـiPad سوف يلغي Signal في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الآيفون هذا، إذ سوف يحد من الميزات الأساسية للتطبيق.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الـiPhone الخاص بك، إذ سيحدّ من بعض الوظف الأساسية.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "فعّل الأذونات";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "تَمكينُ الصّلاحيّات";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "إن الإشعارات تمكنك من رؤية لحظات وصول الرسائل والحصول على تحديثات نشاط أي محادثة جديدة.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "تُتيح لكَ الإشعارات المَعرفة عند وصول رسائل وتلقي تحديثات حول النشاطات الجديد في المُحادثة.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "احصل على الرسالة";
+"ONBOARDING_PERMISSIONS_TITLE" = "الحصول على الرسالة";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "يُرجى اختيار من يمكنه العثور عليك بواسطة رقم هاتفك %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في Signal بواسطة رقم الهاتف الخاص بك %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "من يمكنه العثور عليك بواسطة رقم هاتفك هذا ؟";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليك بواسطة الرقم الخاص بك؟";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "أدخل رقم هاتفك للبدء";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "أدخِل رَقم الهاتِف الخاص بِكَ للبدأ";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم خاطئ ";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد استنفذت كل محاولات الرقم التعريفي الشخصي، لكن يمكنك الوصول إلى حساب Signal عبر إنشاء رقم تعريفي شخصي جديد. للحفاظ على أمانك وخصوصيتك سوف يُستعاد حسابك من دون أي معلومات الحساب ولا الإعدادات المحفوظة في السابق.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب Signal الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات ملف شخصي أو إعادادات محفوظة مُسبقًا.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرف أكثر على الرقم التعريفي الشخصي";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "لحمايتك وحماية خصوصية حسابك، قمنا بقفل حسابك لسبعة أيام.\n\nبعد سبعة أيام من الخمول، سوف تستطيع التسجيل مرة أخرى برقم هاتفك هذا من دون الحاجة إلى رقمك التعريفي الشخصي. سوف تُحذَف نهائيا كل محتوياتك.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "لحماية خصوصيتك وأمن الحساب الخاص بك، لقد أقفلنا حِسابكَ لمُدة سبعة أيام.\n\nبعد سبعة أيام من عدم النشاط، سوف تستطيع تسجيل رقم الهاتف هذا مرة أُخرى دون الحاجة إلى الـPIN. سيتم مسح جميع المُحتويات نهائياً.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "تعرف أكثر على الحسابات المقفولة";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "تعرف على المزيد حول الحِسابات المُقفلة";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "تم قفل الحساب";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "لقد تمَّ قَفل الحِساب";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "الرقم التعريفي الشخصي غير صحيح";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN غير صحيح";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "أدخل الرقم التعريفي الشخصي الذى أنشأته لحسابك. هذا مختلف عن رمز تحقق SMS.";
+"ONBOARDING_PIN_EXPLANATION" = "أدخل الـPIN الذى أنشأته للحساب الخاص بِكَ مُسبقًا. هذا مُختلف عن رمز SMS الخاص بِكَ للتحقق.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "أدخل الرقم التعريفي الشخصي";
+"ONBOARDING_PIN_TITLE" = "أدخل PIN الخاص بِكَ";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشروط وسياسة الخصوصية";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسِياسَة الخُصُوصِية";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "احمل معك خصوصيتك.\nكن كما أنت في كل رسائلك.";
+"ONBOARDING_SPLASH_TITLE" = "احمل خُصُوصِيتكَ مَعَك.\nبِنَفسِكَ في كُلِّ رِسَالة.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "الرقم خاطئ ؟";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "رقم غير صحيح؟";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "لم أحصل على الرمز (متاح في %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "لَم أحصُل على الرمز (مُتاح خِلال %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "الاتصال بخدمة دعم Signal";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "التواصل مع دعم Signal";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "هذا الرمز غير صحيح";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "لم أحصل على الرمز";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "لم أحصل على رمز";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "يُرجى التأكد من توفرك على الاتصال بالشبكة وأنك تستطيع استلام الرسائل القصيرة.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "يُرجى التأكد من أن لديك خِدمة خلوية ويُمكِنُكَ تلقي رسائل SMS.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "لم تحصل على الرمز ؟";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "لا يوجد رمز؟";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "أعد إرسال الرمز";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "أعِد إرسال الرمز";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "اتصل بي بدلاً من ذلك";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "مازلت لم تحصل على الرمز ؟";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "هل مازِلتَ لا تجد الرمز؟";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخل الرمز الذي أرسلناه إلى %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الرمز الَّذي أرسلناهُ إلى %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "للتو أرسلنا الرمز إلى %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "أرسلنا للتوِ رمزاً إلى %@";
 
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "إعدادات";
+"OPEN_SETTINGS_BUTTON" = "الإعدادات";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطّل %@ تخفية الرسائل.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ قد عطّلَ الرسائل المُختفية.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضبط %@ وقت تخفية الرسائل على %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ضبطَ وقت الرسائل المُختفية إلى %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "نقوم حاليا باستعادة عمل خدمة Signal من بعض المشكلات بأسرع ما يمكن.";
+"OUTAGE_WARNING" = "Signal يواجِه صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "لقد اتصلت ب%@";
+"OUTGOING_CALL_FORMAT" = "أنت قد اتصلت بـ %@";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "أضف إلى مجموعة";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "إضافة إلى المجموعة";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%@\" إلى المجموعة ؟";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%@\" إلى المجموعة؟";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "رفض الطلب";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض طلب \"%@\" ؟";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض الطلب مِن \"%@\"؟";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "دعا %@ شخصا واحدا";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ قد دعا شخصًا واحدًا";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "دعا %1$@ %2$@ شخصا";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ قد دعا عدد %2$@ شخص";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "ﻻ يوجد أي طلب انضمام.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "لا توجد طلبات أعضاء مُعلّقة.";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا وجود لأي دعوات.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات للعرض.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "تمت إضافة \"%@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" قد تمّت إضافته.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ طلب العضوية معلقة.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "عدد %@ طلب عضو مُعلّق.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "إظهار الطلبات";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "تم رفض \"%@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" قد تمَّ رفضه.";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "سحب دعوة غير صحيحة";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "إلغاء دعوة غير صالحة";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "سحب %@ دعوات غير صحيحة";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "إلغاء عدد %@ دعوة غير صالحة.";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "أبطِل الدعوة";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "إلغاء الدعوة";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "إبطال الدعوة للمجموعة المرسلة من قبل “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة التي أرسلها \"%@\"؟";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "أبطِل %1$@ دعوات مرسلة من طرف \"%2$@\" ؟";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "إلغاء  عدد %1$@ دعوة قد أُرسلت بواسطة \"%2$@\"؟";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "أبطِل الدعوات";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "إلغاء الدعوات";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "أبطِل دعوة \"%@\" إلى المجموعة ؟";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة إلى \"%@\"؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا تظهر تفاصيل الأشخاص المدعوين من قبل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مشاركة معلوماتهم مع المجموعة. لن يروا أي رسائل في المجموعة حتى ينضموا.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يحاول الأشخاص الموجودون في هذه القائمة الانضمام إلى \"%@\" عبر وصلة المجموعة.‏";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يُحاول الأشخاص في هذه القائمة الانضمام إلى \"%@\" عبر رابط المجموعة.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صحيحة";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صالحة";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوات من أعضاء المجموعة الآخرين";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوات مِن قِبَل أعضاء المجموعة الآخرين";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "طلبات الأعضاء المُعلَّقة";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "الأشخاص الذين دعوتهم";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "الأشخاص الذين قد دعوتهم أنت";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ فى التعامل مع الرسالة الواردة";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ في مُعاملة الرسالة الواردة";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسيط لمشاهدة لمرة واحدة";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسائط العرض لِمرة واحدة";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "الوسائط";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "وسائط";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "صورة لمشاهدة لمرة واحدة";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "صورة للعرض لِمرة واحدة";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو لمشاهدة لمرة واحدة";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو للعرض لِمرة واحدة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "مشاهدة الصورة";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "إظهار الصورة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "مشاهدة الفيديو";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "عرض الفيديو";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "تمت المشاهدة";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "لقد تمَّ عرضه";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الكل";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كل شخص لديه رقم هاتفك في جهات اتصاله سيراك في جهات اتصال Signal. سيتمكن الآخرون من العثور عليك في البحث.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "أي شخص لديه رقم هاتفك في جهات الاتصال الخاصة به سوف يراك كجهة اتصال على Signal. سيتمكن الآخرون من العثور عليك في البحث.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "ﻻ يمكن لأحد في Signal العثور عليك بواسطة رقم هاتفك. لن يكون للأفراد الذين لديهم رقم هاتفك في جهات اتصالهم القدرة على رؤيتك في جهات اتصال Signal، كما أن آخرين لن يتمكنوا من العثور عليك بواسطة رقم هاتفك في البحث.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكن أي شخص على Signal من العثور عليك بواسطة رقم الهاتف الخاص بك. لن تكون مرئيًا كجهة اتصال للأشخاص الذين لديهم رقم هاتفك في جهات الاتصال الخاصة بهم ولن يتمكن الآخرون من العثور عليك باستخدام رقم الهاتف الخاص بك في البحث.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "جهات اتصالي فقط";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "جِهات اتصالي";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "جهات اتصالك فقط هي التي سترى رقم هاتفك في Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "فقط جهات الاتصال الخاصة بك سوف ترى رقم الهاتف الخاص بك على Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "الكل";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "سيكون رقم هاتفك مرئيا لجميع الأشخاص والمجموعات التي يجري تراسلك معها. سوف يراك أيضا اﻷشخاص الذين يجدونك في جهات اتصالهم بـ Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "سيكون رقم هاتفك مرئيًا للأشخاص والمجموعات التي تراسلها. الأشخاص الذين لديهم رقمك في جهات اتصال هواتفهم سيروه أيضًا على Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أحد رقم هاتفك في Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أي أحد رقم هاتفك في Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3437,13 +3437,13 @@
 "PHONE_NUMBER_TYPE_HOME_FAX" = "فاكس المنزل";
 
 /* Label for 'iPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "آي فون";
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "الأساسية";
+"PHONE_NUMBER_TYPE_MAIN" = "الأساسي";
 
 /* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "التليفون المحمول";
+"PHONE_NUMBER_TYPE_MOBILE" = "الهاتف المحمول";
 
 /* Label for 'Other' phone numbers. */
 "PHONE_NUMBER_TYPE_OTHER" = "آخر";
@@ -3458,10 +3458,10 @@
 "PHONE_NUMBER_TYPE_UNKNOWN" = "غير معروف";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "عمل";
+"PHONE_NUMBER_TYPE_WORK" = "العمل";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "فاكس عمل";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "فاكس العمل";
 
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "تعذر التقاط الصورة.";
@@ -3473,31 +3473,31 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "فشلت تهيئة الكاميرا.";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "ألبوم غير مُسمى";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "ألبوم بدون اسم";
 
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "تثبيت";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "يجب أن يحوي الرقم التعريفي الشخصي أربعة حروف على الأقل";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "الـPIN يجب أن يحوي على الأقل اربعة رموز";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "قم بتغيير رقم التعريف الشخصي الخاص بك";
+"PIN_CREATION_CHANGING_TITLE" = "تغيير PIN الخاص بك";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "أكد رقمك التعريفي الشخصي";
+"PIN_CREATION_CONFIRM_TITLE" = "تأكيد PIN الخاص بك";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "أدخل رقمك التعريفي الشخصي الذي أنشأت للتو.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "أدخل الـPIN الذي أنشأته للتو.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "أنشيء الرقم التعريفي الشخصي الأبجدي الرقمي";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "إنشاء PIN أبجدي رقمي";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "أنشيء الرقم التعريفي الشخصي الرقمي";
+"PIN_CREATION_CREATE_NUMERIC" = "أنشيء PIN رقمي";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "إلغاء الرقم التعريفي الشخصي";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل الـPIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا قمت بتعطيل الرمز التعريفي الشخصي، ستفقد جميع البيانات عندما تقوم بإعادة التسجيل إلى Signal إلّا إذا قمت بنقلها من جهاز  iOS آخر. لا يمكنك تفعيل قفل التسجيل أثناء تعطيل الرمز التعريفي الشخصي.";
