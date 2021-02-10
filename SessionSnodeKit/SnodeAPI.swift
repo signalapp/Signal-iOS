@@ -339,7 +339,7 @@ public final class SnodeAPI : NSObject {
             }
         }
         switch statusCode {
-        case 0, 400, 500, 503:
+        case 500, 502, 503:
             // The snode is unreachable
             handleBadSnode()
         case 406:
