@@ -111,9 +111,9 @@ public struct FakeSignalClient: TestSignalClient {
                                 protocolStore: SPKMockProtocolStore())
     }
 
-    public static func generate(e164Identifier: SignalE164Identifier?) -> FakeSignalClient {
+    public static func generate(e164Identifier: SignalE164Identifier? = nil, uuid: UUID? = nil) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
-                                uuid: UUID(),
+                                uuid: uuid ?? UUID(),
                                 deviceId: 1,
                                 identityKeyPair: Curve25519.generateKeyPair(),
                                 protocolStore: SPKMockProtocolStore())

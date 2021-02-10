@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -26,14 +26,11 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     let localE164Identifier = "+13235551234"
     let localUUID = UUID()
+    let localClient = LocalSignalClient()
 
-    let aliceE164Identifier = "+14715355555"
-    var aliceClient: TestSignalClient!
-
-    let bobE164Identifier = "+18083235555"
+    let bobUUID = UUID()
     var bobClient: TestSignalClient!
 
-    let localClient = LocalSignalClient()
     let runner = TestProtocolRunner()
     lazy var fakeService = FakeService(localClient: localClient, runner: runner)
 
@@ -45,6 +42,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     override func setUp() {
         super.setUp()
+
+        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
 
         storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
@@ -59,7 +58,11 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     override func tearDown() {
         super.tearDown()
+
+        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
+
         self.dbObserver = nil
+        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
     }
 
     // MARK: - Tests
@@ -68,7 +71,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             processIncomingMessages()
         }
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
     }
 
     func processIncomingMessages() {
@@ -78,8 +80,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         // use the uiDatabase to be notified of DB writes so we can verify the expected
         // changes occur
-        bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
-        aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
+        bobClient = FakeSignalClient.generate(uuid: bobUUID)
 
         write { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
@@ -92,7 +93,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         let buildEnvelopeData = { () -> Data in
             let envelopeBuilder = try! self.fakeService.envelopeBuilder(fromSenderClient: self.bobClient)
-            envelopeBuilder.setSourceE164(self.bobClient.e164Identifier!)
+            envelopeBuilder.setSourceUuid(self.bobUUID.uuidString)
             return try! envelopeBuilder.buildSerializedData()
         }
 
