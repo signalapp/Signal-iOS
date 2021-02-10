@@ -549,9 +549,9 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             }
 
             self.setProgressView(animating: true, text: "")
-            self.onboardingController.requestVerification(fromViewController: self, isSMS: !asPhoneCall) { [weak self] error in
+            self.onboardingController.requestVerification(fromViewController: self, isSMS: !asPhoneCall) { [weak self] willDismiss, _ in
                 self?.setProgressView(animating: false)
-                if error != nil {
+                if !willDismiss {
                     self?.onboardingCodeView.becomeFirstResponder()
                 }
             }
@@ -560,15 +560,14 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        shouldBottomViewReserveSpaceForKeyboard = false
-    }
-
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        onboardingCodeView.becomeFirstResponder()
         shouldIgnoreKeyboardChanges = false
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        onboardingCodeView.becomeFirstResponder()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -603,7 +602,14 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
     @objc func backLinkTapped() {
         Logger.info("")
-        self.navigationController?.popViewController(animated: true)
+        let phoneNumberVC = navigationController?.viewControllers
+            .filter { $0 is OnboardingPhoneNumberViewController }.last
+
+        if let phoneNumberVC = phoneNumberVC {
+            self.navigationController?.popToViewController(phoneNumberVC, animated: true)
+        } else {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     @objc func resendCodeButtonTapped() {

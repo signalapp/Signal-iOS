@@ -110,8 +110,6 @@ public class OnboardingBaseViewController: OWSViewController {
 
         primaryView.layoutMargins = primaryLayoutMargins
 
-        self.shouldBottomViewReserveSpaceForKeyboard = true
-
         if shouldShowBackButton() {
             let backButton = UIButton()
             let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
@@ -165,9 +163,5 @@ public class OnboardingBaseViewController: OWSViewController {
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
-    }
-
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
     }
 }

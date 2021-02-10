@@ -682,7 +682,11 @@ public class OnboardingController: NSObject {
         vc.present(sheet, animated: true, completion: nil)
     }
 
-    public func requestVerification(fromViewController: UIViewController, isSMS: Bool, completion: @escaping (_ error: Error?) -> Void) {
+    public func requestVerification(
+        fromViewController: UIViewController,
+        isSMS: Bool,
+        completion: ((_ willTransition: Bool, _ error: Error?) -> Void)?) {
+
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {
@@ -703,43 +707,44 @@ public class OnboardingController: NSObject {
                                                            captchaToken: captchaToken,
                                                            isSMS: isSMS)
         }.done {
-            completion(nil)
+            completion?(true, nil)
             self.requestingVerificationDidSucceed(viewController: fromViewController)
 
         }.catch { error in
             Logger.error("Error: \(error)")
-            completion(error)
-            self.requestingVerificationDidFail(viewController: fromViewController, error: error)
-        }
-    }
 
-    private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
-        switch error {
-        case let error where error.httpStatusCode == 400:
-            OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+            switch error {
+            case let error where error.httpStatusCode == 400:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 
-        case let error where error.httpStatusCode == 413:
-            OWSActionSheets.showActionSheet(
-                title: nil,
-                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
+            case let error where error.httpStatusCode == 413:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: nil,
+                    message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
 
-        case let error where error.isNetworkFailureOrTimeout:
-            OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
-                                         comment: "Alert title for network failure during registration"),
-                message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
-                                           comment: "Alert body for network failure during registration"))
+            case let error where error.isNetworkFailureOrTimeout:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
+                                             comment: "Alert title for network failure during registration"),
+                    message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
+                                               comment: "Alert body for network failure during registration"))
 
-        case AccountServiceClientError.captchaRequired:
-            onboardingDidRequireCaptcha(viewController: viewController)
+            case AccountServiceClientError.captchaRequired:
+                completion?(true, error)
+                self.onboardingDidRequireCaptcha(viewController: fromViewController)
 
-        default:
-            let nsError = error as NSError
-            owsFailDebug("unexpected error: \(nsError)")
-            OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                                            message: nsError.localizedRecoverySuggestion)
+            default:
+                let nsError = error as NSError
+                owsFailDebug("unexpected error: \(nsError)")
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
+                                                message: nsError.localizedRecoverySuggestion)
+            }
         }
     }
 

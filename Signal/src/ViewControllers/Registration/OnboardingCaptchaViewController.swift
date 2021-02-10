@@ -54,9 +54,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
         primaryView.addSubview(stackView)
-
-        stackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdgesToSuperviewSafeArea()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -120,7 +118,22 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        onboardingController.requestVerification(fromViewController: self, isSMS: true) { success in
+        let progressView = AnimatedProgressView()
+        view.addSubview(progressView)
+        progressView.autoCenterInSuperview()
+        progressView.startAnimating()
+
+        onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] willDismiss, _ in
+            if !willDismiss {
+                // There's nothing left to do here. If onboardingController isn't taking us anywhere, let's
+                // just pop back to the phone number verification controller
+                self?.navigationController?.popViewController(animated: true)
+            }
+            UIView.animate(withDuration: 0.15) {
+                progressView.alpha = 0
+            } completion: { _ in
+                progressView.removeFromSuperview()
+            }
         }
     }
 
