@@ -652,4 +652,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             self?.tableView.reloadData()
         }
     }
+    
+    public override func viewSafeAreaInsetsDidChange() {
+        tableView.reloadData()
+    }
 }
