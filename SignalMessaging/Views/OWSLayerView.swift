@@ -48,12 +48,17 @@ open class OWSLayerView: UIView {
 
     @objc
     public static func pillView() -> OWSLayerView {
-        pillView(size: nil)
+        pillView(height: nil)
     }
 
-    // Circles and pills are the same.
-    public static func pillView(size: CGFloat? = nil) -> OWSLayerView {
-        circleView(size: size)
+    public static func pillView(height: CGFloat? = nil) -> OWSLayerView {
+        let result = OWSLayerView(frame: .zero) { view in
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
+        }
+        if let height = height {
+            result.autoSetDimension(.height, toSize: height)
+        }
+        return result
     }
 
     public override var bounds: CGRect {

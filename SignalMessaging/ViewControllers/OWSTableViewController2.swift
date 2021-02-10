@@ -4,6 +4,10 @@
 
 import Foundation
 
+// This class offers a convenient way to build table views
+// when performance is not critical, e.g. when the table
+// only holds a screenful or two of cells and it's safe to
+// retain a view model for each cell in memory at all times.
 @objc
 open class OWSTableViewController2: OWSViewController {
 
@@ -180,8 +184,12 @@ open class OWSTableViewController2: OWSViewController {
         wrapperStack.axis = .vertical
         wrapperStack.alignment = .fill
         wrapperStack.isLayoutMarginsRelativeArrangement = true
-        wrapperStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHMargin,
-                                                  vMargin: 0)
+        let layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
+                                         vMargin: 0)
+        // TODO: Should we apply safeAreaInsets?
+        // layoutMargins.left += tableView.safeAreaInsets.left
+        // layoutMargins.right += tableView.safeAreaInsets.right
+        wrapperStack.layoutMargins = layoutMargins
         return wrapperStack
     }
 }
@@ -243,6 +251,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             }
 
             cell.backgroundView?.removeFromSuperview()
+            cell.backgroundView = nil
             cell.backgroundColor = .clear
             cell.contentView.backgroundColor = .clear
 
@@ -250,47 +259,64 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 return
             }
 
-            let backgroundViewOuter = UIView.container()
-            cell.backgroundView = backgroundViewOuter
-            let backgroundViewInner = UIView.container()
-            backgroundViewOuter.addSubview(backgroundViewInner)
-            backgroundViewInner.backgroundColor = Theme.tableCell2BackgroundColor
-            backgroundViewInner.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.cellHMargin)
-            backgroundViewInner.autoPinEdge(toSuperviewEdge: .trailing, withInset: Self.cellHMargin)
-            backgroundViewInner.autoPinEdge(toSuperviewEdge: .top)
-            backgroundViewInner.autoPinEdge(toSuperviewEdge: .bottom)
-
             let isFirstInSection = indexPath.row == 0
             let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
-            backgroundViewInner.layer.cornerRadius = Self.cellRounding
-            var maskedCorners: CACornerMask = []
-            if isFirstInSection {
-                maskedCorners.formUnion(.layerMinXMinYCorner)
-                maskedCorners.formUnion(.layerMaxXMinYCorner)
+            let pillLayer = CAShapeLayer()
+            var separatorLayer: CAShapeLayer?
+            let backgroundView = OWSLayerView(frame: .zero) { view in
+                var pillFrame = view.bounds.inset(by: UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
+                                                                   vMargin: 0))
+                pillFrame.x += view.safeAreaInsets.left
+                pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
+                pillLayer.frame = view.bounds
+                if pillFrame.width > 0,
+                   pillFrame.height > 0 {
+                    var roundingCorners: UIRectCorner = []
+                    if isFirstInSection {
+                        roundingCorners.formUnion(.topLeft)
+                        roundingCorners.formUnion(.topRight)
+                    }
+                    if isLastInSection {
+                        roundingCorners.formUnion(.bottomLeft)
+                        roundingCorners.formUnion(.bottomRight)
+                    }
+                    let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
+                    pillLayer.path = UIBezierPath(roundedRect: pillFrame,
+                                                  byRoundingCorners: roundingCorners,
+                                                  cornerRadii: cornerRadii).cgPath
+                } else {
+                    pillLayer.path = nil
+                }
+
+                if let separatorLayer = separatorLayer {
+                    separatorLayer.frame = view.bounds
+                    var separatorFrame = pillFrame
+                    let separatorThickness: CGFloat = 1
+                    separatorFrame.y = pillFrame.height - separatorThickness
+                    separatorFrame.size.height = separatorThickness
+                    separatorFrame.x += section.separatorInsetLeading
+                    separatorFrame.size.width -= (section.separatorInsetLeading + section.separatorInsetTrailing)
+                    separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
+                }
             }
-            if isLastInSection {
-                maskedCorners.formUnion(.layerMinXMaxYCorner)
-                maskedCorners.formUnion(.layerMaxXMaxYCorner)
-            }
-            backgroundViewInner.layer.maskedCorners = maskedCorners
+
+            pillLayer.fillColor = Theme.tableCell2BackgroundColor.cgColor
+            backgroundView.layer.addSublayer(pillLayer)
 
             if section.hasSeparators,
                !isLastInSection {
-                let separatorView = UIView.container()
-                separatorView.backgroundColor = Theme.tableView2BackgroundColor
-                backgroundViewInner.addSubview(separatorView)
-                separatorView.autoSetDimension(.height, toSize: 1)
-                //                separatorView.autoSetDimension(.height, toSize: 2)
-                //                separatorView.backgroundColor = .red
-                separatorView.autoPinEdge(toSuperviewEdge: .leading, withInset: section.separatorInsetLeading)
-                separatorView.autoPinEdge(toSuperviewEdge: .trailing, withInset: section.separatorInsetTrailing)
-                separatorView.autoPinEdge(toSuperviewEdge: .bottom)
+                let separator = CAShapeLayer()
+                separator.fillColor = Theme.tableView2BackgroundColor.cgColor
+                backgroundView.layer.addSublayer(separator)
+                separatorLayer = separator
             }
+
+            cell.backgroundView = backgroundView
 
             // We use cellHMargin _outside_ the background and another cellHMargin _inside_.
             // By applying it to the cell, ensure the correct behavior for accesories.
-            cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHMargin * 2, vMargin: 0)
+            cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHOuterMargin + Self.cellHInnerMargin, vMargin: 0)
             var contentMargins: UIEdgeInsets = .zero
             // Our table code is going to be vastly simpler if we DRY up the
             // spacing between the cell content and the accessory here.
@@ -321,7 +347,19 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     private static let cellRounding: CGFloat = 10
 
-    public static var cellHMargin: CGFloat {
+    // The distance from the edge of the view to the cell border.
+    public static var cellHOuterMargin: CGFloat {
+        if CurrentAppContext().interfaceOrientation.isLandscape {
+            // We use a small value in landscape orientation;
+            // safeAreaInsets will ensure the correct spacing.
+            return 0
+        } else {
+            return UIDevice.current.isPlusSizePhone ? 20 : 16
+        }
+    }
+
+    // The distance from the the cell border to the cell content.
+    public static var cellHInnerMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
 
@@ -329,10 +367,22 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         UITableView.automaticDimension
     }
 
-    //    private var tableEdgeInsets: UIEdgeInsets {
-    //        let cellHMargin = self.cellHMargin
-    //        return UIEdgeInsets(top: 16, leading: cellHMargin, bottom: 6, trailing: cellHMargin)
-    //    }
+    private func buildHeaderOrFooterTextView() -> UITextView {
+        let textView = LinkingTextView()
+
+        let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
+        var textContainerInset = UIEdgeInsets(top: 16,
+                                                   leading: cellHMargin,
+                                                   bottom: 6,
+                                                   trailing: cellHMargin)
+        textContainerInset.left += tableView.safeAreaInsets.left
+        textContainerInset.right += tableView.safeAreaInsets.right
+        textView.textContainerInset = textContainerInset
+
+        textView.backgroundColor = self.tableBackgroundColor
+
+        return textView
+    }
 
     public func tableView(_ tableView: UITableView, viewForHeaderInSection sectionIndex: Int) -> UIView? {
         guard let section = contents.sections[safe: sectionIndex] else {
@@ -341,15 +391,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
 
         func buildTextView() -> UITextView {
-            let textView = LinkingTextView()
+            let textView = buildHeaderOrFooterTextView()
             textView.textColor = Theme.secondaryTextAndIconColor
             textView.font = UIFont.ows_dynamicTypeCaption1Clamped
-
-            let cellHMargin = Self.cellHMargin
-            textView.textContainerInset = UIEdgeInsets(top: 16, leading: cellHMargin, bottom: 6, trailing: cellHMargin)
-
-            textView.backgroundColor = self.tableBackgroundColor
-
             return textView
         }
 
@@ -379,12 +423,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
 
         func buildTextView() -> UITextView {
-            let textView = LinkingTextView()
+            let textView = buildHeaderOrFooterTextView()
             textView.textColor = UIColor.ows_gray45
             textView.font = UIFont.ows_dynamicTypeCaption1Clamped
-
-            let cellHMargin = Self.cellHMargin
-            textView.textContainerInset = UIEdgeInsets(top: 6, leading: cellHMargin, bottom: 12, trailing: cellHMargin)
 
             let linkTextAttributes: [NSAttributedString.Key: Any] = [
                 NSAttributedString.Key.foregroundColor: Theme.accentBlueColor,
@@ -392,8 +433,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 NSAttributedString.Key.underlineStyle: 0
             ]
             textView.linkTextAttributes = linkTextAttributes
-
-            textView.backgroundColor = self.tableBackgroundColor
 
             return textView
         }
@@ -596,5 +635,21 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public func setEditing(_ editing: Bool) {
         tableView.setEditing(editing, animated: false)
+    }
+
+    // MARK: -
+
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        if UIDevice.current.isIPad {
+            tableView.reloadData()
+        }
+
+        coordinator.animate { [weak self] _ in
+            self?.tableView.reloadData()
+        } completion: { [weak self] _ in
+            self?.tableView.reloadData()
+        }
     }
 }
