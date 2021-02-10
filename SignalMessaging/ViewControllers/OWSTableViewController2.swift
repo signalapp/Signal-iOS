@@ -54,10 +54,10 @@ open class OWSTableViewController2: OWSViewController {
     }
 
     @objc
-    public var customSectionHeaderFooterBackgroundColor: UIColor?
-
-    @objc
     public var shouldAvoidKeyboard = false
+
+    public var defaultHeaderHeight: CGFloat? = 0
+    public var defaultFooterHeight: CGFloat? = 16
 
     private static let cellIdentifier = "cellIdentifier"
 
@@ -314,7 +314,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
             cell.backgroundView = backgroundView
 
-            // We use cellHMargin _outside_ the background and another cellHMargin _inside_.
+            // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
+            // _inside_.
+            //
             // By applying it to the cell, ensure the correct behavior for accesories.
             cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHOuterMargin + Self.cellHInnerMargin, vMargin: 0)
             var contentMargins: UIEdgeInsets = .zero
@@ -409,11 +411,22 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             let textView = buildTextView()
             textView.attributedText = headerAttributedTitle
             return textView
+        } else if let customHeaderHeight = section.customHeaderHeight,
+                  customHeaderHeight.floatValue > 0 {
+            return buildDefaultHeaderOrFooter(height: CGFloat(customHeaderHeight.floatValue))
+        } else if let defaultHeaderHeight = defaultHeaderHeight,
+                  defaultHeaderHeight > 0 {
+            return buildDefaultHeaderOrFooter(height: defaultHeaderHeight)
         } else {
-            let view = UIView()
-            view.backgroundColor = self.tableBackgroundColor
-            return view
+            return nil
         }
+    }
+
+    private func buildDefaultHeaderOrFooter(height: CGFloat) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.autoSetDimension(.height, toSize: height)
+        return view
     }
 
     public func tableView(_ tableView: UITableView, viewForFooterInSection sectionIndex: Int) -> UIView? {
@@ -449,10 +462,19 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             let textView = buildTextView()
             textView.attributedText = footerAttributedTitle
             return textView
+        } else if let customFooterHeight = section.customFooterHeight,
+                  customFooterHeight.floatValue > 0 {
+            return buildDefaultHeaderOrFooter(height: CGFloat(customFooterHeight.floatValue))
+        } else if let defaultFooterHeight = defaultFooterHeight,
+                  defaultFooterHeight > 0 {
+            let isLastSection = sectionIndex == numberOfSections(in: tableView) - 1
+            if isLastSection {
+                return nil
+            } else {
+                return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
+            }
         } else {
-            let view = UIView()
-            view.backgroundColor = self.tableBackgroundColor
-            return view
+            return nil
         }
     }
 
@@ -652,7 +674,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             self?.tableView.reloadData()
         }
     }
-    
+
     public override func viewSafeAreaInsetsDidChange() {
         tableView.reloadData()
     }
