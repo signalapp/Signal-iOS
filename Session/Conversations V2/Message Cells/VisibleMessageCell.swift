@@ -232,9 +232,9 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
             let inset: CGFloat = 12
             let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if viewItem.linkPreview != nil {
-                let linkView = LinkView(for: viewItem, maxWidth: maxWidth, delegate: self)
-                snContentView.addSubview(linkView)
-                linkView.pin(to: snContentView)
+                let linkPreviewView = LinkPreviewViewV2(for: viewItem, maxWidth: maxWidth, delegate: self)
+                snContentView.addSubview(linkPreviewView)
+                linkPreviewView.pin(to: snContentView)
             } else {
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])

@@ -1,5 +1,5 @@
 
-final class LinkView : UIView {
+final class LinkPreviewViewV2 : UIView {
     private let viewItem: ConversationViewItem
     private let maxWidth: CGFloat
     private let delegate: UITextViewDelegate & BodyTextViewDelegate
@@ -44,8 +44,8 @@ final class LinkView : UIView {
         hStackView.pin(to: hStackViewContainer)
         
         let imageViewContainer = UIView()
-        imageViewContainer.set(.width, to: LinkView.imageSize)
-        imageViewContainer.set(.height, to: LinkView.imageSize)
+        imageViewContainer.set(.width, to: LinkPreviewViewV2.imageSize)
+        imageViewContainer.set(.height, to: LinkPreviewViewV2.imageSize)
         imageViewContainer.clipsToBounds = true
         
         let imageView = UIImageView()
