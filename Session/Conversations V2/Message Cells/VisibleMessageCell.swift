@@ -1,5 +1,5 @@
 
-final class VisibleMessageCell : MessageCell, UITextViewDelegate {
+final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDelegate {
     private var unloadContent: (() -> Void)?
     var albumView: MediaAlbumView?
     var bodyTextView: UITextView?
@@ -317,7 +317,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate {
         return super.hitTest(point, with: event)
     }
     
-    @objc private func handleLongPress() {
+    @objc func handleLongPress() {
         guard let viewItem = viewItem else { return }
         delegate?.handleViewItemLongPressed(viewItem)
     }
@@ -426,10 +426,10 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate {
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
     
-    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate) -> UITextView {
+    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
         let isOutgoing = (message.interactionType() == .outgoingMessage)
-        let result = UITextView()
+        let result = BodyTextView(snDelegate: delegate)
         result.isEditable = false
         let attributes: [NSAttributedString.Key:Any] = [
             .foregroundColor : textColor,

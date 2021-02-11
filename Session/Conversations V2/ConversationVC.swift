@@ -6,7 +6,7 @@
 // • Blocking
 // • Subtitle
 // • Resending failed messages
-// • Linkification
+// • Tapping links in link previews
 // • Link previews
 // • Animation glitch when leaving conversation (probably because vc is resigning first responder)
 // • Timestamps

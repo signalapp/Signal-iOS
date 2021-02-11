@@ -2,7 +2,7 @@
 final class LinkView : UIView {
     private let viewItem: ConversationViewItem
     private let maxWidth: CGFloat
-    private let delegate: UITextViewDelegate
+    private let delegate: UITextViewDelegate & BodyTextViewDelegate
     
     private var textColor: UIColor {
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
@@ -14,7 +14,7 @@ final class LinkView : UIView {
     
     private static let imageSize: CGFloat = 100
     
-    init(for viewItem: ConversationViewItem, maxWidth: CGFloat, delegate: UITextViewDelegate) {
+    init(for viewItem: ConversationViewItem, maxWidth: CGFloat, delegate: UITextViewDelegate & BodyTextViewDelegate) {
         self.viewItem = viewItem
         self.maxWidth = maxWidth
         self.delegate = delegate
@@ -85,5 +85,9 @@ final class LinkView : UIView {
         
         addSubview(vStackView)
         vStackView.pin(to: self)
+    }
+    
+    func handleLongPress() {
+        
     }
 }
