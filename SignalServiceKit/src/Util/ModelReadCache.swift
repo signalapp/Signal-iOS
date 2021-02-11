@@ -175,7 +175,6 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                 self.isObservingUIDatabaseSnapshots = true
 
                 NotificationCenter.default.addObserver(forName: ModelReadCaches.evacuateAllModelCaches, object: nil, queue: nil) { [weak self] _ in
-                    AssertIsOnMainThread()
                     self?.evacuateCache()
                 }
             }
@@ -183,6 +182,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
 
     fileprivate func evacuateCache() {
+        // This may execute on background threads. For now, this is OK
+        // because NSCache is thread safe, but if we ever do more work
+        // here we should re-evaluate.
         nsCache.removeAllObjects()
     }
 
@@ -1153,8 +1155,6 @@ public class ModelReadCaches: NSObject {
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
 
     func evacuateAllCaches() {
-        DispatchSyncMainThreadSafe {
-            NotificationCenter.default.post(name: Self.evacuateAllModelCaches, object: nil)
-        }
+        NotificationCenter.default.post(name: Self.evacuateAllModelCaches, object: nil)
     }
 }
