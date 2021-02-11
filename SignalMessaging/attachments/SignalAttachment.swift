@@ -1014,6 +1014,11 @@ public class SignalAttachment: NSObject {
         return 0.6
     }
 
+    private static let preservedMetadata: [CFString] = [
+        "\(kCGImageMetadataPrefixTIFF):\(kCGImagePropertyTIFFOrientation)" as CFString,
+        "\(kCGImageMetadataPrefixIPTCCore):\(kCGImagePropertyIPTCImageOrientation)" as CFString
+    ]
+
     private func removingImageMetadata() throws -> SignalAttachment {
         owsAssertDebug(isImage)
 
@@ -1041,6 +1046,9 @@ public class SignalAttachment: NSObject {
                 throw SignalAttachmentError.couldNotRemoveMetadata
             }
             CGImageMetadataEnumerateTagsUsingBlock(originalMetadata, nil, enumerateOptions) { path, tag in
+                if Self.preservedMetadata.contains(path) {
+                    return true
+                }
                 guard let namespace = CGImageMetadataTagCopyNamespace(tag),
                       let prefix = CGImageMetadataTagCopyPrefix(tag),
                       CGImageMetadataRegisterNamespaceForPrefix(metadata, namespace, prefix, nil),
