@@ -363,6 +363,13 @@ extension MessageReceiver {
             let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
+            // Send the latest encryption key pair to the added members if the current user is the admin of the group
+            let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
+            if isCurrentUserAdmin {
+                for member in membersAsData.map({ $0.toHexString() }) {
+                    MessageSender.sendLatestEncryptionKeyPair(to: member, for: message.groupPublicKey!, using: transaction)
+                }
+            }
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
@@ -462,17 +469,7 @@ extension MessageReceiver {
             guard publicKey != getUserHexEncodedPublicKey() else {
                 return SNLog("Ignoring invalid closed group update.")
             }
-            // Get the latest encryption key pair
-            guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { return }
-            // Send it
-            guard let proto = try? SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey,
-                privateKey: encryptionKeyPair.privateKey).build(), let plaintext = try? proto.serializedData() else { return }
-            let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
-            guard let ciphertext = try? MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey) else { return }
-            SNLog("Responding to closed group encryption key pair request from: \(publicKey).")
-            let wrapper = ClosedGroupControlMessage.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
-            let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(publicKey: Data(hex: groupPublicKey), wrappers: [ wrapper ]))
-            MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
+            MessageSender.sendLatestEncryptionKeyPair(to: publicKey, for: groupPublicKey, using: transaction)
         }
     }
     
