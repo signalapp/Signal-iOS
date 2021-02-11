@@ -1,7 +1,8 @@
 
-final class VisibleMessageCell : MessageCell {
+final class VisibleMessageCell : MessageCell, UITextViewDelegate {
     private var unloadContent: (() -> Void)?
     var albumView: MediaAlbumView?
+    var bodyTextView: UITextView?
     var mediaTextOverlayView: MediaTextOverlayView?
     // Constraints
     private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
@@ -103,7 +104,6 @@ final class VisibleMessageCell : MessageCell {
     // MARK: Lifecycle
     override func setUpViewHierarchy() {
         super.setUpViewHierarchy()
-        isUserInteractionEnabled = true
         // Header view
         addSubview(headerView)
         headerViewTopConstraint.isActive = true
@@ -224,32 +224,34 @@ final class VisibleMessageCell : MessageCell {
     private func populateContentView(for viewItem: ConversationViewItem) {
         snContentView.subviews.forEach { $0.removeFromSuperview() }
         albumView = nil
+        bodyTextView = nil
         mediaTextOverlayView = nil
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
         switch viewItem.messageCellType {
         case .textOnlyMessage:
+            let inset: CGFloat = 12
+            let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if viewItem.linkPreview != nil {
-                let linkView = LinkView(for: viewItem)
+                let linkView = LinkView(for: viewItem, maxWidth: maxWidth, delegate: self)
                 snContentView.addSubview(linkView)
                 linkView.pin(to: snContentView)
             } else {
-                let inset: CGFloat = 12
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
                 stackView.axis = .vertical
                 stackView.spacing = 2
                 // Quote view
                 if viewItem.quotedReply != nil {
-                    let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
                     let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
                     let hInset: CGFloat = 2
                     let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
                     let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
                     stackView.addArrangedSubview(quoteViewContainer)
                 }
-                // Body label
-                let bodyLabel = VisibleMessageCell.getBodyLabel(for: viewItem, with: bodyLabelTextColor)
-                stackView.addArrangedSubview(bodyLabel)
+                // Body text view
+                let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, delegate: self)
+                self.bodyTextView = bodyTextView
+                stackView.addArrangedSubview(bodyTextView)
                 // Constraints
                 snContentView.addSubview(stackView)
                 stackView.pin(to: snContentView, withInset: inset)
@@ -305,6 +307,16 @@ final class VisibleMessageCell : MessageCell {
     }
     
     // MARK: Interaction
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if let bodyTextView = bodyTextView {
+            let pointInBodyTextViewCoordinates = convert(point, to: bodyTextView)
+            if bodyTextView.bounds.contains(pointInBodyTextViewCoordinates) {
+                return bodyTextView
+            }
+        }
+        return super.hitTest(point, with: event)
+    }
+    
     @objc private func handleLongPress() {
         guard let viewItem = viewItem else { return }
         delegate?.handleViewItemLongPressed(viewItem)
@@ -318,6 +330,11 @@ final class VisibleMessageCell : MessageCell {
     @objc private func handleDoubleTap() {
         guard let viewItem = viewItem else { return }
         delegate?.handleViewItemDoubleTapped(viewItem)
+    }
+    
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        delegate?.openURL(URL)
+        return false
     }
     
     // MARK: Convenience
@@ -409,15 +426,29 @@ final class VisibleMessageCell : MessageCell {
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
     
-    static func getBodyLabel(for viewItem: ConversationViewItem, with textColor: UIColor) -> UILabel {
+    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate) -> UITextView {
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
         let isOutgoing = (message.interactionType() == .outgoingMessage)
-        let bodyLabel = UILabel()
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.textColor = textColor
-        bodyLabel.font = .systemFont(ofSize: getFontSize(for: viewItem))
-        bodyLabel.attributedText = given(message.body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: [:]) }
-        return bodyLabel
+        let result = UITextView()
+        result.isEditable = false
+        let attributes: [NSAttributedString.Key:Any] = [
+            .foregroundColor : textColor,
+            .font : UIFont.systemFont(ofSize: getFontSize(for: viewItem))
+        ]
+        result.attributedText = given(message.body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes) }
+        result.dataDetectorTypes = .link
+        result.backgroundColor = .clear
+        result.isOpaque = false
+        result.textContainerInset = UIEdgeInsets.zero
+        result.contentInset = UIEdgeInsets.zero
+        result.textContainer.lineFragmentPadding = 0
+        result.isScrollEnabled = false
+        result.isUserInteractionEnabled = true
+        result.delegate = delegate
+        result.linkTextAttributes = [ .foregroundColor : textColor, .underlineStyle : NSUnderlineStyle.single.rawValue ]
+        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+        let size = result.sizeThatFits(availableSpace)
+        result.set(.height, to: size.height)
+        return result
     }
 }

@@ -201,4 +201,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func handleQuoteViewCancelButtonTapped() {
         snInputView.quoteDraftInfo = nil
     }
+    
+    func openURL(_ url: URL) {
+        let urlModal = URLModal(url: url)
+        urlModal.modalPresentationStyle = .overFullScreen
+        urlModal.modalTransitionStyle = .crossDissolve
+        present(urlModal, animated: true, completion: nil)
+    }
 }

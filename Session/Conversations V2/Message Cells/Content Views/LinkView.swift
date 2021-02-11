@@ -1,6 +1,8 @@
 
 final class LinkView : UIView {
     private let viewItem: ConversationViewItem
+    private let maxWidth: CGFloat
+    private let delegate: UITextViewDelegate
     
     private var textColor: UIColor {
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
@@ -12,18 +14,20 @@ final class LinkView : UIView {
     
     private static let imageSize: CGFloat = 100
     
-    init(for viewItem: ConversationViewItem) {
+    init(for viewItem: ConversationViewItem, maxWidth: CGFloat, delegate: UITextViewDelegate) {
         self.viewItem = viewItem
+        self.maxWidth = maxWidth
+        self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
     
     override init(frame: CGRect) {
-        preconditionFailure("Use init(for:) instead.")
+        preconditionFailure("Use init(for:maxWidth:delegate:) instead.")
     }
     
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(for:) instead.")
+        preconditionFailure("Use init(for:maxWidth:delegate:) instead.")
     }
     
     private func setUpViewHierarchy() {
@@ -72,12 +76,12 @@ final class LinkView : UIView {
         separator.set(.height, to: 1 / UIScreen.main.scale)
         vStackView.addArrangedSubview(separator)
         
-        let bodyLabelContainer = UIView()
+        let bodyTextViewContainer = UIView()
         
-        let bodyLabel = VisibleMessageCell.getBodyLabel(for: viewItem, with: textColor)
-        bodyLabelContainer.addSubview(bodyLabel)
-        bodyLabel.pin(to: bodyLabelContainer, withInset: 12)
-        vStackView.addArrangedSubview(bodyLabelContainer)
+        let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: textColor, delegate: delegate)
+        bodyTextViewContainer.addSubview(bodyTextView)
+        bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
+        vStackView.addArrangedSubview(bodyTextViewContainer)
         
         addSubview(vStackView)
         vStackView.pin(to: self)
