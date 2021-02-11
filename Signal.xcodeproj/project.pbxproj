@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
+		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
+		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
@@ -978,6 +980,8 @@
 		02CD38E58B58A689DCF037AD /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
+		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
+		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
 		173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionMigrationPerfTest.swift; sourceTree = "<group>"; };
 		1BC279B87E730B066A5AFB2A /* Pods-SignalPerformanceTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
@@ -2146,6 +2150,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1704690725D4C2DA000793D8 /* attachments */ = {
+			isa = PBXGroup;
+			children = (
+				1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */,
+			);
+			path = attachments;
+			sourceTree = "<group>";
+		};
 		32ECD08624BFBF5C00EDDED0 /* Help */ = {
 			isa = PBXGroup;
 			children = (
@@ -2938,6 +2950,7 @@
 			children = (
 				34C6B0A51FA0E46F00D35993 /* test-gif.gif */,
 				34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */,
+				1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */,
 				34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */,
 				34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */,
 			);
@@ -3747,6 +3760,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				1704690725D4C2DA000793D8 /* attachments */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6751C29867F00687D6E /* contact */,
 				349BC85F253A2651003C949A /* Groups */,
@@ -4446,6 +4460,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */,
+				1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */,
 				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
 				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
 				34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */,
@@ -5534,6 +5549,7 @@
 				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
+				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
