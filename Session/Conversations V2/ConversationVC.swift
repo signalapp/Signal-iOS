@@ -3,12 +3,13 @@
 // • Tapping replies
 // • Mentions
 // • Remaining send logic
-// • Paging glitch
 // • Blocking
 // • Subtitle
 // • Resending failed messages
 // • Linkification
 // • Link previews
+// • Animation glitch when leaving conversation (probably because vc is resigning first responder)
+// • Timestamps
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
@@ -43,7 +44,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     private lazy var mediaCache: NSCache<NSString, AnyObject> = {
         let result = NSCache<NSString, AnyObject>()
-        result.countLimit = 24
+        result.countLimit = 40
         return result
     }()
     

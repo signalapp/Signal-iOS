@@ -215,6 +215,10 @@ final class VisibleMessageCell : MessageCell {
         let additionalBottomInset = shouldInsetHeader ? Values.mediumSpacing : 1
         headerView.pin(.bottom, to: .bottom, of: dateBreakLabel, withInset: Values.smallSpacing + additionalBottomInset)
         dateBreakLabel.center(.horizontal, in: headerView)
+        let availableWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
+        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+        let dateBreakLabelSize = dateBreakLabel.sizeThatFits(availableSpace)
+        dateBreakLabel.set(.height, to: dateBreakLabelSize.height)
     }
     
     private func populateContentView(for viewItem: ConversationViewItem) {
@@ -224,32 +228,32 @@ final class VisibleMessageCell : MessageCell {
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
         switch viewItem.messageCellType {
         case .textOnlyMessage:
-            guard let message = viewItem.interaction as? TSMessage else { return }
-            let inset: CGFloat = 12
-            // Stack view
-            let stackView = UIStackView(arrangedSubviews: [])
-            stackView.axis = .vertical
-            stackView.spacing = 2
-            // Quote label
-            if viewItem.quotedReply != nil {
-                let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
-                let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
-                let hInset: CGFloat = 2
-                let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
-                let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
-                stackView.addArrangedSubview(quoteViewContainer)
+            if viewItem.linkPreview != nil {
+                let linkView = LinkView(for: viewItem)
+                snContentView.addSubview(linkView)
+                linkView.pin(to: snContentView)
+            } else {
+                let inset: CGFloat = 12
+                // Stack view
+                let stackView = UIStackView(arrangedSubviews: [])
+                stackView.axis = .vertical
+                stackView.spacing = 2
+                // Quote view
+                if viewItem.quotedReply != nil {
+                    let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
+                    let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
+                    let hInset: CGFloat = 2
+                    let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
+                    let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
+                    stackView.addArrangedSubview(quoteViewContainer)
+                }
+                // Body label
+                let bodyLabel = VisibleMessageCell.getBodyLabel(for: viewItem, with: bodyLabelTextColor)
+                stackView.addArrangedSubview(bodyLabel)
+                // Constraints
+                snContentView.addSubview(stackView)
+                stackView.pin(to: snContentView, withInset: inset)
             }
-            // Body label
-            let bodyLabel = UILabel()
-            bodyLabel.numberOfLines = 0
-            bodyLabel.lineBreakMode = .byWordWrapping
-            bodyLabel.textColor = bodyLabelTextColor
-            bodyLabel.font = .systemFont(ofSize: getFontSize(for: viewItem))
-            bodyLabel.attributedText = given(message.body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: [:]) }
-            stackView.addArrangedSubview(bodyLabel)
-            // Constraints
-            snContentView.addSubview(stackView)
-            stackView.pin(to: snContentView, withInset: inset)
         case .mediaMessage:
             guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
             let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
@@ -332,7 +336,7 @@ final class VisibleMessageCell : MessageCell {
         return result
     }
     
-    private func getFontSize(for viewItem: ConversationViewItem) -> CGFloat {
+    private static func getFontSize(for viewItem: ConversationViewItem) -> CGFloat {
         let baselineFontSize = Values.mediumFontSize
         switch viewItem.displayableBodyText?.jumbomojiCount {
         case 1: return baselineFontSize + 30
@@ -403,5 +407,17 @@ final class VisibleMessageCell : MessageCell {
         let isGroupThread = message.thread.isGroupThread()
         let senderSessionID = (message as? TSIncomingMessage)?.authorId
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
+    }
+    
+    static func getBodyLabel(for viewItem: ConversationViewItem, with textColor: UIColor) -> UILabel {
+        guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
+        let isOutgoing = (message.interactionType() == .outgoingMessage)
+        let bodyLabel = UILabel()
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.textColor = textColor
+        bodyLabel.font = .systemFont(ofSize: getFontSize(for: viewItem))
+        bodyLabel.attributedText = given(message.body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: [:]) }
+        return bodyLabel
     }
 }
