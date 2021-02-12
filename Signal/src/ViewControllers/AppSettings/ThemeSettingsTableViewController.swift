@@ -5,12 +5,14 @@
 import Foundation
 
 @objc
-class ThemeSettingsTableViewController: OWSTableViewController2 {
+class ThemeSettingsTableViewController: OWSTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
                                   comment: "The title for the theme section in the appearance settings.")
+
+        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

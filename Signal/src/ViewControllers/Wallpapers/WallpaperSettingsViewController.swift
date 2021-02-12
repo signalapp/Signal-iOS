@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class WallpaperSettingsViewController: OWSTableViewController2 {
+public class WallpaperSettingsViewController: OWSTableViewController {
     let thread: TSThread?
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -22,7 +22,7 @@ public class WallpaperSettingsViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = NSLocalizedString("WALLPAPER_SETTINGS_TITLE", comment: "Title for the wallpaper settings view.")
-
+        useThemeBackgroundColors = true
         updateTableContents()
     }
 
