@@ -253,6 +253,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
             cell.backgroundView?.removeFromSuperview()
             cell.backgroundView = nil
+            cell.selectedBackgroundView?.removeFromSuperview()
+            cell.selectedBackgroundView = nil
             cell.backgroundColor = .clear
             cell.contentView.backgroundColor = .clear
 
@@ -260,60 +262,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 return
             }
 
-            let isFirstInSection = indexPath.row == 0
-            let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
-
-            let pillLayer = CAShapeLayer()
-            var separatorLayer: CAShapeLayer?
-            let backgroundView = OWSLayerView(frame: .zero) { view in
-                var pillFrame = view.bounds.inset(by: UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
-                                                                   vMargin: 0))
-                pillFrame.x += view.safeAreaInsets.left
-                pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
-                pillLayer.frame = view.bounds
-                if pillFrame.width > 0,
-                   pillFrame.height > 0 {
-                    var roundingCorners: UIRectCorner = []
-                    if isFirstInSection {
-                        roundingCorners.formUnion(.topLeft)
-                        roundingCorners.formUnion(.topRight)
-                    }
-                    if isLastInSection {
-                        roundingCorners.formUnion(.bottomLeft)
-                        roundingCorners.formUnion(.bottomRight)
-                    }
-                    let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
-                    pillLayer.path = UIBezierPath(roundedRect: pillFrame,
-                                                  byRoundingCorners: roundingCorners,
-                                                  cornerRadii: cornerRadii).cgPath
-                } else {
-                    pillLayer.path = nil
-                }
-
-                if let separatorLayer = separatorLayer {
-                    separatorLayer.frame = view.bounds
-                    var separatorFrame = pillFrame
-                    let separatorThickness: CGFloat = 1
-                    separatorFrame.y = pillFrame.height - separatorThickness
-                    separatorFrame.size.height = separatorThickness
-                    separatorFrame.x += section.separatorInsetLeading
-                    separatorFrame.size.width -= (section.separatorInsetLeading + section.separatorInsetTrailing)
-                    separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
-                }
-            }
-
-            pillLayer.fillColor = Theme.tableCell2BackgroundColor.cgColor
-            backgroundView.layer.addSublayer(pillLayer)
-
-            if section.hasSeparators,
-               !isLastInSection {
-                let separator = CAShapeLayer()
-                separator.fillColor = Theme.tableView2BackgroundColor.cgColor
-                backgroundView.layer.addSublayer(separator)
-                separatorLayer = separator
-            }
-
-            cell.backgroundView = backgroundView
+            cell.backgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
+            cell.selectedBackgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
 
             // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
             // _inside_.
@@ -337,6 +287,65 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         } else if useThemeBackgroundColors {
             cell.backgroundColor = Theme.tableCellBackgroundColor
         }
+    }
+
+    private func buildCellBackgroundView(indexPath: IndexPath,
+                                         section: OWSTableSection) -> UIView {
+
+        let isFirstInSection = indexPath.row == 0
+        let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
+
+        let pillLayer = CAShapeLayer()
+        var separatorLayer: CAShapeLayer?
+        let backgroundView = OWSLayerView(frame: .zero) { view in
+            var pillFrame = view.bounds.inset(by: UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
+                                                               vMargin: 0))
+            pillFrame.x += view.safeAreaInsets.left
+            pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
+            pillLayer.frame = view.bounds
+            if pillFrame.width > 0,
+               pillFrame.height > 0 {
+                var roundingCorners: UIRectCorner = []
+                if isFirstInSection {
+                    roundingCorners.formUnion(.topLeft)
+                    roundingCorners.formUnion(.topRight)
+                }
+                if isLastInSection {
+                    roundingCorners.formUnion(.bottomLeft)
+                    roundingCorners.formUnion(.bottomRight)
+                }
+                let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
+                pillLayer.path = UIBezierPath(roundedRect: pillFrame,
+                                              byRoundingCorners: roundingCorners,
+                                              cornerRadii: cornerRadii).cgPath
+            } else {
+                pillLayer.path = nil
+            }
+
+            if let separatorLayer = separatorLayer {
+                separatorLayer.frame = view.bounds
+                var separatorFrame = pillFrame
+                let separatorThickness: CGFloat = 1
+                separatorFrame.y = pillFrame.height - separatorThickness
+                separatorFrame.size.height = separatorThickness
+                separatorFrame.x += section.separatorInsetLeading
+                separatorFrame.size.width -= (section.separatorInsetLeading + section.separatorInsetTrailing)
+                separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
+            }
+        }
+
+        pillLayer.fillColor = Theme.tableCell2BackgroundColor.cgColor
+        backgroundView.layer.addSublayer(pillLayer)
+
+        if section.hasSeparators,
+           !isLastInSection {
+            let separator = CAShapeLayer()
+            separator.fillColor = Theme.tableView2BackgroundColor.cgColor
+            backgroundView.layer.addSublayer(separator)
+            separatorLayer = separator
+        }
+
+        return backgroundView
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -687,6 +696,19 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
+        guard isViewLoaded else {
+            return
+        }
+
+        // There is a subtle difference in when the split view controller
+        // transitions between collapsed and expanded state on iPad vs
+        // when it does on iPhone. We reloadData here in order to ensure
+        // the background color of all of our cells is updated to reflect
+        // the current state, so it's important that we're only doing this
+        // once the state is ready, otherwise there will be a flash of the
+        // wrong background color. For iPad, this moment is _before_ the
+        // transition occurs. For iPhone, this moment is _during_ the
+        // transition. We reload in the right places accordingly.
         if UIDevice.current.isIPad {
             tableView.reloadData()
         }
