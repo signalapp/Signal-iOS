@@ -24,6 +24,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func handleSendButtonTapped() {
+        if let thread = thread as? TSContactThread {
+            let publicKey = thread.contactIdentifier()
+            guard !OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else {
+                let blockedModal = BlockedModal(publicKey: publicKey)
+                blockedModal.modalPresentationStyle = .overFullScreen
+                blockedModal.modalTransitionStyle = .crossDissolve
+                return present(blockedModal, animated: true, completion: nil)
+            }
+        }
         // TODO: Attachments
         let text = snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         let thread = self.thread
@@ -211,5 +220,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func handleReplyButtonTapped(for viewItem: ConversationViewItem) {
         reply(viewItem)
+    }
+    
+    @objc func unblock() {
+        guard let thread = thread as? TSContactThread else { return }
+        let publicKey = thread.contactIdentifier()
+        UIView.animate(withDuration: 0.25, animations: {
+            self.blockedBanner.alpha = 0
+        }, completion: { _ in
+            OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
+        })
     }
 }

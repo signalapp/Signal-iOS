@@ -3,7 +3,6 @@
 // • Tapping replies
 // • Mentions
 // • Remaining send logic
-// • Blocking
 // • Subtitle
 // • Resending failed messages
 // • Tapping links in link previews
@@ -69,6 +68,21 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     private lazy var scrollButton = ScrollToBottomButton(delegate: self)
     
+    lazy var blockedBanner: InfoBanner = {
+        let name: String
+        if let thread = thread as? TSContactThread {
+            let publicKey = thread.contactIdentifier()
+            name = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, avoidingWriteTransaction: true) ?? publicKey
+        } else {
+            name = "Thread"
+        }
+        let message = "\(name) is blocked. Unblock them?"
+        let result = InfoBanner(message: message, backgroundColor: Colors.destructive)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(unblock))
+        result.addGestureRecognizer(tapGestureRecognizer)
+        return result
+    }()
+    
     // MARK: Settings
     private static let bottomInset = Values.mediumSpacing
     private static let loadMoreThreshold: CGFloat = 120
@@ -101,11 +115,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         messagesTableView.pin(to: view)
         view.addSubview(scrollButton)
         scrollButton.pin(.right, to: .right, of: view, withInset: -Values.mediumSpacing)
+        // Blocked banner
+        addOrRemoveBlockedBanner()
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
     }
     
     override func viewDidLayoutSubviews() {
@@ -273,6 +290,19 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     func conversationViewModelDidReset() {
         
+    }
+    
+    @objc private func addOrRemoveBlockedBanner() {
+        func detach() {
+            blockedBanner.removeFromSuperview()
+        }
+        guard let thread = thread as? TSContactThread else { return detach() }
+        if OWSBlockingManager.shared().isRecipientIdBlocked(thread.contactIdentifier()) {
+            view.addSubview(blockedBanner)
+            blockedBanner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
+        } else {
+            detach()
+        }
     }
     
     // MARK: General
