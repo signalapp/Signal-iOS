@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -146,8 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)messageReceiverErrorLargeMessage;
 
 + (NSString *)messageReceiverErrorOversizeMessage;
-
-+ (NSString *)messageSendErrorCouldNotSerializeMessageJson;
 
 + (NSString *)messageSendErrorFailedDueToPrekeyUpdateFailures;
 

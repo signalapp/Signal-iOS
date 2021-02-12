@@ -548,6 +548,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(timeStamp > 0);
 
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
+
+    // Returns the per-account-message parameters used when submitting a message to
+    // the Signal Web Service.
+    // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java
     NSDictionary *parameters = @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];

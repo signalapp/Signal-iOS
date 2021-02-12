@@ -15,7 +15,6 @@
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
-#import "OWSMessageServiceParams.h"
 #import "OWSOperation.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
