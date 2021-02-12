@@ -1229,8 +1229,8 @@ extension MessageSender {
             address: recipientAddress,
             device: deviceId,
             content: serializedMessage,
-            isSilent: message.isSilent,
-            registrationId: Int32(bitPattern: try session.remoteRegistrationId()))
+            registrationId: Int32(bitPattern: try session.remoteRegistrationId())
+        )
 
         do {
             return try MTLJSONAdapter.jsonDictionary(fromModel: messageParams) as NSDictionary

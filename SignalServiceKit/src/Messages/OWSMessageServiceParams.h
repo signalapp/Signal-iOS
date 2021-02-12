@@ -23,13 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int destinationDeviceId;
 @property (nonatomic, readonly) int destinationRegistrationId;
 @property (nonatomic, readonly) NSString *content;
-@property (nonatomic, readonly) BOOL silent;
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
                      address:(SignalServiceAddress *)address
                       device:(int)deviceId
                      content:(NSData *)content
-                    isSilent:(BOOL)isSilent
               registrationId:(int)registrationId;
 
 @end

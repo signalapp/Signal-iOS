@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
                      address:(SignalServiceAddress *)address
                       device:(int)deviceId
                      content:(NSData *)content
-                    isSilent:(BOOL)isSilent
               registrationId:(int)registrationId
 {
     OWSAssertDebug(address.isValid);
@@ -36,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
     _destinationDeviceId = deviceId;
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];
-    _silent = isSilent;
 
     return self;
 }

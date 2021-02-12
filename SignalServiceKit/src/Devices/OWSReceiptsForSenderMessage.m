@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReceiptsForSenderMessage.h"
@@ -58,13 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldSyncTranscript
 {
     return NO;
-}
-
-- (BOOL)isSilent
-{
-    // Avoid "phantom messages" for "recipient read receipts".
-
-    return YES;
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
