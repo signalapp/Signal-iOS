@@ -541,16 +541,18 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                       messages:(NSArray *)messages
                                      timeStamp:(uint64_t)timeStamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                      isOnline:(BOOL)isOnline
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timeStamp > 0);
 
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
-    NSDictionary *parameters = @{
-        @"messages" : messages,
-        @"timestamp" : @(timeStamp),
-    };
+
+    // Returns the per-account-message parameters used when submitting a message to
+    // the Signal Web Service.
+    // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java
+    NSDictionary *parameters = @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (udAccessKey != nil) {

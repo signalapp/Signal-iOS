@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -646,11 +646,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     //
     // TODO: Revisit this decision.
     return self.messageState == TSOutgoingMessageStateSent;
-}
-
-- (BOOL)isSilent
-{
-    return NO;
 }
 
 - (BOOL)isOnline

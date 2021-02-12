@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,11 +40,6 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     @objc
     public override func shouldSyncTranscript() -> Bool {
         return false
-    }
-
-    @objc
-    public override var isSilent: Bool {
-        return true
     }
 
     @objc
