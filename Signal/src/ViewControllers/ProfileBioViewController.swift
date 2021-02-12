@@ -24,19 +24,15 @@ class ProfileBioViewController: OWSTableViewController {
 
     private let emojiButton = OWSButton()
 
-    private let mode: ProfileViewMode
-
     private let originalBio: String?
     private let originalBioEmoji: String?
 
     required init(bio: String?,
                   bioEmoji: String?,
-                  mode: ProfileViewMode,
                   profileDelegate: ProfileBioViewControllerDelegate) {
 
         self.originalBio = bio
         self.originalBioEmoji = bioEmoji
-        self.mode = mode
         self.profileDelegate = profileDelegate
 
         super.init()
@@ -45,15 +41,6 @@ class ProfileBioViewController: OWSTableViewController {
         self.bioEmojiLabel.text = bioEmoji
 
         self.shouldAvoidKeyboard = true
-    }
-
-    // MARK: - Orientation
-
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.isIPad {
-            return .all
-        }
-        return mode == .registration ? .portrait : .allButUpsideDown
     }
 
     // MARK: -

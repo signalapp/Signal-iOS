@@ -3244,6 +3244,15 @@
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Enter your PIN";
 
+/* Title label for profile creation step of onboarding */
+"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+
+/* Placeholder text for the family name field of the profile creation view. */
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+
+/* Placeholder text for the given name field of the profile creation view. */
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
 
@@ -3727,11 +3736,17 @@
 /* Error message shown when user tries to update profile with a given name that is too long. */
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
 
+/* Default text for the family name field of the profile view. */
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+
+/* Label for the given name field of the profile view. */
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
