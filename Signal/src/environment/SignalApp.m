@@ -291,11 +291,13 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     UITapGestureRecognizer *registerGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:accountManager action:@selector(fakeRegistration)];
     registerGesture.numberOfTapsRequired = 8;
+    registerGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:registerGesture];
 #else
     UITapGestureRecognizer *submitLogGesture = [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
                                                                                        action:@selector(submitLogs)];
     submitLogGesture.numberOfTapsRequired = 8;
+    registerGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:submitLogGesture];
 #endif
 

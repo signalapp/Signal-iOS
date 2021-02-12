@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -178,6 +178,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 owsFailDebug("Error: \(error)")
                 return
             }
+
             guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
                 return
             }

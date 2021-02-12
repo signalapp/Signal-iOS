@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -148,11 +148,10 @@ public class OWSFlatButton: UIView {
     }
 
     @objc
-    public func setTitle(title: String, font: UIFont,
-                         titleColor: UIColor ) {
-        button.setTitle(title, for: .normal)
-        button.titleLabel!.font = font
-        setTitleColor(titleColor)
+    public func setTitle(title: String? = nil, font: UIFont? = nil, titleColor: UIColor? = nil) {
+        title.map { button.setTitle($0, for: .normal) }
+        font.map { button.titleLabel?.font = $0 }
+        titleColor.map { setTitleColor($0) }
     }
 
     @objc
@@ -233,5 +232,9 @@ public class OWSFlatButton: UIView {
             return
         }
         autoSetDimension(.height, toSize: font.lineHeight * 2.5)
+    }
+
+    override public var intrinsicContentSize: CGSize {
+        button.intrinsicContentSize
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -44,10 +44,10 @@ public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewCon
                                                comment: "Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view.")
         }
 
-        let titleLabel = self.titleLabel(text: titleText)
+        let titleLabel = self.createTitleLabel(text: titleText)
         titleLabel.accessibilityIdentifier = "onboarding.pinAtttemptsExhausted." + "titleLabel"
 
-        let explanationLabel = self.explanationLabel(explanationText: explanationText)
+        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
         explanationLabel.font = UIFont.ows_dynamicTypeBodyClamped
         explanationLabel.textColor = Theme.primaryTextColor
         explanationLabel.accessibilityIdentifier = "onboarding.pinAtttemptsExhausted." + "explanationLabel"

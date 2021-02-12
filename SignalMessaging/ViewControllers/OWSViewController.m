@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch
+- (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch
 {
     OWSAssertDebug(view);
     OWSAssertDebug(!self.bottomLayoutConstraint);
@@ -137,6 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
     }
+    return self.bottomLayoutConstraint;
 }
 
 - (void)observeActivation
@@ -211,29 +212,44 @@ NS_ASSUME_NONNULL_BEGIN
     // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the length
     // (height) of the bottomLayoutGuide, else we'd have an unnecessary buffer between the popped keyboard and the input
     // bar.
-    CGFloat offset = -MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
+    CGFloat newInset = MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
+
+    UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    // Should we ignore keyboard changes if they're coming from somewhere out-of-process?
+    // BOOL isOurKeyboard = [notification.userInfo[UIKeyboardIsLocalUserInfoKey] boolValue];
 
     dispatch_block_t updateLayout = ^{
-        if (self.shouldBottomViewReserveSpaceForKeyboard && offset >= 0) {
+        if (self.shouldBottomViewReserveSpaceForKeyboard && newInset <= 0) {
             // To avoid unnecessary animations / layout jitter,
             // some views never reclaim layout space when the keyboard is dismissed.
             //
             // They _do_ need to relayout if the user switches keyboards.
             return;
         }
-        self.bottomLayoutConstraint.constant = offset;
-        [self.bottomLayoutView.superview layoutIfNeeded];
+        [self updateBottomLayoutConstraintFromInset:-self.bottomLayoutConstraint.constant toInset:newInset];
     };
 
 
-    if (self.shouldAnimateBottomLayout && CurrentAppContext().isAppForegroundAndActive) {
+    if (self.shouldAnimateBottomLayout && duration > 0) {
+        [UIView beginAnimations:@"keyboardStateChange" context:NULL];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationCurve:curve];
+        [UIView setAnimationDuration:duration];
         updateLayout();
+        [UIView commitAnimations];
     } else {
-        // UIKit by default animates all changes in response to keyboard events.
+        // UIKit by default (sometimes? never?) animates all changes in response to keyboard events.
         // We want to suppress those animations if the view isn't visible,
         // otherwise presentation animations don't work properly.
         [UIView performWithoutAnimation:updateLayout];
     }
+}
+
+- (void)updateBottomLayoutConstraintFromInset:(CGFloat)before toInset:(CGFloat)after
+{
+    self.bottomLayoutConstraint.constant = -after;
+    [self.bottomLayoutView.superview layoutIfNeeded];
 }
 
 #pragma mark - Orientation

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -69,6 +69,13 @@ public class OnboardingNavigationController: OWSNavigationController {
         if let nextMilestone = onboardingController.nextMilestone {
             setViewControllers([onboardingController.nextViewController(milestone: nextMilestone)], animated: false)
         }
+    }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        let superOrientations = super.supportedInterfaceOrientations
+        let onboardingOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
+
+        return superOrientations.intersection(onboardingOrientations)
     }
 }
 
@@ -259,7 +266,7 @@ public class OnboardingController: NSObject {
         case .verifiedPhoneNumber, .verifiedLinkedDevice:
             return OnboardingSplashViewController(onboardingController: self)
         case .setupProfile:
-            return buildProfileViewController()
+            return OnboardingProfileCreationViewController(onboardingController: self)
         case .restorePin:
             return Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
         case .setupPin:
@@ -354,6 +361,9 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
+        // TODO: Once notification work is complete, uncomment this.
+        // AppEnvironment.shared.notificationPresenter.cancelIncompleteRegistrationNotification()
+
         let view = OnboardingVerificationViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
     }
@@ -410,19 +420,6 @@ public class OnboardingController: NSObject {
         }
 
         showNextMilestone(navigationController: navigationController)
-    }
-
-    func buildProfileViewController() -> ProfileViewController {
-        return ProfileViewController(mode: .registration) { [weak self] profileVC in
-            guard let self = self else { return }
-
-            guard let navigationController = profileVC.navigationController else {
-                owsFailDebug("navigationController was unexpectedly nil")
-                return
-            }
-
-            self.showNextMilestone(navigationController: navigationController)
-        }
     }
 
     func buildPinSetupViewController() -> PinSetupViewController {
@@ -664,7 +661,32 @@ public class OnboardingController: NSObject {
 
     // MARK: - Registration
 
-    public func requestVerification(fromViewController: UIViewController, isSMS: Bool) {
+    public func presentPhoneNumberConfirmationSheet(from vc: UIViewController, number: String, completion: @escaping (_ didApprove: Bool) -> Void) {
+        let titleFormat = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
+            comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}.")
+        let message = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
+            comment: "Message for confirmation alert during phone number registration.")
+        let editButtonTitle = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
+            comment: "A button allowing user to cancel registration and edit a phone number")
+
+        let sheet = ActionSheetController(title: String(format: titleFormat, number), message: message)
+        sheet.addAction(ActionSheetAction(title: CommonStrings.yesButton, style: .default, handler: { _ in
+            completion(true)
+        }))
+        sheet.addAction(ActionSheetAction(title: editButtonTitle, style: .default, handler: { _ in
+            completion(false)
+        }))
+        vc.present(sheet, animated: true, completion: nil)
+    }
+
+    public func requestVerification(
+        fromViewController: UIViewController,
+        isSMS: Bool,
+        completion: ((_ willTransition: Bool, _ error: Error?) -> Void)?) {
+
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {
@@ -679,49 +701,51 @@ public class OnboardingController: NSObject {
 
         let captchaToken = self.captchaToken
         self.verificationRequestCount += 1
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: true) { modal in
-            firstly {
-                self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
-                                                               captchaToken: captchaToken,
-                                                               isSMS: isSMS)
-            }.done {
-                modal.dismiss {
-                    self.requestingVerificationDidSucceed(viewController: fromViewController)
-                }
-            }.catch { error in
-                Logger.error("Error: \(error)")
-                modal.dismiss {
-                    self.requestingVerificationDidFail(viewController: fromViewController, error: error)
-                }
-            }
-        }
-    }
 
-    private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
-        if let statusCode = error.httpStatusCode {
-            switch statusCode {
-            case 400:
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
-                return
-            case 413:
-                OWSActionSheets.showActionSheet(title: nil,
-                                                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
-                return
+        firstly { () -> Promise<Void> in
+            return self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
+                                                           captchaToken: captchaToken,
+                                                           isSMS: isSMS)
+        }.done {
+            completion?(true, nil)
+            self.requestingVerificationDidSucceed(viewController: fromViewController)
+
+        }.catch { error in
+            Logger.error("Error: \(error)")
+
+            switch error {
+            case let error where error.httpStatusCode == 400:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+
+            case let error where error.httpStatusCode == 413:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: nil,
+                    message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
+
+            case let error where error.isNetworkFailureOrTimeout:
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
+                                             comment: "Alert title for network failure during registration"),
+                    message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
+                                               comment: "Alert body for network failure during registration"))
+
+            case AccountServiceClientError.captchaRequired:
+                completion?(true, error)
+                self.onboardingDidRequireCaptcha(viewController: fromViewController)
+
             default:
-                break
+                let nsError = error as NSError
+                owsFailDebug("unexpected error: \(nsError)")
+                completion?(false, error)
+                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
+                                                message: nsError.localizedRecoverySuggestion)
             }
         }
-
-        if case AccountServiceClientError.captchaRequired = error {
-            return onboardingDidRequireCaptcha(viewController: viewController)
-        }
-
-        let nsError = error as NSError
-        owsFailDebug("unexpected error: \(nsError)")
-        OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                                        message: nsError.localizedRecoverySuggestion)
     }
 
     // MARK: - Transfer
@@ -799,6 +823,7 @@ public class OnboardingController: NSObject {
 
     public func submitVerification(fromViewController: UIViewController,
                                    checkForAvailableTransfer: Bool = true,
+                                   showModal: Bool = true,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
@@ -872,44 +897,54 @@ public class OnboardingController: NSObject {
         tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
 
         let twoFAPin = self.twoFAPin
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: true) { (modal) in
 
-                                                        self.accountManager.register(
-                                                            verificationCode: verificationCode,
-                                                            pin: twoFAPin,
-                                                            checkForAvailableTransfer: checkForAvailableTransfer
-                                                        )
-                                                            .then { _ -> Promise<Void> in
-                                                                // Re-enable 2FA and RegLock with the registered pin, if any
-                                                                if let pin = twoFAPin {
-                                                                    self.databaseStorage.write { transaction in
-                                                                        OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
-                                                                    }
+        let promise = firstly {
+            self.accountManager.register(
+                verificationCode: verificationCode,
+                pin: twoFAPin,
+                checkForAvailableTransfer: checkForAvailableTransfer)
 
-                                                                    if OWS2FAManager.shared().mode == .V2 {
-                                                                        return OWS2FAManager.shared().enableRegistrationLockV2()
-                                                                    }
-                                                                }
+        }.then { () -> Promise<Void> in
+            // Re-enable 2FA and RegLock with the registered pin, if any
+            if let pin = twoFAPin {
+                self.databaseStorage.write { transaction in
+                    OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
+                }
+                if OWS2FAManager.shared().mode == .V2 {
+                    return OWS2FAManager.shared().enableRegistrationLockV2()
+                }
+            }
+            return Promise.value(())
+        }
 
-                                                                return Promise.value(())
-                                                            }.done { (_) in
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        self.verificationDidComplete(fromView: fromViewController)
-                                                                    })
-                                                                }
-                                                            }.catch({ (error) in
-                                                                Logger.error("Error: \(error)")
+        if showModal {
+            ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
+                promise.done {
+                    modal.dismiss {
+                        self.verificationDidComplete(fromView: fromViewController)
+                    }
+                }.catch { error in
+                    modal.dismiss(completion: {
+                        Logger.warn("Error: \(error)")
 
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        self.verificationFailed(fromViewController: fromViewController,
-                                                                                                error: error as NSError,
-                                                                                                completion: completion)
-                                                                    })
-                                                                }
-                                                            })
+                        self.verificationFailed(
+                            fromViewController: fromViewController,
+                            error: error as NSError,
+                            completion: completion)
+                    })
+                }
+            }
+        } else {
+            promise.done {
+                self.verificationDidComplete(fromView: fromViewController)
+            }.catch { error in
+                Logger.warn("Error: \(error)")
+
+                self.verificationFailed(
+                    fromViewController: fromViewController,
+                    error: error as NSError,
+                    completion: completion)
+            }
         }
     }
 

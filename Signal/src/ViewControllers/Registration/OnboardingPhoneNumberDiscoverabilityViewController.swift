@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -46,7 +46,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString(
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
             comment: "Title of the 'onboarding phone number discoverability' view."
         ))
@@ -67,7 +67,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
         )
-        let explanationLabel = self.explanationLabel(
+        let explanationLabel = self.createExplanationLabel(
             explanationText: String(format: explanationTextFormat, formattedPhoneNumber)
         )
         explanationLabel.accessibilityIdentifier = "onboarding.phoneNumberDiscoverability." + "explanationLabel"
@@ -121,11 +121,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
         stackView.alignment = .fill
         primaryView.addSubview(stackView)
 
-        // Because of the keyboard, vertical spacing can get pretty cramped,
-        // so we have custom spacer logic.
-        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
-
+        stackView.autoPinEdgesToSuperviewMargins()
         updateSelections()
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,12 +24,12 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_TITLE", comment: "header text while displaying a QR code which, when scanned, will link this device."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_TITLE", comment: "header text while displaying a QR code which, when scanned, will link this device."))
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.linking.titleLabel"
         titleLabel.setContentHuggingHigh()
 
-        let bodyLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_BODY", comment: "body text while displaying a QR code which, when scanned, will link this device."))
+        let bodyLabel = self.createTitleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_BODY", comment: "body text while displaying a QR code which, when scanned, will link this device."))
         bodyLabel.font = UIFont.ows_dynamicTypeBody
         bodyLabel.numberOfLines = 0
         primaryView.addSubview(bodyLabel)
@@ -53,7 +53,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
 
 #if TESTABLE_BUILD
         let copyURLButton = UIButton(type: .system)
-        copyURLButton.setTitle(LocalizationNotNeeded("COPY URL"), for: .normal)
+        copyURLButton.setTitle(LocalizationNotNeeded("Debug only: Copy URL"), for: .normal)
         copyURLButton.addTarget(self, action: #selector(didTapCopyURL), for: .touchUpInside)
 #endif
 

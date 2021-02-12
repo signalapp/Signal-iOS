@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,12 +23,12 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME", comment: "header text when this device is being added as a secondary"))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME", comment: "header text when this device is being added as a secondary"))
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "linking.deviceName.titleLabel"
         titleLabel.setContentHuggingHigh()
 
-        let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION",
+        let explanationLabel = self.createExplanationLabel(explanationText: NSLocalizedString("SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION",
                                                                                         comment: "label text"))
         explanationLabel.accessibilityIdentifier = "linking.deviceName.explanationLabel"
 

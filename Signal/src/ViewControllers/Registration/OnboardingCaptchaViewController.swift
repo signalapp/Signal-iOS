@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -17,7 +17,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
         titleLabel.accessibilityIdentifier = "onboarding.captcha." + "titleLabel"
 
         let titleRow = UIStackView(arrangedSubviews: [
@@ -54,9 +54,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
         primaryView.addSubview(stackView)
-
-        stackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdgesToSuperviewSafeArea()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -120,7 +118,23 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        onboardingController.requestVerification(fromViewController: self, isSMS: true)
+        let progressView = AnimatedProgressView()
+        view.addSubview(progressView)
+        progressView.autoCenterInSuperview()
+        progressView.startAnimating()
+
+        onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] willDismiss, _ in
+            if !willDismiss {
+                // There's nothing left to do here. If onboardingController isn't taking us anywhere, let's
+                // just pop back to the phone number verification controller
+                self?.navigationController?.popViewController(animated: true)
+            }
+            UIView.animate(withDuration: 0.15) {
+                progressView.alpha = 0
+            } completion: { _ in
+                progressView.removeFromSuperview()
+            }
+        }
     }
 
     private func parseCaptcha(url: URL) -> String? {

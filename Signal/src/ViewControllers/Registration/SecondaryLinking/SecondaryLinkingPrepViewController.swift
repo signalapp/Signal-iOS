@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
                                           comment: "header text before the user can link this device")
         }
 
-        let titleLabel = self.titleLabel(text: titleText)
+        let titleLabel = self.createTitleLabel(text: titleText)
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.prelink.titleLabel"
 

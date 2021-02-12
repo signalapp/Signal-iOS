@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -19,7 +19,7 @@ class AnimatedProgressView: UIView {
     private let errorAnimation = AnimationView(name: "pinCreationFail")
     private let successAnimation = AnimationView(name: "pinCreationSuccess")
 
-    required init(loadingText: String) {
+    required init(loadingText: String? = nil) {
         super.init(frame: .zero)
 
         let animationContainer = UIView()

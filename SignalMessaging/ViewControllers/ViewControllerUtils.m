@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ViewControllerUtils.h"
@@ -15,10 +15,67 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
 
 @implementation ViewControllerUtils
 
-+ (void)phoneNumberTextField:(UITextField *)textField
++ (NSString *)trimPhoneNumberToMaxLength:(NSString *)source
+{
+    // Ensure we don't exceed the maximum length for a e164 phone number,
+    // 15 digits, per: https://en.wikipedia.org/wiki/E.164
+    //
+    // NOTE: The actual limit is 18, not 15, because of certain invalid phone numbers in Germany.
+    //       https://github.com/googlei18n/libphonenumber/blob/master/FALSEHOODS.md
+    const int kMaxPhoneNumberLength = 18;
+    if (source.length > kMaxPhoneNumberLength) {
+        return [source substringToIndex:kMaxPhoneNumberLength];
+    } else {
+        return source;
+    }
+}
+
++ (BOOL)phoneNumberTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
                       callingCode:(NSString *)callingCode
+{
+    BOOL isDeletion = (insertionText.length == 0);
+
+    if (isDeletion) {
+        // If we're deleting text, we're going to want to ignore
+        // parens and spaces when finding a character to delete.
+
+        // Let's tell UIKit to not apply the edit and just apply it ourselves.
+        [self phoneNumberTextField:textField
+            changeCharactersInRange:range
+                  replacementString:insertionText
+                        callingCode:callingCode];
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
++ (void)reformatPhoneNumberTextField:(UITextField *)textField callingCode:(NSString *)callingCode
+{
+    NSString *originalText = textField.text;
+    NSInteger originalCursorOffset = [textField offsetFromPosition:textField.beginningOfDocument
+                                                        toPosition:textField.selectedTextRange.start];
+
+    NSString *trimmedText = [self trimPhoneNumberToMaxLength:originalText.digitsOnly];
+    NSString *updatedText = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:trimmedText
+                                                                         withSpecifiedCountryCodeString:callingCode];
+
+    NSInteger updatedCursorOffset = (NSInteger)[PhoneNumberUtil translateCursorPosition:(NSUInteger)originalCursorOffset
+                                                                                   from:originalText
+                                                                                     to:updatedText
+                                                                      stickingRightward:NO];
+
+    textField.text = updatedText;
+    UITextPosition *pos = [textField positionFromPosition:textField.beginningOfDocument offset:updatedCursorOffset];
+    [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
+}
+
++ (void)phoneNumberTextField:(UITextField *)textField
+     changeCharactersInRange:(NSRange)range
+           replacementString:(NSString *)insertionText
+                 callingCode:(NSString *)callingCode
 {
     // Phone numbers takes many forms.
     //
@@ -61,15 +118,9 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
 
     // 4. Construct the "raw" new text by concatenating left, center and right.
     NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
-    // 4a. Ensure we don't exceed the maximum length for a e164 phone number,
-    //     15 digits, per: https://en.wikipedia.org/wiki/E.164
-    //
-    // NOTE: The actual limit is 18, not 15, because of certain invalid phone numbers in Germany.
-    //       https://github.com/googlei18n/libphonenumber/blob/master/FALSEHOODS.md
-    const int kMaxPhoneNumberLength = 18;
-    if (textAfterChange.length > kMaxPhoneNumberLength) {
-        textAfterChange = [textAfterChange substringToIndex:kMaxPhoneNumberLength];
-    }
+    // 4a. Ensure we don't exceed the maximum length for a e164 phone number
+    textAfterChange = [self trimPhoneNumberToMaxLength:textAfterChange];
+
     // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);

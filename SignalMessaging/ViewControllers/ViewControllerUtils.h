@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -13,15 +13,29 @@ extern NSString *const TappedStatusBarNotification;
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-// This convenience function can be used to reformat the contents of
-// a phone number text field as the user modifies its text by typing,
-// pasting, etc.
-//
-// "callingCode" should be of the form: "+1".
-+ (void)phoneNumberTextField:(UITextField *)textField
+// Performs cursory validation and change handling for phone number text field edits
+// Allows UIKit to apply the majority of edits (unlike +phoneNumberTextField:changeCharacters...")
+// which applies the edit manually.
+// Useful when +phoneNumberTextField:changeCharactersInRange:... can't be used
+// because it applies changes manually and requires failing any change request from UIKit.
++ (BOOL)phoneNumberTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
                       callingCode:(NSString *)callingCode;
+
+// Reformats the text in a UITextField to apply phone number formatting
++ (void)reformatPhoneNumberTextField:(UITextField *)textField callingCode:(NSString *)callingCode;
+
+// This convenience function can be used to reformat the contents of
+// a phone number text field as the user modifies its text by typing,
+// pasting, etc. Applys the incoming edit directly. The text field delegate
+// should return NO from -textField:shouldChangeCharactersInRange:...
+//
+// "callingCode" should be of the form: "+1".
++ (void)phoneNumberTextField:(UITextField *)textField
+     changeCharactersInRange:(NSRange)range
+           replacementString:(NSString *)insertionText
+                 callingCode:(NSString *)callingCode;
 
 + (void)ows2FAPINTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range

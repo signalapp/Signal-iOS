@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -14,7 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 // We often want to pin one view to the bottom of a view controller
 // BUT adjust its location upward if the keyboard appears.
-- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
+- (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
+
+// Override point for any custom handling of keyboard constraint insets
+// Invoked while embedded in an appropriate UIAnimationCurve
+// Default implementation sets the underlying keyboard constraint offset to `after`
+- (void)updateBottomLayoutConstraintFromInset:(CGFloat)before toInset:(CGFloat)after;
 
 // If YES, the bottom view never "reclaims" layout space if the keyboard is dismissed.
 // Defaults to NO.

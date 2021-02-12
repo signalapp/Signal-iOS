@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -22,7 +22,7 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(
+        let titleLabel = self.createTitleLabel(
             text: NSLocalizedString("DEVICE_TRANSFER_RECEIVING_TITLE",
                                     comment: "The title on the view that shows receiving progress")
         )
@@ -30,7 +30,7 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
         titleLabel.accessibilityIdentifier = "onboarding.transferProgress.titleLabel"
         titleLabel.setContentHuggingHigh()
 
-        let explanationLabel = self.explanationLabel(
+        let explanationLabel = self.createExplanationLabel(
             explanationText: NSLocalizedString("DEVICE_TRANSFER_RECEIVING_EXPLANATION",
                                                comment: "The explanation on the view that shows receiving progress")
         )
