@@ -134,22 +134,16 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         let spacerString = "  "
         let learnMoreString = CommonStrings.learnMore
 
-        return [
-            NSMutableAttributedString(string: descriptionString, attributes: [
-                .font: UIFont.ows_dynamicTypeCaption1,
-                .foregroundColor: Theme.secondaryTextAndIconColor,
-            ]),
-            NSMutableAttributedString(string: spacerString, attributes: [
-                .font: UIFont.ows_dynamicTypeCaption1,
-                .foregroundColor: Theme.secondaryTextAndIconColor,
-            ]),
-            NSMutableAttributedString(string: learnMoreString, attributes: [
-                .link: URL(string: "https://support.signal.org/hc/articles/360007459591")!,
-                .font: UIFont.ows_dynamicTypeCaption1,
-                .foregroundColor: Theme.accentBlueColor,
-                .underlineStyle: 0
-            ]),
-        ].reduce(into: NSMutableAttributedString()) { $0.append($1) }
+        return NSAttributedString.composed(of: [
+            descriptionString.styled(with: .font(.ows_dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
+            spacerString.styled(with: .font(. ows_dynamicTypeCaption1), .color(Theme.secondaryTextAndIconColor)),
+            learnMoreString.styled(with:
+                .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!),
+                .font(.ows_dynamicTypeCaption1),
+                .color(Theme.accentBlueColor),
+                .underline([], nil)
+            )
+        ])
     }
 
     private lazy var footerTextView: LinkingTextView = {
