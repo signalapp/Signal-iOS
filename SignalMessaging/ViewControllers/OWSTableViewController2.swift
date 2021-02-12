@@ -57,7 +57,8 @@ open class OWSTableViewController2: OWSViewController {
     public var shouldAvoidKeyboard = false
 
     public var defaultHeaderHeight: CGFloat? = 0
-    public var defaultFooterHeight: CGFloat? = 16
+    public var defaultFooterHeight: CGFloat? = 0
+    public var defaultSpacingBetweenSections: CGFloat? = 24
 
     private static let cellIdentifier = "cellIdentifier"
 
@@ -318,8 +319,10 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             // _inside_.
             //
             // By applying it to the cell, ensure the correct behavior for accesories.
-            cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHOuterMargin + Self.cellHInnerMargin, vMargin: 0)
-            var contentMargins: UIEdgeInsets = .zero
+            cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHOuterMargin + Self.cellHInnerMargin,
+                                              vMargin: 0)
+            var contentMargins = UIEdgeInsets(hMargin: 0,
+                                              vMargin: Self.cellVInnerMargin)
             // Our table code is going to be vastly simpler if we DRY up the
             // spacing between the cell content and the accessory here.
             let hasAccessory = (cell.accessoryView != nil || cell.accessoryType != .none)
@@ -365,24 +368,18 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
 
+    // The distance from the the cell border to the cell content.
+    public static var cellVInnerMargin: CGFloat {
+        10
+    }
+
     private var automaticDimension: CGFloat {
         UITableView.automaticDimension
     }
 
     private func buildHeaderOrFooterTextView() -> UITextView {
         let textView = LinkingTextView()
-
-        let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
-        var textContainerInset = UIEdgeInsets(top: 16,
-                                                   leading: cellHMargin,
-                                                   bottom: 6,
-                                                   trailing: cellHMargin)
-        textContainerInset.left += tableView.safeAreaInsets.left
-        textContainerInset.right += tableView.safeAreaInsets.right
-        textView.textContainerInset = textContainerInset
-
         textView.backgroundColor = self.tableBackgroundColor
-
         return textView
     }
 
@@ -394,8 +391,20 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
-            textView.textColor = Theme.secondaryTextAndIconColor
-            textView.font = UIFont.ows_dynamicTypeCaption1Clamped
+            textView.textColor = (Theme.isDarkThemeEnabled
+                                    ? UIColor.ows_gray05
+                                    : UIColor.ows_gray90)
+            textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+
+            let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
+            var textContainerInset = UIEdgeInsets(top: 12,
+                                                  leading: cellHMargin,
+                                                  bottom: 12,
+                                                  trailing: cellHMargin)
+            textContainerInset.left += tableView.safeAreaInsets.left
+            textContainerInset.right += tableView.safeAreaInsets.right
+            textView.textContainerInset = textContainerInset
+
             return textView
         }
 
@@ -437,7 +446,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
-            textView.textColor = UIColor.ows_gray45
+            textView.textColor = (Theme.isDarkThemeEnabled
+                                  ? UIColor.ows_gray25
+                                    : UIColor.ows_gray60)
             textView.font = UIFont.ows_dynamicTypeCaption1Clamped
 
             let linkTextAttributes: [NSAttributedString.Key: Any] = [
@@ -446,6 +457,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 NSAttributedString.Key.underlineStyle: 0
             ]
             textView.linkTextAttributes = linkTextAttributes
+
+            let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin
+            var textContainerInset = UIEdgeInsets(top: 16,
+                                                  leading: cellHMargin,
+                                                  bottom: 6,
+                                                  trailing: cellHMargin)
+            textContainerInset.left += tableView.safeAreaInsets.left
+            textContainerInset.right += tableView.safeAreaInsets.right
+            textView.textContainerInset = textContainerInset
 
             return textView
         }
@@ -467,11 +487,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             return buildDefaultHeaderOrFooter(height: CGFloat(customFooterHeight.floatValue))
         } else if let defaultFooterHeight = defaultFooterHeight,
                   defaultFooterHeight > 0 {
+            return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
+        } else if let defaultSpacingBetweenSections = defaultSpacingBetweenSections,
+                  defaultSpacingBetweenSections > 0 {
             let isLastSection = sectionIndex == numberOfSections(in: tableView) - 1
             if isLastSection {
                 return nil
             } else {
-                return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
+                return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
             }
         } else {
             return nil
