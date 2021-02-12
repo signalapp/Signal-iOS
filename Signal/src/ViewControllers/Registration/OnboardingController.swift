@@ -266,7 +266,7 @@ public class OnboardingController: NSObject {
         case .verifiedPhoneNumber, .verifiedLinkedDevice:
             return OnboardingSplashViewController(onboardingController: self)
         case .setupProfile:
-            return buildProfileViewController()
+            return OnboardingProfileCreationViewController(onboardingController: self)
         case .restorePin:
             return Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
         case .setupPin:
@@ -420,19 +420,6 @@ public class OnboardingController: NSObject {
         }
 
         showNextMilestone(navigationController: navigationController)
-    }
-
-    func buildProfileViewController() -> ProfileViewController {
-        return ProfileViewController(mode: .registration) { [weak self] profileVC in
-            guard let self = self else { return }
-
-            guard let navigationController = profileVC.navigationController else {
-                owsFailDebug("navigationController was unexpectedly nil")
-                return
-            }
-
-            self.showNextMilestone(navigationController: navigationController)
-        }
     }
 
     func buildPinSetupViewController() -> PinSetupViewController {

@@ -201,6 +201,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
+@property (nonatomic) BOOL layoutMarginsRelativeTableContent;
 @property (nonatomic) BOOL useThemeBackgroundColors;
 
 @property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;

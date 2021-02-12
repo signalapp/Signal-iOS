@@ -7,34 +7,7 @@ import SafariServices
 import PromiseKit
 
 @objc
-public enum ProfileViewMode: UInt {
-    case appSettings
-    case registration
-    case experienceUpgrade
-
-    fileprivate var hasBio: Bool {
-        switch self {
-        case .appSettings:
-            return true
-        case .registration, .experienceUpgrade:
-            return false
-        }
-    }
-
-    fileprivate var hasSaveButton: Bool {
-        switch self {
-        case .appSettings:
-            return false
-        case .registration, .experienceUpgrade:
-            return true
-        }
-    }
-}
-
-// MARK: -
-
-@objc
-public class ProfileViewController: OWSTableViewController {
+public class ProfileSettingsViewController: OWSTableViewController {
 
     private let avatarViewHelper = AvatarViewHelper()
 
@@ -61,29 +34,15 @@ public class ProfileViewController: OWSTableViewController {
         }
     }
 
-    private let mode: ProfileViewMode
-
-    private let completionHandler: (ProfileViewController) -> Void
+    private let completionHandler: (ProfileSettingsViewController) -> Void
 
     @objc
-    public required init(mode: ProfileViewMode,
-                         completionHandler: @escaping (ProfileViewController) -> Void) {
-
-        self.mode = mode
+    public required init(completionHandler: @escaping (ProfileSettingsViewController) -> Void) {
         self.completionHandler = completionHandler
 
         super.init()
 
         self.shouldAvoidKeyboard = true
-    }
-
-    // MARK: - Orientation
-
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.isIPad {
-            return .all
-        }
-        return (mode == .registration ? .portrait : .allButUpsideDown)
     }
 
     // MARK: -
@@ -107,43 +66,17 @@ public class ProfileViewController: OWSTableViewController {
 
         createViews()
         updateNavigationItem()
-
-        if mode == .registration {
-            // mark as dirty if re-registration has content
-            if let familyName = familyNameTextField.text,
-               !familyName.isEmpty {
-                hasUnsavedChanges = true
-            } else if let givenName = givenNameTextField.text,
-                      !givenName.isEmpty {
-                hasUnsavedChanges = true
-            } else if avatarData != nil {
-                hasUnsavedChanges = true
-            }
-        }
-
         updateTableContents()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         updateNavigationItem()
-
-        switch mode {
-        case .appSettings:
-            break
-        case .registration, .experienceUpgrade:
-            givenNameTextField.becomeFirstResponder()
-        @unknown default:
-            owsFailDebug("Unknown value.")
-        }
-
         updateUsername()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         updateNavigationItem()
     }
 
@@ -261,60 +194,54 @@ public class ProfileViewController: OWSTableViewController {
             addGivenNameRow()
             addFamilyNameRow()
         }
-        if shouldShowUsernameRow {
+        if RemoteConfig.usernames {
             namesSection.add(buildUsernameItem())
         }
         contents.addSection(namesSection)
 
-        var lastSection = namesSection
+        let aboutSection = OWSTableSection()
+        aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
+                                                     comment: "Header for the 'bio' section of the profile view.")
+        let profileBio = self.normalizedProfileBio
+        let profileBioEmoji = self.normalizedProfileBioEmoji
+        if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
+            aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                let cell = OWSTableItem.newCell()
 
-        if mode.hasBio {
-            let aboutSection = OWSTableSection()
-            aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
-                                                         comment: "Header for the 'bio' section of the profile view.")
-            let profileBio = self.normalizedProfileBio
-            let profileBioEmoji = self.normalizedProfileBioEmoji
-            if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
-                aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                    let cell = OWSTableItem.newCell()
+                let label = UILabel()
+                label.text = bioForDisplay
+                label.textColor = Theme.primaryTextColor
+                label.font = .ows_dynamicTypeBodyClamped
+                label.numberOfLines = 0
+                label.lineBreakMode = .byWordWrapping
+                cell.contentView.addSubview(label)
+                label.autoPinEdgesToSuperviewMargins()
 
-                    let label = UILabel()
-                    label.text = bioForDisplay
-                    label.textColor = Theme.primaryTextColor
-                    label.font = .ows_dynamicTypeBodyClamped
-                    label.numberOfLines = 0
-                    label.lineBreakMode = .byWordWrapping
-                    cell.contentView.addSubview(label)
-                    label.autoPinEdgesToSuperviewMargins()
+                cell.accessoryType = .disclosureIndicator
 
-                    cell.accessoryType = .disclosureIndicator
+                cell.accessibilityIdentifier = "profile_bio"
 
-                    cell.accessibilityIdentifier = "profile_bio"
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.didTapBio()
-                }))
-            } else {
-                aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
-                                                                           comment: "Button to add a 'bio' to the user's profile in the profile view."),
-                                                   textColor: Theme.accentBlueColor,
-                                                   accessoryType: .disclosureIndicator,
-                                                   accessibilityIdentifier: "profile_bio") { [weak self] in
-                    self?.didTapBio()
-                })
-            }
-            contents.addSection(aboutSection)
-
-            lastSection = aboutSection
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.didTapBio()
+            }))
+        } else {
+            aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
+                                                                       comment: "Button to add a 'bio' to the user's profile in the profile view."),
+                                               textColor: Theme.accentBlueColor,
+                                               accessoryType: .disclosureIndicator,
+                                               accessibilityIdentifier: "profile_bio") { [weak self] in
+                self?.didTapBio()
+            })
         }
+        contents.addSection(aboutSection)
 
         // Information Footer
 
         let infoGestureRecognizer = UITapGestureRecognizer(target: self,
                                                            action: #selector(didTapInfo))
-        lastSection.customFooterView = { () -> UIView in
+        aboutSection.customFooterView = { () -> UIView in
 
             let label = UILabel()
             label.textColor = Theme.secondaryTextAndIconColor
@@ -344,39 +271,6 @@ public class ProfileViewController: OWSTableViewController {
 
             return footer
         }()
-
-        // Big Button
-
-        if mode.hasSaveButton {
-            let buttonSection = OWSTableSection()
-            let target = self
-            let selector = #selector(updateProfile)
-            buttonSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                let cell = OWSTableItem.newCell()
-
-                let buttonHeight: CGFloat = 47
-                let button = OWSFlatButton.button(title: NSLocalizedString("PROFILE_VIEW_SAVE_BUTTON",
-                                                                           comment: "Button to save the profile view in the profile view."),
-                                                  font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                  titleColor: UIColor.ows_white,
-                                                  backgroundColor: UIColor.ows_accentBlue,
-                                                  target: target,
-                                                  selector: selector)
-                button.accessibilityIdentifier = "save_button"
-                button.autoSetDimension(.height, toSize: buttonHeight)
-                cell.contentView.addSubview(button)
-                button.autoPinEdgesToSuperviewMargins()
-
-                cell.backgroundColor = Theme.tableViewBackgroundColor
-                cell.contentView.backgroundColor = Theme.tableViewBackgroundColor
-
-                return cell
-            },
-            actionBlock: { [weak self] in
-                self?.updateProfile()
-            }))
-            contents.addSection(buttonSection)
-        }
 
         self.contents = contents
     }
@@ -462,61 +356,15 @@ public class ProfileViewController: OWSTableViewController {
     }
 
     private func updateNavigationItem() {
-        guard let navigationController = navigationController else {
-            return
-        }
-        // The navigation bar is hidden in the registration workflow.
-        if navigationController.isNavigationBarHidden {
-            navigationController.setNavigationBarHidden(false, animated: true)
-        }
-
-        var forceSaveButtonEnabled = false
-
-        switch mode {
-        case .appSettings:
-            if hasUnsavedChanges {
-                // If we have a unsaved changes, right item should be a "save" button.
-                let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
-                                                 target: self,
-                                                 action: #selector(updateProfile),
-                                                 accessibilityIdentifier: "save_button")
-                navigationItem.rightBarButtonItem = saveButton
-            } else {
-                navigationItem.rightBarButtonItem = nil
-            }
-        case .registration:
-            navigationItem.hidesBackButton = true
+        if hasUnsavedChanges {
+            // If we have a unsaved changes, right item should be a "save" button.
+            let saveButton = UIBarButtonItem(barButtonSystemItem: .save,
+                                             target: self,
+                                             action: #selector(updateProfile),
+                                             accessibilityIdentifier: "save_button")
+            navigationItem.rightBarButtonItem = saveButton
+        } else {
             navigationItem.rightBarButtonItem = nil
-
-            // During registration, if you have a name pre-populatd we want
-            // to enable the save button even if you haven't edited anything.
-            if let givenName = givenNameTextField.text,
-               !givenName.isEmpty {
-                forceSaveButtonEnabled = true
-            }
-        case .experienceUpgrade:
-            navigationItem.rightBarButtonItem = nil
-
-            // During the experience upgrade, if you have a name we want
-            // to enable the save button even if you haven't edited anything.
-            if let givenName = givenNameTextField.text,
-               !givenName.isEmpty {
-                forceSaveButtonEnabled = true
-            }
-        @unknown default:
-            owsFailDebug("Unknown mode.")
-            navigationItem.rightBarButtonItem = nil
-        }
-
-        if let saveButton = saveButton {
-            if hasUnsavedChanges || forceSaveButtonEnabled {
-                saveButton.setEnabled(true)
-                saveButton.setBackgroundColors(upColor: .ows_accentBlue)
-            } else {
-                saveButton.setEnabled(false)
-                saveButton.setBackgroundColors(upColor: UIColor.ows_accentBlue.blended(with: Theme.backgroundColor,
-                                                                                       alpha: 0.5))
-            }
         }
     }
 
@@ -651,33 +499,14 @@ public class ProfileViewController: OWSTableViewController {
     }
 
     private func didTapUsername() {
-        let usernameVC = UsernameViewController()
-        if mode == .registration {
-            usernameVC.modalPresentation = true
-            presentFormSheet(OWSNavigationController(rootViewController: usernameVC), animated: true)
-        } else {
-            navigationController?.pushViewController(usernameVC, animated: true)
-        }
+        navigationController?.pushViewController(UsernameViewController(), animated: true)
     }
 
     private func didTapBio() {
-        let view = ProfileBioViewController(bio: profileBio, bioEmoji:
-                                                profileBioEmoji,
-                                            mode: mode,
+        let view = ProfileBioViewController(bio: profileBio,
+                                            bioEmoji: profileBioEmoji,
                                             profileDelegate: self)
         navigationController?.pushViewController(view, animated: true)
-    }
-
-    private var shouldShowUsernameRow: Bool {
-        switch mode {
-        case .experienceUpgrade, .registration:
-            return false
-        case .appSettings:
-            return RemoteConfig.usernames
-        @unknown default:
-            owsFailDebug("Unknown value.")
-            return false
-        }
     }
 
     private func didTapAvatar() {
@@ -693,7 +522,7 @@ public class ProfileViewController: OWSTableViewController {
 
 // MARK: -
 
-extension ProfileViewController: AvatarViewHelperDelegate {
+extension ProfileSettingsViewController: AvatarViewHelperDelegate {
 
     public func avatarActionSheetTitle() -> String? {
         NSLocalizedString("PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", comment: "Action Sheet title prompting the user for a profile avatar")
@@ -724,7 +553,7 @@ extension ProfileViewController: AvatarViewHelperDelegate {
 
 // MARK: -
 
-extension ProfileViewController: UITextFieldDelegate {
+extension ProfileSettingsViewController: UITextFieldDelegate {
 
     private var firstTextField: UITextField {
         NSLocale.current.isCJKV ? familyNameTextField : givenNameTextField
@@ -741,8 +570,7 @@ extension ProfileViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            maxByteCount: OWSUserProfile.maxNameLengthBytes,
-            maxGlyphCount: OWSUserProfile.maxNameLengthGlyphs
+            maxByteCount: OWSUserProfile.maxNameLengthBytes
         )
     }
 
@@ -767,7 +595,13 @@ extension ProfileViewController: UITextFieldDelegate {
 
 // MARK: -
 
-extension ProfileViewController: OWSNavigationView {
+extension ProfileSettingsViewController: OWSNavigationView {
+
+    @available(iOS 13, *)
+    override public var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set { /* noop superclass requirement */ }
+    }
 
     public func shouldCancelNavigationBack() -> Bool {
         let result = hasUnsavedChanges
@@ -780,7 +614,7 @@ extension ProfileViewController: OWSNavigationView {
 
 // MARK: -
 
-extension ProfileViewController: ProfileBioViewControllerDelegate {
+extension ProfileSettingsViewController: ProfileBioViewControllerDelegate {
 
     public func profileBioViewDidComplete(bio: String?,
                                           bioEmoji: String?) {

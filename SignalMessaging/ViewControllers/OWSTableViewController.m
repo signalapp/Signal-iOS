@@ -619,6 +619,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 
+    [self configureTableLayoutMargins];
     [self applyContents];
     [self applyTheme];
 
@@ -741,17 +742,26 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         UITextView *textView = [LinkingTextView new];
         textView.textColor = Theme.secondaryTextAndIconColor;
         textView.font = UIFont.ows_dynamicTypeCaption1Font;
-
-        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-        textView.textContainerInset = UIEdgeInsetsMake(16, tableEdgeInsets, 6, tableEdgeInsets);
-
         if (section.headerAttributedTitle.length > 0) {
             textView.attributedText = section.headerAttributedTitle;
         } else {
             textView.text = [section.headerTitle uppercaseString];
         }
 
-        return textView;
+        UIView *sectionView = [[UIView alloc] init];
+        [sectionView addSubview:textView];
+        [textView autoPinHeightToSuperview];
+
+        if (self.layoutMarginsRelativeTableContent) {
+            sectionView.preservesSuperviewLayoutMargins = YES;
+            [textView autoPinWidthToSuperviewMargins];
+            textView.textContainerInset = UIEdgeInsetsMake(16, 0, 6, 0);
+        } else {
+            [textView autoPinWidthToSuperview];
+            CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
+            textView.textContainerInset = UIEdgeInsetsMake(16, tableEdgeInsets, 6, tableEdgeInsets);
+        }
+        return sectionView;
     }
 
     return nil;
@@ -767,10 +777,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         UITextView *textView = [LinkingTextView new];
         textView.textColor = UIColor.ows_gray45Color;
         textView.font = UIFont.ows_dynamicTypeCaption1Font;
-
-        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-        textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
-
         textView.linkTextAttributes = @{
             NSForegroundColorAttributeName : Theme.accentBlueColor,
             NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
@@ -783,7 +789,20 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
             textView.text = section.footerTitle;
         }
 
-        return textView;
+        UIView *sectionView = [[UIView alloc] init];
+        [sectionView addSubview:textView];
+        [textView autoPinHeightToSuperview];
+
+        if (self.layoutMarginsRelativeTableContent) {
+            sectionView.preservesSuperviewLayoutMargins = YES;
+            [textView autoPinWidthToSuperviewMargins];
+            textView.textContainerInset = UIEdgeInsetsMake(6, 0, 12, 0);
+        } else {
+            [textView autoPinWidthToSuperview];
+            CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
+            textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
+        }
+        return sectionView;
     }
 
     return nil;
@@ -927,6 +946,15 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.view.backgroundColor = backgroundColor;
     self.tableView.backgroundColor = backgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
+}
+
+- (void)configureTableLayoutMargins
+{
+    if (!self.layoutMarginsRelativeTableContent) {
+        return;
+    }
+    self.tableView.preservesSuperviewLayoutMargins = YES;
+    self.tableView.layoutMargins = UIEdgeInsetsZero;
 }
 
 #pragma mark - Editing
