@@ -56,4 +56,5 @@ protocol MessageCellDelegate {
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem)
     func showFullText(_ viewItem: ConversationViewItem)
     func openURL(_ url: URL)
+    func handleReplyButtonTapped(for viewItem: ConversationViewItem)
 }

@@ -90,7 +90,7 @@ final class QuoteView : UIView {
     static let iconSize: CGFloat = 24
     static let labelStackViewSpacing: CGFloat = 2
     static let labelStackViewVMargin: CGFloat = 4
-    static let cancelButtonSize: CGFloat = 32
+    static let cancelButtonSize: CGFloat = 33
 
     // MARK: Lifecycle
     init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {

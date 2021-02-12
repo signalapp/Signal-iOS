@@ -208,4 +208,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         urlModal.modalTransitionStyle = .crossDissolve
         present(urlModal, animated: true, completion: nil)
     }
+    
+    func handleReplyButtonTapped(for viewItem: ConversationViewItem) {
+        reply(viewItem)
+    }
 }

@@ -1,6 +1,7 @@
 
 final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDelegate {
     private var unloadContent: (() -> Void)?
+    private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
     var bodyTextView: UITextView?
     var mediaTextOverlayView: MediaTextOverlayView?
@@ -76,12 +77,37 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         return result
     }()
     
+    private lazy var replyButton: UIView = {
+        let result = UIView()
+        let size = VisibleMessageCell.replyButtonSize + 8
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.layer.borderWidth = 1
+        result.layer.borderColor = Colors.text.cgColor
+        result.layer.cornerRadius = size / 2
+        result.layer.masksToBounds = true
+        result.alpha = 0
+        return result
+    }()
+    
+    private lazy var replyIconImageView: UIImageView = {
+        let result = UIImageView()
+        let size = VisibleMessageCell.replyButtonSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.image = UIImage(named: "ic_reply")
+        return result
+    }()
+    
     // MARK: Settings
     private static let messageStatusImageViewSize: CGFloat = 16
     private static let authorLabelBottomSpacing: CGFloat = 4
     private static let groupThreadHSpacing: CGFloat = 12
     private static let profilePictureSize = Values.verySmallProfilePictureSize
     private static let authorLabelInset: CGFloat = 12
+    private static let replyButtonSize: CGFloat = 24
+    private static let maxBubbleTranslationX: CGFloat = 40
+    private static let swipeToReplyThreshold: CGFloat = 130
     static let smallCornerRadius: CGFloat = 4
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing
@@ -132,6 +158,12 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         messageStatusImageView.pin(.bottom, to: .bottom, of: self, withInset: -1)
         messageStatusImageViewWidthConstraint.isActive = true
         messageStatusImageViewHeightConstraint.isActive = true
+        // Reply button
+        addSubview(replyButton)
+        replyButton.addSubview(replyIconImageView)
+        replyIconImageView.center(in: replyButton)
+        replyButton.pin(.left, to: .right, of: bubbleView, withInset: Values.smallSpacing)
+        replyButton.center(.vertical, in: bubbleView)
         // Remaining constraints
         authorLabel.pin(.left, to: .left, of: bubbleView, withInset: VisibleMessageCell.authorLabelInset)
     }
@@ -146,6 +178,9 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTapGestureRecognizer)
         tapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        panGestureRecognizer.delegate = self
+        addGestureRecognizer(panGestureRecognizer)
     }
     
     // MARK: Updating
@@ -304,6 +339,9 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
     override func prepareForReuse() {
         super.prepareForReuse()
         unloadContent?()
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        viewsToMove.forEach { $0.transform = .identity }
+        replyButton.alpha = 0
     }
     
     // MARK: Interaction
@@ -317,6 +355,22 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         return super.hitTest(point, with: event)
     }
     
+    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let locationInBubbleView = panGestureRecognizer.location(in: bubbleView)
+            guard bubbleView.bounds.contains(locationInBubbleView) else { return false }
+            let v = panGestureRecognizer.velocity(in: self)
+            guard v.x < 0 else { return false }
+            return abs(v.x) > abs(v.y)
+        } else {
+            return true
+        }
+    }
+    
     @objc func handleLongPress() {
         guard let viewItem = viewItem else { return }
         delegate?.handleViewItemLongPressed(viewItem)
@@ -324,12 +378,56 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
         guard let viewItem = viewItem else { return }
-        delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
+        let location = gestureRecognizer.location(in: self)
+        if replyButton.frame.contains(location) {
+            let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+            UIView.animate(withDuration: 0.25) {
+                viewsToMove.forEach { $0.transform = .identity }
+                self.replyButton.alpha = 0
+            }
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            delegate?.handleReplyButtonTapped(for: viewItem)
+        } else {
+            delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
+        }
     }
 
     @objc private func handleDoubleTap() {
         guard let viewItem = viewItem else { return }
         delegate?.handleViewItemDoubleTapped(viewItem)
+    }
+    
+    @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
+        switch gestureRecognizer.state {
+        case .changed:
+            let damping: CGFloat = 20
+            let sign: CGFloat = -1
+            let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
+            viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
+            replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
+            if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold && abs(previousX) < VisibleMessageCell.swipeToReplyThreshold {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            }
+            previousX = translationX
+        case .ended, .cancelled:
+            if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold {
+                guard let viewItem = viewItem else { return }
+                let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+                UIView.animate(withDuration: 0.25) {
+                    viewsToMove.forEach { $0.transform = .identity }
+                    self.replyButton.alpha = 0
+                }
+                delegate?.handleReplyButtonTapped(for: viewItem)
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: -VisibleMessageCell.maxBubbleTranslationX, y: 0) }
+                    self.replyButton.alpha = 1
+                }
+            }
+        default: break
+        }
     }
     
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
