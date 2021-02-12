@@ -250,18 +250,23 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        shouldBottomViewReserveSpaceForKeyboard = false
         phoneNumberTextField.delegate = self
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         populateDefaults()
     }
 
+    var isAppearing = false
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        phoneNumberTextField.becomeFirstResponder()
         shouldIgnoreKeyboardChanges = false
+        isAppearing = true
 
         updateViewState(animated: false)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        phoneNumberTextField.becomeFirstResponder()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -271,29 +276,38 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        updateViewState()
+        updateViewState(animated: !isAppearing)
+        isAppearing = false
     }
 
     public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
+        var needsLayout = false
+
         let isDismissing = (after == 0)
         if isDismissing, equalSpacerHeightConstraint?.isActive == true {
             pinnedSpacerHeightConstraint?.constant = titleSpacer?.height ?? 0
             equalSpacerHeightConstraint?.isActive = false
             pinnedSpacerHeightConstraint?.isActive = true
+            needsLayout = true
         }
 
         // Ignore any minor decreases in height. We want to grow to accomodate the
         // QuickType bar, but shrinking in response to its dismissal is a bit much.
-        let isKeyboardGrowing = after > (keyboardBottomConstraint?.constant ?? before)
+        let isKeyboardGrowing = after > -(keyboardBottomConstraint?.constant ?? 0.0)
         let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
         if isKeyboardGrowing || isSignificantlyShrinking || isDismissing {
             super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
-            self.view.layoutIfNeeded()
+            needsLayout = true
         }
 
-        if !isDismissing {
+        if !isDismissing, equalSpacerHeightConstraint?.isActive == false {
             pinnedSpacerHeightConstraint?.isActive = false
             equalSpacerHeightConstraint?.isActive = true
+            needsLayout = true
+        }
+
+        if needsLayout {
+            view.layoutIfNeeded()
         }
     }
 
@@ -569,15 +583,15 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         self.onboardingController.update(phoneNumber: phoneNumber)
 
         self.verificationAnimation(shouldPlay: true)
-        self.onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] error in
+        self.onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] willDismiss, error in
             guard let self = self else { return }
             self.verificationAnimation(shouldPlay: false)
 
-            // If verification failed with an error, retake first responder
-            guard let error = error else { return }
+            // If the onboarding controller is not transitioning away from us, retake first responder
+            guard !willDismiss else { return }
             self.phoneNumberTextField.becomeFirstResponder()
 
-            if error.httpStatusCode == 413 {
+            if let error = error, error.httpStatusCode == 413 {
                 // If we're not handed a retry-after date directly from the server, either
                 // use the existing date we already have or construct a new date 5 min from now
                 let retryAfterDate = error.httpRetryAfterDate ?? {
@@ -658,6 +672,6 @@ extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate
         let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
 
         onboardingController.update(countryState: countryState)
-        updateViewState()
+        updateViewState(animated: false)
     }
 }

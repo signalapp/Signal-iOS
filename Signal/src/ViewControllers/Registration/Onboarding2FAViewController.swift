@@ -271,6 +271,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                 self.validationWarningLabel.alpha = 1
                 self.needHelpLink.alpha = 1
             } completion: {
+                self.pinTextField.becomeFirstResponder()
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
             }
