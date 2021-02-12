@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Ndajeni përmes Signal-i";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Cilido me këtë lidhje mund të shohë emrin e këtij grupi dhe anëtarët dhe kërkesat për pjesëmarrje në të. Jepuani njerëzve të cilëve u besoni.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Lidhje Grupi";

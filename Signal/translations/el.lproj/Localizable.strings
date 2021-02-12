@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Μοιράσου μέσω Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Με αυτό τον σύνδεσμο, οποιοσδήποτε μπορεί να δεί το όνομα και τα μέλη αυτής της ομάδας, και να ζητήσει να μπει στην ομάδα. Μοιράσου τον μόνο με άτομα που εμπιστεύεσαι.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Σύνδεσμος ομάδας";

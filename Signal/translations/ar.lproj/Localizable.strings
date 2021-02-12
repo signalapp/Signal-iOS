@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رسالة صوتية %@ ثانية";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رسالة صوتية زمن %@ ثانية";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "المشاركة عبر Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "أي شخص لديه هذا الرابط يُمكنه رؤية اسم هذه المجموعة وأعضائها وإرسال طلب للانضمام. شاركه مع من تثق به.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "رابط المجموعة";
@@ -3479,7 +3479,7 @@
 "PIN_ACTION" = "تثبيت";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "الـPIN يجب أن يحوي على الأقل اربعة رموز";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة رموز على الأقل";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "تغيير PIN الخاص بك";
@@ -3500,127 +3500,127 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل الـPIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا قمت بتعطيل الرمز التعريفي الشخصي، ستفقد جميع البيانات عندما تقوم بإعادة التسجيل إلى Signal إلّا إذا قمت بنقلها من جهاز  iOS آخر. لا يمكنك تفعيل قفل التسجيل أثناء تعطيل الرمز التعريفي الشخصي.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطّلتَ الـPIN، ستفقد جميع البيانات عند إعادة التسجيل في Signal إلّا إذا قمت بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل الـPIN.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "لم يُحفَظ رقمك التعريفي الشخصي. سوف نطلب منك إنشاءه لاحقا.";
+"PIN_CREATION_ERROR_MESSAGE" = "لم يُحفَظ الـPIN الخاص بك. سنُطالِبُك بإنشاء PIN لاحقًا.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الرقم التعريفي الشخصي";
+"PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "الرموز التعريفي الشخصية تبقي المعلومات المحفوظة في Signal مُعمَّاة حتى لا يستطيع أحدٌ غيرك الوصول إليها. سيتم استرجاع صفحة حسابك الشخصي، إعداداتك، وجهات اتصالك عندما تعيد تثبيت التطبيق. لن تحتاج إلى الرمز التعريفي الشخصي لفتح التطبيق.";
+"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "تعرف أكثر على الرقم التعريفي الشخصي";
+"PIN_CREATION_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "الرقمان التعريفيان الشخصيان غير متوافقين. حاول مرة أخرى.";
+"PIN_CREATION_MISMATCH_ERROR" = "الـPIN غير مُطابق. حاول مرة أُخرى.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "يجب أن يحوي الرقم التعريفي الشخصي أربعة حروف على الأقل";
+"PIN_CREATION_NUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعد إدخال الرقم التعريفي الشخصي";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعِد إدخال الـPIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "جاري إنشاء الرقم التعريفي الشخصي";
+"PIN_CREATION_PIN_PROGRESS" = "جار إنشاء الـPIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "يمكنك تغيير الرقم التعريفي الشخصي في أي وقت طالما بقي هذا الجهاز مسجلا.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "يُمكنك تغيير الـPIN الخاص بك طالما أن هذا الجهاز مُسجّل.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "قم بتغيير رقم التعريف الشخصي الخاص بك";
+"PIN_CREATION_RECREATION_TITLE" = "تغيير الـPIN الخاص بك";
 
 /* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "أطفيء";
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "تعطيل";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "لتعطيل الرقم التعريفي الشخصي الخاص بك، عليك أولاً تعطيل قفل الانخراط.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "لتعطيل الـPIN الخاص بك ، عليك أولاً تعطيل قفل التسجيل.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل أطفيء قفل الانخراط ؟";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل تُريد تعطيل قفل التسجيل؟";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "إلغاء الرقم التعريفي الشخصي";
+"PIN_CREATION_SKIP" = "تعطيل الـPIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
+"PIN_CREATION_TITLE" = "إنشاء الـPIN الخاص بك";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "اختر رقما تعريفيا شخصيا أمتن.";
+"PIN_CREATION_WEAK_ERROR" = "اختر PIN أقوى";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "لم يتم تعطيل الرقم التعريفي الشخصي الخاص بك. سنطالبك مرة أخرى لاحقاً.";
+"PIN_DISABLE_ERROR_MESSAGE" = "لقد تعذّر تعطيل الـPIN الخاص بك. سنُطالِبُك مرة أُخرى لاحقًا.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل الرقم التعريفي الشخصي";
+"PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل الـPIN";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "لمساعدتك في تذكُّر رقمك التعريفي الشخصي، سوف نسألك إدخاله من حين لآخر. سوف نسألك في كل مرة أقل مع مرور الزمن.";
+"PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ الـPIN الخاص بك، سوف نسألك لإدخاله من حين لآخر. سنسألك عنه بشكل أقل مع مرور الزمن.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "هل نسيت الرقم التعريفي الشخصي؟";
+"PIN_REMINDER_FORGOT_PIN" = "هل نسيت الـPIN الخاص بك؟";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "إثبات الرقم التعريفي الشخصي";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "التحقُق من الـPIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "سوف نسألك أحيانا للتحقق من رقمك التعريفي الشخصي لكي تتذكره.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "من حين لآخر سنُطالبك بالتحقُق من الـPIN حتى تتذكره.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "سوف نذكرك لاحقا في الأيام القادمة.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "سنذكِرك مرة أُخرى في غُضون بضعة أيام.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "إثبات الرقم التعريفي الشخصي ل Signal";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "التحقق من الـPIN الخاص بك في Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سوف نذكرك مرة أخرى غدا.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سنُذكرك مرة أُخرى غداً.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "سوف نذكرك لاحقا خلال الأسابيع القادمة.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "سنُذكرك مرة أُخرى في غضون بضع أسابيع.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "سوف نذكرك لاحقا خلال أسبوع.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "سنُذكرك مرة أُخرى في عُضون أسبوع.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "الرقم التعريفي الشخصي باطل، حاول مرة أخرى.";
+"PIN_REMINDER_MISMATCH_ERROR" = "PIN غير صالح، حاول مرة أُخرى.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "أدخل الرقم التعريفي الشخصي ل Signal";
+"PIN_REMINDER_TITLE" = "أدخل الـPIN الخاص بك في Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "الرقم الشخصي يجب أن يتكون من 4 خانات على الأقل.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "يمكنك فقط تثبيت 4 محادثات على اﻷكثر.";
+"PINNED_CONVERSATION_LIMIT" = "يُمكنك تثبيت ما يصل إلى 4 مُحادثات فقط.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "مثبّت";
+"PINNED_SECTION_TITLE" = "مُثبّت";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "إنشاء رقم تعريفي شخصي";
+"PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "يسمح الرقم التعريفي الشخصي بإبقاء المعلومات المخزنة مُعمَّاة بواسطة Signal.";
+"PINS_MEGAPHONE_BODY" = "الـPIN يُبقي المعلومات المحفوظة مع Signal بشكل مُعمَّى";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "سوف نذكرك لاحقا. سيصبح إنشاء الرقم التعريفي الشخصي واجبا خلال %ld أيام.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "سنُذكرك لاحقًا. سيُصبح إنشاء PIN إلزاميًا في غُضون عدد %ld يوم.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "إنشاء رقم تعريفي شخصي";
+"PINS_MEGAPHONE_TITLE" = "قم بإنشاء PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "أُنشيء الرقم التعريفي الشخصي. يمكنك تغييره في الإعدادات.";
+"PINS_MEGAPHONE_TOAST" = "تمَّ إنشاء PIN. يُمكنك تغييره في الإعدادات.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "تم تعطيل الرقم التعريفي الشخصي";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "تمَّ تعطيل الـPIN";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "شغِّل الوسائط";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "تشغيل الوسط";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "لم تضع علامة تحقق لـ %@";
@@ -3635,13 +3635,13 @@
 "PRIVACY_TAP_TO_SCAN" = "يُرجى اللمس من أجل المسح الضوئي";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "محو علامة التحقق";
+"PRIVACY_UNVERIFY_BUTTON" = "إزالة التحقق";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %@. هل تتحقق من جهة الاتصال الصحيحة؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "هذا لا يبدوا كرقم الأمان الخاص بك أنت مع %@. هل أنت تتحقق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "الرقم الذي في حافظتك لا يبدو كرقم اﻷمان الخاص بهذه المحادثة.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو أن الرقم الذي في الحافظة الخاصة بك هو رقم الأمان الصحيح لهذه المُحادثة.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد Signal أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
@@ -3656,10 +3656,10 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "شريكك يستخدم إصدارا قديما من Signal. سيحتاج للتحديث ليتمكن من التحقق.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "إن الرمز الممسوح ضوئيا لا يشبه رقم الأمان. أأنتما تستخدمان آخر إصدار Signal ؟";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الرمز المَمسوح لا يبدوا كرقم أمان. هل أنتما كِلاكُما على إصدار حديث من Signal؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "إذا رغبت في التحقق من أمان التعمية من طرف لطرف الخاص بك مع الشخص %@, يجب مقارنة اﻷرقام في اﻷعلى مع اﻷرقام في جهازه.\n\nأو يمكنك مسح الرمز الذي في جهازه, أو الطلب منه مسح الرمز الخاص بك.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "إذا رغبتَ في التحقق مِن أمان تَعمية النِهاية-إلى-النِهاية الخاصة بكَ أنتَ مع %@, قارِن الأرقام في الأعلى مع الأرقام في الجهاز الخاص به.\n\nكبديل، يُمكنك مسح الرمز الذي في هاتفه أو اخبره أن يمسح الرمز الخاص بك.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "التحقق من رقم اﻷمان";
@@ -3671,82 +3671,82 @@
 "PROCEED_BUTTON" = "تقدم";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "اكتب عدة كلمات عن نفسك....";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "اكتب بضع كلمات عن نفسك...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "كن لطيفاً";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "كُن طيِّبَ القَلب";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "محب للقهوة";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "مُحِبٌ لِلقهوَة";
 
 /* The 'Encrypted' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمَّى";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "لديّ وقت للتحدث";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "مُتفرِّغٌ لِلمُحادَثة";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ما عليك إلا التحدث بكل حرية";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخذ استراحة";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخذُ اِستِراحةً";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أعمل على شيء جديد";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أَعمَلُ عَلَى شَيءٍ جَدِيد";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "حول";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "عن (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "حول (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "غيّر %@اسمه من %@إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ قد غيَّر اسم ملفهُ الشخصي مِن %@ إلى %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "غيّر %@ اسمه إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ قد غيّر اسم ملفهُ الشخصي إلى %@.";
 
 /* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "أضف إلى صفحتي الشخصية";
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "الإضافة إلى الملف الشخصي";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "ضع صورة شخصية";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "عيِّن صورة للملف الشخصي";
 
 /* Header for the 'bio' section of the profile view. */
 "PROFILE_VIEW_BIO_SECTION_HEADER" = "حول";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "احذف الصورة";
+"PROFILE_VIEW_CLEAR_AVATAR" = "إزالة الصورة";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "أنشيء اسم المستخدم";
+"PROFILE_VIEW_CREATE_USERNAME" = "أنشيء اسم مُستخدِم";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "إن لقبك طويل جدا.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "اسمكَ الأخير طويلٌ جدًا.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "إن اسمك ضروري.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "اسمُكَ الأول مُتَطلّب.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "إن اسمك طويل جدا.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "اسمكَ الأول طويلٌ جدًا.";
 
 /* Default text for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(اختياري)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "اللقب";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "الاسم الأخير";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(ضروري)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(مُتَطلّب)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "الاسم";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "الاسم الأول";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "يمكن تحديث الحساب فقط إذا كان متصلا بالانترنت.";
+"PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث ملفك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "صفحة حسابك الشخصي مُعمَّاة من طرف لطرف. إن أي تغيير سيكون ظاهرا لجهات اتصالك، بعد قبولك طلب محادثتهم أو بعد انضمامك لمجموعة جديدة.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ملفك الشخصي مُعمَّى من النِهاية إلى النِهاية. إن ملفك الشخصي وأي تغييرات تطرأ عليه ستكون  مرئية لِجهات إتصالك، عندما تبدأ أو تقبل مُحادثة جديدة، وعند إنضمامك لمجموعة جديدة.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -3755,49 +3755,49 @@
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "اسم المستخدم";
+"PROFILE_VIEW_USERNAME_FIELD" = "اسم المُستخدم";
 
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "وضع علامة \"مقروء\"";
+"PUSH_MANAGER_MARKREAD" = "تَعليم كَمقروء";
 
 /* Notification action button title for 'react with thumbs up.' */
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "رُد";
+"PUSH_MANAGER_REPLY" = "الرد";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "تمت بنجاح إعادة الاشتراك في خدمة الإشعارات اللحظية.";
+"PUSH_REGISTER_SUCCESS" = "تمَّ بنجاح إعادة الاشتراك في دَفع الإشعارات.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "الإشعارات اللحظية";
+"PUSH_REGISTER_TITLE" = "دَفع الإشعارات";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "؟";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "قيد الرد على %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "الرد على %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "قيد الرد عليك";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "الرد عليكَ أنت";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "لم يعثر على الرسالة الأصلية.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "لم يُعثَر على الرسالة الأصلية.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "لم تعد الرسالة الأصلية متاحة.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "لم تَعُد الرسالة الأصلية مُتاحة.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "لم يعثر على الرسالة الأصلية.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "لم يُعثَر على الرسالة الأصلية.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "ارفق الصور.";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "مُرفق";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "صوت";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
-"QUOTED_REPLY_TYPE_GIF" = "صورة متحركة";
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "صورة";
@@ -3806,142 +3806,142 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "فيديو";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "الكل· %@";
+"REACTION_DETAIL_ALL_FORMAT" = "الكل · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعل %@ مع رسالتك";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعُل بِـ%@ على رسالتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعل %@ مع ألبومك";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعُل بِـ%@ على ألبومك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعل %@ مع ملفك الصوتي";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعُل بِـ%@ على صوتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعل %@ مع مشاركتك جهة الاتصال";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعُل بِـ%@ على جهة اتصالك المُشاركَة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعل %@ مع ملفك";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعُل بِـ%@ على ملفك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعل %@ مع صورتك المتحركة";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعُل بِـ%@ على GIF الخاص بك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعل مع %@ مع صورتك";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعُل بِـ%@ على صورتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعل %@ مع ملصقك";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على مُلصقك";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعل %@ مع  : \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعل %@ مع الفيديو";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعُل بِـ%@ على فيديوهك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعل %@ مع وسائطك التي تُعرَض مرة واحدة";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على وسط العرض لمرة واحدة خاصتَك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعل %@ مع تسجيلك الصوتي";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على تسجيلك الصوتي";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "أنت";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "قراءة";
+"READ_ACTION" = "مقروء";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "لا يمكن تحديد المستخدم.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "نسيتُ رمز PIN للأمان الخاص بي.";
+"REGISTER_2FA_FORGOT_PIN" = "لقد نسيت الـPIN الخاص بي..";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "أتريد مساعدة ؟";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تُريد المُساعدة؟";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "إن رقمك التعريفي الشخصي عبارة عن رمز مكون من أربعة حروف فما فوق والتي يمكن أن تكون أرقاما أو رموزا. إذا لم تتذكر رقمك التعريفي الشخصي، يجب عليك الانتظار سبعة أيام حتى تعيد تسجيل حسابك.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عِبارة عَن أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُر الـPIN الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "إن رقمك التعريفي الشخصي عبارة عن رمز مكون من أربعة حروف فما فوق والتي يمكن أن تكون أرقاما أو رموزا. إذا لم تتذكر رقمك التعريفي الشخصي، تستطيع إنشاء واحد جديد. يمكنك تسجيل واستخدام حسابك لكنك قد تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عِبارة عَن أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُر الـPIN الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك  ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات ملفك الشخصي.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "إن رقمك التعريفي الشخصي الذي أنشأته عبارة عن رمز مكون من أربعة حروف فما فوق. إذا لم تتذكر رقمك التعريفي الشخصي، يجب عليك الانتظار سبعة أيام حتى تعيد تسجيل حسابك.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عبارة عن أربع خانات رقمية أنت قد أنشأتها. إذا لم تستطع تَذكُر الـPIN الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "بقيت لديك %lu محاولة. إذا استنفذت كل المحاولات، يمكنك إنشاء رقم تعريفي جديد. تستطيع التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "أنت لديك عدد %lu مُحاولة مُتبقية. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات ملفك الشخصي.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "بقيت لديك %lu محاولة. إذا استنفذت كل المحاولات، سوف يقفل حسابك. بعد سبعة أيام من الخمول، سيمكنك إعادة التسجيل دون إدخال رقمك التعريفي الشخصي . سيتم مسح حسابك وحذف جميع محتواه. ";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "أنت لديك عدد %lu مُحاولة مُتبقية. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال الـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "بقيت لديك محاولة واحدة. إذا استنفذت كل المحاولات، سوف يقفل حسابك. بعد سبعة أيام من الخمول، سيمكنك إعادة التسجيل دون إدخال رقمك التعريفي الشخصي . سيتم مسح حسابك وحذف جميع محتواه. ";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "تبقت لديك مُحاولة واحدة مُتبقية. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال الـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "بقيت لديك محاولة واحدة. إذا استنفذت كل المحاولات، يمكنك إنشاء رقم تعريفي جديد. تستطيع التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "تبقت لديك مُحاولة واحدة مُتبقية. إذا استنفذتَ جميع المُحاولات،  يُمكنك إنشاء PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات ملفك الشخصي.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "الرقم التعريفي الشخصي غير صحيح";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN غير صحيح";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "يجري التحقق من الرقم التعريفي الشخصي...";
+"REGISTER_2FA_PIN_PROGRESS" = "جار التحقق من الـPIN...";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "إرسال";
+"REGISTER_2FA_SUBMIT_BUTTON" = "تسليم";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "مرحبًا!";
+"REGISTER_CONTACTS_WELCOME" = "مَرحبًا!";
 
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "حاول مرة أُخرى";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "حاولت مراراً وتكراراً . الرجاء الانتظار لدقيقة واحدة قبل إعادة المحاولة.";
+"REGISTER_RATE_LIMITING_BODY" = "أنتَ قد حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل المُحاولة مرة أُخرى.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "حاولت مراراً وتكراراً . الرجاء الانتظار لدقيقة واحدة قبل إعادة المحاولة.";
+"REGISTER_RATE_LIMITING_ERROR" = "أنتَ قد حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل المُحاولة مرة أُخرى.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "فشلت إعادة الاشتراك في خدمة الإشعارات اللحظية.";
+"REGISTRATION_BODY" = "فشلت إعادة الاشتراك في دَفع الإشعارات.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "رمز البلد";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "قم بإدخال الرقم";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "أدخِل الرقم";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "خطأ في التسجيل";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل حسابك حتى تتحقق من الرمز الذي أرسلناه.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل الحساب الخاص بك حتى تتحقق من الرمز الذي قد أرسلناه لك.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "صيغة رقم الهاتف هذه غير مدعومة, فضلّا تواصل مع الدعم.";
+"REGISTRATION_NON_VALID_NUMBER" = "تنسيق رقم هذا الهاتف غير مدعوم ، يُرجى التواصُل مع الدعم.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "رقم الهاتف";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل إرسال أي رسالة.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "تحتاج إلى التسجيل قبل أن تتمكن من إرسال رسالة.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "فشل التحقق";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "الأرقام التي أدخلتها لا تتطابق مع التي أرسلناها. تريد أن تعيد التحقق؟";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "الأرقام التي قد سلمتها لا تتطابق مع التي أرسلناها. هل تُريد أن تحقق مُجددًا؟";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "قفل الانخراط غير صحيح.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN قفل التسجيل غير صحيح.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "الرجاء إدخال رقم هاتف صالح للتسجيل.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "للتسجيل يُرجى إدخال رقم هاتف صالح.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم الهاتف غير صحيح";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم هاتف غير صحيح";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "الرجاء إدخال رقم هاتف للتسجيل.";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "يُرجى إدخال رقم هاتف للتسجيل.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "لا يوجد رقم هاتف";
@@ -3950,31 +3950,31 @@
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "رقم الهاتف الذي تحاول التسجيل به مسجل بالفعل على خادوم آخر, فضلّا ألغ التسجيل من هناك ثم حاول مرة أخرى.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "إنَّ رقم الهاتف الذي تُحاول تسجيله قد تمَّ تسجيله بالفعل على خادم آخر, يُرجى إلغاء التسجيل من هُناك ثم حاول مرة أُخرى.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "اختر مشرفا جديدا";
+"REPLACE_ADMIN_VIEW_TITLE" = "اختر مُشرف جديد";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "إعادة الإشتراك في خدمة الإشعارات اللحظية";
+"REREGISTER_FOR_PUSH" = "إعادة الإشتراك في دَفع الإشعارات";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "لجعل Signal أفضل تطبيق للتراسُل على هذا الكوكب، يسعدنا سماع ملاحظاتك.";
+"RESEARCH_MEGAPHONE_BODY" = "لجعل Signal أفضل تطبيق مُراسلة على هذا الكوكب ، يُسعدنا سماع ملاحظاتك.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "أخبر Signal ما يجول ببالك";
+"RESEARCH_MEGAPHONE_TITLE" = "أخبر Signal رأيك";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "تستضيف Surveygizmo استطلاع الرأي في الموقع الآمن surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "الاستطلاع مُستضاف بواسطة Surveygizmo على المجال الآمن surveys.signalusers.org";
 
 /* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "لا شكرا";
+"RESEARCH_MODAL_NO_THANKS" = "لا شكراً";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>نؤمن بالخصوصية.</bold>\nﻻ يتعقبك Signal ولا يجمع عنك البيانات. لتحسين Signal للجميع، فنحن نعتمد على ملاحظات المستخدمين، <bold>إذ أننا نتوق لتعليقاتك</bold>.\n\nلذلك، فنحن نجري استطلاعا لفهم كيفية استخدامك Signal. هذا الاستطلاع ﻻ يجمع أي بيانات تمكّن من تحديد هويتك. إن كان لديك اهتمام بمشاركتنا ملاحظات إضافية، فإن لك الاختيار بتزويدنا بمعلومات الاتصال بك.\n\nسنكون ممتنين لك إذا منحت لنا بضع دقائق من وقتك لإخبارنا عن آرائك.";
+"RESEARCH_MODAL_PLEA" = "<bold>نحنُ نؤمِن بالخُصوصية.</bold>\n\nﻻ يتعقبك Signal ولا يجمع بياناتك. للعمل على تحسين Signal من أجل الجميع، نحن نعتمد على مُلاحظات المُستخدمين، <bold>ونحن نتوق لأي من مُلاحظاتِك</bold>.\n\nنحن نجري استطلاعاً لفهم كيفية استخدامك Signal. هذا الاستطلاع ﻻ يجمع أي بيانات تمكّن من تحديد هويتك. إن كان لديك اهتمام بمشاركتنا ملاحظات إضافية، فإن لك الاختيار بتزويدنا بمعلومات الاتصال بك.\n\nسنكون مُمتنين إذا كانت لديك بضع دقائق وملاحظة لتقديمها، نحن نتوق للاستماع إليك.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "يُرجى المشاركة في الاستطلاع";
+"RESEARCH_MODAL_TAKE_SURVEY" = "شارك في الاستطلاع";
 
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "أبحاث Signal";
@@ -3986,100 +3986,100 @@
 "RETURN_CALL_PILL_BUTTON" = "العودة";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "اضف إلى المجموعة على كل حال";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "أضف إلى المجموعة على أي حال";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "أتصل على كل حال";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "اتصل على أي حال";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "أرسل على كل حال";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "أرسل على أي حال";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "هؤلاء الأشخاص قاموا بإعادة تثبيت أو قاموا بتغير أجهزتهم. يرجى تأكيد رقم الأمان معهم لضمان الخصوصية.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "هؤلاء الأشخاص التالون رُبما قد أعادوا التثبيت أو قد غيروا أجهزتهم. تحقق من رقم الأمان الخاص بك أنت معهم لِضمان الخصوصية.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "المتحقق منه سابقاً";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "تمَّ التحقق مِنه مُسبقًا";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "تغيّرات رقم الأمان";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "تغييرات رقم الأمان";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "معاينة ";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "إظهار";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بي:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تم تغيير رقم أمانك مع %@. ربما ترغب في التحقق منه.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "رقم أمانك أنت مع%@ قد تغير. رُبما أنتَ قد ترغب في التحقق منه.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "امسح رمز الـQR المعروض على جهاز جهة اتصالك.";
+"SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "مسح رمز الاستجابة السريعة";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فوري";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فوراً";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "لم ينمكن من الوصول إلى الاستيثاق.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "تعذّر الوصل إلى المُصادقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشل استيثاق.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "فشلت الكثير من محاولات الاستيثاق. يُرجى المحاولة لاحقا.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "إن عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى مُعاودة المُحاولة في وقت لاحق.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يجب عليك تفعيل رمز السر في إعدادات iOS لكي تتمكن من استخدام شاشة القفل.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يجب عليك تفعيل رمز السر في إعدادات iOS لكي تتمكن من استخدام شاشة القفل.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تفعيل رمز السر في إعدادات iOS لكي تتمكن من استخدام شاشة القفل.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قم بالاستيثاق لفتح Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قم بالمُصادقة لفتح Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "فشل التحقق";
+"SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادقة.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "فك القفل عن سيجنال";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَك قفل Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "مريم عدلي";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "مريم";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "مسعود الزياني";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "علي محمد";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
-"SCREENSHOT_NAME_CONTACT_FOUR" = "حنان الشرايبي";
+"SCREENSHOT_NAME_CONTACT_FOUR" = "وسام";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_NINE" = "عباس العابدين";
+"SCREENSHOT_NAME_CONTACT_NINE" = "آمنة";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
-"SCREENSHOT_NAME_CONTACT_ONE" = "رئيس المجلس مياو";
+"SCREENSHOT_NAME_CONTACT_ONE" = "الرئيس مياو";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_SEVEN" = "عثمان عدنان";
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "إحسان";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "عطية الفاسي";
+"SCREENSHOT_NAME_CONTACT_SIX" = "عبدالرحمن";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "هاجر جلال";
+"SCREENSHOT_NAME_CONTACT_TEN" = "علياء";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "رجاء ياسر";
+"SCREENSHOT_NAME_CONTACT_THREE" = "بيان";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "سلوى حطاب";
+"SCREENSHOT_NAME_CONTACT_TWO" = "شمس";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "عائلة حلبي";
+"SCREENSHOT_NAME_GROUP_FIVE" = "عائلة ابو عبدالله";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
 "SCREENSHOT_NAME_GROUP_FOUR" = "الغروب 🌅";
@@ -4091,109 +4091,109 @@
 "SCREENSHOT_NAME_GROUP_SIX" = "حديث القطط 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
-"SCREENSHOT_NAME_GROUP_THREE" = "متسلقو الجبال 🧗🏽‍♀️";
+"SCREENSHOT_NAME_GROUP_THREE" = "مُتسلقو الجبال 🧗🏽‍♀️";
 
 /* This is for a group chat for people who want weather updates. */
-"SCREENSHOT_NAME_GROUP_TWO" = "حالات الطقس";
+"SCREENSHOT_NAME_GROUP_TWO" = "توقعات الطقس";
 
 /* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
-"SCREENSHOT_NAME_LOCAL_PROFILE" = "المديرة عفاف";
+"SCREENSHOT_NAME_LOCAL_PROFILE" = "المديرة فلافل";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "تهانينا ! لا أصدق ذلك !";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "مبروك! لا أستطيع تصديق ذلك!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "أراك غدا ؟";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "أراك غداً إن شاء الله؟";
 
 /* This is a message. Please include the emoji. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "شكرا ☺️";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "شكراً ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "لقد نفعتني حكمتك.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "لقد أنقذتني حكمتك.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "شكرا ! أفرحتني رسالتك :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "شكراً! يا لها من رسالة رائعة لقراءتها :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "المطر يهطل الآن وأنا أجلس هنا لأستمع إليه.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "المطر يتساقط وأنا جالس هنا فقط كي أستمع إليه.";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "هذا ما فعلتُه هذا الصباح أيضا.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "ذلك ما فعلته أنا هذا الصباح أيضًا.";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "أيمكنني الاتصال بك ؟";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "هل أنت مُتفرِّغ للاتصال؟";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "نعم !";
+"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "أجل!";
 
 /* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
-"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "سوف نقوم بتحضير الحلوى غدا";
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "سنصنع الكريب غدًا";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "انظر إلى هذا !";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "هي، تحقق من هذا!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "نيوزلندا !";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "نيوزيلاندا!";
 
 /* This is a message after an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "ياااه ! أين أنت ؟";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "مهلاً أين أنت؟";
 
 /* This is a message in the group chat of family members. */
 "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "اليوم هو ...";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "عيد ميلاد سعيد. عيد ميلاد سعيد !";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "عيد أضحى مُبارك! بإذن الله الوليمة تكون في تمام الساعة الثانية ظهراً.";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "الجو غائم هنا أيضا.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "الأجواء غائمة جداً هُنا.";
 
 /* 1984 is the book title. The file extension is a text file. */
-"SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
+"SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "599.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "هل سبق أن قرأت هذا ؟";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "هل قرأت هذا بعدُ أم لا؟";
 
 /* This is a file name 'Instructions' for the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "التعليمات.PDF";
+"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "التعليمات.pdf";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "هذا دليل التعليمات.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "هذا هو دليل التعليمات.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "الصور، رجاءاً !";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "أرسل الصور من فضلك!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "هذا مُهدِّيء";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "هذا راقي.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "إنها ترافق قطتها وهي مربوطة...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "إنها تُمشّي قطتها وهي مربوطة بحبل...";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 صباح الخير !";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 صباح الخير!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "ما هي الطريق التي يجب أن نسلكها ؟";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "أي طريق يجب أن نسلكه؟";
 
 /* This is a message. Please include the emoji if possible. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "ألقاكم هناك 🤗";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "ألقاكم هُناك بإذن الله 🤗";
 
 /* This is a message sent with an attachment. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "المطر يسقط طول اليوم";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "تمطر طوال يوم";
 
 /* An example name for a user we use in the screenshots. */
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، اسم المستخدم، أو عدد";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، اسم مُستخدم، أو رقم";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "بحث باستخدام الاسم أو الرقم";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "البحث باستخدام الاسم أو الرقم";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "بحث";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "البحث";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "جهات الاتصال أخرى";
+"SEARCH_SECTION_CONTACTS" = "جهات اتصال أُخرى";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
 "SEARCH_SECTION_CONVERSATIONS" = "المحادثات";
@@ -4202,10 +4202,10 @@
 "SEARCH_SECTION_MESSAGES" = "الرسائل";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "تعذر جلب رمز الربط";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "تعذّر جلب رمز الربط";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "قم بتحديث Signal على هذا الجهاز حتى تستطيع ربطه بهاتفك.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "حدِّث Signal في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "إصدار غير مدعوم";
