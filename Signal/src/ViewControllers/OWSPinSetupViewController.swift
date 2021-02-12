@@ -305,7 +305,7 @@ public class PinSetupViewController: OWSViewController {
             pinTypeToggle,
             pinToggleSpacer,
             OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton),
-            buttonSpacer,
+            buttonSpacer
         ])
         stackView.axis = .vertical
         stackView.alignment = .center

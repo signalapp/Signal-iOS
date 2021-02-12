@@ -321,7 +321,6 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
                 formattedPhoneNumber)
             )
 
-
         self.titleLabel = titleLabel
         self.subtitleLabel = subtitleLabel
         titleLabel.accessibilityIdentifier = "onboarding.verification." + "titleLabel"

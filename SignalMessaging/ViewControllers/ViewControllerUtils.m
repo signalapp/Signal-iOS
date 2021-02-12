@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ViewControllerUtils.h"
@@ -31,9 +31,9 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
 }
 
 + (BOOL)phoneNumberTextField:(UITextField *)textField
-shouldChangeCharactersInRange:(NSRange)range
-           replacementString:(NSString *)insertionText
-                 callingCode:(NSString *)callingCode
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText
+                      callingCode:(NSString *)callingCode
 {
     BOOL isDeletion = (insertionText.length == 0);
 
@@ -43,17 +43,16 @@ shouldChangeCharactersInRange:(NSRange)range
 
         // Let's tell UIKit to not apply the edit and just apply it ourselves.
         [self phoneNumberTextField:textField
-           changeCharactersInRange:range
-                 replacementString:insertionText
-                       callingCode:callingCode];
+            changeCharactersInRange:range
+                  replacementString:insertionText
+                        callingCode:callingCode];
         return NO;
     } else {
         return YES;
     }
 }
 
-+ (void)reformatPhoneNumberTextField:(UITextField *)textField
-                         callingCode:(NSString *)callingCode
++ (void)reformatPhoneNumberTextField:(UITextField *)textField callingCode:(NSString *)callingCode
 {
     NSString *originalText = textField.text;
     NSInteger originalCursorOffset = [textField offsetFromPosition:textField.beginningOfDocument

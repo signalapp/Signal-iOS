@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -185,7 +185,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             titleLabel, titleSpacer,
             countryRow, phoneNumberRow, phoneNumberSpacer,
             validationWarningLabel, warningLabelSpacer,
-            OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton), bottomSpacer,
+            OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton), bottomSpacer
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill

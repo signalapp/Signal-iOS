@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -897,8 +897,6 @@ public class OnboardingController: NSObject {
         tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
 
         let twoFAPin = self.twoFAPin
-
-
 
         let promise = firstly {
             self.accountManager.register(

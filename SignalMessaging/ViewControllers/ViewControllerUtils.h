@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -19,13 +19,12 @@ extern NSString *const TappedStatusBarNotification;
 // Useful when +phoneNumberTextField:changeCharactersInRange:... can't be used
 // because it applies changes manually and requires failing any change request from UIKit.
 + (BOOL)phoneNumberTextField:(UITextField *)textField
-shouldChangeCharactersInRange:(NSRange)range
-           replacementString:(NSString *)insertionText
-                 callingCode:(NSString *)callingCode;
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText
+                      callingCode:(NSString *)callingCode;
 
 // Reformats the text in a UITextField to apply phone number formatting
-+ (void)reformatPhoneNumberTextField:(UITextField *)textField
-                         callingCode:(NSString *)callingCode;
++ (void)reformatPhoneNumberTextField:(UITextField *)textField callingCode:(NSString *)callingCode;
 
 // This convenience function can be used to reformat the contents of
 // a phone number text field as the user modifies its text by typing,

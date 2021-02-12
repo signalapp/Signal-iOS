@@ -160,8 +160,8 @@ dispatch_queue_t NetworkManagerQueue()
 
     // Set User-Agent header.
     [httpHeaders addHeader:OWSURLSession.kUserAgentHeader
-                     value:OWSURLSession.signalIosUserAgent
-       overwriteOnConflict:YES];
+                      value:OWSURLSession.signalIosUserAgent
+        overwriteOnConflict:YES];
 
     // Then apply any custom headers for the request
     [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:YES];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -227,8 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
             // They _do_ need to relayout if the user switches keyboards.
             return;
         }
-        [self updateBottomLayoutConstraintFromInset:-self.bottomLayoutConstraint.constant
-                                            toInset:newInset];
+        [self updateBottomLayoutConstraintFromInset:-self.bottomLayoutConstraint.constant toInset:newInset];
     };
 
 
