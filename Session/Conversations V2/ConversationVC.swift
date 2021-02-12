@@ -5,9 +5,8 @@
 // • Remaining send logic
 // • Subtitle
 // • Resending failed messages
-// • Tapping links in link previews
 // • Link previews
-// • Animation glitch when leaving conversation (probably because vc is resigning first responder)
+// • Slight paging glitch
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
@@ -47,19 +46,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }()
     
     // MARK: UI Components
-    lazy var messagesTableView: UITableView = {
-        let result = UITableView()
+    lazy var messagesTableView: MessagesTableView = {
+        let result = MessagesTableView()
         result.dataSource = self
         result.delegate = self
-        result.register(VisibleMessageCell.self, forCellReuseIdentifier: VisibleMessageCell.identifier)
-        result.register(InfoMessageCell.self, forCellReuseIdentifier: InfoMessageCell.identifier)
-        result.register(TypingIndicatorCellV2.self, forCellReuseIdentifier: TypingIndicatorCellV2.identifier)
-        result.separatorStyle = .none
-        result.backgroundColor = .clear
-        result.contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: ConversationVC.bottomInset, trailing: 0)
-        result.showsVerticalScrollIndicator = false
-        result.contentInsetAdjustmentBehavior = .never
-        result.keyboardDismissMode = .interactive
         return result
     }()
     
@@ -189,14 +179,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
             didConstrainScrollButton = true
         }
         UIView.animate(withDuration: 0.25) {
-            self.messagesTableView.contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: newHeight + ConversationVC.bottomInset, trailing: 0)
+            self.messagesTableView.keyboardHeight = newHeight
             self.scrollButton.alpha = 0
         }
     }
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         UIView.animate(withDuration: 0.25) {
-            self.messagesTableView.contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: ConversationVC.bottomInset, trailing: 0)
+            self.messagesTableView.keyboardHeight = 0
             self.scrollButton.alpha = self.getScrollButtonOpacity()
         }
     }

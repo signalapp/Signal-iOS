@@ -220,6 +220,7 @@
 		B821494F25D4E163009C0F2A /* BodyTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821494E25D4E163009C0F2A /* BodyTextView.swift */; };
 		B82149B825D60393009C0F2A /* BlockedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149B725D60393009C0F2A /* BlockedModal.swift */; };
 		B82149C125D605C6009C0F2A /* InfoBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149C025D605C6009C0F2A /* InfoBanner.swift */; };
+		B8214A2B25D63EB9009C0F2A /* MessagesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */; };
 		B8269D2925C7A4B400488AB4 /* InputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D2825C7A4B400488AB4 /* InputView.swift */; };
 		B8269D3325C7A8C600488AB4 /* InputViewButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3225C7A8C600488AB4 /* InputViewButton.swift */; };
 		B8269D3D25C7B34D00488AB4 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3C25C7B34D00488AB4 /* InputTextView.swift */; };
@@ -1269,6 +1270,7 @@
 		B821494E25D4E163009C0F2A /* BodyTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyTextView.swift; sourceTree = "<group>"; };
 		B82149B725D60393009C0F2A /* BlockedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedModal.swift; sourceTree = "<group>"; };
 		B82149C025D605C6009C0F2A /* InfoBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBanner.swift; sourceTree = "<group>"; };
+		B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesTableView.swift; sourceTree = "<group>"; };
 		B8269D2825C7A4B400488AB4 /* InputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputView.swift; sourceTree = "<group>"; };
 		B8269D3225C7A8C600488AB4 /* InputViewButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewButton.swift; sourceTree = "<group>"; };
 		B8269D3C25C7B34D00488AB4 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
@@ -2245,6 +2247,7 @@
 				B821494E25D4E163009C0F2A /* BodyTextView.swift */,
 				B82149B725D60393009C0F2A /* BlockedModal.swift */,
 				B82149C025D605C6009C0F2A /* InfoBanner.swift */,
+				B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */,
 			);
 			path = "Views & Modals";
 			sourceTree = "<group>";
@@ -5047,6 +5050,7 @@
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */,
+				B8214A2B25D63EB9009C0F2A /* MessagesTableView.swift in Sources */,
 				B835246E25C38ABF0089A44F /* ConversationVC.swift in Sources */,
 				B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,

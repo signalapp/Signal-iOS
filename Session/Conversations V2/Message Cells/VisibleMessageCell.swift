@@ -361,8 +361,6 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-            let locationInBubbleView = panGestureRecognizer.location(in: bubbleView)
-            guard bubbleView.bounds.contains(locationInBubbleView) else { return false }
             let v = panGestureRecognizer.velocity(in: self)
             guard v.x < 0 else { return false }
             return abs(v.x) > abs(v.y)
