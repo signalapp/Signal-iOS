@@ -295,21 +295,23 @@ public extension CVViewState {
 
     // We hide banners for an hour.
     private class BannerHiding {
-        let hiddenDate = AtomicOptional<Date>(nil)
+        let unfairLock = UnfairLock()
+        var hiddenDateMap = [String: Date]()
 
-        var isHidden: Bool {
-            get {
-                guard let hiddenDate = self.hiddenDate.get() else {
-                    return false
-                }
-                let hiddenDurationInterval = kHourInterval * 1
-                return abs(hiddenDate.timeIntervalSinceNow) < hiddenDurationInterval
+        func isHidden(_ threadUniqueId: String) -> Bool {
+            let hiddenDate = unfairLock.withLock {
+                hiddenDateMap[threadUniqueId]
             }
-            set {
-                // We should only be setting this value to true.
-                owsAssertDebug(newValue)
+            guard let date = hiddenDate else {
+                return false
+            }
+            let hiddenDurationInterval = kHourInterval * 1
+            return abs(date.timeIntervalSinceNow) < hiddenDurationInterval
+        }
 
-                self.hiddenDate.set(Date())
+        func setIsHidden(_ threadUniqueId: String) {
+            unfairLock.withLock {
+                hiddenDateMap[threadUniqueId] = Date()
             }
         }
     }
@@ -319,28 +321,30 @@ public extension CVViewState {
     private static let isDroppedGroupMembersBannerHiding = BannerHiding()
     private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
 
+    var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
+
     @objc
     var isPendingMemberRequestsBannerHidden: Bool {
-        get { Self.isPendingMemberRequestsBannerHiding.isHidden }
-        set { Self.isPendingMemberRequestsBannerHiding.isHidden = newValue }
+        get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isPendingMemberRequestsBannerHiding.setIsHidden(threadUniqueId) }
     }
 
     @objc
     var isMigrateGroupBannerHidden: Bool {
-        get { Self.isMigrateGroupBannerHiding.isHidden }
-        set { Self.isMigrateGroupBannerHiding.isHidden = newValue }
+        get { Self.isMigrateGroupBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isMigrateGroupBannerHiding.setIsHidden(threadUniqueId) }
     }
 
     @objc
     var isDroppedGroupMembersBannerHidden: Bool {
-        get { Self.isDroppedGroupMembersBannerHiding.isHidden }
-        set { Self.isDroppedGroupMembersBannerHiding.isHidden = newValue }
+        get { Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isDroppedGroupMembersBannerHiding.setIsHidden(threadUniqueId) }
     }
 
     @objc
     var isMessageRequestNameCollisionBannerHidden: Bool {
-        get { Self.isMessageRequestNameCollisionBannerHiding.isHidden }
-        set { Self.isMessageRequestNameCollisionBannerHiding.isHidden = newValue }
+        get { Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isMessageRequestNameCollisionBannerHiding.setIsHidden(threadUniqueId) }
     }
 }
 
