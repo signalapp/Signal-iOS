@@ -95,7 +95,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         let size = VisibleMessageCell.replyButtonSize
         result.set(.width, to: size)
         result.set(.height, to: size)
-        result.image = UIImage(named: "ic_reply")
+        result.image = UIImage(named: "ic_reply")!.withTint(Colors.text)
         return result
     }()
     
@@ -380,13 +380,8 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         guard let viewItem = viewItem else { return }
         let location = gestureRecognizer.location(in: self)
         if replyButton.frame.contains(location) {
-            let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
-            UIView.animate(withDuration: 0.25) {
-                viewsToMove.forEach { $0.transform = .identity }
-                self.replyButton.alpha = 0
-            }
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            delegate?.handleReplyButtonTapped(for: viewItem)
+            reply()
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
         }
@@ -413,13 +408,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
             previousX = translationX
         case .ended, .cancelled:
             if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold {
-                guard let viewItem = viewItem else { return }
-                let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
-                UIView.animate(withDuration: 0.25) {
-                    viewsToMove.forEach { $0.transform = .identity }
-                    self.replyButton.alpha = 0
-                }
-                delegate?.handleReplyButtonTapped(for: viewItem)
+                reply()
             } else {
                 UIView.animate(withDuration: 0.25) {
                     viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: -VisibleMessageCell.maxBubbleTranslationX, y: 0) }
@@ -433,6 +422,16 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         delegate?.openURL(URL)
         return false
+    }
+    
+    private func reply() {
+        guard let viewItem = viewItem else { return }
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        UIView.animate(withDuration: 0.25) {
+            viewsToMove.forEach { $0.transform = .identity }
+            self.replyButton.alpha = 0
+        }
+        delegate?.handleReplyButtonTapped(for: viewItem)
     }
     
     // MARK: Convenience
@@ -476,7 +475,6 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         }
         return (image, backgroundColor)
     }
-
     
     private func getSize(for viewItem: ConversationViewItem) -> CGSize {
         guard let albumItems = viewItem.mediaAlbumItems else { preconditionFailure() }
