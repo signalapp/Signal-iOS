@@ -1,6 +1,11 @@
 name: CI
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - release/*
 
 jobs:
   build_and_test:
@@ -78,7 +83,7 @@ jobs:
         run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install Dependencies
-        run: brew install swiftlint clang-format
+        run: brew install clang-format
 
       - name: Lint files changed in the PR
         run: |
