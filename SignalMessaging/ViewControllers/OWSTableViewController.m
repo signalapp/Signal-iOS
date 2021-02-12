@@ -64,6 +64,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 {
     if (self = [super init]) {
         _items = [NSMutableArray new];
+        _hasSeparators = YES;
+        _hasBackground = YES;
     }
     return self;
 }
@@ -111,7 +113,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 @property (nonatomic, nullable) OWSTableActionBlock actionBlock;
 
 @property (nonatomic) OWSTableCustomCellBlock customCellBlock;
-@property (nonatomic) UITableViewCell *customCell;
+@property (nonatomic, nullable) UITableViewCell *customCell;
 
 @end
 
@@ -537,7 +539,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
-- (nullable UITableViewCell *)customCell
+- (nullable UITableViewCell *)getOrBuildCustomCell
 {
     if (_customCell) {
         return _customCell;
@@ -699,7 +701,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     item.tableViewController = self;
 
-    UITableViewCell *_Nullable customCell = [item customCell];
+    UITableViewCell *_Nullable customCell = [item getOrBuildCustomCell];
     if (customCell != nil) {
         if (self.useThemeBackgroundColors) {
             customCell.backgroundColor = Theme.tableCellBackgroundColor;
