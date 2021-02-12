@@ -1503,46 +1503,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
-    public var serviceAddress: SignalServiceAddress? {
-        guard hasServiceE164 || hasServiceUuid else { return nil }
-
-        let uuidString: String? = {
-            guard hasServiceUuid else { return nil }
-
-            guard let serviceUuid = serviceUuid else {
-                owsFailDebug("serviceUuid was unexpectedly nil")
-                return nil
-            }
-
-            return serviceUuid
-        }()
-
-        let phoneNumber: String? = {
-            guard hasServiceE164 else {
-                return nil
-            }
-
-            guard let serviceE164 = serviceE164 else {
-                owsFailDebug("serviceE164 was unexpectedly nil")
-                return nil
-            }
-
-            guard !serviceE164.isEmpty else {
-                owsFailDebug("serviceE164 was unexpectedly empty")
-                return nil
-            }
-
-            return serviceE164
-        }()
-
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
-        guard address.isValid else {
-            owsFailDebug("address was unexpectedly invalid")
-            return nil
-        }
-
-        return address
-    }
+    public let serviceAddress: SignalServiceAddress?
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -1554,6 +1515,51 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
 
     private init(proto: StorageServiceProtos_ContactRecord) {
         self.proto = proto
+
+        let hasServiceUuid = !proto.serviceUuid.isEmpty
+        let hasServiceE164 = !proto.serviceE164.isEmpty
+        let serviceUuid: String? = proto.serviceUuid
+        let serviceE164: String? = proto.serviceE164
+        self.serviceAddress = {
+            guard hasServiceE164 || hasServiceUuid else { return nil }
+
+            let uuidString: String? = {
+                guard hasServiceUuid else { return nil }
+
+                guard let serviceUuid = serviceUuid else {
+                    owsFailDebug("serviceUuid was unexpectedly nil")
+                    return nil
+                }
+
+                return serviceUuid
+            }()
+
+            let phoneNumber: String? = {
+                guard hasServiceE164 else {
+                    return nil
+                }
+
+                guard let serviceE164 = serviceE164 else {
+                    owsFailDebug("serviceE164 was unexpectedly nil")
+                    return nil
+                }
+
+                guard !serviceE164.isEmpty else {
+                    owsFailDebug("serviceE164 was unexpectedly empty")
+                    return nil
+                }
+
+                return serviceE164
+            }()
+
+            let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
+
+            return address
+        }()
     }
 
     public func serializedData() throws -> Data {

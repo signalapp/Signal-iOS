@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public class FingerprintProtoLogicalFingerprint: NSObject, Codable {
     // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
     @objc
-    public class func builder(identityData: Data) -> FingerprintProtoLogicalFingerprintBuilder {
+    public static func builder(identityData: Data) -> FingerprintProtoLogicalFingerprintBuilder {
         return FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
     }
 
@@ -161,7 +161,7 @@ public class FingerprintProtoLogicalFingerprints: NSObject, Codable {
     // MARK: - FingerprintProtoLogicalFingerprintsBuilder
 
     @objc
-    public class func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
+    public static func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
         return FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
     }
 

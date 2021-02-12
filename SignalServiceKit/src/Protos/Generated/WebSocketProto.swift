@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable {
     // MARK: - WebSocketProtoWebSocketRequestMessageBuilder
 
     @objc
-    public class func builder(verb: String, path: String, requestID: UInt64) -> WebSocketProtoWebSocketRequestMessageBuilder {
+    public static func builder(verb: String, path: String, requestID: UInt64) -> WebSocketProtoWebSocketRequestMessageBuilder {
         return WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
     }
 
@@ -90,9 +90,7 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable {
 
         @objc
         public func addHeaders(_ valueParam: String) {
-            var items = proto.headers
-            items.append(valueParam)
-            proto.headers = items
+            proto.headers.append(valueParam)
         }
 
         @objc
@@ -245,7 +243,7 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable {
     // MARK: - WebSocketProtoWebSocketResponseMessageBuilder
 
     @objc
-    public class func builder(requestID: UInt64, status: UInt32) -> WebSocketProtoWebSocketResponseMessageBuilder {
+    public static func builder(requestID: UInt64, status: UInt32) -> WebSocketProtoWebSocketResponseMessageBuilder {
         return WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
     }
 
@@ -305,9 +303,7 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable {
 
         @objc
         public func addHeaders(_ valueParam: String) {
-            var items = proto.headers
-            items.append(valueParam)
-            proto.headers = items
+            proto.headers.append(valueParam)
         }
 
         @objc
@@ -492,7 +488,7 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable {
     // MARK: - WebSocketProtoWebSocketMessageBuilder
 
     @objc
-    public class func builder() -> WebSocketProtoWebSocketMessageBuilder {
+    public static func builder() -> WebSocketProtoWebSocketMessageBuilder {
         return WebSocketProtoWebSocketMessageBuilder()
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable {
     // MARK: - ProvisioningProtoProvisioningUuidBuilder
 
     @objc
-    public class func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
+    public static func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
         return ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
     }
 
@@ -161,7 +161,7 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable {
     // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
 
     @objc
-    public class func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
+    public static func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
         return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
     }
 
@@ -325,7 +325,7 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable {
     // MARK: - ProvisioningProtoProvisionMessageBuilder
 
     @objc
-    public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
+    public static func builder(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
         return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
     }
 

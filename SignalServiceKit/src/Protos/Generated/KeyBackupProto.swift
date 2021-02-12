@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public class KeyBackupProtoRequest: NSObject, Codable {
     // MARK: - KeyBackupProtoRequestBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoRequestBuilder {
+    public static func builder() -> KeyBackupProtoRequestBuilder {
         return KeyBackupProtoRequestBuilder()
     }
 
@@ -207,7 +207,7 @@ public class KeyBackupProtoResponse: NSObject, Codable {
     // MARK: - KeyBackupProtoResponseBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoResponseBuilder {
+    public static func builder() -> KeyBackupProtoResponseBuilder {
         return KeyBackupProtoResponseBuilder()
     }
 
@@ -394,7 +394,7 @@ public class KeyBackupProtoBackupRequest: NSObject, Codable {
     // MARK: - KeyBackupProtoBackupRequestBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoBackupRequestBuilder {
+    public static func builder() -> KeyBackupProtoBackupRequestBuilder {
         return KeyBackupProtoBackupRequestBuilder()
     }
 
@@ -695,7 +695,7 @@ public class KeyBackupProtoBackupResponse: NSObject, Codable {
     // MARK: - KeyBackupProtoBackupResponseBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoBackupResponseBuilder {
+    public static func builder() -> KeyBackupProtoBackupResponseBuilder {
         return KeyBackupProtoBackupResponseBuilder()
     }
 
@@ -861,7 +861,7 @@ public class KeyBackupProtoRestoreRequest: NSObject, Codable {
     // MARK: - KeyBackupProtoRestoreRequestBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoRestoreRequestBuilder {
+    public static func builder() -> KeyBackupProtoRestoreRequestBuilder {
         return KeyBackupProtoRestoreRequestBuilder()
     }
 
@@ -1125,7 +1125,7 @@ public class KeyBackupProtoRestoreResponse: NSObject, Codable {
     // MARK: - KeyBackupProtoRestoreResponseBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoRestoreResponseBuilder {
+    public static func builder() -> KeyBackupProtoRestoreResponseBuilder {
         return KeyBackupProtoRestoreResponseBuilder()
     }
 
@@ -1334,7 +1334,7 @@ public class KeyBackupProtoDeleteRequest: NSObject, Codable {
     // MARK: - KeyBackupProtoDeleteRequestBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoDeleteRequestBuilder {
+    public static func builder() -> KeyBackupProtoDeleteRequestBuilder {
         return KeyBackupProtoDeleteRequestBuilder()
     }
 
@@ -1498,7 +1498,7 @@ public class KeyBackupProtoDeleteResponse: NSObject, Codable {
     // MARK: - KeyBackupProtoDeleteResponseBuilder
 
     @objc
-    public class func builder() -> KeyBackupProtoDeleteResponseBuilder {
+    public static func builder() -> KeyBackupProtoDeleteResponseBuilder {
         return KeyBackupProtoDeleteResponseBuilder()
     }
 

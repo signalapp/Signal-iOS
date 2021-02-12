@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,7 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable {
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
     @objc
-    public class func builder(entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+    public static func builder(entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
         return SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
     }
 
@@ -269,7 +269,7 @@ public class SignalIOSProtoBackupSnapshot: NSObject, Codable {
     // MARK: - SignalIOSProtoBackupSnapshotBuilder
 
     @objc
-    public class func builder() -> SignalIOSProtoBackupSnapshotBuilder {
+    public static func builder() -> SignalIOSProtoBackupSnapshotBuilder {
         return SignalIOSProtoBackupSnapshotBuilder()
     }
 
@@ -294,9 +294,7 @@ public class SignalIOSProtoBackupSnapshot: NSObject, Codable {
 
         @objc
         public func addEntity(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntity) {
-            var items = proto.entity
-            items.append(valueParam.proto)
-            proto.entity = items
+            proto.entity.append(valueParam.proto)
         }
 
         @objc
@@ -403,7 +401,7 @@ public class SignalIOSProtoDeviceName: NSObject, Codable {
     // MARK: - SignalIOSProtoDeviceNameBuilder
 
     @objc
-    public class func builder(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) -> SignalIOSProtoDeviceNameBuilder {
+    public static func builder(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) -> SignalIOSProtoDeviceNameBuilder {
         return SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
     }
 

@@ -141,5 +141,5 @@ message AccountRecord {
            PhoneNumberSharingMode phoneNumberSharingMode       = 12;
            bool                   notDiscoverableByPhoneNumber = 13;
   repeated PinnedConversation     pinnedConversations          = 14;
-           bool                   preferProfileAvatars         = 15;
+           bool                   preferContactAvatars         = 15;
 }
