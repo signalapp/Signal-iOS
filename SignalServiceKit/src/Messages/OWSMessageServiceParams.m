@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageServiceParams.h"
@@ -21,7 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
                       device:(int)deviceId
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent
-                    isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
 {
     OWSAssertDebug(address.isValid);
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];
     _silent = isSilent;
-    _online = isOnline;
 
     return self;
 }

@@ -840,7 +840,8 @@ public extension MessageSender {
                                             OWSRequestFactory.submitMessageRequest(with: address,
                                                                                    messages: deviceMessages,
                                                                                    timeStamp: message.timestamp,
-                                                                                   udAccessKey: udAccessKey)
+                                                                                   udAccessKey: udAccessKey,
+                                                                                   isOnline: message.isOnline)
                                         },
                                         udAuthFailureBlock: {
                                             // Note the UD auth failure so subsequent retries
@@ -1229,7 +1230,6 @@ extension MessageSender {
             device: deviceId,
             content: serializedMessage,
             isSilent: message.isSilent,
-            isOnline: message.isOnline,
             registrationId: Int32(bitPattern: try session.remoteRegistrationId()))
 
         do {
