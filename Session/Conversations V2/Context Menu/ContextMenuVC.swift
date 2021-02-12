@@ -22,7 +22,7 @@ final class ContextMenuVC : UIViewController {
         let result = UILabel()
         result.text = DateUtil.formatTimestamp(asTime: viewItem.interaction.timestampForUI())
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.textColor = isLightMode ? .black : .white
         return result
     }()
     

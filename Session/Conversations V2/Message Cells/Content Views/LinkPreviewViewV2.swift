@@ -34,7 +34,7 @@ final class LinkPreviewViewV2 : UIView {
         guard let preview = viewItem.linkPreview else { return }
         
         let hStackViewContainer = UIView()
-        hStackViewContainer.backgroundColor = .black
+        hStackViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
         
         let hStackView = UIStackView()
         hStackView.axis = .horizontal
@@ -85,9 +85,5 @@ final class LinkPreviewViewV2 : UIView {
         
         addSubview(vStackView)
         vStackView.pin(to: self)
-    }
-    
-    func handleLongPress() {
-        
     }
 }

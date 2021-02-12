@@ -134,8 +134,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard let lastSortID = viewItems.last?.interaction.sortId else { return }
-        OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
+        markAllAsRead()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -305,6 +304,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     // MARK: General
+    func markAllAsRead() {
+        guard let lastSortID = viewItems.last?.interaction.sortId else { return }
+        OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
+    }
+    
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }

@@ -56,8 +56,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
             // TODO: Sent handling
-            self?.snInputView.text = ""
-            self?.snInputView.quoteDraftInfo = nil
+            guard let self = self else { return }
+            self.snInputView.text = ""
+            self.snInputView.quoteDraftInfo = nil
+            self.markAllAsRead()
             // TODO: Reset mentions
         })
     }
@@ -113,6 +115,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
             let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
             navigationController!.present(shareVC, animated: true, completion: nil)
+        case .textOnlyMessage:
+            guard let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) else { return }
+            openURL(url)
         default: break
         }
     }
