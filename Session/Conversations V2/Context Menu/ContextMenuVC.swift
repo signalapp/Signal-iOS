@@ -18,6 +18,14 @@ final class ContextMenuVC : UIViewController {
         return result
     }()
     
+    private lazy var timestampLabel: UILabel = {
+        let result = UILabel()
+        result.text = DateUtil.formatTimestamp(asTime: viewItem.interaction.timestampForUI())
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.textColor = Colors.text
+        return result
+    }()
+    
     // MARK: Settings
     private static let actionViewHeight: CGFloat = 40
 
@@ -56,6 +64,15 @@ final class ContextMenuVC : UIViewController {
         snapshot.pin(.top, to: .top, of: view, withInset: frame.origin.y)
         snapshot.set(.width, to: frame.width)
         snapshot.set(.height, to: frame.height)
+        // Timestamp
+        view.addSubview(timestampLabel)
+        timestampLabel.center(.vertical, in: snapshot)
+        let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
+        if isOutgoing {
+            timestampLabel.pin(.right, to: .left, of: snapshot, withInset: -Values.smallSpacing)
+        } else {
+            timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
+        }
         // Menu
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
@@ -110,6 +127,7 @@ final class ContextMenuVC : UIViewController {
         UIView.animate(withDuration: 0.25, animations: {
             self.blurView.effect = nil
             self.menuView.alpha = 0
+            self.timestampLabel.alpha = 0
         }, completion: { _ in
             self.dismiss()
         })

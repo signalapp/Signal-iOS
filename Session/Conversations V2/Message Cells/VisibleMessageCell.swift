@@ -410,10 +410,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
             if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold {
                 reply()
             } else {
-                UIView.animate(withDuration: 0.25) {
-                    viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: -VisibleMessageCell.maxBubbleTranslationX, y: 0) }
-                    self.replyButton.alpha = 1
-                }
+                resetReply()
             }
         default: break
         }
@@ -424,13 +421,17 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         return false
     }
     
-    private func reply() {
-        guard let viewItem = viewItem else { return }
+    private func resetReply() {
         let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
         UIView.animate(withDuration: 0.25) {
             viewsToMove.forEach { $0.transform = .identity }
             self.replyButton.alpha = 0
         }
+    }
+    
+    private func reply() {
+        guard let viewItem = viewItem else { return }
+        resetReply()
         delegate?.handleReplyButtonTapped(for: viewItem)
     }
     
