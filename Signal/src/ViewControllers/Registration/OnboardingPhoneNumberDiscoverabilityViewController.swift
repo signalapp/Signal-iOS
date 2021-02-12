@@ -121,8 +121,6 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
         stackView.alignment = .fill
         primaryView.addSubview(stackView)
 
-        // Because of the keyboard, vertical spacing can get pretty cramped,
-        // so we have custom spacer logic.
         stackView.autoPinEdgesToSuperviewMargins()
         updateSelections()
     }

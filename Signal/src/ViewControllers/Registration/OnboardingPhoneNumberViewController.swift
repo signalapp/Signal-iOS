@@ -255,11 +255,18 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         populateDefaults()
     }
 
+    var isAppearing = false
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         shouldIgnoreKeyboardChanges = false
+        isAppearing = true
 
         updateViewState(animated: false)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        phoneNumberTextField.becomeFirstResponder()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -269,7 +276,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        updateViewState()
+        updateViewState(animated: !isAppearing)
+        isAppearing = false
     }
 
     public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
@@ -285,7 +293,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         // Ignore any minor decreases in height. We want to grow to accomodate the
         // QuickType bar, but shrinking in response to its dismissal is a bit much.
-        let isKeyboardGrowing = after > (keyboardBottomConstraint?.constant ?? before)
+        let isKeyboardGrowing = after > -(keyboardBottomConstraint?.constant ?? 0.0)
         let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
         if isKeyboardGrowing || isSignificantlyShrinking || isDismissing {
             super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
