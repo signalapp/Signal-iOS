@@ -324,7 +324,7 @@ extension MockConversationView: CVComponentDelegate {
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView) {}
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in view: CVComponentView) {}
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction { .default }
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 

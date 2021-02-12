@@ -230,7 +230,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    renderItem: CVRenderItem) -> Bool {
 
         if attachmentStream != nil {
-            componentDelegate.cvc_didTapGenericAttachment(self, in: componentView)
+            switch componentDelegate.cvc_didTapGenericAttachment(self) {
+            case .handledByDelegate:
+                break
+            case .default:
+                showShareUI(from: componentView.rootView)
+            }
         } else if let attachmentPointer = attachmentPointer {
             switch attachmentPointer.state {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
