@@ -77,7 +77,7 @@ public class OnboardingBaseViewController: OWSViewController {
             target: self,
             selector: selector)
         button.enableMultilineLabel()
-        button.button.layer.cornerRadius = 14
+        button.button.layer.cornerRadius = 8
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 8)
         return button
     }
