@@ -28,14 +28,6 @@ public class CVViewState: NSObject {
     public var inputToolbar: ConversationInputToolbar?
 
     @objc
-    public var isPendingMemberRequestsBannerHidden = false
-    @objc
-    public var isMigrateGroupBannerHidden = false
-    @objc
-    public var isDroppedGroupMembersBannerHidden = false
-    @objc
-    public var isMessageRequestNameCollisionBannerHidden = false
-    @objc
     public var hasTriedToMigrateGroup = false
 
     @objc
@@ -294,6 +286,61 @@ extension CVViewState {
 
     var asCoreState: CVCoreState {
         CVCoreState(conversationStyle: conversationStyle, mediaCache: mediaCache)
+    }
+}
+
+// MARK: - Banner Hiding
+
+public extension CVViewState {
+
+    // We hide banners for an hour.
+    private class BannerHiding {
+        let hiddenDate = AtomicOptional<Date>(nil)
+
+        var isHidden: Bool {
+            get {
+                guard let hiddenDate = self.hiddenDate.get() else {
+                    return false
+                }
+                let hiddenDurationInterval = kHourInterval * 1
+                return abs(hiddenDate.timeIntervalSinceNow) < hiddenDurationInterval
+            }
+            set {
+                // We should only be setting this value to true.
+                owsAssertDebug(newValue)
+
+                self.hiddenDate.set(Date())
+            }
+        }
+    }
+
+    private static let isPendingMemberRequestsBannerHiding = BannerHiding()
+    private static let isMigrateGroupBannerHiding = BannerHiding()
+    private static let isDroppedGroupMembersBannerHiding = BannerHiding()
+    private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
+
+    @objc
+    var isPendingMemberRequestsBannerHidden: Bool {
+        get { Self.isPendingMemberRequestsBannerHiding.isHidden }
+        set { Self.isPendingMemberRequestsBannerHiding.isHidden = newValue }
+    }
+
+    @objc
+    var isMigrateGroupBannerHidden: Bool {
+        get { Self.isMigrateGroupBannerHiding.isHidden }
+        set { Self.isMigrateGroupBannerHiding.isHidden = newValue }
+    }
+
+    @objc
+    var isDroppedGroupMembersBannerHidden: Bool {
+        get { Self.isDroppedGroupMembersBannerHiding.isHidden }
+        set { Self.isDroppedGroupMembersBannerHiding.isHidden = newValue }
+    }
+
+    @objc
+    var isMessageRequestNameCollisionBannerHidden: Bool {
+        get { Self.isMessageRequestNameCollisionBannerHiding.isHidden }
+        set { Self.isMessageRequestNameCollisionBannerHiding.isHidden = newValue }
     }
 }
 
