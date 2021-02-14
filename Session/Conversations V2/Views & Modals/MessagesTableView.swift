@@ -1,7 +1,10 @@
 
 final class MessagesTableView : UITableView {
     var keyboardHeight: CGFloat = 0
-    
+
+    // Overriding contentInset and adjustedContentInset is to keep them from changing when the
+    // conversation view controller is dismissed.
+
     override var contentInset: UIEdgeInsets {
         get { UIEdgeInsets(top: 0, leading: 0, bottom: MessagesTableView.baselineContentInset + keyboardHeight, trailing: 0) }
         set { }
@@ -33,5 +36,14 @@ final class MessagesTableView : UITableView {
         showsVerticalScrollIndicator = false
         contentInsetAdjustmentBehavior = .never
         keyboardDismissMode = .interactive
+    }
+
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == panGestureRecognizer {
+            let v = panGestureRecognizer.velocity(in: self)
+            return abs(v.x) < 120
+        } else {
+            return true
+        }
     }
 }

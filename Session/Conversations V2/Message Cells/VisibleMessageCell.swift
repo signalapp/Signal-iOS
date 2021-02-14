@@ -18,7 +18,13 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
     private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
-    
+
+    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+        let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        result.delegate = self
+        return result
+    }()
+
     private var positionInCluster: Position? {
         guard let viewItem = viewItem else { return nil }
         if viewItem.isFirstInCluster { return .top }
@@ -178,8 +184,6 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTapGestureRecognizer)
         tapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
-        panGestureRecognizer.delegate = self
         addGestureRecognizer(panGestureRecognizer)
     }
     
@@ -360,7 +364,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+        if gestureRecognizer == panGestureRecognizer {
             let v = panGestureRecognizer.velocity(in: self)
             guard v.x < 0 else { return false }
             return abs(v.x) > abs(v.y)

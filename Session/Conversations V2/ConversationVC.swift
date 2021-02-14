@@ -7,6 +7,7 @@
 // • Resending failed messages
 // • Link previews
 // • Slight paging glitch
+// • Scrolling bug
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
