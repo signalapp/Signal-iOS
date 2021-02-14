@@ -1,22 +1,43 @@
 
 final class LinkPreviewViewV2 : UIView {
-    private let viewItem: ConversationViewItem
+    private let viewItem: ConversationViewItem?
     private let maxWidth: CGFloat
+    private let isOutgoing: Bool
     private let delegate: UITextViewDelegate & BodyTextViewDelegate
-    
+    var linkPreviewState: LinkPreviewState? { didSet { update() } }
+
     private var textColor: UIColor {
-        let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
         switch (isOutgoing, AppModeManager.shared.currentAppMode) {
         case (true, .dark), (false, .light): return .black
         default: return .white
         }
     }
-    
+
+    // MARK: UI Components
+    private lazy var imageView: UIImageView = {
+        let result = UIImageView()
+        result.contentMode = .scaleAspectFill
+        return result
+    }()
+
+    private lazy var titleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = textColor
+        result.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.numberOfLines = 0
+        return result
+    }()
+
+    private lazy var bodyTextViewContainer = UIView()
+
+    // MARK: Settings
     private static let imageSize: CGFloat = 100
-    
-    init(for viewItem: ConversationViewItem, maxWidth: CGFloat, delegate: UITextViewDelegate & BodyTextViewDelegate) {
+
+    // MARK: Lifecycle
+    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, isOutgoing: Bool, delegate: UITextViewDelegate & BodyTextViewDelegate) {
         self.viewItem = viewItem
         self.maxWidth = maxWidth
+        self.isOutgoing = isOutgoing
         self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
@@ -31,59 +52,45 @@ final class LinkPreviewViewV2 : UIView {
     }
     
     private func setUpViewHierarchy() {
-        guard let preview = viewItem.linkPreview else { return }
-        
-        let hStackViewContainer = UIView()
-        hStackViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
-        
-        let hStackView = UIStackView()
-        hStackView.axis = .horizontal
-        hStackView.alignment = .center
-        
-        hStackViewContainer.addSubview(hStackView)
-        hStackView.pin(to: hStackViewContainer)
-        
+        // Image view
         let imageViewContainer = UIView()
         imageViewContainer.set(.width, to: LinkPreviewViewV2.imageSize)
         imageViewContainer.set(.height, to: LinkPreviewViewV2.imageSize)
         imageViewContainer.clipsToBounds = true
-        
-        let imageView = UIImageView()
-        let filePath = given(preview.imageAttachmentId) { TSAttachmentStream.fetch(uniqueId: $0)!.originalFilePath! }
-        imageView.image = given(filePath) { UIImage(contentsOfFile: $0)! }
-        imageView.contentMode = .scaleAspectFill
         imageViewContainer.addSubview(imageView)
         imageView.pin(to: imageViewContainer)
-        hStackView.addArrangedSubview(imageViewContainer)
-        
+        // Title label
         let titleLabelContainer = UIView()
-        
-        let titleLabel = UILabel()
-        titleLabel.text = preview.title
-        titleLabel.textColor = textColor
-        titleLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        titleLabel.numberOfLines = 0
         titleLabelContainer.addSubview(titleLabel)
         titleLabel.pin(to: titleLabelContainer, withInset: Values.smallSpacing)
-        hStackView.addArrangedSubview(titleLabelContainer)
-        
-        let vStackView = UIStackView()
+        // Horizontal stack view
+        let hStackViewContainer = UIView()
+        hStackViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
+        let hStackView = UIStackView(arrangedSubviews: [ imageViewContainer, titleLabelContainer ])
+        hStackView.axis = .horizontal
+        hStackView.alignment = .center
+        hStackViewContainer.addSubview(hStackView)
+        hStackView.pin(to: hStackViewContainer)
+        // Vertical stack view
+        let vStackView = UIStackView(arrangedSubviews: [ hStackViewContainer, bodyTextViewContainer ])
         vStackView.axis = .vertical
-        vStackView.addArrangedSubview(hStackViewContainer)
-        
-        let separator = UIView()
-        separator.backgroundColor = Colors.separator
-        separator.set(.height, to: 1 / UIScreen.main.scale)
-        vStackView.addArrangedSubview(separator)
-        
-        let bodyTextViewContainer = UIView()
-        
-        let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: textColor, delegate: delegate)
-        bodyTextViewContainer.addSubview(bodyTextView)
-        bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
-        vStackView.addArrangedSubview(bodyTextViewContainer)
-        
         addSubview(vStackView)
         vStackView.pin(to: self)
+    }
+
+    // MARK: Updating
+    private func update() {
+        guard let linkPreviewState = linkPreviewState else { return }
+        // Image view
+        imageView.image = linkPreviewState.image()
+        // Title
+        titleLabel.text = linkPreviewState.title()
+        // Body text view
+        bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
+        if let viewItem = viewItem {
+            let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: textColor, delegate: delegate)
+            bodyTextViewContainer.addSubview(bodyTextView)
+            bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
+        }
     }
 }

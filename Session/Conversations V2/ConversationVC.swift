@@ -146,6 +146,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         let viewItem = viewItems[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.getCellType(for: viewItem).identifier) as! MessageCell
         cell.delegate = self
+        cell.conversationStyle = conversationStyle()
         cell.viewItem = viewItem
         return cell
     }

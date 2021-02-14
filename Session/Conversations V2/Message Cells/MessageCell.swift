@@ -2,6 +2,7 @@ import UIKit
 
 class MessageCell : UITableViewCell {
     var delegate: MessageCellDelegate?
+    var conversationStyle: ConversationStyle?
     var viewItem: ConversationViewItem? { didSet { update() } }
     
     // MARK: Settings

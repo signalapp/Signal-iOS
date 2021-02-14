@@ -41,7 +41,7 @@ final class MessagesTableView : UITableView {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == panGestureRecognizer {
             let v = panGestureRecognizer.velocity(in: self)
-            return abs(v.x) < 120
+            return abs(v.x) < 160
         } else {
             return true
         }
