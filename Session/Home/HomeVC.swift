@@ -158,31 +158,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         super.viewDidAppear(animated)
         reload()
         UserDefaults.standard[.hasLaunchedOnce] = true
-        showKeyPairMigrationModalIfNeeded()
-        showKeyPairMigrationSuccessModalIfNeeded()
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: Migration
-    private func showKeyPairMigrationModalIfNeeded() {
-        guard !KeyPairUtilities.hasV2KeyPair() else { return }
-        let sheet = KeyPairMigrationSheet()
-        sheet.modalPresentationStyle = .overFullScreen
-        sheet.modalTransitionStyle = .crossDissolve
-        present(sheet, animated: true, completion: nil)
-    }
-    
-    private func showKeyPairMigrationSuccessModalIfNeeded() {
-        let userDefaults = UserDefaults.standard
-        guard KeyPairUtilities.hasV2KeyPair() && userDefaults[.isMigratingToV2KeyPair] else { return }
-        let sheet = KeyPairMigrationSuccessSheet()
-        sheet.modalPresentationStyle = .overFullScreen
-        sheet.modalTransitionStyle = .crossDissolve
-        present(sheet, animated: true, completion: nil)
-        UserDefaults.standard[.isMigratingToV2KeyPair] = false
     }
     
     // MARK: Table View Data Source
