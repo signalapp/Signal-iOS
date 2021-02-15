@@ -297,7 +297,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     UITapGestureRecognizer *submitLogGesture = [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
                                                                                        action:@selector(submitLogs)];
     submitLogGesture.numberOfTapsRequired = 8;
-    registerGesture.delaysTouchesEnded = NO;
+    submitLogGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:submitLogGesture];
 #endif
 
