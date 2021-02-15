@@ -111,8 +111,6 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func image() -> UIImage? {
-        assert(imageState() == .loaded)
-
         guard let jpegImageData = linkPreviewDraft.jpegImageData else {
             return nil
         }
@@ -197,10 +195,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     public func image() -> UIImage? {
-        assert(imageState() == .loaded)
-
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            owsFailDebug("Could not load image.")
             return nil
         }
         guard attachmentStream.isImage,

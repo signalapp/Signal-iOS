@@ -113,6 +113,10 @@ final class LinkPreviewViewV2 : UIView {
     private func update() {
         cancelButton.removeFromSuperview()
         guard let linkPreviewState = linkPreviewState else { return }
+        var image = linkPreviewState.image()
+        if image == nil && (linkPreviewState is LinkPreviewDraft || linkPreviewState is LinkPreviewSent) {
+            image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
+        }
         // Image view
         let imageViewContainerSize: CGFloat = (linkPreviewState is LinkPreviewSent) ? 100 : 80
         imageViewContainerWidthConstraint.constant = imageViewContainerSize
@@ -123,10 +127,11 @@ final class LinkPreviewViewV2 : UIView {
         } else {
             imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
         }
-        imageView.image = linkPreviewState.image()
+        imageView.image = image
+        imageView.contentMode = (linkPreviewState.image() == nil) ? .center : .scaleAspectFill
         // Loader
-        loader.alpha = (linkPreviewState.image() != nil) ? 0 : 1
-        if linkPreviewState.image() != nil { loader.stopAnimating() } else { loader.startAnimating() }
+        loader.alpha = (image != nil) ? 0 : 1
+        if image != nil { loader.stopAnimating() } else { loader.startAnimating() }
         // Title
         let isSent = (linkPreviewState is LinkPreviewSent)
         let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
