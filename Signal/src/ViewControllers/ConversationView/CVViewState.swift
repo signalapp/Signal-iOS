@@ -28,14 +28,6 @@ public class CVViewState: NSObject {
     public var inputToolbar: ConversationInputToolbar?
 
     @objc
-    public var isPendingMemberRequestsBannerHidden = false
-    @objc
-    public var isMigrateGroupBannerHidden = false
-    @objc
-    public var isDroppedGroupMembersBannerHidden = false
-    @objc
-    public var isMessageRequestNameCollisionBannerHidden = false
-    @objc
     public var hasTriedToMigrateGroup = false
 
     @objc
@@ -294,6 +286,65 @@ extension CVViewState {
 
     var asCoreState: CVCoreState {
         CVCoreState(conversationStyle: conversationStyle, mediaCache: mediaCache)
+    }
+}
+
+// MARK: - Banner Hiding
+
+public extension CVViewState {
+
+    // We hide banners for an hour.
+    private class BannerHiding {
+        let unfairLock = UnfairLock()
+        var hiddenDateMap = [String: Date]()
+
+        func isHidden(_ threadUniqueId: String) -> Bool {
+            let hiddenDate = unfairLock.withLock {
+                hiddenDateMap[threadUniqueId]
+            }
+            guard let date = hiddenDate else {
+                return false
+            }
+            let hiddenDurationInterval = kHourInterval * 1
+            return abs(date.timeIntervalSinceNow) < hiddenDurationInterval
+        }
+
+        func setIsHidden(_ threadUniqueId: String) {
+            unfairLock.withLock {
+                hiddenDateMap[threadUniqueId] = Date()
+            }
+        }
+    }
+
+    private static let isPendingMemberRequestsBannerHiding = BannerHiding()
+    private static let isMigrateGroupBannerHiding = BannerHiding()
+    private static let isDroppedGroupMembersBannerHiding = BannerHiding()
+    private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
+
+    var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
+
+    @objc
+    var isPendingMemberRequestsBannerHidden: Bool {
+        get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isPendingMemberRequestsBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    @objc
+    var isMigrateGroupBannerHidden: Bool {
+        get { Self.isMigrateGroupBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isMigrateGroupBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    @objc
+    var isDroppedGroupMembersBannerHidden: Bool {
+        get { Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isDroppedGroupMembersBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    @objc
+    var isMessageRequestNameCollisionBannerHidden: Bool {
+        get { Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId) }
+        set { Self.isMessageRequestNameCollisionBannerHiding.setIsHidden(threadUniqueId) }
     }
 }
 

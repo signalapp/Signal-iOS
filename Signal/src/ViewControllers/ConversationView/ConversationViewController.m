@@ -767,7 +767,7 @@ typedef enum : NSUInteger {
 
         UIView *_Nullable droppedGroupMembersBanner;
         droppedGroupMembersBanner = [self createDroppedGroupMembersBannerIfNecessaryWithViewState:self.viewState];
-        if (droppedGroupMembersBanner != nil) {
+        if (droppedGroupMembersBanner != nil && !self.viewState.isDroppedGroupMembersBannerHidden) {
             [banners addObject:droppedGroupMembersBanner];
         }
     }

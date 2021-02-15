@@ -167,6 +167,12 @@ fileprivate extension ConversationViewController {
 
     typealias DroppedMembersInfo = GroupMigrationActionSheet.DroppedMembersInfo
 
+}
+
+// MARK: -
+
+fileprivate extension ConversationViewController {
+
     func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {
 
