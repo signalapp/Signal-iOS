@@ -563,6 +563,7 @@
 		C3645350252449260045C478 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364534F252449260045C478 /* VoiceMessageView.swift */; };
 		C364535C252467900045C478 /* AudioUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364535B252467900045C478 /* AudioUtilities.swift */; };
 		C374EEE225DA26740073A857 /* LinkPreviewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEE125DA26740073A857 /* LinkPreviewModal.swift */; };
+		C374EEEB25DA3CA70073A857 /* ConversationTitleViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEEA25DA3CA70073A857 /* ConversationTitleViewV2.swift */; };
 		C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */; };
 		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1606,6 +1607,7 @@
 		C364534F252449260045C478 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		C364535B252467900045C478 /* AudioUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUtilities.swift; sourceTree = "<group>"; };
 		C374EEE125DA26740073A857 /* LinkPreviewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewModal.swift; sourceTree = "<group>"; };
+		C374EEEA25DA3CA70073A857 /* ConversationTitleViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleViewV2.swift; sourceTree = "<group>"; };
 		C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Attachment.swift"; sourceTree = "<group>"; };
 		C379DCFD25673DBC0002D4EB /* TSAttachmentPointer+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointer+Conversion.swift"; sourceTree = "<group>"; };
 		C37F53E8255BA9BB002AEA92 /* Environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
@@ -2251,6 +2253,7 @@
 				C374EEE125DA26740073A857 /* LinkPreviewModal.swift */,
 				B82149C025D605C6009C0F2A /* InfoBanner.swift */,
 				B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */,
+				C374EEEA25DA3CA70073A857 /* ConversationTitleViewV2.swift */,
 			);
 			path = "Views & Modals";
 			sourceTree = "<group>";
@@ -5056,6 +5059,7 @@
 				B8214A2B25D63EB9009C0F2A /* MessagesTableView.swift in Sources */,
 				B835246E25C38ABF0089A44F /* ConversationVC.swift in Sources */,
 				B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */,
+				C374EEEB25DA3CA70073A857 /* ConversationTitleViewV2.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,

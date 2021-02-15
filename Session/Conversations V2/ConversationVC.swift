@@ -3,7 +3,6 @@
 // • Tapping replies
 // • Mentions
 // • Remaining send logic
-// • Subtitle
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug
@@ -47,6 +46,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }()
     
     // MARK: UI Components
+    private lazy var titleView = ConversationTitleViewV2(thread: thread)
+
     lazy var messagesTableView: MessagesTableView = {
         let result = MessagesTableView()
         result.dataSource = self
@@ -98,7 +99,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         setUpGradientBackground()
         // Nav bar
         setUpNavBarStyle()
-        setNavBarTitle(getTitle())
+        navigationItem.titleView = titleView
         updateNavBarButtons()
         // Constraints
         view.addSubview(messagesTableView)
@@ -390,21 +391,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     // MARK: Convenience
-    private func getTitle() -> String {
-        if let thread = thread as? TSGroupThread {
-            return thread.groupModel.groupName!
-        } else if thread.isNoteToSelf() {
-            return "Note to Self"
-        } else {
-            let sessionID = thread.contactIdentifier()!
-            var result = sessionID
-            Storage.read { transaction in
-                result = Storage.shared.getContact(with: sessionID)?.displayName ?? "Anonymous"
-            }
-            return result
-        }
-    }
-    
     private func getScrollButtonOpacity() -> CGFloat {
         let contentOffsetY = messagesTableView.contentOffset.y
         let x = (lastPageTop - ConversationVC.bottomInset - contentOffsetY).clamp(0, .greatestFiniteMagnitude)
