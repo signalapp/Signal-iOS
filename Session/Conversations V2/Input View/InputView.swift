@@ -99,7 +99,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     // MARK: Updating
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView) {
         invalidateIntrinsicContentSize()
-        doLinkPreviewThingies()
+        autoGenerateLinkPreviewIfPossible()
     }
 
     private func handleQuoteDraftChanged() {
@@ -117,20 +117,26 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         quoteView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -6)
     }
 
-    private func doLinkPreviewThingies() {
+    private func autoGenerateLinkPreviewIfPossible() {
         additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         quoteDraftInfo = nil
-        // Suggest that the user enable link previews if they haven't already, and we haven't
+        // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
         let userDefaults = UserDefaults.standard
         if !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty && !SSKPreferences.areLinkPreviewsEnabled
             && !userDefaults[.hasSeenLinkPreviewSuggestion] {
-            // TODO: Show suggestion
+            delegate.showLinkPreviewSuggestionModal()
             userDefaults[.hasSeenLinkPreviewSuggestion] = true
+            return
         }
         // Check that link previews are enabled
         guard SSKPreferences.areLinkPreviewsEnabled else { return }
+        // Proceed
+        autoGenerateLinkPreview()
+    }
+
+    func autoGenerateLinkPreview() {
         // Check that a valid URL is present
         guard let linkPreviewURL = OWSLinkPreview.previewUrl(forRawBodyText: text, selectedRange: inputTextView.selectedRange) else {
             return
@@ -189,6 +195,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 // MARK: Delegate
 protocol InputViewDelegate {
 
+    func showLinkPreviewSuggestionModal()
     func handleCameraButtonTapped()
     func handleLibraryButtonTapped()
     func handleGIFButtonTapped()

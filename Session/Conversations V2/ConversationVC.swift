@@ -353,6 +353,15 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         isLoadingMore = true
         viewModel.loadAnotherPageOfMessages()
     }
+
+    func showLinkPreviewSuggestionModal() {
+        let linkPreviewModel = LinkPreviewModal() { [weak self] in
+            self?.snInputView.autoGenerateLinkPreview()
+        }
+        linkPreviewModel.modalPresentationStyle = .overFullScreen
+        linkPreviewModel.modalTransitionStyle = .crossDissolve
+        present(linkPreviewModel, animated: true, completion: nil)
+    }
     
     // MARK: Convenience
     private func getTitle() -> String {
