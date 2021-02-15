@@ -42,13 +42,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = text
         message.quote = VisibleMessage.Quote.from(snInputView.quoteDraftInfo?.model)
-        // TODO: Link previews
+        let linkPreviewDraft = snInputView.linkPreviewInfo?.draft
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
-        Storage.shared.write(with: { transaction in
-            // TODO: Link previews
+        Storage.write(with: { transaction in
+            message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
         }, completion: { [weak self] in
-            // TODO: Link previews
+            tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
             Storage.shared.write { transaction in
                 tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
             }

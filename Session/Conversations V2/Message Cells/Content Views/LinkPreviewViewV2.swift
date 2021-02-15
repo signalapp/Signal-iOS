@@ -3,7 +3,7 @@ import NVActivityIndicatorView
 final class LinkPreviewViewV2 : UIView {
     private let viewItem: ConversationViewItem?
     private let maxWidth: CGFloat
-    private let delegate: UITextViewDelegate & BodyTextViewDelegate
+    private let delegate: LinkPreviewViewV2Delegate
     var linkPreviewState: LinkPreviewState? { didSet { update() } }
     private lazy var imageViewContainerWidthConstraint = imageView.set(.width, to: 100)
     private lazy var imageViewContainerHeightConstraint = imageView.set(.height, to: 100)
@@ -45,11 +45,25 @@ final class LinkPreviewViewV2 : UIView {
 
     private lazy var hStackViewContainer = UIView()
 
+    private lazy var hStackView = UIStackView()
+
+    private lazy var cancelButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let tint: UIColor = isLightMode ? .black : .white
+        result.setImage(UIImage(named: "X")?.withTint(tint), for: UIControl.State.normal)
+        let cancelButtonSize = LinkPreviewViewV2.cancelButtonSize
+        result.set(.width, to: cancelButtonSize)
+        result.set(.height, to: cancelButtonSize)
+        result.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+
     // MARK: Settings
     private static let loaderSize: CGFloat = 24
+    private static let cancelButtonSize: CGFloat = 45
 
     // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, delegate: UITextViewDelegate & BodyTextViewDelegate) {
+    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, delegate: LinkPreviewViewV2Delegate) {
         self.viewItem = viewItem
         self.maxWidth = maxWidth
         self.delegate = delegate
@@ -76,7 +90,8 @@ final class LinkPreviewViewV2 : UIView {
         titleLabelContainer.addSubview(titleLabel)
         titleLabel.pin(to: titleLabelContainer, withInset: Values.smallSpacing)
         // Horizontal stack view
-        let hStackView = UIStackView(arrangedSubviews: [ imageViewContainer, titleLabelContainer ])
+        hStackView.addArrangedSubview(imageViewContainer)
+        hStackView.addArrangedSubview(titleLabelContainer)
         hStackView.axis = .horizontal
         hStackView.alignment = .center
         hStackViewContainer.addSubview(hStackView)
@@ -96,6 +111,7 @@ final class LinkPreviewViewV2 : UIView {
 
     // MARK: Updating
     private func update() {
+        cancelButton.removeFromSuperview()
         guard let linkPreviewState = linkPreviewState else { return }
         // Image view
         let imageViewContainerSize: CGFloat = (linkPreviewState is LinkPreviewSent) ? 100 : 80
@@ -112,12 +128,15 @@ final class LinkPreviewViewV2 : UIView {
         loader.alpha = (linkPreviewState.image() != nil) ? 0 : 1
         if linkPreviewState.image() != nil { loader.stopAnimating() } else { loader.startAnimating() }
         // Title
-        switch linkPreviewState {
-        case is LinkPreviewSent: titleLabel.textColor = sentLinkPreviewTextColor
-        default:
-            let textColor: UIColor = isDarkMode ? .white : .black
-            titleLabel.textColor = textColor
+        let isSent = (linkPreviewState is LinkPreviewSent)
+        let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
+        let textColor: UIColor
+        if isSent && isOutgoing && isLightMode {
+            textColor = .white
+        } else {
+            textColor = isDarkMode ? .white : .black
         }
+        titleLabel.textColor = textColor
         titleLabel.text = linkPreviewState.title()
         // Horizontal stack view
         switch linkPreviewState {
@@ -131,5 +150,19 @@ final class LinkPreviewViewV2 : UIView {
             bodyTextViewContainer.addSubview(bodyTextView)
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
         }
+        if linkPreviewState is LinkPreviewDraft {
+            hStackView.addArrangedSubview(cancelButton)
+        }
     }
+
+    // MARK: Interaction
+    @objc private func cancel() {
+        delegate.handleLinkPreviewCanceled()
+    }
+}
+
+// MARK: Delegate
+protocol LinkPreviewViewV2Delegate : UITextViewDelegate & BodyTextViewDelegate {
+
+    func handleLinkPreviewCanceled()
 }

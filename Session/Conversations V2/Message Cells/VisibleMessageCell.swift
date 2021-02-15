@@ -1,5 +1,5 @@
 
-final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDelegate {
+final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
     private var unloadContent: (() -> Void)?
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
@@ -437,6 +437,10 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
         guard let viewItem = viewItem else { return }
         resetReply()
         delegate?.handleReplyButtonTapped(for: viewItem)
+    }
+
+    func handleLinkPreviewCanceled() {
+        // Not relevant in this case
     }
     
     // MARK: Convenience

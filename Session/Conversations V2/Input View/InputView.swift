@@ -1,7 +1,8 @@
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, BodyTextViewDelegate, UITextViewDelegate {
+final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewV2Delegate {
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
+    var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
 
     private lazy var linkPreviewView: LinkPreviewViewV2 = {
         let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
@@ -103,6 +104,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 
     private func handleQuoteDraftChanged() {
         additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
+        linkPreviewInfo = nil
         guard let quoteDraftInfo = quoteDraftInfo else { return }
         let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
         let hInset: CGFloat = 6
@@ -117,7 +119,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 
     private func doLinkPreviewThingies() {
         additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
-
+        quoteDraftInfo = nil
+        // Suggest that the user enable link previews if they haven't already, and we haven't
+        // told them about link previews yet
         let text = inputTextView.text!
         let userDefaults = UserDefaults.standard
         if !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty && !SSKPreferences.areLinkPreviewsEnabled
@@ -125,25 +129,33 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             // TODO: Show suggestion
             userDefaults[.hasSeenLinkPreviewSuggestion] = true
         }
-
+        // Check that link previews are enabled
+        guard SSKPreferences.areLinkPreviewsEnabled else { return }
+        // Check that a valid URL is present
         guard let linkPreviewURL = OWSLinkPreview.previewUrl(forRawBodyText: text, selectedRange: inputTextView.selectedRange) else {
             return
         }
-
+        // Guard against obsolete updates
+        guard linkPreviewURL != self.linkPreviewInfo?.url else { return }
+        // Set the state to loading
+        linkPreviewInfo = (url: linkPreviewURL, draft: nil)
         linkPreviewView.linkPreviewState = LinkPreviewLoading()
+        // Add the link preview view
         additionalContentContainer.addSubview(linkPreviewView)
         linkPreviewView.pin(.left, to: .left, of: additionalContentContainer, withInset: InputView.linkPreviewViewInset)
         linkPreviewView.pin(.top, to: .top, of: additionalContentContainer, withInset: 10)
         linkPreviewView.pin(.right, to: .right, of: additionalContentContainer)
         linkPreviewView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -4)
-
+        // Build the link preview
         OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL).done { [weak self] draft in
             guard let self = self else { return }
-
+            guard self.linkPreviewInfo?.url == linkPreviewURL else { return } // Obsolete
+            self.linkPreviewInfo = (url: linkPreviewURL, draft: draft)
             self.linkPreviewView.linkPreviewState = LinkPreviewDraft(linkPreviewDraft: draft)
-
         }.catch { _ in
-
+            guard self.linkPreviewInfo?.url == linkPreviewURL else { return } // Obsolete
+            self.linkPreviewInfo = nil
+            self.additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         }.retainUntilComplete()
     }
     
@@ -166,6 +178,11 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 
     func handleLongPress() {
         // Not relevant in this case
+    }
+
+    func handleLinkPreviewCanceled() {
+        linkPreviewInfo = nil
+        additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
     }
 }
 
