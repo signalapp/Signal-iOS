@@ -5,7 +5,6 @@
 // • Remaining send logic
 // • Subtitle
 // • Resending failed messages
-// • Link previews
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug
