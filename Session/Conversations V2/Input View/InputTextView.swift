@@ -52,6 +52,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
 
     // MARK: Updating
     public func textViewDidChange(_ textView: UITextView) {
+        defer { snDelegate.inputTextViewDidChangeContent(self) }
         placeholderLabel.isHidden = !text.isEmpty
         let width = frame.width
         let height = frame.height
@@ -69,4 +70,5 @@ public final class InputTextView : UITextView, UITextViewDelegate {
 protocol InputTextViewDelegate {
     
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView)
+    func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
 }

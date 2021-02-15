@@ -3,6 +3,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
+    private var voiceMessageOverlay: VoiceMessageOverlay?
 
     private lazy var linkPreviewView: LinkPreviewViewV2 = {
         let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
@@ -21,7 +22,12 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     private lazy var libraryButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_roll_black"), delegate: self)
     private lazy var gifButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_gif_black"), delegate: self)
     private lazy var documentButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_document_black"), delegate: self)
-    private lazy var sendButton = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
+    private lazy var voiceMessageButton = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
+    private lazy var sendButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
+        result.alpha = 0
+        return result
+    }()
     
     private lazy var inputTextView = InputTextView(delegate: self)
 
@@ -94,11 +100,21 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
+        // Voice message button
+        let voiceMessageButtonContainer = container(for: voiceMessageButton)
+        addSubview(voiceMessageButtonContainer)
+        voiceMessageButtonContainer.center(in: sendButton)
     }
     
     // MARK: Updating
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView) {
         invalidateIntrinsicContentSize()
+    }
+
+    func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
+        let hasText = !text.isEmpty
+        sendButton.alpha = hasText ? 1 : 0
+        voiceMessageButton.alpha = hasText ? 0 : 1
         autoGenerateLinkPreviewIfPossible()
     }
 
@@ -174,6 +190,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         if inputViewButton == sendButton { delegate.handleSendButtonTapped() }
     }
 
+    func handleInputViewButtonLongPressed(_ inputViewButton: InputViewButton) {
+        if inputViewButton == voiceMessageButton { showVoiceMessageUI() }
+    }
+
     func handleQuoteViewCancelButtonTapped() {
         delegate.handleQuoteViewCancelButtonTapped()
     }
@@ -189,6 +209,21 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     func handleLinkPreviewCanceled() {
         linkPreviewInfo = nil
         additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
+    }
+
+    @objc private func showVoiceMessageUI() {
+        voiceMessageOverlay?.removeFromSuperview()
+        let voiceMessageButtonFrame = voiceMessageButton.superview!.convert(voiceMessageButton.frame, to: self)
+        let voiceMessageOverlay = VoiceMessageOverlay(voiceMessageButtonFrame: voiceMessageButtonFrame)
+        voiceMessageOverlay.alpha = 0
+        addSubview(voiceMessageOverlay)
+        voiceMessageOverlay.pin(to: self)
+        self.voiceMessageOverlay = voiceMessageOverlay
+        voiceMessageOverlay.animate()
+        let allOtherViews = [ cameraButton, libraryButton, gifButton, documentButton, sendButton, inputTextView, additionalContentContainer ]
+        UIView.animate(withDuration: 0.25) {
+            allOtherViews.forEach { $0.alpha = 0 }
+        }
     }
 }
 

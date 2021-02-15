@@ -3,6 +3,7 @@
 // • Tapping replies
 // • Mentions
 // • Remaining send logic
+// • Recording voice messages
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug

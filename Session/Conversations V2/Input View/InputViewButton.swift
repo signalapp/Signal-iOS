@@ -5,10 +5,13 @@ final class InputViewButton : UIView {
     private let delegate: InputViewButtonDelegate
     private lazy var widthConstraint = set(.width, to: InputViewButton.size)
     private lazy var heightConstraint = set(.height, to: InputViewButton.size)
+    private var longPressTimer: Timer?
+    private var isLongPress = false
     
     // MARK: Settings
     static let size = CGFloat(40)
     static let expandedSize = CGFloat(48)
+    static let iconSize: CGFloat = 20
     
     // MARK: Lifecycle
     init(icon: UIImage, isSendButton: Bool = false, delegate: InputViewButtonDelegate) {
@@ -37,8 +40,9 @@ final class InputViewButton : UIView {
         let tint = isSendButton ? UIColor.black : Colors.text
         let iconImageView = UIImageView(image: icon.withTint(tint))
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.set(.width, to: 20)
-        iconImageView.set(.height, to: 20)
+        let iconSize = InputViewButton.iconSize
+        iconImageView.set(.width, to: iconSize)
+        iconImageView.set(.height, to: iconSize)
         addSubview(iconImageView)
         iconImageView.center(in: self)
     }
@@ -71,15 +75,30 @@ final class InputViewButton : UIView {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         expand()
+        invalidateLongPressIfNeeded()
+        longPressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
+            guard let self = self else { return }
+            self.isLongPress = true
+            self.delegate.handleInputViewButtonLongPressed(self)
+        })
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         collapse()
-        delegate.handleInputViewButtonTapped(self)
+        if !isLongPress {
+            delegate.handleInputViewButtonTapped(self)
+        }
+        invalidateLongPressIfNeeded()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         collapse()
+        invalidateLongPressIfNeeded()
+    }
+
+    private func invalidateLongPressIfNeeded() {
+        longPressTimer?.invalidate()
+        isLongPress = false
     }
 }
 
@@ -87,4 +106,5 @@ final class InputViewButton : UIView {
 protocol InputViewButtonDelegate {
     
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
+    func handleInputViewButtonLongPressed(_ inputViewButton: InputViewButton)
 }
