@@ -27,7 +27,7 @@ final class LinkPreviewModal : Modal {
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = "Session can show previews for URLs. This will make your messaging experience nicer, but to generate a preview Session needs to contact the website in question. You can always disable link previews in the in-app settings."
+        let message = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings."
         messageLabel.text = message
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping

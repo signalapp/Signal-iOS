@@ -4,7 +4,6 @@
 // • Mentions
 // • Remaining send logic
 // • Subtitle
-// • Resending failed messages
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug
@@ -360,6 +359,33 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         linkPreviewModel.modalPresentationStyle = .overFullScreen
         linkPreviewModel.modalTransitionStyle = .crossDissolve
         present(linkPreviewModel, animated: true, completion: nil)
+    }
+
+    func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
+        let thread = self.thread
+        let sheet = UIAlertController(title: tsMessage.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
+            Storage.write { transaction in
+                tsMessage.remove(with: transaction)
+                Storage.shared.cancelPendingMessageSendJobIfNeeded(for: tsMessage.timestamp, using: transaction)
+            }
+        }))
+        sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
+            let message = VisibleMessage.from(tsMessage)
+            Storage.write { transaction in
+                var attachments: [TSAttachmentStream] = []
+                tsMessage.attachmentIds.forEach { attachmentID in
+                    guard let attachmentID = attachmentID as? String else { return }
+                    let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction)
+                    guard let stream = attachment as? TSAttachmentStream else { return }
+                    attachments.append(stream)
+                }
+                MessageSender.prep(attachments, for: message, using: transaction)
+                MessageSender.send(message, in: thread, using: transaction)
+            }
+        }))
+        present(sheet, animated: true, completion: nil)
     }
     
     // MARK: Convenience

@@ -480,7 +480,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         case .read:
             backgroundColor = isLightMode ? .black : .white
             image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-        case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
+        case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.destructive)!
         }
         return (image, backgroundColor)
     }

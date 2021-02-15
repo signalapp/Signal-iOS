@@ -85,40 +85,44 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {
-        switch viewItem.messageCellType {
-        case .audio: playOrPauseAudio(for: viewItem)
-        case .mediaMessage:
-            guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
-                let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell, let albumView = cell.albumView else { return }
-            let locationInCell = gestureRecognizer.location(in: cell)
-            if let overlayView = cell.mediaTextOverlayView {
-                let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
-                if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
-                    return showFullText(viewItem) // FIXME: Bit of a hack to do it this way
+        if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
+            showFailedMessageSheet(for: message)
+        } else {
+            switch viewItem.messageCellType {
+            case .audio: playOrPauseAudio(for: viewItem)
+            case .mediaMessage:
+                guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
+                    let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell, let albumView = cell.albumView else { return }
+                let locationInCell = gestureRecognizer.location(in: cell)
+                if let overlayView = cell.mediaTextOverlayView {
+                    let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
+                    if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
+                        return showFullText(viewItem) // FIXME: Bit of a hack to do it this way
+                    }
                 }
-            }
-            let locationInAlbumView = cell.convert(locationInCell, to: albumView)
-            guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
-            if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
-                // TODO: Tapped a failed incoming attachment
-            }
-            let attachment = mediaView.attachment
-            if let pointer = attachment as? TSAttachmentPointer {
-                if pointer.state == .failed {
+                let locationInAlbumView = cell.convert(locationInCell, to: albumView)
+                guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
+                if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
                     // TODO: Tapped a failed incoming attachment
                 }
+                let attachment = mediaView.attachment
+                if let pointer = attachment as? TSAttachmentPointer {
+                    if pointer.state == .failed {
+                        // TODO: Tapped a failed incoming attachment
+                    }
+                }
+                guard let stream = attachment as? TSAttachmentStream else { return }
+                let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
+                gallery.presentDetailView(fromViewController: self, mediaAttachment: stream, replacingView: mediaView)
+            case .genericAttachment:
+                guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
+                let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
+                navigationController!.present(shareVC, animated: true, completion: nil)
+            case .textOnlyMessage:
+                guard let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) else { return }
+                openURL(url)
+            default: break
             }
-            guard let stream = attachment as? TSAttachmentStream else { return }
-            let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
-            gallery.presentDetailView(fromViewController: self, mediaAttachment: stream, replacingView: mediaView)
-        case .genericAttachment:
-            guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
-            let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
-            navigationController!.present(shareVC, animated: true, completion: nil)
-        case .textOnlyMessage:
-            guard let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) else { return }
-            openURL(url)
-        default: break
         }
     }
 
