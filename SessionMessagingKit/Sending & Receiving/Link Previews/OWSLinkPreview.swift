@@ -370,18 +370,11 @@ public class OWSLinkPreview: MTLModel {
         let matchRange: NSRange
     }
 
-    class func allPreviewUrls(forMessageBodyText body: String) -> [String] {
+    public class func allPreviewUrls(forMessageBodyText body: String) -> [String] {
         return allPreviewUrlMatches(forMessageBodyText: body).map { $0.urlString }
     }
 
     class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
-        guard OWSLinkPreview.featureEnabled else {
-            return []
-        }
-        guard SSKPreferences.areLinkPreviewsEnabled else {
-            return []
-        }
-
         let detector: NSDataDetector
         do {
             detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)

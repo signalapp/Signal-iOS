@@ -271,7 +271,7 @@ final class VisibleMessageCell : MessageCell, UITextViewDelegate, BodyTextViewDe
             let inset: CGFloat = 12
             let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if let linkPreview = viewItem.linkPreview {
-                let linkPreviewView = LinkPreviewViewV2(for: viewItem, maxWidth: maxWidth, isOutgoing: isOutgoing, delegate: self)
+                let linkPreviewView = LinkPreviewViewV2(for: viewItem, maxWidth: maxWidth, delegate: self)
                 let conversationStyle = self.conversationStyle ?? ConversationStyle(thread: viewItem.interaction.thread)
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment, conversationStyle:conversationStyle)
                 snContentView.addSubview(linkPreviewView)

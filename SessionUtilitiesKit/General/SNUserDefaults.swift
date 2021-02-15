@@ -7,6 +7,7 @@ public enum SNUserDefaults {
         case hasSeenGIFMetadataWarning
         case hasSyncedConfiguration
         case hasViewedSeed
+        case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
         case isMigratingToV2KeyPair
         case isUsingMultiDevice

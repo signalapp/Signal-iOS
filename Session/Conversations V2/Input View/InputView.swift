@@ -1,8 +1,13 @@
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate {
+final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, BodyTextViewDelegate, UITextViewDelegate {
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
-    
+
+    private lazy var linkPreviewView: LinkPreviewViewV2 = {
+        let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
+        return LinkPreviewViewV2(for: nil, maxWidth: maxWidth, delegate: self)
+    }()
+
     var text: String {
         get { inputTextView.text }
         set { inputTextView.text = newValue }
@@ -19,11 +24,14 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     
     private lazy var inputTextView = InputTextView(delegate: self)
 
-    private lazy var quoteDraftContainer: UIView = {
+    private lazy var additionalContentContainer: UIView = {
         let result = UIView()
         result.heightAnchor.constraint(greaterThanOrEqualToConstant: 4).isActive = true
         return result
     }()
+
+    // MARK: Settings
+    private static let linkPreviewViewInset: CGFloat = 6
     
     // MARK: Lifecycle
     init(delegate: InputViewDelegate) {
@@ -76,7 +84,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         bottomStackView.spacing = Values.smallSpacing
         bottomStackView.alignment = .center
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, quoteDraftContainer, bottomStackView ])
+        let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, additionalContentContainer, bottomStackView ])
         mainStackView.axis = .vertical
         mainStackView.isLayoutMarginsRelativeArrangement = true
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
@@ -90,20 +98,53 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     // MARK: Updating
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView) {
         invalidateIntrinsicContentSize()
+        doLinkPreviewThingies()
     }
 
     private func handleQuoteDraftChanged() {
-        quoteDraftContainer.subviews.forEach { $0.removeFromSuperview() }
+        additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         guard let quoteDraftInfo = quoteDraftInfo else { return }
         let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
         let hInset: CGFloat = 6
-        let maxWidth = quoteDraftContainer.bounds.width
+        let maxWidth = additionalContentContainer.bounds.width
         let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxWidth: maxWidth, delegate: self)
-        quoteDraftContainer.addSubview(quoteView)
-        quoteView.pin(.left, to: .left, of: quoteDraftContainer, withInset: hInset)
-        quoteView.pin(.top, to: .top, of: quoteDraftContainer, withInset: 12)
-        quoteView.pin(.right, to: .right, of: quoteDraftContainer, withInset: -hInset)
-        quoteView.pin(.bottom, to: .bottom, of: quoteDraftContainer, withInset: -6)
+        additionalContentContainer.addSubview(quoteView)
+        quoteView.pin(.left, to: .left, of: additionalContentContainer, withInset: hInset)
+        quoteView.pin(.top, to: .top, of: additionalContentContainer, withInset: 12)
+        quoteView.pin(.right, to: .right, of: additionalContentContainer, withInset: -hInset)
+        quoteView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -6)
+    }
+
+    private func doLinkPreviewThingies() {
+        additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
+
+        let text = inputTextView.text!
+        let userDefaults = UserDefaults.standard
+        if !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty && !SSKPreferences.areLinkPreviewsEnabled
+            && !userDefaults[.hasSeenLinkPreviewSuggestion] {
+            // TODO: Show suggestion
+            userDefaults[.hasSeenLinkPreviewSuggestion] = true
+        }
+
+        guard let linkPreviewURL = OWSLinkPreview.previewUrl(forRawBodyText: text, selectedRange: inputTextView.selectedRange) else {
+            return
+        }
+
+        linkPreviewView.linkPreviewState = LinkPreviewLoading()
+        additionalContentContainer.addSubview(linkPreviewView)
+        linkPreviewView.pin(.left, to: .left, of: additionalContentContainer, withInset: InputView.linkPreviewViewInset)
+        linkPreviewView.pin(.top, to: .top, of: additionalContentContainer, withInset: 10)
+        linkPreviewView.pin(.right, to: .right, of: additionalContentContainer)
+        linkPreviewView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -4)
+
+        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL).done { [weak self] draft in
+            guard let self = self else { return }
+
+            self.linkPreviewView.linkPreviewState = LinkPreviewDraft(linkPreviewDraft: draft)
+
+        }.catch { _ in
+
+        }.retainUntilComplete()
     }
     
     // MARK: Interaction
@@ -122,11 +163,15 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     override func resignFirstResponder() -> Bool {
         inputTextView.resignFirstResponder()
     }
+
+    func handleLongPress() {
+        // Not relevant in this case
+    }
 }
 
 // MARK: Delegate
 protocol InputViewDelegate {
-    
+
     func handleCameraButtonTapped()
     func handleLibraryButtonTapped()
     func handleGIFButtonTapped()
