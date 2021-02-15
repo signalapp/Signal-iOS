@@ -163,7 +163,7 @@ public extension ConversationViewController {
 
 // MARK: -
 
-public extension ConversationViewController {
+fileprivate extension ConversationViewController {
 
     typealias DroppedMembersInfo = GroupMigrationActionSheet.DroppedMembersInfo
 
