@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رسالة صوتية زمن %@ ثانية";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رِسالة صوتيَّة زمن %@ ثانية";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -293,7 +293,7 @@
 "ATTACHMENT_TYPE_VIDEO" = "فيديو";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رِسالة صوتيَّة";
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رسالة سمعية";
@@ -1073,7 +1073,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "إعادة التوجيه إلى GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل الفحص";
+"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل التصحيح";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف جميع الرسائل في المُحادثة؟";
@@ -1478,13 +1478,13 @@
 "GIF_PICKER_ERROR_GENERIC" = "حدث خلل مجهول.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "تعذّر اختيار الصورة المتحركة";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "تعذّر اختيار الـGIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "الرجاء إدخال البحث الخاص بك.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "البحث عن الصور المتحركة";
+"GIF_PICKER_VIEW_TITLE" = "البحث عن الـGIF";
 
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "خطأ. انقر لإعادة المحاولة.";
@@ -1508,7 +1508,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "لقد غيرتَ من يمكنه تعديل معلومات المجموعة إلى \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "غيرَ %1$@ مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ قد غيّر مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%@\" التعديل على معلومات المجموعة.";
@@ -1538,7 +1538,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "فقط المُشرفين يُكنهم تعديل هذا الخيار.";
+"GROUP_ADMIN_ONLY_WARNING" = "فقط المُشرفين يُمكنهم تعديل هذا الإعداد.";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "أنت لن تتلقى الصوت أو الفيديو الخاص بهم ونفس الأمر ينطبق عليهم.";
@@ -1622,7 +1622,7 @@
 "GROUP_CALL_RECONNECTING" = "تجري إعادة الاتصال";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "انضم شخص لهذه المُكالمة برقم أمان قد تغير.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "لقد انضم شخص لهذه المُكالمة برقم أمان قد تغير.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "بدأ شخص ما مكالمة جماعية";
@@ -1832,10 +1832,10 @@
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "شارك الرابط مع الأصدقاء لتمكينهم من الانضمام بشكل سريع لهذه المجموعة.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "ادعو الأصدقاء";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "اُدعُ الأصدقاء";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "ادعو الأصدقاء لمجموعتك عبر رابط المجموعة";
+"GROUP_LINK_PROMOTION_UPDATE" = "اُدعُ الأصدقاء لمجموعتك عبر رابط المجموعة";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "سيتمكن الأشخاص الذين يمسحون هذا الرمز من الانضمام إلى مجموعتك. سيبقى على عاتق المشرفين الموافقة على الأعضاء الجُدد إذا كنت قد فعّلت هذا الإعداد.";
@@ -1859,7 +1859,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "الإدارة والمشاركة";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "تتطلب موافقة المشرف لقبول انضمام أعضاء جُدد عبر رابط المجموعة.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "موافقة المُشرف مِن المتطلبات لقبول انضمام أعضاء جُدد عبر رابط المجموعة.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "طلبات الأعضاء";
@@ -1922,10 +1922,10 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "لقد دُعيتَ إلى المجموعة.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "لقد انضممت إلى المجموعة.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "أنت قد انضممت إلى المجموعة.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "لقد انضممت للمجموعة بواسطة رابط المجموعة.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "أنت قد انضممت للمجموعة بواسطة رابط المجموعة.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ قد أزالك.";
@@ -2153,7 +2153,7 @@
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "أنت قد غيرت اسم المجموعة إلى \"%@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ قد غير اسم المجموعة إلى \"%2$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ قد غيّر اسم المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اسم المجموعة هو \"%@\".";
@@ -2486,7 +2486,7 @@
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المُحادثات مؤرشفة وسظهر في علبة الوارد إذا تم استلام رسائل جديدة فقط.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إنَّ هذه المُحادثات مؤرشفة وسظهر في علبة الوارد إذا تمَّ استلام رسائل جديدة فقط.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ مُحَادَثاتٍ حَتَّى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
@@ -2504,7 +2504,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "المُلصقات";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رسالة صوتية";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رِسالة صوتيَّة";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
@@ -3194,13 +3194,13 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الـiPhone الخاص بك، إذ سيحدّ من بعض الوظف الأساسية.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "تَمكينُ الصّلاحيّات";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "تُتيح لكَ الإشعارات المَعرفة عند وصول رسائل وتلقي تحديثات حول النشاطات الجديد في المُحادثة.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "الحصول على الرسالة";
+"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في Signal بواسطة رقم الهاتف الخاص بك %@";
@@ -3208,11 +3208,17 @@
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليك بواسطة الرقم الخاص بك؟";
 
+/* Placeholder string for phone number field during registration */
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "رقم هاتفك";
+
+/* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "أدخِل رَقم الهاتِف الخاص بِكَ للبدأ";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "يُرجى إدخال رقم هاتفك";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالح";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب Signal الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات ملف شخصي أو إعادادات محفوظة مُسبقًا.";
@@ -3238,8 +3244,17 @@
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "أدخل PIN الخاص بِكَ";
 
+/* Title label for profile creation step of onboarding */
+"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+
+/* Placeholder text for the family name field of the profile creation view. */
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+
+/* Placeholder text for the given name field of the profile creation view. */
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسِياسَة الخُصُوصِية";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسياسة الخُصُوصِية";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "احمل خُصُوصِيتكَ مَعَك.\nبِنَفسِكَ في كُلِّ رِسَالة.";
@@ -3247,38 +3262,29 @@
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "رقم غير صحيح؟";
 
-/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "لَم أحصُل على الرمز (مُتاح خِلال %@)";
+/* Label for button to perform verification with a phone call. */
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "اتصل بي";
 
-/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "التواصل مع دعم Signal";
+/* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+
+/* Label for a progress spinner currently validating code */
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "هذا الرمز غير صحيح";
 
-/* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "لم أحصل على رمز";
+/* Label for button to resend SMS verification code. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "أعِد إرسال الرمز";
 
-/* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "يُرجى التأكد من أن لديك خِدمة خلوية ويُمكِنُكَ تلقي رسائل SMS.";
-
-/* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "لا يوجد رمز؟";
-
-/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "أعِد إرسال الرمز";
-
-/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "اتصل بي بدلاً من ذلك";
-
-/* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "هل مازِلتَ لا تجد الرمز؟";
+/* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الرمز الَّذي أرسلناهُ إلى %@";
 
-/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "أرسلنا للتوِ رمزاً إلى %@";
+/* Title label for the onboarding verification page */
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
@@ -3374,7 +3380,7 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ في مُعاملة الرسالة الواردة";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسائط العرض لِمرة واحدة";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسائط-العرض-لِمرة-واحدة";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "وسائط";
@@ -3599,7 +3605,7 @@
 "PINNED_CONVERSATION_LIMIT" = "يُمكنك تثبيت ما يصل إلى 4 مُحادثات فقط.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "مُثبّت";
+"PINNED_SECTION_TITLE" = "المُثبَّتة";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
@@ -3746,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث ملفك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ملفك الشخصي مُعمَّى من النِهاية إلى النِهاية. إن ملفك الشخصي وأي تغييرات تطرأ عليه ستكون  مرئية لِجهات إتصالك، عندما تبدأ أو تقبل مُحادثة جديدة، وعند إنضمامك لمجموعة جديدة.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -3842,7 +3848,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على وسط العرض لمرة واحدة خاصتَك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على تسجيلك الصوتي";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على تسجيلكَ الصوتيّ";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "أنت";
@@ -3916,6 +3922,12 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل الحساب الخاص بك حتى تتحقق من الرمز الذي قد أرسلناه لك.";
 
+/* Alert body for network failure during registration */
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
+
+/* Alert title for network failure during registration */
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "تنسيق رقم هذا الهاتف غير مدعوم ، يُرجى التواصُل مع الدعم.";
 
@@ -3945,6 +3957,18 @@
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "لا يوجد رقم هاتف";
+
+/* Message for confirmation alert during phone number registration. */
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
+
+/* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+
+/* A button allowing user to cancel registration and edit a phone number */
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";
+
+/* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -4010,7 +4034,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بي:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "رقم أمانك أنت مع%@ قد تغير. رُبما أنتَ قد ترغب في التحقق منه.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "رقم أمانك أنت مع %@ قد تغّير. رُبما قد ترغب في التحقق منه.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
@@ -4211,94 +4235,94 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "إصدار غير مدعوم";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن جهازك يعمل بإصدار قديم لـ Signal لا يدعم المسح الضوئي للرموز المربعة في جهاز iPad. يُرجى تثبيت آخر إصدار لتطبيق Signal ثم أعد لاحقا.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من Signal وهو لا يدعم مسح رُموز الاستجابة السريعة للـiPad. يُرجى تثبيت آخر إصدار من Signal ثم المُحاولة مرة أُخرى.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "حدِّث جهاز المسح الضوئي";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "قُم بتحديث الجهاز الماسِح";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "فشل ربط جهازك";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "فشل ربط الجهاز الخاص بك";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "اختر اسما لهذا الجهاز";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "اختر اسمًا لهذا الجهاز";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "سوف ترى هذا الاسم في \"الأجهزة المرتبطة\".";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "سترى هذا الاسم ضمن \"الأجهزة المُرتبطة\".";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "اختر اسما";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "اختر اسمًا";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "اكتمل الربط";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "إنهاء الارتباط";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل Signal في هاتفك لربط جهاز iPad مع حسابك";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل  Signal على الهاتف الخاص بك لربط هذا الـiPad بحسابك";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "لا أتوفر على Signal في هاتفي...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لدي تطبيق Signal على الهاتف الخاص بي...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى مستودع التطبيقات في هاتفك، و ثبِّت Signal، ثم قم بإتمام عملية الانخراط، بعدها يمكنك ربط جهاز iPad مع نفس الحساب.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى الـAppStore على هاتفك ، ثبِّت Signal، أكمل عملية التسجيل، وبعد ذلك يُمكنك ربط الـiPad الخاص بك بنفس الحساب.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت Signal في هاتفك";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت Signal على الهاتف الخاص بك";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "المس صورة حسابك لفتح إعدادات ‫إعدادات ‫‫Signal‬‬‫ في هاتفك. بعدها \"أجهزة مرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز ضوئيا مع هاتفك :";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة ملفك الشخصي لفتح ‫إعدادات ‫‫Signal‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "احصل على المساعدة حول ربط جهاز iPad هنا";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الـiPad الخاص بك";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "قم بالمسح الضوئي للرمز المربع بواسطة هاتفك";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "امسح رمز الاستجابة السريعة عن طريق هاتفك";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "تشغيل Signal على جهاز iPad القديم الخاص بك لتحويل حسابك";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "قُم بتشغيل Signal على جهاز الـiPad القديم الخاص بك حتى تنقل الحساب الخاص بك";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "لقد تم إعادة تعيين دورة الاتصال الآمنة";
+"SECURE_SESSION_RESET" = "لقد تمَّ إعادة تعيين الجلسة الآمنة.";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "جهات الاتصال أخرى";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "جهات اتصال أُخرى";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "المحادثات الحديثة";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "المُحادثات الأخيرة";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "ارسل مرة أُخرى";
+"SEND_AGAIN_BUTTON" = "إعادة الإرسال";
 
 /* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "إرسال";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "فشل إرسال الرسالة.";
+"SEND_FAILED_NOTIFICATION_BODY" = "لقد فشل إرسال رسالتك.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة، يُرجى إعادة المحاولة لاحقا.";
+"SEND_INVITE_FAILURE" = "لقد فشل إرسال الدعوة، يرُجى المُحاولة مرة أُخرى لاحقًا.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "لقد دعوت صديقك لاستخدام Signal !";
+"SEND_INVITE_SUCCESS" = "أنت قد دعوت صديقكَ لاستخدام Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "تجاهل الوسائط";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "تجاهُل الوسائط";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "عُد إلى الكاميرا";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "العودة إلى الكاميرا";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "عُد إلى مكتبة الوسائط";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "العودة إلى مكتبة الوسائط";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "إرسال دعوة لصديق عن طريق رسالة نصية غير آمنة؟";
+"SEND_SMS_CONFIRM_TITLE" = "دعوة صديق عبر رسالة SMS غير الآمنة؟";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "هل ترغب في إرسال دعوة لتطبيق Signal إلى الرقم التالي:";
+"SEND_SMS_INVITE_TITLE" = "هل ترغب في دعوة صاحب الرقم التالي إلى Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal يستخدم تعمية الطرف-إلى-الطرف ومن الممكن أن يحتاج إلى إنعاش جلسة المحادثة بعض الأحيان. هذا لا يؤثر على أمان محادثاتك لكن من المحتمل أن تكون قد فوت رسالة من جهة الاتصال هذه ويمكنك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم Signal تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة المُحادثة الخاصة بك في بعض الأحيان. لا يؤثر هذا على أمان المُحادثة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
+"SESSION_REFRESH_ALERT_TITLE" = "تمَّ إنعاش جلسة المُحادثة";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "الاختيار من الصور";
@@ -4322,139 +4346,139 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "الموقع:%@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "إذا كان مُفعل, الخدمة ستحاول التحايل على الرقابة. لا تُمكن هذه الميزة إلا إذا كنت في موقع يُراقب الخدمة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "في حالة التفعيل، سيُحاول تطبيق Signal تجاوز الرقابة. لا تُفعِّل هذه الميزة إلا إذا كنتَ في مكان يخضع فيه Signal للرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تم تنشيط التحايل على الرقابة إستنادًا إلى رقم الهاتف الخاص بحسابك.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تمَّ تنشيط تجاوز الرقابة إستنادًا على رقم الهاتف الخاص بحسابك.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "لقد قمت بإلغاء تجاوز الرقابة يدويا.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "أنت قد عطّلتَ يدويًا تجاوز الرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل التحايل على الرقابة إلا عند الإتصال بالإنترنت.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل تجاوز الرقابة إلا عند الاتصال بالإنترنت.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "لا يلزمك التحايل على الرقابة; حيث أنك متصل على الخدمة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوز الرقابة ليس ضُروريًا ؛ أنت بالفعل مُتصل بخدمة Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "التحايل على الرقابة";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "تجاوز الرقابة";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "تفعيل سجل التصحيح";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات الرقم التعريفي الشخصي المتقدمة";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات PIN المُتقدمة";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات الرقم التعريفي الشخصي المتقدمة";
+"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات PIN المُتقدمة";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "إلغاء الرقم التعريفي الشخصي";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل الـPIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "فعّل الرقم التعريفي الشخصي";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "تفعيل الـPIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "الرقم Signal التعريفي الشخصي";
+"SETTINGS_ADVANCED_PINS_HEADER" = "الـPIN الخاص بـSignal";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "إرسال سجل التصحيح";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "تسليم سجل التصحيح";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "متقدم";
+"SETTINGS_ADVANCED_TITLE" = "مُتقدِم";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الخطأ";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الأخطاء";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات اتصال النظام إن كانت مُتاحة";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "عرض صور جهات اتصال النظام إن كانت مُتاحة";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استخدم صور جهات اتصال النظام";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استخدام صور جهات اتصال النظام";
 
 /* The title for the theme section in the appearance settings. */
-"SETTINGS_APPEARANCE_THEME_TITLE" = "السمة";
+"SETTINGS_APPEARANCE_THEME_TITLE" = "السِّمَة";
 
 /* The title for the appearance settings. */
 "SETTINGS_APPEARANCE_TITLE" = "المظهر";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (افتراضي)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (اِفتراضي)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "النسخ الاحتياطي";
+"SETTINGS_BACKUP" = "النَسخ الاحتياطي";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "انسخ احتياطيا الآن";
+"SETTINGS_BACKUP_BACKUP_NOW" = "أنشيء نُسخة اِحتياطية الآن";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "ألغ النسخ احتياطي";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "إلغاء النَسخ الاِحتياطي";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "النسخ الاحتياطي مُشغَّل";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "النَسخ الاِحتياطي مُفغّل";
 
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "حالة iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "فشلت استعادة النسخة الاحتياطية";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "فشلت استعادة النُسخة الاِحتياطية";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "استعادة النسخة الاحتياطية خاملة";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "استعادة النُسخة الاِحتياطية في وضع خُمول";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "تجري استعادة النسخة الاحتياطية";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "اِستعادة النُسخ الاِحتياطية قيد التقدُم";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "نجحت استعادة النسخة الاحتياطية";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "لقد نجحت استعادة النُسخة الاِحتياطية";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "المرحلة";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "سير الإنجاز";
+"SETTINGS_BACKUP_PROGRESS" = "قيد التقدُم";
 
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "الحالة";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "فشلت النسخ الاحتياطي";
+"SETTINGS_BACKUP_STATUS_FAILED" = "فشل النَسخ الاِحتياطي";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "في الانتظار";
+"SETTINGS_BACKUP_STATUS_IDLE" = "جار الانتظار";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "يجري النسخ الاحتياطي";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "جار عمل النَسخ الاِحتياطي";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "نجح النسخ الاحتياطي";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "نجحَ النَسخ الاِحتياطي";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدماً محظوراً";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مستخدم محظور";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "قائمة جهات الاتصال والمجموعات التي قمت بحظرها.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "قائمة جهات الاتصال والمجموعات التي قد حظرتها أنت.";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "جهات الاتصال الخاصة بك غير موجودة على Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على Signal.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا توجد نتائج لبحثك";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا نتائج للبحث";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "محظورة";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "مناوبة المكالمات الهاتفية دوماً";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "دائمًا اعِد توجيه المُكالمات";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ترحيل كل المكالمات عبر خوادم Signal لتفادي الكشف عن عنوان IP  لديك لجهات اتصالك. سوف يخفض تشغيل هذه الميزة من جودة المكالمة.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المُكالمات عبر خوادم Signal لتفادي الكشف عن عنوان الـIP  الخاص بك لجهة اتصالك. تفعيل هذه الميزة سوف يُقلل من جودة المُكالمة.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "محو محفوظات الرسائل";
+"SETTINGS_CLEAR_HISTORY" = "مسح تاريخ المُحادثة";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "‫مِرسال Signal‬. جميع الحقوق محفوظة\nمرخص بموجب رخصة جْنُو العمومية، الإصدار الثالث";
+"SETTINGS_COPYRIGHT" = "الحُقوق Signal Messenger\nمُرخَّص بِمُوجَب رُخصَة GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "استخدام البيانات";
@@ -4463,82 +4487,82 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "استخدم بيانات أقل";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "يُحسِّن استخدام بيانات أقل جودة المكالمات في الشبكات الضعيفة";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "استخدام بيانات أقل قد يُحسِّن جودة المكالمات على الشبكات السيئة";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "المُكالمات";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "تُنزَّل الرسائل الصوتية و الوسائط ذات العرض الواحد والملصقات (أقل من 100 كيلو بِتْ) تلقائيا.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "يتمُّ دائمًا تنزيل الرِّسالة الصَّوتيَّة، وسائط-العرض-لمرة-واحدة، والمُلصقات (الأقل من 100 كيلوبايت) بشكل تلقائيًا.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "التنزيل التلقائي للوسائط";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "التنزيل-التلقائي للوسائط";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "إعادة التعيين إعدادات التنزيل التلقائي";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "إعادة تعيين إعدادات التنزيل-التلقائي";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "استخدام البيانات";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "حذف حسابك";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "حذف الحساب";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "حذف كل البيانات";
+"SETTINGS_DELETE_DATA_BUTTON" = "حذف كافة البيانات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل تريد حقا حذف كل التاريخ (الرسائل، المرفقات، المكالمات، إلخ.) ؟ إن هذا الإجراء لا يمكن التراجع عنه.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت مُتأكد من أنّكَ تُريد حذف كُل التأريخ (الرسائل، المُرفقات، المُكالمات، إلخ.)؟ إنَّ هذا إجراء لا يُمكن التراجُع عنه.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "حذف كل شيء";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "تبرع لـ Signal";
+"SETTINGS_DONATE" = "التبرُّع لـSignal";
 
 /* Title for support page in app settings. */
-"SETTINGS_HELP" = "مساعدة";
+"SETTINGS_HELP" = "المُساعدة";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "محو محفوظات الرسائل";
+"SETTINGS_HISTORYLOG_TITLE" = "مسح تاريخ المُحادثة";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "معلومات";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "ادعو أصدقائك";
+"SETTINGS_INVITE_TITLE" = "اُدعُ الأصدِقاء";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "يمكنك التواصل معي بواسطة @signalapp.  احصل عليه الآن : https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "يُمكِنك التواصل معي عبر استخدام Signal. احصل عليه الآن: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صوت الرسالة";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "خلفية المحادثة";
+"SETTINGS_ITEM_WALLPAPER" = "خلفية المُحادثة";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "الشروط وسياسة الخصوصية";
+"SETTINGS_LEGAL_TERMS_CELL" = "الشُروط وَسياسة الخُصُوصِية";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "توليد معاينة الوصلات";
+"SETTINGS_LINK_PREVIEWS" = "توليد مُعايَنات للرَوابط";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "جلب استعراض للروابط للرسائل التي ترسلها من المواقع مباشرةً.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "جلب مُعايَنات للرَوابط مُباشرة مِن موقع الويب للرسائل التي تُرسِلَها.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "أبداً";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "شبكة Wi-Fi والشبكة الخلوية";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi والخلوية";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
 
 /* Label for the 'audio' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "صوت";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "الصوت";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "الوثائق";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "المُستندات";
 
 /* Label for the 'photo' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "الصور";
@@ -4553,19 +4577,19 @@
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "عدد المحادثات الصامتة";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "تعداد  المُحادثات المَكتومة";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "عدد الشارة";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "شارة التعداد";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "إشعارات المكالمات والرسائل قد تظهر عندما يكون هاتفك مقفلا. قد تود تحديد ما الذي يجب أن يظهر في هذه الإشعارات.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "يُمكن أن تظهر إشعارات المُكالمات والرسائل أثناء قفل الهاتف. قد ترغب في تقييد أو تحديد ما يظهر في هذه الإشعارات.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "محتوى الإشعارات";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "مُحتوى الإشعارات";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "انضمت جهة اتصال إلى Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "إنضمام جهة اتصال إلى Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "الأحداث";
@@ -4574,10 +4598,10 @@
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "اعثروا عليّ برقم الهاتف";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "العُثور عليّ عن طريق رقم الهاتف";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "اعثروا عليّ برقم الهاتف";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "العُثور عليّ عن طريق رقم الهاتف";
 
 /* Label for the 'phone number sharing' setting. */
 "SETTINGS_PHONE_NUMBER_SHARING" = "رؤية رقم هاتفي";
@@ -4586,73 +4610,73 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "رؤية رقم هاتفي";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "أطفيء التذكيرات";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "تعطيل التذكيرات";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ رقم التعريف الشخصي أو تخزينه بشكل آمن لأنه لا يمكن استرداده. إذا نسيت رقم التعريف الشخصي ، فقد تفقد البيانات عند إعادة تسجيل حساب Signal الخاص بك.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ الـPIN الخاص بك أو تخزينه بشكل آمن لأنه لا يُمكن استعادته. إذا نسيت الـPIN الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب Signal الخاص بك.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد رقم التعريف الشخصي ل Signal الخاص بك ";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد الـPIN الخاص بك لـSignal";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "تساعدك التذكيرات في تذكر رقم التعريف الشخصي لأنه لا يمكن استرداده. سيُطلب منك أقل مرات بمرور الوقت.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "تُساعدك التذكيرات على تذكُّر الـPIN الخاص بك لأنه من غير المُمكن إستعادته. سوف يتم سؤالك بشكل أقل مع مُرور الوقت.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات رقم التعريف الشخصي";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات الـPIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "يمكنك الرقم التعريفي الشخصي من حفظ معلوماتك بشكل مُعمَّى في Signal بحيث يمكنك الوصول إليها وحدك. سوف تتم استعادة حسابك وإعداداتك و جهات اتصالك عند إعادة تثبيت Signal.";
+"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "قم بتغيير رقم التعريف الشخصي الخاص بك";
+"SETTINGS_PINS_ITEM" = "تغيير الـPIN الخاص بك";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "إنشاء رقم تعريفي شخصي";
+"SETTINGS_PINS_ITEM_CREATE" = "إنشاء PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "رقم SIGNAL التعريفي الشخصي";
+"SETTINGS_PINS_TITLE" = "الـPIN الخاص بـSignal";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "أظهر المكالمات في قائمة \"الحديثة\" في تطبيق هاتف iOS.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "إظهار المُكالمات في قائمة \"الحديثة\" داخل تطبيق الهاتف للـiOS";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "أظهر المكالمات في الحديثة";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "إظهار المُكالمات في الحديثة";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "الخصوصية";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "تقارير القراءة";
+"SETTINGS_READ_RECEIPT" = "تقارير القِراءة";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "مشاهدة ومشاركة وقت قراءة الرسائل. هذا اﻹعداد اختياري ويُطبَّق على كل المحادثات.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "مُشاهدة ومُشاركة وقت قراءة الرسائل. هذا اﻹعداد اختياري ويُطبَّق على جميع المُحادثات.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "أطفيء";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "تعطيل";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "هل أطفيء قفل الانخراط ؟";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "هل تُريد تعطيل قفل التسجيل؟";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "شغِّل";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "تفعيل";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "إن نسيت الرقم التعريفي الشخصي خلال قيامك بالتسجيل مرة أخرى في Signal، سوف يُقفَل حسابك لسبعة أيام.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "إذا نسيت الـPIN الخاص بك لـSignal خلال التسجيل مرة أُخرى في Signal، سوف يُقفَل حسابك لمدة سبعة أيام.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "شغِّل قفل الانخراط ؟";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "تفعيل قفل التسجيل؟";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "أعد الربط";
+"SETTINGS_RELINK_BUTTON" = "إعادة-الربط";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "إعادة التسجيل";
+"SETTINGS_REREGISTER_BUTTON" = "إعادة-التسجيل";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "مهلة شاشة القفل";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "مُهلة قفل الشاشة";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ألغ شاشة قفل Signal بواسطة البصمة أو الوجه أو رمز سر جهاز iOS. يمكنك الإجابة على المكالمات الواردة واستلام إشعارات الرسائل والمكالمات بينما يكون قفل الشاشة مُفعَّلا. تمكنك إعدادات الإشعارات في Signal من تخصيص المعلومات المعروضة.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "فك قفل شاشة Signal بواسطة  Touch ID، Face ID، أو الرمز السري لجهاز iOS الخاص بك. يُمكنك الإجابة على المُكالمات الواردة واستلام إشعارات الرسائل والمُكالمات اثناء تفعيل قفل الشاشة. تُمكنك إعدادات الإشعارات في Signal مِن تخصيص المعلومات التي تُعرض.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "قفل الشاشة";
@@ -4661,10 +4685,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "قفل الشاشة";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "تفعيل خاصية تأمين الشاشة";
+"SETTINGS_SCREEN_SECURITY" = "تفعيل أمان الشاشة";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "منع ظهور استعراضات Signal في محول البرنامج.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "مَنع مُعاينة تطبيق Signal مِن الظُهور في مُبدِل التطبيقات.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "اﻷصوات";
@@ -4676,37 +4700,37 @@
 "SETTINGS_SECURITY_TITLE" = "تأمين الشاشة";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "أظهره في الإقتراحات";
+"SETTINGS_SHARING_SUGGESTIONS" = "الإظهار في الاقتراحات";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "تُعرَض محادثات Signal كاقتراحات عند المشاركة من تطبيقات أخرى.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "يتم عَرض مُحادثات Signal كاِقتراحات عِند المُشاركة مِن تطبيقات أُخرى.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "تأمين التسجيل";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل التسجيل";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "لأمان أكثر، شغِّل قفل الانخراط، والذي يتطلب رقمك التعريفي الشخصي في Signal لتسجيل رقم هاتفك مع Signal مرة أخرى.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "للمزيد من الأمان، فعِّل قفل التسجيل، الذي سيطلب الـPIN الخاص بك في Signal لتسجيل رقم هاتفك مع Signal مرة أُخرى.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "مؤشرات الكتابة";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "مشاهدة ومشاركة وقت كتابة الرسائل. هذا اﻹعداد اختياري ويُطبَّق على كل المحادثات.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "المُشاهدة والمُشاركة متى ما كانت الرسائل تُكتَب. هذا اﻹعداد اختياري ويُطبَّق على جميع المُحادثات.";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "الراسل المغلق";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "المُرسِل المَختوم";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "عرض المؤشرات";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "عرض المؤشِرات";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "أظهر أيقونة الحالة عند تحديدك \"المزيد من المعلومات\" في الرسائل التي استُلمَت باستخدام المُرسِل المختوم.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "إظهار رمز الحالة عند تحديد \"المزيد من المعلومات\" في الرسائل التي تمَّ تسليمها باستخدام المُرسِل المَختوم.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "السماح من كل أحد";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "السماح مِن أيِّ شخص";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "اسمح بخاصية الراسل المغلق للرسائل القادمة من أشخاص ليسوا فى جهات اتصالك و الذين لم تشارك ملفك الشخصى معهم.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "تفعيل المُرسِل المَختوم للرسائل الواردة مِن غير جهات الاتصال والأشخاص الذين لم تُشارك ملفَّكَ الشخصي معهم.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "اﻹصدار";
@@ -4721,49 +4745,49 @@
 "SHARE_ACTION_MESSAGE" = "رسالة";
 
 /* action sheet item */
-"SHARE_ACTION_TWEET" = "تويتر";
+"SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "لقد تغير رقم أمانك مؤخرا مع %@. قد تود التحقق منه داخل التطبيق قبل إعادة الإرسال.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم أمانك أنت مع %@ قد تغير. رُبما قد ترغب في التحقق منه في التطبيق الرئيس قبل إعادة الإرسال.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "قيد التحميل..";
+"SHARE_EXTENSION_LOADING" = "جار التحميل..";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "شغِّل تطبيق Signal للتسجيل.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "غير مسجل";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "غير مُسجِل";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "شغِّل تطبيق Signal للتحديث أو للتسجيل.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "غير مستعد";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "غير مُستَعِد";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "تعذر إرسال المرفق";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "تعذّر إرسال المُرفق";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "جاري رفع %1$@ من %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "جار رَفع %1$@ مِن %2$@...";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "جار التحميل ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "جار الرَفع...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذر تجهيز  المرفق";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذّر تجهيز  المُرفق";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "شارك في Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "شارك على Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فشل تعطيل إقتراحات المشاركة.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فشل تعطيل اقتراحات المُشاركة.";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "يمكن الآن عرض محادثات سيغنال كإقتراحات عند المشاركة من تطبيقات أخرى.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "يُمكن الآن عَرض مُحادثات Signal كاِقتراحات عِند المُشاركة مِن تطبيقات أُخرى.";
 
 /* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "أصبحت المشاركة أسهل";
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "أصبحت المُشاركة أسهل";
 
 /* Disable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "تعطيل";
@@ -4775,16 +4799,16 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "إظهار المحادثة";
+"SHOW_THREAD_BUTTON_TITLE" = "إظهار المُحادثة";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "أنا ادعُك لتثبيت تطبيق Signal، ها هو الرابط:";
+"SMS_INVITE_BODY" = "أنا أدعوك لتثبيت تطبيق Signal! ها هو الرابط:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "لا شيء ";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "ستحصل تلقائيا المجموعات الحالية على هذه الميزات خلال اﻷسابيع القادمة.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "المجموعات الحالية ستحصل على هذه الميزات تلقائيًا في الأسابيع القادمة.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "مجموعة جديدة";
@@ -4793,187 +4817,187 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "المجموعات الجديد هنا !";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "لقد وصلت المجموعات الجديدة!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "تحوي المجموعات الجديدة ميزات كـ ‎@mentions‎ ومشرفين على المجموعة، وأشياء أخرى. يُرجى تجربتها بلمس :";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "المجموعات الجديدة تحتوي على تضمين الاسم @‎ والمُشرفين وأشياء أُخرى. جربها الآن مِن خلال النقر على: ";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "رسالة تحتوي ملصق";
+"STICKER_MESSAGE_PREVIEW" = "رسالة مُلصق";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "تنزيل";
+"STICKERS_INSTALL_BUTTON" = "تثبيت";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "سلسلة فنان Signal";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "حزم المُلصقات المُدمجة";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "الملصقات المستلمة";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "حزم المُلصقات التي قد تلقيتها أنت";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض حزم الملصقات";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض حزم المُلصقات";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "الملصقات المثبتة";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "حزم المُلصقات المُثبَّتة";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "قيد التحميل..";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "جار التحميل..";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "لم يتم تنزيل أية ملصقات";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "لا توجد أي حزم مُلصقات مُثبتة";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "ستظهر هنا الملصقات القادمة من الرسائل الواردة";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "المُلصقات مِن الرسائل الواردة ستظهر هُنا";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "لصاقات";
+"STICKERS_MANAGE_VIEW_TITLE" = "المُلصقات";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "حزمة الملصقات";
+"STICKERS_PACK_DEFAULT_TITLE" = "حزمة مُلصقات";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "حزمة الملصقات";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "حزمة المُلصقات";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل حزمة الملصقات";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل حزمة المُلصقات";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "إلغاء التثبيت";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم الأمان الخاص بك مع %@ متطابق. يمكنك وضع علامة على جهة الاتصال هذه بأنها مُتحقق منها.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم الأمان الخاص بك أنت مع %@ مُتطابق. يُمكنك تعليم جهة الاتصال هذه كمُتحقق مِنها.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "رقم الأمان متطابق!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "رقم الأمان مُتطابق!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "وسائل الأتصال";
+"SUPPORT_CONTACT_US_HEADER" = "تواصل معنا";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "أخبرنا بالذي يجري";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "أخبِرنا بما يحدُث";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "يُرجى إخبارنا عن المشكل :";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "أخبِرنا حول الأخطاء:";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "يُرجى إرسال طلب الدعم عبر البريد الإلكتروني إلى support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "يُرجى إرسال طلب الدعم بواسطة البريد الإلكتروني إلى support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "المُرشِّح : %@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "الجهاز : %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID:‏ %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "-- معلومات الدعم --";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "إصدار iOS : %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "الإعدادات المحلية : %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "عنوان السجّل : %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "إصدار Signal :‏ %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "طلب دعم Signal لنظام تشغيل iOS";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "كيف تشعر ؟ (اختياري)";
+"SUPPORT_EMOJI_PROMPT" = "ما هو شُعُورك؟ (اختياري)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "هل قرأت قسم الأسئلة الشائعة لدينا ؟";
+"SUPPORT_FAQ_PROMPT" = "هل قرأت الأسئلة الشَّائعة الخاصّة بنا؟";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "تضمين سِجل الفحص";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "تضمِّين سِجل التصحيح";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "جارٍ التحميل";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "جار التحميل";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "غير مفعّل";
+"SWITCH_OFF" = "مُعطَّل";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "مفعّل";
+"SWITCH_ON" = "مُفعَّل";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تحقق";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "التحقق";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "تم حذف هذه الرسالة.";
+"THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %@، %@، و %lu مجموعات أخرى";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %@، %@، وعدد %lu مِن المجموعات الأُخرى";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يمكنك إضافة ملاحظات لنفسك في هذه المحادثة . ستتم مزامنتها مع باقي الأجهزة المرتبطة بنفس الحساب.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يُمكِنُك إضافة مُلاحظات لنفسك في هذه المُحادثة. إذا كان حسابك يحتوي على أي أجهزة مُرتبطة، ستتم مُزامنة المُلاحظات.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "عضو في %@، %@، و%@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "عضو في %@، %@، و %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %@ و %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ أيام";
+"TIME_AMOUNT_DAYS" = "زمن %@ أيام";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ أيام";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ي";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ ساعات";
+"TIME_AMOUNT_HOURS" = "زمن %@ ساعات";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ س";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@س";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ دقائق";
+"TIME_AMOUNT_MINUTES" = "زمن %@ دقائق";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ د";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@د";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ ثوان";
+"TIME_AMOUNT_SECONDS" = "زمن %@ ثوان";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ ث";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ث";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ يوم";
+"TIME_AMOUNT_SINGLE_DAY" = "زمن %@ يوم";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ ساعة";
+"TIME_AMOUNT_SINGLE_HOUR" = "زمن %@ ساعة";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ دقيقة";
+"TIME_AMOUNT_SINGLE_MINUTE" = "زمن %@ دقيقة";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ثانية";
+"TIME_AMOUNT_SINGLE_SECOND" = "زمن %@ ثانية";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ أسبوع";
+"TIME_AMOUNT_SINGLE_WEEK" = "زمن %@ أُسبوع";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ سنة";
+"TIME_AMOUNT_SINGLE_YEAR" = "زمن %@ سنة";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ أسابيع";
+"TIME_AMOUNT_WEEKS" = "زمن %@ أسابيع";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ أسابيع";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@أ";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ سنوات";
+"TIME_AMOUNT_YEARS_FORMAT" = "زمن %@ سنوات";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_ZERO_SECONDS" = "0 ثانية";
@@ -4985,73 +5009,73 @@
 "TXT_DELETE_TITLE" = "حذف";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "استعادة من اﻷرشيف";
+"UNARCHIVE_ACTION" = "الإخراج من اﻷرشيف";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "المستخدم ليس ضمن أسماء قائمة جهات الاتصال التابعة لك. هل ترغب في حظر هذا المستخدم؟";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "المُستخدم ليس ضمن جهات الاتصال الخاصة بك. هل ترغب في حظر هذا المُستخدم؟";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "جهة اتصال مجهولة";
+"UNKNOWN_CONTACT_NAME" = "جهة اتصال غير معروفة";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "بلد مجهول";
+"UNKNOWN_COUNTRY_NAME" = "بلد غير معروف";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أحد أجهزتك أرسل رسالة لا يمكن معالجتها أو عرضها هنا لأنها تستخدم ميزة جديدة لـ Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "أرسل لك %@ رسالة لا يمكن معالجتها أو عرضها لأنها تستخدم ميزة جديدة لـ Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ قد أرسل لكَ رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "لقد استلمت رساة لا يمكن معالجتها أو عرضها لأنها تستخدم ميزة جديدة لـ Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "أنت قد تلقيت رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "حدِّث Signal الآن";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "حُدِّث Signal بآخر إصدار. يمكنك الآن استلام هذا الصنف من الرسائل في جهازك.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "تمَّ التحديث إلى آخر إصدار من Signal. يُمكنك الآن تلقي هذا النوع من الرسائل على جهازك.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يمكن الطلب من %@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار لـ Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يُمكن أن تطلب من %@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يمكن الطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار لـ Signal. ";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يُمكن أن تطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "مجهول";
+"UNKNOWN_USER" = "غير معروف";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد ألغي تشغيل الرسائل المختفية.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعطيل الرسائل المختفية.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "تم تحديد مهلة اختفاء الرسائل بـ %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعيين زمن الرسائل المُختفية إلى %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "مجهول";
+"UNKNOWN_VALUE" = "غير معروف";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "فصل الارتباط";
+"UNLINK_ACTION" = "إلغاء الارتباط";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "لن يتمكن هذا الجهاز من إرسال أو استلام الرسائل إذا أصبح غير مرتبط.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "لن يتمكن هذا الجهاز بعد الآن من إرسال الرسائل أو استقبالها إذا تمَّ إلغاء ربطه.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "فصل ارتباط \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "إلغاء ربط \"%@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "لم يعد الجهاز مرتبطا. أعد ربط Signal مع هاتفك لكي تستمر في تراسُل.";
+"UNLINKED_WARNING" = "لم يعُد الجهاز مُرتبطًا. أعد ربط Signal مع الهاتف الخاص بك لمُتابعة التراسُل.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "فشل Signal في فك ارتباط جهازك.";
+"UNLINKING_FAILED_ALERT_TITLE" = "لم يتمكن Signal من إلغاء ربط جهازك.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "جهاز غير مسمّى";
+"UNNAMED_DEVICE" = "جهاز بدون اسم";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "نزع التثبيت";
+"UNPIN_ACTION" = "فك التثبيت";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "المحادثات";
+"UNPINNED_SECTION_TITLE" = "المُحادثات";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "غير مقروءة";
@@ -5060,58 +5084,58 @@
 "UNREGISTER_SIGNAL_FAIL" = "فشل إلغاء التسجيل من Signal.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "تم تلقى ملحقة من نوعية غير معتمد";
+"UNSUPPORTED_ATTACHMENT" = "تمَّ استلام مُرفق مِن نوع غير مدعوم.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الخاصية";
+"UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الميزة.";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "لا يمكن تحديث المجموعات.";
+"UPDATE_GROUP_FAILED" = "لا يُمكن تحديث المجموعة.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لم يتم تديث المجموعة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لا يُمكن تحديث المجموعة. تحقق من اتصالك بالإنترنت ثمَّ حاول مرة أُخرى.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الـPIN الخاص بك";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "تعرف أكثر على الرقم التعريفي الشخصي";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "تعرَّف على المزيد حَول الـPIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الرموز التعريفي الشخصية تبقي المعلومات المحفوظة في Signal مُعمَّاة حتى لا يستطيع أحدٌ غيرك الوصول إليها. سيتم استرجاع صفحة حسابك الشخصي، إعداداتك، وجهات اتصالك عندما تعيد تثبيت التطبيق. لن تحتاج إلى الرمز التعريفي الشخصي لفتح التطبيق.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نقدم لكم الأرقام التعريفية الشخصية PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نُقدِّم لكُم الـPIN";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "إلغاء الرقم التعريفي الشخصي";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "تعطيل الـPIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "سوف يتطلب استخدام Signal عما قريب النسخة 11 من iOS فما بعدها. يُرجى ترقية النظام في تطبيق الإعدادات >> عام >> تحديث النظام.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "قريبًا سيطلب تطبيق Signal نظام iOS 11 أو أحدث. يُرجى الترقية من تطبيق الإعدادات >> عام >> تحديث البرامج.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "ترقية iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "إن اسم المستخدم اختياري في Signal. إذا اخترت إنشاء اسم المستخدم، سوف يتمكن المستخدمون الآخرون لـ Signal من العثور عليك بواسطة ذلك الاسم و من ثَمَّ التواصل معك بدون معرفتهم لرقم هاتفك.";
+"USERNAME_DESCRIPTION" = "اسماء المُستخدمين على Signal اختيارية. إذا اخترت إنشاء اسم مُستخدم، سيتمكن مُستخدمو Signal الآخرون من العُثور عليك بواسطة اسم المُستخدم هذا والاتصال بك دون معرفة رقم الهاتف الخاص بك.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "اسم المستخدم";
+"USERNAME_FIELD" = "اسم المُستخدم";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "قد تتكون أسماء المستخدمين فقط من حروف (من a إلى z) و أرقام و الرمز  _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "يُمكن أن تحتوي اسماء المُستخدمين على حروف a-z، أرقام 0-9 والشرطة السُفلية _ فقط";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "حدث خطأ خلال الاطلاع على اسم المستخدم. يُرجى المحاولة لاحقا.";
+"USERNAME_LOOKUP_ERROR" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@لا يستخدم Signal. تأكد من إدخالك لاسم المستخدم كله. ";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ليس مُستخدم Signal. تأكد من إدخالك لاسم المُستخدم الكامل.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "لم يعثر على المستخدم.";
+"USERNAME_NOT_FOUND_TITLE" = "لم يتمّ العُثر على المُستخدم.";
 
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "أدخل اسم المستخدم";
@@ -5120,70 +5144,70 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "يجب ألا يبتدأ اسم المستخدم بعدد.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "لا يُمكن أن يُبتدأ اسم المُستخدم بِرَقم.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "اسم المستخدم";
+"USERNAME_TITLE" = "اسم المُستخدم";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "يجب على اسم المستخدم أن يتكون من 4 حروف على الأقل.";
+"USERNAME_TOO_SHORT_ERROR" = "يجب أن يتكون اسم المُستخدم مِن 4 خانات على الأقل.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ مأخوذ.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ قد أُخِذَ مُسبقًا.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "فشل تحديث اسم المستخدم.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "فشل تحديث اسم المُستخدم.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "يجب ألا يكون اسم الجهاز فارغا";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "لا يُمكن أن يكون اسم الجهاز فارغ";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "اسم الجهاز طويل جدا";
+"VALIDATION_ERROR_TOO_LONG" = "إنَّ اسم الجهاز طويل جدًا";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "لقد قمت بوضع علامة \"غير متحقق منه\" ل%@.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "أنتَ قد علََّمتَ %@ كغير مُتحقّق منه.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "لقد قمت بوضع علامة \"غير متحقق منه\" ل%@ من خلال جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علََّمتَ %@ كغير مُتحقّق منه على جهاز آخر.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "لقد قمت بوضع علامة \"متحقق منه\" ل%@.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "أنتَ قد علََّمتَ %@ كمُتحقّق منه.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "لقد قمت بوضع علامة \"متحقق منه\" ل%@ من خلال جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علََّمتَ %@ كمُتحقّق منه على جهاز آخر.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "تم تغيير حالة التحقق.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "لقد تغيَّرت حالة التَحقُّق.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "عرض رقم اﻷمان";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "مراجعة أرقام الأمان";
+"VERIFY_PRIVACY_MULTIPLE" = "مُراجعة أرقام الأمان";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "اتصال فيديو";
+"VIDEO_CALL_LABEL" = "مُكالمة فيديو";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "لقد سبق لك رؤية هذه الرسالة.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "أنتَ بالفعل قد شاهدتَ هذه الرسالة.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "عليك باللمس هنا لجعل هذه الرسالة تختفي بعد أن تشاهد.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هُنا لإخفاء هذه الرسالة بعد أن تمَّ عرضها.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "تُزال ملفات الوسائط التي تظهر مرة واحدة تلقائيا فور إرسالها.";
+"VIEW_ONCE_OUTGOING_TOAST" = "تتمُّ إزالة ملفات وسائط-العرض-لمرة-واحدة الصادرة تلقائيًا بعد أن يتمَّ إرسالُها.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مرر للإلغاء";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مَرِّر لِلإلغاء";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "رسالة صوتية";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "انقر مع الاستمرار لتسجيل رسالة صوتية.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "انقر واِستَمرّ لتسجيل رِسالة صوتيَّة.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "رسالة صوتية";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "الرِّسالة الصَّوتيَّة";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
