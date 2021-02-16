@@ -250,13 +250,27 @@ final class VoiceMessageRecordingView : UIView {
             chevronImageView.transform = .identity
             slideToCancelLabel.transform = .identity
         }
+        if isValidLockViewLocation(location) {
+            if !lockView.isExpanded {
+                UIView.animate(withDuration: 0.25) {
+                    self.lockViewBottomConstraint.constant = -Values.mediumSpacing + LockView.expansionMargin
+                }
+            }
+            lockView.expandIfNeeded()
+        } else {
+            if lockView.isExpanded {
+                UIView.animate(withDuration: 0.25) {
+                    self.lockViewBottomConstraint.constant = -Values.mediumSpacing
+                }
+            }
+            lockView.collapseIfNeeded()
+        }
     }
 
     func handleLongPressEnded(at location: CGPoint) {
-        let lockViewHitMargin = VoiceMessageRecordingView.lockViewHitMargin
         if pulseView.frame.contains(location) {
             delegate.endVoiceMessageRecording()
-        } else if location.y < 0 && location.x > (lockView.frame.minX - lockViewHitMargin) && location.x < (lockView.frame.maxX + lockViewHitMargin) {
+        } else if isValidLockViewLocation(location) {
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCircleViewTap))
             circleView.addGestureRecognizer(tapGestureRecognizer)
             UIView.animate(withDuration: 0.25, delay: 0, options: .transitionCrossDissolve, animations: {
@@ -279,14 +293,33 @@ final class VoiceMessageRecordingView : UIView {
     @objc private func handleCancelButtonTapped() {
         delegate.cancelVoiceMessageRecording()
     }
+
+    // MARK: Convenience
+    private func isValidLockViewLocation(_ location: CGPoint) -> Bool {
+        let lockViewHitMargin = VoiceMessageRecordingView.lockViewHitMargin
+        return location.y < 0 && location.x > (lockView.frame.minX - lockViewHitMargin) && location.x < (lockView.frame.maxX + lockViewHitMargin)
+    }
 }
 
 // MARK: Lock View
 extension VoiceMessageRecordingView {
 
     fileprivate final class LockView : UIView {
+        private lazy var widthConstraint = set(.width, to: LockView.width)
+        private(set) var isExpanded = false
+
+        private lazy var stackView: UIStackView = {
+            let result = UIStackView()
+            result.axis = .vertical
+            result.spacing = Values.smallSpacing
+            result.alignment = .center
+            result.isLayoutMarginsRelativeArrangement = true
+            result.layoutMargins = UIEdgeInsets(top: 12, leading: 0, bottom: 8, trailing: 0)
+            return result
+        }()
 
         private static let width: CGFloat = 44
+        static let expansionMargin: CGFloat = 3
         private static let lockIconSize: CGFloat = 20
         private static let chevronIconSize: CGFloat = 20
 
@@ -312,9 +345,8 @@ extension VoiceMessageRecordingView {
             addSubview(blurView)
             blurView.pin(to: self)
             // Size & shape
-            let width = LockView.width
-            set(.width, to: width)
-            layer.cornerRadius = width / 2
+            widthConstraint.isActive = true
+            layer.cornerRadius = LockView.width / 2
             layer.masksToBounds = true
             // Border
             layer.borderWidth = 1
@@ -325,20 +357,41 @@ extension VoiceMessageRecordingView {
             let lockIconSize = LockView.lockIconSize
             lockIconImageView.set(.width, to: lockIconSize)
             lockIconImageView.set(.height, to: lockIconSize)
+            stackView.addArrangedSubview(lockIconImageView)
             // Chevron icon
             let chevronIconImageView = UIImageView(image: UIImage(named: "ic_chevron_up")!.withTint(iconTint))
             let chevronIconSize = LockView.chevronIconSize
             chevronIconImageView.set(.width, to: chevronIconSize)
             chevronIconImageView.set(.height, to: chevronIconSize)
+            stackView.addArrangedSubview(chevronIconImageView)
             // Stack view
-            let stackView = UIStackView(arrangedSubviews: [ lockIconImageView, chevronIconImageView ])
-            stackView.axis = .vertical
-            stackView.spacing = Values.smallSpacing
-            stackView.alignment = .center
-            stackView.isLayoutMarginsRelativeArrangement = true
-            stackView.layoutMargins = UIEdgeInsets(top: 12, leading: 0, bottom: 8, trailing: 0)
             addSubview(stackView)
             stackView.pin(to: self)
+        }
+
+        func expandIfNeeded() {
+            guard !isExpanded else { return }
+            isExpanded = true
+            let expansionMargin = LockView.expansionMargin
+            let newWidth = LockView.width + 2 * expansionMargin
+            widthConstraint.constant = newWidth
+            UIView.animate(withDuration: 0.25) {
+                self.layer.cornerRadius = newWidth / 2
+                self.stackView.layoutMargins = UIEdgeInsets(top: 12 + expansionMargin, leading: 0, bottom: 8 + expansionMargin, trailing: 0)
+                self.layoutIfNeeded()
+            }
+        }
+
+        func collapseIfNeeded() {
+            guard isExpanded else { return }
+            isExpanded = false
+            let newWidth = LockView.width
+            widthConstraint.constant = newWidth
+            UIView.animate(withDuration: 0.25) {
+                self.layer.cornerRadius = newWidth / 2
+                self.stackView.layoutMargins = UIEdgeInsets(top: 12, leading: 0, bottom: 8, trailing: 0)
+                self.layoutIfNeeded()
+            }
         }
     }
 }

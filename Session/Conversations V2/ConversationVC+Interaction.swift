@@ -23,17 +23,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func handleDocumentButtonTapped() {
         // TODO: Implement
     }
-    
+
+    private func showBlockedModalIfNeeded() -> Bool {
+        guard let thread = thread as? TSContactThread else { return false }
+        let publicKey = thread.contactIdentifier()
+        guard OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else { return false }
+        let blockedModal = BlockedModal(publicKey: publicKey)
+        blockedModal.modalPresentationStyle = .overFullScreen
+        blockedModal.modalTransitionStyle = .crossDissolve
+        present(blockedModal, animated: true, completion: nil)
+        return true
+    }
+
     func handleSendButtonTapped() {
-        if let thread = thread as? TSContactThread {
-            let publicKey = thread.contactIdentifier()
-            guard !OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else {
-                let blockedModal = BlockedModal(publicKey: publicKey)
-                blockedModal.modalPresentationStyle = .overFullScreen
-                blockedModal.modalTransitionStyle = .crossDissolve
-                return present(blockedModal, animated: true, completion: nil)
-            }
-        }
+        guard !showBlockedModalIfNeeded() else { return }
         // TODO: Attachments
         let text = snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         let thread = self.thread
@@ -55,12 +58,44 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             Storage.shared.write { transaction in
                 MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
-            guard let self = self else { return }
-            self.snInputView.text = ""
-            self.snInputView.quoteDraftInfo = nil
-            self.markAllAsRead()
-            // TODO: Reset mentions
+            self?.handleMessageSent()
         })
+    }
+
+    func sendAttachments(_ attachments: [SignalAttachment], with text: String) {
+        guard !showBlockedModalIfNeeded() else { return }
+        for attachment in attachments {
+            if attachment.hasError {
+                let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                return present(alert, animated: true, completion: nil)
+            }
+        }
+        let thread = self.thread
+        let message = VisibleMessage()
+        message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.text = text
+        let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+        Storage.write(with: { transaction in
+            tsMessage.save(with: transaction)
+        }, completion: { [weak self] in
+            Storage.write { transaction in
+                MessageSender.send(message, with: attachments, in: thread, using: transaction)
+            }
+            self?.handleMessageSent()
+        })
+    }
+
+    func handleMessageSent() {
+        // TODO: Reset mentions
+        self.snInputView.text = ""
+        self.snInputView.quoteDraftInfo = nil
+        self.markAllAsRead()
+        if Environment.shared.preferences.soundInForeground() {
+            let soundID = OWSSounds.systemSoundID(for: .messageSent, quiet: true)
+            AudioServicesPlaySystemSound(soundID)
+        }
+        SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
     }
 
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
@@ -340,7 +375,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             return present(alert, animated: true, completion: nil)
         }
         // Send attachment
-        // TODO: Send the attachment
+        sendAttachments([ attachment ], with: "")
     }
 
     func cancelVoiceMessageRecording() {
