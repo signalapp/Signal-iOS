@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hours > 0) {
         return [NSString stringWithFormat:@"%ld:%02ld:%02ld", hours, minutes, seconds];
     } else {
-        return [NSString stringWithFormat:@"%ld:%02ld", minutes, seconds];
+        return [NSString stringWithFormat:@"%02ld:%02ld", minutes, seconds];
     }
 }
 

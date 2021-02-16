@@ -564,7 +564,7 @@
 		C364535C252467900045C478 /* AudioUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364535B252467900045C478 /* AudioUtilities.swift */; };
 		C374EEE225DA26740073A857 /* LinkPreviewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEE125DA26740073A857 /* LinkPreviewModal.swift */; };
 		C374EEEB25DA3CA70073A857 /* ConversationTitleViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEEA25DA3CA70073A857 /* ConversationTitleViewV2.swift */; };
-		C374EEF425DB31D40073A857 /* VoiceMessageOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEF325DB31D40073A857 /* VoiceMessageOverlay.swift */; };
+		C374EEF425DB31D40073A857 /* VoiceMessageRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */; };
 		C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */; };
 		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1609,7 +1609,7 @@
 		C364535B252467900045C478 /* AudioUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUtilities.swift; sourceTree = "<group>"; };
 		C374EEE125DA26740073A857 /* LinkPreviewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewModal.swift; sourceTree = "<group>"; };
 		C374EEEA25DA3CA70073A857 /* ConversationTitleViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleViewV2.swift; sourceTree = "<group>"; };
-		C374EEF325DB31D40073A857 /* VoiceMessageOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageOverlay.swift; sourceTree = "<group>"; };
+		C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageRecordingView.swift; sourceTree = "<group>"; };
 		C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Attachment.swift"; sourceTree = "<group>"; };
 		C379DCFD25673DBC0002D4EB /* TSAttachmentPointer+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointer+Conversion.swift"; sourceTree = "<group>"; };
 		C37F53E8255BA9BB002AEA92 /* Environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
@@ -2291,7 +2291,7 @@
 				B8269D2825C7A4B400488AB4 /* InputView.swift */,
 				B8269D3225C7A8C600488AB4 /* InputViewButton.swift */,
 				B8269D3C25C7B34D00488AB4 /* InputTextView.swift */,
-				C374EEF325DB31D40073A857 /* VoiceMessageOverlay.swift */,
+				C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */,
 			);
 			path = "Input View";
 			sourceTree = "<group>";
@@ -5017,7 +5017,7 @@
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
-				C374EEF425DB31D40073A857 /* VoiceMessageOverlay.swift in Sources */,
+				C374EEF425DB31D40073A857 /* VoiceMessageRecordingView.swift in Sources */,
 				B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,

@@ -3,7 +3,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
-    private var voiceMessageOverlay: VoiceMessageOverlay?
+    private var voiceMessageRecordingView: VoiceMessageRecordingView?
 
     private lazy var linkPreviewView: LinkPreviewViewV2 = {
         let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
@@ -212,14 +212,14 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     @objc private func showVoiceMessageUI() {
-        voiceMessageOverlay?.removeFromSuperview()
+        voiceMessageRecordingView?.removeFromSuperview()
         let voiceMessageButtonFrame = voiceMessageButton.superview!.convert(voiceMessageButton.frame, to: self)
-        let voiceMessageOverlay = VoiceMessageOverlay(voiceMessageButtonFrame: voiceMessageButtonFrame)
-        voiceMessageOverlay.alpha = 0
-        addSubview(voiceMessageOverlay)
-        voiceMessageOverlay.pin(to: self)
-        self.voiceMessageOverlay = voiceMessageOverlay
-        voiceMessageOverlay.animate()
+        let voiceMessageRecordingView = VoiceMessageRecordingView(voiceMessageButtonFrame: voiceMessageButtonFrame)
+        voiceMessageRecordingView.alpha = 0
+        addSubview(voiceMessageRecordingView)
+        voiceMessageRecordingView.pin(to: self)
+        self.voiceMessageRecordingView = voiceMessageRecordingView
+        voiceMessageRecordingView.animate()
         let allOtherViews = [ cameraButton, libraryButton, gifButton, documentButton, sendButton, inputTextView, additionalContentContainer ]
         UIView.animate(withDuration: 0.25) {
             allOtherViews.forEach { $0.alpha = 0 }
