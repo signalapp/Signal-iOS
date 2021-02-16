@@ -1,27 +1,27 @@
 import CoreServices
+import Photos
 
-extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate {
-    
+extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate, SendMediaNavDelegate, UIDocumentPickerDelegate {
+
     @objc func openSettings() {
         let settingsVC = OWSConversationSettingsViewController()
         settingsVC.configure(with: thread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
         navigationController!.pushViewController(settingsVC, animated: true, completion: nil)
     }
-    
-    func handleCameraButtonTapped() {
-        // TODO: Implement
+
+    func handleScrollToBottomButtonTapped() {
+        scrollToBottom(isAnimated: true)
     }
-    
-    func handleLibraryButtonTapped() {
-        // TODO: Implement
-    }
-    
-    func handleGIFButtonTapped() {
-        // TODO: Implement
-    }
-    
-    func handleDocumentButtonTapped() {
-        // TODO: Implement
+
+    // MARK: Blocking
+    @objc func unblock() {
+        guard let thread = thread as? TSContactThread else { return }
+        let publicKey = thread.contactIdentifier()
+        UIView.animate(withDuration: 0.25, animations: {
+            self.blockedBanner.alpha = 0
+        }, completion: { _ in
+            OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
+        })
     }
 
     private func showBlockedModalIfNeeded() -> Bool {
@@ -35,9 +35,128 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         return true
     }
 
+    // MARK: Attachments
+    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
+        dismiss(animated: true, completion: nil)
+    }
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+        sendAttachments(attachments, with: messageText ?? "")
+        scrollToBottom(isAnimated: false)
+        dismiss(animated: true) { }
+    }
+
+    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String? {
+        return snInputView.text
+    }
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
+        snInputView.text = newMessageText ?? ""
+    }
+
+    func handleCameraButtonTapped() {
+        guard requestCameraPermissionIfNeeded() else { return }
+        requestMicrophonePermissionIfNeeded { }
+        if AVAudioSession.sharedInstance().recordPermission != .granted {
+            SNLog("Proceeding without microphone access. Any recorded video will be silent.")
+        }
+        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst()
+        sendMediaNavController.sendMediaNavDelegate = self
+        sendMediaNavController.modalPresentationStyle = .fullScreen
+        present(sendMediaNavController, animated: true, completion: nil)
+    }
+    
+    func handleLibraryButtonTapped() {
+        let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst()
+        sendMediaNavController.sendMediaNavDelegate = self
+        sendMediaNavController.modalPresentationStyle = .fullScreen
+        present(sendMediaNavController, animated: true, completion: nil)
+    }
+    
+    func handleGIFButtonTapped() {
+        // TODO: Implement
+    }
+    
+    func handleDocumentButtonTapped() {
+        // UIDocumentPickerModeImport copies to a temp file within our container.
+        // It uses more memory than "open" but lets us avoid working with security scoped URLs.
+        let documentPickerVC = UIDocumentPickerViewController(documentTypes: [ kUTTypeItem as String ], in: UIDocumentPickerMode.import)
+        documentPickerVC.delegate = self
+        present(documentPickerVC, animated: true, completion: nil)
+    }
+
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        // Do nothing
+    }
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return } // TODO: Handle multiple?
+        let urlResourceValues: URLResourceValues
+        do {
+            urlResourceValues = try url.resourceValues(forKeys: [ .typeIdentifierKey, .isDirectoryKey, .nameKey ])
+        } catch {
+            let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            return present(alert, animated: true, completion: nil)
+        }
+        let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
+        guard urlResourceValues.isDirectory != true else {
+            DispatchQueue.main.async {
+                let title = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE", comment: "")
+                let message = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY", comment: "")
+                OWSAlerts.showAlert(title: title, message: message)
+            }
+            return
+        }
+        let fileName = urlResourceValues.name ?? NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "")
+        guard let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
+            DispatchQueue.main.async {
+                let title = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE", comment: "")
+                OWSAlerts.showAlert(title: title)
+            }
+            return
+        }
+        dataSource.sourceFilename = fileName
+        // Although we want to be able to send higher quality attachments through the document picker
+        // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
+        guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: type) else {
+            return showAttachmentApprovalDialogAfterProcessingVideo(at: url, with: fileName)
+        }
+        // "Document picker" attachments _SHOULD NOT_ be resized
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type, imageQuality: .original)
+        showAttachmentApprovalDialog(for: [ attachment ])
+    }
+
+    private func showAttachmentApprovalDialog(for attachments: [SignalAttachment]) {
+        let navController = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments, approvalDelegate: self)
+        present(navController, animated: true, completion: nil)
+    }
+
+    private func showAttachmentApprovalDialogAfterProcessingVideo(at url: URL, with fileName: String) {
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true, message: nil) { [weak self] modalActivityIndicator in
+            let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)!
+            dataSource.sourceFilename = fileName
+            let compressionResult: SignalAttachment.VideoCompressionResult = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+            compressionResult.attachmentPromise.done { attachment in
+                guard !modalActivityIndicator.wasCancelled, let attachment = attachment as? SignalAttachment else { return }
+                modalActivityIndicator.dismiss {
+                    if !attachment.hasError {
+                        self?.showApprovalDialog(for: [ attachment ])
+                    } else {
+                        self?.showErrorAlert(for: attachment)
+                    }
+                }
+            }.retainUntilComplete()
+        }
+    }
+
+    // MARK: Message Sending
     func handleSendButtonTapped() {
+        sendMessage()
+    }
+
+    func sendMessage() {
         guard !showBlockedModalIfNeeded() else { return }
-        // TODO: Attachments
         let text = snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         let thread = self.thread
         guard !text.isEmpty else { return }
@@ -66,9 +185,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         guard !showBlockedModalIfNeeded() else { return }
         for attachment in attachments {
             if attachment.hasError {
-                let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                return present(alert, animated: true, completion: nil)
+                return showErrorAlert(for: attachment)
             }
         }
         let thread = self.thread
@@ -98,6 +215,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
     }
 
+    // MARK: View Item Interaction
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
         guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
             let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
@@ -171,34 +289,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let longMessageVC = LongTextViewController(viewItem: viewItem)
         navigationController!.pushViewController(longMessageVC, animated: true)
     }
-
-    func playOrPauseAudio(for viewItem: ConversationViewItem) {
-        guard let attachment = viewItem.attachmentStream else { return }
-        let fileManager = FileManager.default
-        guard let path = attachment.originalFilePath, fileManager.fileExists(atPath: path),
-            let url = attachment.originalMediaURL else { return }
-        if let audioPlayer = audioPlayer {
-            if let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem {
-                audioPlayer.playbackRate = 1
-                audioPlayer.togglePlayState()
-                return
-            } else {
-                audioPlayer.stop()
-                self.audioPlayer = nil
-            }
-        }
-        let audioPlayer = OWSAudioPlayer(mediaUrl: url, audioBehavior: .audioMessagePlayback, delegate: viewItem)
-        self.audioPlayer = audioPlayer
-        audioPlayer.owner = viewItem
-        audioPlayer.play()
-        audioPlayer.setCurrentTime(Double(viewItem.audioProgressSeconds))
-    }
-
-    func speedUpAudio(for viewItem: ConversationViewItem) {
-        guard let audioPlayer = audioPlayer, let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem, audioPlayer.isPlaying else { return }
-        audioPlayer.playbackRate = 1.5
-        viewItem.lastAudioMessageView?.showSpeedUpLabel()
-    }
     
     func reply(_ viewItem: ConversationViewItem) {
         var quoteDraftOrNil: OWSQuotedReplyModel?
@@ -245,10 +335,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
-    func handleScrollToBottomButtonTapped() {
-        scrollToBottom(isAnimated: true)
-    }
 
     func handleQuoteViewCancelButtonTapped() {
         snInputView.quoteDraftInfo = nil
@@ -264,38 +350,42 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func handleReplyButtonTapped(for viewItem: ConversationViewItem) {
         reply(viewItem)
     }
-    
-    @objc func unblock() {
-        guard let thread = thread as? TSContactThread else { return }
-        let publicKey = thread.contactIdentifier()
-        UIView.animate(withDuration: 0.25, animations: {
-            self.blockedBanner.alpha = 0
-        }, completion: { _ in
-            OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
-        })
-    }
 
-    func requestMicrophonePermissionIfNeeded() {
-        switch AVAudioSession.sharedInstance().recordPermission {
-        case .granted: break
-        case .denied:
-            cancelVoiceMessageRecording()
-            let modal = PermissionMissingModal(permission: "microphone") { [weak self] in
-                self?.cancelVoiceMessageRecording()
+    // MARK: Voice Message Playback
+    func playOrPauseAudio(for viewItem: ConversationViewItem) {
+        guard let attachment = viewItem.attachmentStream else { return }
+        let fileManager = FileManager.default
+        guard let path = attachment.originalFilePath, fileManager.fileExists(atPath: path),
+            let url = attachment.originalMediaURL else { return }
+        if let audioPlayer = audioPlayer {
+            if let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem {
+                audioPlayer.playbackRate = 1
+                audioPlayer.togglePlayState()
+                return
+            } else {
+                audioPlayer.stop()
+                self.audioPlayer = nil
             }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-        case .undetermined:
-            cancelVoiceMessageRecording()
-            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
-        default: break
         }
+        let audioPlayer = OWSAudioPlayer(mediaUrl: url, audioBehavior: .audioMessagePlayback, delegate: viewItem)
+        self.audioPlayer = audioPlayer
+        audioPlayer.owner = viewItem
+        audioPlayer.play()
+        audioPlayer.setCurrentTime(Double(viewItem.audioProgressSeconds))
     }
 
+    func speedUpAudio(for viewItem: ConversationViewItem) {
+        guard let audioPlayer = audioPlayer, let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem, audioPlayer.isPlaying else { return }
+        audioPlayer.playbackRate = 1.5
+        viewItem.lastAudioMessageView?.showSpeedUpLabel()
+    }
+
+    // MARK: Voice Message Recording
     func startVoiceMessageRecording() {
         // Request permission if needed
-        requestMicrophonePermissionIfNeeded()
+        requestMicrophonePermissionIfNeeded() { [weak self] in
+            self?.cancelVoiceMessageRecording()
+        }
         guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
         // Cancel any current audio playback
         audioPlayer?.stop()
@@ -370,9 +460,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         dataSource.sourceFilename = fileName
         let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
         guard !attachment.hasError else {
-            let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
+            return showErrorAlert(for: attachment)
         }
         // Send attachment
         sendAttachments([ attachment ], with: "")
@@ -388,5 +476,63 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func stopVoiceMessageRecording() {
         audioRecorder?.stop()
         audioSession.endAudioActivity(recordVoiceMessageActivity)
+    }
+
+    // MARK: Requesting Permission
+    func requestCameraPermissionIfNeeded() -> Bool {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: return true
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "camera") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+            return false
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
+            return false
+        default: return false
+        }
+    }
+
+    func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted: break
+        case .denied:
+            onNotGranted()
+            let modal = PermissionMissingModal(permission: "microphone") {
+                onNotGranted()
+            }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        case .undetermined:
+            onNotGranted()
+            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
+        default: break
+        }
+    }
+
+    func requestLibraryPermissionIfNeeded() -> Bool {
+        switch PHPhotoLibrary.authorizationStatus() {
+        case .authorized, .limited: return true
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "library") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+            return false
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { _ in }
+            return false
+        default: return false
+        }
+    }
+
+    // MARK: Convenience
+    func showErrorAlert(for attachment: SignalAttachment) {
+        let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
+        let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
+        OWSAlerts.showAlert(title: title, message: message)
     }
 }

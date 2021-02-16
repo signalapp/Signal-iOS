@@ -100,7 +100,7 @@ final class VoiceMessageRecordingView : UIView {
         let result = UILabel()
         result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.text = "00:00"
+        result.text = "0:00"
         return result
     }()
 
