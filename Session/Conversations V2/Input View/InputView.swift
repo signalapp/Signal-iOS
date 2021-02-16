@@ -183,14 +183,19 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) {
-        if inputViewButton == voiceMessageButton {
-            delegate.startVoiceMessageRecording()
-            showVoiceMessageUI()
-        }
+        guard inputViewButton == voiceMessageButton else { return }
+        delegate.startVoiceMessageRecording()
+        showVoiceMessageUI()
+    }
+
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) {
+        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
+        let location = touch.location(in: voiceMessageRecordingView)
+        voiceMessageRecordingView.handleLongPressMoved(to: location)
     }
 
     func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) {
-        guard let voiceMessageRecordingView = voiceMessageRecordingView else { return }
+        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
         let location = touch.location(in: voiceMessageRecordingView)
         voiceMessageRecordingView.handleLongPressEnded(at: location)
     }

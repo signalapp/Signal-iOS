@@ -11,6 +11,27 @@ final class VoiceMessageRecordingView : UIView {
     private var recordingTimer: Timer?
 
     // MARK: UI Components
+    private lazy var iconImageView: UIImageView = {
+        let result = UIImageView()
+        result.image = UIImage(named: "Microphone")!.withTint(.white)
+        result.contentMode = .scaleAspectFit
+        let size = VoiceMessageRecordingView.iconSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        return result
+    }()
+
+    private lazy var circleView: UIView = {
+        let result = UIView()
+        result.backgroundColor = Colors.destructive
+        let size = VoiceMessageRecordingView.circleSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.layer.cornerRadius = size / 2
+        result.layer.masksToBounds = true
+        return result
+    }()
+
     private lazy var pulseView: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.destructive
@@ -28,11 +49,31 @@ final class VoiceMessageRecordingView : UIView {
         return result
     }()
 
+    private lazy var chevronImageView: UIImageView = {
+        let chevronSize = VoiceMessageRecordingView.chevronSize
+        let chevronColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.mediumOpacity)
+        let result = UIImageView(image: UIImage(named: "small_chevron_left")!.withTint(chevronColor))
+        result.contentMode = .scaleAspectFit
+        result.set(.width, to: chevronSize)
+        result.set(.height, to: chevronSize)
+        return result
+    }()
+
     private lazy var slideToCancelLabel: UILabel = {
         let result = UILabel()
         result.text = "Slide to cancel"
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        return result
+    }()
+
+    private lazy var cancelButton: UIButton = {
+        let result = UIButton()
+        result.setTitle("Cancel", for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(handleCancelButtonTapped), for: UIControl.Event.touchUpInside)
+        result.alpha = 0
         return result
     }()
 
@@ -68,9 +109,10 @@ final class VoiceMessageRecordingView : UIView {
     // MARK: Settings
     private static let circleSize: CGFloat = 96
     private static let pulseSize: CGFloat = 24
-    private static let microPhoneIconSize: CGFloat = 28
+    private static let iconSize: CGFloat = 28
     private static let chevronSize: CGFloat = 16
     private static let dotSize: CGFloat = 16
+    private static let lockViewHitMargin: CGFloat = 40
 
     // MARK: Lifecycle
     init(voiceMessageButtonFrame: CGRect, delegate: VoiceMessageRecordingViewDelegate) {
@@ -78,7 +120,7 @@ final class VoiceMessageRecordingView : UIView {
         self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
-        recordingTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.updateDurationLabel()
         }
     }
@@ -97,41 +139,27 @@ final class VoiceMessageRecordingView : UIView {
 
     private func setUpViewHierarchy() {
         // Icon
-        let iconSize = VoiceMessageRecordingView.microPhoneIconSize
-        let iconImageView = UIImageView()
-        iconImageView.image = UIImage(named: "Microphone")!.withTint(.white)
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.set(.width, to: iconSize)
-        iconImageView.set(.height, to: iconSize)
+        let iconSize = VoiceMessageRecordingView.iconSize
         addSubview(iconImageView)
         let voiceMessageButtonCenter = voiceMessageButtonFrame.center
         iconImageView.pin(.left, to: .left, of: self, withInset: voiceMessageButtonCenter.x - iconSize / 2)
         iconImageView.pin(.top, to: .top, of: self, withInset: voiceMessageButtonCenter.y - iconSize / 2)
         // Circle
-        let circleView = UIView()
-        circleView.backgroundColor = Colors.destructive
-        let circleSize = VoiceMessageRecordingView.circleSize
-        circleView.set(.width, to: circleSize)
-        circleView.set(.height, to: circleSize)
-        circleView.layer.cornerRadius = circleSize / 2
-        circleView.layer.masksToBounds = true
         insertSubview(circleView, at: 0)
         circleView.center(in: iconImageView)
         // Pulse
         insertSubview(pulseView, at: 0)
         pulseView.center(in: circleView)
         // Slide to cancel stack view
-        let chevronSize = VoiceMessageRecordingView.chevronSize
-        let chevronColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.mediumOpacity)
-        let chevronImageView = UIImageView(image: UIImage(named: "small_chevron_left")!.withTint(chevronColor))
-        chevronImageView.contentMode = .scaleAspectFit
-        chevronImageView.set(.width, to: chevronSize)
-        chevronImageView.set(.height, to: chevronSize)
         slideToCancelStackView.addArrangedSubview(chevronImageView)
         slideToCancelStackView.addArrangedSubview(slideToCancelLabel)
         addSubview(slideToCancelStackView)
         slideToCancelStackViewRightConstraint.isActive = true
         slideToCancelStackView.center(.vertical, in: iconImageView)
+        // Cancel button
+        addSubview(cancelButton)
+        cancelButton.center(.horizontal, in: self)
+        cancelButton.center(.vertical, in: iconImageView)
         // Duration stack view
         durationStackView.addArrangedSubview(dotView)
         durationStackView.addArrangedSubview(durationLabel)
@@ -208,12 +236,48 @@ final class VoiceMessageRecordingView : UIView {
     }
 
     // MARK: Interaction
+    func handleLongPressMoved(to location: CGPoint) {
+        if location.x < bounds.center.x {
+            let translationX = location.x - bounds.center.x
+            let sign: CGFloat = -1
+            let chevronDamping: CGFloat = 4
+            let labelDamping: CGFloat = 3
+            let chevronX = (chevronDamping * (sqrt(abs(translationX)) / sqrt(chevronDamping))) * sign
+            let labelX = (labelDamping * (sqrt(abs(translationX)) / sqrt(labelDamping))) * sign
+            chevronImageView.transform = CGAffineTransform(translationX: chevronX, y: 0)
+            slideToCancelLabel.transform = CGAffineTransform(translationX: labelX, y: 0)
+        } else {
+            chevronImageView.transform = .identity
+            slideToCancelLabel.transform = .identity
+        }
+    }
+
     func handleLongPressEnded(at location: CGPoint) {
+        let lockViewHitMargin = VoiceMessageRecordingView.lockViewHitMargin
         if pulseView.frame.contains(location) {
             delegate.endVoiceMessageRecording()
-        } else if lockView.frame.contains(location) {
-            print("[Test] Lock view")
+        } else if location.y < 0 && location.x > (lockView.frame.minX - lockViewHitMargin) && location.x < (lockView.frame.maxX + lockViewHitMargin) {
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCircleViewTap))
+            circleView.addGestureRecognizer(tapGestureRecognizer)
+            UIView.animate(withDuration: 0.25, delay: 0, options: .transitionCrossDissolve, animations: {
+                self.lockView.alpha = 0
+                self.iconImageView.image = UIImage(named: "ArrowUp")!.withTint(.white)
+                self.slideToCancelStackView.alpha = 0
+                self.cancelButton.alpha = 1
+            }, completion: { _ in
+                // Do nothing
+            })
+        } else {
+            delegate.cancelVoiceMessageRecording()
         }
+    }
+
+    @objc private func handleCircleViewTap() {
+        delegate.endVoiceMessageRecording()
+    }
+
+    @objc private func handleCancelButtonTapped() {
+        delegate.cancelVoiceMessageRecording()
     }
 }
 

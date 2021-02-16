@@ -83,6 +83,12 @@ final class InputViewButton : UIView {
         })
     }
 
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if isLongPress {
+            delegate.handleInputViewButtonLongPressMoved(self, with: touches.first!)
+        }
+    }
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         collapse()
         if !isLongPress {
@@ -109,5 +115,6 @@ protocol InputViewButtonDelegate {
     
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch)
     func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch)
 }

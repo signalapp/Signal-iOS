@@ -37,7 +37,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // TODO: Attachments
         let text = snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         let thread = self.thread
-        // TODO: Blocking
         guard !text.isEmpty else { return }
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
@@ -56,7 +55,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             Storage.shared.write { transaction in
                 MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
-            // TODO: Sent handling
             guard let self = self else { return }
             self.snInputView.text = ""
             self.snInputView.quoteDraftInfo = nil
@@ -263,6 +261,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func startVoiceMessageRecording() {
         // Request permission if needed
         requestMicrophonePermissionIfNeeded()
+        guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
         // Cancel any current audio playback
         audioPlayer?.stop()
         audioPlayer = nil
@@ -323,8 +322,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // Check for user misunderstanding
         guard duration > 1 else {
             self.audioRecorder = nil
-            // TODO: Show modal explaining what's up
-            return
+            let title = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE", comment: "")
+            let message = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
+            return OWSAlerts.showAlert(title: title, message: message)
         }
         // Get data
         let dataSourceOrNil = DataSourcePath.dataSource(with: audioRecorder.url, shouldDeleteOnDeallocation: true)
@@ -335,8 +335,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         dataSource.sourceFilename = fileName
         let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
         guard !attachment.hasError else {
-            // TODO: Show error UI
-            return
+            let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            return present(alert, animated: true, completion: nil)
         }
         // Send attachment
         // TODO: Send the attachment
