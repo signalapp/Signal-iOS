@@ -5,6 +5,7 @@ final class VoiceMessageRecordingView : UIView {
     private lazy var slideToCancelLabelCenterHorizontalConstraint = slideToCancelLabel.center(.horizontal, in: self)
     private lazy var pulseViewWidthConstraint = pulseView.set(.width, to: VoiceMessageRecordingView.circleSize)
     private lazy var pulseViewHeightConstraint = pulseView.set(.height, to: VoiceMessageRecordingView.circleSize)
+    private lazy var lockViewBottomConstraint = lockView.pin(.bottom, to: .top, of: self, withInset: Values.mediumSpacing)
     private let recordingStartDate = Date()
     private var recordingTimer: Timer?
 
@@ -60,6 +61,8 @@ final class VoiceMessageRecordingView : UIView {
         result.text = "00:00"
         return result
     }()
+
+    private lazy var lockView = LockView()
 
     // MARK: Settings
     private static let circleSize: CGFloat = 96
@@ -117,7 +120,7 @@ final class VoiceMessageRecordingView : UIView {
         pulseView.center(in: circleView)
         // Slide to cancel stack view
         let chevronSize = VoiceMessageRecordingView.chevronSize
-        let chevronColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        let chevronColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.mediumOpacity)
         let chevronImageView = UIImageView(image: UIImage(named: "small_chevron_left")!.withTint(chevronColor))
         chevronImageView.contentMode = .scaleAspectFit
         chevronImageView.set(.width, to: chevronSize)
@@ -134,13 +137,9 @@ final class VoiceMessageRecordingView : UIView {
         durationStackView.pin(.left, to: .left, of: self, withInset: Values.largeSpacing)
         durationStackView.center(.vertical, in: iconImageView)
         // Lock view
-        let lockView = UIView()
-        lockView.backgroundColor = .blue
-        lockView.set(.width, to: 60)
-        lockView.set(.height, to: 60)
         addSubview(lockView)
-        lockView.pin(.bottom, to: .top, of: self, withInset: -40)
         lockView.center(.horizontal, in: iconImageView)
+        lockViewBottomConstraint.isActive = true
     }
 
     // MARK: Updating
@@ -152,30 +151,33 @@ final class VoiceMessageRecordingView : UIView {
     // MARK: Animation
     func animate() {
         layoutIfNeeded()
-        self.slideToCancelStackViewRightConstraint.isActive = false
-        self.slideToCancelLabelCenterHorizontalConstraint.isActive = true
-        UIView.animate(withDuration: 0.25, animations: {
+        slideToCancelStackViewRightConstraint.isActive = false
+        slideToCancelLabelCenterHorizontalConstraint.isActive = true
+        lockViewBottomConstraint.constant = -Values.mediumSpacing
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
+            guard let self = self else { return }
             self.alpha = 1
             self.layoutIfNeeded()
-        }, completion: { _ in
+        }, completion: { [weak self] _ in
+            guard let self = self else { return }
             self.fadeOutDotView()
             self.pulse()
         })
     }
 
     private func fadeOutDotView() {
-        UIView.animate(withDuration: 0.5, animations: {
-            self.dotView.alpha = 0
-        }, completion: { _ in
-            self.fadeInDotView()
+        UIView.animate(withDuration: 0.5, animations: { [weak self] in
+            self?.dotView.alpha = 0
+        }, completion: { [weak self] _ in
+            self?.fadeInDotView()
         })
     }
 
     private func fadeInDotView() {
-        UIView.animate(withDuration: 0.5, animations: {
-            self.dotView.alpha = 1
-        }, completion: { _ in
-            self.fadeOutDotView()
+        UIView.animate(withDuration: 0.5, animations: { [weak self] in
+            self?.dotView.alpha = 1
+        }, completion: { [weak self] _ in
+            self?.fadeOutDotView()
         })
     }
 
@@ -186,12 +188,14 @@ final class VoiceMessageRecordingView : UIView {
         let expandedFrame = CGRect(center: pulseView.center, size: CGSize(width: expandedSize, height: expandedSize))
         pulseViewWidthConstraint.constant = expandedSize
         pulseViewHeightConstraint.constant = expandedSize
-        UIView.animate(withDuration: 1, animations: {
+        UIView.animate(withDuration: 1, animations: { [weak self] in
+            guard let self = self else { return }
             self.layoutIfNeeded()
             self.pulseView.frame = expandedFrame
             self.pulseView.layer.cornerRadius = expandedSize / 2
             self.pulseView.alpha = 0
-        }, completion: { _ in
+        }, completion: { [weak self] _ in
+            guard let self = self else { return }
             self.pulseViewWidthConstraint.constant = collapsedSize
             self.pulseViewHeightConstraint.constant = collapsedSize
             self.pulseView.frame = collapsedFrame
@@ -199,5 +203,67 @@ final class VoiceMessageRecordingView : UIView {
             self.pulseView.alpha = 0.5
             self.pulse()
         })
+    }
+}
+
+// MARK: Lock View
+extension VoiceMessageRecordingView {
+
+    fileprivate final class LockView : UIView {
+
+        private static let width: CGFloat = 44
+        private static let lockIconSize: CGFloat = 20
+        private static let chevronIconSize: CGFloat = 20
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            setUpViewHierarchy()
+        }
+
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            setUpViewHierarchy()
+        }
+
+        private func setUpViewHierarchy() {
+            let iconTint: UIColor = isLightMode ? .black : .white
+            // Background & blur
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = isLightMode ? .white : .black
+            backgroundView.alpha = Values.lowOpacity
+            addSubview(backgroundView)
+            backgroundView.pin(to: self)
+            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+            addSubview(blurView)
+            blurView.pin(to: self)
+            // Size & shape
+            let width = LockView.width
+            set(.width, to: width)
+            layer.cornerRadius = width / 2
+            layer.masksToBounds = true
+            // Border
+            layer.borderWidth = 1
+            let borderColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.veryLowOpacity)
+            layer.borderColor = borderColor.cgColor
+            // Lock icon
+            let lockIconImageView = UIImageView(image: UIImage(named: "ic_lock_outline")!.withTint(iconTint))
+            let lockIconSize = LockView.lockIconSize
+            lockIconImageView.set(.width, to: lockIconSize)
+            lockIconImageView.set(.height, to: lockIconSize)
+            // Chevron icon
+            let chevronIconImageView = UIImageView(image: UIImage(named: "ic_chevron_up")!.withTint(iconTint))
+            let chevronIconSize = LockView.chevronIconSize
+            chevronIconImageView.set(.width, to: chevronIconSize)
+            chevronIconImageView.set(.height, to: chevronIconSize)
+            // Stack view
+            let stackView = UIStackView(arrangedSubviews: [ lockIconImageView, chevronIconImageView ])
+            stackView.axis = .vertical
+            stackView.spacing = Values.smallSpacing
+            stackView.alignment = .center
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.layoutMargins = UIEdgeInsets(top: 12, leading: 0, bottom: 8, trailing: 0)
+            addSubview(stackView)
+            stackView.pin(to: self)
+        }
     }
 }
