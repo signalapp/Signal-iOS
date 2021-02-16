@@ -1,6 +1,5 @@
 
-@objc(LKAppearanceUtilities)
-final class AppearanceUtilities : NSObject {
+@objc final class SNAppearance : NSObject {
 
     @objc static func switchToSessionAppearance() {
         if #available(iOS 13, *) {
@@ -21,6 +20,14 @@ final class AppearanceUtilities : NSObject {
             UINavigationBar.appearance().isTranslucent = false
             UINavigationBar.appearance().tintColor = .black
             UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor : UIColor.black ]
+        }
+    }
+
+    @objc static func switchToDocumentPickerAppearance() {
+        if #available(iOS 13, *) {
+            let textColor: UIColor = isDarkMode ? .white : .black
+            UINavigationBar.appearance().tintColor = textColor
+            UINavigationBar.appearance().titleTextAttributes = [ NSAttributedString.Key.foregroundColor : textColor ]
         }
     }
 }

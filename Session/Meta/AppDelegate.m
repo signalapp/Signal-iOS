@@ -211,7 +211,7 @@ static NSTimeInterval launchStartedAt;
 
     [SNConfiguration performMainSetup];
 
-    [LKAppearanceUtilities switchToSessionAppearance];
+    [SNAppearance switchToSessionAppearance];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
