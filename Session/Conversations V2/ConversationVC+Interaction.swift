@@ -1,7 +1,8 @@
 import CoreServices
 import Photos
 
-extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate, SendMediaNavDelegate, UIDocumentPickerDelegate {
+extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
+    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate {
 
     @objc func openSettings() {
         let settingsVC = OWSConversationSettingsViewController()
@@ -43,6 +44,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
         scrollToBottom(isAnimated: false)
+        // TODO: Reset mentions
+        self.snInputView.text = ""
         dismiss(animated: true) { }
     }
 
@@ -51,6 +54,22 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
+        snInputView.text = newMessageText ?? ""
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+        sendAttachments(attachments, with: messageText ?? "")
+        scrollToBottom(isAnimated: false)
+        // TODO: Reset mentions
+        self.snInputView.text = ""
+        dismiss(animated: true) { }
+    }
+
+    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         snInputView.text = newMessageText ?? ""
     }
 
@@ -82,14 +101,17 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // It uses more memory than "open" but lets us avoid working with security scoped URLs.
         let documentPickerVC = UIDocumentPickerViewController(documentTypes: [ kUTTypeItem as String ], in: UIDocumentPickerMode.import)
         documentPickerVC.delegate = self
+        documentPickerVC.modalPresentationStyle = .fullScreen
+        AppearanceUtilities.switchToImagePickerAppearance()
         present(documentPickerVC, animated: true, completion: nil)
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        // Do nothing
+        AppearanceUtilities.switchToSessionAppearance()
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        AppearanceUtilities.switchToSessionAppearance()
         guard let url = urls.first else { return } // TODO: Handle multiple?
         let urlResourceValues: URLResourceValues
         do {
@@ -141,7 +163,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 guard !modalActivityIndicator.wasCancelled, let attachment = attachment as? SignalAttachment else { return }
                 modalActivityIndicator.dismiss {
                     if !attachment.hasError {
-                        self?.showApprovalDialog(for: [ attachment ])
+                        self?.showAttachmentApprovalDialog(for: [ attachment ])
                     } else {
                         self?.showErrorAlert(for: attachment)
                     }
