@@ -2,7 +2,7 @@ import CoreServices
 import Photos
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
-    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate {
+    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate {
 
     @objc func openSettings() {
         let settingsVC = OWSConversationSettingsViewController()
@@ -93,7 +93,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func handleGIFButtonTapped() {
-        // TODO: Implement
+        let gifVC = GifPickerViewController(thread: thread)
+        gifVC.delegate = self
+        let navController = OWSNavigationController(rootViewController: gifVC)
+        present(navController, animated: true) { }
+    }
+
+    func gifPickerDidSelect(attachment: SignalAttachment) {
+        showAttachmentApprovalDialog(for: [ attachment ])
     }
     
     func handleDocumentButtonTapped() {

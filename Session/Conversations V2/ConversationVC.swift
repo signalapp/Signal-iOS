@@ -2,11 +2,11 @@
 // TODO
 // • Tapping replies
 // • Mentions
-// • Remaining send logic
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug
 // • Image detail VC transition glitch
+// • Photo rounding
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
