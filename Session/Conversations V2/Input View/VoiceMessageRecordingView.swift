@@ -1,6 +1,7 @@
 
 final class VoiceMessageRecordingView : UIView {
     private let voiceMessageButtonFrame: CGRect
+    private let delegate: VoiceMessageRecordingViewDelegate
     private lazy var slideToCancelStackViewRightConstraint = slideToCancelStackView.pin(.right, to: .right, of: self)
     private lazy var slideToCancelLabelCenterHorizontalConstraint = slideToCancelLabel.center(.horizontal, in: self)
     private lazy var pulseViewWidthConstraint = pulseView.set(.width, to: VoiceMessageRecordingView.circleSize)
@@ -72,8 +73,9 @@ final class VoiceMessageRecordingView : UIView {
     private static let dotSize: CGFloat = 16
 
     // MARK: Lifecycle
-    init(voiceMessageButtonFrame: CGRect) {
+    init(voiceMessageButtonFrame: CGRect, delegate: VoiceMessageRecordingViewDelegate) {
         self.voiceMessageButtonFrame = voiceMessageButtonFrame
+        self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
@@ -138,7 +140,7 @@ final class VoiceMessageRecordingView : UIView {
         durationStackView.center(.vertical, in: iconImageView)
         // Lock view
         addSubview(lockView)
-        lockView.center(.horizontal, in: iconImageView)
+        lockView.centerXAnchor.constraint(equalTo: iconImageView.centerXAnchor, constant: 2).isActive = true
         lockViewBottomConstraint.isActive = true
     }
 
@@ -204,6 +206,15 @@ final class VoiceMessageRecordingView : UIView {
             self.pulse()
         })
     }
+
+    // MARK: Interaction
+    func handleLongPressEnded(at location: CGPoint) {
+        if pulseView.frame.contains(location) {
+            delegate.endVoiceMessageRecording()
+        } else if lockView.frame.contains(location) {
+            print("[Test] Lock view")
+        }
+    }
 }
 
 // MARK: Lock View
@@ -266,4 +277,12 @@ extension VoiceMessageRecordingView {
             stackView.pin(to: self)
         }
     }
+}
+
+// MARK: Delegate
+protocol VoiceMessageRecordingViewDelegate {
+
+    func startVoiceMessageRecording()
+    func endVoiceMessageRecording()
+    func cancelVoiceMessageRecording()
 }

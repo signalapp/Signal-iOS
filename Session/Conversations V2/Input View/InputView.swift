@@ -25,9 +25,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     private lazy var voiceMessageButton = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
-        result.alpha = 0
+        result.isHidden = true
         return result
     }()
+    private lazy var voiceMessageButtonContainer = container(for: voiceMessageButton)
     
     private lazy var inputTextView = InputTextView(delegate: self)
 
@@ -73,14 +74,6 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
         // Buttons
-        func container(for button: InputViewButton) -> UIView {
-            let result = UIView()
-            result.addSubview(button)
-            result.set(.width, to: InputViewButton.expandedSize)
-            result.set(.height, to: InputViewButton.expandedSize)
-            button.center(in: result)
-            return result
-        }
         let (cameraButtonContainer, libraryButtonContainer, gifButtonContainer, documentButtonContainer) = (container(for: cameraButton), container(for: libraryButton), container(for: gifButton), container(for: documentButton))
         let buttonStackView = UIStackView(arrangedSubviews: [ cameraButtonContainer, libraryButtonContainer, gifButtonContainer, documentButtonContainer, UIView.hStretchingSpacer() ])
         buttonStackView.axis = .horizontal
@@ -101,7 +94,6 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
         // Voice message button
-        let voiceMessageButtonContainer = container(for: voiceMessageButton)
         addSubview(voiceMessageButtonContainer)
         voiceMessageButtonContainer.center(in: sendButton)
     }
@@ -113,8 +105,8 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
         let hasText = !text.isEmpty
-        sendButton.alpha = hasText ? 1 : 0
-        voiceMessageButton.alpha = hasText ? 0 : 1
+        sendButton.isHidden = !hasText
+        voiceMessageButtonContainer.isHidden = hasText
         autoGenerateLinkPreviewIfPossible()
     }
 
@@ -190,8 +182,17 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         if inputViewButton == sendButton { delegate.handleSendButtonTapped() }
     }
 
-    func handleInputViewButtonLongPressed(_ inputViewButton: InputViewButton) {
-        if inputViewButton == voiceMessageButton { showVoiceMessageUI() }
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) {
+        if inputViewButton == voiceMessageButton {
+            delegate.startVoiceMessageRecording()
+            showVoiceMessageUI()
+        }
+    }
+
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) {
+        guard let voiceMessageRecordingView = voiceMessageRecordingView else { return }
+        let location = touch.location(in: voiceMessageRecordingView)
+        voiceMessageRecordingView.handleLongPressEnded(at: location)
     }
 
     func handleQuoteViewCancelButtonTapped() {
@@ -214,7 +215,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     @objc private func showVoiceMessageUI() {
         voiceMessageRecordingView?.removeFromSuperview()
         let voiceMessageButtonFrame = voiceMessageButton.superview!.convert(voiceMessageButton.frame, to: self)
-        let voiceMessageRecordingView = VoiceMessageRecordingView(voiceMessageButtonFrame: voiceMessageButtonFrame)
+        let voiceMessageRecordingView = VoiceMessageRecordingView(voiceMessageButtonFrame: voiceMessageButtonFrame, delegate: delegate)
         voiceMessageRecordingView.alpha = 0
         addSubview(voiceMessageRecordingView)
         voiceMessageRecordingView.pin(to: self)
@@ -225,10 +226,31 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             allOtherViews.forEach { $0.alpha = 0 }
         }
     }
+
+    func hideVoiceMessageUI() {
+        let allOtherViews = [ cameraButton, libraryButton, gifButton, documentButton, sendButton, inputTextView, additionalContentContainer ]
+        UIView.animate(withDuration: 0.25, animations: {
+            allOtherViews.forEach { $0.alpha = 1 }
+            self.voiceMessageRecordingView?.alpha = 0
+        }, completion: { _ in
+            self.voiceMessageRecordingView?.removeFromSuperview()
+            self.voiceMessageRecordingView = nil
+        })
+    }
+
+    // MARK: Convenience
+    private func container(for button: InputViewButton) -> UIView {
+        let result = UIView()
+        result.addSubview(button)
+        result.set(.width, to: InputViewButton.expandedSize)
+        result.set(.height, to: InputViewButton.expandedSize)
+        button.center(in: result)
+        return result
+    }
 }
 
 // MARK: Delegate
-protocol InputViewDelegate {
+protocol InputViewDelegate : VoiceMessageRecordingViewDelegate {
 
     func showLinkPreviewSuggestionModal()
     func handleCameraButtonTapped()

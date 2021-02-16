@@ -12,8 +12,11 @@
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
     private let focusedMessageID: String?
-    var audioPlayer: OWSAudioPlayer?
     private var didConstrainScrollButton = false
+    // Audio playback & recording
+    var audioPlayer: OWSAudioPlayer?
+    var audioRecorder: AVAudioRecorder?
+    var audioTimer: Timer?
     // Context menu
     var contextMenuWindow: ContextMenuWindow?
     var contextMenuVC: ContextMenuVC?
@@ -22,7 +25,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     private var hasPerformedInitialScroll = false
     private var isLoadingMore = false
     private var scrollDistanceToBottomBeforeUpdate: CGFloat?
-    
+
+    var audioSession: OWSAudioSession { Environment.shared.audioSession }
     private var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
     func conversationStyle() -> ConversationStyle { return ConversationStyle(thread: thread) }
@@ -45,6 +49,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         result.countLimit = 40
         return result
     }()
+
+    lazy var recordVoiceMessageActivity = AudioActivity(audioDescription: "Voice message", behavior: .playAndRecord)
     
     // MARK: UI Components
     private lazy var titleView = ConversationTitleViewV2(thread: thread)

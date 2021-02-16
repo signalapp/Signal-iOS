@@ -1,3 +1,4 @@
+import CoreServices
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate {
     
@@ -239,5 +240,117 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }, completion: { _ in
             OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
         })
+    }
+
+    func requestMicrophonePermissionIfNeeded() {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted: break
+        case .denied:
+            cancelVoiceMessageRecording()
+            let modal = PermissionMissingModal(permission: "microphone") { [weak self] in
+                self?.cancelVoiceMessageRecording()
+            }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        case .undetermined:
+            cancelVoiceMessageRecording()
+            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
+        default: break
+        }
+    }
+
+    func startVoiceMessageRecording() {
+        // Request permission if needed
+        requestMicrophonePermissionIfNeeded()
+        // Cancel any current audio playback
+        audioPlayer?.stop()
+        audioPlayer = nil
+        // Create URL
+        let directory = OWSTemporaryDirectory()
+        let fileName = "\(NSDate.millisecondTimestamp()).m4a"
+        let path = (directory as NSString).appendingPathComponent(fileName)
+        let url = URL(fileURLWithPath: path)
+        // Set up audio session
+        let isConfigured = audioSession.startAudioActivity(recordVoiceMessageActivity)
+        guard isConfigured else {
+            return cancelVoiceMessageRecording()
+        }
+        // Set up audio recorder
+        let settings: [String:NSNumber] = [
+            AVFormatIDKey : NSNumber(value: kAudioFormatMPEG4AAC),
+            AVSampleRateKey : NSNumber(value: 44100),
+            AVNumberOfChannelsKey : NSNumber(value: 2),
+            AVEncoderBitRateKey : NSNumber(value: 128 * 1024)
+        ]
+        let audioRecorder: AVAudioRecorder
+        do {
+            audioRecorder = try AVAudioRecorder(url: url, settings: settings)
+            audioRecorder.isMeteringEnabled = true
+            self.audioRecorder = audioRecorder
+        } catch {
+            SNLog("Couldn't start audio recording due to error: \(error).")
+            return cancelVoiceMessageRecording()
+        }
+        // Limit voice messages to a minute
+        audioTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false, block: { [weak self] _ in
+            self?.snInputView.hideVoiceMessageUI()
+            self?.endVoiceMessageRecording()
+        })
+        // Prepare audio recorder
+        guard audioRecorder.prepareToRecord() else {
+            SNLog("Couldn't prepare audio recorder.")
+            return cancelVoiceMessageRecording()
+        }
+        // Start recording
+        guard audioRecorder.record() else {
+            SNLog("Couldn't record audio.")
+            return cancelVoiceMessageRecording()
+        }
+    }
+
+    func endVoiceMessageRecording() {
+        // Hide the UI
+        snInputView.hideVoiceMessageUI()
+        // Cancel the timer
+        audioTimer?.invalidate()
+        // Check preconditions
+        guard let audioRecorder = audioRecorder else { return }
+        // Get duration
+        let duration = audioRecorder.currentTime
+        // Stop the recording
+        stopVoiceMessageRecording()
+        // Check for user misunderstanding
+        guard duration > 1 else {
+            self.audioRecorder = nil
+            // TODO: Show modal explaining what's up
+            return
+        }
+        // Get data
+        let dataSourceOrNil = DataSourcePath.dataSource(with: audioRecorder.url, shouldDeleteOnDeallocation: true)
+        self.audioRecorder = nil
+        guard let dataSource = dataSourceOrNil else { return SNLog("Couldn't load recorded data.") }
+        // Create attachment
+        let fileName = (NSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "") as NSString).appendingPathExtension("m4a")
+        dataSource.sourceFilename = fileName
+        let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
+        guard !attachment.hasError else {
+            // TODO: Show error UI
+            return
+        }
+        // Send attachment
+        // TODO: Send the attachment
+    }
+
+    func cancelVoiceMessageRecording() {
+        snInputView.hideVoiceMessageUI()
+        audioTimer?.invalidate()
+        stopVoiceMessageRecording()
+        audioRecorder = nil
+    }
+
+    func stopVoiceMessageRecording() {
+        audioRecorder?.stop()
+        audioSession.endAudioActivity(recordVoiceMessageActivity)
     }
 }

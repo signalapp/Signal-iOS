@@ -79,14 +79,16 @@ final class InputViewButton : UIView {
         longPressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
             guard let self = self else { return }
             self.isLongPress = true
-            self.delegate.handleInputViewButtonLongPressed(self)
+            self.delegate.handleInputViewButtonLongPressBegan(self)
         })
     }
-    
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         collapse()
         if !isLongPress {
             delegate.handleInputViewButtonTapped(self)
+        } else {
+            delegate.handleInputViewButtonLongPressEnded(self, with: touches.first!)
         }
         invalidateLongPressIfNeeded()
     }
@@ -106,5 +108,6 @@ final class InputViewButton : UIView {
 protocol InputViewButtonDelegate {
     
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
-    func handleInputViewButtonLongPressed(_ inputViewButton: InputViewButton)
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch)
 }

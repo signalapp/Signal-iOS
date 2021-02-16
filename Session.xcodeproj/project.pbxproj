@@ -729,6 +729,7 @@
 		C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A722292558C1E40043A11F /* DotNetAPI.swift */; };
 		C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7225D2558C38D0043A11F /* Promise+Retaining.swift */; };
 		C3A7229C2558E4310043A11F /* OpenGroupMessage+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */; };
+		C3A76A8D25DB83F90074CB90 /* PermissionMissingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3AAFFE825AE975D0089E6DD /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */; };
 		C3AAFFF225AE99710089E6DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFF125AE99710089E6DD /* AppDelegate.swift */; };
@@ -1789,6 +1790,7 @@
 		C3A722292558C1E40043A11F /* DotNetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotNetAPI.swift; sourceTree = "<group>"; };
 		C3A7225D2558C38D0043A11F /* Promise+Retaining.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+Retaining.swift"; sourceTree = "<group>"; };
 		C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenGroupMessage+Conversion.swift"; sourceTree = "<group>"; };
+		C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionMissingModal.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "Migrating Translations from Android.md"; path = "Meta/Translations/Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupManager.swift; sourceTree = "<group>"; };
 		C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
@@ -2249,6 +2251,7 @@
 			isa = PBXGroup;
 			children = (
 				B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */,
+				C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */,
 				B821494525D4D6FF009C0F2A /* URLModal.swift */,
 				B821494E25D4E163009C0F2A /* BodyTextView.swift */,
 				B82149B725D60393009C0F2A /* BlockedModal.swift */,
@@ -5033,6 +5036,7 @@
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				C3A76A8D25DB83F90074CB90 /* PermissionMissingModal.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				B849789625D4A2F500D0D0B3 /* LinkPreviewViewV2.swift in Sources */,
 				C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */,
