@@ -33,10 +33,15 @@ public class PinSetupViewController: OWSViewController {
                                                 comment: "The explanation of confirmation in the 'pin creation' view.")
         }
 
+        // The font is too long to fit wih dynamic type. Design is looking into
+        // how to design this page to fit dyanmic type. In the meantime, we have
+        // to pin the font size.
+        let explanationLabelFont = UIFont.systemFont(ofSize: 15)
+
         let attributedString = NSMutableAttributedString(
             string: explanationText,
             attributes: [
-                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                .font: explanationLabelFont,
                 .foregroundColor: Theme.secondaryTextAndIconColor
             ]
         )
@@ -48,7 +53,7 @@ public class PinSetupViewController: OWSViewController {
                 CommonStrings.learnMore,
                 attributes: [
                     .link: URL(string: "https://support.signal.org/hc/articles/360007059792")!,
-                    .font: UIFont.ows_dynamicTypeSubheadlineClamped
+                    .font: explanationLabelFont
                 ]
             )
         }
@@ -65,8 +70,10 @@ public class PinSetupViewController: OWSViewController {
         let pinTextField = UITextField()
         pinTextField.textAlignment = .center
         pinTextField.textColor = Theme.primaryTextColor
-        pinTextField.font = UIFont.ows_dynamicTypeBodyClamped
-        pinTextField.autoSetDimension(.height, toSize: UIFont.ows_dynamicTypeBodyClamped.lineHeight + 2 * 8.0)
+
+        let font = UIFont.systemFont(ofSize: 17)
+        pinTextField.font = font
+        pinTextField.autoSetDimension(.height, toSize: font.lineHeight + 2 * 8.0)
 
         pinTextField.textContentType = .password
         pinTextField.isSecureTextEntry = true

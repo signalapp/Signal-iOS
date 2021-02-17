@@ -176,7 +176,8 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         primaryView.insetsLayoutMarginsFromSafeArea = false
 
         primaryView.addSubview(contentScrollView)
-        contentScrollView.autoPinEdgesToSuperviewEdges()
+        contentScrollView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: contentScrollView, avoidNotch: true)
         contentScrollView.preservesSuperviewLayoutMargins = true
 
         // Build stacks
@@ -227,7 +228,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
         saveButtonGradient.autoSetDimension(.height, toSize: 30)
         saveButtonGradient.autoPinEdge(.bottom, to: .top, of: saveButtonBackdrop)
-        autoPinView(toBottomOfViewControllerOrKeyboard: saveButtonBackdrop, avoidNotch: true)
+        saveButtonBackdrop.autoPinEdge(.bottom, to: .bottom, of: contentScrollView)
     }
 
     public override func viewDidLoad() {
@@ -248,12 +249,34 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         applyTheme()
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !UIDevice.current.isIPhone5OrShorter {
+            // Only become first responder on devices larger than iPhone 5s
+            // 5s is prone to obscuring the profile description text behind the keyboard
+            // At larger font sizes, it's not clear that it's scrollable.
+            firstTextField.becomeFirstResponder()
+        }
+    }
+
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         let bottomInsetHeight = saveButtonBackdrop.height + (saveButtonGradient.height / 2)
         if contentScrollView.contentInset.bottom < bottomInsetHeight {
             contentScrollView.contentInset.bottom = bottomInsetHeight
+        }
+    }
+
+    public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
+        // Ignore any minor decreases in height. We want to grow to accomodate the
+        // QuickType bar, but shrinking in response to its dismissal is a bit much.
+        let isKeyboardDismissing = (after == 0)
+        let isKeyboardGrowing = after > before
+        let isKeyboardSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
+
+        if isKeyboardGrowing || isKeyboardSignificantlyShrinking || isKeyboardDismissing {
+            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
         }
     }
 
