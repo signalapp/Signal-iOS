@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
@@ -433,6 +433,20 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (NSString *)contentType
 {
     return _contentType.filterFilename;
+}
+
+// This method should only be called on instances which have
+// not yet been inserted into the database.
+- (void)replaceUnsavedContentType:(NSString *)contentType
+{
+    if (contentType.length < 1) {
+        OWSFailDebug(@"Missing or empty contentType.");
+        return;
+    }
+    if (self.contentType.length > 0 && ![self.contentType isEqualToString:contentType]) {
+        OWSLogInfo(@"Replacing content type: %@ -> %@", self.contentType, contentType);
+    }
+    _contentType = contentType;
 }
 
 #pragma mark -

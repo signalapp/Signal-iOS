@@ -492,13 +492,13 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         AssertIsOnMainThread()
 
         if isAnimated {
-            guard let image = media as? UIImage else {
+            guard let image = media as? YYImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
             }
             imageView.image = image
         } else {
-            guard let image = media as? YYImage else {
+            guard let image = media as? UIImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
             }
