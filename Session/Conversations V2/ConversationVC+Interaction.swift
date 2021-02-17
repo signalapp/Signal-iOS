@@ -44,7 +44,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
         scrollToBottom(isAnimated: false)
-        // TODO: Reset mentions
+        resetMentions()
         self.snInputView.text = ""
         dismiss(animated: true) { }
     }
@@ -60,7 +60,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
         scrollToBottom(isAnimated: false)
-        // TODO: Reset mentions
+        resetMentions()
         self.snInputView.text = ""
         dismiss(animated: true) { }
     }
@@ -186,7 +186,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func sendMessage() {
         guard !showBlockedModalIfNeeded() else { return }
-        let text = snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
         let thread = self.thread
         guard !text.isEmpty else { return }
         let message = VisibleMessage()
@@ -220,7 +220,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let thread = self.thread
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
-        message.text = text
+        message.text = replaceMentions(in: text)
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         Storage.write(with: { transaction in
             tsMessage.save(with: transaction)
@@ -233,7 +233,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func handleMessageSent() {
-        // TODO: Reset mentions
+        resetMentions()
         self.snInputView.text = ""
         self.snInputView.quoteDraftInfo = nil
         self.markAllAsRead()
@@ -242,6 +242,77 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             AudioServicesPlaySystemSound(soundID)
         }
         SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
+    }
+
+    // MARK: Input View
+    func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
+        let newText = inputTextView.text ?? ""
+        if !newText.isEmpty {
+            SSKEnvironment.shared.typingIndicators.didStartTypingOutgoingInput(inThread: thread)
+        }
+        updateMentions(for: newText)
+    }
+
+    // MARK: Mentions
+    private func updateMentions(for newText: String) {
+        if newText.count < oldText.count {
+            currentMentionStartIndex = nil
+            snInputView.hideMentionsUI()
+            mentions = mentions.filter { $0.isContained(in: newText) }
+        }
+        if !newText.isEmpty {
+            let lastCharacterIndex = newText.index(before: newText.endIndex)
+            let lastCharacter = newText[lastCharacterIndex]
+            // Check if there is a whitespace before the '@' or the '@' is the first character
+            let isCharacterBeforeLastAtSignOrStartOfLine: Bool
+            if newText.count == 1 {
+                isCharacterBeforeLastAtSignOrStartOfLine = true // Start of line
+            } else {
+                let characterBeforeLast = newText[newText.index(before: lastCharacterIndex)]
+                isCharacterBeforeLastAtSignOrStartOfLine = (characterBeforeLast == "@")
+            }
+            if lastCharacter == "@" && isCharacterBeforeLastAtSignOrStartOfLine {
+                let candidates = MentionsManager.getMentionCandidates(for: "", in: thread.uniqueId!)
+                currentMentionStartIndex = lastCharacterIndex
+                snInputView.showMentionsUI(for: candidates, in: thread)
+            } else if lastCharacter.isWhitespace {
+                currentMentionStartIndex = nil
+                snInputView.hideMentionsUI()
+            } else {
+                if let currentMentionStartIndex = currentMentionStartIndex {
+                    let query = String(newText[newText.index(after: currentMentionStartIndex)...]) // + 1 to get rid of the @
+                    let candidates = MentionsManager.getMentionCandidates(for: query, in: thread.uniqueId!)
+                    snInputView.showMentionsUI(for: candidates, in: thread)
+                }
+            }
+        }
+        oldText = newText
+    }
+
+    private func resetMentions() {
+        oldText = ""
+        currentMentionStartIndex = nil
+        mentions = []
+    }
+
+    private func replaceMentions(in text: String) -> String {
+        var result = text
+        for mention in mentions {
+            guard let range = result.range(of: "@\(mention.displayName)") else { continue }
+            result = result.replacingCharacters(in: range, with: "@\(mention.publicKey)")
+        }
+        return result
+    }
+
+    func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
+        guard let currentMentionStartIndex = currentMentionStartIndex else { return }
+        mentions.append(mention)
+        let oldText = snInputView.text
+        let newText = oldText.replacingCharacters(in: currentMentionStartIndex..., with: "@\(mention.displayName)")
+        snInputView.text = newText
+        self.currentMentionStartIndex = nil
+        snInputView.hideMentionsUI()
+        self.oldText = newText
     }
 
     // MARK: View Item Interaction

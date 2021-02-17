@@ -327,6 +327,7 @@
 		C300A60D2554B31900555489 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CE2553860700C340D1 /* Logging.swift */; };
 		C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = C300A6312554B6D100555489 /* NSDate+Timestamp.mm */; };
 		C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */ = {isa = PBXBuildFile; fileRef = C300A6302554B68200555489 /* NSDate+Timestamp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C302093E25DCBF08001F572D /* MentionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C302093D25DCBF07001F572D /* MentionSelectionView.swift */; };
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */; };
@@ -1371,6 +1372,7 @@
 		C300A5FB2554B0A000555489 /* MessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReceiver.swift; sourceTree = "<group>"; };
 		C300A6302554B68200555489 /* NSDate+Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Timestamp.h"; sourceTree = "<group>"; };
 		C300A6312554B6D100555489 /* NSDate+Timestamp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+Timestamp.mm"; sourceTree = "<group>"; };
+		C302093D25DCBF07001F572D /* MentionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionSelectionView.swift; sourceTree = "<group>"; };
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
 		C31D1DDC25217014005D4DA8 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
@@ -2295,6 +2297,7 @@
 				B8269D3225C7A8C600488AB4 /* InputViewButton.swift */,
 				B8269D3C25C7B34D00488AB4 /* InputTextView.swift */,
 				C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */,
+				C302093D25DCBF07001F572D /* MentionSelectionView.swift */,
 			);
 			path = "Input View";
 			sourceTree = "<group>";
@@ -5161,6 +5164,7 @@
 				B897621C25D201F7004F83B2 /* ScrollToBottomButton.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
+				C302093E25DCBF08001F572D /* MentionSelectionView.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				C328251F25CA3A900062D0A7 /* QuoteView.swift in Sources */,
 				B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */,

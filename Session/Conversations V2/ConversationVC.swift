@@ -1,7 +1,7 @@
 
 // TODO
 // • Tapping replies
-// • Mentions
+// • Moderator icons
 // • Slight paging glitch
 // • Scrolling bug
 // • Scroll button bug
@@ -19,6 +19,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     // Context menu
     var contextMenuWindow: ContextMenuWindow?
     var contextMenuVC: ContextMenuVC?
+    // Mentions
+    var oldText = ""
+    var currentMentionStartIndex: String.Index?
+    var mentions: [Mention] = []
     // Scrolling & paging
     private var isUserScrolling = false
     private var hasPerformedInitialScroll = false

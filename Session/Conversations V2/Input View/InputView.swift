@@ -1,9 +1,10 @@
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewV2Delegate {
+final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewV2Delegate, MentionSelectionViewDelegate {
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
     private var voiceMessageRecordingView: VoiceMessageRecordingView?
+    private lazy var mentionsViewHeightConstraint = mentionsView.set(.height, to: 0)
 
     private lazy var linkPreviewView: LinkPreviewViewV2 = {
         let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
@@ -29,6 +30,13 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         return result
     }()
     private lazy var voiceMessageButtonContainer = container(for: voiceMessageButton)
+
+    private lazy var mentionsView: MentionSelectionView = {
+        let result = MentionSelectionView()
+        result.alpha = 0
+        result.delegate = self
+        return result
+    }()
     
     private lazy var inputTextView = InputTextView(delegate: self)
 
@@ -93,6 +101,11 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
+        // Mentions
+        addSubview(mentionsView)
+        mentionsViewHeightConstraint.isActive = true
+        mentionsView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
+        mentionsView.pin(.bottom, to: .top, of: self)
         // Voice message button
         addSubview(voiceMessageButtonContainer)
         voiceMessageButtonContainer.center(in: sendButton)
@@ -108,6 +121,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         sendButton.isHidden = !hasText
         voiceMessageButtonContainer.isHidden = hasText
         autoGenerateLinkPreviewIfPossible()
+        delegate.inputTextViewDidChangeContent(inputTextView)
     }
 
     private func handleQuoteDraftChanged() {
@@ -174,6 +188,14 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
     
     // MARK: Interaction
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        if mentionsView.frame.contains(point) {
+            return true
+        } else {
+            return super.point(inside: point, with: event)
+        }
+    }
+
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton) {
         if inputViewButton == cameraButton { delegate.handleCameraButtonTapped() }
         if inputViewButton == libraryButton { delegate.handleLibraryButtonTapped() }
@@ -243,6 +265,32 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         })
     }
 
+    func hideMentionsUI() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.mentionsView.alpha = 0
+        }, completion: { _ in
+            self.mentionsViewHeightConstraint.constant = 0
+            self.mentionsView.tableView.contentOffset = CGPoint.zero
+        })
+    }
+
+    func showMentionsUI(for candidates: [Mention], in thread: TSThread) {
+        if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
+            mentionsView.publicChatServer = openGroup.server
+            mentionsView.publicChatChannel = openGroup.channel
+        }
+        mentionsView.mentionCandidates = candidates
+        mentionsViewHeightConstraint.constant = CGFloat(candidates.count * 42)
+        layoutIfNeeded()
+        UIView.animate(withDuration: 0.25) {
+            self.mentionsView.alpha = 1
+        }
+    }
+
+    func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
+        print(mention.displayName)
+    }
+
     // MARK: Convenience
     private func container(for button: InputViewButton) -> UIView {
         let result = UIView()
@@ -264,4 +312,5 @@ protocol InputViewDelegate : VoiceMessageRecordingViewDelegate {
     func handleDocumentButtonTapped()
     func handleSendButtonTapped()
     func handleQuoteViewCancelButtonTapped()
+    func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
 }
