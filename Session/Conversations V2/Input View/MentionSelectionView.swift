@@ -1,18 +1,17 @@
 
 final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
-    @objc var mentionCandidates: [Mention] = [] { didSet { tableView.reloadData() } }
-    @objc var publicChatServer: String?
-    var publicChatChannel: UInt64?
-    @objc var delegate: MentionSelectionViewDelegate?
-
-    // MARK: Convenience
-    @objc(setPublicChatChannel:)
-    func setPublicChatChannel(to publicChatChannel: UInt64) {
-        self.publicChatChannel = publicChatChannel != 0 ? publicChatChannel : nil
+    var candidates: [Mention] = [] {
+        didSet {
+            tableView.isScrollEnabled = (candidates.count > 4)
+            tableView.reloadData()
+        }
     }
+    var openGroupServer: String?
+    var openGroupChannel: UInt64?
+    var delegate: MentionSelectionViewDelegate?
 
     // MARK: Components
-    @objc lazy var tableView: UITableView = { // TODO: Make this private
+    lazy var tableView: UITableView = { // TODO: Make this private
         let result = UITableView()
         result.dataSource = self
         result.delegate = self
@@ -35,8 +34,10 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
     }
 
     private func setUpViewHierarchy() {
+        // Table view
         addSubview(tableView)
         tableView.pin(to: self)
+        // Top separator
         let topSeparator = UIView()
         topSeparator.backgroundColor = Colors.separator
         topSeparator.set(.height, to: Values.separatorThickness)
@@ -44,6 +45,7 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
         topSeparator.pin(.leading, to: .leading, of: self)
         topSeparator.pin(.top, to: .top, of: self)
         topSeparator.pin(.trailing, to: .trailing, of: self)
+        // Bottom separator
         let bottomSeparator = UIView()
         bottomSeparator.backgroundColor = Colors.separator
         bottomSeparator.set(.height, to: Values.separatorThickness)
@@ -55,22 +57,22 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
 
     // MARK: Data
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mentionCandidates.count
+        return candidates.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
-        let mentionCandidate = mentionCandidates[indexPath.row]
+        let mentionCandidate = candidates[indexPath.row]
         cell.mentionCandidate = mentionCandidate
-        cell.publicChatServer = publicChatServer
-        cell.publicChatChannel = publicChatChannel
-        cell.separator.isHidden = (indexPath.row == (mentionCandidates.count - 1))
+        cell.openGroupServer = openGroupServer
+        cell.openGroupChannel = openGroupChannel
+        cell.separator.isHidden = (indexPath.row == (candidates.count - 1))
         return cell
     }
 
     // MARK: Interaction
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let mentionCandidate = mentionCandidates[indexPath.row]
+        let mentionCandidate = candidates[indexPath.row]
         delegate?.handleMentionSelected(mentionCandidate, from: self)
     }
 }
@@ -81,8 +83,8 @@ private extension MentionSelectionView {
 
     final class Cell : UITableViewCell {
         var mentionCandidate = Mention(publicKey: "", displayName: "") { didSet { update() } }
-        var publicChatServer: String?
-        var publicChatChannel: UInt64?
+        var openGroupServer: String?
+        var openGroupChannel: UInt64?
 
         // MARK: Components
         private lazy var profilePictureView = ProfilePictureView()
@@ -119,36 +121,36 @@ private extension MentionSelectionView {
         }
 
         private func setUpViewHierarchy() {
-            // Set the cell background color
-            backgroundColor = Colors.cellBackground
-            // Set up the highlight color
+            // Cell background color
+            backgroundColor = .clear
+            // Highlight color
             let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = Colors.cellBackground // Intentionally not Colors.cellSelected
+            selectedBackgroundView.backgroundColor = .clear
             self.selectedBackgroundView = selectedBackgroundView
-            // Set up the profile picture image view
-            let profilePictureViewSize = Values.verySmallProfilePictureSize
+            // Profile picture image view
+            let profilePictureViewSize = Values.smallProfilePictureSize
             profilePictureView.set(.width, to: profilePictureViewSize)
             profilePictureView.set(.height, to: profilePictureViewSize)
             profilePictureView.size = profilePictureViewSize
-            // Set up the main stack view
-            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
-            stackView.axis = .horizontal
-            stackView.alignment = .center
-            stackView.spacing = Values.mediumSpacing
-            stackView.set(.height, to: profilePictureViewSize)
-            contentView.addSubview(stackView)
-            stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
-            stackView.pin(.top, to: .top, of: contentView, withInset: Values.smallSpacing)
-            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.smallSpacing)
-            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
-            // Set up the moderator icon image view
+            // Main stack view
+            let mainStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
+            mainStackView.axis = .horizontal
+            mainStackView.alignment = .center
+            mainStackView.spacing = Values.mediumSpacing
+            mainStackView.set(.height, to: profilePictureViewSize)
+            contentView.addSubview(mainStackView)
+            mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
+            mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.smallSpacing)
+            contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.mediumSpacing)
+            contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.smallSpacing)
+            mainStackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
+            // Moderator icon image view
             moderatorIconImageView.set(.width, to: 20)
             moderatorIconImageView.set(.height, to: 20)
             contentView.addSubview(moderatorIconImageView)
-            moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView)
-            moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 3.5)
-            // Set up the separator
+            moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView, withInset: 1)
+            moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 4.5)
+            // Separator
             addSubview(separator)
             separator.pin(.leading, to: .leading, of: self)
             separator.pin(.trailing, to: .trailing, of: self)
@@ -160,7 +162,7 @@ private extension MentionSelectionView {
             displayNameLabel.text = mentionCandidate.displayName
             profilePictureView.hexEncodedPublicKey = mentionCandidate.publicKey
             profilePictureView.update()
-            if let server = publicChatServer, let channel = publicChatChannel {
+            if let server = openGroupServer, let channel = openGroupChannel {
                 let isUserModerator = OpenGroupAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
@@ -172,7 +174,6 @@ private extension MentionSelectionView {
 
 // MARK: - Delegate
 
-@objc(LKMentionSelectionViewDelegate)
 protocol MentionSelectionViewDelegate {
 
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)

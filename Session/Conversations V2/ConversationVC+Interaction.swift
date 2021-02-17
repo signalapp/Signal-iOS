@@ -253,6 +253,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         updateMentions(for: newText)
     }
 
+    func showLinkPreviewSuggestionModal() {
+        let linkPreviewModel = LinkPreviewModal() { [weak self] in
+            self?.snInputView.autoGenerateLinkPreview()
+        }
+        linkPreviewModel.modalPresentationStyle = .overFullScreen
+        linkPreviewModel.modalTransitionStyle = .crossDissolve
+        present(linkPreviewModel, animated: true, completion: nil)
+    }
+
     // MARK: Mentions
     private func updateMentions(for newText: String) {
         if newText.count < oldText.count {
@@ -378,6 +387,33 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
 
+    func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
+        let thread = self.thread
+        let sheet = UIAlertController(title: tsMessage.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
+            Storage.write { transaction in
+                tsMessage.remove(with: transaction)
+                Storage.shared.cancelPendingMessageSendJobIfNeeded(for: tsMessage.timestamp, using: transaction)
+            }
+        }))
+        sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
+            let message = VisibleMessage.from(tsMessage)
+            Storage.write { transaction in
+                var attachments: [TSAttachmentStream] = []
+                tsMessage.attachmentIds.forEach { attachmentID in
+                    guard let attachmentID = attachmentID as? String else { return }
+                    let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction)
+                    guard let stream = attachment as? TSAttachmentStream else { return }
+                    attachments.append(stream)
+                }
+                MessageSender.prep(attachments, for: message, using: transaction)
+                MessageSender.send(message, in: thread, using: transaction)
+            }
+        }))
+        present(sheet, animated: true, completion: nil)
+    }
+
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem) {
         switch viewItem.messageCellType {
         case .audio: speedUpAudio(for: viewItem)
@@ -452,6 +488,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     // MARK: Voice Message Playback
+    @objc func handleAudioDidFinishPlayingNotification(_ notification: Notification) {
+        guard let audioPlayer = audioPlayer, let viewItem = audioPlayer.owner as? ConversationViewItem,
+            let index = viewItems.firstIndex(where: { $0 === viewItem }), index < (viewItems.endIndex - 1) else { return }
+        let nextViewItem = viewItems[index + 1]
+        guard nextViewItem.messageCellType == .audio else { return }
+        playOrPauseAudio(for: nextViewItem)
+    }
+    
     func playOrPauseAudio(for viewItem: ConversationViewItem) {
         guard let attachment = viewItem.attachmentStream else { return }
         let fileManager = FileManager.default

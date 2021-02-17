@@ -124,6 +124,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
+        // Mentions
+        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
     }
     
     override func viewDidLayoutSubviews() {
@@ -323,14 +325,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     func getMediaCache() -> NSCache<NSString, AnyObject> {
         return mediaCache
     }
-
-    @objc private func handleAudioDidFinishPlayingNotification(_ notification: Notification) {
-        guard let audioPlayer = audioPlayer, let viewItem = audioPlayer.owner as? ConversationViewItem,
-            let index = viewItems.firstIndex(where: { $0 === viewItem }), index < (viewItems.endIndex - 1) else { return }
-        let nextViewItem = viewItems[index + 1]
-        guard nextViewItem.messageCellType == .audio else { return }
-        playOrPauseAudio(for: nextViewItem)
-    }
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling else { return }
@@ -362,42 +356,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
         isLoadingMore = true
         viewModel.loadAnotherPageOfMessages()
-    }
-
-    func showLinkPreviewSuggestionModal() {
-        let linkPreviewModel = LinkPreviewModal() { [weak self] in
-            self?.snInputView.autoGenerateLinkPreview()
-        }
-        linkPreviewModel.modalPresentationStyle = .overFullScreen
-        linkPreviewModel.modalTransitionStyle = .crossDissolve
-        present(linkPreviewModel, animated: true, completion: nil)
-    }
-
-    func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
-        let thread = self.thread
-        let sheet = UIAlertController(title: tsMessage.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
-            Storage.write { transaction in
-                tsMessage.remove(with: transaction)
-                Storage.shared.cancelPendingMessageSendJobIfNeeded(for: tsMessage.timestamp, using: transaction)
-            }
-        }))
-        sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
-            let message = VisibleMessage.from(tsMessage)
-            Storage.write { transaction in
-                var attachments: [TSAttachmentStream] = []
-                tsMessage.attachmentIds.forEach { attachmentID in
-                    guard let attachmentID = attachmentID as? String else { return }
-                    let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction)
-                    guard let stream = attachment as? TSAttachmentStream else { return }
-                    attachments.append(stream)
-                }
-                MessageSender.prep(attachments, for: message, using: transaction)
-                MessageSender.send(message, in: thread, using: transaction)
-            }
-        }))
-        present(sheet, animated: true, completion: nil)
     }
     
     // MARK: Convenience
