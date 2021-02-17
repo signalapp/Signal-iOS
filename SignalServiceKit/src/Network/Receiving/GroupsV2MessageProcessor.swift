@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -543,24 +543,11 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
             owsFailDebug("Missing groupContextInfo.")
             return true
         }
-        let groupId = groupContextInfo.groupId
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            return false
-        }
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            Logger.warn("Invalid group model; possibly needs to be migrated.")
-            return false
-        }
-        let messageRevision = groupContext.revision
-        let modelRevision = groupModel.revision
-        if messageRevision <= modelRevision {
-            return true
-        }
-        // The incoming message indicates that there is a new group revision.
-        // We'll update our group model in a standalone batch using either
-        // the change proto embedded in the group context or by fetching
-        // latest state from the service.
-        return false
+        return GroupsV2MessageProcessor.canContextBeProcessedWithoutUpdate(
+            groupContext: groupContext,
+            groupContextInfo: groupContextInfo,
+            transaction: transaction
+        )
     }
 
     // NOTE: This method might do its work synchronously (in the "no update" case)
@@ -917,6 +904,10 @@ public class GroupsV2MessageProcessor: NSObject {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private class var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+    }
+
     // MARK: - 
 
     @objc
@@ -988,6 +979,59 @@ public class GroupsV2MessageProcessor: NSObject {
                                         plaintextData: Data?) -> Bool {
         return groupContextV2(forEnvelope: envelope,
                               plaintextData: plaintextData) != nil
+    }
+
+    @objc
+    public class func canContextBeProcessedImmediately(
+        groupContext: SSKProtoGroupContextV2,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+        } catch {
+            owsFailDebug("Invalid group context: \(error).")
+            return false
+        }
+
+        // We can only process GV2 messages immediately if:
+        // 1. We don't have any other messages queued for this thread
+        // 2. The message can be processed without updates
+
+        guard !GRDBGroupsV2MessageJobFinder().existsJob(forGroupId: groupContextInfo.groupId, transaction: transaction.unwrapGrdbRead) else {
+            Logger.warn("Cannot immediately process GV2 message because there are messages queued")
+            return false
+        }
+
+        return canContextBeProcessedWithoutUpdate(
+            groupContext: groupContext,
+            groupContextInfo: groupContextInfo,
+            transaction: transaction
+        )
+    }
+
+    fileprivate class func canContextBeProcessedWithoutUpdate(
+        groupContext: SSKProtoGroupContextV2,
+        groupContextInfo: GroupV2ContextInfo,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) else {
+            return false
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            Logger.warn("Invalid group model; possibly needs to be migrated.")
+            return false
+        }
+        let messageRevision = groupContext.revision
+        let modelRevision = groupModel.revision
+        if messageRevision <= modelRevision {
+            return true
+        }
+        // The incoming message indicates that there is a new group revision.
+        // We'll update our group model in a standalone batch using either
+        // the change proto embedded in the group context or by fetching
+        // latest state from the service.
+        return false
     }
 
     @objc

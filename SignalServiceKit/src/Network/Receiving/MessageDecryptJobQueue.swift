@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -171,25 +171,66 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             messageDecrypter.decryptEnvelope(envelope,
                                              envelopeData: envelopeData,
                                              successBlock: { (result: OWSMessageDecryptResult, transaction: SDSAnyWriteTransaction) in
-                                                // We persist the decrypted envelope data in the same transaction within which
-                                                // it was decrypted to prevent data loss.  If the new job isn't persisted,
-                                                // the session state side effects of its decryption are also rolled back.
-                                                //
-                                                // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
-                                                // since the envelope may be altered by the decryption process in the UD case.
-                                                self.batchMessageProcessor.enqueueEnvelopeData(result.envelopeData,
-                                                                                               plaintextData: result.plaintextData,
-                                                                                               wasReceivedByUD: wasReceivedByUD,
-                                                                                               serverDeliveryTimestamp: self.jobRecord.serverDeliveryTimestamp,
-                                                                                               transaction: transaction)
+
+                                                let envelope: SSKProtoEnvelope
+                                                do {
+                                                    // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
+                                                    // since the envelope may be altered by the decryption process in the UD case.
+                                                    envelope = try SSKProtoEnvelope(serializedData: result.envelopeData)
+                                                } catch {
+                                                    self.reportError(error.asUnretryableError)
+                                                    return
+                                                }
+
+                                                if let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(
+                                                    forEnvelope: envelope,
+                                                    plaintextData: result.plaintextData
+                                                ), !GroupsV2MessageProcessor.canContextBeProcessedImmediately(
+                                                    groupContext: groupContextV2,
+                                                    transaction: transaction
+                                                ) {
+                                                    // If we can't process the message immediately, we enqueue it for
+                                                    // for processing in the same transaction within which it was decrypted
+                                                    // to prevent data loss.
+                                                    SSKEnvironment.shared.groupsV2MessageProcessor.enqueue(
+                                                        envelopeData: result.envelopeData,
+                                                        plaintextData: result.plaintextData,
+                                                        envelope: envelope,
+                                                        wasReceivedByUD: wasReceivedByUD,
+                                                        serverDeliveryTimestamp: self.jobRecord.serverDeliveryTimestamp,
+                                                        transaction: transaction
+                                                    )
+                                                } else {
+                                                    // Envelopes can be processed immediately if they're:
+                                                    // 1. Not a GV2 message.
+                                                    // 2. A GV2 message that doesn't require updating the group.
+                                                    //
+                                                    // The advantage to processing the message immediately is that
+                                                    // we can full process the message in the same transaction that
+                                                    // we used to decrypt it. This results in a significant perf
+                                                    // benefit verse queueing the message and waiting for that queue
+                                                    // to open new transactions and process messages. The downside is
+                                                    // that if we *fail* to process this message (e.g. the app crashed
+                                                    // or was killed), we'll have to re-decrypt again before we process.
+                                                    // This is safe, since the decrypt operation would also be rolled
+                                                    // back (since the transaction didn't finalize) and should be rare.
+                                                    SSKEnvironment.shared.messageManager.processEnvelope(
+                                                        envelope,
+                                                        plaintextData: result.plaintextData,
+                                                        wasReceivedByUD: wasReceivedByUD,
+                                                        serverDeliveryTimestamp: self.jobRecord.serverDeliveryTimestamp,
+                                                        transaction: transaction
+                                                    )
+                                                }
+
                                                 DispatchQueue.global().async {
                                                     self.reportSuccess()
                                                 }
-            },
+                                             },
                                              failureBlock: {
                                                 // TODO: failureBlock should propagate specific error.
                                                 self.reportError(SSKMessageDecryptOperationError.unspecifiedError)
-                                            })
+                                             })
         } catch {
             reportError(withUndefinedRetry: error)
         }

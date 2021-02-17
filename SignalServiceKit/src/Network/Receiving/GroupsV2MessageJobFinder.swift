@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,6 +70,17 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
                                                                 transaction: transaction)
 
         return try! cursor.all()
+    }
+
+    @objc
+    public func existsJob(forGroupId groupId: Data, transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+            SELECT EXISTS (
+                SELECT 1 FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
+                WHERE \(incomingGroupsV2MessageJobColumn: .groupId) = ?
+            )
+        """
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: [groupId]) ?? false
     }
 
     @objc
