@@ -346,7 +346,7 @@
     ProfileSettingsViewController *profileVC = nil;
     profileVC = [[ProfileSettingsViewController alloc] initWithCompletionHandler:^(
         ProfileSettingsViewController *vc) { [vc.navigationController popViewControllerAnimated:YES]; }];
-    [self.navigationController pushViewController:profileVC animated:NO];
+    [self.navigationController pushViewController:profileVC animated:YES];
 }
 
 - (void)showData

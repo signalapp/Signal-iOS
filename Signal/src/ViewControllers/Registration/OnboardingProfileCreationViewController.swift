@@ -176,7 +176,8 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         primaryView.insetsLayoutMarginsFromSafeArea = false
 
         primaryView.addSubview(contentScrollView)
-        contentScrollView.autoPinEdgesToSuperviewEdges()
+        contentScrollView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: contentScrollView, avoidNotch: true)
         contentScrollView.preservesSuperviewLayoutMargins = true
 
         // Build stacks
@@ -227,7 +228,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
         saveButtonGradient.autoSetDimension(.height, toSize: 30)
         saveButtonGradient.autoPinEdge(.bottom, to: .top, of: saveButtonBackdrop)
-        autoPinView(toBottomOfViewControllerOrKeyboard: saveButtonBackdrop, avoidNotch: true)
+        saveButtonBackdrop.autoPinEdge(.bottom, to: .bottom, of: contentScrollView)
     }
 
     public override func viewDidLoad() {
@@ -246,6 +247,11 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         super.viewWillAppear(animated)
         updateAvatarView()
         applyTheme()
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        firstTextField.becomeFirstResponder()
     }
 
     public override func viewDidLayoutSubviews() {
