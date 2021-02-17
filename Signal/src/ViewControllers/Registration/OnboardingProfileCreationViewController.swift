@@ -251,7 +251,12 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        firstTextField.becomeFirstResponder()
+        if !UIDevice.current.isIPhone5OrShorter {
+            // Only become first responder on devices larger than iPhone 5s
+            // 5s is prone to obscuring the profile description text behind the keyboard
+            // At larger font sizes, it's not clear that it's scrollable.
+            firstTextField.becomeFirstResponder()
+        }
     }
 
     public override func viewDidLayoutSubviews() {
