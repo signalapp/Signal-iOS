@@ -333,10 +333,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         let frame = cell.convert(cell.bubbleView.frame, to: UIApplication.shared.keyWindow!)
         let window = ContextMenuWindow()
-        let contextMenuVC = ContextMenuVC(snapshot: snapshot, viewItem: viewItem, frame: frame, delegate: self) {
+        let contextMenuVC = ContextMenuVC(snapshot: snapshot, viewItem: viewItem, frame: frame, delegate: self) { [weak self] in
             window.isHidden = true
+            guard let self = self else { return }
             self.contextMenuVC = nil
             self.contextMenuWindow = nil
+            self.scrollButton.alpha = 0
+            UIView.animate(withDuration: 0.25) {
+                self.scrollButton.alpha = self.getScrollButtonOpacity()
+            }
         }
         self.contextMenuVC = contextMenuVC
         contextMenuWindow = window

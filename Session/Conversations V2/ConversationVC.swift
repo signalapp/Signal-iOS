@@ -1,12 +1,14 @@
 
 // TODO
 // • Tapping replies
+// • Initial scroll position
 // • Moderator icons
 // • Slight paging glitch
-// • Scrolling bug
-// • Scroll button bug
 // • Image detail VC transition glitch
 // • Photo rounding
+// • Disappearing messages timer
+// • Scroll button behind mentions view
+// • Search...
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
@@ -37,7 +39,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     override var canBecomeFirstResponder: Bool { true }
 
     private var tableViewUnobscuredHeight: CGFloat {
-        let bottomInset = messagesTableView.adjustedContentInset.bottom + ConversationVC.bottomInset
+        let bottomInset = messagesTableView.adjustedContentInset.bottom
         return messagesTableView.bounds.height - bottomInset
     }
 
@@ -67,7 +69,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     lazy var snInputView = InputView(delegate: self)
     
-    private lazy var scrollButton = ScrollToBottomButton(delegate: self)
+    lazy var scrollButton = ScrollToBottomButton(delegate: self)
     
     lazy var blockedBanner: InfoBanner = {
         let name: String
@@ -359,7 +361,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     // MARK: Convenience
-    private func getScrollButtonOpacity() -> CGFloat {
+    func getScrollButtonOpacity() -> CGFloat {
         let contentOffsetY = messagesTableView.contentOffset.y
         let x = (lastPageTop - ConversationVC.bottomInset - contentOffsetY).clamp(0, .greatestFiniteMagnitude)
         let a = 1 / (ConversationVC.scrollButtonFullVisibilityThreshold - ConversationVC.scrollButtonNoVisibilityThreshold)

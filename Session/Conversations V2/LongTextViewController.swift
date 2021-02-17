@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalUtilitiesKit
-import SignalUtilitiesKit
 
 @objc
 public protocol LongTextViewDelegate {
@@ -118,7 +117,7 @@ public class LongTextViewController: OWSViewController {
 
         let messageTextView = OWSTextView()
         self.messageTextView = messageTextView
-        messageTextView.font = .systemFont(ofSize: Values.mediumFontSize)
+        messageTextView.font = .systemFont(ofSize: Values.smallFontSize)
         messageTextView.backgroundColor = .clear
         messageTextView.isOpaque = true
         messageTextView.isEditable = false
