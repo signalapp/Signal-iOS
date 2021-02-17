@@ -59,6 +59,37 @@
 				<string>com.apple.platform.iphoneos</string>
 			</dict>
 		</dict>
+		<key>43FCDABA-A342-4D4E-9E33-17434BF867F1</key>
+		<dict>
+			<key>localComputer</key>
+			<dict>
+				<key>busSpeedInMHz</key>
+				<integer>400</integer>
+				<key>cpuCount</key>
+				<integer>1</integer>
+				<key>cpuKind</key>
+				<string>6-Core Intel Core i7</string>
+				<key>cpuSpeedInMHz</key>
+				<integer>2600</integer>
+				<key>logicalCPUCoresPerPackage</key>
+				<integer>12</integer>
+				<key>modelCode</key>
+				<string>MacBookPro15,1</string>
+				<key>physicalCPUCoresPerPackage</key>
+				<integer>6</integer>
+				<key>platformIdentifier</key>
+				<string>com.apple.platform.macosx</string>
+			</dict>
+			<key>targetArchitecture</key>
+			<string>x86_64</string>
+			<key>targetDevice</key>
+			<dict>
+				<key>modelCode</key>
+				<string>iPhone12,5</string>
+				<key>platformIdentifier</key>
+				<string>com.apple.platform.iphonesimulator</string>
+			</dict>
+		</dict>
 		<key>DABF98F2-C093-481E-85D7-95CD7E3C6268</key>
 		<dict>
 			<key>localComputer</key>
