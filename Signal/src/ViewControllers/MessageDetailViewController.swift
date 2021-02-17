@@ -825,13 +825,14 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(mediaPageVC, animated: true)
     }
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in componentView: CVComponentView) {
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
         if attachment.canQuickLook {
             let previewController = QLPreviewController()
             previewController.dataSource = attachment
             present(previewController, animated: true)
+            return .handledByDelegate
         } else {
-            attachment.showShareUI(from: componentView.rootView)
+            return .default
         }
     }
 

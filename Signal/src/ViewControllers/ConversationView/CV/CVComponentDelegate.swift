@@ -4,6 +4,12 @@
 
 import Foundation
 
+@objc
+public enum CVAttachmentTapAction: Int {
+    case handledByDelegate
+    case `default`
+}
+
 // TODO: Remove cvc_ prefix once we've removed old CV logic.
 @objc
 public protocol CVComponentDelegate {
@@ -73,8 +79,7 @@ public protocol CVComponentDelegate {
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView)
 
-    @objc(cvc_didTapGenericAttachment:inComponentView:)
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in componentView: CVComponentView)
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel)
 

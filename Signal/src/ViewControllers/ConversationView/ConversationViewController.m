@@ -4320,8 +4320,7 @@ typedef enum : NSUInteger {
     [self presentViewController:pageVC animated:YES completion:nil];
 }
 
-- (void)cvc_didTapGenericAttachment:(CVComponentGenericAttachment *_Nonnull)attachment
-                    inComponentView:(id <CVComponentView> _Nonnull)componentView
+- (CVAttachmentTapAction)cvc_didTapGenericAttachment:(CVComponentGenericAttachment *_Nonnull)attachment
 {
     OWSAssertIsOnMainThread();
 
@@ -4329,8 +4328,9 @@ typedef enum : NSUInteger {
         QLPreviewController *previewController = [[QLPreviewController alloc] init];
         previewController.dataSource = attachment;
         [self presentViewController:previewController animated:YES completion:nil];
+        return CVAttachmentTapActionHandledByDelegate;
     } else {
-        [attachment showShareUIFromView:componentView.rootView];
+        return CVAttachmentTapActionDefault;
     }
 }
 
