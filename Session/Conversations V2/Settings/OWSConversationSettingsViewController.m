@@ -29,29 +29,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//#define SHOW_COLOR_PICKER
+CGFloat kIconViewLength = 24;
 
-const CGFloat kIconViewLength = 24;
-
-@interface OWSConversationSettingsViewController () <
-#ifdef SHOW_COLOR_PICKER
-    ColorPickerDelegate,
-#endif
-    OWSSheetViewControllerDelegate>
+@interface OWSConversationSettingsViewController () <OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
-
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 @property (nullable, nonatomic) MediaGallery *mediaGallery;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
-#ifdef SHOW_COLOR_PICKER
-@property (nonatomic) OWSColorPicker *colorPicker;
-#endif
 
 @end
 
@@ -236,11 +226,6 @@ const CGFloat kIconViewLength = 24;
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
 
-#ifdef SHOW_COLOR_PICKER
-    self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
-    self.colorPicker.delegate = self;
-#endif
-
     [self updateTableContents];
     
     NSString *title;
@@ -251,18 +236,6 @@ const CGFloat kIconViewLength = 24;
     }
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:title customBackButton:YES];
     self.tableView.backgroundColor = UIColor.clearColor;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-
-    if (self.showVerificationOnAppear) {
-        self.showVerificationOnAppear = NO;
-        if (self.isGroupThread) {
-            [self showGroupMembersView];
-        }
-    }
 }
 
 - (void)updateTableContents
@@ -279,13 +252,7 @@ const CGFloat kIconViewLength = 24;
     OWSTableSection *mainSection = [OWSTableSection new];
 
     mainSection.customHeaderView = [self mainSectionHeader];
-
-    if (self.isGroupThread) {
-        mainSection.customHeaderHeight = @(147.f);
-    } else {
-        BOOL isSmallScreen = (UIScreen.mainScreen.bounds.size.height - 568) < 1;
-        mainSection.customHeaderHeight = isSmallScreen ? @(201.f) : @(208.f);
-    }
+    mainSection.customHeaderHeight = @(UITableViewAutomaticDimension);
 
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         [mainSection addItem:[OWSTableItem
@@ -444,29 +411,6 @@ const CGFloat kIconViewLength = 24;
                                         actionBlock:nil]];
         }
     }
-#ifdef SHOW_COLOR_PICKER
-    [mainSection
-        addItem:[OWSTableItem
-                    itemWithCustomCellBlock:^{
-                        OWSConversationSettingsViewController *strongSelf = weakSelf;
-                        OWSCAssertDebug(strongSelf);
-
-                        ConversationColorName colorName = strongSelf.thread.conversationColorName;
-                        UIColor *currentColor =
-                            [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
-                        NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
-                            @"Label for table cell which leads to picking a new conversation color");
-                        return [strongSelf
-                                       cellWithName:title
-                                           iconName:@"ic_color_palette"
-                                disclosureIconColor:currentColor
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                        OWSConversationSettingsViewController, @"conversation_color")];
-                    }
-                    actionBlock:^{
-                        [weakSelf showColorPicker];
-                    }]];
-#endif
 
     [contents addSection:mainSection];
 
@@ -631,9 +575,6 @@ const CGFloat kIconViewLength = 24;
     // Block Conversation section.
 
     if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
-        mainSection.footerTitle = NSLocalizedString(
-            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
-
         [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  OWSConversationSettingsViewController *strongSelf = weakSelf;
@@ -721,47 +662,17 @@ const CGFloat kIconViewLength = 24;
     return cell;
 }
 
-static CGRect oldframe;
-
--(void)showProfilePicture:(UITapGestureRecognizer *)tapGesture
+- (void)showProfilePicture:(UITapGestureRecognizer *)tapGesture
 {
     LKProfilePictureView *profilePictureView = (LKProfilePictureView *)tapGesture.view;
     UIImage *image = [profilePictureView getProfilePicture];
     if (image == nil) { return; }
-    
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    UIView *backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
-    oldframe = [profilePictureView convertRect:profilePictureView.bounds toView:window];
-    backgroundView.backgroundColor = [UIColor blackColor];
-    backgroundView.alpha = 0;
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:oldframe];
-    imageView.image = image;
-    imageView.tag = 1;
-    imageView.layer.cornerRadius = [UIScreen mainScreen].bounds.size.width / 2;
-    imageView.layer.masksToBounds = true;
-    [backgroundView addSubview:imageView];
-    [window addSubview:backgroundView];
-        
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideImage:)];
-    [backgroundView addGestureRecognizer: tap];
-        
-    [UIView animateWithDuration:0.25 animations:^{
-        imageView.frame = CGRectMake(0,([UIScreen mainScreen].bounds.size.height - oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width) / 2, [UIScreen mainScreen].bounds.size.width, oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width);
-        backgroundView.alpha = 1;
-    } completion:nil];
+    NSString *title = (self.threadName != nil && self.threadName.length > 0) ? self.threadName : @"Anonymous";
+    SNProfilePictureVC *profilePictureVC = [[SNProfilePictureVC alloc] initWithImage:image title:title];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:profilePictureVC];
+    navController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:navController animated:YES completion:nil];
 }
-
--(void)hideImage:(UITapGestureRecognizer *)tap{
-    UIView *backgroundView = tap.view;
-    UIImageView *imageView = (UIImageView *)[tap.view viewWithTag:1];
-    [UIView animateWithDuration:0.25 animations:^{
-        imageView.frame = oldframe;
-        backgroundView.alpha = 0;
-    } completion:^(BOOL finished) {
-        [backgroundView removeFromSuperview];
-    }];
-}
-
 
 - (UIView *)mainSectionHeader
 {
@@ -865,22 +776,6 @@ static CGRect oldframe;
 }
 
 #pragma mark - Actions
-
-- (void)showShareProfileAlert
-{
-    [self.profileManager presentAddThreadToProfileWhitelist:self.thread
-                                         fromViewController:self
-                                                    success:^{
-                                                        [self updateTableContents];
-                                                    }];
-}
-
-- (void)showGroupMembersView
-{
-    TSGroupThread *thread = (TSGroupThread *)self.thread;
-    LKGroupMembersVC *groupMembersVC = [[LKGroupMembersVC alloc] initWithThread:thread];
-    [self.navigationController pushViewController:groupMembersVC animated:YES];
-}
 
 - (void)editGroup
 {
@@ -1199,44 +1094,6 @@ static CGRect oldframe;
         [self updateTableContents];
     }
 }
-
-#pragma mark - ColorPickerDelegate
-
-#ifdef SHOW_COLOR_PICKER
-
-- (void)showColorPicker
-{
-    OWSSheetViewController *sheetViewController = self.colorPicker.sheetViewController;
-    sheetViewController.delegate = self;
-
-    [self presentViewController:sheetViewController
-                       animated:YES
-                     completion:^() {
-                         OWSLogInfo(@"presented sheet view");
-                     }];
-}
-
-- (void)colorPicker:(OWSColorPicker *)colorPicker
-    didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
-{
-    OWSLogDebug(@"picked color: %@", conversationColor.name);
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
-    }];
-
-    [self.contactsManager.avatarCache removeAllImages];
-    [self updateTableContents];
-    [self.conversationSettingsViewDelegate conversationColorWasUpdated];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        ConversationConfigurationSyncOperation *operation =
-            [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
-        OWSAssertDebug(operation.isReady);
-        [operation start];
-    });
-}
-
-#endif
 
 #pragma mark - OWSSheetViewController
 
