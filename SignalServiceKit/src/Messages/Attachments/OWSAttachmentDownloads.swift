@@ -236,14 +236,14 @@ public class OWSAttachmentDownloads: NSObject {
                 // * Kick off download of that attachment.
                 // * Receive read receipt for that message, causing it to be disappeared immediately.
                 // * Try to download that attachment - but it's missing.
-                Logger.warn("Missing attachment.")
+                Logger.warn("Missing attachment: \(job.category).")
                 return nil
             }
             guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                 // This isn't necessarily a bug.
                 //
                 // * An attachment may have been re-enqueued for download while it was already being downloaded.
-                owsFailDebug("Attachment already downloaded.")
+                owsFailDebug("Attachment already downloaded: \(job.category).")
 
                 Self.unfairLock.withLock {
                     owsAssertDebug(!self.completeAttachmentMap.contains(job.attachmentId))
@@ -256,7 +256,7 @@ public class OWSAttachmentDownloads: NSObject {
             switch job.jobType {
             case .messageAttachment(_, let message):
                 if DebugFlags.forceAttachmentDownloadFailures.get() {
-                    Logger.info("Skipping media download for thread due to debug settings.")
+                    Logger.info("Skipping media download for thread due to debug settings: \(job.category).")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .failed,
                                                                    transaction: transaction)
@@ -264,7 +264,7 @@ public class OWSAttachmentDownloads: NSObject {
                 }
 
                 if self.isDownloadBlockedByActiveCall(job: job) {
-                    Logger.info("Skipping media download due to active call.")
+                    Logger.info("Skipping media download due to active call: \(job.category).")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
@@ -274,7 +274,7 @@ public class OWSAttachmentDownloads: NSObject {
                                                                  attachmentPointer: attachmentPointer,
                                                                  message: message,
                                                                  transaction: transaction) {
-                    Logger.info("Skipping media download for thread with pending message request.")
+                    Logger.info("Skipping media download for thread with pending message request: \(job.category).")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingMessageRequest,
                                                                    transaction: transaction)
@@ -283,7 +283,7 @@ public class OWSAttachmentDownloads: NSObject {
                 if self.isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
                                                                         attachmentPointer: attachmentPointer,
                                                                         transaction: transaction) {
-                    Logger.info("Skipping media download for thread due to auto-download settings.")
+                    Logger.info("Skipping media download for thread due to auto-download settings: \(job.category).")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
                                                                    transaction: transaction)
@@ -294,6 +294,8 @@ public class OWSAttachmentDownloads: NSObject {
                 // to headless attachments.
                 break
             }
+
+            Logger.info("Downloading: \(job.category).")
 
             attachmentPointer.updateAttachmentPointerState(.downloading, transaction: transaction)
 
@@ -408,6 +410,15 @@ public class OWSAttachmentDownloads: NSObject {
     private func downloadDidSucceed(attachmentStream: TSAttachmentStream,
                                     job: Job) {
         Logger.verbose("Attachment download succeeded.")
+
+        if job.category.isSticker,
+           let filePath = attachmentStream.originalFilePath {
+            let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
+            if imageMetadata.imageFormat != .unknown,
+               let mimeTypeFromMetadata = imageMetadata.mimeType {
+                attachmentStream.replaceUnsavedContentType(mimeTypeFromMetadata)
+            }
+        }
 
         Self.databaseStorage.write { transaction in
             guard let attachmentPointer = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentPointer else {
@@ -805,7 +816,7 @@ public extension OWSAttachmentDownloads {
     }
 
     @objc
-    enum AttachmentCategory: UInt, Equatable {
+    enum AttachmentCategory: UInt, Equatable, CustomStringConvertible {
         case bodyMediaImage
         case bodyMediaVideo
         case bodyAudioVoiceMemo
@@ -818,6 +829,44 @@ public extension OWSAttachmentDownloads {
         case linkedPreviewThumbnail
         case contactShareAvatar
         case other
+
+        var isSticker: Bool {
+            (self == .stickerSmall || self == .stickerLarge)
+        }
+
+        // MARK: - CustomStringConvertible
+
+        public var description: String {
+            switch self {
+            case .bodyMediaImage:
+                return ".bodyMediaImage"
+            case .bodyMediaVideo:
+                return ".bodyMediaVideo"
+            case .bodyAudioVoiceMemo:
+                return ".bodyAudioVoiceMemo"
+            case .bodyAudioOther:
+                return ".bodyAudioOther"
+            case .bodyFile:
+                return ".bodyFile"
+            case .bodyOversizeText:
+                return ".bodyOversizeText"
+            case .stickerSmall:
+                return ".stickerSmall"
+            case .stickerLarge:
+                return ".stickerLarge"
+            case .quotedReplyThumbnail:
+                return ".quotedReplyThumbnail"
+            case .linkedPreviewThumbnail:
+                return ".linkedPreviewThumbnail"
+            case .contactShareAvatar:
+                return ".contactShareAvatar"
+            case .other:
+                return ".other"
+            default:
+                owsFailDebug("unexpected value: \(self.rawValue)")
+                return "Unknown"
+            }
+        }
     }
 
     private class func buildJobRequests(forMessage message: TSMessage,
@@ -1275,6 +1324,7 @@ public extension OWSAttachmentDownloads {
                 TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
             }
             try attachmentStream.write(plaintext)
+
             return attachmentStream
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -180,7 +180,11 @@ public class MessageSticker: MTLModel {
         do {
             let dataSource = try DataSourcePath.dataSource(with: stickerDataUrl, shouldDeleteOnDeallocation: false)
             let contentType: String
-            if let dataContentType = dataProto.contentType,
+            let imageMetadata = NSData.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
+            if imageMetadata.imageFormat != .unknown,
+               let mimeTypeFromMetadata = imageMetadata.mimeType {
+                contentType = mimeTypeFromMetadata
+            } else if let dataContentType = dataProto.contentType,
                 !dataContentType.isEmpty {
                 contentType = dataContentType
             } else {
@@ -219,10 +223,16 @@ public class MessageSticker: MTLModel {
             throw StickerError.assertionFailure
         }
         let fileExtension = stickerType.fileExtension
-        let contentType = stickerType.contentType
-
+        var contentType = stickerType.contentType
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         try stickerData.write(to: fileUrl)
+
+        let imageMetadata = NSData.imageMetadata(withPath: fileUrl.path, mimeType: nil)
+        if imageMetadata.imageFormat != .unknown,
+           let mimeTypeFromMetadata = imageMetadata.mimeType {
+            contentType = mimeTypeFromMetadata
+        }
+
         let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
         let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         try attachment.writeConsumingDataSource(dataSource)

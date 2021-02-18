@@ -30,7 +30,7 @@ public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
     var cacheKey: String { get }
-    var isAnimated: Bool { get }
+    var shouldBeRenderedByYY: Bool { get }
 
     func applyMedia(_ media: AnyObject)
     func unloadMedia()
@@ -178,7 +178,7 @@ public class ReusableMediaView: NSObject {
         let mediaViewAdapter = self.mediaViewAdapter
         let cacheKey = mediaViewAdapter.cacheKey
         let mediaCache = self.mediaCache
-        if let media = mediaCache.getMedia(cacheKey, isAnimated: mediaViewAdapter.isAnimated) {
+        if let media = mediaCache.getMedia(cacheKey, isAnimated: mediaViewAdapter.shouldBeRenderedByYY) {
             Logger.verbose("media cache hit")
             loadCompletion(media)
             return
@@ -194,7 +194,7 @@ public class ReusableMediaView: NSObject {
             }
             return mediaViewAdapter.loadMedia()
         }.done(on: .main) { (media: AnyObject) in
-            mediaCache.setMedia(media, forKey: cacheKey, isAnimated: mediaViewAdapter.isAnimated)
+            mediaCache.setMedia(media, forKey: cacheKey, isAnimated: mediaViewAdapter.shouldBeRenderedByYY)
 
             loadCompletion(media)
         }.catch(on: .main) { (error: Error) in
@@ -214,7 +214,7 @@ public class ReusableMediaView: NSObject {
 
 class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
-    public let isAnimated = false
+    public let shouldBeRenderedByYY = false
     let blurHash: String
     let imageView = UIImageView()
 
@@ -264,7 +264,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
 class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
-    public let isAnimated = true
+    public let shouldBeRenderedByYY = true
     let attachmentStream: TSAttachmentStream
     let imageView = YYAnimatedImageView()
 
@@ -318,7 +318,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
 class MediaViewAdapterStill: MediaViewAdapterSwift {
 
-    public let isAnimated = false
+    public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = UIImageView()
 
@@ -377,7 +377,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
 
 class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
-    public let isAnimated = false
+    public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = UIImageView()
 
@@ -437,16 +437,16 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 @objc
 public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
 
-    public let isAnimated: Bool
+    public let shouldBeRenderedByYY: Bool
     let attachmentStream: TSAttachmentStream
     let imageView: UIImageView
 
     @objc
     public init(attachmentStream: TSAttachmentStream) {
-        self.isAnimated = attachmentStream.shouldBeRenderedByYY
+        self.shouldBeRenderedByYY = attachmentStream.shouldBeRenderedByYY
         self.attachmentStream = attachmentStream
 
-        if isAnimated {
+        if shouldBeRenderedByYY {
             imageView = YYAnimatedImageView()
         } else {
             imageView = UIImageView()
@@ -468,14 +468,16 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     }
 
     public func loadMedia() -> Promise<AnyObject> {
-
         guard attachmentStream.isValidImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let filePath = attachmentStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
         }
-        if isAnimated {
+        let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
+        Logger.verbose("imageMetadata: \(NSStringForImageFormat(imageMetadata.imageFormat))")
+        Logger.flush()
+        if shouldBeRenderedByYY {
             guard let animatedImage = YYImage(contentsOfFile: filePath) else {
                 return Promise(error: OWSAssertionError("Invalid animated image."))
             }
@@ -491,14 +493,14 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     public func applyMedia(_ media: AnyObject) {
         AssertIsOnMainThread()
 
-        if isAnimated {
-            guard let image = media as? UIImage else {
+        if shouldBeRenderedByYY {
+            guard let image = media as? YYImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
             }
             imageView.image = image
         } else {
-            guard let image = media as? YYImage else {
+            guard let image = media as? UIImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
             }

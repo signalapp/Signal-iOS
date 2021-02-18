@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -140,6 +140,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 // This should only ever be used before the attachment is saved,
 // after that point the content type will be already set.
 - (void)setDefaultContentType:(NSString *)contentType;
+
+// This method should only be called on instances which have
+// not yet been inserted into the database.
+- (void)replaceUnsavedContentType:(NSString *)contentType NS_SWIFT_NAME(replaceUnsavedContentType(_:));
 
 #pragma mark - Update With...
 
