@@ -2348,10 +2348,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ഈ ഗ്രൂപ്പ് അപ്‌ഗ്രേഡുചെയ്യുക";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "ഈ ഗ്രൂപ്പിനെ ഇപ്പോൾ ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്റ്റുചെയ്‌തിട്ടില്ലാത്തതിനാൽ ഈ ഗ്രൂപ്പിനെ ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "അപ്ഗ്രേഡ് പൂർത്തിയാക്കാൻ കഴിഞ്ഞില്ല";
@@ -2564,7 +2564,7 @@
 "KEY_COMMAND_NEXT_CONVERSATION" = "അടുത്ത ചാറ്റിലേക്ക് പോകുക";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "മുമ്പത്തെ ചാറ്റിലേക്ക് പോകുക";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "തിരയൽ";
@@ -2630,7 +2630,7 @@
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "ഏതെങ്കിലും ലിങ്ക് പ്രിവ്യൂ ചെയ്യുക";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
@@ -2708,10 +2708,10 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "എല്ലാവർക്കുമായി ഇല്ലാതാക്കുക";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "സംഭാഷണത്തിലെ എല്ലാവർ‌ക്കും അവർ‌ Signal-ന്റെ സമീപകാല പതിപ്പിലാണെങ്കിൽ‌ ഈ സന്ദേശം ഇല്ലാതാക്കും. നിങ്ങൾ ഒരു സന്ദേശം ഇല്ലാതാക്കിയത് അവർക്ക് കാണാൻ കഴിയും.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "ആർക്കാണ് ഈ സന്ദേശം ഇല്ലാതാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നത്?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "എനിക്കായി ഇല്ലാതാക്കുക";
@@ -2870,13 +2870,13 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പുമായുള്ള സംഭാഷണം തുടരുകയും നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടുകയും ചെയ്യണോ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ നിങ്ങൾക്ക് സന്ദേശം അയയ്‌ക്കാനും നിങ്ങളുടെ പേരും ഫോട്ടോയും അവരുമായി പങ്കിടട്ടെ? നിങ്ങൾ അംഗീകരിക്കുന്നതുവരെ നിങ്ങൾ അവരുടെ സന്ദേശം കണ്ടതായി അവർക്ക് അറിയില്ല.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പിൽ ചേര്‍ൻ, നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടണോ? നിങ്ങൾ സ്വീകരിക്കുന്നതുവരെ നിങ്ങൾ അവരുടെ സന്ദേശങ്ങള്‍ കണ്ടതായി അവർക്ക് അറിയില്ല.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "ഈ ഗ്രൂപ്പിൽ ചേരണോ? നിങ്ങൾ സ്വീകരിക്കുന്നതുവരെ അവരുടെ സന്ദേശങ്ങൾ കണ്ടതായി അവർക്ക് അറിയില്ല.";
@@ -3209,7 +3209,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "നിങ്ങളുടെ നമ്പർ ഉപയോഗിച്ച് ആർക്കാണ് നിങ്ങളെ കണ്ടെത്താൻ കഴിയുക?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "നിങ്ങളുടെ ഫോൺ നമ്പർ";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
@@ -3218,7 +3218,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "നിങ്ങളുടെ ഫോൺ നമ്പർ നൽകുക";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "അസാധുവായ ഫോൺ നമ്പർ .രജിസ്റ്റർ ചെയ്യുന്നതിനായി സാധുവായ ഒരു ഫോൺ നമ്പർ നൽകുക.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "നിങ്ങൾക്ക് PIN ഊഹിച്ചെടുക്കാനുള്ള അവസരങ്ങൾ കഴിഞ്ഞിരിക്കുന്നു, എന്നാലും ഒരു പുതിയ PIN സൃഷ്ടിച്ച് നിങ്ങളുടെ Signal അക്കൗണ്ട് പ്രാപ്തമാക്കാൻ നിങ്ങൾക്ക് ഇപ്പോഴും സാധ്യമാണ്.";
@@ -3245,13 +3245,13 @@
 "ONBOARDING_PIN_TITLE" = "നിങ്ങളുടെ പിൻ നൽകുക";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "നിങ്ങളുടെ പ്രൊഫൈൽ";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "പേരിൻ്റെ അവസാന ഭാഗം (ഓപ്ഷണൽ)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "പേരിൻ്റെ ആദ്യ ഭാഗം (ആവശ്യമാണ്)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "നിബന്ധനകളും സ്വകാര്യതാ നയവും";
@@ -3365,7 +3365,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "അസാധുവായ ക്ഷണങ്ങൾ";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "മറ്റ് ഗ്രൂപ്പ് അംഗങ്ങളുടെ ക്ഷണങ്ങൾ";
@@ -3404,7 +3404,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "എല്ലാവരും";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "കോൺ‌ടാക്റ്റുകളിൽ‌ നിങ്ങളുടെ ഫോൺ‌ നമ്പർ‌ ഉള്ള ഏതൊരാളും നിങ്ങളെ Signal-ഇലെ (സിഗ്നലിലെ) ഒരു കോൺ‌ടാക്റ്റായി കാണും. മറ്റുള്ളവർക്ക് നിങ്ങളെ തിരയലിൽ കണ്ടെത്താൻ കഴിയും.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "ആരുംതന്നെയില്ല";
@@ -3623,7 +3623,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN സൃഷ്ടിച്ചിരിക്കുന്നു.  നിങ്ങൾക്കത് സെറ്റിംഗ്സിൽ മാറ്റാവുന്നതാണ്.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN പ്രവർത്തനരഹിതമാക്കി.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "മീഡിയ പ്ലേ ചെയ്യുക";
@@ -3647,7 +3647,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "ഇത് %@ ൻ്റെ പക്കലുള്ള നിങ്ങളുടെ സുരക്ഷാ നമ്പർ പോലെ അല്ല.  നിങ്ങൾ പരിശോധിക്കുന്നത് ശരിയായിട്ടുള്ള കോൺടാക്ടാണോ?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "നിങ്ങളുടെ ക്ലിപ്പ് ബോർഡിലുള്ളത് ഈ സംഭാഷണത്തിന് വേണ്ടിയുള്ള ശരിയായ സുരക്ഷാ നമ്പർ പോലെ അല്ല.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ന് നിങ്ങളുടെ ക്ലിപ്പ് ബോർഡിൽ ഒരു സുരക്ഷാ നമ്പരും കണ്ടു പിടിക്കാൻ കഴിഞ്ഞില്ല.  നിങ്ങൾ അത് ശരിയായിട്ടാണോ കോപ്പി ചെയ്തത്?";
@@ -3926,7 +3926,7 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "കണക്ഷൻ പരിശോധിക്കുക";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ഈ ഫോൺ നമ്പർ ഫോർമാറ്റ് അനുവദനീയമല്ല, ദയവായി സപ്പോർട്ടുമായി ബന്ധപ്പെടുക.";
@@ -3968,7 +3968,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "തിരുത്തുക";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%@ പരിശോധിക്കുന്നു...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "നിരസിക്കുക";
@@ -4715,7 +4715,7 @@
 "SETTINGS_TYPING_INDICATORS" = "ടൈപ്പിംഗ് ഇൻഡിക്കേറ്ററുകൾ";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "സന്ദേശങ്ങൾ ടൈപ്പുചെയ്യുന്നുവെന്ന്കാണുകയും പങ്കിടുകയും ചെയ്യുക. ഈ ക്രമീകരണം ഓപ്‌ഷണലാണ് ഒപ്പം എല്ലാ ചാറ്റുകൾക്കും ഇത് ബാധകമാണ്.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ";
@@ -4787,7 +4787,7 @@
 "SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
 
 /* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "പങ്കിടൽ ഇപ്പോൾ എളുപ്പമായി";
 
 /* Disable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
@@ -4808,7 +4808,7 @@
 "SOUNDS_NONE" = "ഒന്നുമില്ല";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "നിലവിലുള്ള ഗ്രൂപ്പുകൾ‌ക്ക് ഈ സവിശേഷതകൾ‌ സ്വപ്രേരിതമായി വരും ആഴ്ചകളിൽ‌ ലഭിക്കും.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "പുതിയ ഗ്രൂപ്പ്";
@@ -4817,10 +4817,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "പുതിയ ഗ്രൂപ്പുകൾ എത്തി!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "പുതിയ ഗ്രൂപ്പ് സവിശേഷതകളിൽ @സൂചനകള്‍, അഡ്‌മിനുകൾ എന്നിവയും അതിലേറെയും ഉൾപ്പെടുന്നു. ടാപ്പുചെയ്ത് ഇത് പരീക്ഷിക്കുക:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "സ്റ്റിക്കർ സന്ദേശം";
@@ -4877,16 +4877,16 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "എന്താണ് സംഭവിക്കുന്നതെന്ന് ഞങ്ങളോട് പറയുക";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "പ്രശ്നത്തെക്കുറിച്ച് ഞങ്ങളോട് പറയുക:";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "നിങ്ങളുടെ പിന്തുണ അഭ്യർത്ഥന support@signal.org ലേക്ക് ഇമെയിൽ ചെയ്യുക";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "ഫിൽട്ടർ: %@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "ഹാർഡ്‌വെയർ: %@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
@@ -4907,7 +4907,7 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "സിഗ്നൽ പതിപ്പ്: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS പിന്തുണ അഭ്യർത്ഥന";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "നിങ്ങൾക്ക് എന്തുതോന്നുന്നു? (ഓപ്ഷണൽ)";
@@ -4937,7 +4937,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ലെ അംഗം, കൂടാതെ %lu അധിക ഗ്രൂപ്പുകൾ";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "ഈ സംഭാഷണത്തിൽ‌ നിങ്ങൾ‌ക്കായി കുറിപ്പുകൾ‌ ചേർ‌ക്കാൻ‌ കഴിയും. നിങ്ങളുടെ അക്കൗണ്ടിൽ ലിങ്കുചെയ്‌ത ഉപകരണങ്ങളുണ്ടെങ്കിൽ, പുതിയ കുറിപ്പുകൾ സമന്വയിപ്പിക്കും.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ ലെ അംഗം";
@@ -5072,13 +5072,13 @@
 "UNNAMED_DEVICE" = "പേരിടാത്ത ഉപകരണം";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "അൺപിൻ ചെയ്യുക";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "ചാറ്റുകൾ";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "വായിക്കാത്തവ";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal ലിൽ നിന്ന് അൺരജിസ്റ്റർ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
@@ -5213,16 +5213,16 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop സെറ്റ്അപ്പ് പൂർത്തിയാക്കുക.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "കോണ്ടാക്ടിന്റെ പേര്";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "ചിത്രം അവ്യക്തമാക്കുക";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "വലുതാക്കാന്‍ നുള്ളുക, ക്രമീകരിക്കാൻ വലിച്ചിടുക.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "കൂടുതൽ വാള്‍പേപ്പറുകള്‍ പ്രിവ്യൂ ചെയ്യാൻ സ്വൈപ്പുചെയ്യുക.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "എല്ലാ ചാറ്റുകള്‍ക്കും വാള്‍പേപ്പര്‍ സജ്ജമാക്കുക";
@@ -5249,10 +5249,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ഡാര്‍ക്ക് തീം വാള്‍പേപ്പര്‍ മങ്ങിക്കും";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "വാൾപേപ്പർ മായ്‌ക്കാനായില്ല, ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ പിശക് തുടരുകയാണെങ്കിൽ പിന്തുണയുമായി ബന്ധപ്പെടുക.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "വാൾപേപ്പറുകൾ പുനഃസജ്ജമാക്കാൻ കഴിഞ്ഞില്ല, ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ പിശക് തുടരുകയാണെങ്കിൽ പിന്തുണയുമായി ബന്ധപ്പെടുക.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "പ്രിവ്യൂ";

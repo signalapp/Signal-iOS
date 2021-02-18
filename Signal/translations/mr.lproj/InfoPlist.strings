@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "Signal ला मिडीया संलग्नक प्ले करण्यासाठी Apple म्युझिक वापरण्याची गरज आहे.";
+NSCameraUsageDescription = "Signal फोटो काढण्यासाठी आणि व्हिडीओ कॉल करण्यासाठी आपला कॅमेरा वापरतो.";
+NSContactsUsageDescription = "Signal आपल्या ओळखीचे युजर्स शोधण्यासाठी आपल्या कॉन्टॅक्ट्स चा वापर करतो. आम्ही आपले कॉन्टॅक्ट्स सर्व्हरमध्ये ठेवत नाही.";
+NSFaceIDUsageDescription = "Signal च्या स्क्रीन लॉक मध्ये फेस आयडीचा वापर केला जातो.";
+NSLocationWhenInUseUsageDescription = "Signal ला आपले हल्लीचे लोकेशन शेअर करण्यासाठी आपली लोकेशन अॅक्सेस करावा लागतो.";
+NSMicrophoneUsageDescription = "Signal ला फोन कॉल्स करण्यासाठी आणि  मिळविण्यासाठी आणि व्हॉइस संदेश रेकॉर्ड करण्यासाठी आपला मायक्रोफोन अॅॅक्सेस करावा लागतो.";
+NSPhotoLibraryAddUsageDescription = "Signal आपली लायब्ररी मध्ये फोटो जतन करणार.";
+NSPhotoLibraryUsageDescription = "Signal आपल्याला आपली लायब्ररीतून पाठविण्यासाठी फोटो निवडू देणार.";
+NSLocalNetworkUsageDescription = "Signal स्थानिक नेटवर्क वापरतो जेणेकरून आपण आपले खाते नवीन फोनवर थेट ट्रान्स्फर करू शकता. स्पष्टपणे नवीन डिव्हाइस मध्ये ट्रान्स्फर सुरु करणे निवड करेपर्यंत याचा वापर केला जाणार नाही.";

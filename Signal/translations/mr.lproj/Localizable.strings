@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "व्हॉईस संदेश";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "व्हॉईस संदेश %@ सेकंद";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal कॉल";
@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal द्वारा शेअर करा";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "ही लिंक असलेला कुणीही या गटाचा नाव आणि सदस्ये आणि सामील होण्याची विनंती पाहू शकतो. याला आपल्या विश्वासातल्या लोकांसह सामायिक करा.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "गट लिंक";
