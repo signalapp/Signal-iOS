@@ -622,13 +622,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
-        // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
-        // they are saved and moved into the `persistedViewItems`
-        // Loki: Original code
-        // ========
-//        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
-        // ========
-
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId]);

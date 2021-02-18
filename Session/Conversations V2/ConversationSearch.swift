@@ -17,7 +17,7 @@ public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate
 }
 
 @objc
-public class ConversationSearchController: NSObject {
+public class ConversationSearchController : NSObject {
 
     @objc
     public static let kMinimumSearchTextLength: UInt = 2
@@ -31,7 +31,7 @@ public class ConversationSearchController: NSObject {
     let thread: TSThread
 
     @objc
-    public let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
+    public let resultsBar: SearchResultsBarV2 = SearchResultsBarV2()
 
     // MARK: Initializer
 
@@ -45,14 +45,12 @@ public class ConversationSearchController: NSObject {
         uiSearchController.searchResultsUpdater = self
 
         uiSearchController.hidesNavigationBarDuringPresentation = false
-        uiSearchController.dimsBackgroundDuringPresentation = false
+        if #available(iOS 13, *) {
+            // Do nothing
+        } else {
+            uiSearchController.dimsBackgroundDuringPresentation = false
+        }
         uiSearchController.searchBar.inputAccessoryView = resultsBar
-
-        applyTheme()
-    }
-
-    func applyTheme() {
-        OWSSearchBar.applyTheme(to: uiSearchController.searchBar)
     }
 
     // MARK: Dependencies
@@ -62,7 +60,8 @@ public class ConversationSearchController: NSObject {
     }
 }
 
-extension ConversationSearchController: UISearchControllerDelegate {
+extension ConversationSearchController : UISearchControllerDelegate {
+    
     public func didPresentSearchController(_ searchController: UISearchController) {
         Logger.verbose("")
         delegate?.didPresentSearchController?(searchController)
@@ -74,7 +73,8 @@ extension ConversationSearchController: UISearchControllerDelegate {
     }
 }
 
-extension ConversationSearchController: UISearchResultsUpdating {
+extension ConversationSearchController : UISearchResultsUpdating {
+    
     var dbSearcher: FullTextSearcher {
         return FullTextSearcher.shared
     }
@@ -88,7 +88,6 @@ extension ConversationSearchController: UISearchResultsUpdating {
             return
         }
         let searchText = FullTextSearchFinder.normalize(text: rawSearchText)
-        BenchManager.startEvent(title: "Conversation Search", eventId: searchText)
 
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
             self.resultsBar.updateResults(resultSet: nil)
@@ -112,8 +111,9 @@ extension ConversationSearchController: UISearchResultsUpdating {
     }
 }
 
-extension ConversationSearchController: SearchResultsBarDelegate {
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
+extension ConversationSearchController : SearchResultsBarDelegate {
+    
+    func searchResultsBar(_ searchResultsBar: SearchResultsBarV2,
                           setCurrentIndex currentIndex: Int,
                           resultSet: ConversationScreenSearchResultSet) {
         guard let searchResult = resultSet.messages[safe: currentIndex] else {
@@ -126,68 +126,95 @@ extension ConversationSearchController: SearchResultsBarDelegate {
     }
 }
 
-protocol SearchResultsBarDelegate: AnyObject {
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
+protocol SearchResultsBarDelegate : AnyObject {
+    
+    func searchResultsBar(_ searchResultsBar: SearchResultsBarV2,
                           setCurrentIndex currentIndex: Int,
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public class SearchResultsBar: UIToolbar {
-
+public final class SearchResultsBarV2 : UIView {
+    private var resultSet: ConversationScreenSearchResultSet?
+    var currentIndex: Int?
     weak var resultsBarDelegate: SearchResultsBarDelegate?
-
-    var showLessRecentButton: UIBarButtonItem!
-    var showMoreRecentButton: UIBarButtonItem!
-    let labelItem: UIBarButtonItem
-
-    var resultSet: ConversationScreenSearchResultSet?
-
+    
+    public override var intrinsicContentSize: CGSize { CGSize.zero }
+    
+    private lazy var label: UILabel = {
+        let result = UILabel()
+        result.text = "Test"
+        result.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.textColor = Colors.text
+        return result
+    }()
+    
+    private lazy var upButton: UIButton = {
+        let icon = #imageLiteral(resourceName: "ic_chevron_up").withRenderingMode(.alwaysTemplate)
+        let result = UIButton()
+        result.setImage(icon, for: UIControl.State.normal)
+        result.tintColor = Colors.accent
+        result.addTarget(self, action: #selector(handleUpButtonTapped), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var downButton: UIButton = {
+        let icon = #imageLiteral(resourceName: "ic_chevron_down").withRenderingMode(.alwaysTemplate)
+        let result = UIButton()
+        result.setImage(icon, for: UIControl.State.normal)
+        result.tintColor = Colors.accent
+        result.addTarget(self, action: #selector(handleDownButtonTapped), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
     override init(frame: CGRect) {
-
-        labelItem = UIBarButtonItem(title: nil, style: .plain, target: nil, action: nil)
-        labelItem.setTitleTextAttributes([ .font : UIFont.systemFont(ofSize: Values.mediumFontSize) ], for: UIControl.State.normal)
-
         super.init(frame: frame)
-
-        let leftExteriorChevronMargin: CGFloat
-        let leftInteriorChevronMargin: CGFloat
-        if CurrentAppContext().isRTL {
-            leftExteriorChevronMargin = 8
-            leftInteriorChevronMargin = 0
-        } else {
-            leftExteriorChevronMargin = 0
-            leftInteriorChevronMargin = 8
-        }
-
-        let upChevron = #imageLiteral(resourceName: "ic_chevron_up").withRenderingMode(.alwaysTemplate)
-        showLessRecentButton = UIBarButtonItem(image: upChevron, style: .plain, target: self, action: #selector(didTapShowLessRecent))
-        showLessRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftExteriorChevronMargin, bottom: 2, right: leftInteriorChevronMargin)
-        showLessRecentButton.tintColor = Colors.accent
-
-        let downChevron = #imageLiteral(resourceName: "ic_chevron_down").withRenderingMode(.alwaysTemplate)
-        showMoreRecentButton = UIBarButtonItem(image: downChevron, style: .plain, target: self, action: #selector(didTapShowMoreRecent))
-        showMoreRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftInteriorChevronMargin, bottom: 2, right: leftExteriorChevronMargin)
-        showMoreRecentButton.tintColor = Colors.accent
-
-        let spacer1 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let spacer2 = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
-        self.items = [showLessRecentButton, showMoreRecentButton, spacer1, labelItem, spacer2]
-
-        self.isTranslucent = false
-        self.isOpaque = true
-        self.barTintColor = Colors.navigationBarBackground
-
-        self.autoresizingMask = .flexibleHeight
-        self.translatesAutoresizingMaskIntoConstraints = false
+        setUpViewHierarchy()
     }
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setUpViewHierarchy()
     }
-
+    
+    private func setUpViewHierarchy() {
+        autoresizingMask = .flexibleHeight
+        // Background & blur
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.alpha = Values.lowOpacity
+        addSubview(backgroundView)
+        backgroundView.pin(to: self)
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        addSubview(blurView)
+        blurView.pin(to: self)
+        // Separator
+        let separator = UIView()
+        separator.backgroundColor = Colors.text.withAlphaComponent(0.2)
+        separator.set(.height, to: 1 / UIScreen.main.scale)
+        addSubview(separator)
+        separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
+        // Spacers
+        let spacer1 = UIView.hStretchingSpacer()
+        let spacer2 = UIView.hStretchingSpacer()
+        // Button containers
+        let upButtonContainer = UIView(wrapping: upButton, withInsets: UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 0))
+        let downButtonContainer = UIView(wrapping: downButton, withInsets: UIEdgeInsets(top: 0, left: 0, bottom: 2, right: 0))
+        // Main stack view
+        let mainStackView = UIStackView(arrangedSubviews: [ upButtonContainer, downButtonContainer, spacer1, label, spacer2 ])
+        mainStackView.axis = .horizontal
+        mainStackView.spacing = Values.mediumSpacing
+        mainStackView.isLayoutMarginsRelativeArrangement = true
+        mainStackView.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, leading: Values.largeSpacing, bottom: Values.smallSpacing, trailing: Values.largeSpacing)
+        addSubview(mainStackView)
+        mainStackView.pin(.top, to: .bottom, of: separator)
+        mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
+        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
+        // Remaining constraints
+        label.center(.horizontal, in: self)
+    }
+    
     @objc
-    public func didTapShowLessRecent() {
+    public func handleUpButtonTapped() {
         Logger.debug("")
         guard let resultSet = resultSet else {
             owsFailDebug("resultSet was unexpectedly nil")
@@ -211,7 +238,7 @@ public class SearchResultsBar: UIToolbar {
     }
 
     @objc
-    public func didTapShowMoreRecent() {
+    public func handleDownButtonTapped() {
         Logger.debug("")
         guard let resultSet = resultSet else {
             owsFailDebug("resultSet was unexpectedly nil")
@@ -234,10 +261,6 @@ public class SearchResultsBar: UIToolbar {
         resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, resultSet: resultSet)
     }
 
-    var currentIndex: Int?
-
-    // MARK: 
-
     func updateResults(resultSet: ConversationScreenSearchResultSet?) {
         if let resultSet = resultSet {
             if resultSet.messages.count > 0 {
@@ -259,17 +282,17 @@ public class SearchResultsBar: UIToolbar {
 
     func updateBarItems() {
         guard let resultSet = resultSet else {
-            labelItem.title = nil
-            showMoreRecentButton.isEnabled = false
-            showLessRecentButton.isEnabled = false
+            label.text = ""
+            downButton.isEnabled = false
+            upButton.isEnabled = false
             return
         }
 
         switch resultSet.messages.count {
         case 0:
-            labelItem.title = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
+            label.text = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
         case 1:
-            labelItem.title = NSLocalizedString("CONVERSATION_SEARCH_ONE_RESULT", comment: "keyboard toolbar label when exactly 1 message matches the search string")
+            label.text = NSLocalizedString("CONVERSATION_SEARCH_ONE_RESULT", comment: "keyboard toolbar label when exactly 1 message matches the search string")
         default:
             let format = NSLocalizedString("CONVERSATION_SEARCH_RESULTS_FORMAT",
                                            comment: "keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
@@ -278,15 +301,15 @@ public class SearchResultsBar: UIToolbar {
                 owsFailDebug("currentIndex was unexpectedly nil")
                 return
             }
-            labelItem.title = String(format: format, currentIndex + 1, resultSet.messages.count)
+            label.text = String(format: format, currentIndex + 1, resultSet.messages.count)
         }
 
         if let currentIndex = currentIndex {
-            showMoreRecentButton.isEnabled = currentIndex > 0
-            showLessRecentButton.isEnabled = currentIndex + 1 < resultSet.messages.count
+            downButton.isEnabled = currentIndex > 0
+            upButton.isEnabled = currentIndex + 1 < resultSet.messages.count
         } else {
-            showMoreRecentButton.isEnabled = false
-            showLessRecentButton.isEnabled = false
+            downButton.isEnabled = false
+            upButton.isEnabled = false
         }
     }
 }

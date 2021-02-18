@@ -7,12 +7,13 @@
 // • Photo rounding
 // • Disappearing messages timer
 // • Scroll button behind mentions view
-// • Search...
+// • Remaining search bugs
 
-final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewDataSource, UITableViewDelegate {
+final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
-    private let focusedMessageID: String?
-    private var didConstrainScrollButton = false
+    let focusedMessageID: String?
+    var didConstrainScrollButton = false
+    var isShowingSearchUI = false
     // Audio playback & recording
     var audioPlayer: OWSAudioPlayer?
     var audioRecorder: AVAudioRecorder?
@@ -25,30 +26,30 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     var currentMentionStartIndex: String.Index?
     var mentions: [Mention] = []
     // Scrolling & paging
-    private var isUserScrolling = false
-    private var didFinishInitialLayout = false
-    private var isLoadingMore = false
-    private var scrollDistanceToBottomBeforeUpdate: CGFloat?
+    var isUserScrolling = false
+    var didFinishInitialLayout = false
+    var isLoadingMore = false
+    var scrollDistanceToBottomBeforeUpdate: CGFloat?
 
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
-    private var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
+    var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
     func conversationStyle() -> ConversationStyle { return ConversationStyle(thread: thread) }
-    override var inputAccessoryView: UIView? { snInputView }
+    override var inputAccessoryView: UIView? { isShowingSearchUI ? searchController.resultsBar : snInputView }
     override var canBecomeFirstResponder: Bool { true }
 
-    private var tableViewUnobscuredHeight: CGFloat {
+    var tableViewUnobscuredHeight: CGFloat {
         let bottomInset = messagesTableView.adjustedContentInset.bottom
         return messagesTableView.bounds.height - bottomInset
     }
 
-    private var lastPageTop: CGFloat {
+    var lastPageTop: CGFloat {
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
     
-    private lazy var mediaCache: NSCache<NSString, AnyObject> = {
+    lazy var mediaCache: NSCache<NSString, AnyObject> = {
         let result = NSCache<NSString, AnyObject>()
         result.countLimit = 40
         return result
@@ -56,8 +57,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
 
     lazy var recordVoiceMessageActivity = AudioActivity(audioDescription: "Voice message", behavior: .playAndRecord)
     
+    lazy var searchController: ConversationSearchController = {
+        let result = ConversationSearchController(thread: thread)
+        result.delegate = self
+        return result
+    }()
+    
     // MARK: UI Components
-    private lazy var titleView = ConversationTitleViewV2(thread: thread)
+    lazy var titleView = ConversationTitleViewV2(thread: thread)
 
     lazy var messagesTableView: MessagesTableView = {
         let result = MessagesTableView()
@@ -86,12 +93,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }()
     
     // MARK: Settings
-    private static let bottomInset = Values.mediumSpacing
-    private static let loadMoreThreshold: CGFloat = 120
+    static let bottomInset = Values.mediumSpacing
+    static let loadMoreThreshold: CGFloat = 120
     /// The button will be fully visible once the user has scrolled this amount from the bottom of the table view.
-    private static let scrollButtonFullVisibilityThreshold: CGFloat = 80
+    static let scrollButtonFullVisibilityThreshold: CGFloat = 80
     /// The button will be invisible until the user has scrolled at least this amount from the bottom of the table view.
-    private static let scrollButtonNoVisibilityThreshold: CGFloat = 20
+    static let scrollButtonNoVisibilityThreshold: CGFloat = 20
     
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
@@ -168,28 +175,33 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     }
     
     // MARK: Updating
-    private func updateNavBarButtons() {
-        let rightBarButtonItem: UIBarButtonItem
-        if thread is TSContactThread {
-            let size = Values.verySmallProfilePictureSize
-            let profilePictureView = ProfilePictureView()
-            profilePictureView.accessibilityLabel = "Settings button"
-            profilePictureView.size = size
-            profilePictureView.update(for: thread)
-            profilePictureView.set(.width, to: size)
-            profilePictureView.set(.height, to: size)
-            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
-            profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-            rightBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+    func updateNavBarButtons() {
+        navigationItem.hidesBackButton = isShowingSearchUI
+        if isShowingSearchUI {
+            navigationItem.rightBarButtonItems = []
         } else {
-            rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+            let rightBarButtonItem: UIBarButtonItem
+            if thread is TSContactThread {
+                let size = Values.verySmallProfilePictureSize
+                let profilePictureView = ProfilePictureView()
+                profilePictureView.accessibilityLabel = "Settings button"
+                profilePictureView.size = size
+                profilePictureView.update(for: thread)
+                profilePictureView.set(.width, to: size)
+                profilePictureView.set(.height, to: size)
+                let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
+                profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+                rightBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+            } else {
+                rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+            }
+            rightBarButtonItem.accessibilityLabel = "Settings button"
+            rightBarButtonItem.isAccessibilityElement = true
+            navigationItem.rightBarButtonItem = rightBarButtonItem
         }
-        rightBarButtonItem.accessibilityLabel = "Settings button"
-        rightBarButtonItem.isAccessibilityElement = true
-        navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
-    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+    @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if !didConstrainScrollButton {
             // Bit of a hack to do this here, but it works out.
@@ -202,7 +214,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         }
     }
     
-    @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
+    @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
         UIView.animate(withDuration: 0.25) {
             self.messagesTableView.keyboardHeight = 0
             self.scrollButton.alpha = self.getScrollButtonOpacity()
@@ -298,7 +310,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         
     }
     
-    @objc private func addOrRemoveBlockedBanner() {
+    // MARK: General
+    @objc func addOrRemoveBlockedBanner() {
         func detach() {
             blockedBanner.removeFromSuperview()
         }
@@ -311,7 +324,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         }
     }
     
-    // MARK: General
     func markAllAsRead() {
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
         OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
@@ -353,7 +365,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         autoLoadMoreIfNeeded()
     }
     
-    private func autoLoadMoreIfNeeded() {
+    func autoLoadMoreIfNeeded() {
         let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
         guard isMainAppAndActive && viewModel.canLoadMoreItems() && !isLoadingMore
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
@@ -361,11 +373,118 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
         viewModel.loadAnotherPageOfMessages()
     }
     
-    // MARK: Convenience
     func getScrollButtonOpacity() -> CGFloat {
         let contentOffsetY = messagesTableView.contentOffset.y
         let x = (lastPageTop - ConversationVC.bottomInset - contentOffsetY).clamp(0, .greatestFiniteMagnitude)
         let a = 1 / (ConversationVC.scrollButtonFullVisibilityThreshold - ConversationVC.scrollButtonNoVisibilityThreshold)
         return a * x
+    }
+    
+    func groupWasUpdated(_ groupModel: TSGroupModel) {
+        // Do nothing
+    }
+    
+    // MARK: Search
+    func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {
+        showSearchUI()
+        popAllConversationSettingsViews {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.searchController.uiSearchController.searchBar.becomeFirstResponder()
+            }
+        }
+    }
+    
+    func popAllConversationSettingsViews(completion completionBlock: (() -> Void)? = nil) {
+        if presentedViewController != nil {
+            dismiss(animated: true) {
+                self.navigationController!.popToViewController(self, animated: true, completion: completionBlock)
+            }
+        } else {
+            navigationController!.popToViewController(self, animated: true, completion: completionBlock)
+        }
+    }
+    
+    func showSearchUI() {
+        isShowingSearchUI = true
+        // Search bar
+        let searchBar = searchController.uiSearchController.searchBar
+        searchBar.searchBarStyle = .minimal
+        searchBar.barStyle = .black
+        searchBar.tintColor = Colors.accent
+        let searchIcon = UIImage(named: "searchbar_search")!.asTintedImage(color: Colors.searchBarPlaceholder)
+        searchBar.setImage(searchIcon, for: .search, state: UIControl.State.normal)
+        let clearIcon = UIImage(named: "searchbar_clear")!.asTintedImage(color: Colors.searchBarPlaceholder)
+        searchBar.setImage(clearIcon, for: .clear, state: UIControl.State.normal)
+        let searchTextField: UITextField
+        if #available(iOS 13, *) {
+            searchTextField = searchBar.searchTextField
+        } else {
+            searchTextField = searchBar.value(forKey: "_searchField") as! UITextField
+        }
+        searchTextField.backgroundColor = Colors.searchBarBackground
+        searchTextField.textColor = Colors.text
+        searchTextField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
+        searchTextField.keyboardAppearance = isLightMode ? .default : .dark
+        searchBar.setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: .search)
+        searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
+        searchBar.setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: .clear)
+        navigationItem.titleView = searchBar
+        // Nav bar buttons
+        updateNavBarButtons()
+        // Hack so that the ResultsBar stays on the screen when dismissing the search field
+        // keyboard.
+        //
+        // Details:
+        //
+        // When the search UI is activated, both the SearchField and the ConversationVC
+        // have the resultsBar as their inputAccessoryView.
+        //
+        // So when the SearchField is first responder, the ResultsBar is shown on top of the keyboard.
+        // When the ConversationVC is first responder, the ResultsBar is shown at the bottom of the
+        // screen.
+        //
+        // When the user swipes to dismiss the keyboard, trying to see more of the content while
+        // searching, we want the ResultsBar to stay at the bottom of the screen - that is, we
+        // want the ConversationVC to becomeFirstResponder.
+        //
+        // If the SearchField were a subview of ConversationVC.view, this would all be automatic,
+        // as first responder status is percolated up the responder chain via `nextResponder`, which
+        // basically travereses each superView, until you're at a rootView, at which point the next
+        // responder is the ViewController which controls that View.
+        //
+        // However, because SearchField lives in the Navbar, it's "controlled" by the
+        // NavigationController, not the ConversationVC.
+        //
+        // So here we stub the next responder on the navBar so that when the searchBar resigns
+        // first responder, the ConversationVC will be in it's responder chain - keeeping the
+        // ResultsBar on the bottom of the screen after dismissing the keyboard.
+        let navBar = navigationController!.navigationBar as! OWSNavigationBar
+        navBar.stubbedNextResponder = self
+    }
+    
+    func hideSearchUI() {
+        isShowingSearchUI = false
+        navigationItem.titleView = titleView
+        updateNavBarButtons()
+        let navBar = navigationController!.navigationBar as! OWSNavigationBar
+        navBar.stubbedNextResponder = nil
+        becomeFirstResponder()
+    }
+    
+    func didDismissSearchController(_ searchController: UISearchController) {
+        hideSearchUI()
+    }
+    
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
+        messagesTableView.reloadRows(at: messagesTableView.indexPathsForVisibleRows ?? [], with: UITableView.RowAnimation.none)
+    }
+    
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didSelectMessageId interactionID: String) {
+        scrollToInteraction(with: interactionID)
+    }
+    
+    private func scrollToInteraction(with interactionID: String) {
+        guard let indexPath = viewModel.ensureLoadWindowContainsInteractionId(interactionID) else { return }
+        messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
     }
 }

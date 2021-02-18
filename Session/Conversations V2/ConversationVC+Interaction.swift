@@ -7,6 +7,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     @objc func openSettings() {
         let settingsVC = OWSConversationSettingsViewController()
         settingsVC.configure(with: thread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
+        settingsVC.conversationSettingsViewDelegate = self
         navigationController!.pushViewController(settingsVC, animated: true, completion: nil)
     }
 
@@ -25,7 +26,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         })
     }
 
-    private func showBlockedModalIfNeeded() -> Bool {
+    func showBlockedModalIfNeeded() -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
         let publicKey = thread.contactIdentifier()
         guard OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else { return false }
@@ -157,12 +158,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         showAttachmentApprovalDialog(for: [ attachment ])
     }
 
-    private func showAttachmentApprovalDialog(for attachments: [SignalAttachment]) {
+    func showAttachmentApprovalDialog(for attachments: [SignalAttachment]) {
         let navController = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments, approvalDelegate: self)
         present(navController, animated: true, completion: nil)
     }
 
-    private func showAttachmentApprovalDialogAfterProcessingVideo(at url: URL, with fileName: String) {
+    func showAttachmentApprovalDialogAfterProcessingVideo(at url: URL, with fileName: String) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true, message: nil) { [weak self] modalActivityIndicator in
             let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)!
             dataSource.sourceFilename = fileName
@@ -264,7 +265,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     // MARK: Mentions
-    private func updateMentions(for newText: String) {
+    func updateMentions(for newText: String) {
         if newText.count < oldText.count {
             currentMentionStartIndex = nil
             snInputView.hideMentionsUI()
@@ -299,13 +300,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         oldText = newText
     }
 
-    private func resetMentions() {
+    func resetMentions() {
         oldText = ""
         currentMentionStartIndex = nil
         mentions = []
     }
 
-    private func replaceMentions(in text: String) -> String {
+    func replaceMentions(in text: String) -> String {
         var result = text
         for mention in mentions {
             guard let range = result.range(of: "@\(mention.displayName)") else { continue }
