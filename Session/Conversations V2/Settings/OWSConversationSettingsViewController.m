@@ -4,19 +4,14 @@
 
 #import "OWSConversationSettingsViewController.h"
 #import "BlockListUIUtils.h"
-
-
-
 #import "OWSBlockingManager.h"
 #import "OWSSoundSettingsViewController.h"
-
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/Environment.h>
-
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSSounds.h>
 #import <SessionMessagingKit/OWSUserProfile.h>
@@ -24,7 +19,6 @@
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
-
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
