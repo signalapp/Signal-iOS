@@ -96,6 +96,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let gifVC = GifPickerViewController(thread: thread)
         gifVC.delegate = self
         let navController = OWSNavigationController(rootViewController: gifVC)
+        navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true) { }
     }
 

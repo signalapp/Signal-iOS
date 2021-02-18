@@ -1,7 +1,6 @@
 
 // TODO
 // • Tapping replies
-// • Initial scroll position
 // • Moderator icons
 // • Slight paging glitch
 // • Image detail VC transition glitch
@@ -27,7 +26,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     var mentions: [Mention] = []
     // Scrolling & paging
     private var isUserScrolling = false
-    private var hasPerformedInitialScroll = false
+    private var didFinishInitialLayout = false
     private var isLoadingMore = false
     private var scrollDistanceToBottomBeforeUpdate: CGFloat?
 
@@ -132,14 +131,16 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, UITableViewD
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if !hasPerformedInitialScroll {
-            scrollToBottom(isAnimated: false)
-            hasPerformedInitialScroll = true
+        if !didFinishInitialLayout {
+            DispatchQueue.main.async {
+                self.scrollToBottom(isAnimated: false)
+            }
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        didFinishInitialLayout = true
         markAllAsRead()
     }
     
