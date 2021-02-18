@@ -226,6 +226,8 @@
 		B83786802586D296003CE78E /* KeyPairMigrationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */; };
 		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
+		B84A897D25DE0F4D0040017D /* LinkDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84A897C25DE0F4D0040017D /* LinkDeviceVC.swift */; };
+		B84A898725DE1EE90040017D /* Notification+MessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84A898625DE1EE90040017D /* Notification+MessageReceiver.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
 		B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C223A1BD1200AAF6CD /* SeedVC.swift */; };
 		B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */; };
@@ -1292,6 +1294,8 @@
 		B840729F2565F1670037CB17 /* OWSQuotedReplyModel+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSQuotedReplyModel+Conversion.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B847570023D568EB00759540 /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B84A897C25DE0F4D0040017D /* LinkDeviceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkDeviceVC.swift; sourceTree = "<group>"; };
+		B84A898625DE1EE90040017D /* Notification+MessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+MessageReceiver.swift"; sourceTree = "<group>"; };
 		B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderView.swift; sourceTree = "<group>"; };
 		B85357C223A1BD1200AAF6CD /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
 		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
@@ -2236,6 +2240,14 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		B84A897B25DE0F3E0040017D /* Device Linking */ = {
+			isa = PBXGroup;
+			children = (
+				B84A897C25DE0F4D0040017D /* LinkDeviceVC.swift */,
+			);
+			path = "Device Linking";
+			sourceTree = "<group>";
+		};
 		B8A582AB258C64E800AFD84C /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -2446,6 +2458,7 @@
 				C32C5ADE256DBF7F003C73A2 /* Read Tracking */,
 				C32C5995256DAF85003C73A2 /* Typing Indicators */,
 				C3471FA32555439E00297E91 /* Notification+MessageSender.swift */,
+				B84A898625DE1EE90040017D /* Notification+MessageReceiver.swift */,
 				C300A5F12554B09800555489 /* MessageSender.swift */,
 				C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */,
 				B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */,
@@ -3668,6 +3681,7 @@
 				C36096AE25AD1909008B62B2 /* Conversations */,
 				C32C5D49256DD522003C73A2 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
+				B84A897B25DE0F3E0040017D /* Device Linking */,
 				C360968E25AD16E8008B62B2 /* Home */,
 				C36096BA25AD1B14008B62B2 /* Media Viewing & Editing */,
 				C36096BB25AD1BBB008B62B2 /* Notifications */,
@@ -4906,6 +4920,7 @@
 				C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */,
 				B8856D34256F1192001CE70E /* Environment.m in Sources */,
 				B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */,
+				B84A898725DE1EE90040017D /* Notification+MessageReceiver.swift in Sources */,
 				C32C5AB1256DBE8F003C73A2 /* TSIncomingMessage.m in Sources */,
 				C3A3A107256E1A5C004D228D /* OWSDisappearingMessagesFinder.m in Sources */,
 				C32C59C3256DB41F003C73A2 /* TSGroupModel.m in Sources */,
@@ -5024,6 +5039,7 @@
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */,
+				B84A897D25DE0F4D0040017D /* LinkDeviceVC.swift in Sources */,
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
 				3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */,
