@@ -59,6 +59,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         return result
     }()
     
+    private lazy var moderatorIconImageView = UIImageView(image: #imageLiteral(resourceName: "Crown"))
+    
     lazy var bubbleView: UIView = {
         let result = UIView()
         result.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
@@ -151,6 +153,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         profilePictureViewLeftConstraint.isActive = true
         profilePictureViewWidthConstraint.isActive = true
         profilePictureView.pin(.bottom, to: .bottom, of: self, withInset: -1)
+        // Moderator icon image view
+        moderatorIconImageView.set(.width, to: 20)
+        moderatorIconImageView.set(.height, to: 20)
+        addSubview(moderatorIconImageView)
+        moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView, withInset: 1)
+        moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 4.5)
         // Bubble view
         addSubview(bubbleView)
         bubbleViewLeftConstraint1.isActive = true
@@ -201,6 +209,13 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         profilePictureView.isHidden = !VisibleMessageCell.shouldShowProfilePicture(for: viewItem)
         if let senderSessionID = senderSessionID {
             profilePictureView.update(for: senderSessionID)
+        }
+        if let thread = thread as? TSGroupThread, thread.isOpenGroup,
+            let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!), let senderSessionID = senderSessionID {
+            let isUserModerator = OpenGroupAPI.isUserModerator(senderSessionID, for: openGroup.channel, on: openGroup.server)
+            moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
+        } else {
+            moderatorIconImageView.isHidden = true
         }
         // Bubble view
         bubbleViewLeftConstraint1.isActive = (direction == .incoming)
@@ -542,8 +557,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
             .foregroundColor : textColor,
             .font : UIFont.systemFont(ofSize: getFontSize(for: viewItem))
         ]
-        var attributedText = NSMutableAttributedString(attributedString: MentionUtilities.highlightMentions(in: message.body ?? "", isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes))
-        
+        let attributedText = NSMutableAttributedString(attributedString: MentionUtilities.highlightMentions(in: message.body ?? "", isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes))
         if let searchText = searchText, searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
             let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
             do {
@@ -555,7 +569,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
                     attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
                 }
             } catch {
-                
+                // Do nothing
             }
         }
         result.attributedText = attributedText

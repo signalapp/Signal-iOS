@@ -89,10 +89,7 @@ private extension MentionSelectionView {
         // MARK: Components
         private lazy var profilePictureView = ProfilePictureView()
 
-        private lazy var moderatorIconImageView: UIImageView = {
-            let result = UIImageView(image: #imageLiteral(resourceName: "Crown"))
-            return result
-        }()
+        private lazy var moderatorIconImageView = UIImageView(image: #imageLiteral(resourceName: "Crown"))
 
         private lazy var displayNameLabel: UILabel = {
             let result = UILabel()
