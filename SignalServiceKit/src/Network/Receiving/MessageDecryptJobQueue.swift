@@ -166,11 +166,15 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                 return
             }
 
-            messageDecrypter.decryptEnvelope(
-                try SSKProtoEnvelope(serializedData: envelopeData),
-                envelopeData: envelopeData,
-                successBlock: hanndleResult(_:transaction:)
-            ) {
+            let envelope = try SSKProtoEnvelope(serializedData: envelopeData)
+
+            // It's important to calculate this with the *encrypted* envelope,
+            // because after decryption the source will always be filled in.
+            let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
+
+            messageDecrypter.decryptEnvelope(envelope, envelopeData: envelopeData) { result, transaction in
+                self.handleResult(result, wasReceivedByUD: wasReceivedByUD, transaction: transaction)
+            } failureBlock: {
                 // TODO: failureBlock should propagate specific error.
                 self.reportError(SSKMessageDecryptOperationError.unspecifiedError)
             }
@@ -179,7 +183,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
         }
     }
 
-    private func hanndleResult(_ result: OWSMessageDecryptResult, transaction: SDSAnyWriteTransaction) {
+    private func handleResult(_ result: OWSMessageDecryptResult, wasReceivedByUD: Bool, transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!Thread.isMainThread)
 
         let envelope: SSKProtoEnvelope
@@ -189,7 +193,8 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             envelope = try SSKProtoEnvelope(serializedData: result.envelopeData)
         } catch {
             owsFailDebug("Failed to parse decrypted envelope \(error)")
-            DispatchQueue.global().async {
+
+            transaction.addAsyncCompletionOffMain {
                 self.reportError(error.asUnretryableError)
             }
             return
@@ -209,7 +214,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                 envelopeData: result.envelopeData,
                 plaintextData: result.plaintextData,
                 envelope: envelope,
-                wasReceivedByUD: wasReceivedByUD(envelope: envelope),
+                wasReceivedByUD: wasReceivedByUD,
                 serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
                 transaction: transaction
             )
@@ -230,13 +235,15 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             SSKEnvironment.shared.messageManager.processEnvelope(
                 envelope,
                 plaintextData: result.plaintextData,
-                wasReceivedByUD: wasReceivedByUD(envelope: envelope),
+                wasReceivedByUD: wasReceivedByUD,
                 serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
                 transaction: transaction
             )
         }
 
-        DispatchQueue.global().async { self.reportSuccess() }
+        transaction.addAsyncCompletionOffMain {
+            self.reportSuccess()
+        }
     }
 
     override public func didSucceed() {
