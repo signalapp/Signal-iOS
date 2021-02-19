@@ -17,6 +17,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
     
     override var intrinsicContentSize: CGSize { CGSize.zero }
+    var lastSearchedText: String? { nil }
     
     // MARK: UI Components
     private lazy var cameraButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_black"), delegate: self)

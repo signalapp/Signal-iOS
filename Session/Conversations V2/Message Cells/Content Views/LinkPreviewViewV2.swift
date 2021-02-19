@@ -151,7 +151,7 @@ final class LinkPreviewViewV2 : UIView {
         // Body text view
         bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
         if let viewItem = viewItem {
-            let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: sentLinkPreviewTextColor, delegate: delegate)
+            let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: sentLinkPreviewTextColor, searchText: delegate.lastSearchedText, delegate: delegate)
             bodyTextViewContainer.addSubview(bodyTextView)
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
         }
@@ -168,6 +168,7 @@ final class LinkPreviewViewV2 : UIView {
 
 // MARK: Delegate
 protocol LinkPreviewViewV2Delegate : UITextViewDelegate & BodyTextViewDelegate {
+    var lastSearchedText: String? { get }
 
     func handleLinkPreviewCanceled()
 }

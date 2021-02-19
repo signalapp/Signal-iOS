@@ -50,6 +50,7 @@ class MessageCell : UITableViewCell {
 }
 
 protocol MessageCellDelegate {
+    var lastSearchedText: String? { get }
     
     func getMediaCache() -> NSCache<NSString, AnyObject>
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem)

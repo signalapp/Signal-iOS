@@ -25,6 +25,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         return result
     }()
 
+    var lastSearchedText: String? { delegate?.lastSearchedText }
+    
     private var positionInCluster: Position? {
         guard let viewItem = viewItem else { return nil }
         if viewItem.isFirstInCluster { return .top }
@@ -290,7 +292,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
                     stackView.addArrangedSubview(quoteViewContainer)
                 }
                 // Body text view
-                let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, delegate: self)
+                let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate?.lastSearchedText, delegate: self)
                 self.bodyTextView = bodyTextView
                 stackView.addArrangedSubview(bodyTextView)
                 // Constraints
@@ -531,7 +533,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
     
-    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
+    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, searchText: String?, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
         let isOutgoing = (message.interactionType() == .outgoingMessage)
         let result = BodyTextView(snDelegate: delegate)
@@ -540,7 +542,23 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
             .foregroundColor : textColor,
             .font : UIFont.systemFont(ofSize: getFontSize(for: viewItem))
         ]
-        result.attributedText = given(message.body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes) }
+        var attributedText = NSMutableAttributedString(attributedString: MentionUtilities.highlightMentions(in: message.body ?? "", isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes))
+        
+        if let searchText = searchText, searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
+            let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
+            do {
+                let regex = try NSRegularExpression(pattern: NSRegularExpression.escapedPattern(for: normalizedSearchText), options: .caseInsensitive)
+                let matches = regex.matches(in: attributedText.string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: (attributedText.string as NSString).length))
+                for match in matches {
+                    guard match.range.location + match.range.length < attributedText.length else { continue }
+                    attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: match.range)
+                    attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
+                }
+            } catch {
+                
+            }
+        }
+        result.attributedText = attributedText
         result.dataDetectorTypes = .link
         result.backgroundColor = .clear
         result.isOpaque = false

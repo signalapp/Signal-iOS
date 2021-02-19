@@ -7,13 +7,16 @@
 // • Photo rounding
 // • Disappearing messages timer
 // • Scroll button behind mentions view
-// • Remaining search bugs
+// • Remaining search glitchiness
+// • Brendan no likey buttons above text field
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
     let focusedMessageID: String?
     var didConstrainScrollButton = false
+    // Search
     var isShowingSearchUI = false
+    var lastSearchedText: String?
     // Audio playback & recording
     var audioPlayer: OWSAudioPlayer?
     var audioRecorder: AVAudioRecorder?
@@ -60,6 +63,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     lazy var searchController: ConversationSearchController = {
         let result = ConversationSearchController(thread: thread)
         result.delegate = self
+        if #available(iOS 13, *) {
+            result.uiSearchController.obscuresBackgroundDuringPresentation = false
+        } else {
+            result.uiSearchController.dimsBackgroundDuringPresentation = false
+        }
         return result
     }()
     
@@ -469,6 +477,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let navBar = navigationController!.navigationBar as! OWSNavigationBar
         navBar.stubbedNextResponder = nil
         becomeFirstResponder()
+        reloadInputViews()
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
@@ -476,6 +485,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
+        lastSearchedText = resultSet?.searchText
         messagesTableView.reloadRows(at: messagesTableView.indexPathsForVisibleRows ?? [], with: UITableView.RowAnimation.none)
     }
     
