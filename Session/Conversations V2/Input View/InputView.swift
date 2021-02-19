@@ -155,8 +155,6 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     private func autoGenerateLinkPreviewIfPossible() {
-        additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
-        quoteDraftInfo = nil
         // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
@@ -180,6 +178,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         }
         // Guard against obsolete updates
         guard linkPreviewURL != self.linkPreviewInfo?.url else { return }
+        // Clear content container
+        additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
+        quoteDraftInfo = nil
         // Set the state to loading
         linkPreviewInfo = (url: linkPreviewURL, draft: nil)
         linkPreviewView.linkPreviewState = LinkPreviewLoading()
