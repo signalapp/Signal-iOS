@@ -1067,43 +1067,43 @@
 "DEBUG_LOG_ALERT_TITLE" = "خطوة أخيرة";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "تم نسخ رابط المُحتوى في الحافظة الخاصة بك. أنت على وشك إعادة توجيهك إلى قائمة المشاكل على موقع GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "تمَّ نَسخ رابط المُحتوى في الحافِظة الخاصة بِك. أنتَ على وَشَك إعادَة تَوجيهك إلى قائمَة المَشاكِل عَلى مَوقِع GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "إعادة التوجيه إلى GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل التصحيح";
+"DEBUG_LOG_INFO_BUTTON" = "مَعلُومات عَن سِجل التَصحيح";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف جميع الرسائل في المُحادثة؟";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "احذف جميع الرسائل";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "حَذف جَميع الرَّسائل";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "احذف عدد %ld رسالة؟";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "حَذف عَدَد %ld رِسالة؟";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "حذف الرسالة؟";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "حذف الرِّسالة؟";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "أعد تسجيل رقم الهاتف المعنيّ";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "لم يعُد الجهاز مُسجلاً. قد يكون رقم هاتفك مُسجلاً بواسطة Signal في جهاز آخر. انقر لإعادة التسجيل.";
+"DEREGISTRATION_WARNING" = "لم يعُد الجِّهاز مُسَجلاً. قَد يَكُونُ رَقم هاتفَك مُسجلاً بِواسِطَة Signal في جِهاز آخر. اُنقُر لإعادَة التَّسجيل.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخر نشاط: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخرُ نَشاط: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "مرتبط: %@";
+"DEVICE_LINKED_AT_LABEL" = "مُرتَبِط: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "فشل تحديث قائمة الأجهزة";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "إيقاف الإنتقال";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "إيقافُ النَّقل";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "سيؤدي إغلاق هذه النافذة إلى إيقاف عملية النقل الجارية، هل انت متأكد انك تريد المتابعة؟";
@@ -1115,10 +1115,10 @@
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "إذا كان جهازك الـiOS القديم متاحاً، يمكنك نقل حسابك والرسائل بأمان إلى هذا الجهاز.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كنت تستخدم Signal مُسبقًا على جهاز iPad مُرتبط، يمكنك نقل حسابك والرسائل إلى هذا الجهاز بشكل آمن.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كُنتَ تَستخدِم Signal مُسبقًا عَلى جِهاز iPad مُرتَبِط، يُمكِنُكَ نَقل حِسابك وَالرَّسائِل إلى هَذَا الجِهاز بِشَكل آمن.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "استمر بدون نقل حسابك ورسائلك";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "الاِستِمر دُونَ نَقل حِسابَك وَرَسائِلك";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "أضف هذا الـiPad كجهاز مُرتبط جديد دون نقل سجل الرسائل";
@@ -1148,13 +1148,13 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يُعطل Signal على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذّر التحقق من جهازك الجديد، من فضلك حاول مُجددًا";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذَّر التَّحقُّق مِن جِهازك الجَديد، مِن فَضلِك حاوِل مُجددًا";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "يتعذّر إكتمال عملية النقل، من فضلك احرص على أن تكون أجهزتك بالقرب من بعضها البعض ثم حاول مُجددًا.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "يتعذَّر إكتِمال عَمليِّة النَقل، مِن فَضلِك احرص على أن تكون أجهزتكَ بالقُرب مِن بَعضِها البَعض ثمَّ حاوِل مُجددًا.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "لإعداد جهاز الـiPad هذا كجهاز مُرتبط، يجب مسح الرمز باستخدام جهاز iPad القديم";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "لإعداد جِهاز الـiPad هَذَا كَجِهاز مُرتبِط، يَجب مَسح الرَّمز باستخدام جِهاز iPad القديم";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "لنقل حسابك، يجب مسح الرمز باستخدام الـiPhone الخاص بك";
@@ -1172,13 +1172,13 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "نقل الحساب";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "افتح Signal على جهازك القديم، ضعه بمكان قريب، وتأكد من تمكين الـWi-Fi و البلوتوث في كلا الجهازين.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "افتَح Signal عَلى جِهازك القَديم، ضَعه بِمَكان قَريب، وتأكَّد مِن تَمكيِّن الـWi-Fi والبلوتوث في كِلا الجِهازين.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ضع رمز الاستجابة السريعة في إطار جهازك الآخر.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "مَوضِع رَمز الاِستجابة السَريعة في إطار جِهازك الآخر.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ألا يظهر التنبيه الفوري في جهازك القديم؟";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ألا يظهر التَنبيه الفَوري في جِهازك القديم؟";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر ...";
@@ -1262,7 +1262,7 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخراً، أصبحتُ استخدم Signal على الـiPhone الخاص بي لجعل مُحادثاتي خُصوصية. أودُ لو تُثبّته أنت كذلك، حتى نتأكد معاً أننا الوحيدان اللذان يُمكنهما قراءة رسائلنا أو سماع مُكالماتنا.\n\nSignal مُتاح للآيفون و للأندرويد. احصل عليه من هُنا: %@\n\nيعمل Signal مثل تطبيق تراسلك الحالي. نستطيع إرسال الصور والفيديوهات, إجراء مُكالمات, وبدء مُحادثة جماعية. أفضل شيء فيه هو أن لا أحد آخر قادر على رؤية أي شيء من ذلك، بما في ذلك مُصمِمّو Signal عينهم\n\nتستطيع قراءة المزيد عن Open Whisper Systems، مُصمّمو Signal، هنا: %@";
+"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ اَستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل مُحادَثاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصُل عَليه مِن هُنا: %@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُّوَر والمَقاطِع المَرئية, إجراءُ مُكالمات, وبدءُ مُحادثة جَماعية. أفضلُ شيء فيه هُو أنَّ لا أحد آخَر قادِر عَلى رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لننتقل إلى Signal";
@@ -1355,7 +1355,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "إجابة غير صالحة من الخدمة.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "لم يعُد هذا الجهاز مُسجلاً مع رقم هاتفك. يُرجى إعادة تثبيت Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "لم يعُد هَذَا الجِهاز مُسجلاً مَع رَقم هاتفك. يُرجى إعادَة تَثبيت Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "خلل في الخادم، الرجاء تكرار المحاولة لاحقاً.";
@@ -1661,7 +1661,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "أنت (في جهاز آخر)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "افتح مجموعة جديدة لبدء مُكالمة جماعية مجانية ومُعمَّاة";
+"GROUP_CALLS_MEGAPHONE_BODY" = "افتح مجموعة جديدة لبدء مُكالمة جماعية مجانية ومُعمّاة";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "تقديم مكالمات المجموعة";
@@ -1955,7 +1955,7 @@
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "عضو قد أضافك إلى المجموعة.";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "مُشرف";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "مُشرِف";
 
 /* The 'group member count' indicator when there are no members in the group. */
 "GROUP_MEMBER_COUNT_LABEL_0" = "لا يوجد أعضاء";
@@ -1982,7 +1982,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "الأعضاء";
 
 /* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "رسالة";
+"GROUP_MEMBERS_SEND_MESSAGE" = "رِسالَة";
 
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "اتصال فيديو";
@@ -2534,7 +2534,7 @@
 "KEEP_MESSAGES_DURATION" = "الرسائل ستختفي بعد %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "الرسائل لا تختفي.";
+"KEEP_MESSAGES_FOREVER" = "الرَّسائل لا تَختَفي.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
@@ -2675,10 +2675,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "مكتبة الصور";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "حذف عدد %d رسالة";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "حَذف عَدَد %d رِسالَة";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "حذف الرسالة";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "حَذف الرِّسالة";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "عدد %@ صورة";
@@ -3518,7 +3518,7 @@
 "PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
@@ -3611,7 +3611,7 @@
 "PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "الـPIN يُبقي المعلومات المحفوظة مع Signal بشكل مُعمَّى";
+"PINS_MEGAPHONE_BODY" = "الـPIN يُبقي المعلومات المحفوظة مع Signal بشكل مُعمّى";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "سنُذكرك لاحقًا. سيُصبح إنشاء PIN إلزاميًا في غُضون عدد %ld يوم.";
@@ -3686,7 +3686,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "مُحِبٌ لِلقهوَة";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمَّـى";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمّى";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "مُتفرِّغٌ لِلمُحادَثة";
@@ -3752,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث ملفك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ملفُّك الشَّخصيّ مُعمَّى مِنَ النِهاية إلى النِهاية. إنَّ ملفُّك الشَّخصيّ وأي تغييرات تطرأ عليه ستكون مرئية لِجهات إتصالك وعندما تبدأ أو تقبل مُحادثة جديدة.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ملفُّك الشَّخصيّ مُعمّى مِنَ النِهاية إلى النِهاية. إنَّ ملفُّك الشَّخصيّ وأي تغييرات تطرأ عليه ستكون مرئية لِجهات إتصالك وعندما تبدأ أو تقبل مُحادثة جديدة.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -4046,10 +4046,10 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فوراً";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "تعذّر الوصل إلى المُصادقة.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "تعذَّر الوصُل إلى المُصادقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادقة.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادَقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "إن عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى مُعاودة المُحاولة في وقت لاحق.";
@@ -4064,10 +4064,10 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قم بالمُصادقة لفتح Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "صَادِق  لِفَتح Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادقة.";
+"SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "فَك قفل Signal";
@@ -4625,7 +4625,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات الـPIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت Signal.";
+"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "تغيير الـPIN الخاص بك";
@@ -5105,7 +5105,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "تعرَّف على المزيد حَول الـPIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمَّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نُقدِّم لكُم الـPIN";

@@ -2867,7 +2867,7 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Видалити";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Продовжити спілкування з %@ та поділитись іменем та фотографією?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Продовжувати спілкуватися з цією групою та ділитися своїм ім’ям та фото з її учасниками?";
