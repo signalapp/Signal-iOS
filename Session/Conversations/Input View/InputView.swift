@@ -1,14 +1,14 @@
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewV2Delegate, MentionSelectionViewDelegate {
+final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
     private let delegate: InputViewDelegate
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
     private var voiceMessageRecordingView: VoiceMessageRecordingView?
     private lazy var mentionsViewHeightConstraint = mentionsView.set(.height, to: 0)
 
-    private lazy var linkPreviewView: LinkPreviewViewV2 = {
+    private lazy var linkPreviewView: LinkPreviewView = {
         let maxWidth = self.additionalContentContainer.bounds.width - InputView.linkPreviewViewInset
-        return LinkPreviewViewV2(for: nil, maxWidth: maxWidth, delegate: self)
+        return LinkPreviewView(for: nil, maxWidth: maxWidth, delegate: self)
     }()
 
     var text: String {

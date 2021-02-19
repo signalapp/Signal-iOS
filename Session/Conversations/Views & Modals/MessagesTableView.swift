@@ -30,7 +30,7 @@ final class MessagesTableView : UITableView {
     private func initialize() {
         register(VisibleMessageCell.self, forCellReuseIdentifier: VisibleMessageCell.identifier)
         register(InfoMessageCell.self, forCellReuseIdentifier: InfoMessageCell.identifier)
-        register(TypingIndicatorCellV2.self, forCellReuseIdentifier: TypingIndicatorCellV2.identifier)
+        register(TypingIndicatorCell.self, forCellReuseIdentifier: TypingIndicatorCell.identifier)
         separatorStyle = .none
         backgroundColor = .clear
         showsVerticalScrollIndicator = false

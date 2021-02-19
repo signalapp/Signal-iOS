@@ -1,9 +1,9 @@
 import NVActivityIndicatorView
 
-final class LinkPreviewViewV2 : UIView {
+final class LinkPreviewView : UIView {
     private let viewItem: ConversationViewItem?
     private let maxWidth: CGFloat
-    private let delegate: LinkPreviewViewV2Delegate
+    private let delegate: LinkPreviewViewDelegate
     var linkPreviewState: LinkPreviewState? { didSet { update() } }
     private lazy var imageViewContainerWidthConstraint = imageView.set(.width, to: 100)
     private lazy var imageViewContainerHeightConstraint = imageView.set(.height, to: 100)
@@ -51,7 +51,7 @@ final class LinkPreviewViewV2 : UIView {
         let result = UIButton(type: .custom)
         let tint: UIColor = isLightMode ? .black : .white
         result.setImage(UIImage(named: "X")?.withTint(tint), for: UIControl.State.normal)
-        let cancelButtonSize = LinkPreviewViewV2.cancelButtonSize
+        let cancelButtonSize = LinkPreviewView.cancelButtonSize
         result.set(.width, to: cancelButtonSize)
         result.set(.height, to: cancelButtonSize)
         result.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
@@ -63,7 +63,7 @@ final class LinkPreviewViewV2 : UIView {
     private static let cancelButtonSize: CGFloat = 45
 
     // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, delegate: LinkPreviewViewV2Delegate) {
+    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, delegate: LinkPreviewViewDelegate) {
         self.viewItem = viewItem
         self.maxWidth = maxWidth
         self.delegate = delegate
@@ -103,7 +103,7 @@ final class LinkPreviewViewV2 : UIView {
         vStackView.pin(to: self)
         // Loader
         addSubview(loader)
-        let loaderSize = LinkPreviewViewV2.loaderSize
+        let loaderSize = LinkPreviewView.loaderSize
         loader.set(.width, to: loaderSize)
         loader.set(.height, to: loaderSize)
         loader.center(in: self)
@@ -167,7 +167,7 @@ final class LinkPreviewViewV2 : UIView {
 }
 
 // MARK: Delegate
-protocol LinkPreviewViewV2Delegate : UITextViewDelegate & BodyTextViewDelegate {
+protocol LinkPreviewViewDelegate : UITextViewDelegate & BodyTextViewDelegate {
     var lastSearchedText: String? { get }
 
     func handleLinkPreviewCanceled()

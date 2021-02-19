@@ -1,5 +1,5 @@
 
-final class ConversationTitleViewV2 : UIView {
+final class ConversationTitleView : UIView {
     private let thread: TSThread
 
     override var intrinsicContentSize: CGSize {

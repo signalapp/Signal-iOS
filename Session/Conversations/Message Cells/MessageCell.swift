@@ -42,7 +42,7 @@ class MessageCell : UITableViewCell {
         case is TSIncomingMessage: fallthrough
         case is TSOutgoingMessage: return VisibleMessageCell.self
         case is TSInfoMessage: return InfoMessageCell.self
-        case is TypingIndicatorInteraction: return TypingIndicatorCellV2.self
+        case is TypingIndicatorInteraction: return TypingIndicatorCell.self
         default: preconditionFailure()
         }
     }

@@ -3,7 +3,7 @@
 // • We'll never encounter an outgoing typing indicator.
 // • Typing indicators are only sent in contact threads.
 
-final class TypingIndicatorCellV2 : MessageCell {
+final class TypingIndicatorCell : MessageCell {
 
     private var positionInCluster: Position? {
         guard let viewItem = viewItem else { return nil }

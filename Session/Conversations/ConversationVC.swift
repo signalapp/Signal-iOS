@@ -69,7 +69,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
     
     // MARK: UI Components
-    lazy var titleView = ConversationTitleViewV2(thread: thread)
+    lazy var titleView = ConversationTitleView(thread: thread)
 
     lazy var messagesTableView: MessagesTableView = {
         let result = MessagesTableView()

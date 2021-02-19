@@ -31,7 +31,7 @@ public class ConversationSearchController : NSObject {
     let thread: TSThread
 
     @objc
-    public let resultsBar: SearchResultsBarV2 = SearchResultsBarV2()
+    public let resultsBar: SearchResultsBar = SearchResultsBar()
 
     // MARK: Initializer
 
@@ -113,7 +113,7 @@ extension ConversationSearchController : UISearchResultsUpdating {
 
 extension ConversationSearchController : SearchResultsBarDelegate {
     
-    func searchResultsBar(_ searchResultsBar: SearchResultsBarV2,
+    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
                           setCurrentIndex currentIndex: Int,
                           resultSet: ConversationScreenSearchResultSet) {
         guard let searchResult = resultSet.messages[safe: currentIndex] else {
@@ -128,12 +128,12 @@ extension ConversationSearchController : SearchResultsBarDelegate {
 
 protocol SearchResultsBarDelegate : AnyObject {
     
-    func searchResultsBar(_ searchResultsBar: SearchResultsBarV2,
+    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
                           setCurrentIndex currentIndex: Int,
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public final class SearchResultsBarV2 : UIView {
+public final class SearchResultsBar : UIView {
     private var resultSet: ConversationScreenSearchResultSet?
     var currentIndex: Int?
     weak var resultsBarDelegate: SearchResultsBarDelegate?

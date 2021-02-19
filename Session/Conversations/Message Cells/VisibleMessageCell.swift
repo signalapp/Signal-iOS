@@ -1,5 +1,5 @@
 
-final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
+final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var unloadContent: (() -> Void)?
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
@@ -305,7 +305,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
             let inset: CGFloat = 12
             let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if let linkPreview = viewItem.linkPreview {
-                let linkPreviewView = LinkPreviewViewV2(for: viewItem, maxWidth: maxWidth, delegate: self)
+                let linkPreviewView = LinkPreviewView(for: viewItem, maxWidth: maxWidth, delegate: self)
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
@@ -351,7 +351,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
             }
             unloadContent = { albumView.unloadMedia() }
         case .audio:
-            let voiceMessageView = VoiceMessageViewV2(viewItem: viewItem)
+            let voiceMessageView = VoiceMessageView(viewItem: viewItem)
             snContentView.addSubview(voiceMessageView)
             voiceMessageView.pin(to: snContentView)
             viewItem.lastAudioMessageView = voiceMessageView

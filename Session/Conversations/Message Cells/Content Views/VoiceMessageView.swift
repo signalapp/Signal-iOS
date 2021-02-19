@@ -1,13 +1,13 @@
 import NVActivityIndicatorView
 
 @objc(SNVoiceMessageView)
-public final class VoiceMessageViewV2 : UIView {
+public final class VoiceMessageView : UIView {
     private let viewItem: ConversationViewItem
     private var isShowingSpeedUpLabel = false
     @objc var progress: Int = 0 { didSet { handleProgressChanged() } }
     @objc var isPlaying = false { didSet { handleIsPlayingChanged() } }
 
-    private lazy var progressViewRightConstraint = progressView.pin(.right, to: .right, of: self, withInset: -VoiceMessageViewV2.width)
+    private lazy var progressViewRightConstraint = progressView.pin(.right, to: .right, of: self, withInset: -VoiceMessageView.width)
 
     private var attachment: TSAttachment? { viewItem.attachmentStream ?? viewItem.attachmentPointer }
     private var duration: Int { Int(viewItem.audioDurationSeconds) }
@@ -29,8 +29,8 @@ public final class VoiceMessageViewV2 : UIView {
 
     private lazy var loader: NVActivityIndicatorView = {
         let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
-        result.set(.width, to: VoiceMessageViewV2.toggleContainerSize + 2)
-        result.set(.height, to: VoiceMessageViewV2.toggleContainerSize + 2)
+        result.set(.width, to: VoiceMessageView.toggleContainerSize + 2)
+        result.set(.height, to: VoiceMessageView.toggleContainerSize + 2)
         return result
     }()
 
@@ -38,7 +38,7 @@ public final class VoiceMessageViewV2 : UIView {
         let result = UIView()
         result.backgroundColor = .white
         result.layer.masksToBounds = true
-        result.set(.height, to: VoiceMessageViewV2.toggleContainerSize)
+        result.set(.height, to: VoiceMessageView.toggleContainerSize)
         result.set(.width, to: 44)
         return result
     }()
@@ -84,10 +84,10 @@ public final class VoiceMessageViewV2 : UIView {
     }
 
     private func setUpViewHierarchy() {
-        let toggleContainerSize = VoiceMessageViewV2.toggleContainerSize
-        let inset = VoiceMessageViewV2.inset
+        let toggleContainerSize = VoiceMessageView.toggleContainerSize
+        let inset = VoiceMessageView.inset
         // Width & height
-        set(.width, to: VoiceMessageViewV2.width)
+        set(.width, to: VoiceMessageView.width)
         // Toggle
         let toggleContainer = UIView()
         toggleContainer.backgroundColor = .white
@@ -146,7 +146,7 @@ public final class VoiceMessageViewV2 : UIView {
         countdownLabel.text = OWSFormat.formatDurationSeconds(duration - progress)
         guard viewItem.audioProgressSeconds > 0 && viewItem.audioDurationSeconds > 0 else { return }
         let fraction = viewItem.audioProgressSeconds / viewItem.audioDurationSeconds
-        progressViewRightConstraint.constant = -(VoiceMessageViewV2.width * (1 - fraction))
+        progressViewRightConstraint.constant = -(VoiceMessageView.width * (1 - fraction))
     }
 
     func showSpeedUpLabel() {
