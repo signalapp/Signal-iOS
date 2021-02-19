@@ -3,7 +3,7 @@
 // https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
 // more information on database handling.
 
-final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
@@ -124,10 +124,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         view.addSubview(newConversationButtonSet)
         newConversationButtonSet.center(.horizontal, in: view)
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
-        // Previewing
-        if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: tableView)
-        }
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
@@ -295,21 +291,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         present(navigationController, animated: true, completion: nil)
     }
     
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let indexPath = tableView.indexPathForRow(at: location), let thread = self.thread(at: indexPath.row) else { return nil }
-        previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
-        let conversationVC = ConversationViewController()
-        conversationVC.configure(for: thread, action: .none, focusMessageId: nil)
-        conversationVC.peekSetup()
-        return conversationVC
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        guard let conversationVC = viewControllerToCommit as? ConversationViewController else { return }
-        conversationVC.popped()
-        navigationController?.pushViewController(conversationVC, animated: false)
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let thread = self.thread(at: indexPath.row) else { return }
         show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
@@ -321,15 +302,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
             if let presentedVC = self.presentedViewController {
                 presentedVC.dismiss(animated: false, completion: nil)
             }
-            let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
-            if displayName == "Brendan" && 0.4 < Double.random(in: 0...1) { // Show Brendan the old screen approx 1 out of 5 times to mess with him
-                let conversationVC = ConversationViewController()
-                conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
-                self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
-            } else {
-                let conversationVC = ConversationVC(thread: thread)
-                self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
-            }
+            let conversationVC = ConversationVC(thread: thread)
+            self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
         }
     }
     

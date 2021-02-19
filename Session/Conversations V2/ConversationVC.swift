@@ -35,7 +35,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
-    func conversationStyle() -> ConversationStyle { return ConversationStyle(thread: thread) }
     override var inputAccessoryView: UIView? { isShowingSearchUI ? searchController.resultsBar : snInputView }
     override var canBecomeFirstResponder: Bool { true }
 
@@ -175,7 +174,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let viewItem = viewItems[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.getCellType(for: viewItem).identifier) as! MessageCell
         cell.delegate = self
-        cell.conversationStyle = conversationStyle()
         cell.viewItem = viewItem
         return cell
     }

@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "ConversationViewLayout.h"
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -54,14 +53,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
 
-// This is a ViewModel for cells in the conversation view.
-//
-// The lifetime of this class is the lifetime of that cell
-// in the load window of the conversation view.
-//
-// Critically, this class implements ConversationViewLayoutItem
-// and does caching of the cell's size.
-@protocol ConversationViewItem <NSObject, ConversationViewLayoutItem, OWSAudioPlayerDelegate>
+@protocol ConversationViewItem <NSObject, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 
@@ -90,9 +82,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL wasPreviousItemInfoMessage;
 
 @property (nonatomic, nullable) OWSUnreadIndicator *unreadIndicator;
-
-- (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
-                                             indexPath:(NSIndexPath *)indexPath;
 
 - (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction;
 
@@ -161,13 +150,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 #pragma mark -
 
 @interface ConversationInteractionViewItem
-    : NSObject <ConversationViewItem, ConversationViewLayoutItem, OWSAudioPlayerDelegate>
+    : NSObject <ConversationViewItem, OWSAudioPlayerDelegate>
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction
-                  conversationStyle:(ConversationStyle *)conversationStyle;
+                        transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

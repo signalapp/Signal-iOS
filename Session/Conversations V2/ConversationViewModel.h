@@ -87,8 +87,6 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 // to prod the view to reset its scroll state, etc.
 - (void)conversationViewModelDidReset;
 
-- (ConversationStyle *)conversationStyle;
-
 @end
 
 #pragma mark -

@@ -3,7 +3,6 @@
 //
 
 #import "OWSMessageTimerView.h"
-#import "ConversationViewController.h"
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"

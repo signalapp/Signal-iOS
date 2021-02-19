@@ -247,7 +247,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
 
     private func commitChanges() {
         let popToConversationVC: (EditClosedGroupVC) -> Void = { editVC in
-            if let conversationVC = editVC.navigationController!.viewControllers.first(where: { $0 is ConversationViewController }) {
+            if let conversationVC = editVC.navigationController!.viewControllers.first(where: { $0 is ConversationVC }) {
                 editVC.navigationController!.popToViewController(conversationVC, animated: true)
             } else {
                 editVC.navigationController!.popViewController(animated: true)

@@ -5,7 +5,6 @@
 #import "ConversationViewModel.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
-#import "OWSMessageBubbleView.h"
 #import "OWSQuotedReplyModel.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -1042,7 +1041,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
-    ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     [self ensureConversationProfileState];
 
@@ -1055,8 +1053,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
                                                                             isGroupThread:isGroupThread
-                                                                              transaction:transaction
-                                                                        conversationStyle:conversationStyle];
+                                                                              transaction:transaction];
               }
               OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
               viewItemCache[interaction.uniqueId] = viewItem;

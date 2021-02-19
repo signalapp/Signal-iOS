@@ -454,7 +454,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         detailView.backgroundColor = .clear
         navigationController.view.backgroundColor = .clear
 
-        navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
+        navigationController.presentationView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
 
         fromViewController.present(navigationController, animated: false) {
 
@@ -635,7 +635,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                             if changedItems {
                                 self.navigationController.presentationView.alpha = 0
                             } else {
-                                self.navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
+                                self.navigationController.presentationView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
                             }
             })
 
