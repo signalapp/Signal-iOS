@@ -1,6 +1,5 @@
 
 // TODO
-// • Tapping replies
 // • Disappearing messages timer
 // • Brendan no likey buttons above text field
 // • Slight paging glitch
@@ -492,7 +491,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         scrollToInteraction(with: interactionID)
     }
     
-    private func scrollToInteraction(with interactionID: String) {
+    func scrollToInteraction(with interactionID: String) {
         guard let indexPath = viewModel.ensureLoadWindowContainsInteractionId(interactionID) else { return }
         messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
     }

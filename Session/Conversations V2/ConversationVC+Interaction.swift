@@ -387,8 +387,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
                 navigationController!.present(shareVC, animated: true, completion: nil)
             case .textOnlyMessage:
-                guard let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) else { return }
-                openURL(url)
+                if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
+                    openURL(url)
+                } else if let reply = viewItem.quotedReply {
+                    guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
+                    messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
+                }
             default: break
             }
         }
