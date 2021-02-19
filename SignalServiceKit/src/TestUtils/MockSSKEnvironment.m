@@ -12,7 +12,6 @@
 #import "OWSFakeNetworkManager.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
-#import "OWSMessageDecrypter.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSOutgoingReceiptManager.h"

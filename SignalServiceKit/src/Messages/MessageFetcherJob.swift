@@ -188,21 +188,20 @@ public class MessageFetcherJob: NSObject {
         return firstly {
             fetchBatchViaRest()
         }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
-            for envelope in envelopes {
-                Logger.info("received envelope.")
-                do {
-                    let envelopeData = try envelope.serializedData()
-                    MessageProcessor.processEncryptedEnvelopeData(
-                        envelopeData,
-                        encryptedEnvelope: envelope,
-                        serverDeliveryTimestamp: serverDeliveryTimestamp
-                    ) { _ in
+
+            MessageProcessor.processEncryptedEnvelopes(
+                envelopes: envelopes.compactMap { envelope in
+                    do {
+                        let envelopeData = try envelope.serializedData()
+                        return (envelopeData, envelope, { _ in self.acknowledgeDelivery(envelope: envelope) })
+                    } catch {
+                        owsFailDebug("failed to serialize envelope")
                         self.acknowledgeDelivery(envelope: envelope)
+                        return nil
                     }
-                } catch {
-                    owsFailDebug("failed to serialize envelope")
-                }
-            }
+                },
+                serverDeliveryTimestamp: serverDeliveryTimestamp
+            )
 
             if more {
                 Logger.info("fetching more messages.")

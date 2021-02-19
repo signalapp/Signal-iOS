@@ -172,11 +172,16 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             // because after decryption the source will always be filled in.
             let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
 
-            messageDecrypter.decryptEnvelope(envelope, envelopeData: envelopeData) { result, transaction in
-                self.handleResult(result, wasReceivedByUD: wasReceivedByUD, transaction: transaction)
-            } failureBlock: {
-                // TODO: failureBlock should propagate specific error.
-                self.reportError(SSKMessageDecryptOperationError.unspecifiedError)
+            databaseStorage.write { transaction in
+                let result = self.messageDecrypter.decryptEnvelope(envelope, envelopeData: envelopeData, transaction: transaction)
+                switch result {
+                case .success(let result):
+                    self.handleResult(result, wasReceivedByUD: wasReceivedByUD, transaction: transaction)
+                case .failure(let error):
+                    transaction.addAsyncCompletionOffMain {
+                        self.reportError(withUndefinedRetry: error)
+                    }
+                }
             }
         } catch {
             reportError(withUndefinedRetry: error)

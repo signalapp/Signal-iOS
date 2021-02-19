@@ -118,9 +118,11 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         }
 
         startMeasuring()
-        for envelopeData in envelopeDatas {
-            MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0) { XCTAssertNil($0) }
-        }
+
+        MessageProcessor.processEncryptedEnvelopes(
+            envelopes: envelopeDatas.map { ($0, nil, { XCTAssertNil($0) }) },
+            serverDeliveryTimestamp: 0
+        )
 
         waitForExpectations(timeout: 15.0) { _ in
             self.stopMeasuring()

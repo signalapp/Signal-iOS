@@ -3,38 +3,45 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public class MessageProcessor: NSObject {
     private static let maxEnvelopeByteCount = 250 * 1024
     private static let largeEnvelopeWarningByteCount = 25 * 1024
-    private static let serialQueue = DispatchQueue(label: "MessageProcessor")
+    private static let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
 
-    @objc
-    public static func processEncryptedEnvelopeData(
-        _ encryptedEnvelopeData: Data,
-        encryptedEnvelope: SSKProtoEnvelope? = nil,
-        serverDeliveryTimestamp: UInt64,
-        completion: @escaping (Error?) -> Void
+    private struct PendingEnvelope {
+        let encryptedEnvelopeData: Data
+        let encryptedEnvelope: SSKProtoEnvelope
+        let serverDeliveryTimestamp: UInt64
+        let completion: (Error?) -> Void
+    }
+
+    private static let pendingEnvelopesLock = UnfairLock()
+    private static var pendingEnvelopes = [PendingEnvelope]()
+
+    public static func processEncryptedEnvelopes(
+        envelopes: [(encryptedEnvelopeData: Data, encryptedEnvelope: SSKProtoEnvelope?, completion: (Error?) -> Void)],
+        serverDeliveryTimestamp: UInt64
     ) {
-        serialQueue.async {
-            self._processEncryptedEnvelopeData(
-                encryptedEnvelopeData,
-                encryptedEnvelope: encryptedEnvelope,
+        for envelope in envelopes {
+            processEncryptedEnvelopeData(
+                envelope.encryptedEnvelopeData,
+                encryptedEnvelope: envelope.encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: completion
+                completion: envelope.completion
             )
         }
     }
 
-    public static func _processEncryptedEnvelopeData(
+    @objc
+    public static func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
         encryptedEnvelope optionalEncryptedEnvelope: SSKProtoEnvelope? = nil,
         serverDeliveryTimestamp: UInt64,
         completion: @escaping (Error?) -> Void
     ) {
-        assertOnQueue(serialQueue)
-
         guard !encryptedEnvelopeData.isEmpty else {
             completion(OWSAssertionError("Empty envelope."))
             return
@@ -67,24 +74,63 @@ public class MessageProcessor: NSObject {
             }
         }
 
-        // It's important to calculate this with the *encrypted* envelope,
-        // because after decryption the source will always be filled in.
-        let wasReceivedByUD = self.wasReceivedByUD(envelope: encryptedEnvelope)
+        pendingEnvelopesLock.withLock {
+            pendingEnvelopes.append(PendingEnvelope(
+                encryptedEnvelopeData: encryptedEnvelopeData,
+                encryptedEnvelope: encryptedEnvelope,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                completion: completion
+            ))
+        }
 
-        SSKEnvironment.shared.messageDecrypter.decryptEnvelope(
-            encryptedEnvelope,
-            envelopeData: encryptedEnvelopeData
-        ) { result, transaction in
-            owsAssertDebug(!Thread.isMainThread)
+        serialQueue.async { self.parseEnvelopes() }
+    }
 
+    public static func parseEnvelopes() {
+        assertOnQueue(serialQueue)
+
+        let batchSize = 5
+        let batchEnvelopes = pendingEnvelopesLock.withLock {
+            pendingEnvelopes.prefix(batchSize)
+        }
+
+        guard !batchEnvelopes.isEmpty else { return }
+
+        SDSDatabaseStorage.shared.write { transaction in
+            for pendingEnvelope in batchEnvelopes {
+                self.parseEnvelope(pendingEnvelope, transaction: transaction)
+            }
+
+            // Remove the processed envelopes from the pending list.
+            pendingEnvelopesLock.withLock {
+                guard pendingEnvelopes.count > batchEnvelopes.count else {
+                    pendingEnvelopes = []
+                    return
+                }
+                pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            }
+        }
+    }
+
+    private static func parseEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {
+        assertOnQueue(serialQueue)
+
+        let result = SSKEnvironment.shared.messageDecrypter.decryptEnvelope(
+            pendingEnvelope.encryptedEnvelope,
+            envelopeData: pendingEnvelope.encryptedEnvelopeData,
+            transaction: transaction
+        )
+
+        switch result {
+        case .success(let result):
             let envelope: SSKProtoEnvelope
             do {
-                // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
+                // NOTE: We use envelopeData from the decrypt result, not the pending envelope,
                 // since the envelope may be altered by the decryption process in the UD case.
                 envelope = try SSKProtoEnvelope(serializedData: result.envelopeData)
             } catch {
                 owsFailDebug("Failed to parse decrypted envelope \(error)")
-                transaction.addAsyncCompletionOffMain { completion(error) }
+                transaction.addAsyncCompletionOffMain { pendingEnvelope.completion(error) }
                 return
             }
 
@@ -102,8 +148,8 @@ public class MessageProcessor: NSObject {
                     envelopeData: result.envelopeData,
                     plaintextData: result.plaintextData,
                     envelope: envelope,
-                    wasReceivedByUD: wasReceivedByUD,
-                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    wasReceivedByUD: wasReceivedByUD(envelope: pendingEnvelope.encryptedEnvelope),
+                    serverDeliveryTimestamp: pendingEnvelope.serverDeliveryTimestamp,
                     transaction: transaction
                 )
             } else {
@@ -123,16 +169,17 @@ public class MessageProcessor: NSObject {
                 SSKEnvironment.shared.messageManager.processEnvelope(
                     envelope,
                     plaintextData: result.plaintextData,
-                    wasReceivedByUD: wasReceivedByUD,
-                    serverDeliveryTimestamp: serverDeliveryTimestamp,
+                    wasReceivedByUD: wasReceivedByUD(envelope: pendingEnvelope.encryptedEnvelope),
+                    serverDeliveryTimestamp: pendingEnvelope.serverDeliveryTimestamp,
                     transaction: transaction
                 )
             }
 
-            transaction.addAsyncCompletionOffMain { completion(nil) }
-        } failureBlock: {
-            // TODO: failureBlock should propagate specific error.
-            completion(SSKMessageDecryptOperationError.unspecifiedError)
+            transaction.addAsyncCompletionOffMain { pendingEnvelope.completion(nil) }
+        case .failure(let error):
+            transaction.addAsyncCompletionOffMain {
+                pendingEnvelope.completion(error)
+            }
         }
     }
 
