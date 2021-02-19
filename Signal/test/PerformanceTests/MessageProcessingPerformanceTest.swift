@@ -119,7 +119,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
         for envelopeData in envelopeDatas {
-            messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0)
+            MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0) { XCTAssertNil($0) }
         }
 
         waitForExpectations(timeout: 15.0) { _ in

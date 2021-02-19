@@ -802,7 +802,6 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
             [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(self.serialQueue, ^{
-            BOOL success = NO;
             @try {
                 BOOL useSignalingKey = NO;
                 uint64_t serverDeliveryTimestamp = 0;
@@ -838,28 +837,33 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
                 } else {
-                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload
-                                             serverDeliveryTimestamp:serverDeliveryTimestamp];
-                    success = YES;
+                    [MessageProcessor
+                        processEncryptedEnvelopeData:decryptedPayload
+                                   encryptedEnvelope:nil
+                             serverDeliveryTimestamp:serverDeliveryTimestamp
+                                          completion:^(NSError *error) {
+                                              if (error) {
+                                                  DatabaseStorageWrite(
+                                                      self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                                          ThreadlessErrorMessage *errorMessage =
+                                                              [ThreadlessErrorMessage corruptedMessageInUnknownThread];
+                                                          [self.notificationsManager
+                                                              notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                      transaction:transaction];
+                                                      });
+                                              }
+
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [self sendWebSocketMessageAcknowledgement:message];
+                                                  OWSAssertDebug(backgroundTask);
+                                                  backgroundTask = nil;
+                                              });
+                                          }];
                 }
             } @catch (NSException *exception) {
                 OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 // TODO: Add analytics.
             }
-
-            if (!success) {
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
-                    [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                       transaction:transaction];
-                });
-            }
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self sendWebSocketMessageAcknowledgement:message];
-                OWSAssertDebug(backgroundTask);
-                backgroundTask = nil;
-            });
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
         // Queue is drained.

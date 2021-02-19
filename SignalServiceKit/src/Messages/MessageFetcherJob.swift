@@ -192,14 +192,16 @@ public class MessageFetcherJob: NSObject {
                 Logger.info("received envelope.")
                 do {
                     let envelopeData = try envelope.serializedData()
-                    self.messageReceiver.handleReceivedEnvelopeData(
+                    MessageProcessor.processEncryptedEnvelopeData(
                         envelopeData,
+                        encryptedEnvelope: envelope,
                         serverDeliveryTimestamp: serverDeliveryTimestamp
-                    )
+                    ) { _ in
+                        self.acknowledgeDelivery(envelope: envelope)
+                    }
                 } catch {
                     owsFailDebug("failed to serialize envelope")
                 }
-                self.acknowledgeDelivery(envelope: envelope)
             }
 
             if more {

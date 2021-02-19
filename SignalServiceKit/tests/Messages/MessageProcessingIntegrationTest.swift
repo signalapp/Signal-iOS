@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -123,7 +123,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
+        MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }
@@ -175,7 +175,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
+        MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }
