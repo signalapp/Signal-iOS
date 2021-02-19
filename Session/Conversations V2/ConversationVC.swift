@@ -1,12 +1,12 @@
 
 // TODO
-// • Disappearing messages timer
 // • Brendan no likey buttons above text field
 // • Slight paging glitch
 // • Image detail VC transition glitch
 // • Photo rounding
 // • Scroll button behind mentions view
 // • Remaining search glitchiness
+// • Rethink disappearing messages timer positioning
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread

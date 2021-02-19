@@ -18,6 +18,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
     private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
+    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.right, to: .left, of: bubbleView, withInset: -Values.mediumSpacing)
+    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.left, to: .right, of: bubbleView, withInset: Values.mediumSpacing)
 
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
@@ -109,6 +111,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         return result
     }()
     
+    private lazy var timerView = OWSMessageTimerView()
+    
     // MARK: Settings
     private static let messageStatusImageViewSize: CGFloat = 16
     private static let authorLabelBottomSpacing: CGFloat = 4
@@ -164,6 +168,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         bubbleViewLeftConstraint1.isActive = true
         bubbleViewTopConstraint.isActive = true
         bubbleViewRightConstraint1.isActive = true
+        // Timer view
+        addSubview(timerView)
+        timerView.center(.vertical, in: bubbleView)
+        timerViewOutgoingMessageConstraint.isActive = true
         // Content view
         bubbleView.addSubview(snContentView)
         snContentView.pin(to: bubbleView)
@@ -255,6 +263,15 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         [ messageStatusImageViewWidthConstraint, messageStatusImageViewHeightConstraint ].forEach {
             $0.constant = (messageStatusImageView.isHidden) ? 0 : VisibleMessageCell.messageStatusImageViewSize
         }
+        // Timer
+        if viewItem.isExpiringMessage {
+            let expirationTimestamp = message.expiresAt
+            let expiresInSeconds = message.expiresInSeconds
+            timerView.configure(withExpirationTimestamp: expirationTimestamp, initialDurationSeconds: expiresInSeconds, tintColor: Colors.text)
+        }
+        timerView.isHidden = !viewItem.isExpiringMessage
+        timerViewOutgoingMessageConstraint.isActive = (direction == .outgoing)
+        timerViewIncomingMessageConstraint.isActive = (direction == .incoming)
     }
     
     private func populateHeader(for viewItem: ConversationViewItem) {
@@ -365,6 +382,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewV2Delegate {
         let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
         viewsToMove.forEach { $0.transform = .identity }
         replyButton.alpha = 0
+        timerView.prepareForReuse()
     }
     
     // MARK: Interaction

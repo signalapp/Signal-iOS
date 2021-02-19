@@ -2541,6 +2541,8 @@
 				340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */,
 				340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */,
 				B84A89BB25DE328A0040017D /* ProfilePictureVC.swift */,
+				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
+				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3009,8 +3011,6 @@
 				348570A620F67574004FF32B /* OWSMessageHeaderView.m */,
 				34DBF000206BD5A400025978 /* OWSMessageTextView.h */,
 				34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */,
-				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
-				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
 				34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */,
 				34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */,
 				34D1F0A51F867BFC0066283D /* OWSSystemMessageCell.h */,
