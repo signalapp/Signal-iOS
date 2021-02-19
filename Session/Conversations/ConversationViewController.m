@@ -587,8 +587,7 @@ typedef enum : NSUInteger {
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 
-    [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:nil customBackButton:YES];
-    self.collectionView.backgroundColor = UIColor.clearColor;
+    self.collectionView.backgroundColor = UIColor.systemPinkColor;
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
     settingsButton.tintColor = LKColors.text;
     settingsButton.accessibilityLabel = @"Conversation settings button";

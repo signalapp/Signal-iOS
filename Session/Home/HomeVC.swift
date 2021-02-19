@@ -321,9 +321,15 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
             if let presentedVC = self.presentedViewController {
                 presentedVC.dismiss(animated: false, completion: nil)
             }
-            let conversationVC = ConversationVC(thread: thread)
-//            conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
-            self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
+            let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
+            if displayName == "Brendan" && 0.2 < Double.random(in: 0...1) { // Show Brendan the old screen approx 1 out of 5 times to mess with him
+                let conversationVC = ConversationViewController()
+                conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
+                self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
+            } else {
+                let conversationVC = ConversationVC(thread: thread)
+                self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
+            }
         }
     }
     
