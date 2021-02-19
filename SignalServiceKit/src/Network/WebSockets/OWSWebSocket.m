@@ -802,13 +802,26 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
             [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(self.serialQueue, ^{
+            void (^ackMessage)(BOOL success) = ^void(BOOL success) {
+                if (!success) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                        ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
+                        [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                           transaction:transaction];
+                    });
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self sendWebSocketMessageAcknowledgement:message];
+                    OWSAssertDebug(backgroundTask);
+                    backgroundTask = nil;
+                });
+            };
+
             @try {
-                BOOL useSignalingKey = NO;
                 uint64_t serverDeliveryTimestamp = 0;
                 for (NSString *header in message.headers) {
-                    if ([header isEqualToString:@"X-Signal-Key: true"]) {
-                        useSignalingKey = YES;
-                    } else if ([header hasPrefix:@"X-Signal-Timestamp:"]) {
+                    if ([header hasPrefix:@"X-Signal-Timestamp:"]) {
                         NSArray<NSString *> *components = [header componentsSeparatedByString:@":"];
                         if (components.count == 2) {
                             serverDeliveryTimestamp = (uint64_t)[components[1] longLongValue];
@@ -822,47 +835,20 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                     OWSFailDebug(@"Missing server delivery timestamp");
                 }
 
-                NSData *_Nullable decryptedPayload;
-                if (useSignalingKey) {
-                    NSString *_Nullable signalingKey = self.tsAccountManager.storedSignalingKey;
-                    OWSAssertDebug(signalingKey);
-                    decryptedPayload =
-                        [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:signalingKey];
-                } else {
-                    OWSAssertDebug([message.headers containsObject:@"X-Signal-Key: false"]);
-
-                    decryptedPayload = message.body;
-                }
+                NSData *_Nullable decryptedPayload = message.body;
 
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
+                    ackMessage(NO);
                 } else {
-                    [MessageProcessor
-                        processEncryptedEnvelopeData:decryptedPayload
-                                   encryptedEnvelope:nil
-                             serverDeliveryTimestamp:serverDeliveryTimestamp
-                                          completion:^(NSError *error) {
-                                              if (error) {
-                                                  DatabaseStorageWrite(
-                                                      self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                                          ThreadlessErrorMessage *errorMessage =
-                                                              [ThreadlessErrorMessage corruptedMessageInUnknownThread];
-                                                          [self.notificationsManager
-                                                              notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                      transaction:transaction];
-                                                      });
-                                              }
-
-                                              dispatch_async(dispatch_get_main_queue(), ^{
-                                                  [self sendWebSocketMessageAcknowledgement:message];
-                                                  OWSAssertDebug(backgroundTask);
-                                                  backgroundTask = nil;
-                                              });
-                                          }];
+                    [MessageProcessor processEncryptedEnvelopeData:decryptedPayload
+                                                 encryptedEnvelope:nil
+                                           serverDeliveryTimestamp:serverDeliveryTimestamp
+                                                        completion:^(NSError *error) { ackMessage(error == nil); }];
                 }
             } @catch (NSException *exception) {
                 OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
-                // TODO: Add analytics.
+                ackMessage(NO);
             }
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
