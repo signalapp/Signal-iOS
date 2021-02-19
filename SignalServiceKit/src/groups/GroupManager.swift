@@ -2326,20 +2326,33 @@ public class GroupManager: NSObject {
 
         guard wasLocalUserJustAddedToTheGroup(oldGroupModel: oldGroupModel,
                                               newGroupModel: newGroupModel) else {
+            if DebugFlags.internalLogging {
+                Logger.info("Local user was not just added to the group.")
+            }
             return
         }
 
         guard let groupUpdateSourceAddress = groupUpdateSourceAddress else {
-            Logger.verbose("No groupUpdateSourceAddress.")
+            if DebugFlags.internalLogging {
+                Logger.info("No groupUpdateSourceAddress.")
+            }
             return
         }
 
-        let shouldAddToWhitelist = (groupUpdateSourceAddress.isLocalAddress ||
-                                        contactsManager.isSystemContact(address: groupUpdateSourceAddress) ||
-                                        profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress, transaction: transaction))
+        let isLocalAddress = groupUpdateSourceAddress.isLocalAddress
+        let isSystemContact = contactsManager.isSystemContact(address: groupUpdateSourceAddress)
+        let isUserInProfileWhitelist = profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress,
+                                                             transaction: transaction)
+        let shouldAddToWhitelist = (isLocalAddress || isSystemContact || isUserInProfileWhitelist)
         guard shouldAddToWhitelist else {
-            Logger.verbose("Not adding to whitelist.")
+            if DebugFlags.internalLogging {
+                Logger.info("Not adding to whitelist. groupUpdateSourceAddress: \(groupUpdateSourceAddress), isLocalAddress: \(isLocalAddress), isSystemContact: \(isSystemContact), isUserInProfileWhitelists: \(isUserInProfileWhitelist), ")
+            }
             return
+        }
+
+        if DebugFlags.internalLogging {
+            Logger.info("Adding to whitelist")
         }
 
         // Ensure the thread is in our profile whitelist if we're a member of the group.
