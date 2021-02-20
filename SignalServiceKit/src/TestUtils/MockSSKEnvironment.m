@@ -76,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
     SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
-    SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
     OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
@@ -125,7 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
                               preKeyStore:preKeyStore
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
-                   messageDecryptJobQueue:messageDecryptJobQueue
                     batchMessageProcessor:batchMessageProcessor
                           messageReceiver:messageReceiver
                  groupsV2MessageProcessor:groupsV2MessageProcessor

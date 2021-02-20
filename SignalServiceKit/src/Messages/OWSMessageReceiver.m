@@ -544,11 +544,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - Dependencies
 
-- (SSKMessageDecryptJobQueue *)messageDecryptJobQueue
-{
-    return SSKEnvironment.shared.messageDecryptJobQueue;
-}
-
 - (StorageCoordinator *)storageCoordinator
 {
     return SSKEnvironment.shared.storageCoordinator;
@@ -596,7 +591,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         [self.yapProcessingQueue drainQueue];
     } else {
         // We *could* use this processing Queue for Yap *and* GRDB
-        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData serverDeliveryTimestamp:serverDeliveryTimestamp];
+        OWSFailDebug(@"This should never be called. Use MessageProcessor instead");
     }
 }
 
@@ -606,7 +601,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"GRDB-for-all should ship before we use this method in production.");
         return [self.yapProcessingQueue hasPendingJobsWithTransaction:transaction];
     } else {
-        return [self.messageDecryptJobQueue hasPendingJobsObjcWithTransaction:transaction];
+        OWSFailDebug(@"This should never be called. Use MessageProcessor instead");
+        return NO;
     }
 }
 

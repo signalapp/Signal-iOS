@@ -26,7 +26,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSIdentityManager *identityManager;
 @property (nonatomic) id<OWSUDManager> udManager;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic) OWSMessageReceiver *messageReceiver;
 @property (nonatomic) GroupsV2MessageProcessor *groupsV2MessageProcessor;
@@ -84,7 +83,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-                 messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
@@ -139,7 +137,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(preKeyStore);
     OWSAssertDebug(udManager);
     OWSAssertDebug(messageDecrypter);
-    OWSAssertDebug(messageDecryptJobQueue);
     OWSAssertDebug(batchMessageProcessor);
     OWSAssertDebug(messageReceiver);
     OWSAssertDebug(groupsV2MessageProcessor);
@@ -189,7 +186,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _preKeyStore = preKeyStore;
     _udManager = udManager;
     _messageDecrypter = messageDecrypter;
-    _messageDecryptJobQueue = messageDecryptJobQueue;
     _batchMessageProcessor = batchMessageProcessor;
     _messageReceiver = messageReceiver;
     _groupsV2MessageProcessor = groupsV2MessageProcessor;

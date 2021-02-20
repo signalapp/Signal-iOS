@@ -146,22 +146,11 @@ public class MessageProcessing: NSObject {
 
         guard !messageProcessor.hasPendingEnvelopes else { return }
 
-        let hasPendingJobs = databaseStorage.read { transaction in
-            return self.isDecryptingIncomingMessages(transaction: transaction)
-        }
-        guard !hasPendingJobs else {
-            return
-        }
-
         self.decryptStepResolvers = []
 
         for resolver in decryptStepResolvers {
             resolver.fulfill(())
         }
-    }
-
-    private func isDecryptingIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
-        return messageReceiver.hasPendingJobs(with: transaction)
     }
 
     @objc
@@ -217,6 +206,8 @@ public class MessageProcessing: NSObject {
     }
 
     private func isProcessingIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
+        guard !messageProcessor.hasPendingEnvelopes else { return true }
+
         guard !batchMessageProcessor.hasPendingJobs(with: transaction) else {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("batchMessageProcessor.hasPendingJobs")
@@ -443,13 +434,7 @@ public class MessageProcessing: NSObject {
 
         guard !messageProcessor.hasPendingEnvelopes else { return false }
 
-        let hasPendingDecryptionOrProcess = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
-            guard !self.isDecryptingIncomingMessages(transaction: transaction) else {
-                if DebugFlags.isMessageProcessingVerbose {
-                    Logger.verbose("isDecryptingIncomingMessages")
-                }
-                return true
-            }
+        let hasPendingProcessing = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             guard !self.isProcessingIncomingMessages(transaction: transaction) else {
                 if DebugFlags.isMessageProcessingVerbose {
                     Logger.verbose("isProcessingIncomingMessages")
@@ -458,7 +443,7 @@ public class MessageProcessing: NSObject {
             }
             return false
         }
-        guard !hasPendingDecryptionOrProcess else {
+        guard !hasPendingProcessing else {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("hasPendingDecryptionOrProcess")
             }

@@ -32,6 +32,25 @@ public class MessageProcessor: NSObject {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             SSKEnvironment.shared.messagePipelineSupervisor.register(pipelineStage: self)
+
+            // We may have legacy decrypt jobs queued. We want to schedule them for
+            // processing immediately when we launch, so that we can drain the old queue.
+            SDSDatabaseStorage.shared.read { transaction in
+                let legacyJobRecords = AnyJobRecordFinder<SSKMessageDecryptJobRecord>().allRecords(
+                    label: "SSKMessageDecrypt",
+                    status: .ready,
+                    transaction: transaction
+                )
+                for jobRecord in legacyJobRecords {
+                    guard let envelopeData = jobRecord.envelopeData else {
+                        owsFailDebug("Skipping job with no envelope data")
+                        continue
+                    }
+                    self.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp) { _ in
+                        SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
+                    }
+                }
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -778,7 +778,7 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
                 let newJob = SSKMessageDecryptJobRecord(
                     envelopeData: legacyJob.envelopeData,
                     serverDeliveryTimestamp: 0,
-                    label: SSKMessageDecryptJobQueue.jobRecordLabel
+                    label: "SSKMessageDecrypt"
                 )
                 newJob.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
