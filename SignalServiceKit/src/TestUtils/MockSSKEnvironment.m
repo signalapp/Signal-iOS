@@ -4,7 +4,6 @@
 
 #import "MockSSKEnvironment.h"
 #import "OWS2FAManager.h"
-#import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
@@ -75,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
-    OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
     TSAccountManager *tsAccountManager = [TSAccountManager new];
@@ -122,7 +120,6 @@ NS_ASSUME_NONNULL_BEGIN
                               preKeyStore:preKeyStore
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
-                    batchMessageProcessor:batchMessageProcessor
                  groupsV2MessageProcessor:groupsV2MessageProcessor
                             socketManager:socketManager
                          tsAccountManager:tsAccountManager

@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class ModelReadCaches;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
-@class OWSBatchMessageProcessor;
 @class OWSBlockingManager;
 @class OWSDisappearingMessagesJob;
 @class OWSIdentityManager;
@@ -79,7 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
@@ -138,7 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SSKPreKeyStore *preKeyStore;
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) GroupsV2MessageProcessor *groupsV2MessageProcessor;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;

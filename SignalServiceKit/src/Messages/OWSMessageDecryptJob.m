@@ -9,7 +9,6 @@
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
-#import "OWSBatchMessageProcessor.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
 #import "ProfileManagerProtocol.h"

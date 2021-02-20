@@ -6,7 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSStorage;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;

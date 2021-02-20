@@ -5,7 +5,6 @@
 #import "OWSPrimaryStorage.h"
 #import "AppContext.h"
 #import "OWSAnalytics.h"
-#import "OWSBatchMessageProcessor.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFailedAttachmentDownloadsJob.h"
 #import "OWSFailedMessagesJob.h"

@@ -19,10 +19,6 @@ public class MessageProcessing: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private var batchMessageProcessor: OWSBatchMessageProcessor {
-        return SSKEnvironment.shared.batchMessageProcessor
-    }
-
     private var socketManager: TSSocketManager {
         return TSSocketManager.shared
     }
@@ -57,14 +53,6 @@ public class MessageProcessing: NSObject {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(messageProcessorDidFlushQueue),
                                                name: MessageProcessor.messageProcessorDidFlushQueue,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(messageDecryptionDidFlushQueue),
-                                               name: .messageDecryptionDidFlushQueue,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(messageProcessingDidFlushQueue),
-                                               name: .messageProcessingDidFlushQueue,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(webSocketStateDidChange),
@@ -149,16 +137,6 @@ public class MessageProcessing: NSObject {
         }
     }
 
-    @objc
-    fileprivate func messageDecryptionDidFlushQueue() {
-        AssertIsOnMainThread()
-
-        serialQueue.async {
-            self.tryToResolveDecryptStepPromises()
-            self.tryToResolveAllMessageFetchingAndProcessingPromises()
-        }
-    }
-
     // MARK: - Processing Step
 
     // This should only be accessed on serialQueue.
@@ -188,7 +166,7 @@ public class MessageProcessing: NSObject {
         guard !messageProcessor.hasPendingEnvelopes else { return }
 
         let hasPendingJobs = databaseStorage.read { transaction in
-            return self.isProcessingIncomingMessages(transaction: transaction)
+            return self.isProcessingGV2Messages(transaction: transaction)
         }
         guard !hasPendingJobs else {
             return
@@ -201,15 +179,7 @@ public class MessageProcessing: NSObject {
         }
     }
 
-    private func isProcessingIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
-        guard !messageProcessor.hasPendingEnvelopes else { return true }
-
-        guard !batchMessageProcessor.hasPendingJobs(with: transaction) else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("batchMessageProcessor.hasPendingJobs")
-            }
-            return true
-        }
+    private func isProcessingGV2Messages(transaction: SDSAnyReadTransaction) -> Bool {
         guard !groupsV2MessageProcessor.hasPendingJobs(transaction: transaction) else {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("groupsV2MessageProcessor.hasPendingJobs")
@@ -225,16 +195,6 @@ public class MessageProcessing: NSObject {
 
         serialQueue.async {
             self.tryToResolveDecryptStepPromises()
-            self.tryToResolveAllMessageFetchingAndProcessingPromises()
-        }
-    }
-
-    @objc
-    fileprivate func messageProcessingDidFlushQueue() {
-        AssertIsOnMainThread()
-
-        serialQueue.async {
-            self.tryToResolveProcessingStepPromises()
             self.tryToResolveAllMessageFetchingAndProcessingPromises()
         }
     }
@@ -431,7 +391,7 @@ public class MessageProcessing: NSObject {
         guard !messageProcessor.hasPendingEnvelopes else { return false }
 
         let hasPendingProcessing = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
-            guard !self.isProcessingIncomingMessages(transaction: transaction) else {
+            guard !self.isProcessingGV2Messages(transaction: transaction) else {
                 if DebugFlags.isMessageProcessingVerbose {
                     Logger.verbose("isProcessingIncomingMessages")
                 }

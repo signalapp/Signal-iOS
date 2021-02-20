@@ -14,7 +14,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSGroupInfoRequestMessage.h>
@@ -4018,13 +4017,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         return;
     }
 
-    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-        [SSKEnvironment.shared.batchMessageProcessor enqueueEnvelopeData:envelopeData
-                                                           plaintextData:plaintextData
-                                                         wasReceivedByUD:NO
-                                                 serverDeliveryTimestamp:0
-                                                             transaction:transaction];
-    });
+    [MessageProcessor.shared processDecryptedEnvelopeData:envelopeData
+                                            plaintextData:plaintextData
+                                  serverDeliveryTimestamp:0
+                                          wasReceivedByUD:NO
+                                               completion:^(NSError *error) {
+
+                                               }];
 }
 
 + (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
