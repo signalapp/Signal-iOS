@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSStorage;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
@@ -56,6 +57,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeD
 - (NSString *)databaseExtensionGroup;
 
 - (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
+
++ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
 #ifdef DEBUG
 - (void)addJobForEnvelopeData:(NSData *)envelopeData

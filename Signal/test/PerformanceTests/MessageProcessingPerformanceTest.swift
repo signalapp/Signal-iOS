@@ -41,8 +41,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        messageProcessor.shouldProcessDuringTests = true
-
         storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
 
@@ -53,8 +51,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     override func tearDown() {
         super.tearDown()
-
-        messageProcessor.shouldProcessDuringTests = false
 
         self.dbObserver = nil
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
@@ -94,6 +90,13 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         let envelopeCount: Int = DebugFlags.fastPerfTests ? 5 : 500
         let envelopeDatas: [Data] = (0..<envelopeCount).map { _ in buildEnvelopeData() }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
+        }
 
         let expectMessagesProcessed = expectation(description: "messages processed")
         let hasFulfilled = AtomicBool(false)

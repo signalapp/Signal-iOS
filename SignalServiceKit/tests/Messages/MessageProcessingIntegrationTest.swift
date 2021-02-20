@@ -54,12 +54,9 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
-
-        messageProcessor.shouldProcessDuringTests = true
     }
 
     override func tearDown() {
-        messageProcessor.shouldProcessDuringTests = false
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
 
         super.tearDown()
@@ -73,6 +70,13 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
                                         transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
@@ -125,6 +129,13 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
                                         transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
         }
 
         let expectMessageProcessed = expectation(description: "message processed")

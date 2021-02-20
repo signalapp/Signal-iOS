@@ -82,10 +82,6 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    #if TESTABLE_BUILD
-    var shouldProcessDuringTests = false
-    #endif
-
     @objc
     public func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
@@ -184,13 +180,6 @@ public class MessageProcessor: NSObject {
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
 
-        #if TESTABLE_BUILD
-        guard !CurrentAppContext().isRunningTests || shouldProcessDuringTests else {
-            isDrainingPendingEnvelopes = false
-            return
-        }
-        #endif
-
         // We want a value that is just high enough to yield perf benefits.
         let kIncomingMessageBatchSize = 16
         // If the app is in the background, use batch size of 1.
@@ -229,9 +218,7 @@ public class MessageProcessor: NSObject {
     private func processEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {
         assertOnQueue(serialQueue)
 
-        let result = pendingEnvelope.decrypt(transaction: transaction)
-
-        switch result {
+        switch pendingEnvelope.decrypt(transaction: transaction) {
         case .success(let result):
             let envelope: SSKProtoEnvelope
             do {
