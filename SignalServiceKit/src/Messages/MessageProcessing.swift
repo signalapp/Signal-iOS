@@ -47,6 +47,8 @@ public class MessageProcessing: NSObject {
         return SSKEnvironment.shared.groupsV2MessageProcessor
     }
 
+    private var messageProcessor: MessageProcessor { .shared }
+
     // MARK: -
 
     private let serialQueue = DispatchQueue(label: "org.signal.MessageProcessing")
@@ -56,6 +58,10 @@ public class MessageProcessing: NSObject {
 
         SwiftSingletons.register(self)
 
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(messageProcessorDidFlushQueue),
+                                               name: MessageProcessor.messageProcessorDidFlushQueue,
+                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(messageDecryptionDidFlushQueue),
                                                name: .messageDecryptionDidFlushQueue,
@@ -138,6 +144,8 @@ public class MessageProcessing: NSObject {
             return
         }
 
+        guard !messageProcessor.hasPendingEnvelopes else { return }
+
         let hasPendingJobs = databaseStorage.read { transaction in
             return self.isDecryptingIncomingMessages(transaction: transaction)
         }
@@ -192,6 +200,8 @@ public class MessageProcessing: NSObject {
             return
         }
 
+        guard !messageProcessor.hasPendingEnvelopes else { return }
+
         let hasPendingJobs = databaseStorage.read { transaction in
             return self.isProcessingIncomingMessages(transaction: transaction)
         }
@@ -220,6 +230,16 @@ public class MessageProcessing: NSObject {
             return true
         }
         return false
+    }
+
+    @objc
+    fileprivate func messageProcessorDidFlushQueue() {
+        AssertIsOnMainThread()
+
+        serialQueue.async {
+            self.tryToResolveDecryptStepPromises()
+            self.tryToResolveAllMessageFetchingAndProcessingPromises()
+        }
     }
 
     @objc
@@ -420,6 +440,8 @@ public class MessageProcessing: NSObject {
         guard isMessageFetchingComplete else {
             return false
         }
+
+        guard !messageProcessor.hasPendingEnvelopes else { return false }
 
         let hasPendingDecryptionOrProcess = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             guard !self.isDecryptingIncomingMessages(transaction: transaction) else {

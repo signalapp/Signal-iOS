@@ -122,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
         AppExpiry *appExpiry = [AppExpiry new];
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
+        MessageProcessor *messageProcessor = [MessageProcessor new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -182,7 +183,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   modelReadCaches:modelReadCaches
                                                               earlyMessageManager:earlyMessageManager
                                                         messagePipelineSupervisor:messagePipelineSupervisor
-                                                                        appExpiry:appExpiry]];
+                                                                        appExpiry:appExpiry
+                                                                 messageProcessor:messageProcessor]];
 
         appSpecificSingletonBlock();
 

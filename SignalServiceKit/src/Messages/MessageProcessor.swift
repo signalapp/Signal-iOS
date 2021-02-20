@@ -7,21 +7,35 @@ import PromiseKit
 
 @objc
 public class MessageProcessor: NSObject {
-    private static let maxEnvelopeByteCount = 250 * 1024
-    private static let largeEnvelopeWarningByteCount = 25 * 1024
-    private static let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
+    @objc
+    public static let messageProcessorDidFlushQueue = Notification.Name("messageProcessorDidFlushQueue")
 
-    private struct PendingEnvelope {
-        let encryptedEnvelopeData: Data
-        let encryptedEnvelope: SSKProtoEnvelope
-        let serverDeliveryTimestamp: UInt64
-        let completion: (Error?) -> Void
+    @objc
+    public static var shared: MessageProcessor { SSKEnvironment.shared.messageProcessor }
+
+    @objc
+    public var hasPendingEnvelopes: Bool {
+        pendingEnvelopesLock.withLock { !pendingEnvelopes.isEmpty }
     }
 
-    private static let pendingEnvelopesLock = UnfairLock()
-    private static var pendingEnvelopes = [PendingEnvelope]()
+    public override init() {
+        super.init()
 
-    public static func processEncryptedEnvelopes(
+        SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            SSKEnvironment.shared.messagePipelineSupervisor.register(pipelineStage: self)
+        }
+    }
+
+    public func processEncryptedEnvelopes(
         envelopes: [(encryptedEnvelopeData: Data, encryptedEnvelope: SSKProtoEnvelope?, completion: (Error?) -> Void)],
         serverDeliveryTimestamp: UInt64
     ) {
@@ -35,8 +49,12 @@ public class MessageProcessor: NSObject {
         }
     }
 
+    #if TESTABLE_BUILD
+    var shouldProcessDuringTests = false
+    #endif
+
     @objc
-    public static func processEncryptedEnvelopeData(
+    public func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
         encryptedEnvelope optionalEncryptedEnvelope: SSKProtoEnvelope? = nil,
         serverDeliveryTimestamp: UInt64,
@@ -83,37 +101,92 @@ public class MessageProcessor: NSObject {
             ))
         }
 
-        serialQueue.async { self.parseEnvelopes() }
+        drainPendingEnvelopes()
     }
 
-    public static func parseEnvelopes() {
+    private static let maxEnvelopeByteCount = 250 * 1024
+    private static let largeEnvelopeWarningByteCount = 25 * 1024
+    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
+
+    private struct PendingEnvelope {
+        let encryptedEnvelopeData: Data
+        let encryptedEnvelope: SSKProtoEnvelope
+        let serverDeliveryTimestamp: UInt64
+        let completion: (Error?) -> Void
+    }
+
+    private let pendingEnvelopesLock = UnfairLock()
+    private var pendingEnvelopes = [PendingEnvelope]()
+    private var isDrainingPendingEnvelopes = false {
+        didSet { assertOnQueue(serialQueue) }
+    }
+
+    private func drainPendingEnvelopes() {
+        guard SSKEnvironment.shared.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
+        guard TSAccountManager.shared().isRegisteredAndReady else { return }
+
+        guard CurrentAppContext().shouldProcessIncomingMessages else { return }
+
+        serialQueue.async {
+            guard !self.isDrainingPendingEnvelopes else { return }
+            self.isDrainingPendingEnvelopes = true
+            self.drainNextBatch()
+        }
+    }
+
+    private func drainNextBatch() {
         assertOnQueue(serialQueue)
 
-        let batchSize = 5
+        #if TESTABLE_BUILD
+        guard !CurrentAppContext().isRunningTests || shouldProcessDuringTests else {
+            isDrainingPendingEnvelopes = false
+            return
+        }
+        #endif
+
+        // We want a value that is just high enough to yield perf benefits.
+        let kIncomingMessageBatchSize = 16
+        // If the app is in the background, use batch size of 1.
+        // This reduces the risk of us never being able to drain any
+        // messages from the queue. We should fine tune this number
+        // to yield the best perf we can get.
+        let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
         let batchEnvelopes = pendingEnvelopesLock.withLock {
             pendingEnvelopes.prefix(batchSize)
         }
 
-        guard !batchEnvelopes.isEmpty else { return }
+        guard !batchEnvelopes.isEmpty else {
+            isDrainingPendingEnvelopes = false
+            NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+            return
+        }
+
+        Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
 
         SDSDatabaseStorage.shared.write { transaction in
-            for pendingEnvelope in batchEnvelopes {
-                self.parseEnvelope(pendingEnvelope, transaction: transaction)
-            }
-
-            // Remove the processed envelopes from the pending list.
-            pendingEnvelopesLock.withLock {
-                guard pendingEnvelopes.count > batchEnvelopes.count else {
-                    pendingEnvelopes = []
-                    return
-                }
-                pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
-            }
+            batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
         }
+
+        // Remove the processed envelopes from the pending list.
+        pendingEnvelopesLock.withLock {
+            guard pendingEnvelopes.count > batchEnvelopes.count else {
+                pendingEnvelopes = []
+                return
+            }
+            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+        }
+
+        // Wait a bit in hopes of increasing the batch size.
+        // This delay won't affect the first message to arrive when this queue is idle,
+        // so by definition we're receiving more than one message and can benefit from
+        // batching.
+        serialQueue.asyncAfter(deadline: .now() + 0.5) { self.drainNextBatch() }
     }
 
-    private static func parseEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {
+    private func processEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {
         assertOnQueue(serialQueue)
+
+        Logger.info("Processing envelope with timestamp \(pendingEnvelope.encryptedEnvelope.timestamp)")
 
         let result = SSKEnvironment.shared.messageDecrypter.decryptEnvelope(
             pendingEnvelope.encryptedEnvelope,
@@ -183,7 +256,7 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    private static func wasReceivedByUD(envelope: SSKProtoEnvelope) -> Bool {
+    private func wasReceivedByUD(envelope: SSKProtoEnvelope) -> Bool {
         let hasSenderSource: Bool
         if envelope.hasValidSource {
             hasSenderSource = true
@@ -191,5 +264,18 @@ public class MessageProcessor: NSObject {
             hasSenderSource = false
         }
         return envelope.type == .unidentifiedSender && !hasSenderSource
+    }
+
+    @objc
+    func registrationStateDidChange() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.drainPendingEnvelopes()
+        }
+    }
+}
+
+extension MessageProcessor: MessageProcessingPipelineStage {
+    public func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+        drainPendingEnvelopes()
     }
 }

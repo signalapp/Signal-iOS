@@ -65,11 +65,23 @@ public class OWSMessageDecryptResult: NSObject {
 @objc
 public class OWSMessageDecrypter: OWSMessageHandler {
 
-    var tsAccountManager: TSAccountManager { .shared() }
-    var blockingManager: OWSBlockingManager { .shared() }
+    private var tsAccountManager: TSAccountManager { .shared() }
+    private var blockingManager: OWSBlockingManager { .shared() }
 
-    // TODO:
-    var recentlyResetSenderIds = NSMutableSet()
+    private var senderIdsResetDuringCurrentBatch = NSMutableSet()
+
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(messageProcessorDidFlushQueue),
+            name: MessageProcessor.messageProcessorDidFlushQueue,
+            object: nil
+        )
+    }
 
     @objc
     @available(*, deprecated, message: "Use Result based function instead")
@@ -85,7 +97,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
+    public func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
         owsAssertDebug(tsAccountManager.isRegistered)
 
         Logger.info("decrypting envelope: \(description(for: envelope))")
@@ -154,6 +166,19 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
             return .failure(OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)"))
         }
+    }
+
+    @objc
+    func messageProcessorDidFlushQueue() {
+        // We don't want to send additional resets until we
+        // have received the "empty" response from the WebSocket
+        // or finished at least one REST fetch.
+        guard SSKEnvironment.shared.messageProcessing.hasCompletedInitialFetch else { return }
+
+        // We clear all recently reset sender ids any time the
+        // decryption queue has drained, so that any new messages
+        // that fail to decrypt will reset the session again.
+        senderIdsResetDuringCurrentBatch.removeAllObjects()
     }
 
     // The debug logs can be more verbose than the analytics events.
@@ -264,8 +289,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             // reset IDs is cleared.
 
             let senderId = "\(sourceUuid).\(envelope.sourceDevice)"
-            if !recentlyResetSenderIds.contains(senderId) {
-                recentlyResetSenderIds.add(senderId)
+            if !senderIdsResetDuringCurrentBatch.contains(senderId) {
+                senderIdsResetDuringCurrentBatch.add(senderId)
 
                 Logger.warn("Archiving session for undecryptable message from \(senderId)")
                 SSKEnvironment.shared.sessionStore.archiveSession(for: sourceAddress,

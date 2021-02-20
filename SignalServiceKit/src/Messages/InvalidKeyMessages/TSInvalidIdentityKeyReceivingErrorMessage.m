@@ -186,7 +186,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         [self.threadWithSneakyTransaction receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [MessageProcessor
+        [MessageProcessor.shared
             processEncryptedEnvelopeData:errorMessage.envelopeData
                        encryptedEnvelope:nil
                  serverDeliveryTimestamp:0

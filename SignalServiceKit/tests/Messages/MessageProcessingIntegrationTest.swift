@@ -26,6 +26,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         return SSKEnvironment.shared.storageCoordinator
     }
 
+    var messageProcessor: MessageProcessor { .shared }
+
     // MARK: -
 
     let localE164Identifier = "+13235551234"
@@ -57,13 +59,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
 
-        // for unit tests, we must manually start the decryptJobQueue
-        SSKEnvironment.shared.messageDecryptJobQueue.setup()
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
+        messageProcessor.shouldProcessDuringTests = true
     }
 
     override func tearDown() {
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
+        messageProcessor.shouldProcessDuringTests = false
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
 
         super.tearDown()
@@ -72,11 +72,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func test_contactMessage_e164AndUuidEnvelope() {
-        storageCoordinator.useGRDBForTests()
-
-        // Re-initialize this state now that we've just switched databases.
-        identityManager.generateNewIdentityKey()
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
@@ -123,7 +118,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
+        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }
@@ -175,7 +170,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
+        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }

@@ -189,7 +189,7 @@ public class MessageFetcherJob: NSObject {
             fetchBatchViaRest()
         }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
 
-            MessageProcessor.processEncryptedEnvelopes(
+            SSKEnvironment.shared.messageProcessor.processEncryptedEnvelopes(
                 envelopes: envelopes.compactMap { envelope in
                     do {
                         let envelopeData = try envelope.serializedData()

@@ -22,6 +22,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         return SSKEnvironment.shared.identityManager
     }
 
+    var messageProcessor: MessageProcessor { .shared }
+
     // MARK: -
 
     let localE164Identifier = "+13235551234"
@@ -43,13 +45,10 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
+        messageProcessor.shouldProcessDuringTests = true
 
         storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
-
-        // for unit tests, we must manually start the decryptJobQueue
-        SSKEnvironment.shared.messageDecryptJobQueue.setup()
 
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
@@ -59,7 +58,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func tearDown() {
         super.tearDown()
 
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
+        messageProcessor.shouldProcessDuringTests = false
 
         self.dbObserver = nil
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
@@ -119,7 +118,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
 
-        MessageProcessor.processEncryptedEnvelopes(
+        messageProcessor.processEncryptedEnvelopes(
             envelopes: envelopeDatas.map { ($0, nil, { XCTAssertNil($0) }) },
             serverDeliveryTimestamp: 0
         )

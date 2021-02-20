@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKEnvironment.h"
@@ -116,6 +116,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
                               appExpiry:(AppExpiry *)appExpiry
+                       messageProcessor:(MessageProcessor *)messageProcessor
 {
     self = [super init];
     if (!self) {
@@ -169,6 +170,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(modelReadCaches);
     OWSAssertDebug(earlyMessageManager);
     OWSAssertDebug(appExpiry);
+    OWSAssertDebug(messageProcessor);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -219,6 +221,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _earlyMessageManager = earlyMessageManager;
     _messagePipelineSupervisor = messagePipelineSupervisor;
     _appExpiry = appExpiry;
+    _messageProcessor = messageProcessor;
 
     return self;
 }

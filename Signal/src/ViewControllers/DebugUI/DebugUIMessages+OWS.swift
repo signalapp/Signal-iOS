@@ -18,6 +18,8 @@ public extension DebugUIMessages {
         return SDSDatabaseStorage.shared
     }
 
+    static var messageProcessor: MessageProcessor { .shared }
+
     // MARK: -
 
     @objc
@@ -67,7 +69,7 @@ public extension DebugUIMessages {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
         envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        MessageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0) { _ in }
+        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0) { _ in }
     }
 
     @objc

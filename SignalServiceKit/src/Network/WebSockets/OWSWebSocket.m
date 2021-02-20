@@ -810,7 +810,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                                                                            transaction:transaction];
                     });
                 }
-
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self sendWebSocketMessageAcknowledgement:message];
                     OWSAssertDebug(backgroundTask);
@@ -818,37 +818,32 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                 });
             };
 
-            @try {
-                uint64_t serverDeliveryTimestamp = 0;
-                for (NSString *header in message.headers) {
-                    if ([header hasPrefix:@"X-Signal-Timestamp:"]) {
-                        NSArray<NSString *> *components = [header componentsSeparatedByString:@":"];
-                        if (components.count == 2) {
-                            serverDeliveryTimestamp = (uint64_t)[components[1] longLongValue];
-                        } else {
-                            OWSFailDebug(@"Invalidly formatted timestamp header %@", header);
-                        }
+            uint64_t serverDeliveryTimestamp = 0;
+            for (NSString *header in message.headers) {
+                if ([header hasPrefix:@"X-Signal-Timestamp:"]) {
+                    NSArray<NSString *> *components = [header componentsSeparatedByString:@":"];
+                    if (components.count == 2) {
+                        serverDeliveryTimestamp = (uint64_t)[components[1] longLongValue];
+                    } else {
+                        OWSFailDebug(@"Invalidly formatted timestamp header %@", header);
                     }
                 }
+            }
 
-                if (serverDeliveryTimestamp == 0) {
-                    OWSFailDebug(@"Missing server delivery timestamp");
-                }
+            if (serverDeliveryTimestamp == 0) {
+                OWSFailDebug(@"Missing server delivery timestamp");
+            }
 
-                NSData *_Nullable decryptedPayload = message.body;
+            NSData *_Nullable encryptedEnvelope = message.body;
 
-                if (!decryptedPayload) {
-                    OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
-                    ackMessage(NO);
-                } else {
-                    [MessageProcessor processEncryptedEnvelopeData:decryptedPayload
-                                                 encryptedEnvelope:nil
-                                           serverDeliveryTimestamp:serverDeliveryTimestamp
-                                                        completion:^(NSError *error) { ackMessage(error == nil); }];
-                }
-            } @catch (NSException *exception) {
-                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+            if (!encryptedEnvelope) {
+                OWSLogWarn(@"Missing encrypted envelope on message");
                 ackMessage(NO);
+            } else {
+                [MessageProcessor.shared processEncryptedEnvelopeData:encryptedEnvelope
+                                                    encryptedEnvelope:nil
+                                              serverDeliveryTimestamp:serverDeliveryTimestamp
+                                                           completion:^(NSError *error) { ackMessage(error == nil); }];
             }
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {

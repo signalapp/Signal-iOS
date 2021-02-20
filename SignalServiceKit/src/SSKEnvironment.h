@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
 @class MessageProcessing;
+@class MessageProcessor;
 @class MessageSender;
 @class MessageSenderJobQueue;
 @class ModelReadCaches;
@@ -111,7 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
-                              appExpiry:(AppExpiry *)appExpiry NS_DESIGNATED_INITIALIZER;
+                              appExpiry:(AppExpiry *)appExpiry
+                       messageProcessor:(MessageProcessor *)messageProcessor NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -172,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) EarlyMessageManager *earlyMessageManager;
 @property (nonatomic, readonly) OWSMessagePipelineSupervisor *messagePipelineSupervisor;
 @property (nonatomic, readonly) AppExpiry *appExpiry;
+@property (nonatomic, readonly) MessageProcessor *messageProcessor;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
