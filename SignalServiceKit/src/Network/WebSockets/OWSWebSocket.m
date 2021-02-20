@@ -804,7 +804,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                                                                            transaction:transaction];
                     });
                 }
-                
+
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self sendWebSocketMessageAcknowledgement:message];
                     OWSAssertDebug(backgroundTask);
