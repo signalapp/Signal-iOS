@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageDecrypter;
 @class OWSMessageManager;
 @class OWSMessagePipelineSupervisor;
-@class OWSMessageReceiver;
 @class OWSOutgoingReceiptManager;
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
@@ -81,7 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                        messageReceiver:(OWSMessageReceiver *)messageReceiver
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
@@ -141,7 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
-@property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 @property (nonatomic, readonly) GroupsV2MessageProcessor *groupsV2MessageProcessor;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;

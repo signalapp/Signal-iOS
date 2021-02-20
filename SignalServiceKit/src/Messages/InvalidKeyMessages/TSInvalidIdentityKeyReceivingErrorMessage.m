@@ -6,7 +6,6 @@
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
-#import "OWSMessageReceiver.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>

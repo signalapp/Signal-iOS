@@ -19,10 +19,6 @@ public class MessageProcessing: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
-
     private var batchMessageProcessor: OWSBatchMessageProcessor {
         return SSKEnvironment.shared.batchMessageProcessor
     }

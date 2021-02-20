@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage.h"
@@ -12,7 +12,6 @@
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncompleteCallsJob.h"
-#import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
 #import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -142,7 +141,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                                           withName:[TSDatabaseSecondaryIndexes
                                                                        registerTimeStampIndexExtensionName]];
 
-                                      [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
                                       [YAPDBMessageContentJobFinder asyncRegisterDatabaseExtension:self];
 
                                       [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];

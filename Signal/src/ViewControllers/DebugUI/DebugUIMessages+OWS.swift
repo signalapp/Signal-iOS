@@ -10,10 +10,6 @@ public extension DebugUIMessages {
 
     // MARK: - Dependencies
 
-    static var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
-
     static var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }

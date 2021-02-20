@@ -10,10 +10,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     // MARK: - Dependencies
 
-    var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
-
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }

@@ -13,7 +13,6 @@
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
-#import "OWSMessageReceiver.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
@@ -77,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
-    OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
     TSAccountManager *tsAccountManager = [TSAccountManager new];
@@ -125,7 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
                     batchMessageProcessor:batchMessageProcessor
-                          messageReceiver:messageReceiver
                  groupsV2MessageProcessor:groupsV2MessageProcessor
                             socketManager:socketManager
                          tsAccountManager:tsAccountManager

@@ -12,7 +12,6 @@
 #import "OWSDevicesService.h"
 #import "OWSError.h"
 #import "OWSMessageManager.h"
-#import "OWSMessageReceiver.h"
 #import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -239,11 +238,6 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 - (OWSSignalService *)signalService
 {
     return [OWSSignalService shared];
-}
-
-- (OWSMessageReceiver *)messageReceiver
-{
-    return SSKEnvironment.shared.messageReceiver;
 }
 
 - (TSAccountManager *)tsAccountManager

@@ -30,8 +30,8 @@
 #import <SignalServiceKit/OWSGroupCallMessage.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
+#import <SignalServiceKit/OWSMessageDecryptJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSReaction.h>

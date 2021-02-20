@@ -42,10 +42,6 @@ public class MessageFetcherJob: NSObject {
         return SSKEnvironment.shared.networkManager
     }
 
-    private class var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
-
     private class var signalService: OWSSignalService {
         return OWSSignalService.shared()
     }

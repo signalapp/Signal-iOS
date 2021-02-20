@@ -18,7 +18,6 @@
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSStorage.h>
@@ -82,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
-        OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
@@ -152,7 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
                                                             batchMessageProcessor:batchMessageProcessor
-                                                                  messageReceiver:messageReceiver
                                                          groupsV2MessageProcessor:groupsV2MessageProcessor
                                                                     socketManager:socketManager
                                                                  tsAccountManager:tsAccountManager
