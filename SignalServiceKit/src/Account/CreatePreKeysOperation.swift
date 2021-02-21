@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,8 +30,8 @@ public class CreatePreKeysOperation: OWSOperation {
         return SDSDatabaseStorage.shared
     }
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+    private var messageProcessor: MessageProcessor {
+        return SSKEnvironment.shared.messageProcessor
     }
 
     private var tsAccountManager: TSAccountManager {
@@ -61,7 +61,7 @@ public class CreatePreKeysOperation: OWSOperation {
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return Promise.value(())
             }
-            return self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+            return self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: .global()) { () -> Promise<Void> in
             self.accountServiceClient.setPreKeys(identityKey: identityKey,
                                                  signedPreKeyRecord: signedPreKeyRecord,

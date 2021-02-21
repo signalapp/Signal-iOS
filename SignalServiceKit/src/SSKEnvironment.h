@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
-@class MessageProcessing;
 @class MessageProcessor;
 @class MessageSender;
 @class MessageSenderJobQueue;
@@ -98,7 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
                          sskPreferences:(SSKPreferences *)sskPreferences
                                groupsV2:(id<GroupsV2>)groupsV2
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
-                      messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
                          bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
@@ -156,7 +154,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 @property (nonatomic, readonly) SSKPreferences *sskPreferences;
-@property (nonatomic, readonly) MessageProcessing *messageProcessing;
 @property (nonatomic, readonly) MessageFetcherJob *messageFetcherJob;
 @property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetch;
 @property (nonatomic, readonly) BulkUUIDLookup *bulkUUIDLookup;

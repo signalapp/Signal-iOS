@@ -173,7 +173,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         // We don't want to send additional resets until we
         // have received the "empty" response from the WebSocket
         // or finished at least one REST fetch.
-        guard SSKEnvironment.shared.messageProcessing.hasCompletedInitialFetch else { return }
+        guard SSKEnvironment.shared.messageFetcherJob.hasCompletedInitialFetch else { return }
 
         // We clear all recently reset sender ids any time the
         // decryption queue has drained, so that any new messages

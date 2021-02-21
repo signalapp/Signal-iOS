@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,8 +9,8 @@ public class MessageProcessingOperation: OWSOperation {
 
     // MARK: - Dependencies
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+    private var messageProcessor: MessageProcessor {
+        return SSKEnvironment.shared.messageProcessor
     }
 
     // MARK: - 
@@ -19,7 +19,7 @@ public class MessageProcessingOperation: OWSOperation {
         Logger.debug("")
 
         firstly(on: .global()) {
-            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.done { _ in
             Logger.verbose("Complete.")
             self.reportSuccess()

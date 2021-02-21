@@ -69,8 +69,8 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.storageServiceManager
     }
 
-    fileprivate class var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+    fileprivate class var messageProcessor: MessageProcessor {
+        return SSKEnvironment.shared.messageProcessor
     }
 
     private class var bulkProfileFetch: BulkProfileFetch {
@@ -2505,7 +2505,7 @@ public extension GroupManager {
 
     private class func messageProcessingPromise(description: String) -> Promise<Void> {
         return firstly {
-            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
             GroupsV2Error.timeout

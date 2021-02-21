@@ -35,8 +35,8 @@ class GroupsV2ProfileKeyUpdater {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+    private var messageProcessor: MessageProcessor {
+        return SSKEnvironment.shared.messageProcessor
     }
 
     private var reachabilityManager: SSKReachabilityManager {
@@ -235,7 +235,7 @@ class GroupsV2ProfileKeyUpdater {
         }
 
         return firstly {
-            self.messageProcessing.allMessageFetchingAndProcessingPromise()
+            self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.map(on: .global()) { () throws -> TSGroupThread in
             return try self.databaseStorage.read { transaction in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {

@@ -18,6 +18,58 @@ public class MessageProcessor: NSObject {
         pendingEnvelopesLock.withLock { !pendingEnvelopes.isEmpty }
     }
 
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func processingCompletePromise() -> AnyPromise {
+        return AnyPromise(processingCompletePromise())
+    }
+
+    public func processingCompletePromise() -> Promise<Void> {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("!shouldProcessIncomingMessages")
+            }
+            return Promise.value(())
+        }
+
+        if self.hasPendingEnvelopes {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("hasPendingEnvelopes")
+            }
+            return NotificationCenter.default.observe(
+                once: Self.messageProcessorDidFlushQueue
+            ).then { _ in self.processingCompletePromise() }.asVoid()
+        } else if SDSDatabaseStorage.shared.read(
+            block: { SSKEnvironment.shared.groupsV2MessageProcessor.hasPendingJobs(transaction: $0) }
+        ) {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("hasPendingJobs")
+            }
+            return NotificationCenter.default.observe(
+                once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
+            ).then { _ in self.processingCompletePromise() }.asVoid()
+        } else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("!hasPendingEnvelopes && !hasPendingJobs")
+            }
+            return Promise.value(())
+        }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func fetchingAndProcessingCompletePromise() -> AnyPromise {
+        return AnyPromise(fetchingAndProcessingCompletePromise())
+    }
+
+    public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            SSKEnvironment.shared.messageFetcherJob.fetchingCompletePromise()
+        }.then { () -> Promise<Void> in
+            self.processingCompletePromise()
+        }
+    }
+
     public override init() {
         super.init()
 
