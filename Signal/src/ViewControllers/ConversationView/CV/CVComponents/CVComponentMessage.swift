@@ -312,6 +312,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let selectionView = componentView.selectionView
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
             cellView.addSubview(selectionView)
+            rootView.accessibilityTraits = buildAccessibilityTraits(componentView: componentView)
             selectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
             leadingView = selectionView
         }
@@ -641,6 +642,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         componentView.rootView.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
         componentView.rootView.isAccessibilityElement = true
+        componentView.rootView.accessibilityTraits = buildAccessibilityTraits(componentView: componentView)
+    }
+    
+    private func buildAccessibilityTraits(componentView: CVComponentViewMessage) -> UIAccessibilityTraits {
+        var accessibilityTraits = componentView.accessibilityTraits
+        if componentView.selectionView.isSelected {
+            accessibilityTraits.insert(.selected)
+        } else {
+            accessibilityTraits.remove(.selected)
+        }
+        return accessibilityTraits
     }
 
     // Builds an accessibility label for the entire message.
@@ -927,6 +939,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 componentDelegate.cvc_didSelectViewItem(itemViewModel)
             }
             // Suppress other tap handling during selection mode.
+            componentView.rootView.accessibilityTraits = buildAccessibilityTraits(componentView: componentView)
             return true
         }
 
