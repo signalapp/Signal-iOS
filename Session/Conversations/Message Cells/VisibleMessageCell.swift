@@ -378,7 +378,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     override func prepareForReuse() {
         super.prepareForReuse()
         unloadContent?()
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
         viewsToMove.forEach { $0.transform = .identity }
         replyButton.alpha = 0
         timerView.prepareForReuse()
@@ -431,7 +431,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         switch gestureRecognizer.state {
         case .changed:
@@ -460,7 +460,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     private func resetReply() {
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton ]
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
         UIView.animate(withDuration: 0.25) {
             viewsToMove.forEach { $0.transform = .identity }
             self.replyButton.alpha = 0

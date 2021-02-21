@@ -282,6 +282,7 @@
 		B8D64FC725BA78520029CFC0 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84EA225DF745A005A043E /* LinkPreviewState.swift */; };
+		B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */; };
 		B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		B8FF8E6225C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */; };
@@ -1272,6 +1273,7 @@
 		B8CCF6422397711F0091D419 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		B8D84E9325DF72AF005A043E /* ConversationViewAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConversationViewAction.h; sourceTree = "<group>"; };
 		B8D84EA225DF745A005A043E /* LinkPreviewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewState.swift; sourceTree = "<group>"; };
+		B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingAttachmentsButton.swift; sourceTree = "<group>"; };
 		B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+ClosedGroups.swift"; sourceTree = "<group>"; };
 		B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Jobs.swift"; sourceTree = "<group>"; };
 		B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OpenGroups.swift"; sourceTree = "<group>"; };
@@ -2229,6 +2231,7 @@
 				B8269D3C25C7B34D00488AB4 /* InputTextView.swift */,
 				C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */,
 				C302093D25DCBF07001F572D /* MentionSelectionView.swift */,
+				B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */,
 			);
 			path = "Input View";
 			sourceTree = "<group>";
@@ -4950,6 +4953,7 @@
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */,
 				45B5360E206DD8BB00D61655 /* UIResponder+OWS.swift in Sources */,
+				B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */,
 				4CFE6B6C21F92BA700006701 /* LegacyNotificationsAdaptee.swift in Sources */,
 				B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */,
 				C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */,

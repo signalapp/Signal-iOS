@@ -3,10 +3,14 @@ final class InputViewButton : UIView {
     private let icon: UIImage
     private let isSendButton: Bool
     private let delegate: InputViewButtonDelegate
+    private let hasOpaqueBackground: Bool
     private lazy var widthConstraint = set(.width, to: InputViewButton.size)
     private lazy var heightConstraint = set(.height, to: InputViewButton.size)
     private var longPressTimer: Timer?
     private var isLongPress = false
+    
+    // MARK: UI Components
+    private lazy var backgroundView = UIView()
     
     // MARK: Settings
     static let size = CGFloat(40)
@@ -14,10 +18,11 @@ final class InputViewButton : UIView {
     static let iconSize: CGFloat = 20
     
     // MARK: Lifecycle
-    init(icon: UIImage, isSendButton: Bool = false, delegate: InputViewButtonDelegate) {
+    init(icon: UIImage, isSendButton: Bool = false, delegate: InputViewButtonDelegate, hasOpaqueBackground: Bool = false) {
         self.icon = icon
         self.isSendButton = isSendButton
         self.delegate = delegate
+        self.hasOpaqueBackground = hasOpaqueBackground
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -31,7 +36,10 @@ final class InputViewButton : UIView {
     }
     
     private func setUpViewHierarchy() {
-        backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
+        backgroundColor = .clear
+        backgroundView.backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
+        addSubview(backgroundView)
+        backgroundView.pin(to: self)
         layer.cornerRadius = InputViewButton.size / 2
         layer.masksToBounds = true
         isUserInteractionEnabled = true
@@ -58,7 +66,7 @@ final class InputViewButton : UIView {
             self.layer.cornerRadius = size / 2
             let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: isLightMode ? 4 : 6)
             self.setCircularGlow(with: glowConfiguration)
-            self.backgroundColor = backgroundColor
+            self.backgroundView.backgroundColor = backgroundColor
         }
     }
     
@@ -117,4 +125,11 @@ protocol InputViewButtonDelegate {
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)
     func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch)
     func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch)
+}
+
+extension InputViewButtonDelegate {
+    
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) { }
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) { }
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) { }
 }

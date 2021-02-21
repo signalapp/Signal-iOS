@@ -20,11 +20,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     var lastSearchedText: String? { nil }
     
     // MARK: UI Components
-    private lazy var cameraButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_black"), delegate: self)
-    private lazy var libraryButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_roll_black"), delegate: self)
-    private lazy var gifButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_gif_black"), delegate: self)
-    private lazy var documentButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_document_black"), delegate: self)
+    private lazy var attachmentsButton = ExpandingAttachmentsButton(delegate: delegate)
+    
     private lazy var voiceMessageButton = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
+    
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
         result.isHidden = true
@@ -94,18 +93,13 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         separator.set(.height, to: 1 / UIScreen.main.scale)
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
-        // Buttons
-        let (cameraButtonContainer, libraryButtonContainer, gifButtonContainer, documentButtonContainer) = (container(for: cameraButton), container(for: libraryButton), container(for: gifButton), container(for: documentButton))
-        let buttonStackView = UIStackView(arrangedSubviews: [ cameraButtonContainer, libraryButtonContainer, gifButtonContainer, documentButtonContainer, UIView.hStretchingSpacer() ])
-        buttonStackView.axis = .horizontal
-        buttonStackView.spacing = Values.smallSpacing
         // Bottom stack view
-        let bottomStackView = UIStackView(arrangedSubviews: [ inputTextView, container(for: sendButton) ])
+        let bottomStackView = UIStackView(arrangedSubviews: [ attachmentsButton, inputTextView, container(for: sendButton) ])
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = Values.smallSpacing
         bottomStackView.alignment = .center
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ buttonStackView, additionalContentContainer, bottomStackView ])
+        let mainStackView = UIStackView(arrangedSubviews: [ additionalContentContainer, bottomStackView ])
         mainStackView.axis = .vertical
         mainStackView.isLayoutMarginsRelativeArrangement = true
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
@@ -204,19 +198,31 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
     
     // MARK: Interaction
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let buttonContainers = [ attachmentsButton.mainButton, attachmentsButton.cameraButton,
+            attachmentsButton.libraryButton, attachmentsButton.documentButton, attachmentsButton.gifButton ]
+        let buttonContainer = buttonContainers.first { $0.superview!.convert($0.frame, to: self).contains(point) }
+        if let buttonContainer = buttonContainer {
+            return buttonContainer
+        } else {
+            return super.hitTest(point, with: event)
+        }
+    }
+    
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        if mentionsViewContainer.frame.contains(point) {
+        let buttonContainers = [ attachmentsButton.gifButtonContainer, attachmentsButton.documentButtonContainer,
+            attachmentsButton.libraryButtonContainer, attachmentsButton.cameraButtonContainer, attachmentsButton.mainButtonContainer ]
+        let isPointInsideAttachmentsButton = buttonContainers.contains { $0.superview!.convert($0.frame, to: self).contains(point) }
+        if isPointInsideAttachmentsButton {
+            return true
+        } else if mentionsViewContainer.frame.contains(point) {
             return true
         } else {
             return super.point(inside: point, with: event)
         }
     }
-
+    
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton) {
-        if inputViewButton == cameraButton { delegate.handleCameraButtonTapped() }
-        if inputViewButton == libraryButton { delegate.handleLibraryButtonTapped() }
-        if inputViewButton == gifButton { delegate.handleGIFButtonTapped() }
-        if inputViewButton == documentButton { delegate.handleDocumentButtonTapped() }
         if inputViewButton == sendButton { delegate.handleSendButtonTapped() }
     }
 
@@ -264,14 +270,14 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         voiceMessageRecordingView.pin(to: self)
         self.voiceMessageRecordingView = voiceMessageRecordingView
         voiceMessageRecordingView.animate()
-        let allOtherViews = [ cameraButton, libraryButton, gifButton, documentButton, sendButton, inputTextView, additionalContentContainer ]
+        let allOtherViews = [ attachmentsButton, sendButton, inputTextView, additionalContentContainer ]
         UIView.animate(withDuration: 0.25) {
             allOtherViews.forEach { $0.alpha = 0 }
         }
     }
 
     func hideVoiceMessageUI() {
-        let allOtherViews = [ cameraButton, libraryButton, gifButton, documentButton, sendButton, inputTextView, additionalContentContainer ]
+        let allOtherViews = [ attachmentsButton, sendButton, inputTextView, additionalContentContainer ]
         UIView.animate(withDuration: 0.25, animations: {
             allOtherViews.forEach { $0.alpha = 1 }
             self.voiceMessageRecordingView?.alpha = 0
@@ -320,13 +326,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 }
 
 // MARK: Delegate
-protocol InputViewDelegate : VoiceMessageRecordingViewDelegate {
+protocol InputViewDelegate : ExpandingAttachmentsButtonDelegate, VoiceMessageRecordingViewDelegate {
 
     func showLinkPreviewSuggestionModal()
-    func handleCameraButtonTapped()
-    func handleLibraryButtonTapped()
-    func handleGIFButtonTapped()
-    func handleDocumentButtonTapped()
     func handleSendButtonTapped()
     func handleQuoteViewCancelButtonTapped()
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)

@@ -1,6 +1,5 @@
 
 // TODO
-// • Brendan no likey buttons above text field
 // • Slight paging glitch
 // • Image detail VC transition glitch
 // • Photo rounding
