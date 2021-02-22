@@ -145,22 +145,10 @@ extension MessageReceiver {
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
         guard message.sender == getUserHexEncodedPublicKey(), !UserDefaults.standard[.hasSyncedConfiguration] else { return }
         let storage = SNMessagingKitConfiguration.shared.storage
-        let profileManager = SSKEnvironment.shared.profileManager
-        // Profile
-        let sessionID = getUserHexEncodedPublicKey()
-        let contact = Storage.shared.getContact(with: sessionID) ?? Contact(sessionID: sessionID)
-        if let displayName = message.displayName {
-            profileManager.updateProfileForContact(withID: sessionID, displayName: displayName, with: transaction as! YapDatabaseReadWriteTransaction)
-            contact.displayName = displayName
-        }
-        if let profileKey = message.profileKey, let profilePictureURL = message.profilePictureURL, profileKey.count == kAES256_KeyByteLength {
-            profileManager.setProfileKeyData(profileKey, forRecipientId: sessionID, avatarURL: profilePictureURL)
-            contact.profilePictureURL = profilePictureURL
-            contact.profilePictureEncryptionKey = OWSAES256Key(data: profileKey)
-        }
         // Notification
         UserDefaults.standard[.hasSyncedConfiguration] = true
-        NotificationCenter.default.post(name: .configurationMessageReceived, object: nil)
+        let profile: [String:Any?] = [ "displayName" : message.displayName, "profilePictureURL" : message.profilePictureURL, "profileKey" : message.profileKey ]
+        NotificationCenter.default.post(name: .configurationMessageReceived, object: profile)
         // Closed groups
         let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
         for closedGroup in message.closedGroups {

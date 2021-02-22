@@ -93,6 +93,10 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
 
+#pragma mark - Other
+
+- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile;
+
 @end
 
 NS_ASSUME_NONNULL_END

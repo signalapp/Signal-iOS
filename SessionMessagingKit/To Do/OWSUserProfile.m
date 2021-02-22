@@ -29,9 +29,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 @interface OWSUserProfile ()
 
-@property (atomic, nullable) OWSAES256Key *profileKey;
-@property (atomic, nullable) NSString *profileName;
-@property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
 
 @end
