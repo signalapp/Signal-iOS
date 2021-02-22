@@ -31,18 +31,7 @@ public final class Values : NSObject {
     
     @objc public static let searchBarHeight = CGFloat(36)
 
-    // TODO ----------------
-    
     @objc public static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
-    @objc public static let tabBarHeight = isIPhone5OrSmaller ? CGFloat(32) : CGFloat(48)
-    @objc public static let modalButtonCornerRadius = CGFloat(5)
-    @objc public static let progressBarThickness: CGFloat = 2
-    @objc public static let pnOptionCornerRadius = CGFloat(8)
-    @objc public static let pathStatusViewSize = CGFloat(8)
-    @objc public static var pathRowLineThickness: CGFloat { return 1 / UIScreen.main.scale }
-    @objc public static let pathRowDotSize = CGFloat(8)
-    @objc public static let pathRowExpandedDotSize = CGFloat(16)
-    @objc public static let pathRowHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
     
     // MARK: - Distances
     @objc public static let verySmallSpacing = CGFloat(4)
@@ -53,10 +42,4 @@ public final class Values : NSObject {
     @objc public static let massiveSpacing = CGFloat(64)
     @objc public static let newConversationButtonBottomOffset = CGFloat(52)
     @objc public static let onboardingButtonBottomOffset = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(72)
-    
-    // MARK: - Animation Values
-    @objc public static let fakeChatStartDelay: TimeInterval = 1
-    @objc public static let fakeChatAnimationDuration: TimeInterval = 0.4
-    @objc public static let fakeChatDelay: TimeInterval = 1.5
-    @objc public static let fakeChatMessagePopAnimationStartScale: CGFloat = 0.6
 }

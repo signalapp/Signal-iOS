@@ -39,7 +39,7 @@ final class PermissionMissingModal : Modal {
         // Settings button
         let settingsButton = UIButton()
         settingsButton.set(.height, to: Values.mediumButtonHeight)
-        settingsButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        settingsButton.layer.cornerRadius = Modal.buttonCornerRadius
         settingsButton.backgroundColor = Colors.buttonBackground
         settingsButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         settingsButton.setTitleColor(Colors.text, for: UIControl.State.normal)

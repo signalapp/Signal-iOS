@@ -20,7 +20,7 @@ class Modal : BaseVC {
     lazy var cancelButton: UIButton = {
         let result = UIButton()
         result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Values.modalButtonCornerRadius
+        result.layer.cornerRadius = Modal.buttonCornerRadius
         result.backgroundColor = Colors.buttonBackground
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
@@ -30,6 +30,7 @@ class Modal : BaseVC {
     
     // MARK: Settings
     private static let cornerRadius: CGFloat = 10
+    static let buttonCornerRadius = CGFloat(5)
     
     // MARK: Lifecycle
     override func viewDidLoad() {

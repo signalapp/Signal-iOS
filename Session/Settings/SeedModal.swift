@@ -48,7 +48,7 @@ final class SeedModal : Modal {
         // Set up copy button
         let copyButton = UIButton()
         copyButton.set(.height, to: Values.mediumButtonHeight)
-        copyButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        copyButton.layer.cornerRadius = Modal.buttonCornerRadius
         copyButton.backgroundColor = Colors.buttonBackground
         copyButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         copyButton.setTitleColor(Colors.text, for: UIControl.State.normal)

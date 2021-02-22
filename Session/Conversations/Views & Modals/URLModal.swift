@@ -37,7 +37,7 @@ final class URLModal : Modal {
         // Open button
         let openButton = UIButton()
         openButton.set(.height, to: Values.mediumButtonHeight)
-        openButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        openButton.layer.cornerRadius = Modal.buttonCornerRadius
         openButton.backgroundColor = Colors.buttonBackground
         openButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         openButton.setTitleColor(Colors.text, for: UIControl.State.normal)

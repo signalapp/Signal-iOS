@@ -39,7 +39,7 @@ final class BlockedModal : Modal {
         // Unblock button
         let unblockButton = UIButton()
         unblockButton.set(.height, to: Values.mediumButtonHeight)
-        unblockButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        unblockButton.layer.cornerRadius = Modal.buttonCornerRadius
         unblockButton.backgroundColor = Colors.buttonBackground
         unblockButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         unblockButton.setTitleColor(Colors.text, for: UIControl.State.normal)

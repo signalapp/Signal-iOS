@@ -23,7 +23,7 @@ final class NukeDataModal : Modal {
         // Set up nuke data button
         let nukeDataButton = UIButton()
         nukeDataButton.set(.height, to: Values.mediumButtonHeight)
-        nukeDataButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        nukeDataButton.layer.cornerRadius = Modal.buttonCornerRadius
         if isDarkMode {
             nukeDataButton.backgroundColor = Colors.destructive
         }

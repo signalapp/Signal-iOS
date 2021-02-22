@@ -7,6 +7,8 @@ final class OptionView : UIView {
     private let isRecommended: Bool
     var isSelected = false { didSet { handleIsSelectedChanged() } }
 
+    private static let cornerRadius: CGFloat = 8
+    
     init(title: String, explanation: String, delegate: OptionViewDelegate, isRecommended: Bool = false) {
         self.title = title
         self.explanation = explanation
@@ -27,7 +29,7 @@ final class OptionView : UIView {
     private func setUpViewHierarchy() {
         backgroundColor = Colors.pnOptionBackground
         // Round corners
-        layer.cornerRadius = Values.pnOptionCornerRadius
+        layer.cornerRadius = OptionView.cornerRadius
         // Set up border
         layer.borderWidth = 1
         layer.borderColor = Colors.pnOptionBorder.cgColor

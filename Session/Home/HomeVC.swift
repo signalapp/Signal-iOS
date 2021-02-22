@@ -265,8 +265,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
         let pathStatusView = PathStatusView()
         pathStatusView.accessibilityLabel = "Current onion routing path button"
-        pathStatusView.set(.width, to: Values.pathStatusViewSize)
-        pathStatusView.set(.height, to: Values.pathStatusViewSize)
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
         pathStatusViewContainer.addSubview(pathStatusView)
         pathStatusView.center(.horizontal, in: pathStatusViewContainer)
         pathStatusView.center(.vertical, in: pathStatusViewContainer)

@@ -35,7 +35,7 @@ final class LinkPreviewModal : Modal {
         // Enable button
         let enableButton = UIButton()
         enableButton.set(.height, to: Values.mediumButtonHeight)
-        enableButton.layer.cornerRadius = Values.modalButtonCornerRadius
+        enableButton.layer.cornerRadius = Modal.buttonCornerRadius
         enableButton.backgroundColor = Colors.buttonBackground
         enableButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         enableButton.setTitleColor(Colors.text, for: UIControl.State.normal)

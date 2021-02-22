@@ -11,7 +11,7 @@ final class SeedReminderView : UIView {
         result.progressViewStyle = .bar
         result.progressTintColor = Colors.accent
         result.backgroundColor = isLightMode ? UIColor(hex: 0x000000).withAlphaComponent(0.1) : UIColor(hex: 0xFFFFFF).withAlphaComponent(0.1)
-        result.set(.height, to: Values.progressBarThickness)
+        result.set(.height, to: SeedReminderView.progressBarThickness)
         return result
     }()
     
@@ -31,6 +31,9 @@ final class SeedReminderView : UIView {
         result.numberOfLines = 0
         return result
     }()
+    
+    // MARK: Settings
+    private static let progressBarThickness: CGFloat = 2
     
     // MARK: Lifecycle
     init(hasContinueButton: Bool) {

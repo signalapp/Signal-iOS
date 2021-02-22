@@ -2,6 +2,8 @@ import UIKit
 
 final class PathStatusView : UIView {
     
+    static let size = CGFloat(8)
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
@@ -15,7 +17,7 @@ final class PathStatusView : UIView {
     }
     
     private func setUpViewHierarchy() {
-        layer.cornerRadius = Values.pathStatusViewSize / 2
+        layer.cornerRadius = PathStatusView.size / 2
         layer.masksToBounds = false
         if OnionRequestAPI.paths.isEmpty {
             OnionRequestAPI.paths = Storage.shared.getOnionRequestPaths()
@@ -36,7 +38,7 @@ final class PathStatusView : UIView {
 
     private func setColor(to color: UIColor, isAnimated: Bool) {
         backgroundColor = color
-        let size = Values.pathStatusViewSize
+        let size = PathStatusView.size
         let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: color, isAnimated: isAnimated, radius: isLightMode ? 6 : 8)
         setCircularGlow(with: glowConfiguration)
     }
