@@ -29,7 +29,7 @@ final class OptionView : UIView {
         // Round corners
         layer.cornerRadius = Values.pnOptionCornerRadius
         // Set up border
-        layer.borderWidth = Values.borderThickness
+        layer.borderWidth = 1
         layer.borderColor = Colors.pnOptionBorder.cgColor
         // Set up shadow
         layer.shadowColor = UIColor.black.cgColor
@@ -88,7 +88,7 @@ final class OptionView : UIView {
         layer.add(borderAnimation, forKey: borderAnimation.keyPath)
         layer.borderColor = newBorderColor
         // Animate shadow color
-        let newShadowColor = isSelected ? Colors.newConversationButtonShadow.cgColor : UIColor.black.cgColor
+        let newShadowColor = isSelected ? Colors.expandedButtonGlowColor.cgColor : UIColor.black.cgColor
         let shadowAnimation = CABasicAnimation(keyPath: "shadowColor")
         shadowAnimation.fromValue = layer.shadowColor
         shadowAnimation.toValue = newShadowColor

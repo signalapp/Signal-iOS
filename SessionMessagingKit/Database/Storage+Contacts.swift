@@ -1,4 +1,3 @@
-import SessionProtocolKit
 
 extension Storage {
     

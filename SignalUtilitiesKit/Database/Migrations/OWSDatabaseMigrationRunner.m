@@ -26,8 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
     return @[
-        [SNContactsMigration new],
-        [SNClosedGroupsV2Migration new]
+        [SNContactsMigration new]
     ];
 }
 

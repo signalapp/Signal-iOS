@@ -30,7 +30,7 @@ class BaseVC : UIViewController {
     internal func setUpGradientBackground() {
         hasGradient = true
         view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
+        let gradient = Gradients.defaultBackground
         view.setGradient(gradient)
     }
 

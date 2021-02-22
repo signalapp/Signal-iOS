@@ -6,9 +6,12 @@ public final class TextField : UITextField {
     private let horizontalInset: CGFloat
     private let verticalInset: CGFloat
 
+    static let height: CGFloat = isIPhone5OrSmaller ? CGFloat(48) : CGFloat(80)
+    public static let cornerRadius: CGFloat = 8
+    
     public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
-        self.height = customHeight ?? Values.textFieldHeight
+        self.height = customHeight ?? TextField.height
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
         super.init(frame: CGRect.zero)
@@ -28,7 +31,7 @@ public final class TextField : UITextField {
         textColor = Colors.text
         font = .systemFont(ofSize: Values.smallFontSize)
         let placeholder = NSMutableAttributedString(string: self.placeholder!)
-        let placeholderColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        let placeholderColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         placeholder.addAttribute(.foregroundColor, value: placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         attributedPlaceholder = placeholder
         tintColor = Colors.accent
@@ -36,9 +39,9 @@ public final class TextField : UITextField {
         if usesDefaultHeight {
             set(.height, to: height)
         }
-        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
-        layer.borderWidth = Values.borderThickness
-        layer.cornerRadius = Values.textFieldCornerRadius
+        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.lowOpacity).cgColor
+        layer.borderWidth = 1
+        layer.cornerRadius = TextField.cornerRadius
     }
     
     public override func textRect(forBounds bounds: CGRect) -> CGRect {

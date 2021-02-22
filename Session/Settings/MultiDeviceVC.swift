@@ -104,8 +104,8 @@ final class MultiDeviceVC : BaseVC {
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
         mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? 4 : Values.smallSpacing)
-        mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
-        mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
+        mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
+        mnemonicLabelContainer.layer.borderWidth = 1
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         let stepsLabel1Container = UIView()
         stepsLabel1Container.addSubview(stepsLabel1)

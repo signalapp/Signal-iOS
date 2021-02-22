@@ -89,7 +89,7 @@ final class UserCell : UITableViewCell {
         case .none: accessoryImageView.isHidden = true
         case .lock:
             accessoryImageView.isHidden = false
-            accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").asTintedImage(color: Colors.text.withAlphaComponent(Values.unimportantElementOpacity))!
+            accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").asTintedImage(color: Colors.text.withAlphaComponent(Values.mediumOpacity))!
         case .tick(let isSelected):
             accessoryImageView.isHidden = false
             let icon = isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")

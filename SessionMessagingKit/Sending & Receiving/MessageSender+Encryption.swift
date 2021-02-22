@@ -1,4 +1,3 @@
-import SessionProtocolKit
 import SessionUtilitiesKit
 import Sodium
 

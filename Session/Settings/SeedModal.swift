@@ -34,12 +34,12 @@ final class SeedModal : Modal {
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
         mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? 4 : Values.smallSpacing)
-        mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
-        mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
+        mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
+        mnemonicLabelContainer.layer.borderWidth = 1
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = NSLocalizedString("modal_seed_explanation", comment: "")
         explanationLabel.numberOfLines = 0

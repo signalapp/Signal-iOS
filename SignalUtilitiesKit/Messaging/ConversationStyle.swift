@@ -90,18 +90,13 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func updateProperties() {
-        if thread.isGroupThread() {
-            gutterLeading = 12 + Values.smallProfilePictureSize + 12
-            gutterTrailing = 16
-        } else {
-            gutterLeading = 16
-            gutterTrailing = 16
-        }
-        fullWidthGutterLeading = 16
-        fullWidthGutterTrailing = 16
-        headerGutterLeading = 16
-        headerGutterTrailing = 16
-        errorGutterTrailing = 16
+        gutterLeading = thread.isGroupThread() ? (12 + Values.smallProfilePictureSize + 12) : Values.mediumSpacing
+        gutterTrailing = Values.mediumSpacing
+        fullWidthGutterLeading = Values.mediumSpacing
+        fullWidthGutterTrailing = Values.mediumSpacing
+        headerGutterLeading = Values.mediumSpacing
+        headerGutterTrailing = Values.mediumSpacing
+        errorGutterTrailing = Values.mediumSpacing
 
         if thread is TSGroupThread {
             maxMessageWidth = floor(contentWidth)
@@ -206,7 +201,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(Values.unimportantElementOpacity)
+        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(Values.mediumOpacity)
     }
 
     @objc

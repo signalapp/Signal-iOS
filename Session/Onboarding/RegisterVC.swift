@@ -64,8 +64,8 @@ final class RegisterVC : BaseVC {
         let publicKeyLabelContainer = UIView()
         publicKeyLabelContainer.addSubview(publicKeyLabel)
         publicKeyLabel.pin(to: publicKeyLabelContainer, withInset: Values.mediumSpacing)
-        publicKeyLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
-        publicKeyLabelContainer.layer.borderWidth = Values.borderThickness
+        publicKeyLabelContainer.layer.cornerRadius = TextField.cornerRadius
+        publicKeyLabelContainer.layer.borderWidth = 1
         publicKeyLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()

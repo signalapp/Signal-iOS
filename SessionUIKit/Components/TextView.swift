@@ -12,13 +12,13 @@ public final class TextView : UITextView, UITextViewDelegate {
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         return result
     }()
 
     public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
-        self.height = customHeight ?? Values.textFieldHeight
+        self.height = customHeight ?? TextField.height
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
         self.placeholder = placeholder
@@ -47,9 +47,9 @@ public final class TextView : UITextView, UITextViewDelegate {
         if usesDefaultHeight {
             set(.height, to: height)
         }
-        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
-        layer.borderWidth = Values.borderThickness
-        layer.cornerRadius = Values.textFieldCornerRadius
+        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.lowOpacity).cgColor
+        layer.borderWidth = 1
+        layer.cornerRadius = TextField.cornerRadius
         let horizontalInset = usesDefaultHeight ? self.horizontalInset : Values.mediumSpacing
         textContainerInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
         addSubview(placeholderLabel)

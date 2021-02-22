@@ -23,7 +23,7 @@ public final class Colors : NSObject {
     @objc public static var navigationBarBackground: UIColor { UIColor(named: "session_navigation_bar_background")! }
     @objc public static var searchBarPlaceholder: UIColor { UIColor(named: "session_search_bar_placeholder")! } // Also used for the icons
     @objc public static var searchBarBackground: UIColor { UIColor(named: "session_search_bar_background")! }
-    @objc public static var newConversationButtonShadow: UIColor { UIColor(named: "session_new_conversation_button_shadow")! }
+    @objc public static var expandedButtonGlowColor: UIColor { UIColor(named: "session_expanded_button_glow_color")! }
     @objc public static var separator: UIColor { UIColor(named: "session_separator")! }
     @objc public static var unimportantButtonBackground: UIColor { UIColor(named: "session_unimportant_button_background")! }
     @objc public static var buttonBackground: UIColor { UIColor(named: "session_button_background")! }

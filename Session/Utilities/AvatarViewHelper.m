@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
-    [LKAppearanceUtilities switchToImagePickerAppearance];
+    [SNAppearance switchToImagePickerAppearance];
     
     [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
-    [LKAppearanceUtilities switchToImagePickerAppearance];
+    [SNAppearance switchToImagePickerAppearance];
     
     [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
-    [LKAppearanceUtilities switchToSessionAppearance];
+    [SNAppearance switchToSessionAppearance];
     
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
 
-    [LKAppearanceUtilities switchToSessionAppearance];
+    [SNAppearance switchToSessionAppearance];
     
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
 

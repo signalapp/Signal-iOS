@@ -722,7 +722,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customHeaderHeight) {
-        OWSAssertDebug([section.customHeaderHeight floatValue] > 0);
         return [section.customHeaderHeight floatValue];
     } else if (section.headerTitle.length > 0) {
         return UITableViewAutomaticDimension;

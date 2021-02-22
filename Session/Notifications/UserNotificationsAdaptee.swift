@@ -188,7 +188,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationViewController else {
+        guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationVC else {
             return true
         }
 

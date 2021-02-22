@@ -4,7 +4,6 @@ FOUNDATION_EXPORT double SignalUtilitiesKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 
 @import SessionMessagingKit;
-@import SessionProtocolKit;
 @import SessionSnodeKit;
 @import SessionUtilitiesKit;
 

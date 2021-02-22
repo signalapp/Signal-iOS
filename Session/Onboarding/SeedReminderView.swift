@@ -25,7 +25,7 @@ final class SeedReminderView : UIView {
     
     lazy var subtitleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
         result.lineBreakMode = .byWordWrapping
         result.numberOfLines = 0

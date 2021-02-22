@@ -4,7 +4,6 @@
 
 #import "SignalApp.h"
 #import "AppDelegate.h"
-#import "ConversationViewController.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
@@ -105,16 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-        
-        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
-            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
-                [conversationVC popKeyBoard];
-                return;
-            }
-        }
-        
         [self.homeViewController show:thread with:action highlightedMessageID:focusMessageId animated:isAnimated];
     });
 }
@@ -133,16 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-
-        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
-            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
-                [conversationVC scrollToFirstUnreadMessage:isAnimated];
-                return;
-            }
-        }
-
         [self.homeViewController show:thread with:ConversationViewActionNone highlightedMessageID:nil animated:isAnimated];
     });
 }

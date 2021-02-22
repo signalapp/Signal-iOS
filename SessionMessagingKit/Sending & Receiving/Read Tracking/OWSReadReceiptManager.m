@@ -14,7 +14,6 @@
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -183,15 +182,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self markAsReadBeforeSortId:sortId
-                                  thread:thread
-                           readTimestamp:[NSDate millisecondTimestamp]
-                                wasLocal:YES
-                             transaction:transaction];
-        }];
-    });
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsReadBeforeSortId:sortId
+                              thread:thread
+                       readTimestamp:[NSDate millisecondTimestamp]
+                            wasLocal:YES
+                         transaction:transaction];
+    }];
 }
 
 - (void)messageWasReadLocally:(TSIncomingMessage *)message

@@ -119,7 +119,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         }
         // Set up version label
         let versionLabel = UILabel()
-        versionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        versionLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         versionLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         versionLabel.numberOfLines = 0
         versionLabel.textAlignment = .center

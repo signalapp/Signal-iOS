@@ -11,7 +11,6 @@
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 

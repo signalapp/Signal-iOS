@@ -1,16 +1,16 @@
 
 @objc(LKMentionUtilities)
 public final class MentionUtilities : NSObject {
-    
+
     override private init() { }
-    
+
     @objc public static func highlightMentions(in string: String, threadID: String) -> String {
         return highlightMentions(in: string, isOutgoingMessage: false, threadID: threadID, attributes: [:]).string // isOutgoingMessage and attributes are irrelevant
     }
-    
+
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
         let userPublicKey = getUserHexEncodedPublicKey()
-        let publicChat = Storage.shared.getOpenGroup(for: threadID)
+        let openGroup = Storage.shared.getOpenGroup(for: threadID)
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         }
@@ -27,7 +27,7 @@ public final class MentionUtilities : NSObject {
                 if publicKey == userPublicKey {
                     displayName = OWSProfileManager.shared().localProfileName()
                 } else {
-                    if let publicChat = publicChat {
+                    if let publicChat = openGroup {
                         displayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)
                     } else {
                         displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
@@ -47,9 +47,9 @@ public final class MentionUtilities : NSObject {
         }
         let result = NSMutableAttributedString(string: string, attributes: attributes)
         mentions.forEach { mention in
-            let color = isLightMode && isOutgoingMessage ? UIColor.black : Colors.accent
+            let color = isOutgoingMessage ? (isLightMode ? .white : .black) : Colors.accent
             result.addAttribute(.foregroundColor, value: color, range: mention.range)
-            result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: mention.range)
+            result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.smallFontSize), range: mention.range)
         }
         return result
     }

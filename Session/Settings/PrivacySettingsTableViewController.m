@@ -253,69 +253,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
 }
 
-- (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
-{
-    BOOL enabled = sender.isOn;
-    OWSLogInfo(@"toggled callsHideIPAddress: %@", enabled ? @"ON" : @"OFF");
-    [self.preferences setDoCallsHideIPAddress:enabled];
-}
-
-- (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsSystemCallLogEnabled:sender.isOn];
-}
-
-- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitEnabled:sender.isOn];
-
-    // Show/Hide dependent switch: CallKit privacy
-    [self updateTableContents];
-}
-
-- (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
-
-    // rebuild callUIAdapter since CallKit configuration changed.
-//    [AppEnvironment.shared.callService createCallUIAdapter];
-}
-
-- (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender
-{
-    
-}
-
-- (void)didToggleUDShowIndicatorsSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setShouldShowUnidentifiedDeliveryIndicators:sender.isOn];
-}
-
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
-    BOOL isOn = sender.isOn;
-    if (isOn) {
-        NSString *title = @"Enable Link Previews?";
-        NSString *message = @"You will not have full metadata protection when sending or receiving link previews.";
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:nil]];
-        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [sender setOn:NO animated:YES];
-            SSKPreferences.areLinkPreviewsEnabled = NO;
-        }]];
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
-}
-
-- (void)show2FASettings
-{
-    
+    BOOL enabled = sender.isOn;
+    OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+    SSKPreferences.areLinkPreviewsEnabled = enabled;
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender
