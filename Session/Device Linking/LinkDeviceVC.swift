@@ -35,7 +35,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = "Bla bla foo bar"
+        let message = "Navigate to Settings → Recovery Phrase on your other device to show your QR code."
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -117,7 +117,8 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        print(string)
+        guard let seed = string.data(using: .utf8) else { return }
+        continueWithSeed(seed)
     }
     
     func continueWithSeed(_ seed: Data) {
@@ -126,11 +127,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair.hexEncodedPublicKey
         OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
         UserDefaults.standard[.hasViewedSeed] = true
-        UserDefaults.standard[.isUsingFullAPNs] = true // TODO: Get this from the sync message or show the PN mode screen
         TSAccountManager.sharedInstance().didRegister()
-        let syncTokensJob = SyncPushTokensJob(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
-        syncTokensJob.uploadOnlyIfStale = false
-        let _: Promise<Void> = syncTokensJob.run()
         NotificationCenter.default.addObserver(self, selector: #selector(handleConfigurationMessageReceived), name: .configurationMessageReceived, object: nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] modal in
             self?.activityIndicatorModal = modal
@@ -138,7 +135,12 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     @objc private func handleConfigurationMessageReceived() {
-        
+        DispatchQueue.main.async {
+            self.navigationController!.dismiss(animated: true) {
+                let pnModeVC = PNModeVC()
+                self.navigationController!.setViewControllers([ pnModeVC ], animated: true)
+            }
+        }
     }
 }
 

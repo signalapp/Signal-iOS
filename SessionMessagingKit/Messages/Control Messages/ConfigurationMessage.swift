@@ -4,16 +4,28 @@ import SessionUtilitiesKit
 public final class ConfigurationMessage : ControlMessage {
     public var closedGroups: Set<ClosedGroup> = []
     public var openGroups: Set<String> = []
+    public var displayName: String?
+    public var profilePictureURL: String?
+    public var profileKey: Data?
     
     public override var ttl: UInt64 { 4 * 24 * 60 * 60 * 1000 }
 
     public override var isSelfSendValid: Bool { true }
     
+    // MARK: Validation
+    public override var isValid: Bool {
+        guard displayName != nil else { return false }
+        return true
+    }
+    
     // MARK: Initialization
     public override init() { super.init() }
 
-    public init(closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
+    public init(displayName: String, profilePictureURL: String?, profileKey: Data?, closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
         super.init()
+        self.displayName = displayName
+        self.profilePictureURL = profilePictureURL
+        self.profileKey = profileKey
         self.closedGroups = closedGroups
         self.openGroups = openGroups
     }
@@ -23,24 +35,36 @@ public final class ConfigurationMessage : ControlMessage {
         super.init(coder: coder)
         if let closedGroups = coder.decodeObject(forKey: "closedGroups") as! Set<ClosedGroup>? { self.closedGroups = closedGroups }
         if let openGroups = coder.decodeObject(forKey: "openGroups") as! Set<String>? { self.openGroups = openGroups }
+        if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
+        if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
+        if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
         coder.encode(closedGroups, forKey: "closedGroups")
         coder.encode(openGroups, forKey: "openGroups")
+        coder.encode(displayName, forKey: "displayName")
+        coder.encode(profilePictureURL, forKey: "profilePictureURL")
+        coder.encode(profileKey, forKey: "profileKey")
     }
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> ConfigurationMessage? {
         guard let configurationProto = proto.configurationMessage else { return nil }
+        let displayName = configurationProto.displayName
+        let profilePictureURL = configurationProto.profilePicture
+        let profileKey = configurationProto.profileKey
         let closedGroups = Set(configurationProto.closedGroups.compactMap { ClosedGroup.fromProto($0) })
         let openGroups = Set(configurationProto.openGroups)
-        return ConfigurationMessage(closedGroups: closedGroups, openGroups: openGroups)
+        return ConfigurationMessage(displayName: displayName, profilePictureURL: profilePictureURL, profileKey: profileKey, closedGroups: closedGroups, openGroups: openGroups)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
-        let configurationProto = SNProtoConfigurationMessage.builder()
+        guard let displayName = displayName else { return nil }
+        let configurationProto = SNProtoConfigurationMessage.builder(displayName: displayName)
+        if let profilePictureURL = profilePictureURL { configurationProto.setProfilePicture(profilePictureURL) }
+        if let profileKey = profileKey { configurationProto.setProfileKey(profileKey) }
         configurationProto.setClosedGroups(closedGroups.compactMap { $0.toProto() })
         configurationProto.setOpenGroups([String](openGroups))
         let contentProto = SNProtoContent.builder()

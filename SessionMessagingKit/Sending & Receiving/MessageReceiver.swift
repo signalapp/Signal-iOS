@@ -152,7 +152,9 @@ public enum MessageReceiver {
             if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
                 isValid = true
             }
-            guard isValid else { throw Error.invalidMessage }
+            guard isValid else {
+                throw Error.invalidMessage
+            }
             // Return
             return (message, proto)
         } else {

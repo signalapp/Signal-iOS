@@ -3126,15 +3126,21 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     // MARK: - SNProtoConfigurationMessageBuilder
 
-    @objc public class func builder() -> SNProtoConfigurationMessageBuilder {
-        return SNProtoConfigurationMessageBuilder()
+    @objc public class func builder(displayName: String) -> SNProtoConfigurationMessageBuilder {
+        return SNProtoConfigurationMessageBuilder(displayName: displayName)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoConfigurationMessageBuilder {
-        let builder = SNProtoConfigurationMessageBuilder()
+        let builder = SNProtoConfigurationMessageBuilder(displayName: displayName)
         builder.setClosedGroups(closedGroups)
         builder.setOpenGroups(openGroups)
+        if let _value = profilePicture {
+            builder.setProfilePicture(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
         return builder
     }
 
@@ -3143,6 +3149,12 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         private var proto = SessionProtos_ConfigurationMessage()
 
         @objc fileprivate override init() {}
+
+        @objc fileprivate init(displayName: String) {
+            super.init()
+
+            setDisplayName(displayName)
+        }
 
         @objc public func addClosedGroups(_ valueParam: SNProtoConfigurationMessageClosedGroup) {
             var items = proto.closedGroups
@@ -3164,6 +3176,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
             proto.openGroups = wrappedItems
         }
 
+        @objc public func setDisplayName(_ valueParam: String) {
+            proto.displayName = valueParam
+        }
+
+        @objc public func setProfilePicture(_ valueParam: String) {
+            proto.profilePicture = valueParam
+        }
+
+        @objc public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
         @objc public func build() throws -> SNProtoConfigurationMessage {
             return try SNProtoConfigurationMessage.parseProto(proto)
         }
@@ -3177,14 +3201,38 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     @objc public let closedGroups: [SNProtoConfigurationMessageClosedGroup]
 
+    @objc public let displayName: String
+
     @objc public var openGroups: [String] {
         return proto.openGroups
     }
 
+    @objc public var profilePicture: String? {
+        guard proto.hasProfilePicture else {
+            return nil
+        }
+        return proto.profilePicture
+    }
+    @objc public var hasProfilePicture: Bool {
+        return proto.hasProfilePicture
+    }
+
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
     private init(proto: SessionProtos_ConfigurationMessage,
-                 closedGroups: [SNProtoConfigurationMessageClosedGroup]) {
+                 closedGroups: [SNProtoConfigurationMessageClosedGroup],
+                 displayName: String) {
         self.proto = proto
         self.closedGroups = closedGroups
+        self.displayName = displayName
     }
 
     @objc
@@ -3201,12 +3249,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         var closedGroups: [SNProtoConfigurationMessageClosedGroup] = []
         closedGroups = try proto.closedGroups.map { try SNProtoConfigurationMessageClosedGroup.parseProto($0) }
 
+        guard proto.hasDisplayName else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: displayName")
+        }
+        let displayName = proto.displayName
+
         // MARK: - Begin Validation Logic for SNProtoConfigurationMessage -
 
         // MARK: - End Validation Logic for SNProtoConfigurationMessage -
 
         let result = SNProtoConfigurationMessage(proto: proto,
-                                                 closedGroups: closedGroups)
+                                                 closedGroups: closedGroups,
+                                                 displayName: displayName)
         return result
     }
 

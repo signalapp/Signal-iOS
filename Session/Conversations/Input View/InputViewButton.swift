@@ -46,6 +46,9 @@ final class InputViewButton : UIView {
             let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
             addSubview(blurView)
             blurView.pin(to: self)
+            layer.borderWidth = Values.separatorThickness
+            let borderColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.veryLowOpacity)
+            layer.borderColor = borderColor.cgColor
         }
         backgroundView.backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
         addSubview(backgroundView)
