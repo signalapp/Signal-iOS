@@ -136,6 +136,7 @@ public final class VoiceMessageView : UIView {
 
     private func handleIsPlayingChanged() {
         toggleImageView.image = isPlaying ? UIImage(named: "Pause") : UIImage(named: "Play")
+        if !isPlaying { progress = 0 }
     }
 
     private func handleProgressChanged() {
@@ -144,7 +145,9 @@ public final class VoiceMessageView : UIView {
         if isDownloaded { loader.stopAnimating() } else if !loader.isAnimating { loader.startAnimating() }
         guard isDownloaded else { return }
         countdownLabel.text = OWSFormat.formatDurationSeconds(duration - progress)
-        guard viewItem.audioProgressSeconds > 0 && viewItem.audioDurationSeconds > 0 else { return }
+        guard viewItem.audioProgressSeconds > 0 && viewItem.audioDurationSeconds > 0 else {
+            return progressViewRightConstraint.constant = -VoiceMessageView.width
+        }
         let fraction = viewItem.audioProgressSeconds / viewItem.audioDurationSeconds
         progressViewRightConstraint.constant = -(VoiceMessageView.width * (1 - fraction))
     }
