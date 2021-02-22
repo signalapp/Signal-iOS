@@ -47,6 +47,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         result.addSubview(blurView)
         blurView.pin(to: result)
+        result.alpha = 0
         return result
     }()
     
@@ -109,7 +110,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
         // Mentions
-        addSubview(mentionsViewContainer)
+        insertSubview(mentionsViewContainer, belowSubview: mainStackView)
         mentionsViewContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
         mentionsViewContainer.pin(.bottom, to: .top, of: self)
         mentionsViewContainer.addSubview(mentionsView)

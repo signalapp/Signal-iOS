@@ -37,6 +37,16 @@ final class InputViewButton : UIView {
     
     private func setUpViewHierarchy() {
         backgroundColor = .clear
+        if hasOpaqueBackground {
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = isLightMode ? .white : .black
+            backgroundView.alpha = Values.lowOpacity
+            addSubview(backgroundView)
+            backgroundView.pin(to: self)
+            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+            addSubview(blurView)
+            blurView.pin(to: self)
+        }
         backgroundView.backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
         addSubview(backgroundView)
         backgroundView.pin(to: self)

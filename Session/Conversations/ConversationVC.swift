@@ -127,7 +127,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         view.addSubview(messagesTableView)
         messagesTableView.pin(to: view)
         view.addSubview(scrollButton)
-        scrollButton.pin(.right, to: .right, of: view, withInset: -Values.mediumSpacing)
+        scrollButton.pin(.right, to: .right, of: view, withInset: -22)
         // Blocked banner
         addOrRemoveBlockedBanner()
         // Notifications
@@ -208,7 +208,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if !didConstrainScrollButton {
             // Bit of a hack to do this here, but it works out.
-            scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + Values.mediumSpacing))
+            scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 22))
             didConstrainScrollButton = true
         }
         UIView.animate(withDuration: 0.25) {
