@@ -160,9 +160,9 @@ extension MessageReceiver {
         }
         // Notification
         UserDefaults.standard[.hasSyncedConfiguration] = true
+        NotificationCenter.default.post(name: .configurationMessageReceived, object: nil)
         // Closed groups
         let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-        NotificationCenter.default.post(name: .configurationMessageReceived, object: nil)
         for closedGroup in message.closedGroups {
             guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
             handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,

@@ -135,6 +135,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     @objc private func handleConfigurationMessageReceived() {
+        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         DispatchQueue.main.async {
             self.navigationController!.dismiss(animated: true) {
                 let pnModeVC = PNModeVC()
