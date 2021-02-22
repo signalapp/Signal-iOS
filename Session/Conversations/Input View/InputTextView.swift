@@ -3,6 +3,8 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     private let snDelegate: InputTextViewDelegate
     private lazy var heightConstraint = self.set(.height, to: minHeight)
     
+    public override var text: String! { didSet { handleTextChanged() } }
+    
     // MARK: UI Components
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
@@ -52,6 +54,10 @@ public final class InputTextView : UITextView, UITextViewDelegate {
 
     // MARK: Updating
     public func textViewDidChange(_ textView: UITextView) {
+        handleTextChanged()
+    }
+    
+    private func handleTextChanged() {
         defer { snDelegate.inputTextViewDidChangeContent(self) }
         placeholderLabel.isHidden = !text.isEmpty
         let width = frame.width
