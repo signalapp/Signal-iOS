@@ -9,6 +9,8 @@ final class SettingRow : UIView {
         result.layer.masksToBounds = true
         return result
     }()
+    
+    private static let defaultHeight: CGFloat = 60
 
     init(autoSize: Bool) {
         self.autoSize = autoSize
@@ -31,7 +33,7 @@ final class SettingRow : UIView {
     private func setUpUI() {
         // Height
         if !autoSize {
-            let height = Values.defaultSettingRowHeight
+            let height = SettingRow.defaultHeight
             set(.height, to: height)
         }
         // Shadow

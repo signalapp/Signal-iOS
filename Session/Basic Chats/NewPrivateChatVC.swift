@@ -77,10 +77,10 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         pageVCView.set(.width, to: screen.width)
         let height: CGFloat
         if #available(iOS 13, *) {
-            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight
+            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight
         } else {
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
-            height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
         }
         pageVCView.set(.height, to: height)
         enterPublicKeyVC.constrainHeight(to: height)
@@ -183,7 +183,7 @@ private final class EnterPublicKeyVC : UIViewController {
         view.backgroundColor = .clear
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         explanationLabel.text = NSLocalizedString("vc_enter_public_key_explanation", comment: "")
         explanationLabel.numberOfLines = 0

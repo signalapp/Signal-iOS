@@ -69,7 +69,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
         let statusBarHeight = UIApplication.shared.statusBarFrame.height
-        let height = navigationController!.view.bounds.height - navigationBar.height() - Values.tabBarHeight - statusBarHeight
+        let height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
         pageVCView.set(.height, to: height)
         recoveryPhraseVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)

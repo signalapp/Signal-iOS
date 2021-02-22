@@ -23,7 +23,7 @@ final class ConversationCell : UITableViewCell {
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text
         result.lineBreakMode = .byTruncatingTail
-        result.alpha = Values.conversationCellTimestampOpacity
+        result.alpha = Values.lowOpacity
         return result
     }()
     
@@ -40,10 +40,13 @@ final class ConversationCell : UITableViewCell {
     private lazy var statusIndicatorView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
-        result.layer.cornerRadius = Values.conversationCellStatusIndicatorSize / 2
+        result.layer.cornerRadius = ConversationCell.conversationCellStatusIndicatorSize / 2
         result.layer.masksToBounds = true
         return result
     }()
+    
+    // MARK: Settings
+    private static let conversationCellStatusIndicatorSize: CGFloat = 14
     
     // MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -107,8 +110,8 @@ final class ConversationCell : UITableViewCell {
         bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
         bottomLabelStackView.set(.height, to: 18)
         bottomLabelSpacer.set(.height, to: 18)
-        statusIndicatorView.set(.width, to: Values.conversationCellStatusIndicatorSize)
-        statusIndicatorView.set(.height, to: Values.conversationCellStatusIndicatorSize)
+        statusIndicatorView.set(.width, to: ConversationCell.conversationCellStatusIndicatorSize)
+        statusIndicatorView.set(.height, to: ConversationCell.conversationCellStatusIndicatorSize)
         snippetLabel.pin(to: snippetLabelContainer)
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true

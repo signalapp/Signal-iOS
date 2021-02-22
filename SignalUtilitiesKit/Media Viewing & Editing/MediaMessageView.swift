@@ -415,6 +415,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         OWSAlerts.showErrorAlert(message: NSLocalizedString("INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE", comment: "Message for the alert indicating that an audio file is invalid."))
     }
 
+    public func audioPlayerDidFinishPlaying(_ player: OWSAudioPlayer, successfully flag: Bool) {
+        // Do nothing
+    }
+
     private func ensureButtonState() {
         if playbackState == .playing {
             setAudioIconToPause()

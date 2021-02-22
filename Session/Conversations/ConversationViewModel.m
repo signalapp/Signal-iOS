@@ -5,7 +5,6 @@
 #import "ConversationViewModel.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
-#import "OWSMessageBubbleView.h"
 #import "OWSQuotedReplyModel.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -166,12 +165,12 @@ NS_ASSUME_NONNULL_BEGIN
 // Always load up to n messages when user arrives.
 //
 // The smaller this number is, the faster the conversation can display.
-// To test, shrink you accessability font as much as possible, then count how many 1-line system info messages (our
+// To test, shrink you accessibility font as much as possible, then count how many 1-line system info messages (our
 // shortest cells) can fit on screen at a time on an iPhoneX
 //
 // PERF: we could do less messages on shorter (older, slower) devices
 // PERF: we could cache the cell height, since some messages will be much taller.
-static const int kYapDatabasePageSize = 18;
+static const int kYapDatabasePageSize = 100;
 
 // Never show more than n messages in conversation view when user arrives.
 static const int kConversationInitialMaxRangeSize = 300;
@@ -622,13 +621,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
-        // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
-        // they are saved and moved into the `persistedViewItems`
-        // Loki: Original code
-        // ========
-//        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
-        // ========
-
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId]);
@@ -1049,7 +1041,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
-    ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     [self ensureConversationProfileState];
 
@@ -1062,8 +1053,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
                                                                             isGroupThread:isGroupThread
-                                                                              transaction:transaction
-                                                                        conversationStyle:conversationStyle];
+                                                                              transaction:transaction];
               }
               OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
               viewItemCache[interaction.uniqueId] = viewItem;
@@ -1083,13 +1073,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 [TSInteraction fetchObjectWithUniqueID:uniqueId transaction:transaction];
             if (!interaction) {
                 OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-                // TODO: Add analytics.
                 hasError = YES;
                 continue;
             }
             if (!interaction.uniqueId) {
                 OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
-                // TODO: Add analytics.
                 hasError = YES;
                 continue;
             }
@@ -1226,7 +1214,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         id<ConversationViewItem> viewItem = viewItems[i];
         id<ConversationViewItem> _Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
         id<ConversationViewItem> _Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
-        BOOL shouldShowSenderAvatar = NO;
+        BOOL shouldShowSenderProfilePicture = NO;
         BOOL shouldHideFooter = NO;
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
@@ -1322,9 +1310,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             }
 
             if (viewItem.isGroupThread) {
-                // Show the sender name for incoming group messages unless
-                // the previous message has the same sender name and
-                // no "date break" separates us.
+                // Show the sender name for incoming group messages unless the
+                // previous message has the same sender and no "date break" separates us.
                 BOOL shouldShowSenderName = YES;
                 NSString *_Nullable previousIncomingSenderId = nil;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
@@ -1333,37 +1320,18 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                     previousIncomingSenderId = previousIncomingMessage.authorId;
                     OWSAssertDebug(previousIncomingSenderId.length > 0);
 
-                    shouldShowSenderName
-                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.hasCellHeader);
+                    shouldShowSenderName = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId] || viewItem.hasCellHeader);
                 }
                 
                 if (shouldShowSenderName) {
                     senderName = [[NSAttributedString alloc] initWithString:[SSKEnvironment.shared.profileManager profileNameForRecipientWithID:incomingSenderId avoidingWriteTransaction:YES]];
-                    
-                    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-                        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-                        NSData *groupId = groupThread.groupModel.groupId;
-                        NSString *stringGroupId = [[NSString alloc] initWithData:groupId encoding:NSUTF8StringEncoding];
-                        
-                        if (stringGroupId != nil) {
-                            NSString __block *displayName;
-                            [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                               displayName = [transaction objectForKey:incomingSenderId inCollection:stringGroupId];
-                            }];
-                            if (displayName != nil) {
-                                senderName = [[NSAttributedString alloc] initWithString:displayName attributes:[OWSMessageBubbleView senderNamePrimaryAttributes]];
-                            }
-                        }
-                    }
                 }
 
-                // Show the sender avatar for incoming group messages unless
-                // the next message has the same sender avatar and
-                // no "date break" separates us.
-                shouldShowSenderAvatar = YES;
-                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]);
+                // Show the sender profile picture for incoming group messages unless the
+                // next message has the same sender and no "date break" separates us.
+                shouldShowSenderProfilePicture = YES;
+                if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                    shouldShowSenderProfilePicture = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]);
                 }
             }
         }
@@ -1374,9 +1342,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
         viewItem.isFirstInCluster = isFirstInCluster;
         viewItem.isLastInCluster = isLastInCluster;
-        viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
+        viewItem.shouldShowSenderProfilePicture = shouldShowSenderProfilePicture;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
+        viewItem.wasPreviousItemInfoMessage = (previousViewItem.interaction.interactionType == OWSInteractionType_Info);
     }
 
     self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];

@@ -9,10 +9,10 @@ public final class TabBar : UIView {
     private lazy var tabLabels: [UILabel] = tabs.map { tab in
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.textAlignment = .center
         result.text = tab.title
-        result.set(.height, to: Values.tabBarHeight - Values.separatorThickness - Values.accentLineThickness)
+        result.set(.height, to: TabBar.snHeight - Values.separatorThickness - Values.accentLineThickness)
         return result
     }
     
@@ -33,6 +33,9 @@ public final class TabBar : UIView {
         }
     }
     
+    // MARK: Settings
+    public static let snHeight = isIPhone5OrSmaller ? CGFloat(32) : CGFloat(48)
+    
     // MARK: Lifecycle
     public init(tabs: [Tab]) {
         self.tabs = tabs
@@ -49,7 +52,7 @@ public final class TabBar : UIView {
     }
     
     private func setUpViewHierarchy() {
-        set(.height, to: Values.tabBarHeight)
+        set(.height, to: TabBar.snHeight)
         tabLabels.forEach { tabLabel in
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTabLabelTapped(_:)))
             tabLabel.addGestureRecognizer(tapGestureRecognizer)
@@ -60,7 +63,7 @@ public final class TabBar : UIView {
         tabLabelStackView.spacing = Values.mediumSpacing
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTabLabelTapped(_:)))
         tabLabelStackView.addGestureRecognizer(tapGestureRecognizer)
-        tabLabelStackView.set(.height, to: Values.tabBarHeight - Values.separatorThickness - Values.accentLineThickness)
+        tabLabelStackView.set(.height, to: TabBar.snHeight - Values.separatorThickness - Values.accentLineThickness)
         addSubview(tabLabelStackView)
         let separator = UIView()
         separator.backgroundColor = Colors.separator
@@ -93,7 +96,7 @@ public final class TabBar : UIView {
         tabLabelsCopy.remove(at: index)
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
             tabLabel.textColor = Colors.text
-            tabLabelsCopy.forEach { $0.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity) }
+            tabLabelsCopy.forEach { $0.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity) }
             self.layoutIfNeeded()
         }
     }

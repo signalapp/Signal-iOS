@@ -124,7 +124,6 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - CocoaLumberjack
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
   - FeedKit
@@ -217,6 +216,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: bb4f6cffd6e7c08814b945e1787d01d639036b1e
+PODFILE CHECKSUM: 2fca3f32c171e1324c9e3809b96a32d4a929d05c
 
 COCOAPODS: 1.10.0.rc.1

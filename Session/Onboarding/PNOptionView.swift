@@ -7,6 +7,8 @@ final class OptionView : UIView {
     private let isRecommended: Bool
     var isSelected = false { didSet { handleIsSelectedChanged() } }
 
+    private static let cornerRadius: CGFloat = 8
+    
     init(title: String, explanation: String, delegate: OptionViewDelegate, isRecommended: Bool = false) {
         self.title = title
         self.explanation = explanation
@@ -27,9 +29,9 @@ final class OptionView : UIView {
     private func setUpViewHierarchy() {
         backgroundColor = Colors.pnOptionBackground
         // Round corners
-        layer.cornerRadius = Values.pnOptionCornerRadius
+        layer.cornerRadius = OptionView.cornerRadius
         // Set up border
-        layer.borderWidth = Values.borderThickness
+        layer.borderWidth = 1
         layer.borderColor = Colors.pnOptionBorder.cgColor
         // Set up shadow
         layer.shadowColor = UIColor.black.cgColor
@@ -88,7 +90,7 @@ final class OptionView : UIView {
         layer.add(borderAnimation, forKey: borderAnimation.keyPath)
         layer.borderColor = newBorderColor
         // Animate shadow color
-        let newShadowColor = isSelected ? Colors.newConversationButtonShadow.cgColor : UIColor.black.cgColor
+        let newShadowColor = isSelected ? Colors.expandedButtonGlowColor.cgColor : UIColor.black.cgColor
         let shadowAnimation = CABasicAnimation(keyPath: "shadowColor")
         shadowAnimation.fromValue = layer.shadowColor
         shadowAnimation.toValue = newShadowColor

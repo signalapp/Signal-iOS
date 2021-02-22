@@ -451,6 +451,10 @@ BOOL IsNoteToSelfEnabled(void)
                              changeBlock:^(TSThread *thread) {
                                  [thread setMutedUntilDate:mutedUntilDate];
                              }];
+
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.muteSettingUpdated object:self.uniqueId];
+    }];
 }
 
 @end

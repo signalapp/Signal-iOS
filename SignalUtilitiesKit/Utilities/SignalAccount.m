@@ -7,7 +7,6 @@
 #import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "SignalRecipient.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,7 @@ final class LandingVC : BaseVC {
     // MARK: Components
     private lazy var fakeChatView: FakeChatView = {
         let result = FakeChatView()
-        result.set(.height, to: Values.fakeChatViewHeight)
+        result.set(.height, to: LandingVC.fakeChatViewHeight)
         return result
     }()
     
@@ -23,6 +23,9 @@ final class LandingVC : BaseVC {
         result.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         return result
     }()
+    
+    // MARK: Settings
+    private static let fakeChatViewHeight = isIPhone5OrSmaller ? CGFloat(234) : CGFloat(260)
     
     // MARK: Lifecycle
     override func viewDidLoad() {

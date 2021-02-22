@@ -4,7 +4,6 @@
 
 #import "YapDatabaseTransaction+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

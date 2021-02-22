@@ -19,7 +19,7 @@ public class LoadingViewController: UIViewController {
         
         // Loki: Set gradient background
         view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
+        let gradient = Gradients.defaultBackground
         view.setGradient(gradient)
 
         self.logoView = UIImageView(image: #imageLiteral(resourceName: "SessionGreen64"))

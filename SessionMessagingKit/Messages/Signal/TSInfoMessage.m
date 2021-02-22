@@ -4,7 +4,6 @@
 
 #import "TSInfoMessage.h"
 #import "SSKEnvironment.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 

@@ -6,7 +6,7 @@ public final class Separator : UIView {
     // MARK: Components
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.textAlignment = .center
         return result
@@ -19,6 +19,9 @@ public final class Separator : UIView {
         result.fillColor = UIColor.clear.cgColor
         return result
     }()
+    
+    // MARK: Settings
+    private static let height: CGFloat = 24
     
     // MARK: Initialization
     public init(title: String) {
@@ -41,7 +44,7 @@ public final class Separator : UIView {
         titleLabel.center(.horizontal, in: self)
         titleLabel.center(.vertical, in: self)
         layer.insertSublayer(lineLayer, at: 0)
-        set(.height, to: Values.separatorLabelHeight)
+        set(.height, to: Separator.height)
     }
     
     // MARK: Updating
@@ -57,7 +60,7 @@ public final class Separator : UIView {
         path.move(to: CGPoint(x: 0, y: h / 2))
         let titleLabelFrame = titleLabel.frame.insetBy(dx: -10, dy: -6)
         path.addLine(to: CGPoint(x: titleLabelFrame.origin.x, y: h / 2))
-        let oval = UIBezierPath(roundedRect: titleLabelFrame, cornerRadius: Values.separatorLabelHeight / 2)
+        let oval = UIBezierPath(roundedRect: titleLabelFrame, cornerRadius: Separator.height / 2)
         path.append(oval)
         path.move(to: CGPoint(x: titleLabelFrame.origin.x + titleLabelFrame.width, y: h / 2))
         path.addLine(to: CGPoint(x: w, y: h / 2))

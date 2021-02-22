@@ -7,10 +7,10 @@ class Modal : BaseVC {
     lazy var contentView: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.modalBackground
-        result.layer.cornerRadius = Values.modalCornerRadius
+        result.layer.cornerRadius = Modal.cornerRadius
         result.layer.masksToBounds = false
         result.layer.borderColor = isLightMode ? UIColor.white.cgColor : Colors.modalBorder.cgColor
-        result.layer.borderWidth = Values.borderThickness
+        result.layer.borderWidth = 1
         result.layer.shadowColor = UIColor.black.cgColor
         result.layer.shadowRadius = isLightMode ? 2 : 8
         result.layer.shadowOpacity = isLightMode ? 0.1 : 0.64
@@ -20,7 +20,7 @@ class Modal : BaseVC {
     lazy var cancelButton: UIButton = {
         let result = UIButton()
         result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Values.modalButtonCornerRadius
+        result.layer.cornerRadius = Modal.buttonCornerRadius
         result.backgroundColor = Colors.buttonBackground
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
@@ -28,10 +28,14 @@ class Modal : BaseVC {
         return result
     }()
     
+    // MARK: Settings
+    private static let cornerRadius: CGFloat = 10
+    static let buttonCornerRadius = CGFloat(5)
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let alpha = isLightMode ? CGFloat(0.1) : Values.modalBackgroundOpacity
+        let alpha = isLightMode ? CGFloat(0.1) : Values.highOpacity
         view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(alpha)
         cancelButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))

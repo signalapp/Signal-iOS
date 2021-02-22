@@ -22,6 +22,13 @@ final class FakeChatView : UIView {
         return result
     }()
     
+    private static let bubbleWidth = CGFloat(224)
+    private static let bubbleCornerRadius = CGFloat(10)
+    private static let startDelay: TimeInterval = 1
+    private static let animationDuration: TimeInterval = 0.4
+    private static let chatDelay: TimeInterval = 1.5
+    private static let popAnimationStartScale: CGFloat = 0.6
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
@@ -54,8 +61,8 @@ final class FakeChatView : UIView {
     private func getChatBubble(withText text: String, wasSentByCurrentUser: Bool) -> UIView {
         let result = UIView()
         let bubbleView = UIView()
-        bubbleView.set(.width, to: Values.fakeChatBubbleWidth)
-        bubbleView.layer.cornerRadius = Values.fakeChatBubbleCornerRadius
+        bubbleView.set(.width, to: FakeChatView.bubbleWidth)
+        bubbleView.layer.cornerRadius = FakeChatView.bubbleCornerRadius
         bubbleView.layer.shadowColor = UIColor.black.cgColor
         bubbleView.layer.shadowRadius = isLightMode ? 4 : 8
         bubbleView.layer.shadowOpacity = isLightMode ? 0.16 : 0.24
@@ -83,10 +90,10 @@ final class FakeChatView : UIView {
     }
     
     private func animate() {
-        let animationDuration = Values.fakeChatAnimationDuration
-        let delayBetweenMessages = Values.fakeChatDelay
+        let animationDuration = FakeChatView.animationDuration
+        let delayBetweenMessages = FakeChatView.chatDelay
         chatBubbles.forEach { $0.alpha = 0 }
-        Timer.scheduledTimer(withTimeInterval: Values.fakeChatStartDelay, repeats: false) { [weak self] _ in
+        Timer.scheduledTimer(withTimeInterval: FakeChatView.startDelay, repeats: false) { [weak self] _ in
             self?.showChatBubble(at: 0)
             Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
                 self?.showChatBubble(at: 1)
@@ -117,12 +124,12 @@ final class FakeChatView : UIView {
     
     private func showChatBubble(at index: Int) {
         let chatBubble = chatBubbles[index]
-        UIView.animate(withDuration: Values.fakeChatAnimationDuration) {
+        UIView.animate(withDuration: FakeChatView.animationDuration) {
             chatBubble.alpha = 1
         }
-        let scale = Values.fakeChatMessagePopAnimationStartScale
+        let scale = FakeChatView.popAnimationStartScale
         chatBubble.transform = CGAffineTransform(scaleX: scale, y: scale)
-        UIView.animate(withDuration: Values.fakeChatAnimationDuration, delay: 0, usingSpringWithDamping: 0.68, initialSpringVelocity: 4, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: FakeChatView.animationDuration, delay: 0, usingSpringWithDamping: 0.68, initialSpringVelocity: 4, options: .curveEaseInOut, animations: {
             chatBubble.transform = CGAffineTransform(scaleX: 1, y: 1)
         }, completion: nil)
     }

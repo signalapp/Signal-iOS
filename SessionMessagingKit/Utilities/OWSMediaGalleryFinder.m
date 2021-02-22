@@ -11,7 +11,6 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
 #import <YapDatabase/YapWhitelistBlacklist.h>
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import "TSAttachment.h"
 
 NS_ASSUME_NONNULL_BEGIN

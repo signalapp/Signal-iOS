@@ -4,21 +4,18 @@
 
 #import <CoreServices/CoreServices.h>
 #import "ConversationViewItem.h"
-
-#import "OWSMessageCell.h"
-#import "OWSMessageHeaderView.h"
-#import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
 #import "AnyPromise.h"
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
-
 #import <SessionMessagingKit/TSInteraction.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const SNAudioDidFinishPlayingNotification = @"SNAudioDidFinishPlayingNotification";
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
@@ -102,7 +99,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 @property (nonatomic, nullable) NSString *authorConversationColorName;
-@property (nonatomic, nullable) ConversationStyle *conversationStyle;
 
 @end
 
@@ -111,13 +107,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @implementation ConversationInteractionViewItem
 
 @synthesize shouldShowDate = _shouldShowDate;
-@synthesize shouldShowSenderAvatar = _shouldShowSenderAvatar;
+@synthesize shouldShowSenderProfilePicture = _shouldShowSenderProfilePicture;
 @synthesize unreadIndicator = _unreadIndicator;
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
 @synthesize isGroupThread = _isGroupThread;
+@synthesize isOnlyMessageInCluster = _isOnlyMessageInCluster;
 @synthesize isLastInCluster = _isLastInCluster;
+@synthesize wasPreviousItemInfoMessage = _wasPreviousItemInfoMessage;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
 @synthesize shouldHideFooter = _shouldHideFooter;
@@ -125,11 +123,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
                         transaction:(YapDatabaseReadTransaction *)transaction
-                  conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssertDebug(interaction);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(conversationStyle);
 
     self = [super init];
 
@@ -139,7 +135,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
-    _conversationStyle = conversationStyle;
 
     [self ensureViewState:transaction];
 
@@ -228,13 +223,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderAvatar
+- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderProfilePicture
 {
-    if (_shouldShowSenderAvatar == shouldShowSenderAvatar) {
+    if (_shouldShowSenderProfilePicture == shouldShowSenderProfilePicture) {
         return;
     }
 
-    _shouldShowSenderAvatar = shouldShowSenderAvatar;
+    _shouldShowSenderProfilePicture = shouldShowSenderProfilePicture;
 
     [self clearCachedLayoutState];
 }
@@ -307,114 +302,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return self.cachedCellSize != nil;
 }
 
-- (CGSize)cellSize
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.conversationStyle);
-
-    if (!self.cachedCellSize) {
-        ConversationViewCell *_Nullable measurementCell = [self measurementCell];
-        measurementCell.viewItem = self;
-        measurementCell.conversationStyle = self.conversationStyle;
-        CGSize cellSize = [measurementCell cellSize];
-        self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
-        [measurementCell prepareForReuse];
-    }
-    return [self.cachedCellSize CGSizeValue];
-}
-
-- (nullable ConversationViewCell *)measurementCell
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.interaction);
-
-    // For performance reasons, we cache one instance of each kind of
-    // cell and uses these cells for measurement.
-    static NSMutableDictionary<NSNumber *, ConversationViewCell *> *measurementCellCache = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        measurementCellCache = [NSMutableDictionary new];
-    });
-
-    NSNumber *cellCacheKey = @(self.interaction.interactionType);
-    ConversationViewCell *_Nullable measurementCell = measurementCellCache[cellCacheKey];
-    if (!measurementCell) {
-        switch (self.interaction.interactionType) {
-            case OWSInteractionType_Unknown:
-                OWSFailDebug(@"Unknown interaction type.");
-                return nil;
-            case OWSInteractionType_IncomingMessage:
-            case OWSInteractionType_OutgoingMessage:
-                measurementCell = [OWSMessageCell new];
-                break;
-            case OWSInteractionType_Error:
-            case OWSInteractionType_Info:
-            case OWSInteractionType_Call:
-                measurementCell = [OWSSystemMessageCell new];
-                break;
-            case OWSInteractionType_TypingIndicator:
-                measurementCell = [OWSTypingIndicatorCell new];
-                break;
-        }
-
-        OWSAssertDebug(measurementCell);
-        measurementCellCache[cellCacheKey] = measurementCell;
-    }
-
-    return measurementCell;
-}
-
-- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewItem>)previousLayoutItem
-{
-    OWSAssertDebug(previousLayoutItem);
-
-    if (self.hasCellHeader) {
-        return OWSMessageHeaderViewDateHeaderVMargin;
-    }
-
-    // "Bubble Collapse".  Adjacent messages with the same author should be close together.
-    if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-        TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
-            return 2.f;
-        }
-    } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        return 2.f;
-    }
-
-    return 12.f;
-}
-
-- (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
-                                             indexPath:(NSIndexPath *)indexPath
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(collectionView);
-    OWSAssertDebug(indexPath);
-    OWSAssertDebug(self.interaction);
-
-    switch (self.interaction.interactionType) {
-        case OWSInteractionType_Unknown:
-            OWSFailDebug(@"Unknown interaction type.");
-            return nil;
-        case OWSInteractionType_IncomingMessage:
-        case OWSInteractionType_OutgoingMessage:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_Error:
-        case OWSInteractionType_Info:
-        case OWSInteractionType_Call:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_TypingIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-    }
-}
-
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment
 {
     OWSAssertDebug(self.mediaAlbumItems.count > 0);
@@ -446,7 +333,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.audioProgressSeconds = progress;
 
-    [self.lastAudioMessageView setProgress:progress / duration];
+    [self.lastAudioMessageView setProgress:(int)(progress)];
 }
 
 - (void)showInvalidAudioFileAlert
@@ -456,6 +343,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [OWSAlerts
         showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
                                       @"Message for the alert indicating that an audio file is invalid.")];
+}
+
+- (void)audioPlayerDidFinishPlaying:(OWSAudioPlayer *)player successfully:(BOOL)flag
+{
+    if (!flag) { return; }
+    [NSNotificationCenter.defaultCenter postNotificationName:SNAudioDidFinishPlayingNotification object:nil];
 }
 
 #pragma mark - Displayable Text
@@ -659,9 +552,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     if (self.hasBodyText) {
         if (self.messageCellType == OWSMessageCellType_Unknown) {
-//            OWSAssertDebug(message.attachmentIds.count == 0
-//                || (message.attachmentIds.count == 1 &&
-//                       [message oversizeTextAttachmentWithTransaction:transaction] != nil));
             self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         }
         OWSAssertDebug(self.displayableBodyText);

@@ -3,7 +3,7 @@
 // https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
 // more information on database handling.
 
-final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
@@ -36,7 +36,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         result.backgroundColor = .clear
         result.separatorStyle = .none
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
-        let bottomInset = Values.newConversationButtonBottomOffset + Values.newConversationButtonExpandedSize + Values.largeSpacing + Values.newConversationButtonCollapsedSize
+        let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         result.showsVerticalScrollIndicator = false
         return result
@@ -124,10 +124,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         view.addSubview(newConversationButtonSet)
         newConversationButtonSet.center(.horizontal, in: view)
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
-        // Previewing
-        if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: tableView)
-        }
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
@@ -269,8 +265,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
         let pathStatusView = PathStatusView()
         pathStatusView.accessibilityLabel = "Current onion routing path button"
-        pathStatusView.set(.width, to: Values.pathStatusViewSize)
-        pathStatusView.set(.height, to: Values.pathStatusViewSize)
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
         pathStatusViewContainer.addSubview(pathStatusView)
         pathStatusView.center(.horizontal, in: pathStatusViewContainer)
         pathStatusView.center(.vertical, in: pathStatusViewContainer)
@@ -295,21 +291,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         present(navigationController, animated: true, completion: nil)
     }
     
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let indexPath = tableView.indexPathForRow(at: location), let thread = self.thread(at: indexPath.row) else { return nil }
-        previewingContext.sourceRect = tableView.rectForRow(at: indexPath)
-        let conversationVC = ConversationViewController()
-        conversationVC.configure(for: thread, action: .none, focusMessageId: nil)
-        conversationVC.peekSetup()
-        return conversationVC
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        guard let conversationVC = viewControllerToCommit as? ConversationViewController else { return }
-        conversationVC.popped()
-        navigationController?.pushViewController(conversationVC, animated: false)
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let thread = self.thread(at: indexPath.row) else { return }
         show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
@@ -321,8 +302,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
             if let presentedVC = self.presentedViewController {
                 presentedVC.dismiss(animated: false, completion: nil)
             }
-            let conversationVC = ConversationViewController()
-            conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
+            let conversationVC = ConversationVC(thread: thread)
             self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
         }
     }
@@ -403,7 +383,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
     }
     
     @objc func joinOpenGroup() {
-        let joinOpenGroupVC = JoinPublicChatVC()
+        let joinOpenGroupVC = JoinOpenGroupVC()
         let navigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
         present(navigationController, animated: true, completion: nil)
     }

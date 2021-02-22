@@ -22,6 +22,11 @@ final class PathVC : BaseVC {
         result.addTarget(self, action: #selector(learnMore), for: UIControl.Event.touchUpInside)
         return result
     }()
+    
+    // MARK: Settings
+    static let dotSize = CGFloat(8)
+    static let expandedDotSize = CGFloat(16)
+    static let rowHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
 
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -44,7 +49,7 @@ final class PathVC : BaseVC {
     private func setUpViewHierarchy() {
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = NSLocalizedString("vc_path_explanation", comment: "")
         explanationLabel.numberOfLines = 0
@@ -131,8 +136,8 @@ final class PathVC : BaseVC {
     // MARK: General
     private func getPathRow(title: String, subtitle: String?, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double) -> UIStackView {
         let lineView = LineView(location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-        lineView.set(.width, to: Values.pathRowExpandedDotSize)
-        lineView.set(.height, to: Values.pathRowHeight)
+        lineView.set(.width, to: PathVC.expandedDotSize)
+        lineView.set(.height, to: PathVC.rowHeight)
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
@@ -188,10 +193,10 @@ private final class LineView : UIView {
 
     private lazy var dotView: UIView = {
         let result = UIView()
-        result.layer.cornerRadius = Values.pathRowDotSize / 2
+        result.layer.cornerRadius = PathVC.dotSize / 2
         let glowRadius: CGFloat = isLightMode ? 1 : 2
         let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
-        let glowConfiguration = UIView.CircularGlowConfiguration(size: Values.pathRowDotSize, color: glowColor, isAnimated: true, animationDuration: 0.5, radius: glowRadius)
+        let glowConfiguration = UIView.CircularGlowConfiguration(size: PathVC.dotSize, color: glowColor, isAnimated: true, animationDuration: 0.5, radius: glowRadius)
         result.setCircularGlow(with: glowConfiguration)
         result.backgroundColor = Colors.accent
         return result
@@ -215,7 +220,7 @@ private final class LineView : UIView {
     
     private func setUpViewHierarchy() {
         let lineView = UIView()
-        lineView.set(.width, to: Values.pathRowLineThickness)
+        lineView.set(.width, to: Values.separatorThickness)
         lineView.backgroundColor = Colors.text
         addSubview(lineView)
         lineView.center(.horizontal, in: self)
@@ -227,7 +232,7 @@ private final class LineView : UIView {
         case .top, .middle: lineView.pin(.bottom, to: .bottom, of: self)
         case .bottom: lineView.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
         }
-        let dotSize = Values.pathRowDotSize
+        let dotSize = PathVC.dotSize
         dotViewWidthConstraint = dotView.set(.width, to: dotSize)
         dotViewHeightConstraint = dotView.set(.height, to: dotSize)
         addSubview(dotView)
@@ -254,14 +259,14 @@ private final class LineView : UIView {
     }
 
     private func expandDot() {
-        let newSize = Values.pathRowExpandedDotSize
+        let newSize = PathVC.expandedDotSize
         let newGlowRadius: CGFloat = isLightMode ? 4 : 6
         let newGlowColor = Colors.accent.withAlphaComponent(0.6)
         updateDotView(size: newSize, glowRadius: newGlowRadius, glowColor: newGlowColor)
     }
 
     private func collapseDot() {
-        let newSize = Values.pathRowDotSize
+        let newSize = PathVC.dotSize
         let newGlowRadius: CGFloat = isLightMode ? 1 : 2
         let newGlowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
         updateDotView(size: newSize, glowRadius: newGlowRadius, glowColor: newGlowColor)

@@ -1,5 +1,4 @@
 import PromiseKit
-import SessionProtocolKit
 
 extension MessageSender {
     public static var distributingClosedGroupEncryptionKeyPairs: [String:[ECKeyPair]] = [:]
