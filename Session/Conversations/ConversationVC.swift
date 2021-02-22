@@ -5,7 +5,6 @@
 // • Photo rounding
 // • Scroll button behind mentions view
 // • Remaining search glitchiness
-// • Rethink disappearing messages timer positioning
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread

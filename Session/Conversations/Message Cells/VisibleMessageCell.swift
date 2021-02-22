@@ -18,8 +18,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
-    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.right, to: .left, of: bubbleView, withInset: -Values.mediumSpacing)
-    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.left, to: .right, of: bubbleView, withInset: Values.mediumSpacing)
+    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
+    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
 
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
