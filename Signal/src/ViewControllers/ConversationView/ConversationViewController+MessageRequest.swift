@@ -15,7 +15,7 @@ extension ConversationViewController: MessageRequestDelegate {
         case .none:
             owsFailDebug("Invalid mode.")
         case .contactOrGroupRequest:
-            let blockSheet = createBlockActionSheet()
+            let blockSheet = createBlockThreadActionSheet()
             presentActionSheet(blockSheet)
         case .groupInviteRequest:
             showBlockInviteActionSheet()
@@ -117,7 +117,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
     func messageRequestViewDidTapDelete() {
         AssertIsOnMainThread()
-        let deleteSheet = createDeleteActionSheet()
+        let deleteSheet = createDeleteThreadActionSheet()
         presentActionSheet(deleteSheet)
     }
 
@@ -229,9 +229,9 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 }
 
-extension ConversationViewController: MessageRequestNameCollisionDelegate {
+extension ConversationViewController: NameCollisionResolutionDelegate {
 
-    func createBlockActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
+    func createBlockThreadActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
         Logger.info("")
 
         let actionSheetTitleFormat: String
@@ -271,7 +271,7 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         return actionSheet
     }
 
-    func createDeleteActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
+    func createDeleteThreadActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
         let actionSheetTitle: String
         let actionSheetMessage: String
         let confirmationText: String
@@ -310,14 +310,15 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         return actionSheet
     }
 
-    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisionsSuccessfully success: Bool) {
-        if success {
-            ensureBannerState()
-        } else {
+    func nameCollisionControllerDidComplete(_ controller: NameCollisionResolutionViewController, dismissConversationView: Bool) {
+        if dismissConversationView {
             // This may have already been closed (e.g. if the user requested deletion), but
             // it's not guaranteed (e.g. the user blocked the request). Let's close it just
             // to be safe.
             self.conversationSplitViewController?.closeSelectedConversation(animated: false)
+        } else {
+            // Conversation view is being kept around. Update the banner state to account for any changes
+            ensureBannerState()
         }
         controller.dismiss(animated: true, completion: nil)
     }

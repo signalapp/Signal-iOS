@@ -132,15 +132,21 @@ public extension ConversationViewController {
 
     func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
         guard !viewState.isMessageRequestNameCollisionBannerHidden else { return nil }
-        guard viewState.threadViewModel.isContactThread else { return nil }
+        guard let contactThread = thread as? TSContactThread else { return nil }
 
-        guard databaseStorage.uiRead(block: { readTx in
-            MessageRequestNameCollisionViewController.shouldShowBanner(
-                for: viewState.threadViewModel.threadRecord,
-                transaction: readTx)
-        }) else { return nil }
+        let collisionFinder = ContactThreadNameCollisionFinder(thread: contactThread)
+        let collisionCount = databaseStorage.read { readTx in
+            collisionFinder.findCollisions(transaction: readTx).count
+        }
+        guard collisionCount > 0 else { return nil }
 
-        let banner = MessageRequestNameCollisionBanner()
+        let banner = NameCollisionBanner()
+        banner.labelText = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
+            comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
+        banner.reviewActionText = NSLocalizedString(
+            "MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
+            comment: "Button to allow user to review known name collisions with an incoming message request")
 
         banner.closeAction = { [weak self] in
             viewState.isMessageRequestNameCollisionBannerHidden = true
@@ -149,11 +155,77 @@ public extension ConversationViewController {
 
         banner.reviewAction = { [weak self] in
             guard let self = self else { return }
-            guard let contactThread = self.thread as? TSContactThread else {
-                return owsFailDebug("Unexpected thread type")
+            let vc = NameCollisionResolutionViewController(collisionFinder: collisionFinder, collisionDelegate: self)
+            vc.present(from: self)
+        }
+
+        return banner
+    }
+
+    func createGroupMembershipCollisionBannerIfNecessary() -> UIView? {
+        guard let groupThread = thread as? TSGroupThread else { return nil }
+
+        let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
+
+        // If we discovery any collisions, pull out the necessary info to build the banner
+        guard let (title, avatar1, avatar2) = databaseStorage.read(block: { readTx -> (String, UIImage?, UIImage?)? in
+            let collisionSets = collisionFinder.findCollisions(transaction: readTx)
+            guard !collisionSets.isEmpty, collisionSets[0].elements.count >= 2 else { return nil }
+
+            let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }
+
+            let title: String = {
+                if collisionSets.count == 1 {
+                    let titleFormat = NSLocalizedString(
+                        "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT",
+                        comment: "Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }}")
+                    return String(format: titleFormat, OWSFormat.formatInt(totalCollisionElementCount))
+                } else {
+                    let titleFormat = NSLocalizedString(
+                        "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT",
+                        comment: "Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }}")
+                    return String(format: titleFormat, OWSFormat.formatInt(totalCollisionElementCount))
+                }
+            }()
+
+            let fetchAvatarForAddress = { (address: SignalServiceAddress) -> UIImage? in
+                if address.isLocalAddress, let profileAvatar = self.profileManager.localProfileAvatarImage() {
+                    return profileAvatar.resizedImage(to: CGSize(square: 24))
+                } else {
+                    return OWSContactAvatarBuilder.buildImage(
+                        address: address,
+                        diameter: 24,
+                        transaction: readTx)
+                }
             }
 
-            let vc = MessageRequestNameCollisionViewController(thread: contactThread, collisionDelegate: self)
+            let avatar1 = fetchAvatarForAddress(collisionSets[0].elements[0].address)
+            let avatar2 = fetchAvatarForAddress(collisionSets[0].elements[1].address)
+            return (title, avatar1, avatar2)
+
+        }) else { return nil }
+
+        let banner = NameCollisionBanner()
+        banner.labelText = title
+        banner.reviewActionText = NSLocalizedString(
+            "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON",
+            comment: "Button to allow user to review known name collisions in group membership")
+        if let avatar1 = avatar1, let avatar2 = avatar2 {
+            banner.primaryImage = avatar1
+            banner.secondaryImage = avatar2
+        }
+
+        banner.closeAction = { [weak self] in
+            self?.databaseStorage.asyncWrite(block: { writeTx in
+                collisionFinder.markCollisionsAsResolved(transaction: writeTx)
+            }, completion: {
+                self?.ensureBannerState()
+            })
+        }
+
+        banner.reviewAction = { [weak self] in
+            guard let self = self else { return }
+            let vc = NameCollisionResolutionViewController(collisionFinder: collisionFinder, collisionDelegate: self)
             vc.present(from: self)
         }
 
@@ -291,7 +363,33 @@ public class GestureView: UIView {
     }
 }
 
-private class MessageRequestNameCollisionBanner: UIView {
+private class NameCollisionBanner: UIView {
+
+    var primaryImage: UIImage? {
+        get { primaryImageView.image }
+        set {
+            primaryImageView.image = newValue
+            setNeedsUpdateConstraints()
+        }
+    }
+
+    var secondaryImage: UIImage? {
+        get { secondaryImageView.image }
+        set {
+            secondaryImageView.image = newValue
+            setNeedsUpdateConstraints()
+        }
+    }
+
+    var labelText: String? {
+        get { label.text }
+        set { label.text = newValue }
+    }
+
+    var reviewActionText: String? {
+        get { reviewButton.title(for: .normal) }
+        set { reviewButton.setTitle(newValue, for: .normal) }
+    }
 
     var reviewAction: () -> Void {
         get { reviewButton.block }
@@ -304,25 +402,43 @@ private class MessageRequestNameCollisionBanner: UIView {
     }
 
     private let label: UILabel = {
-        let labelText = NSLocalizedString(
-            "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
-            comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
-
         let label = UILabel()
-        label.text = labelText
         label.numberOfLines = 0
         label.font = UIFont.ows_dynamicTypeFootnote
         label.textColor = Theme.secondaryTextAndIconColor
         return label
     }()
 
-    private let infoIcon: UIImageView = {
-        let icon = UIImageView.withTemplateImageName(
+    private let primaryImageView: UIImageView = {
+        let avatarSize = CGSize(square: 24)
+        let borderWidth: CGFloat = 2
+        let totalSize = avatarSize.plus(CGSize(square: borderWidth))
+
+        let imageView = UIImageView.withTemplateImageName(
             "info-outline-24",
             tintColor: Theme.secondaryTextAndIconColor)
-        icon.setCompressionResistanceHigh()
-        icon.setContentHuggingHigh()
-        return icon
+        imageView.contentMode = .center
+
+        imageView.layer.borderColor = Theme.secondaryBackgroundColor.cgColor
+        imageView.layer.borderWidth = borderWidth
+        imageView.layer.cornerRadius = totalSize.smallerAxis / 2
+        imageView.layer.masksToBounds = true
+
+        imageView.autoSetDimensions(to: totalSize)
+        imageView.setCompressionResistanceHigh()
+        imageView.setContentHuggingHigh()
+        return imageView
+    }()
+
+    private let secondaryImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 12
+        imageView.layer.masksToBounds = true
+
+        imageView.autoSetDimensions(to: CGSize(square: 24))
+        imageView.setCompressionResistanceHigh()
+        imageView.setContentHuggingHigh()
+        return imageView
     }()
 
     private let closeButton: OWSButton = {
@@ -338,10 +454,7 @@ private class MessageRequestNameCollisionBanner: UIView {
     }()
 
     private let reviewButton: OWSButton = {
-        let buttonText = NSLocalizedString("MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
-            comment: "Button to allow user to review known name collisions with an incoming message request")
-
-        let button = OWSButton(title: buttonText)
+        let button = OWSButton()
         button.setTitleColor(Theme.accentBlueColor, for: .normal)
         button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
         button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
@@ -353,14 +466,23 @@ private class MessageRequestNameCollisionBanner: UIView {
         super.init(frame: frame)
         backgroundColor = Theme.secondaryBackgroundColor
 
-        [infoIcon, label, closeButton, reviewButton]
+        [secondaryImageView, primaryImageView, label, closeButton, reviewButton]
             .forEach { addSubview($0) }
+
+        // Offsets adjusted in updateConstraints() based on content
+        primaryImageViewConstraints = (
+            top: primaryImageView.autoPinEdge(.top, to: .top, of: self, withOffset: 18),
+            leading: primaryImageView.autoPinEdge(.leading, to: .leading, of: self, withOffset: 16),
+            trailing: label.autoPinEdge(.leading, to: .trailing, of: primaryImageView, withOffset: 16)
+        )
+        // Secondary image is always offset to the top left of the primary image
+        secondaryImageView.autoPinEdge(.top, to: .top, of: primaryImageView, withOffset: -12)
+        secondaryImageView.autoPinEdge(.leading, to: .leading, of: primaryImageView, withOffset: -12)
 
         // Note that UIButtons are being aligned based on their content subviews
         // UIButtons this small will have an intrinsic size larger than their content
         // That extra padding between the content and its frame messes up alignment
         label.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
-        infoIcon.autoPinEdge(.top, to: .top, of: label)
         closeButton.imageView?.autoPinEdge(.top, to: .top, of: label)
         reviewButton.titleLabel?.autoPinEdge(.top, to: .bottom, of: label, withOffset: 3)
         reviewButton.titleLabel?.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -12)
@@ -368,14 +490,26 @@ private class MessageRequestNameCollisionBanner: UIView {
         // Aligning things this way is useful, because we can also increase the tap target
         // for the tiny close button without messing up the appearance.
         closeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 8, vMargin: 8)
-
-        infoIcon.autoPinLeading(toEdgeOf: self, offset: 16)
-        label.autoPinLeading(toTrailingEdgeOf: infoIcon, offset: 16)
         closeButton.imageView?.autoPinLeading(toTrailingEdgeOf: label, offset: 16)
         closeButton.imageView?.autoPinTrailing(toEdgeOf: self, offset: -16)
         reviewButton.titleLabel?.autoPinLeading(toEdgeOf: label)
 
         accessibilityElements = [label, reviewButton, closeButton]
+    }
+
+    var primaryImageViewConstraints: (top: NSLayoutConstraint, leading: NSLayoutConstraint, trailing: NSLayoutConstraint)?
+
+    override func updateConstraints() {
+        super.updateConstraints()
+        guard let topConstraint = primaryImageViewConstraints?.top,
+              let leadingConstraint = primaryImageViewConstraints?.leading,
+              let trailingConstraint = primaryImageViewConstraints?.trailing else { return }
+
+        // If we have a secondary image, we want to adjust our constraints a bit
+        let hasSecondaryImage = (secondaryImage != nil)
+        topConstraint.constant = hasSecondaryImage ? 24 : 18
+        leadingConstraint.constant = hasSecondaryImage ? 28 : 16
+        trailingConstraint.constant = hasSecondaryImage ? 12 : 16
     }
 
     required init?(coder: NSCoder) {

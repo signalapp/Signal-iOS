@@ -778,6 +778,12 @@ typedef enum : NSUInteger {
         [banners addObject:messageRequestNameCollisionBanner];
     }
 
+    UIView *_Nullable groupMembershipNameCollisionBanner;
+    groupMembershipNameCollisionBanner = [self createGroupMembershipCollisionBannerIfNecessary];
+    if (groupMembershipNameCollisionBanner != nil) {
+        [banners addObject:groupMembershipNameCollisionBanner];
+    }
+
     if (banners.count < 1) {
         if (self.hasViewDidAppearEverBegun) {
             [self updateContentInsetsAnimated:NO];

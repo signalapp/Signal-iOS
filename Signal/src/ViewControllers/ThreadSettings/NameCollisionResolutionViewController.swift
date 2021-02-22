@@ -1,0 +1,349 @@
+//
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+import ContactsUI
+
+protocol NameCollisionResolutionDelegate: class {
+    // For message requests, we should piggyback on the same action sheet that's presented
+    // by the message request actions
+    func createBlockThreadActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
+    func createDeleteThreadActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
+
+    // Invoked when the controller requests dismissal
+    func nameCollisionControllerDidComplete(_ controller: NameCollisionResolutionViewController, dismissConversationView: Bool)
+}
+
+class NameCollisionResolutionViewController: OWSTableViewController {
+    private let collisionFinder: NameCollisionFinder
+    private var thread: TSThread { collisionFinder.thread }
+    private var groupViewHelper: GroupViewHelper?
+    private weak var collisionDelegate: NameCollisionResolutionDelegate?
+
+    // The actual table UI doesn't section off one collision from the next
+    // As a convenience, here's a flattened window of cell models
+    private var flattenedCellModels: [NameCollisionCellModel] { cellModels.lazy.flatMap { $0 } }
+    private var cellModels: [[NameCollisionCellModel]] = [] {
+        didSet {
+            if cellModels.count == 0 || cellModels.allSatisfy({ $0.count <= 1 }) {
+                collisionDelegate?.nameCollisionControllerDidComplete(self, dismissConversationView: false)
+            } else {
+                updateTableContents()
+            }
+        }
+    }
+
+    init(collisionFinder: NameCollisionFinder, collisionDelegate: NameCollisionResolutionDelegate) {
+        self.collisionFinder = collisionFinder
+        self.collisionDelegate = collisionDelegate
+        super.init()
+
+        useThemeBackgroundColors = true
+        contactsViewHelper.addObserver(self)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        updateModel()
+        tableView.separatorStyle = .none
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(donePressed))
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            // Force tableview to recalculate self-sized cell height
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        }
+    }
+
+    func updateModel() {
+        cellModels = databaseStorage.read(block: { readTx in
+            if self.groupViewHelper == nil, self.thread.isGroupThread {
+                let threadViewModel = ThreadViewModel(thread: self.thread, forConversationList: false, transaction: readTx)
+                self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+                self.groupViewHelper?.delegate = self
+            }
+
+            let collisions = self.collisionFinder.findCollisions(transaction: readTx)
+            guard collisions.count > 0, collisions.allSatisfy({ $0.elements.count >= 2 }) else { return [] }
+
+            let collisionComparator = { (cell1: NameCollisionCellModel, cell2: NameCollisionCellModel) -> Bool in
+                // Given two cells containing collision information, we sort by:
+                // - Message requester first (if contact thread with pending message request)
+                // - Most recent profile update first (if available)
+                // - SignalServiceAddress UUID otherwise, to ensure stable sorting
+
+                if let contactAddress = (self.thread as? TSContactThread)?.contactAddress,
+                   [cell1.address, cell2.address].contains(contactAddress),
+                   cell1.address != cell2.address {
+                    return cell1.address == contactAddress
+
+                } else if cell1.updateTimestamp != nil || cell2.updateTimestamp != nil {
+                    return (cell1.updateTimestamp ?? 0) > (cell2.updateTimestamp ?? 0)
+
+                } else {
+                    return cell1.address.sortKey < cell2.address.sortKey
+                }
+            }
+
+            let collisionSetComparator = { (collisionSet1: [NameCollisionCellModel], collisionSet2: [NameCollisionCellModel]) -> Bool in
+                // Across collision sets, (e.g. two independent collisions, two people named Michelle, two people named Nora)
+                // We'll sort by the smallest comparable name in each collision set
+                // (Usually they're all the same, but this might change in the future when comparing homographs)
+                let smallestName1 = collisionSet1
+                    .map { self.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .min()
+                let smallestName2 = collisionSet2
+                    .map { self.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .min()
+
+                switch (smallestName1, smallestName2) {
+                case let (name1?, name2?):
+                    return name1 < name2
+                case (_?, nil):
+                    return true
+                case (nil, _):
+                    return false
+                }
+            }
+
+            return collisions
+                .map { $0.collisionCellModels(thread: self.thread, transaction: readTx) }
+                .map { $0.sorted(by: collisionComparator) }     // Sort cells within a collision (e.g. all cells for "Michelle")
+                .sorted(by: collisionSetComparator)             // Sort accross collision sets (e.g. cells for "Michelle" versus cells for "Nora")
+        })
+    }
+
+    func updateTableContents() {
+        let titleString: String
+        if thread.isGroupThread {
+            titleString = NSLocalizedString(
+                "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE",
+                comment: "A title string for a view that allows a user to review name collisions in group membership")
+        } else {
+            titleString = NSLocalizedString(
+                "MESSAGE_REQUEST_NAME_COLLISON_TITLE",
+                comment: "A title string for a view that allows a user to review name collisions for an incoming message request")
+        }
+
+        contents = OWSTableContents(
+            title: titleString,
+            sections: [
+                createHeaderSection(),
+            ] + flattenedCellModels.map {
+                createSection(for: $0)
+            })
+    }
+
+    func createHeaderSection() -> OWSTableSection {
+        OWSTableSection(header: {
+            let view = UIView()
+            let label = UILabel()
+
+            label.textColor = Theme.secondaryTextAndIconColor
+            label.font = UIFont.ows_dynamicTypeFootnote
+            label.adjustsFontForContentSizeCategory = true
+            label.numberOfLines = 0
+
+            if thread.isGroupThread, cellModels.count >= 2 {
+                let format = NSLocalizedString(
+                    "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER",
+                    comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
+                label.text = String(format: format, OWSFormat.formatInt(flattenedCellModels.count))
+            } else if thread.isGroupThread {
+                let format = NSLocalizedString(
+                    "GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER",
+                    comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
+                label.text = String(format: format, OWSFormat.formatInt(flattenedCellModels.count))
+
+            } else {
+                label.text = NSLocalizedString(
+                    "MESSAGE_REQUEST_NAME_COLLISON_HEADER",
+                    comment: "A header string informing the user about name collisions in a message request")
+            }
+
+            view.addSubview(label)
+            label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 24, leading: 16, bottom: 16, trailing: 16))
+            return view
+        })
+    }
+
+    func createSection(for model: NameCollisionCellModel) -> OWSTableSection {
+        let requesterHeader = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER",
+            comment: "A header string above the requester's contact info")
+        let contactHeader = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER",
+            comment: "A header string above a known contact's contact info")
+        let groupMemberHeader = NSLocalizedString(
+            "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER",
+            comment: "A header string above a group member's contact info")
+        let updateContactActionString = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION",
+            comment: "A button that updates a known contact's information to resolve a name collision")
+        let deleteActionString = NSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+            comment: "incoming message request button text which deletes a conversation")
+        let blockActionString = NSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+            comment: "A button used to block a user on an incoming message request.")
+        let removeActionString = NSLocalizedString(
+            "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
+            comment: "Label for 'remove from group' button in conversation settings view.")
+
+        let header: String = {
+            switch (thread: thread, model: model) {
+            case (thread: is TSContactThread, let model) where model.address == flattenedCellModels.first?.address:
+                return requesterHeader
+            case (thread: is TSContactThread, _):
+                return contactHeader
+            case (thread: is TSGroupThread, let model) where model.isSystemContact:
+                return contactHeader
+            case (thread: is TSGroupThread, _):
+                return groupMemberHeader
+            default:
+                owsFailDebug("Unknown header type")
+                return contactHeader
+            }
+        }()
+
+        let actions: [NameCollisionActionCell.Action] = {
+            switch (thread: thread, address: model.address, isBlocked: model.isBlocked) {
+            case (thread: is TSContactThread, address: flattenedCellModels.first?.address, isBlocked: false):
+                return [
+                    (title: deleteActionString, action: { [weak self] in self?.deleteThread() }),
+                    (title: blockActionString, action: { [weak self] in self?.blockThread() })
+                ]
+            case (thread: is TSContactThread, address: flattenedCellModels.first?.address, isBlocked: true):
+                return [(title: deleteActionString, action: { [weak self] in self?.deleteThread() })]
+
+            case (_, let address, _) where shouldShowContactUpdateAction(for: address):
+                return [(title: updateContactActionString, action: { [weak self] in self?.presentContactUpdateSheet(for: address) })]
+
+            case (thread: is TSGroupThread, let address, _) where
+                    !address.isLocalAddress && groupViewHelper?.canRemoveFromGroup(address: model.address) == true:
+                return [(title: removeActionString, action: { [weak self] in self?.removeFromGroup(model.address) })]
+
+            case (thread: is TSGroupThread, let address, isBlocked: false) where !address.isLocalAddress:
+                return [(title: blockActionString, action: { [weak self] in self?.blockAddress(model.address) })]
+
+            default:
+                return []
+            }
+        }()
+
+        let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
+        let section = OWSTableSection(title: header, items: [
+            OWSTableItem(customCell: contactInfoCell)
+        ])
+
+        if actions.isEmpty {
+            contactInfoCell.isPairedWithActions = false
+        } else {
+            contactInfoCell.isPairedWithActions = true
+            section.add(OWSTableItem(customCell: NameCollisionActionCell(actions: actions)))
+        }
+
+        return section
+    }
+
+    // MARK: - Resolution Actions
+
+    private func deleteThread() {
+        guard let collisionDelegate = collisionDelegate else { return }
+
+        presentActionSheet(collisionDelegate.createDeleteThreadActionSheet { [weak self] shouldDismiss in
+            if shouldDismiss {
+                guard let self = self else { return }
+                collisionDelegate.nameCollisionControllerDidComplete(self, dismissConversationView: true)
+            }
+        })
+    }
+
+    private func blockThread() {
+        guard let collisionDelegate = collisionDelegate else { return }
+
+        presentActionSheet(collisionDelegate.createBlockThreadActionSheet { [weak self] shouldDismiss in
+            if shouldDismiss {
+                guard let self = self else { return }
+                collisionDelegate.nameCollisionControllerDidComplete(self, dismissConversationView: true)
+            }
+        })
+    }
+
+    private func blockAddress(_ address: SignalServiceAddress) {
+        BlockListUIUtils.showBlockAddressActionSheet(address, from: self) { [weak self] (didBlock) in
+            if didBlock {
+                self?.updateModel()
+            }
+        }
+    }
+
+    private func removeFromGroup(_ address: SignalServiceAddress) {
+        groupViewHelper?.presentRemoveFromGroupActionSheet(address: address)
+        // groupViewHelper will call out to its delegate (us) when the membership
+    }
+
+    private func presentContactUpdateSheet(for address: SignalServiceAddress) {
+        owsAssertDebug(navigationController != nil)
+        guard contactsManager.supportsContactEditing else {
+            return owsFailDebug("Contact editing unsupported")
+        }
+        guard let contactVC = contactsViewHelper.contactViewController(for: address, editImmediately: true) else {
+            return owsFailDebug("Failed to create contact view controller")
+        }
+
+        contactVC.delegate = self
+        navigationController?.pushViewController(contactVC, animated: true)
+        // We observe contact updates and will automatically update our model in response
+    }
+
+    @objc
+    private func donePressed(_ sender: UIBarButtonItem) {
+        databaseStorage.write { writeTx in
+            self.collisionFinder.markCollisionsAsResolved(transaction: writeTx)
+        }
+        collisionDelegate?.nameCollisionControllerDidComplete(self, dismissConversationView: false)
+    }
+}
+
+// MARK: - Contacts
+
+extension NameCollisionResolutionViewController: CNContactViewControllerDelegate, ContactsViewHelperObserver {
+
+    func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
+        return contactsManager.isSystemContact(address: address) && contactsManager.supportsContactEditing
+    }
+
+    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+        DispatchQueue.main.async {
+            self.navigationController?.popToViewController(self, animated: true)
+        }
+    }
+
+    func contactsViewHelperDidUpdateContacts() {
+        updateModel()
+    }
+}
+
+extension NameCollisionResolutionViewController: GroupViewHelperDelegate {
+    func groupViewHelperDidUpdateGroup() {
+        updateModel()
+    }
+
+    var currentGroupModel: TSGroupModel? { (thread as? TSGroupThread)?.groupModel }
+
+    var fromViewController: UIViewController? { self }
+}

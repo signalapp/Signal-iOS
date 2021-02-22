@@ -66,6 +66,10 @@ public extension TSInfoMessage {
         return profileChanges?.address
     }
 
+    var profileChangesOldFullName: String? {
+        profileChanges?.oldFullName
+    }
+
     var profileChangeNewNameComponents: PersonNameComponents? {
         return profileChanges?.newNameComponents
     }
