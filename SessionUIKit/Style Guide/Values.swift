@@ -33,18 +33,9 @@ public final class Values : NSObject {
 
     // TODO ----------------
     
-    @objc public static let separatorLabelHeight = CGFloat(24)
     @objc public static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc public static let tabBarHeight = isIPhone5OrSmaller ? CGFloat(32) : CGFloat(48)
-    @objc public static let settingButtonHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
-    @objc public static let defaultSettingRowHeight = CGFloat(60)
-    @objc public static let modalCornerRadius = CGFloat(10)
     @objc public static let modalButtonCornerRadius = CGFloat(5)
-    @objc public static let fakeChatBubbleWidth = CGFloat(224)
-    @objc public static let fakeChatBubbleCornerRadius = CGFloat(10)
-    @objc public static let fakeChatViewHeight = isIPhone5OrSmaller ? CGFloat(234) : CGFloat(260)
-    @objc public static let composeViewTextFieldBorderThickness = 1 / UIScreen.main.scale
-    @objc public static let messageBubbleCornerRadius: CGFloat = 8
     @objc public static let progressBarThickness: CGFloat = 2
     @objc public static let pnOptionCornerRadius = CGFloat(8)
     @objc public static let pathStatusViewSize = CGFloat(8)

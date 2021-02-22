@@ -7,7 +7,7 @@ class Modal : BaseVC {
     lazy var contentView: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.modalBackground
-        result.layer.cornerRadius = Values.modalCornerRadius
+        result.layer.cornerRadius = Modal.cornerRadius
         result.layer.masksToBounds = false
         result.layer.borderColor = isLightMode ? UIColor.white.cgColor : Colors.modalBorder.cgColor
         result.layer.borderWidth = 1
@@ -27,6 +27,9 @@ class Modal : BaseVC {
         result.setTitle(NSLocalizedString("cancel", comment: ""), for: UIControl.State.normal)
         return result
     }()
+    
+    // MARK: Settings
+    private static let cornerRadius: CGFloat = 10
     
     // MARK: Lifecycle
     override func viewDidLoad() {

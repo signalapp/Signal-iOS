@@ -52,6 +52,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
+    // MARK: Settings
+    private static let buttonHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,7 +175,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
             button.setBackgroundImage(getImage(withColor: selectedColor), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
-            button.set(.height, to: Values.settingButtonHeight)
+            button.set(.height, to: SettingsVC.buttonHeight)
             return button
         }
         var result = [

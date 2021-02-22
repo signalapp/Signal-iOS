@@ -28,6 +28,7 @@ final class ContextMenuVC : UIViewController {
     
     // MARK: Settings
     private static let actionViewHeight: CGFloat = 40
+    private static let menuCornerRadius: CGFloat = 8
 
     // MARK: Lifecycle
     init(snapshot: UIView, viewItem: ConversationViewItem, frame: CGRect, delegate: ContextMenuActionDelegate, dismiss: @escaping () -> Void) {
@@ -76,7 +77,7 @@ final class ContextMenuVC : UIViewController {
         // Menu
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
-        menuBackgroundView.layer.cornerRadius = Values.messageBubbleCornerRadius
+        menuBackgroundView.layer.cornerRadius = ContextMenuVC.menuCornerRadius
         menuBackgroundView.layer.masksToBounds = true
         menuView.addSubview(menuBackgroundView)
         menuBackgroundView.pin(to: menuView)
@@ -115,7 +116,7 @@ final class ContextMenuVC : UIViewController {
     // MARK: Updating
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: Values.messageBubbleCornerRadius).cgPath
+        menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
     }
 
     // MARK: Interaction
