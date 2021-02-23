@@ -6,7 +6,6 @@ import Foundation
 import UserNotifications
 import PromiseKit
 
-@available(iOS 10.0, *)
 class UserNotificationConfig {
 
     class var allNotificationCategories: Set<UNNotificationCategory> {
@@ -50,7 +49,6 @@ class UserNotificationConfig {
 
 }
 
-@available(iOS 10.0, *)
 class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelegate {
 
     private let notificationCenter: UNUserNotificationCenter
@@ -64,7 +62,6 @@ class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelega
     }
 }
 
-@available(iOS 10.0, *)
 extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func registerNotificationSettings() -> Promise<Void> {
@@ -170,7 +167,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         AssertIsOnMainThread()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-        LegacyNotificationPresenterAdaptee.clearExistingNotifications()
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
@@ -198,7 +194,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 }
 
 @objc(OWSUserNotificationActionHandler)
-@available(iOS 10.0, *)
 public class UserNotificationActionHandler: NSObject {
 
     var actionHandler: NotificationActionHandler {
@@ -258,7 +253,7 @@ public class UserNotificationActionHandler: NSObject {
 }
 
 extension OWSSound {
-    @available(iOS 10.0, *)
+    
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
         guard let filename = OWSSounds.filename(for: self, quiet: isQuiet) else {
             owsFailDebug("filename was unexpectedly nil")

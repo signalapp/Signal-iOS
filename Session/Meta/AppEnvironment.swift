@@ -37,26 +37,11 @@ import SignalUtilitiesKit
     @objc
     public var backup: OWSBackup
 
-    private var _legacyNotificationActionHandler: LegacyNotificationActionHandler
-    @objc
-    public var legacyNotificationActionHandler: LegacyNotificationActionHandler {
-        get {
-            if #available(iOS 10, *) {
-                owsFailDebug("shouldn't user legacyNotificationActionHandler on modern iOS")
-            }
-            return _legacyNotificationActionHandler
-        }
-        set {
-            _legacyNotificationActionHandler = newValue
-        }
-    }
-
     // Stored properties cannot be marked as `@available`, only classes and functions.
     // Instead, store a private `Any` and wrap it with a public `@available` getter
     private var _userNotificationActionHandler: Any?
 
     @objc
-    @available(iOS 10.0, *)
     public var userNotificationActionHandler: UserNotificationActionHandler {
         return _userNotificationActionHandler as! UserNotificationActionHandler
     }
@@ -70,10 +55,7 @@ import SignalUtilitiesKit
         self.pushRegistrationManager = PushRegistrationManager()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
-        if #available(iOS 10.0, *) {
-            self._userNotificationActionHandler = UserNotificationActionHandler()
-        }
-        self._legacyNotificationActionHandler = LegacyNotificationActionHandler()
+        self._userNotificationActionHandler = UserNotificationActionHandler()
 
         super.init()
 
