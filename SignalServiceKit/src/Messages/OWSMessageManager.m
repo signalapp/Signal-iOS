@@ -176,11 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.earlyMessageManager;
 }
 
-- (MessageProcessing *)messageProcessing
-{
-    return MessageProcessing.shared;
-}
-
 #pragma mark -
 
 - (void)startObserving
@@ -944,7 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Once we've drained the queue we can reset groupInfoRequestSet.
-    [self.messageProcessing allMessageFetchingAndProcessingPromiseObjc].thenInBackground(^{
+    [MessageProcessor.shared fetchingAndProcessingCompletePromise].thenInBackground(^{
         @synchronized(self) {
             [self.groupInfoRequestSet removeAllObjects];
         }

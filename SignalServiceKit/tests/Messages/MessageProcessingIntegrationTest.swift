@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -9,10 +9,6 @@ import GRDB
 class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     // MARK: - Dependencies
-
-    var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
 
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
@@ -25,6 +21,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     var storageCoordinator: StorageCoordinator {
         return SSKEnvironment.shared.storageCoordinator
     }
+
+    var messageProcessor: MessageProcessor { .shared }
 
     // MARK: -
 
@@ -56,14 +54,9 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
-
-        // for unit tests, we must manually start the decryptJobQueue
-        SSKEnvironment.shared.messageDecryptJobQueue.setup()
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
     }
 
     override func tearDown() {
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
 
         super.tearDown()
@@ -72,16 +65,18 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func test_contactMessage_e164AndUuidEnvelope() {
-        storageCoordinator.useGRDBForTests()
-
-        // Re-initialize this state now that we've just switched databases.
-        identityManager.generateNewIdentityKey()
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
                                         transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
@@ -123,7 +118,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
+        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }
@@ -134,6 +129,13 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
                                         transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
@@ -175,7 +177,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
+        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp()) { XCTAssertNil($0) }
 
         waitForExpectations(timeout: 1.0)
     }

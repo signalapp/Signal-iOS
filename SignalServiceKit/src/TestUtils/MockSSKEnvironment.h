@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKEnvironment.h"
@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSIdentityManager *identityManager;
 @property (nonatomic) id<OWSUDManager> udManager;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
-@property (nonatomic) OWSMessageReceiver *messageReceiver;
 @property (nonatomic) TSSocketManager *socketManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWS2FAManager *ows2FAManager;

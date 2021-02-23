@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UserNotifications
@@ -16,7 +16,7 @@ class NotificationService: UNNotificationServiceExtension {
         return SSKEnvironment.shared.storageCoordinator
     }
 
-    var messageProcessing: MessageProcessing {
+    var messageProcessor: MessageProcessor {
         return .shared
     }
 
@@ -252,7 +252,7 @@ class NotificationService: UNNotificationServiceExtension {
         Logger.info("Beginning message fetch.")
 
         messageFetcherJob.run().promise.then {
-            return self.messageProcessing.flushMessageDecryptionAndProcessingPromise().asVoid()
+            return self.messageProcessor.processingCompletePromise()
         }.ensure {
             Logger.info("Message fetch completed.")
             self.isProcessingMessages.set(false)

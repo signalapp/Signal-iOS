@@ -16,8 +16,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return SDSDatabaseStorage.shared
     }
 
-    private var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+    private var messageProcessor: MessageProcessor {
+        return SSKEnvironment.shared.messageProcessor
     }
 
     private var groupsV2: GroupsV2Swift {
@@ -197,8 +197,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return TSAccountManager.shared()
         }
 
-        private var messageProcessing: MessageProcessing {
-            return SSKEnvironment.shared.messageProcessing
+        private var messageProcessor: MessageProcessor {
+            return SSKEnvironment.shared.messageProcessor
         }
 
         // MARK: -
@@ -239,7 +239,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         public override func run() {
             firstly { () -> Promise<Void> in
                 if groupUpdateMode.shouldBlockOnMessageProcessing {
-                    return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+                    return self.messageProcessor.fetchingAndProcessingCompletePromise()
                 } else {
                     return Promise.value(())
                 }
@@ -564,7 +564,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                    groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+                return self.messageProcessor.fetchingAndProcessingCompletePromise()
             } else {
                 return Promise.value(())
             }
@@ -895,7 +895,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                              groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+                return self.messageProcessor.fetchingAndProcessingCompletePromise()
             } else {
                 return Promise.value(())
             }

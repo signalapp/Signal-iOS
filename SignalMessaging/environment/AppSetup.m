@@ -13,13 +13,10 @@
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSMessageDecrypter.h>
 #import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSStorage.h>
@@ -82,9 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
         SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
         id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
-        SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
-        OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
-        OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
@@ -111,7 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        MessageProcessing *messageProcessing = [MessageProcessing new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
         BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
@@ -123,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
         ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
         AppExpiry *appExpiry = [AppExpiry new];
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
+        MessageProcessor *messageProcessor = [MessageProcessor new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -152,9 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       preKeyStore:preKeyStore
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
-                                                           messageDecryptJobQueue:messageDecryptJobQueue
-                                                            batchMessageProcessor:batchMessageProcessor
-                                                                  messageReceiver:messageReceiver
                                                          groupsV2MessageProcessor:groupsV2MessageProcessor
                                                                     socketManager:socketManager
                                                                  tsAccountManager:tsAccountManager
@@ -175,7 +166,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    sskPreferences:sskPreferences
                                                                          groupsV2:groupsV2
                                                                    groupV2Updates:groupV2Updates
-                                                                messageProcessing:messageProcessing
                                                                 messageFetcherJob:messageFetcherJob
                                                                  bulkProfileFetch:bulkProfileFetch
                                                                    bulkUUIDLookup:bulkUUIDLookup
@@ -183,7 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   modelReadCaches:modelReadCaches
                                                               earlyMessageManager:earlyMessageManager
                                                         messagePipelineSupervisor:messagePipelineSupervisor
-                                                                        appExpiry:appExpiry]];
+                                                                        appExpiry:appExpiry
+                                                                 messageProcessor:messageProcessor]];
 
         appSpecificSingletonBlock();
 

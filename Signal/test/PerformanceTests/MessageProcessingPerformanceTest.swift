@@ -10,10 +10,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Dependencies
 
-    var messageReceiver: OWSMessageReceiver {
-        return SSKEnvironment.shared.messageReceiver
-    }
-
     var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
@@ -21,6 +17,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     var identityManager: OWSIdentityManager {
         return SSKEnvironment.shared.identityManager
     }
+
+    var messageProcessor: MessageProcessor { .shared }
 
     // MARK: -
 
@@ -43,13 +41,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
-
         storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
-
-        // for unit tests, we must manually start the decryptJobQueue
-        SSKEnvironment.shared.messageDecryptJobQueue.setup()
 
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
@@ -58,8 +51,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     override func tearDown() {
         super.tearDown()
-
-        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
 
         self.dbObserver = nil
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
@@ -100,6 +91,13 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         let envelopeCount: Int = DebugFlags.fastPerfTests ? 5 : 500
         let envelopeDatas: [Data] = (0..<envelopeCount).map { _ in buildEnvelopeData() }
 
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
+        }
+
         let expectMessagesProcessed = expectation(description: "messages processed")
         let hasFulfilled = AtomicBool(false)
         let fulfillOnce = {
@@ -118,9 +116,11 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         }
 
         startMeasuring()
-        for envelopeData in envelopeDatas {
-            messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0)
-        }
+
+        messageProcessor.processEncryptedEnvelopes(
+            envelopes: envelopeDatas.map { ($0, nil, { XCTAssertNil($0) }) },
+            serverDeliveryTimestamp: 0
+        )
 
         waitForExpectations(timeout: 15.0) { _ in
             self.stopMeasuring()

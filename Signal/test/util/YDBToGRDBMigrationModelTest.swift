@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -38,6 +38,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.shared()
     }
+
+    private let legacyDecryptJobLabel = "SSKMessageDecrypt"
 
     // MARK: -
 
@@ -293,7 +295,6 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         // SSKMessageDecryptJobRecord
         let messageDecryptJobFinder1 = AnyJobRecordFinder<SSKMessageDecryptJobRecord>()
-        let messageDecryptJobQueue = SSKMessageDecryptJobQueue()
         // OWSSessionResetJobRecord
         let sessionResetJobFinder = AnyJobRecordFinder<OWSSessionResetJobRecord>()
         let sessionResetJobQueue = SessionResetJobQueue()
@@ -305,8 +306,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -319,8 +320,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
@@ -335,12 +336,17 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapWrite { transaction in
             // SSKMessageDecryptJobRecord
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData1,
-                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                       transaction: transaction.asAnyWrite)
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData2,
-                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                       transaction: transaction.asAnyWrite)
+            SSKMessageDecryptJobRecord(
+                envelopeData: messageDecryptData1,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                label: self.legacyDecryptJobLabel
+            ).anyInsert(transaction: transaction.asAnyWrite)
+            SSKMessageDecryptJobRecord(
+                envelopeData: messageDecryptData2,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                label: self.legacyDecryptJobLabel
+            ).anyInsert(transaction: transaction.asAnyWrite)
+
             // OWSSessionResetJobRecord
             sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
             sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
@@ -364,9 +370,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
-            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -382,8 +388,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
@@ -408,9 +414,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
-            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -426,9 +432,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
-            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
@@ -466,7 +472,6 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         // SSKMessageDecryptJobRecord
         let messageDecryptJobFinder1 = AnyJobRecordFinder<SSKMessageDecryptJobRecord>()
-        let messageDecryptJobQueue = SSKMessageDecryptJobQueue()
         // OWSSessionResetJobRecord
         let sessionResetJobFinder = AnyJobRecordFinder<OWSSessionResetJobRecord>()
         let sessionResetJobQueue = SessionResetJobQueue()
@@ -478,8 +483,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -492,8 +497,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
@@ -508,12 +513,17 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapWrite { transaction in
             // SSKMessageDecryptJobRecord
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData1,
-                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                       transaction: transaction.asAnyWrite)
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData2,
-                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                       transaction: transaction.asAnyWrite)
+            SSKMessageDecryptJobRecord(
+                envelopeData: messageDecryptData1,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                label: self.legacyDecryptJobLabel
+            ).anyInsert(transaction: transaction.asAnyWrite)
+            SSKMessageDecryptJobRecord(
+                envelopeData: messageDecryptData2,
+                serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                label: self.legacyDecryptJobLabel
+            ).anyInsert(transaction: transaction.asAnyWrite)
+
             // OWSSessionResetJobRecord
             sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
             sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
@@ -537,9 +547,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
-            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -555,8 +565,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
@@ -581,9 +591,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
-            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
@@ -601,9 +611,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // SSKMessageDecryptJobRecord
             //
             // NOTE: These jobs are migrated from OWSMessageDecryptJob.
-            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
-            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
-            XCTAssertEqual([messageDecryptData3, messageDecryptData4 ], messageDecryptJobFinder1.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.envelopeData })
+            XCTAssertNotNil(messageDecryptJobFinder1.getNextReady(label: self.legacyDecryptJobLabel, transaction: transaction))
+            XCTAssertEqual(2, messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).count)
+            XCTAssertEqual([messageDecryptData3, messageDecryptData4 ], messageDecryptJobFinder1.allRecords(label: self.legacyDecryptJobLabel, status: .ready, transaction: transaction).compactMap { $0.envelopeData })
             // OWSSessionResetJobRecord
             //
             // NOTE: These jobs are _NOT_ migrated.

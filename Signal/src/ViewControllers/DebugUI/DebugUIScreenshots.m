@@ -11,7 +11,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
