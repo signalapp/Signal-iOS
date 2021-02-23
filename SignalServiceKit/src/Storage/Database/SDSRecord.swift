@@ -104,6 +104,29 @@ fileprivate extension SDSRecord {
 
 extension BaseModel {
 
+    static public func maxAutoincrementingPrimaryKeyId(tableMetadata: SDSTableMetadata,
+                                                       transaction: GRDBReadTransaction) -> UInt64? {
+
+        do {
+            let primaryKeyColumns = tableMetadata.columns.filter { $0.columnType == .primaryKey }
+            guard primaryKeyColumns.count == 1 else {
+                owsFailDebug("Unexpected primary key schema for table \(tableMetadata.tableName)")
+                return nil
+            }
+
+            let sql = "SELECT seq FROM sqlite_sequence WHERE name IS ?"
+            guard let value = try UInt64.fetchOne(
+                    transaction.database,
+                    sql: sql,
+                    arguments: [tableMetadata.tableName.quotedDatabaseIdentifier]) else { return nil }
+
+            return value
+        } catch {
+            owsFailDebug("Could not find max autoincrementing primary key \(error)")
+            return nil
+        }
+    }
+
     static func grdbIdByUniqueId(tableMetadata: SDSTableMetadata,
                                  uniqueIdColumnName: String,
                                  uniqueIdColumnValue: String,

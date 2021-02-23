@@ -76,7 +76,7 @@ extension NameCollision {
                 address: $0.address,
                 name: $0.currentName,
                 oldName: $0.oldName,
-                updateTimestamp: $0.latestUpdate,
+                updateTimestamp: $0.latestUpdateTimestamp,
                 commonGroupsString: commonGroupsString(for: $0.address, thread: thread, transaction: transaction),
                 avatar: avatar(for: $0.address, transaction: transaction),
                 isBlocked: OWSBlockingManager.shared().isAddressBlocked($0.address),
