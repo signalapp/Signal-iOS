@@ -123,10 +123,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     
     func continueWithSeed(_ seed: Data) {
         let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
-        KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair.hexEncodedPublicKey
-        OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
-        UserDefaults.standard[.hasViewedSeed] = true
+        Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         TSAccountManager.sharedInstance().didRegister()
         NotificationCenter.default.addObserver(self, selector: #selector(handleConfigurationMessageReceived), name: .configurationMessageReceived, object: nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] modal in

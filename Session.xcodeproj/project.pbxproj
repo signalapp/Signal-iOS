@@ -278,6 +278,7 @@
 		B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF6422397711F0091D419 /* SettingsVC.swift */; };
 		B8D0A25025E3678700C1835E /* LinkDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D0A24F25E3678700C1835E /* LinkDeviceVC.swift */; };
 		B8D0A25925E367AC00C1835E /* Notification+MessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D0A25825E367AC00C1835E /* Notification+MessageReceiver.swift */; };
+		B8D0A26925E4A2C200C1835E /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D0A26825E4A2C200C1835E /* Onboarding.swift */; };
 		B8D64FBB25BA78310029CFC0 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		B8D64FBD25BA78310029CFC0 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		B8D64FBE25BA78310029CFC0 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
@@ -1273,8 +1274,9 @@
 		B8CCF638239721E20091D419 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		B8CCF63E23975CFB0091D419 /* JoinOpenGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinOpenGroupVC.swift; sourceTree = "<group>"; };
 		B8CCF6422397711F0091D419 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
-		B8D0A24F25E3678700C1835E /* LinkDeviceVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LinkDeviceVC.swift; path = "Device Linking/LinkDeviceVC.swift"; sourceTree = "<group>"; };
+		B8D0A24F25E3678700C1835E /* LinkDeviceVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkDeviceVC.swift; sourceTree = "<group>"; };
 		B8D0A25825E367AC00C1835E /* Notification+MessageReceiver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Notification+MessageReceiver.swift"; path = "SessionMessagingKit/Sending & Receiving/Notification+MessageReceiver.swift"; sourceTree = SOURCE_ROOT; };
+		B8D0A26825E4A2C200C1835E /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		B8D84E9325DF72AF005A043E /* ConversationViewAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConversationViewAction.h; sourceTree = "<group>"; };
 		B8D84EA225DF745A005A043E /* LinkPreviewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewState.swift; sourceTree = "<group>"; };
 		B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandingAttachmentsButton.swift; sourceTree = "<group>"; };
@@ -2389,14 +2391,6 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		B8D0A24E25E3677300C1835E /* Device Linking */ = {
-			isa = PBXGroup;
-			children = (
-				B8D0A24F25E3678700C1835E /* LinkDeviceVC.swift */,
-			);
-			name = "Device Linking";
-			sourceTree = "<group>";
-		};
 		B8FF8E6025C10D8B004D1F22 /* Countries */ = {
 			isa = PBXGroup;
 			children = (
@@ -2806,12 +2800,14 @@
 				B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */,
 				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
 				B82B40872399EB0E00A248E7 /* LandingVC.swift */,
+				B8D0A24F25E3678700C1835E /* LinkDeviceVC.swift */,
 				C3548F0524456447009433A8 /* PNModeVC.swift */,
 				C353F8F8244809150011121A /* PNOptionView.swift */,
 				B82B408B239A068800A248E7 /* RegisterVC.swift */,
 				B82B408F239DD75000A248E7 /* RestoreVC.swift */,
 				B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */,
 				B85357C223A1BD1200AAF6CD /* SeedVC.swift */,
+				B8D0A26825E4A2C200C1835E /* Onboarding.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -3596,7 +3592,6 @@
 				B835246C25C38AA20089A44F /* Conversations */,
 				C32C5D49256DD522003C73A2 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
-				B8D0A24E25E3677300C1835E /* Device Linking */,
 				C360968E25AD16E8008B62B2 /* Home */,
 				C36096BA25AD1B14008B62B2 /* Media Viewing & Editing */,
 				C36096BB25AD1BBB008B62B2 /* Notifications */,
@@ -4924,6 +4919,7 @@
 				C35D0DA125AE582D00B6BF49 /* MultiDeviceVC.swift in Sources */,
 				B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
+				B8D0A26925E4A2C200C1835E /* Onboarding.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,

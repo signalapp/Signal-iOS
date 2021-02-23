@@ -165,10 +165,7 @@ final class RestoreVC : BaseVC {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
             let seed = Data(hex: hexEncodedSeed)
             let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
-            KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
-            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair.hexEncodedPublicKey
-            OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
-            UserDefaults.standard[.hasViewedSeed] = true
+            Onboarding.Flow.recover.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             mnemonicTextView.resignFirstResponder()
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
                 let displayNameVC = DisplayNameVC()
