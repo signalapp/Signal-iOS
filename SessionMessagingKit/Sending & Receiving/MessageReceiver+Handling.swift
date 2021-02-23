@@ -143,24 +143,48 @@ extension MessageReceiver {
     }
     
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
-        guard message.sender == getUserHexEncodedPublicKey(), !UserDefaults.standard[.hasSyncedConfiguration] else { return }
+        guard message.sender == getUserHexEncodedPublicKey() else { return }
         let storage = SNMessagingKitConfiguration.shared.storage
-        // Notification
-        UserDefaults.standard[.hasSyncedConfiguration] = true
-        let profile: [String:Any?] = [ "displayName" : message.displayName, "profilePictureURL" : message.profilePictureURL, "profileKey" : message.profileKey ]
-        NotificationCenter.default.post(name: .configurationMessageReceived, object: profile)
-        // Closed groups
-        let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-        for closedGroup in message.closedGroups {
-            guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
-            handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                members: [String](closedGroup.members), admins: [String](closedGroup.admins), messageSentTimestamp: message.sentTimestamp!, using: transaction)
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let userDefaults = UserDefaults.standard
+        // Profile
+        let userProfile = storage.getUserProfile(using: transaction)
+        if let displayName = message.displayName {
+            let shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
+            if shouldUpdate {
+                userProfile.profileName = displayName
+                userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
+            }
         }
-        // Open groups
-        let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
-        for openGroupURL in message.openGroups {
-            guard !allOpenGroups.contains(openGroupURL) else { continue }
-            OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
+        if let profilePictureURL = message.profilePictureURL, let profileKeyAsData = message.profileKey {
+            let shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
+            if shouldUpdate {
+                userProfile.avatarUrlPath = profilePictureURL
+                userProfile.profileKey = OWSAES256Key(data: profileKeyAsData)
+                userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
+            }
+        }
+        userProfile.save(with: transaction)
+        transaction.addCompletionQueue(DispatchQueue.main) {
+            SSKEnvironment.shared.profileManager.downloadAvatar(for: userProfile)
+        }
+        // Initial configuration sync
+        if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
+            UserDefaults.standard[.hasSyncedInitialConfiguration] = true
+            NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+            // Closed groups
+            let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+            for closedGroup in message.closedGroups {
+                guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+                handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), messageSentTimestamp: message.sentTimestamp!, using: transaction)
+            }
+            // Open groups
+            let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
+            for openGroupURL in message.openGroups {
+                guard !allOpenGroups.contains(openGroupURL) else { continue }
+                OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
+            }
         }
     }
 

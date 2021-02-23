@@ -296,10 +296,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
+        let userDefaults = UserDefaults.standard
         let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
         let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: getUserHexEncodedPublicKey())
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
             OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: profilePicture, success: {
+                if displayNameToBeUploaded != nil {
+                    userDefaults[.lastDisplayNameUpdate] = Date()
+                }
+                if profilePictureToBeUploaded != nil {
+                    userDefaults[.lastProfilePictureUpdate] = Date()
+                }
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
                         guard let self = self else { return }

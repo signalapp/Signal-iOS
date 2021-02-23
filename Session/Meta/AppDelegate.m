@@ -118,11 +118,6 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.userNotificationActionHandler;
 }
 
-- (OWSLegacyNotificationActionHandler *)legacyNotificationActionHandler
-{
-    return AppEnvironment.shared.legacyNotificationActionHandler;
-}
-
 #pragma mark - Lifecycle
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -639,19 +634,6 @@ static NSTimeInterval launchStartedAt;
 #else
     [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
-}
-
-- (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    [self.notificationPresenter didRegisterLegacyNotificationSettings];
 }
 
 - (void)clearAllNotificationsAndRestoreBadgeCount

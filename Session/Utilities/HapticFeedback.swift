@@ -51,7 +51,6 @@ enum NotificationHapticFeedbackType {
     case error, success, warning
 }
 
-@available(iOS 10.0, *)
 extension NotificationHapticFeedbackType {
     var uiNotificationFeedbackType: UINotificationFeedbackGenerator.FeedbackType {
         switch self {
@@ -71,11 +70,7 @@ class NotificationHapticFeedback: NotificationHapticFeedbackAdapter {
     let adapter: NotificationHapticFeedbackAdapter
 
     init() {
-        if #available(iOS 10, *) {
-            adapter = ModernNotificationHapticFeedbackAdapter()
-        } else {
-            adapter = LegacyNotificationHapticFeedbackAdapter()
-        }
+        adapter = ModernNotificationHapticFeedbackAdapter()
     }
 
     func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
@@ -83,7 +78,6 @@ class NotificationHapticFeedback: NotificationHapticFeedbackAdapter {
     }
 }
 
-@available(iOS 10.0, *)
 class ModernNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
     let feedbackGenerator = UINotificationFeedbackGenerator()
 
@@ -94,15 +88,5 @@ class ModernNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter
     func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
         feedbackGenerator.notificationOccurred(notificationType.uiNotificationFeedbackType)
         feedbackGenerator.prepare()
-    }
-}
-
-class LegacyNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
-    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
-        vibrate()
-    }
-
-    private func vibrate() {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 }
