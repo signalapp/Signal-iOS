@@ -168,10 +168,7 @@ final class RegisterVC : BaseVC {
     
     // MARK: Interaction
     @objc private func register() {
-        KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair!.hexEncodedPublicKey
-        OWSPrimaryStorage.shared().setRestorationTime(0)
-        UserDefaults.standard[.hasViewedSeed] = false
+        Onboarding.Flow.register.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         let displayNameVC = DisplayNameVC()
         navigationController!.pushViewController(displayNameVC, animated: true)
     }

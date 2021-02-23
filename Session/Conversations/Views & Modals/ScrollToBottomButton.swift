@@ -38,7 +38,7 @@ final class ScrollToBottomButton : UIView {
         layer.cornerRadius = size / 2
         layer.masksToBounds = true
         // Border
-        layer.borderWidth = 1
+        layer.borderWidth = Values.separatorThickness
         let borderColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.veryLowOpacity)
         layer.borderColor = borderColor.cgColor
         // Icon

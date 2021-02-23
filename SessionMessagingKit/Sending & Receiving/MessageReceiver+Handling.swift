@@ -145,18 +145,23 @@ extension MessageReceiver {
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
         guard message.sender == getUserHexEncodedPublicKey(), !UserDefaults.standard[.hasSyncedConfiguration] else { return }
         let storage = SNMessagingKitConfiguration.shared.storage
+        // Notification
+        UserDefaults.standard[.hasSyncedConfiguration] = true
+        let profile: [String:Any?] = [ "displayName" : message.displayName, "profilePictureURL" : message.profilePictureURL, "profileKey" : message.profileKey ]
+        NotificationCenter.default.post(name: .configurationMessageReceived, object: profile)
+        // Closed groups
         let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
         for closedGroup in message.closedGroups {
             guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
             handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
                 members: [String](closedGroup.members), admins: [String](closedGroup.admins), messageSentTimestamp: message.sentTimestamp!, using: transaction)
         }
+        // Open groups
         let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
         for openGroupURL in message.openGroups {
             guard !allOpenGroups.contains(openGroupURL) else { continue }
             OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
         }
-        UserDefaults.standard[.hasSyncedConfiguration] = true
     }
 
     @discardableResult

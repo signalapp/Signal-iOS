@@ -1139,7 +1139,7 @@ struct SessionProtos_DataMessage {
       /// name, members
       case update // = 2
 
-      /// wrappers
+      /// publicKey, wrappers
       case encryptionKeyPair // = 3
 
       /// name
@@ -1151,8 +1151,6 @@ struct SessionProtos_DataMessage {
       /// members
       case membersRemoved // = 6
       case memberLeft // = 7
-
-      /// wrappers
       case encryptionKeyPairRequest // = 8
 
       init() {
@@ -1248,6 +1246,33 @@ struct SessionProtos_ConfigurationMessage {
 
   var openGroups: [String] = []
 
+  var displayName: String {
+    get {return _displayName ?? String()}
+    set {_displayName = newValue}
+  }
+  /// Returns true if `displayName` has been explicitly set.
+  var hasDisplayName: Bool {return self._displayName != nil}
+  /// Clears the value of `displayName`. Subsequent reads from it will return its default value.
+  mutating func clearDisplayName() {self._displayName = nil}
+
+  var profilePicture: String {
+    get {return _profilePicture ?? String()}
+    set {_profilePicture = newValue}
+  }
+  /// Returns true if `profilePicture` has been explicitly set.
+  var hasProfilePicture: Bool {return self._profilePicture != nil}
+  /// Clears the value of `profilePicture`. Subsequent reads from it will return its default value.
+  mutating func clearProfilePicture() {self._profilePicture = nil}
+
+  var profileKey: Data {
+    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
+    set {_profileKey = newValue}
+  }
+  /// Returns true if `profileKey` has been explicitly set.
+  var hasProfileKey: Bool {return self._profileKey != nil}
+  /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
+  mutating func clearProfileKey() {self._profileKey = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct ClosedGroup {
@@ -1300,6 +1325,10 @@ struct SessionProtos_ConfigurationMessage {
   }
 
   init() {}
+
+  fileprivate var _displayName: String? = nil
+  fileprivate var _profilePicture: String? = nil
+  fileprivate var _profileKey: Data? = nil
 }
 
 struct SessionProtos_ReceiptMessage {
@@ -3186,6 +3215,9 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "closedGroups"),
     2: .same(proto: "openGroups"),
+    3: .same(proto: "displayName"),
+    4: .same(proto: "profilePicture"),
+    5: .same(proto: "profileKey"),
   ]
 
   public var isInitialized: Bool {
@@ -3198,6 +3230,9 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
       switch fieldNumber {
       case 1: try decoder.decodeRepeatedMessageField(value: &self.closedGroups)
       case 2: try decoder.decodeRepeatedStringField(value: &self.openGroups)
+      case 3: try decoder.decodeSingularStringField(value: &self._displayName)
+      case 4: try decoder.decodeSingularStringField(value: &self._profilePicture)
+      case 5: try decoder.decodeSingularBytesField(value: &self._profileKey)
       default: break
       }
     }
@@ -3210,12 +3245,24 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
     if !self.openGroups.isEmpty {
       try visitor.visitRepeatedStringField(value: self.openGroups, fieldNumber: 2)
     }
+    if let v = self._displayName {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    if let v = self._profilePicture {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
+    if let v = self._profileKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_ConfigurationMessage, rhs: SessionProtos_ConfigurationMessage) -> Bool {
     if lhs.closedGroups != rhs.closedGroups {return false}
     if lhs.openGroups != rhs.openGroups {return false}
+    if lhs._displayName != rhs._displayName {return false}
+    if lhs._profilePicture != rhs._profilePicture {return false}
+    if lhs._profileKey != rhs._profileKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

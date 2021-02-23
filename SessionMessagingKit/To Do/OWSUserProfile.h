@@ -26,9 +26,9 @@ extern NSString *const kLocalProfileUniqueId;
 @interface OWSUserProfile : TSYapDatabaseObject
 
 @property (atomic, readonly) NSString *recipientId;
-@property (atomic, readonly, nullable) OWSAES256Key *profileKey;
-@property (atomic, readonly, nullable) NSString *profileName;
-@property (atomic, readonly, nullable) NSString *avatarUrlPath;
+@property (atomic, nullable) OWSAES256Key *profileKey;
+@property (atomic, nullable) NSString *profileName;
+@property (atomic, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
 

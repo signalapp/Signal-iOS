@@ -3135,6 +3135,15 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         let builder = SNProtoConfigurationMessageBuilder()
         builder.setClosedGroups(closedGroups)
         builder.setOpenGroups(openGroups)
+        if let _value = displayName {
+            builder.setDisplayName(_value)
+        }
+        if let _value = profilePicture {
+            builder.setProfilePicture(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
         return builder
     }
 
@@ -3164,6 +3173,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
             proto.openGroups = wrappedItems
         }
 
+        @objc public func setDisplayName(_ valueParam: String) {
+            proto.displayName = valueParam
+        }
+
+        @objc public func setProfilePicture(_ valueParam: String) {
+            proto.profilePicture = valueParam
+        }
+
+        @objc public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
         @objc public func build() throws -> SNProtoConfigurationMessage {
             return try SNProtoConfigurationMessage.parseProto(proto)
         }
@@ -3179,6 +3200,36 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     @objc public var openGroups: [String] {
         return proto.openGroups
+    }
+
+    @objc public var displayName: String? {
+        guard proto.hasDisplayName else {
+            return nil
+        }
+        return proto.displayName
+    }
+    @objc public var hasDisplayName: Bool {
+        return proto.hasDisplayName
+    }
+
+    @objc public var profilePicture: String? {
+        guard proto.hasProfilePicture else {
+            return nil
+        }
+        return proto.profilePicture
+    }
+    @objc public var hasProfilePicture: Bool {
+        return proto.hasProfilePicture
+    }
+
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
     }
 
     private init(proto: SessionProtos_ConfigurationMessage,

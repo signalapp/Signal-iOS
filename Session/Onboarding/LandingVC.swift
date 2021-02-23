@@ -33,39 +33,49 @@ final class LandingVC : BaseVC {
         setUpGradientBackground()
         setUpNavBarStyle()
         setUpNavBarSessionIcon()
-        // Set up title label
+        // Title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("vc_landing_title_2", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        // Set up title label container
+        // Title label container
         let titleLabelContainer = UIView()
         titleLabelContainer.addSubview(titleLabel)
         titleLabel.pin(.leading, to: .leading, of: titleLabelContainer, withInset: Values.veryLargeSpacing)
         titleLabel.pin(.top, to: .top, of: titleLabelContainer)
         titleLabelContainer.pin(.trailing, to: .trailing, of: titleLabel, withInset: Values.veryLargeSpacing)
         titleLabelContainer.pin(.bottom, to: .bottom, of: titleLabel)
-        // Set up spacers
+        // Spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
-        // Set up link button container
+        // Link button
+        let linkButton = UIButton()
+        linkButton.setTitle("Link a Device", for: UIControl.State.normal)
+        linkButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        linkButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        linkButton.addTarget(self, action: #selector(link), for: UIControl.Event.touchUpInside)
+        // Link button container
         let linkButtonContainer = UIView()
         linkButtonContainer.set(.height, to: Values.onboardingButtonBottomOffset)
-        // Set up button stack view
+//        linkButtonContainer.addSubview(linkButton)
+//        linkButton.center(.horizontal, in: linkButtonContainer)
+//        let isIPhoneX = (UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0)
+//        linkButton.centerYAnchor.constraint(equalTo: linkButtonContainer.centerYAnchor, constant: isIPhoneX ? -4 : 0).isActive = true
+        // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
         buttonStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         buttonStackView.alignment = .fill
-        // Set up button stack view container
+        // Button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)
         buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
         buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
-        // Set up main stack view
+        // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, linkButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
@@ -90,5 +100,10 @@ final class LandingVC : BaseVC {
     @objc private func restore() {
         let restoreVC = RestoreVC()
         navigationController!.pushViewController(restoreVC, animated: true)
+    }
+    
+    @objc private func link() {
+        let linkVC = LinkDeviceVC()
+        navigationController!.pushViewController(linkVC, animated: true)
     }
 }
