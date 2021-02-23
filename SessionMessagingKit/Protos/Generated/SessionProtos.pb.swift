@@ -1246,7 +1246,6 @@ struct SessionProtos_ConfigurationMessage {
 
   var openGroups: [String] = []
 
-  /// @required
   var displayName: String {
     get {return _displayName ?? String()}
     set {_displayName = newValue}
@@ -3222,7 +3221,6 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
   ]
 
   public var isInitialized: Bool {
-    if self._displayName == nil {return false}
     if !SwiftProtobuf.Internal.areAllInitialized(self.closedGroups) {return false}
     return true
   }

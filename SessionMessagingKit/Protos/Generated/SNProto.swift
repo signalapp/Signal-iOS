@@ -3126,15 +3126,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     // MARK: - SNProtoConfigurationMessageBuilder
 
-    @objc public class func builder(displayName: String) -> SNProtoConfigurationMessageBuilder {
-        return SNProtoConfigurationMessageBuilder(displayName: displayName)
+    @objc public class func builder() -> SNProtoConfigurationMessageBuilder {
+        return SNProtoConfigurationMessageBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoConfigurationMessageBuilder {
-        let builder = SNProtoConfigurationMessageBuilder(displayName: displayName)
+        let builder = SNProtoConfigurationMessageBuilder()
         builder.setClosedGroups(closedGroups)
         builder.setOpenGroups(openGroups)
+        if let _value = displayName {
+            builder.setDisplayName(_value)
+        }
         if let _value = profilePicture {
             builder.setProfilePicture(_value)
         }
@@ -3149,12 +3152,6 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         private var proto = SessionProtos_ConfigurationMessage()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(displayName: String) {
-            super.init()
-
-            setDisplayName(displayName)
-        }
 
         @objc public func addClosedGroups(_ valueParam: SNProtoConfigurationMessageClosedGroup) {
             var items = proto.closedGroups
@@ -3201,10 +3198,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     @objc public let closedGroups: [SNProtoConfigurationMessageClosedGroup]
 
-    @objc public let displayName: String
-
     @objc public var openGroups: [String] {
         return proto.openGroups
+    }
+
+    @objc public var displayName: String? {
+        guard proto.hasDisplayName else {
+            return nil
+        }
+        return proto.displayName
+    }
+    @objc public var hasDisplayName: Bool {
+        return proto.hasDisplayName
     }
 
     @objc public var profilePicture: String? {
@@ -3228,11 +3233,9 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     }
 
     private init(proto: SessionProtos_ConfigurationMessage,
-                 closedGroups: [SNProtoConfigurationMessageClosedGroup],
-                 displayName: String) {
+                 closedGroups: [SNProtoConfigurationMessageClosedGroup]) {
         self.proto = proto
         self.closedGroups = closedGroups
-        self.displayName = displayName
     }
 
     @objc
@@ -3249,18 +3252,12 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         var closedGroups: [SNProtoConfigurationMessageClosedGroup] = []
         closedGroups = try proto.closedGroups.map { try SNProtoConfigurationMessageClosedGroup.parseProto($0) }
 
-        guard proto.hasDisplayName else {
-            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: displayName")
-        }
-        let displayName = proto.displayName
-
         // MARK: - Begin Validation Logic for SNProtoConfigurationMessage -
 
         // MARK: - End Validation Logic for SNProtoConfigurationMessage -
 
         let result = SNProtoConfigurationMessage(proto: proto,
-                                                 closedGroups: closedGroups,
-                                                 displayName: displayName)
+                                                 closedGroups: closedGroups)
         return result
     }
 

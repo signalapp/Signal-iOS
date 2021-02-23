@@ -12,16 +12,10 @@ public final class ConfigurationMessage : ControlMessage {
 
     public override var isSelfSendValid: Bool { true }
     
-    // MARK: Validation
-    public override var isValid: Bool {
-        guard displayName != nil else { return false }
-        return true
-    }
-    
     // MARK: Initialization
     public override init() { super.init() }
 
-    public init(displayName: String, profilePictureURL: String?, profileKey: Data?, closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
+    public init(displayName: String?, profilePictureURL: String?, profileKey: Data?, closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
         super.init()
         self.displayName = displayName
         self.profilePictureURL = profilePictureURL
@@ -61,8 +55,8 @@ public final class ConfigurationMessage : ControlMessage {
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
-        guard let displayName = displayName else { return nil }
-        let configurationProto = SNProtoConfigurationMessage.builder(displayName: displayName)
+        let configurationProto = SNProtoConfigurationMessage.builder()
+        if let displayName = displayName { configurationProto.setDisplayName(displayName) }
         if let profilePictureURL = profilePictureURL { configurationProto.setProfilePicture(profilePictureURL) }
         if let profileKey = profileKey { configurationProto.setProfileKey(profileKey) }
         configurationProto.setClosedGroups(closedGroups.compactMap { $0.toProto() })
