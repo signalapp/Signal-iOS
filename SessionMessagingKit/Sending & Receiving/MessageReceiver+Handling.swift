@@ -153,7 +153,7 @@ extension MessageReceiver {
             let shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
             if shouldUpdate {
                 userProfile.profileName = displayName
-                userDefaults[.lastDisplayNameUpdate] = Date()
+                userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
             }
         }
         if let profilePictureURL = message.profilePictureURL, let profileKeyAsData = message.profileKey {
@@ -161,7 +161,7 @@ extension MessageReceiver {
             if shouldUpdate {
                 userProfile.avatarUrlPath = profilePictureURL
                 userProfile.profileKey = OWSAES256Key(data: profileKeyAsData)
-                userDefaults[.lastProfilePictureUpdate] = Date()
+                userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
             }
         }
         userProfile.save(with: transaction)
