@@ -169,7 +169,7 @@ public extension ConversationViewController {
 
         // If we discovery any collisions, pull out the necessary info to build the banner
         guard let (title, avatar1, avatar2) = databaseStorage.read(block: { readTx -> (String, UIImage?, UIImage?)? in
-            let collisionSets = collisionFinder.findCollisions(transaction: readTx)
+            let collisionSets = collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
             guard !collisionSets.isEmpty, collisionSets[0].elements.count >= 2 else { return nil }
 
             let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }

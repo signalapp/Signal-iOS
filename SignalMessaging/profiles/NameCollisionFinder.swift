@@ -14,7 +14,7 @@ public struct NameCollision {
     }
 
     public let elements: [Element]
-    init(_ elements: [Element]) {
+    public init(_ elements: [Element]) {
         self.elements = elements
     }
 }
@@ -238,5 +238,52 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 fileprivate extension SignalServiceAddress {
     func getDisplayName(transaction readTx: SDSAnyReadTransaction) -> String {
         Environment.shared.contactsManager.displayName(for: self, transaction: readTx)
+    }
+}
+
+public extension NameCollision {
+    func standardSort(readTx: SDSAnyReadTransaction) -> NameCollision {
+        NameCollision(
+            elements.sorted { element1, element2 in
+                // Given two colliding elements, we sort by:
+                // - Most recent profile update first (if available)
+                // - SignalServiceAddress UUID otherwise, to ensure stable sorting
+                if element1.latestUpdateTimestamp != nil || element2.latestUpdateTimestamp != nil {
+                    return (element1.latestUpdateTimestamp ?? 0) > (element2.latestUpdateTimestamp ?? 0)
+
+                } else {
+                    return element1.address.sortKey < element2.address.sortKey
+                }
+            }
+        )
+    }
+}
+
+public extension Array where Element == NameCollision {
+    func standardSort(readTx: SDSAnyReadTransaction) -> [NameCollision] {
+        self
+            .map { $0.standardSort(readTx: readTx) }
+            .sorted { set1, set2 in
+                // Across collision sets, (e.g. two independent collisions, two people named Michelle, two people named Nora)
+                // We'll sort by the smallest comparable name in each collision set
+                // (Usually they're all the same, but this might change in the future when comparing homographs)
+                // This is to try and maintain stable sorting as individual elements within the set are resolved
+
+                let smallestName1 = set1.elements
+                    .map { Environment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .min()
+                let smallestName2 = set2.elements
+                    .map { Environment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .min()
+
+                switch (smallestName1, smallestName2) {
+                case let (name1?, name2?):
+                    return name1 < name2
+                case (_?, nil):
+                    return true
+                case (nil, _):
+                    return false
+                }
+        }
     }
 }

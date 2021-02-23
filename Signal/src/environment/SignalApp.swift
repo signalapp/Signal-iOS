@@ -14,6 +14,11 @@ extension SignalApp {
         DispatchQueue.global(qos: .background).async {
             Wallpaper.warmCaches()
         }
+
+        let kvStore = SDSKeyValueStore(collection: "GroupThreadCollisionFinder")
+        SDSDatabaseStorage.shared.write { (writeTx) in
+            kvStore.removeAll(transaction: writeTx)
+        }
     }
 
     @objc

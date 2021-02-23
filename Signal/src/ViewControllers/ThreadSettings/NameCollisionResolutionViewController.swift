@@ -27,6 +27,9 @@ class NameCollisionResolutionViewController: OWSTableViewController {
     private var cellModels: [[NameCollisionCellModel]] = [] {
         didSet {
             if cellModels.count == 0 || cellModels.allSatisfy({ $0.count <= 1 }) {
+                databaseStorage.asyncWrite { writeTx in
+                    self.collisionFinder.markCollisionsAsResolved(transaction: writeTx)
+                }
                 collisionDelegate?.nameCollisionControllerDidComplete(self, dismissConversationView: false)
             } else {
                 updateTableContents()
@@ -76,53 +79,24 @@ class NameCollisionResolutionViewController: OWSTableViewController {
                 self.groupViewHelper?.delegate = self
             }
 
-            let collisions = self.collisionFinder.findCollisions(transaction: readTx)
-            guard collisions.count > 0, collisions.allSatisfy({ $0.elements.count >= 2 }) else { return [] }
+            let standardSort = self.collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
+            guard standardSort.count > 0, standardSort.allSatisfy({ $0.elements.count >= 2 }) else { return [] }
 
-            let collisionComparator = { (cell1: NameCollisionCellModel, cell2: NameCollisionCellModel) -> Bool in
-                // Given two cells containing collision information, we sort by:
-                // - Message requester first (if contact thread with pending message request)
-                // - Most recent profile update first (if available)
-                // - SignalServiceAddress UUID otherwise, to ensure stable sorting
-
-                if let contactAddress = (self.thread as? TSContactThread)?.contactAddress,
-                   [cell1.address, cell2.address].contains(contactAddress),
-                   cell1.address != cell2.address {
-                    return cell1.address == contactAddress
-
-                } else if cell1.updateTimestamp != nil || cell2.updateTimestamp != nil {
-                    return (cell1.updateTimestamp ?? 0) > (cell2.updateTimestamp ?? 0)
-
-                } else {
-                    return cell1.address.sortKey < cell2.address.sortKey
-                }
+            let sortedCollisions: [NameCollision]
+            if let contactAddress = (self.thread as? TSContactThread)?.contactAddress,
+               standardSort.count == 1,
+               let requesterIndex = standardSort[0].elements.firstIndex(where: { $0.address == contactAddress }) {
+                // If we're in a contact thread, the one exception to the standard sorting of collisions
+                // is that the message requester should appear first
+                var collidingElements = standardSort[0].elements
+                let requesterElement = collidingElements.remove(at: requesterIndex)
+                collidingElements.insert(requesterElement, at: 0)
+                sortedCollisions = [NameCollision(collidingElements)]
+            } else {
+                sortedCollisions = standardSort
             }
 
-            let collisionSetComparator = { (collisionSet1: [NameCollisionCellModel], collisionSet2: [NameCollisionCellModel]) -> Bool in
-                // Across collision sets, (e.g. two independent collisions, two people named Michelle, two people named Nora)
-                // We'll sort by the smallest comparable name in each collision set
-                // (Usually they're all the same, but this might change in the future when comparing homographs)
-                let smallestName1 = collisionSet1
-                    .map { self.contactsManager.comparableName(for: $0.address, transaction: readTx )}
-                    .min()
-                let smallestName2 = collisionSet2
-                    .map { self.contactsManager.comparableName(for: $0.address, transaction: readTx )}
-                    .min()
-
-                switch (smallestName1, smallestName2) {
-                case let (name1?, name2?):
-                    return name1 < name2
-                case (_?, nil):
-                    return true
-                case (nil, _):
-                    return false
-                }
-            }
-
-            return collisions
-                .map { $0.collisionCellModels(thread: self.thread, transaction: readTx) }
-                .map { $0.sorted(by: collisionComparator) }     // Sort cells within a collision (e.g. all cells for "Michelle")
-                .sorted(by: collisionSetComparator)             // Sort accross collision sets (e.g. cells for "Michelle" versus cells for "Nora")
+            return sortedCollisions.map { $0.collisionCellModels(thread: self.thread, transaction: readTx) }
         })
     }
 
@@ -312,6 +286,9 @@ class NameCollisionResolutionViewController: OWSTableViewController {
 
     @objc
     private func donePressed(_ sender: UIBarButtonItem) {
+        // When the user presses done, implicitly mark the remaining collisions as resolved (if the finder supports it)
+        // Note: We only do this for dismissal via "Done". If the user uses interactive sheet dismissal, leave the
+        // collisions as-is.
         databaseStorage.write { writeTx in
             self.collisionFinder.markCollisionsAsResolved(transaction: writeTx)
         }
