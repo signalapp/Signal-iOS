@@ -23,8 +23,6 @@ PODS:
   - CocoaLumberjack (3.7.0):
     - CocoaLumberjack/Core (= 3.7.0)
   - CocoaLumberjack/Core (3.7.0)
-  - CocoaLumberjack/Swift (3.7.0):
-    - CocoaLumberjack/Core
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalClient
@@ -85,10 +83,10 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalArgon2 (1.3.2)
   - SignalArgon2/Tests (1.3.2)
-  - SignalClient (0.1.2):
-    - CocoaLumberjack/Swift
-  - SignalClient/Tests (0.1.2):
-    - CocoaLumberjack/Swift
+  - SignalClient (0.3.0):
+    - SignalCoreKit
+  - SignalClient/Tests (0.3.0):
+    - SignalCoreKit
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
@@ -373,13 +371,13 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalClient:
-    :commit: 28618d37b63ded1a530483c418ddcfd13d537293
+    :commit: c9fd658b62bf829f0e1bda4d7c278039f4d1a459
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 96b09fe32d71f3f52131b906c6ac33f132e80bce
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: c0b114797a31a5e87d03b92d4563f90effbc397c
+    :commit: 6bcb9a4e21fc0beabfd4f1026c69e369ff9c1565
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -416,7 +414,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: 91b917679b15bdf469934aca026787493efdbe1b
+  SignalClient: d3d24026b91205f3f48fcb27517edddcda9ed2cc
   SignalCoreKit: 43daa8f15d6125d54705f35628ac35051bb205c6
   SignalMetadataKit: a40217605426975468175eb9328a170e2162be94
   SignalRingRTC: d59de0ae05da586f043f83e5a6f7e5bc0c60a482
@@ -430,6 +428,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 58b0dcf90e54a3d6d59eebe376b19dc5606b4419
+PODFILE CHECKSUM: 70ac5af4c2290ee2d38793a59f26395582cd0bd8
 
 COCOAPODS: 1.9.2

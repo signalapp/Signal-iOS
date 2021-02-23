@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 import ZKGroup
-import HKDFKit
+import SignalClient
 
 @objc
 public class GroupsV2Migration: NSObject {
@@ -1081,17 +1081,11 @@ fileprivate extension GroupsV2Migration {
         guard GroupManager.isValidGroupId(v1GroupId, groupsVersion: .V1) else {
             throw OWSAssertionError("Invalid v1 group id.")
         }
-        guard let migrationInfo: Data = "GV2 Migration".data(using: .utf8) else {
-            throw OWSAssertionError("Couldn't convert info data.")
-        }
-        let salt = Data(repeating: 0, count: 32)
-        let masterKeyLength: Int32 = Int32(GroupMasterKey.SIZE)
-        let masterKey =
-            try HKDFKit.deriveKey(v1GroupId, info: migrationInfo, salt: salt, outputSize: masterKeyLength)
-        guard masterKey.count == masterKeyLength else {
-            throw OWSAssertionError("Invalid master key.")
-        }
-        return masterKey
+        let migrationInfo = "GV2 Migration"
+        let masterKey = try migrationInfo.utf8.withContiguousStorageIfAvailable {
+            try hkdf(outputLength: GroupMasterKey.SIZE, version: 3, inputKeyMaterial: v1GroupId, salt: [], info: $0)
+        }!
+        return Data(masterKey)
     }
 
     // MARK: -
