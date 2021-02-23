@@ -143,6 +143,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
+            appDelegate.syncConfigurationIfNeeded()
         }
         // Onion request path countries cache
         DispatchQueue.global(qos: .utility).async {
