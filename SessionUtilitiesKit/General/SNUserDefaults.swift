@@ -3,19 +3,15 @@ import Foundation
 public enum SNUserDefaults {
     
     public enum Bool : Swift.String {
-        case hasLaunchedOnce
-        case hasSeenGIFMetadataWarning
         case hasSyncedConfiguration
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
         case isMigratingToV2KeyPair
-        case isUsingMultiDevice
     }
 
     public enum Date : Swift.String {
         case lastProfilePictureUpload
-        case lastKeyPairMigrationNudge
         case lastConfigurationSync
     }
 
@@ -23,7 +19,7 @@ public enum SNUserDefaults {
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
     }
 
-    public enum Int: Swift.String {
+    public enum Int : Swift.String {
         case appMode
     }
     

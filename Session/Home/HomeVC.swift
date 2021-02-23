@@ -153,7 +153,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reload()
-        UserDefaults.standard[.hasLaunchedOnce] = true
     }
     
     deinit {

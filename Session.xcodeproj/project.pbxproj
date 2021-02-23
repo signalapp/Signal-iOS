@@ -532,8 +532,6 @@
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
-		C35D0DA125AE582D00B6BF49 /* MultiDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */; };
-		C35D0DAB25AE5BDE00B6BF49 /* SettingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */; };
 		C35D0DB525AE5F1200B6BF49 /* UIEdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
 		C364535C252467900045C478 /* AudioUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364535B252467900045C478 /* AudioUtilities.swift */; };
@@ -1533,8 +1531,6 @@
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
-		C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceVC.swift; sourceTree = "<group>"; };
-		C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRow.swift; sourceTree = "<group>"; };
 		C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIEdgeInsets.swift; sourceTree = "<group>"; };
 		C35E8AA22485C72300ACB629 /* SwiftCSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCSV.framework; path = ThirdParty/Carthage/Build/iOS/SwiftCSV.framework; sourceTree = "<group>"; };
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
@@ -2386,7 +2382,6 @@
 				C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
-				C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2836,7 +2831,6 @@
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8CCF6422397711F0091D419 /* SettingsVC.swift */,
-				C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -4916,7 +4910,6 @@
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
 				B835247925C38D880089A44F /* MessageCell.swift in Sources */,
-				C35D0DA125AE582D00B6BF49 /* MultiDeviceVC.swift in Sources */,
 				B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
 				B8D0A26925E4A2C200C1835E /* Onboarding.swift in Sources */,
@@ -4927,7 +4920,6 @@
 				B82B408C239A068800A248E7 /* RegisterVC.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
-				C35D0DAB25AE5BDE00B6BF49 /* SettingRow.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				C331FFFE2558FF3B00070591 /* ConversationCell.swift in Sources */,
 				C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */,
