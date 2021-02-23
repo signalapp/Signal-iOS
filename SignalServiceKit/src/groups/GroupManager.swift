@@ -1576,7 +1576,17 @@ public class GroupManager: NSObject {
                 // Block on the outcome of the profile updates.
                 var promises = [Promise<Void>]()
                 for address in addressesWithoutCapability {
-                    promises.append(self.profileManager.fetchProfile(forAddressPromise: address).asVoid())
+                    let promise = firstly(on: .global()) {
+                        self.profileManager.fetchProfile(forAddressPromise: address).asVoid()
+                    }.recover(on: .global()) { error -> Promise<Void> in
+                        if case ProfileFetchError.missing = error {
+                            // If a user has no profile, ignore.
+                            return Promise.value(())
+                        }
+                        owsFailDebugUnlessNetworkFailure(error)
+                        throw error
+                    }
+                    promises.append(promise)
                 }
                 return when(fulfilled: promises)
             } else {
