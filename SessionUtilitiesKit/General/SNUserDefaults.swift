@@ -3,7 +3,7 @@ import Foundation
 public enum SNUserDefaults {
     
     public enum Bool : Swift.String {
-        case hasSyncedConfiguration
+        case hasSyncedInitialConfiguration = "hasSyncedConfiguration"
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
@@ -13,6 +13,8 @@ public enum SNUserDefaults {
     public enum Date : Swift.String {
         case lastProfilePictureUpload
         case lastConfigurationSync
+        case lastDisplayNameUpdate
+        case lastProfilePictureUpdate
     }
 
     public enum Double : Swift.String {

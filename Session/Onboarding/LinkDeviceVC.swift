@@ -132,28 +132,13 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     @objc private func handleConfigurationMessageReceived(_ notification: Notification) {
-        guard let profile = notification.object as? [String:Any?], let displayName = profile["displayName"] as? String else { return }
-        let profilePictureURL = profile["profilePictureURL"] as? String
-        let profileKeyAsData = profile["profileKey"] as? NSData
-        let profileKey = given(profileKeyAsData) { OWSAES256Key(data: $0 as Data)! }
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        let profileManager = OWSProfileManager.shared()
-        var userProfile: OWSUserProfile!
-        Storage.write(with: { transaction in
-            userProfile = profileManager.getLocalUserProfile(with: transaction)
-            userProfile.profileName = displayName
-            userProfile.avatarUrlPath = profilePictureURL
-            userProfile.profileKey = profileKey
-            userProfile.save(with: transaction)
-        }, completion: {
-            profileManager.downloadAvatar(for: userProfile)
-            DispatchQueue.main.async {
-                self.navigationController!.dismiss(animated: true) {
-                    let pnModeVC = PNModeVC()
-                    self.navigationController!.setViewControllers([ pnModeVC ], animated: true)
-                }
+        DispatchQueue.main.async {
+            self.navigationController!.dismiss(animated: true) {
+                let pnModeVC = PNModeVC()
+                self.navigationController!.setViewControllers([ pnModeVC ], animated: true)
             }
-        })
+        }
     }
 }
 

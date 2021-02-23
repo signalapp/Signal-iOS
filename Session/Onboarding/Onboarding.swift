@@ -14,11 +14,17 @@ enum Onboarding {
             case .register:
                 userDefaults[.hasViewedSeed] = false
                 restorationTime = 0
-                userDefaults[.hasSyncedConfiguration] = true
+                userDefaults[.hasSyncedInitialConfiguration] = true
             case .recover, .link:
                 userDefaults[.hasViewedSeed] = true
                 restorationTime = Date().timeIntervalSince1970
-                userDefaults[.hasSyncedConfiguration] = false
+                userDefaults[.hasSyncedInitialConfiguration] = false
+            }
+            switch self {
+            case .register, .recover:
+                userDefaults[.lastDisplayNameUpdate] = Date()
+                userDefaults[.lastProfilePictureUpdate] = Date()
+            case .link: break
             }
             OWSPrimaryStorage.shared().setRestorationTime(restorationTime)
         }

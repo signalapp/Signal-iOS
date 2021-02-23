@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ensureLocalProfileCached;
 - (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile;
+
 @end
 
 NS_ASSUME_NONNULL_END
