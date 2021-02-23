@@ -33,8 +33,15 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
-    override var inputAccessoryView: UIView? { isShowingSearchUI ? searchController.resultsBar : snInputView }
     override var canBecomeFirstResponder: Bool { true }
+    
+    override var inputAccessoryView: UIView? {
+        if let thread = thread as? TSGroupThread, thread.groupModel.groupType == .closedGroup && !thread.isCurrentUserMemberInGroup() {
+            return nil
+        } else {
+            return isShowingSearchUI ? searchController.resultsBar : snInputView
+        }
+    }
 
     var tableViewUnobscuredHeight: CGFloat {
         let bottomInset = messagesTableView.adjustedContentInset.bottom
@@ -135,6 +142,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleGroupUpdatedNotification), name: .groupThreadUpdated, object: nil)
         // Mentions
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
     }
@@ -310,6 +318,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func conversationViewModelDidReset() {
         
+    }
+    
+    @objc private func handleGroupUpdatedNotification() {
+        thread.reload()
+        reloadInputViews()
     }
     
     // MARK: General
