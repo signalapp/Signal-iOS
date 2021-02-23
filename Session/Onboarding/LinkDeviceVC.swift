@@ -125,13 +125,13 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
         let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
         Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         TSAccountManager.sharedInstance().didRegister()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleConfigurationMessageReceived), name: .configurationMessageReceived, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleInitialConfigurationMessageReceived), name: .initialConfigurationMessageReceived, object: nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] modal in
             self?.activityIndicatorModal = modal
         }
     }
     
-    @objc private func handleConfigurationMessageReceived(_ notification: Notification) {
+    @objc private func handleInitialConfigurationMessageReceived(_ notification: Notification) {
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         DispatchQueue.main.async {
             self.navigationController!.dismiss(animated: true) {

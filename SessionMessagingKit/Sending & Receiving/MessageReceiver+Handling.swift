@@ -168,11 +168,10 @@ extension MessageReceiver {
         transaction.addCompletionQueue(DispatchQueue.main) {
             SSKEnvironment.shared.profileManager.downloadAvatar(for: userProfile)
         }
-        // Notification
-        NotificationCenter.default.post(name: .configurationMessageReceived, object: nil)
         // Initial configuration sync
         if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
             UserDefaults.standard[.hasSyncedInitialConfiguration] = true
+            NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
             // Closed groups
             let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
             for closedGroup in message.closedGroups {
