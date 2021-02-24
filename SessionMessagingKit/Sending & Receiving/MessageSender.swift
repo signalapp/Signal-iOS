@@ -346,33 +346,36 @@ public final class MessageSender : NSObject {
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         // Ignore future self-sends
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
-        // Track the open group server message ID
-        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-        tsMessage.save(with: transaction)
-        if let serverID = message.openGroupServerMessageID {
-            storage.setIDForMessage(withServerID: serverID, to: tsMessage.uniqueId!, using: transaction)
+        // Get the visible message if possible
+        if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
+            // Track the open group server message ID
+            tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+            tsMessage.save(with: transaction)
+            if let serverID = message.openGroupServerMessageID {
+                storage.setIDForMessage(withServerID: serverID, to: tsMessage.uniqueId!, using: transaction)
+            }
+            // Mark the message as sent
+            var recipients = [ message.recipient! ]
+            if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
+                let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
+                recipients = thread.groupModel.groupMemberIds
+            }
+            recipients.forEach { recipient in
+                tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
+            }
+            // Start the disappearing messages timer if needed
+            OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
-        // Mark the message as sent
-        var recipients = [ message.recipient! ]
-        if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
-            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
-            recipients = thread.groupModel.groupMemberIds
-        }
-        recipients.forEach { recipient in
-            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
-        }
-        // Start the disappearing messages timer if needed
-        OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         // Sync the message if:
-        // • it's a visible message
+        // • it's a visible message or an expiration timer update
         // • the destination was a contact
         // • we didn't sync it already
         let userPublicKey = getUserHexEncodedPublicKey()
-        if case .contact(let publicKey) = destination, !isSyncMessage, let message = message as? VisibleMessage {
-            message.syncTarget = publicKey
+        if case .contact(let publicKey) = destination, !isSyncMessage {
+            if let message = message as? VisibleMessage { message.syncTarget = publicKey }
+            if let message = message as? ExpirationTimerUpdate { message.syncTarget = publicKey }
             // FIXME: Make this a job
             sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
         }

@@ -96,13 +96,13 @@ extension MessageReceiver {
 
     private static func handleExpirationTimerUpdate(_ message: ExpirationTimerUpdate, using transaction: Any) {
         if message.duration! > 0 {
-            setExpirationTimer(to: message.duration!, for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction)
+            setExpirationTimer(to: message.duration!, for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, using: transaction)
         } else {
-            disableExpirationTimer(for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction)
+            disableExpirationTimer(for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, using: transaction)
         }
     }
 
-    public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, groupPublicKey: String?, using transaction: Any) {
+    public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -110,7 +110,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactId(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
@@ -122,7 +122,7 @@ extension MessageReceiver {
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 
-    public static func disableExpirationTimer(for senderPublicKey: String, groupPublicKey: String?, using transaction: Any) {
+    public static func disableExpirationTimer(for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -130,7 +130,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactId(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
