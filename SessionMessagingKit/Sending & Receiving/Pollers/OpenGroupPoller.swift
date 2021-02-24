@@ -69,7 +69,6 @@ public final class OpenGroupPoller : NSObject {
         guard !self.isPolling else { return Promise.value(()) }
         self.isPolling = true
         let openGroup = self.openGroup
-        let userPublicKey = getUserHexEncodedPublicKey()
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
         OpenGroupAPI.getMessages(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { messages in
@@ -177,13 +176,13 @@ public final class OpenGroupPoller : NSObject {
             }
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
             seal.fulfill(()) // The promise is just used to keep track of when we're done
-        }
+        }.retainUntilComplete()
         return promise
     }
     
     private func pollForDeletedMessages() {
         let openGroup = self.openGroup
-        let _ = OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
+        OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             let deletedMessageIDs = deletedMessageServerIDs.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0)) }
             SNMessagingKitConfiguration.shared.storage.write { transaction in
                 deletedMessageIDs.forEach { messageID in
@@ -191,10 +190,10 @@ public final class OpenGroupPoller : NSObject {
                     TSMessage.fetch(uniqueId: messageID, transaction: transaction)?.remove(with: transaction)
                 }
             }
-        }
+        }.retainUntilComplete()
     }
     
     private func pollForModerators() {
-        let _ = OpenGroupAPI.getModerators(for: openGroup.channel, on: openGroup.server)
+        OpenGroupAPI.getModerators(for: openGroup.channel, on: openGroup.server).retainUntilComplete()
     }
 }

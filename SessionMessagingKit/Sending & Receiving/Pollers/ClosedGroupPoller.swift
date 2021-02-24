@@ -79,6 +79,7 @@ public final class ClosedGroupPoller : NSObject {
             promise.catch2 { error in
                 SNLog("Polling failed for closed group with public key: \(publicKey) due to error: \(error).")
             }
+            promise.retainUntilComplete()
             return promise.map { _ in }
         }
     }
