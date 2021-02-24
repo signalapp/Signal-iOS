@@ -217,7 +217,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16))
             didConstrainScrollButton = true
         }
+        let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
         UIView.animate(withDuration: 0.25) {
+            if shouldScroll {
+                self.messagesTableView.contentOffset.y += (newHeight - self.messagesTableView.keyboardHeight)
+            }
             self.messagesTableView.keyboardHeight = newHeight
             self.scrollButton.alpha = 0
         }
