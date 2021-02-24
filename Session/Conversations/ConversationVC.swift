@@ -1,7 +1,6 @@
 
 // TODO
 // • Slight paging glitch
-// • Image detail VC transition glitch
 // • Photo rounding
 // • Scroll button behind mentions view
 // • Remaining search glitchiness

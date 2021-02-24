@@ -381,7 +381,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 }
                 guard let stream = attachment as? TSAttachmentStream else { return }
                 let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
-                gallery.presentDetailView(fromViewController: self, mediaAttachment: stream, replacingView: mediaView)
+                gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
             case .genericAttachment:
                 guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                 let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)

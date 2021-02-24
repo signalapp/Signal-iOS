@@ -239,7 +239,6 @@ protocol MediaGalleryDataSourceDelegate: class {
 
 class MediaGalleryNavigationController: OWSNavigationController {
 
-    var presentationView: UIImageView!
     var retainUntilDismissed: MediaGallery?
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
@@ -250,16 +249,6 @@ class MediaGalleryNavigationController: OWSNavigationController {
         return true
     }
 
-    override public func becomeFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.becomeFirstResponder()
-    }
-
-    override public func resignFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.resignFirstResponder()
-    }
-
     // MARK: View Lifecycle
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -268,23 +257,6 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // UIModalPresentationCustom retains the current view context behind our VC, allowing us to manually
-        // animate in our view, over the existing context, similar to a cross disolve, but allowing us to have
-        // more fine grained control
-        self.modalPresentationStyle = .custom
-
-        // The presentationView is only used during present/dismiss animations.
-        // It's a static image of the media content.
-        let presentationView = UIImageView()
-        self.presentationView = presentationView
-        self.view.insertSubview(presentationView, at: 0)
-        presentationView.isHidden = true
-        presentationView.clipsToBounds = true
-        presentationView.layer.allowsEdgeAntialiasing = true
-        presentationView.layer.minificationFilter = .trilinear
-        presentationView.layer.magnificationFilter = .trilinear
-        presentationView.contentMode = .scaleAspectFit
 
         guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar had unexpected class: \(self.navigationBar)")
@@ -363,14 +335,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         return self.pageViewController!.currentItem
     }
 
-    private var replacingView: UIView?
-    private var presentationViewConstraints: [NSLayoutConstraint] = []
-
-    // TODO rename to replacingOriginRect
-    private var originRect: CGRect?
-
     @objc
-    public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment, replacingView: UIView) {
+    public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment) {
         var galleryItem: MediaGalleryItem?
         uiDatabaseConnection.read { transaction in
             galleryItem = self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
@@ -380,10 +346,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             return
         }
 
-        presentDetailView(fromViewController: fromViewController, initialDetailItem: initialDetailItem, replacingView: replacingView)
+        presentDetailView(fromViewController: fromViewController, initialDetailItem: initialDetailItem)
     }
 
-    public func presentDetailView(fromViewController: UIViewController, initialDetailItem: MediaGalleryItem, replacingView: UIView) {
+    public func presentDetailView(fromViewController: UIViewController, initialDetailItem: MediaGalleryItem) {
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
         ensureGalleryItemsLoaded(.around, item: initialDetailItem, amount: 10)
@@ -405,103 +371,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         navigationController.setViewControllers([pageViewController], animated: false)
 
-        self.replacingView = replacingView
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
 
-        let convertedRect: CGRect = replacingView.convert(replacingView.bounds, to: UIApplication.shared.keyWindow)
-        self.originRect = convertedRect
-
-        // loadView hasn't necessarily been called yet.
-        navigationController.loadViewIfNeeded()
-
-        navigationController.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.navigationController.presentationView.image = image
-            }, failure: {
-                Logger.warn("Could not load presentation image.")
-        })
-
-        self.applyInitialMediaViewConstraints()
-
-        // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
-        navigationController.setNavigationBarHidden(false, animated: false)
-        navigationController.presentationView.alpha = 1
-
-        // We want to animate the tapped media from it's position in the previous VC
-        // to it's resting place in the center of this view controller.
-        //
-        // Rather than animating the actual media view in place, we animate the presentationView, which is a static
-        // image of the media content. Animating the actual media view is problematic for a couple reasons:
-        // 1. The media view ultimately lives in a zoomable scrollView. Getting both original positioning and the final positioning
-        //    correct, involves manipulating the zoomScale and position simultaneously, which results in non-linear movement,
-        //    especially noticeable on high resolution images.
-        // 2. For Video views, the AVPlayerLayer content does not scale with the presentation animation. So you instead get a full scale
-        //    video, wherein only the cropping is animated.
-        // Using a simple image view allows us to address both these problems relatively easily.
-        navigationController.view.alpha = 0.0
-
-        guard let detailView = pageViewController.view else {
-            owsFailDebug("detailView was unexpectedly nil")
-            return
-        }
-
-        // At this point our media view should be overlayed perfectly
-        // by our presentationView. Swapping them out should be imperceptible.
-        navigationController.presentationView.isHidden = false
-        // We don't hide the pageViewController entirely - e.g. we want the toolbars to fade in.
-        pageViewController.currentViewController.view.isHidden = true
-        detailView.backgroundColor = .clear
-        navigationController.view.backgroundColor = .clear
-
-        navigationController.presentationView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
-
-        fromViewController.present(navigationController, animated: false) {
-
-            // 1. Fade in the entire view.
-            UIView.animate(withDuration: 0.1) {
-                self.replacingView?.alpha = 0.0
-                self.navigationController.view.alpha = 1.0
-            }
-
-            self.navigationController.presentationView.superview?.layoutIfNeeded()
-            self.applyFinalMediaViewConstraints()
-
-            // 2. Animate imageView from it's initial position, which should match where it was
-            // in the presenting view to it's final position, front and center in this view. This
-            // animation duration intentionally overlaps the previous
-            UIView.animate(withDuration: 0.2,
-                           delay: 0.08,
-                           options: .curveEaseOut,
-                           animations: {
-
-                            self.navigationController.presentationView.layer.cornerRadius = 0
-                            self.navigationController.presentationView.superview?.layoutIfNeeded()
-
-                            // fade out content behind the pageViewController
-                            // and behind the presentation view
-                            self.navigationController.view.backgroundColor = Theme.darkThemeBackgroundColor
-            },
-                           completion: { (_: Bool) in
-                            // At this point our presentation view should be overlayed perfectly
-                            // with our media view. Swapping them out should be imperceptible.
-                            pageViewController.currentViewController.view.isHidden = false
-                            self.navigationController.presentationView.isHidden = true
-
-                            self.navigationController.view.isUserInteractionEnabled = true
-
-                            pageViewController.wasPresented()
-
-                            // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
-                            //
-                            // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
-                            // OWSWindowManager window juggling calls `[rootWindow makeKeyAndVisible]`.
-                            //
-                            // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
-                            // presenting directly from ConversationVC.
-                            _ = self.navigationController.becomeFirstResponder()
-            })
-        }
+        fromViewController.present(navigationController, animated: true, completion: nil)
     }
 
     // If we're using a navigationController other than self to present the views
@@ -554,7 +427,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             // [ConversationView]
             //
 
-            self.presentDetailView(fromViewController: mediaTileViewController, initialDetailItem: mediaGalleryItem, replacingView: tappedView)
+            self.presentDetailView(fromViewController: mediaTileViewController, initialDetailItem: mediaGalleryItem)
         } else {
             // If we got to the gallery via the conversation view, pop the tile view
             // to return to the detail view
@@ -596,127 +469,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         navigationController.view.isUserInteractionEnabled = false
 
-        guard let detailView = mediaPageViewController.view else {
-            owsFailDebug("detailView was unexpectedly nil")
-            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
-            return
-        }
-
-        mediaPageViewController.currentViewController.view.isHidden = true
-        navigationController.presentationView.isHidden = false
-
-        // Move the presentationView back to it's initial position, i.e. where
-        // it sits on the screen in the conversation view.
-        let changedItems = currentItem != self.initialDetailItem
-        if changedItems {
-            navigationController.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
-                guard let strongSelf = self else {
-                    return
-                }
-                strongSelf.navigationController.presentationView.image = image
-                }, failure: {
-                    Logger.warn("Could not load presentation image.")
-            })
-            self.applyOffscreenMediaViewConstraints()
-        } else {
-            self.applyInitialMediaViewConstraints()
-        }
-
-        if isAnimated {
-            UIView.animate(withDuration: changedItems ? 0.25 : 0.18,
-                           delay: 0.0,
-                           options: .curveEaseOut,
-                           animations: {
-                            // Move back over it's original location
-                            self.navigationController.presentationView.superview?.layoutIfNeeded()
-
-                            detailView.alpha = 0
-
-                            if changedItems {
-                                self.navigationController.presentationView.alpha = 0
-                            } else {
-                                self.navigationController.presentationView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
-                            }
-            })
-
-            // This intentionally overlaps the previous animation a bit
-            UIView.animate(withDuration: 0.1,
-                           delay: 0.15,
-                           options: .curveEaseInOut,
-                           animations: {
-                            guard let replacingView = self.replacingView else {
-                                owsFailDebug("replacingView was unexpectedly nil")
-                                presentingViewController.dismiss(animated: false, completion: completion)
-                                return
-                            }
-                            // fade out content and toolbars
-                            self.navigationController.view.alpha = 0.0
-                            replacingView.alpha = 1.0
-            },
-                           completion: { (_: Bool) in
-                            presentingViewController.dismiss(animated: false, completion: completion)
-            })
-        } else {
-            guard let replacingView = self.replacingView else {
-                owsFailDebug("replacingView was unexpectedly nil")
-                presentingViewController.dismiss(animated: false, completion: completion)
-                return
-            }
-            replacingView.alpha = 1.0
-            presentingViewController.dismiss(animated: false, completion: completion)
-        }
-    }
-
-    private func applyInitialMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        guard let originRect = self.originRect else {
-            owsFailDebug("originRect was unexpectedly nil")
-            return
-        }
-
-        guard let presentationSuperview = navigationController.presentationView.superview else {
-            owsFailDebug("presentationView.superview was unexpectedly nil")
-            return
-        }
-
-        let convertedRect: CGRect = presentationSuperview.convert(originRect, from: UIApplication.shared.keyWindow)
-
-        self.presentationViewConstraints += navigationController.presentationView.autoSetDimensions(to: convertedRect.size)
-        self.presentationViewConstraints += [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset: convertedRect.origin.y),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset: convertedRect.origin.x)
-        ]
-    }
-
-    private func applyFinalMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        self.presentationViewConstraints = [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .bottom)
-        ]
-    }
-
-    private func applyOffscreenMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        self.presentationViewConstraints += [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            navigationController.presentationView.autoPinEdge(.top, to: .bottom, of: self.navigationController.view)
-        ]
+        presentingViewController.dismiss(animated: true, completion: completion)
     }
 
     // MARK: - Database Notifications
