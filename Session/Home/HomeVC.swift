@@ -143,7 +143,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
-            appDelegate.syncConfigurationIfNeeded()
+            // Do this only if we created a new Session ID, or if we already received the initial configuration message
+            if UserDefaults.standard[.hasSyncedInitialConfiguration] {
+                appDelegate.syncConfigurationIfNeeded()
+            }
         }
         // Onion request path countries cache
         DispatchQueue.global(qos: .utility).async {
