@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -268,6 +268,19 @@ public extension DebugUIStress {
             Logger.info("Complete.")
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
+        }
+    }
+
+    class func deleteOtherProfiles() {
+        databaseStorage.write { transaction in
+            let profiles = OWSUserProfile.anyFetchAll(transaction: transaction)
+            for profile in profiles {
+                guard !OWSUserProfile.isLocalProfileAddress(profile.address) else {
+                    continue
+                }
+                Logger.verbose("Deleting: \(profile.address)")
+                profile.anyRemove(transaction: transaction)
+            }
         }
     }
 }

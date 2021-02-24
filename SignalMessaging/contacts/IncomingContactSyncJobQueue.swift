@@ -231,20 +231,53 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 let inputStream = ChunkedInputStream(forReadingFrom: pointer, count: bufferPtr.count)
                 let contactStream = ContactsInputStream(inputStream: inputStream)
 
-                try databaseStorage.write { transaction in
-                    while let nextContact = try contactStream.decodeContact() {
+                // We use batching to avoid long-running write transactions.
+                while true {
+                    let batch = try Self.buildBatch(contactStream: contactStream)
+                    try databaseStorage.write { transaction in
                         try autoreleasepool {
-                            try self.process(contactDetails: nextContact, transaction: transaction)
+                            for contact in batch.contacts {
+                                try self.process(contactDetails: contact, transaction: transaction)
+                            }
+                        }
+
+                        if batch.isComplete {
+                            // Always fire just one identity change notification, rather than potentially
+                            // once per contact. It's possible that *no* identities actually changed,
+                            // but we have no convenient way to track that.
+                            self.identityManager.fireIdentityStateChangeNotification(after: transaction)
                         }
                     }
-
-                    // Always fire just one identity change notification, rather than potentially
-                    // once per contact. It's possible that *no* identities actually changed,
-                    // but we have no convenient way to track that.
-                    self.identityManager.fireIdentityStateChangeNotification(after: transaction)
+                    if batch.isComplete {
+                        break
+                    }
                 }
             }
         }
+    }
+
+    private struct Batch {
+        let contacts: [ContactDetails]
+        let isComplete: Bool
+    }
+
+    private static func buildBatch(contactStream: ContactsInputStream) throws -> Batch {
+        let batchSize = 8
+        var contacts = [ContactDetails]()
+        var isComplete = false
+
+        while true {
+            guard contacts.count < batchSize else {
+                break
+            }
+            guard let contact = try contactStream.decodeContact() else {
+                isComplete = true
+                break
+            }
+            contacts.append(contact)
+        }
+
+        return Batch(contacts: contacts, isComplete: isComplete)
     }
 
     private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws {

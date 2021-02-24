@@ -517,7 +517,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .grdb:
             do {
                 try grdbStorage.write { transaction in
-                    Bench(title: benchTitle, logIfLongerThan: 0.1) {
+                    Bench(title: benchTitle, logIfLongerThan: 0.1, logInProduction: DebugFlags.internalLogging) {
                         block(transaction.asAnyWrite)
                     }
                 }

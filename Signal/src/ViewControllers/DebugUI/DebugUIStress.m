@@ -518,10 +518,9 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [weakSelf thrashWithMaxWritesPerSecond:100 thread:thread];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Stop thrash"
-                                     actionBlock:^{
-                                         [weakSelf stopThrash];
-                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Stop thrash" actionBlock:^{ [weakSelf stopThrash]; }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete other profiles"
+                                     actionBlock:^{ [DebugUIStress deleteOtherProfiles]; }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
