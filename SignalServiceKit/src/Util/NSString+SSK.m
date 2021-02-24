@@ -41,7 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSUInteger outputLength = 0;
     for (NSUInteger i = 0; i < inputLength; i++) {
         unichar c = inputChars[i];
-        if (c == '+' || (c >= '0' && c <= '9')) {
+        if (c >= '0' && c <= '9') {
+            outputChars[outputLength++] = c;
+        } else if (outputLength == 0 && c == '+') {
             outputChars[outputLength++] = c;
         }
     }
