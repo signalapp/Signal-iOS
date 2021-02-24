@@ -3109,19 +3109,13 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     // MARK: - SNProtoConfigurationMessageContactBuilder
 
-    @objc public class func builder() -> SNProtoConfigurationMessageContactBuilder {
-        return SNProtoConfigurationMessageContactBuilder()
+    @objc public class func builder(publicKey: Data, name: String) -> SNProtoConfigurationMessageContactBuilder {
+        return SNProtoConfigurationMessageContactBuilder(publicKey: publicKey, name: name)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoConfigurationMessageContactBuilder {
-        let builder = SNProtoConfigurationMessageContactBuilder()
-        if let _value = publicKey {
-            builder.setPublicKey(_value)
-        }
-        if let _value = name {
-            builder.setName(_value)
-        }
+        let builder = SNProtoConfigurationMessageContactBuilder(publicKey: publicKey, name: name)
         if let _value = profilePicture {
             builder.setProfilePicture(_value)
         }
@@ -3136,6 +3130,13 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         private var proto = SessionProtos_ConfigurationMessage.Contact()
 
         @objc fileprivate override init() {}
+
+        @objc fileprivate init(publicKey: Data, name: String) {
+            super.init()
+
+            setPublicKey(publicKey)
+            setName(name)
+        }
 
         @objc public func setPublicKey(_ valueParam: Data) {
             proto.publicKey = valueParam
@@ -3164,25 +3165,9 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
     fileprivate let proto: SessionProtos_ConfigurationMessage.Contact
 
-    @objc public var publicKey: Data? {
-        guard proto.hasPublicKey else {
-            return nil
-        }
-        return proto.publicKey
-    }
-    @objc public var hasPublicKey: Bool {
-        return proto.hasPublicKey
-    }
+    @objc public let publicKey: Data
 
-    @objc public var name: String? {
-        guard proto.hasName else {
-            return nil
-        }
-        return proto.name
-    }
-    @objc public var hasName: Bool {
-        return proto.hasName
-    }
+    @objc public let name: String
 
     @objc public var profilePicture: String? {
         guard proto.hasProfilePicture else {
@@ -3204,8 +3189,12 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         return proto.hasProfileKey
     }
 
-    private init(proto: SessionProtos_ConfigurationMessage.Contact) {
+    private init(proto: SessionProtos_ConfigurationMessage.Contact,
+                 publicKey: Data,
+                 name: String) {
         self.proto = proto
+        self.publicKey = publicKey
+        self.name = name
     }
 
     @objc
@@ -3219,11 +3208,23 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     }
 
     fileprivate class func parseProto(_ proto: SessionProtos_ConfigurationMessage.Contact) throws -> SNProtoConfigurationMessageContact {
+        guard proto.hasPublicKey else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: publicKey")
+        }
+        let publicKey = proto.publicKey
+
+        guard proto.hasName else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: name")
+        }
+        let name = proto.name
+
         // MARK: - Begin Validation Logic for SNProtoConfigurationMessageContact -
 
         // MARK: - End Validation Logic for SNProtoConfigurationMessageContact -
 
-        let result = SNProtoConfigurationMessageContact(proto: proto)
+        let result = SNProtoConfigurationMessageContact(proto: proto,
+                                                        publicKey: publicKey,
+                                                        name: name)
         return result
     }
 

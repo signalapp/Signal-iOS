@@ -1335,6 +1335,7 @@ struct SessionProtos_ConfigurationMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var publicKey: Data {
       get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
       set {_publicKey = newValue}
@@ -1344,6 +1345,7 @@ struct SessionProtos_ConfigurationMessage {
     /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
     mutating func clearPublicKey() {self._publicKey = nil}
 
+    /// @required
     var name: String {
       get {return _name ?? String()}
       set {_name = newValue}
@@ -2843,6 +2845,7 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
 
   public var isInitialized: Bool {
     if !SwiftProtobuf.Internal.areAllInitialized(self.closedGroups) {return false}
+    if !SwiftProtobuf.Internal.areAllInitialized(self.contacts) {return false}
     return true
   }
 
@@ -2960,6 +2963,12 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
     3: .same(proto: "profilePicture"),
     4: .same(proto: "profileKey"),
   ]
+
+  public var isInitialized: Bool {
+    if self._publicKey == nil {return false}
+    if self._name == nil {return false}
+    return true
+  }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

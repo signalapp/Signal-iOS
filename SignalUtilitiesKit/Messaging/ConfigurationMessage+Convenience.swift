@@ -8,6 +8,7 @@ extension ConfigurationMessage {
         let profileKey = storage.getUserProfileKey()
         var closedGroups: Set<ClosedGroup> = []
         var openGroups: Set<String> = []
+        var contacts: Set<Contact> = []
         Storage.read { transaction in
             TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard let thread = object as? TSGroupThread else { return }
@@ -28,6 +29,7 @@ extension ConfigurationMessage {
                 }
             }
         }
-        return ConfigurationMessage(displayName: displayName, profilePictureURL: profilePictureURL, profileKey: profileKey, closedGroups: closedGroups, openGroups: openGroups)
+        return ConfigurationMessage(displayName: displayName, profilePictureURL: profilePictureURL, profileKey: profileKey,
+            closedGroups: closedGroups, openGroups: openGroups, contacts: contacts)
     }
 }
