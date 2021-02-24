@@ -148,7 +148,6 @@ public class MessageProcessor: NSObject {
 
         // Drop any too-large messages on the floor. Well behaving clients should never send them.
         guard encryptedEnvelopeData.count <= Self.maxEnvelopeByteCount else {
-            //        OWSProdError([OWSAnalyticsEvents messageReceiverErrorOversizeMessage]);
             completion(OWSAssertionError("Oversize envelope."))
             return
         }
@@ -156,7 +155,6 @@ public class MessageProcessor: NSObject {
         // Take note of any messages larger than we expect, but still process them.
         // This likely indicates a misbehaving sending client.
         if encryptedEnvelopeData.count > Self.largeEnvelopeWarningByteCount {
-            //        OWSProdError([OWSAnalyticsEvents messageReceiverErrorLargeMessage]);
             owsFailDebug("Unexpectedly large envelope.")
         }
 

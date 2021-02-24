@@ -481,9 +481,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let identifiedEnvelope: SSKProtoEnvelope
 
             if nsError.domain == "SignalMetadataKit.SecretSessionKnownSenderError" {
-                underlyingError = error
-                identifiedEnvelope = envelope
-            } else {
                 underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as! Error
 
                 let senderE164 = nsError.userInfo[SecretSessionKnownSenderError.kSenderE164Key] as? String
@@ -507,6 +504,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 } catch {
                     owsFail("failure identifiedEnvelopeBuilderError: \(error)")
                 }
+            } else {
+                underlyingError = error
+                identifiedEnvelope = envelope
             }
 
             // Decrypt Failure Part 2: Handle unwrapped failure details
