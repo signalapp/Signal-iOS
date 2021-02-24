@@ -135,12 +135,6 @@ public final class OpenGroupPoller : NSObject {
                     dataMessageProto.setProfileKey(profilePicture.profileKey)
                 }
                 dataMessageProto.setProfile(try! profileProto.build())
-                // Open group info
-                if let messageServerID = message.serverID {
-                    let openGroupProto = SNProtoPublicChatInfo.builder()
-                    openGroupProto.setServerID(messageServerID)
-                    dataMessageProto.setPublicChatInfo(try! openGroupProto.build())
-                }
                 // Signal group context
                 let groupProto = SNProtoGroupContext.builder(id: id, type: .deliver)
                 groupProto.setName(openGroup.displayName)

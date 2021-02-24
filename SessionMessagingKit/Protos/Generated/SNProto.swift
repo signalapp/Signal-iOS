@@ -2696,9 +2696,6 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         if let _value = syncTarget {
             builder.setSyncTarget(_value)
         }
-        if let _value = publicChatInfo {
-            builder.setPublicChatInfo(_value)
-        }
         return builder
     }
 
@@ -2778,10 +2775,6 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             proto.syncTarget = valueParam
         }
 
-        @objc public func setPublicChatInfo(_ valueParam: SNProtoPublicChatInfo) {
-            proto.publicChatInfo = valueParam.proto
-        }
-
         @objc public func build() throws -> SNProtoDataMessage {
             return try SNProtoDataMessage.parseProto(proto)
         }
@@ -2806,8 +2799,6 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
     @objc public let profile: SNProtoDataMessageLokiProfile?
 
     @objc public let closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?
-
-    @objc public let publicChatInfo: SNProtoPublicChatInfo?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -2867,8 +2858,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                  contact: [SNProtoDataMessageContact],
                  preview: [SNProtoDataMessagePreview],
                  profile: SNProtoDataMessageLokiProfile?,
-                 closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?,
-                 publicChatInfo: SNProtoPublicChatInfo?) {
+                 closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -2877,7 +2867,6 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         self.preview = preview
         self.profile = profile
         self.closedGroupControlMessage = closedGroupControlMessage
-        self.publicChatInfo = publicChatInfo
     }
 
     @objc
@@ -2920,11 +2909,6 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             closedGroupControlMessage = try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto.closedGroupControlMessage)
         }
 
-        var publicChatInfo: SNProtoPublicChatInfo? = nil
-        if proto.hasPublicChatInfo {
-            publicChatInfo = try SNProtoPublicChatInfo.parseProto(proto.publicChatInfo)
-        }
-
         // MARK: - Begin Validation Logic for SNProtoDataMessage -
 
         // MARK: - End Validation Logic for SNProtoDataMessage -
@@ -2936,8 +2920,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                                         contact: contact,
                                         preview: preview,
                                         profile: profile,
-                                        closedGroupControlMessage: closedGroupControlMessage,
-                                        publicChatInfo: publicChatInfo)
+                                        closedGroupControlMessage: closedGroupControlMessage)
         return result
     }
 
@@ -3120,6 +3103,151 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
 #endif
 
+// MARK: - SNProtoConfigurationMessageContact
+
+@objc public class SNProtoConfigurationMessageContact: NSObject {
+
+    // MARK: - SNProtoConfigurationMessageContactBuilder
+
+    @objc public class func builder() -> SNProtoConfigurationMessageContactBuilder {
+        return SNProtoConfigurationMessageContactBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoConfigurationMessageContactBuilder {
+        let builder = SNProtoConfigurationMessageContactBuilder()
+        if let _value = publicKey {
+            builder.setPublicKey(_value)
+        }
+        if let _value = name {
+            builder.setName(_value)
+        }
+        if let _value = profilePicture {
+            builder.setProfilePicture(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoConfigurationMessageContactBuilder: NSObject {
+
+        private var proto = SessionProtos_ConfigurationMessage.Contact()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setPublicKey(_ valueParam: Data) {
+            proto.publicKey = valueParam
+        }
+
+        @objc public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc public func setProfilePicture(_ valueParam: String) {
+            proto.profilePicture = valueParam
+        }
+
+        @objc public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoConfigurationMessageContact {
+            return try SNProtoConfigurationMessageContact.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoConfigurationMessageContact.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_ConfigurationMessage.Contact
+
+    @objc public var publicKey: Data? {
+        guard proto.hasPublicKey else {
+            return nil
+        }
+        return proto.publicKey
+    }
+    @objc public var hasPublicKey: Bool {
+        return proto.hasPublicKey
+    }
+
+    @objc public var name: String? {
+        guard proto.hasName else {
+            return nil
+        }
+        return proto.name
+    }
+    @objc public var hasName: Bool {
+        return proto.hasName
+    }
+
+    @objc public var profilePicture: String? {
+        guard proto.hasProfilePicture else {
+            return nil
+        }
+        return proto.profilePicture
+    }
+    @objc public var hasProfilePicture: Bool {
+        return proto.hasProfilePicture
+    }
+
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
+    private init(proto: SessionProtos_ConfigurationMessage.Contact) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoConfigurationMessageContact {
+        let proto = try SessionProtos_ConfigurationMessage.Contact(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_ConfigurationMessage.Contact) throws -> SNProtoConfigurationMessageContact {
+        // MARK: - Begin Validation Logic for SNProtoConfigurationMessageContact -
+
+        // MARK: - End Validation Logic for SNProtoConfigurationMessageContact -
+
+        let result = SNProtoConfigurationMessageContact(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoConfigurationMessageContact {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoConfigurationMessageContact.SNProtoConfigurationMessageContactBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoConfigurationMessageContact? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoConfigurationMessage
 
 @objc public class SNProtoConfigurationMessage: NSObject {
@@ -3144,6 +3272,7 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
+        builder.setContacts(contacts)
         return builder
     }
 
@@ -3185,6 +3314,16 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
             proto.profileKey = valueParam
         }
 
+        @objc public func addContacts(_ valueParam: SNProtoConfigurationMessageContact) {
+            var items = proto.contacts
+            items.append(valueParam.proto)
+            proto.contacts = items
+        }
+
+        @objc public func setContacts(_ wrappedItems: [SNProtoConfigurationMessageContact]) {
+            proto.contacts = wrappedItems.map { $0.proto }
+        }
+
         @objc public func build() throws -> SNProtoConfigurationMessage {
             return try SNProtoConfigurationMessage.parseProto(proto)
         }
@@ -3197,6 +3336,8 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     fileprivate let proto: SessionProtos_ConfigurationMessage
 
     @objc public let closedGroups: [SNProtoConfigurationMessageClosedGroup]
+
+    @objc public let contacts: [SNProtoConfigurationMessageContact]
 
     @objc public var openGroups: [String] {
         return proto.openGroups
@@ -3233,9 +3374,11 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     }
 
     private init(proto: SessionProtos_ConfigurationMessage,
-                 closedGroups: [SNProtoConfigurationMessageClosedGroup]) {
+                 closedGroups: [SNProtoConfigurationMessageClosedGroup],
+                 contacts: [SNProtoConfigurationMessageContact]) {
         self.proto = proto
         self.closedGroups = closedGroups
+        self.contacts = contacts
     }
 
     @objc
@@ -3252,12 +3395,16 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         var closedGroups: [SNProtoConfigurationMessageClosedGroup] = []
         closedGroups = try proto.closedGroups.map { try SNProtoConfigurationMessageClosedGroup.parseProto($0) }
 
+        var contacts: [SNProtoConfigurationMessageContact] = []
+        contacts = try proto.contacts.map { try SNProtoConfigurationMessageContact.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SNProtoConfigurationMessage -
 
         // MARK: - End Validation Logic for SNProtoConfigurationMessage -
 
         let result = SNProtoConfigurationMessage(proto: proto,
-                                                 closedGroups: closedGroups)
+                                                 closedGroups: closedGroups,
+                                                 contacts: contacts)
         return result
     }
 
@@ -3705,212 +3852,6 @@ extension SNProtoAttachmentPointer.SNProtoAttachmentPointerBuilder {
 
 #endif
 
-// MARK: - SNProtoGroupContext
-
-@objc public class SNProtoGroupContext: NSObject {
-
-    // MARK: - SNProtoGroupContextType
-
-    @objc public enum SNProtoGroupContextType: Int32 {
-        case unknown = 0
-        case update = 1
-        case deliver = 2
-        case quit = 3
-        case requestInfo = 4
-    }
-
-    private class func SNProtoGroupContextTypeWrap(_ value: SessionProtos_GroupContext.TypeEnum) -> SNProtoGroupContextType {
-        switch value {
-        case .unknown: return .unknown
-        case .update: return .update
-        case .deliver: return .deliver
-        case .quit: return .quit
-        case .requestInfo: return .requestInfo
-        }
-    }
-
-    private class func SNProtoGroupContextTypeUnwrap(_ value: SNProtoGroupContextType) -> SessionProtos_GroupContext.TypeEnum {
-        switch value {
-        case .unknown: return .unknown
-        case .update: return .update
-        case .deliver: return .deliver
-        case .quit: return .quit
-        case .requestInfo: return .requestInfo
-        }
-    }
-
-    // MARK: - SNProtoGroupContextBuilder
-
-    @objc public class func builder(id: Data, type: SNProtoGroupContextType) -> SNProtoGroupContextBuilder {
-        return SNProtoGroupContextBuilder(id: id, type: type)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoGroupContextBuilder {
-        let builder = SNProtoGroupContextBuilder(id: id, type: type)
-        if let _value = name {
-            builder.setName(_value)
-        }
-        builder.setMembers(members)
-        if let _value = avatar {
-            builder.setAvatar(_value)
-        }
-        builder.setAdmins(admins)
-        return builder
-    }
-
-    @objc public class SNProtoGroupContextBuilder: NSObject {
-
-        private var proto = SessionProtos_GroupContext()
-
-        @objc fileprivate override init() {}
-
-        @objc fileprivate init(id: Data, type: SNProtoGroupContextType) {
-            super.init()
-
-            setId(id)
-            setType(type)
-        }
-
-        @objc public func setId(_ valueParam: Data) {
-            proto.id = valueParam
-        }
-
-        @objc public func setType(_ valueParam: SNProtoGroupContextType) {
-            proto.type = SNProtoGroupContextTypeUnwrap(valueParam)
-        }
-
-        @objc public func setName(_ valueParam: String) {
-            proto.name = valueParam
-        }
-
-        @objc public func addMembers(_ valueParam: String) {
-            var items = proto.members
-            items.append(valueParam)
-            proto.members = items
-        }
-
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
-        }
-
-        @objc public func setAvatar(_ valueParam: SNProtoAttachmentPointer) {
-            proto.avatar = valueParam.proto
-        }
-
-        @objc public func addAdmins(_ valueParam: String) {
-            var items = proto.admins
-            items.append(valueParam)
-            proto.admins = items
-        }
-
-        @objc public func setAdmins(_ wrappedItems: [String]) {
-            proto.admins = wrappedItems
-        }
-
-        @objc public func build() throws -> SNProtoGroupContext {
-            return try SNProtoGroupContext.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoGroupContext.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_GroupContext
-
-    @objc public let id: Data
-
-    @objc public let type: SNProtoGroupContextType
-
-    @objc public let avatar: SNProtoAttachmentPointer?
-
-    @objc public var name: String? {
-        guard proto.hasName else {
-            return nil
-        }
-        return proto.name
-    }
-    @objc public var hasName: Bool {
-        return proto.hasName
-    }
-
-    @objc public var members: [String] {
-        return proto.members
-    }
-
-    @objc public var admins: [String] {
-        return proto.admins
-    }
-
-    private init(proto: SessionProtos_GroupContext,
-                 id: Data,
-                 type: SNProtoGroupContextType,
-                 avatar: SNProtoAttachmentPointer?) {
-        self.proto = proto
-        self.id = id
-        self.type = type
-        self.avatar = avatar
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoGroupContext {
-        let proto = try SessionProtos_GroupContext(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_GroupContext) throws -> SNProtoGroupContext {
-        guard proto.hasID else {
-            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        let id = proto.id
-
-        guard proto.hasType else {
-            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SNProtoGroupContextTypeWrap(proto.type)
-
-        var avatar: SNProtoAttachmentPointer? = nil
-        if proto.hasAvatar {
-            avatar = try SNProtoAttachmentPointer.parseProto(proto.avatar)
-        }
-
-        // MARK: - Begin Validation Logic for SNProtoGroupContext -
-
-        // MARK: - End Validation Logic for SNProtoGroupContext -
-
-        let result = SNProtoGroupContext(proto: proto,
-                                         id: id,
-                                         type: type,
-                                         avatar: avatar)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoGroupContext {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoGroupContext.SNProtoGroupContextBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoGroupContext? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - SNProtoContactDetailsAvatar
 
 @objc public class SNProtoContactDetailsAvatar: NSObject {
@@ -4229,127 +4170,49 @@ extension SNProtoContactDetails.SNProtoContactDetailsBuilder {
 
 #endif
 
-// MARK: - SNProtoGroupDetailsAvatar
+// MARK: - SNProtoGroupContext
 
-@objc public class SNProtoGroupDetailsAvatar: NSObject {
+@objc public class SNProtoGroupContext: NSObject {
 
-    // MARK: - SNProtoGroupDetailsAvatarBuilder
+    // MARK: - SNProtoGroupContextType
 
-    @objc public class func builder() -> SNProtoGroupDetailsAvatarBuilder {
-        return SNProtoGroupDetailsAvatarBuilder()
+    @objc public enum SNProtoGroupContextType: Int32 {
+        case unknown = 0
+        case update = 1
+        case deliver = 2
+        case quit = 3
+        case requestInfo = 4
+    }
+
+    private class func SNProtoGroupContextTypeWrap(_ value: SessionProtos_GroupContext.TypeEnum) -> SNProtoGroupContextType {
+        switch value {
+        case .unknown: return .unknown
+        case .update: return .update
+        case .deliver: return .deliver
+        case .quit: return .quit
+        case .requestInfo: return .requestInfo
+        }
+    }
+
+    private class func SNProtoGroupContextTypeUnwrap(_ value: SNProtoGroupContextType) -> SessionProtos_GroupContext.TypeEnum {
+        switch value {
+        case .unknown: return .unknown
+        case .update: return .update
+        case .deliver: return .deliver
+        case .quit: return .quit
+        case .requestInfo: return .requestInfo
+        }
+    }
+
+    // MARK: - SNProtoGroupContextBuilder
+
+    @objc public class func builder(id: Data, type: SNProtoGroupContextType) -> SNProtoGroupContextBuilder {
+        return SNProtoGroupContextBuilder(id: id, type: type)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoGroupDetailsAvatarBuilder {
-        let builder = SNProtoGroupDetailsAvatarBuilder()
-        if let _value = contentType {
-            builder.setContentType(_value)
-        }
-        if hasLength {
-            builder.setLength(length)
-        }
-        return builder
-    }
-
-    @objc public class SNProtoGroupDetailsAvatarBuilder: NSObject {
-
-        private var proto = SessionProtos_GroupDetails.Avatar()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setContentType(_ valueParam: String) {
-            proto.contentType = valueParam
-        }
-
-        @objc public func setLength(_ valueParam: UInt32) {
-            proto.length = valueParam
-        }
-
-        @objc public func build() throws -> SNProtoGroupDetailsAvatar {
-            return try SNProtoGroupDetailsAvatar.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoGroupDetailsAvatar.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_GroupDetails.Avatar
-
-    @objc public var contentType: String? {
-        guard proto.hasContentType else {
-            return nil
-        }
-        return proto.contentType
-    }
-    @objc public var hasContentType: Bool {
-        return proto.hasContentType
-    }
-
-    @objc public var length: UInt32 {
-        return proto.length
-    }
-    @objc public var hasLength: Bool {
-        return proto.hasLength
-    }
-
-    private init(proto: SessionProtos_GroupDetails.Avatar) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoGroupDetailsAvatar {
-        let proto = try SessionProtos_GroupDetails.Avatar(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_GroupDetails.Avatar) throws -> SNProtoGroupDetailsAvatar {
-        // MARK: - Begin Validation Logic for SNProtoGroupDetailsAvatar -
-
-        // MARK: - End Validation Logic for SNProtoGroupDetailsAvatar -
-
-        let result = SNProtoGroupDetailsAvatar(proto: proto)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoGroupDetailsAvatar {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoGroupDetailsAvatar? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - SNProtoGroupDetails
-
-@objc public class SNProtoGroupDetails: NSObject {
-
-    // MARK: - SNProtoGroupDetailsBuilder
-
-    @objc public class func builder(id: Data) -> SNProtoGroupDetailsBuilder {
-        return SNProtoGroupDetailsBuilder(id: id)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoGroupDetailsBuilder {
-        let builder = SNProtoGroupDetailsBuilder(id: id)
+    @objc public func asBuilder() -> SNProtoGroupContextBuilder {
+        let builder = SNProtoGroupContextBuilder(id: id, type: type)
         if let _value = name {
             builder.setName(_value)
         }
@@ -4357,36 +4220,29 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
-        if hasActive {
-            builder.setActive(active)
-        }
-        if hasExpireTimer {
-            builder.setExpireTimer(expireTimer)
-        }
-        if let _value = color {
-            builder.setColor(_value)
-        }
-        if hasBlocked {
-            builder.setBlocked(blocked)
-        }
         builder.setAdmins(admins)
         return builder
     }
 
-    @objc public class SNProtoGroupDetailsBuilder: NSObject {
+    @objc public class SNProtoGroupContextBuilder: NSObject {
 
-        private var proto = SessionProtos_GroupDetails()
+        private var proto = SessionProtos_GroupContext()
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(id: Data) {
+        @objc fileprivate init(id: Data, type: SNProtoGroupContextType) {
             super.init()
 
             setId(id)
+            setType(type)
         }
 
         @objc public func setId(_ valueParam: Data) {
             proto.id = valueParam
+        }
+
+        @objc public func setType(_ valueParam: SNProtoGroupContextType) {
+            proto.type = SNProtoGroupContextTypeUnwrap(valueParam)
         }
 
         @objc public func setName(_ valueParam: String) {
@@ -4403,24 +4259,8 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
             proto.members = wrappedItems
         }
 
-        @objc public func setAvatar(_ valueParam: SNProtoGroupDetailsAvatar) {
+        @objc public func setAvatar(_ valueParam: SNProtoAttachmentPointer) {
             proto.avatar = valueParam.proto
-        }
-
-        @objc public func setActive(_ valueParam: Bool) {
-            proto.active = valueParam
-        }
-
-        @objc public func setExpireTimer(_ valueParam: UInt32) {
-            proto.expireTimer = valueParam
-        }
-
-        @objc public func setColor(_ valueParam: String) {
-            proto.color = valueParam
-        }
-
-        @objc public func setBlocked(_ valueParam: Bool) {
-            proto.blocked = valueParam
         }
 
         @objc public func addAdmins(_ valueParam: String) {
@@ -4433,20 +4273,22 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
             proto.admins = wrappedItems
         }
 
-        @objc public func build() throws -> SNProtoGroupDetails {
-            return try SNProtoGroupDetails.parseProto(proto)
+        @objc public func build() throws -> SNProtoGroupContext {
+            return try SNProtoGroupContext.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoGroupDetails.parseProto(proto).serializedData()
+            return try SNProtoGroupContext.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SessionProtos_GroupDetails
+    fileprivate let proto: SessionProtos_GroupContext
 
     @objc public let id: Data
 
-    @objc public let avatar: SNProtoGroupDetailsAvatar?
+    @objc public let type: SNProtoGroupContextType
+
+    @objc public let avatar: SNProtoAttachmentPointer?
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -4462,46 +4304,17 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
         return proto.members
     }
 
-    @objc public var active: Bool {
-        return proto.active
-    }
-    @objc public var hasActive: Bool {
-        return proto.hasActive
-    }
-
-    @objc public var expireTimer: UInt32 {
-        return proto.expireTimer
-    }
-    @objc public var hasExpireTimer: Bool {
-        return proto.hasExpireTimer
-    }
-
-    @objc public var color: String? {
-        guard proto.hasColor else {
-            return nil
-        }
-        return proto.color
-    }
-    @objc public var hasColor: Bool {
-        return proto.hasColor
-    }
-
-    @objc public var blocked: Bool {
-        return proto.blocked
-    }
-    @objc public var hasBlocked: Bool {
-        return proto.hasBlocked
-    }
-
     @objc public var admins: [String] {
         return proto.admins
     }
 
-    private init(proto: SessionProtos_GroupDetails,
+    private init(proto: SessionProtos_GroupContext,
                  id: Data,
-                 avatar: SNProtoGroupDetailsAvatar?) {
+                 type: SNProtoGroupContextType,
+                 avatar: SNProtoAttachmentPointer?) {
         self.proto = proto
         self.id = id
+        self.type = type
         self.avatar = avatar
     }
 
@@ -4510,28 +4323,34 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoGroupDetails {
-        let proto = try SessionProtos_GroupDetails(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoGroupContext {
+        let proto = try SessionProtos_GroupContext(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SessionProtos_GroupDetails) throws -> SNProtoGroupDetails {
+    fileprivate class func parseProto(_ proto: SessionProtos_GroupContext) throws -> SNProtoGroupContext {
         guard proto.hasID else {
             throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
         }
         let id = proto.id
 
-        var avatar: SNProtoGroupDetailsAvatar? = nil
+        guard proto.hasType else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = SNProtoGroupContextTypeWrap(proto.type)
+
+        var avatar: SNProtoAttachmentPointer? = nil
         if proto.hasAvatar {
-            avatar = try SNProtoGroupDetailsAvatar.parseProto(proto.avatar)
+            avatar = try SNProtoAttachmentPointer.parseProto(proto.avatar)
         }
 
-        // MARK: - Begin Validation Logic for SNProtoGroupDetails -
+        // MARK: - Begin Validation Logic for SNProtoGroupContext -
 
-        // MARK: - End Validation Logic for SNProtoGroupDetails -
+        // MARK: - End Validation Logic for SNProtoGroupContext -
 
-        let result = SNProtoGroupDetails(proto: proto,
+        let result = SNProtoGroupContext(proto: proto,
                                          id: id,
+                                         type: type,
                                          avatar: avatar)
         return result
     }
@@ -4543,105 +4362,14 @@ extension SNProtoGroupDetailsAvatar.SNProtoGroupDetailsAvatarBuilder {
 
 #if DEBUG
 
-extension SNProtoGroupDetails {
+extension SNProtoGroupContext {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SNProtoGroupDetails.SNProtoGroupDetailsBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoGroupDetails? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - SNProtoPublicChatInfo
-
-@objc public class SNProtoPublicChatInfo: NSObject {
-
-    // MARK: - SNProtoPublicChatInfoBuilder
-
-    @objc public class func builder() -> SNProtoPublicChatInfoBuilder {
-        return SNProtoPublicChatInfoBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoPublicChatInfoBuilder {
-        let builder = SNProtoPublicChatInfoBuilder()
-        if hasServerID {
-            builder.setServerID(serverID)
-        }
-        return builder
-    }
-
-    @objc public class SNProtoPublicChatInfoBuilder: NSObject {
-
-        private var proto = SessionProtos_PublicChatInfo()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setServerID(_ valueParam: UInt64) {
-            proto.serverID = valueParam
-        }
-
-        @objc public func build() throws -> SNProtoPublicChatInfo {
-            return try SNProtoPublicChatInfo.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoPublicChatInfo.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_PublicChatInfo
-
-    @objc public var serverID: UInt64 {
-        return proto.serverID
-    }
-    @objc public var hasServerID: Bool {
-        return proto.hasServerID
-    }
-
-    private init(proto: SessionProtos_PublicChatInfo) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoPublicChatInfo {
-        let proto = try SessionProtos_PublicChatInfo(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_PublicChatInfo) throws -> SNProtoPublicChatInfo {
-        // MARK: - Begin Validation Logic for SNProtoPublicChatInfo -
-
-        // MARK: - End Validation Logic for SNProtoPublicChatInfo -
-
-        let result = SNProtoPublicChatInfo(proto: proto)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoPublicChatInfo {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoPublicChatInfo.SNProtoPublicChatInfoBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoPublicChatInfo? {
+extension SNProtoGroupContext.SNProtoGroupContextBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoGroupContext? {
         return try! self.build()
     }
 }

@@ -209,7 +209,6 @@ message DataMessage {
   optional LokiProfile               profile                   = 101;
   optional ClosedGroupControlMessage closedGroupControlMessage = 104;
   optional string                    syncTarget                = 105;
-  optional PublicChatInfo            publicChatInfo            = 999;
 }
 
 message ConfigurationMessage {
@@ -222,11 +221,19 @@ message ConfigurationMessage {
     repeated bytes   admins            = 5;
   }
 
+  message Contact {
+    optional bytes  publicKey         = 1;
+    optional string name              = 2;
+    optional string profilePicture    = 3;
+    optional bytes  profileKey        = 4;
+  }
+
   repeated ClosedGroup closedGroups   = 1;
   repeated string      openGroups     = 2;
   optional string      displayName    = 3;
   optional string      profilePicture = 4;
   optional bytes       profileKey     = 5;
+  repeated Contact     contacts       = 6;
 }
 
 message ReceiptMessage {
@@ -262,26 +269,6 @@ message AttachmentPointer {
   optional string  url         = 101;
 }
 
-message GroupContext {
-
-  enum Type {
-    UNKNOWN      = 0;
-    UPDATE       = 1;
-    DELIVER      = 2;
-    QUIT         = 3;
-    REQUEST_INFO = 4;
-  }
-
-  // @required
-  optional bytes             id      = 1;
-  // @required
-  optional Type              type    = 2;
-  optional string            name    = 3;
-  repeated string            members = 4;
-  optional AttachmentPointer avatar  = 5;
-  repeated string            admins  = 6;
-}
-
 message ContactDetails {
 
   message Avatar {
@@ -300,25 +287,24 @@ message ContactDetails {
   optional string   nickname    = 101;
 }
 
-message GroupDetails {
+// -------- Deprecated --------
 
-  message Avatar {
-    optional string contentType = 1;
-    optional uint32 length      = 2;
+message GroupContext {
+
+  enum Type {
+    UNKNOWN      = 0;
+    UPDATE       = 1;
+    DELIVER      = 2;
+    QUIT         = 3;
+    REQUEST_INFO = 4;
   }
 
   // @required
-  optional bytes  id          = 1;
-  optional string name        = 2;
-  repeated string members     = 3;
-  optional Avatar avatar      = 4;
-  optional bool   active      = 5 [default = true];
-  optional uint32 expireTimer = 6;
-  optional string color       = 7;
-  optional bool   blocked     = 8;
-  repeated string admins      = 9;
-}
-
-message PublicChatInfo { // Intended for internal use only
-    optional uint64 serverID = 1;
+  optional bytes             id      = 1;
+  // @required
+  optional Type              type    = 2;
+  optional string            name    = 3;
+  repeated string            members = 4;
+  optional AttachmentPointer avatar  = 5;
+  repeated string            admins  = 6;
 }
