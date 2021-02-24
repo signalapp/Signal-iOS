@@ -3197,7 +3197,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Myönnä käyttöoikeudet";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Ilmoitusten ja yhteystietojen salliminen antaa sinun nähdä, kun viestejä saapuu, ja auttaa sinua löytämään tuntemiasi ihmisiä. Yhteystiedot on salattu, joten signaalipalvelu ei näe niitä.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Myönnä käyttöoikeudet";
@@ -3752,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Internet-yhteys vaaditaan profiilin päivittämiseen.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiilisi on salattu päästä päähän. Profiilisi ja siihen tehdyt muutokset näkyvät yhteyshenkilöillesi ja kun aloitat tai hyväksyt uudet keskustelut.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";

@@ -749,7 +749,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "没有选中任何联系人字段。";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "联系支持团队";
+"CONTACT_SUPPORT" = "联系支持";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "抱歉，Signal 无法完成你所需的帮助请求。";
@@ -863,7 +863,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "指定能修改群名称、群头像，以及阅后即焚信息的计时器的组员：";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "所有群成员";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "全部成员";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "谁能添加成员";
@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "指定谁能添加成员到此群组：";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "所有群成员";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "全部成员";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "群组链接";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "未保存的修改";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "查看全体群成员";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "查看全部成员";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "此用户在您的通讯录中";
@@ -1307,7 +1307,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友?";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "无法启用注册锁。";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "无法启用注册锁定。";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "忙碌";
@@ -1520,7 +1520,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "任何人";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "所有群成员";
+"GROUP_ACCESS_LEVEL_MEMBER" = "全部成员";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "未知";
@@ -2705,7 +2705,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "复制消息文本";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "为所有人删除";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "对每个人删除";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "将对所有使用较新版本 Signal 的群组用户永久删除此消息，群成员将看到您删除了一条消息。";
@@ -2714,7 +2714,7 @@
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "您想要对谁删除此消息？";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "只对我删除";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "对我删除";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "删除此消息";
@@ -3113,7 +3113,7 @@
 "NOTIFICATIONS_NONE" = "没有名字或者内容";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "应用内播放提示音";
+"NOTIFICATIONS_SECTION_INAPP" = "应用打开时播放";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
@@ -3122,7 +3122,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "添加自定义声音...";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "发送人，内容，操作";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字、内容和操作";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
@@ -3137,7 +3137,7 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN 输入错误次数已达上限。";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "创建新的 PIN 码";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "新建 PIN 码";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "输入含有数字和字母的 PIN 码";
@@ -3158,7 +3158,7 @@
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN 输入错误。最后 1 次尝试机会。";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "跳过并创建新的 PIN 码";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "跳过并新建 PIN 码";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "如果你忘记了你的 PIN 码，你可以重新创建一个。你可以注册并继续使用你的账户，但你会丢失一些个人设置——如你的个人资料。";
@@ -3482,16 +3482,16 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相册";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "标记";
+"PIN_ACTION" = "置顶";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN 码至少要有4个字符。";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "更改 PIN";
+"PIN_CREATION_CHANGING_TITLE" = "更改 PIN 码";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "确认你的 PIN 码";
+"PIN_CREATION_CONFIRM_TITLE" = "确认 PIN 码";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "输入你刚刚创建的 PIN 码。";
@@ -3539,16 +3539,16 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "你可以在你的已经登录过的设备上更改你的 PIN 码";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "更改 PIN";
+"PIN_CREATION_RECREATION_TITLE" = "更改 PIN 码";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "关闭";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "禁用 PIN 前必须先取消注册锁定。";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "禁用 PIN 码前必须先关闭注册锁定。";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "关闭注册锁？";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "关闭注册锁定？";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "禁用 PIN";
@@ -3581,7 +3581,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "我们会在几天后再次提醒你。";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "验证您Signal帐号的PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "验证您的 PIN 码";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "我们会在明天再次提醒你。";
@@ -3596,7 +3596,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN 无效，请重新尝试。";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "请输入您 Signal 账户的 PIN";
+"PIN_REMINDER_TITLE" = "请输入您的 Signal PIN 码";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN 最少需要4位数字";
@@ -3605,10 +3605,10 @@
 "PINNED_CONVERSATION_LIMIT" = "您最多只能标记4个对话。";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "已标记";
+"PINNED_SECTION_TITLE" = "已置顶";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "创建密码";
+"PINS_MEGAPHONE_ACTION" = "创建 PIN 码";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Signal 储存的信息使用你的 PIN 码来加密。";
@@ -3944,7 +3944,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "你提交的数字和我们发给你的数字不匹配. 想要再次检查?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "注册锁 PIN 码不正确。";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "注册锁定 PIN 码不正确。";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "请输入一个有效的电话号码来注册。";
@@ -4379,7 +4379,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "启用 PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN 密码";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN 码";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "提交调试日志";
@@ -4577,10 +4577,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "设置";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "将静音对话计入通知数量";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "计数静音对话";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "角标数量";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "标记数量";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "电话和消息的提示将能够在锁屏状态下显示。您可以选择是否显示这些通知内容。";
@@ -4610,7 +4610,7 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "查看我的电话号码";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "关闭提醒词";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "关闭提醒";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "请确保你能牢记或安全保存好你的 PIN 码，因为它不能被找回。如果你忘记了 PIN 码，你可能会在重新注册 Signal 账号时丢失一些数据。";
@@ -4622,16 +4622,16 @@
 "SETTINGS_PIN_REMINDER_FOOTER" = "因为 PIN 码无法找回，提醒词能帮你记住 PIN 码。之后你被询问的次数会减少。";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN 码提醒词";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN 码提醒";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "Signal 储存的信息使用你的 PIN 码来加密，以保证只有你能读取它们。你的资料、设置和联系人都会在你重新安装 Signal 时恢复。";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "更改 PIN";
+"SETTINGS_PINS_ITEM" = "更改 PIN 码";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "创建你的密码";
+"SETTINGS_PINS_ITEM_CREATE" = "创建 PIN 码";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN 码";
@@ -4655,16 +4655,16 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "关闭";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "关闭注册锁？";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "关闭注册锁定？";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "开启";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "启用";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "如果在再次登录时，你忘记了你的 Signal PIN 码，你将在7天内都无法登录。";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "打开注册锁？";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "开启注册锁定？";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "重新关联";
@@ -4679,10 +4679,10 @@
 "SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "用 Touch ID、 Face ID 或者是你的 iOS 设备密码来解锁你的 Signal 锁屏。当锁屏开启时，接听正在通话中电话、接电话和收到短信通知依旧如常。Signal 的通知设置可以让你自定义是否展示信息详情。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "屏幕锁🔒";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "屏幕锁定";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "屏幕锁🔒";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "屏幕锁定";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "开启屏幕锁定功能";
@@ -4709,7 +4709,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "注册锁定";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "为了更好的保证账户安全，打开注册锁。这样在有人用你的手机号注册 Signal 时，会需要额外验证你的 Signal PIN 码。";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "为了更好的保证账户安全，打开注册锁定。这样在有人用你的手机号注册 Signal 时，会需要额外验证你的 Signal PIN 码。";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
@@ -5072,7 +5072,7 @@
 "UNNAMED_DEVICE" = "未命名设备";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "取消标记";
+"UNPIN_ACTION" = "取消置顶";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "聊天";

@@ -3194,13 +3194,13 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Det anbefales ikke å koble din iPhone og vil begrense kjernefunksjonaliteten.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Godta tillatelser";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Hvis du tillater varsler og kontakter, kan du se når meldinger kommer og hjelper deg med å finne folk du kjenner. Kontakter er kryptert slik at Signal-tjenesten ikke kan se dem.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "Godta tillatelser";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Velg hvem som kan finne deg på Signal med telefonnummeret ditt %@";
@@ -3212,13 +3212,13 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Ditt telefonnummer";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Vent noen minutter før du prøver igjen. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Skriv inn ditt telefonnummer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ugyldig telefonnummer. Vennligst skriv inn et gyldig telefonnummer for å registrere deg.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har brukt opp alle PIN forsøk, men du kan fortsatt få tilgang til din Signal konto ved å opprette ny PIN-kode. For din sikkerhet og ditt personvern vil kontoen bli gjenopprettet uten lagret profilinformasjon og innstillinger.";
@@ -3266,10 +3266,10 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Ring meg";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Ring meg om %@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validerer kode...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Denne koden er feil";
@@ -3278,7 +3278,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Send kode på nytt";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Send koden på nytt om %@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Tast inn koden vi sendte til %@";
@@ -3752,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profilen kan bare oppdateres når den er koblet til internett.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profilen din er ende-til-ende kryptert. Profilen din, og endringer i den, vil være synlige for kontaktene dine og når du starter eller godtar nye samtaler.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Lagre";
@@ -3923,10 +3923,10 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan ikke aktivere kontoen din før du bekrefter koden vi sendte deg.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "For å fortsette, kontroller telefonens internetforbindelse og prøv på nytt.";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Kontroller nettverkstilkobling";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnummeret støttes ikke, vennligst ta kontakt med kundeservice.";
@@ -3959,10 +3959,10 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Ingen telefonnummer";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "En bekreftelseskode vil bli sendt til dette nummeret. Er telefonnummeret ditt riktig?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Bekreft telefonnummer: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Rediger";

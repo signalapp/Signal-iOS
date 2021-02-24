@@ -23,7 +23,7 @@
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Tú";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Cromo";
+"ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Nota de voz";
@@ -1799,7 +1799,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Cargando …";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Deseas unirte a este grupo y así compartir tu nombre y foto con sus participantes?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Combrueba que estás online e inténtalo de nuevo.";
@@ -2501,7 +2501,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "¡%@ usa Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Cromos";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Nota de voz";
@@ -2573,7 +2573,7 @@
 "KEY_COMMAND_SETTINGS" = "Ajustes";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Ver cromos";
+"KEY_COMMAND_STICKERS" = "Ver stickers";
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Desarchivar chat";
@@ -2852,10 +2852,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Deseas que %@ te envíe mensajes y así compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Deseas que %@ te envíe mensajes y compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y así compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "¿Desbloquear este grupo? Sus participantes no sabrán que has visto sus mensajes hasta que lo desbloquees.";
@@ -2867,16 +2867,16 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Eliminar";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "¿Deseas chatear con %@ y así compartir tu nombre y foto con esta persona?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "¿Deseas chatear con %@ y compartir tu nombre y foto con esta persona?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "¿Deseas chatear con este grupo y así compartir tu nombre y foto con sus participantes?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "¿Deseas chatear con este grupo y compartir tu nombre y foto con sus participantes?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "¿Deseas que %@ te envíe mensajes y así compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "¿Deseas que %@ te envíe mensajes y compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "¿Unirse a este grupo y así compartir tu nombre y foto con sus participantes? No sabrán que has visto sus mensajes hasta que aceptes.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "¿Unirse a este grupo y compartir tu nombre y foto con sus participantes? No sabrán que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "¿Deseas unirte a este grupo? Sus participantes no sabrán que has visto sus mensajes hasta que aceptes.";
@@ -3575,7 +3575,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Verificar PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Te preguntaremos ocasionalmente para verificar tu PIN y que así lo puedas recordar.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Te preguntaremos ocasionalmente para verificar tu PIN para que así lo puedas recordar.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Te lo recordaremos de nuevo en unos pocos días.";
@@ -3836,7 +3836,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacción a tu foto: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacción a tu cromo: %@";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacción a tu sticker: %@";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacción %@ a: «%@»";
@@ -4493,7 +4493,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Llamadas";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mensajes de voz, adjuntos para ver una vez y cromos (más pequeños de 100kb) se descargan automáticamente.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mensajes de voz, adjuntos para ver una vez y stickers (más pequeños de 100kb) se descargan automáticamente.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "DESCARGA AUTOMÁTICA DE ADJUNTOS";
@@ -4823,7 +4823,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Funciones de los nuevos grupos incluyen @menciones, admins y más. Pruébalos tocando en:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Mensaje con cromo";
+"STICKER_MESSAGE_PREVIEW" = "Mensaje con sticker";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalar";
@@ -4832,34 +4832,34 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Series de artistas de Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Cromos recibidos";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers recibidos";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Fallo al cargar algunos paquetes de cromos";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Fallo al cargar algunos paquetes de stickers";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Cromos instalados";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Stickers instalados";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Cargando …";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de cromos instalado ";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de stickers instalado ";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Los cromos recibidos en mensajes aparecerán aquí";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Los stickers recibidos en mensajes aparecerán aquí";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Cromos (stickers)";
+"STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Paquete de cromos";
+"STICKERS_PACK_DEFAULT_TITLE" = "Paquete de stickers";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquete de cromos";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquete de stickers";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Fallo al cargar el paquete de cromos";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Fallo al cargar el paquete de stickers";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Desinstalar";

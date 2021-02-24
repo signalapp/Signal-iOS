@@ -3605,7 +3605,7 @@
 "PINNED_CONVERSATION_LIMIT" = "நீங்கள் மட்டுமே முடியும் முள் 4 அரட்டைகள் வரை.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "மேலே பொருத்தப்பட்ட செய்திகள்";
+"PINNED_SECTION_TITLE" = "முக்கியமானது";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";

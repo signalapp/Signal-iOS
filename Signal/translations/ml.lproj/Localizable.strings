@@ -44,7 +44,7 @@
 "ACTION_SHARE_CONTACT" = "കോൺടാക്ട് പങ്കുവയ്ക്കുക";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "ഡൌൺലോഡ് ചെയ്യാൻ ടാപ് ചെയ്യുക";
+"ACTION_TAP_TO_DOWNLOAD" = "ഡൌൺലോഡ് ചെയ്യാൻ തൊടുക";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "വീഡിയോ കോൾ";
@@ -122,7 +122,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "ഉത്തരം";
 
 /* notification body */
-"APN_Message" = "പുതിയ മെസേജ്";
+"APN_Message" = "പുതിയ സന്ദേശം";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ലോഞ്ച് ചെയ്യാൻ കഴിയുന്നില്ല. ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, നമുക്ക് ഈ പ്രശ്നത്തിനൊരു പരിഹാരം കാണാൻ വേണ്ടി.";
@@ -146,7 +146,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "കൈമാറ്റം പൂർത്തീകരിക്കാൻ കഴിയുന്നില്ല";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "നിങ്ങളുടെ പേര് എന്റർ ചെയ്യുക";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "നിങ്ങളുടെ പേര് നൽകുക";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ഇപ്പോൾ വേണ്ട";
@@ -194,7 +194,7 @@
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ഫയൽ ടൈപ്പ്: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "സൈസ്: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "വലുപ്പം: %@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "സംരക്ഷിച്ചു";
@@ -272,7 +272,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ഈ ഫയൽ അല്ലെങ്കിൽ ഡയറക്ടറിയുടെ ഒരു കം‌പ്രസ്ഡ് ആർക്കൈവ് ഉണ്ടാക്കി പകരം അവ അയ്ക്കാൻ ശ്രമിക്കുക.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "സപ്പോർട്ട് ചെയ്യാത്ത ഫയൽ";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "പിന്തുണയ്‌ക്കാത്ത ഫയൽ";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "ശബ്ദം";
@@ -293,7 +293,7 @@
 "ATTACHMENT_TYPE_VIDEO" = "വീഡിയോ";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "വോയിസ് മെസേജ്";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "ശബ്ദ സന്ദേശം";
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ഓഡിയോ മെസേജ്";
@@ -371,7 +371,7 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "ബ്ലോക്ക്";
+"BLOCK_LIST_BLOCK_BUTTON" = "തടയുക";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = " \"%@\" ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്തു വിട്ടുപോവണോ?";
@@ -410,7 +410,7 @@
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@നെ അൺ‌ബ്ലോക്ക് ചെയ്യണോ?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ബ്ലോക്ക്";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "തടയുക";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ നെ ബ്ലോക്ക് ചെയ്തു.";
@@ -1808,7 +1808,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "ദയവായി വീണ്ടും ശ്രമിക്കുക.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "ഇതൊരു സാധുവായ ഗ്രൂപ്പ് ലിങ്കല്ല. ചേരാൻ ശ്രമിക്കുന്നതിന് മുമ്പ് മുഴുവൻ ലിങ്കും കേടുകൂടാതെ ശരിയാണെന്ന് ഉറപ്പാക്കുക.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "അസാധുവായ ലിങ്ക്";
@@ -2084,13 +2084,13 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള അവരുടെ അഭ്യർത്ഥന %@ റദ്ദാക്കി.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള %@-യുടെ അഭ്യർത്ഥന നിങ്ങൾ നിരസിച്ചു.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള %1$@-യുടെ അഭ്യർത്ഥന %2$@ നിഷേധിച്ചു.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള %@-യുടെ അഭ്യർത്ഥന നിരസിച്ചു.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "ഗ്രൂപ്പ് ലിങ്ക് വഴി ചേരാൻ %@ അഭ്യർത്ഥിച്ചു.";
@@ -2162,22 +2162,22 @@
 "GROUP_WAS_MIGRATED" = "ഈ ഗ്രൂപ്പ് ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "ഒരു അംഗത്തെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല, ഒപ്പം നീക്കംചെയ്തു.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "നിങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല, ഒപ്പം നീക്കംചെയ്തു.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ അംഗങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല, അവരെ ഗ്രൂപ്പിൽ നിന്ന് നീക്കംചെയ്തു.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "ഒരു അംഗത്തെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല, ഒപ്പം ചേരാൻ ക്ഷണിക്കുകയും ചെയ്തിട്ടുണ്ട്";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "നിങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല ഒപ്പം ചേരാൻ ക്ഷണിക്കുകയും ചെയ്തിട്ടുണ്ട്.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ അംഗങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിഞ്ഞില്ല, ഒപ്പം ചേരാൻ ക്ഷണിക്കുകയും ചെയ്തിട്ടുണ്ട്.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "നിങ്ങൾ ഗ്രൂപ്പ് വിട്ടു.";
@@ -2228,55 +2228,55 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "വളരെയധികം അംഗങ്ങളുള്ളതിനാൽ ഈ ഗ്രൂപ്പിനെ ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല. അപ്‌ഗ്രേഡുചെയ്യാനാകുന്ന പരമാവധി ഗ്രൂപ്പ് വലുപ്പം %@ ആണ്.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "നിലവിലെ എല്ലാ ഗ്രൂപ്പ് അംഗങ്ങളും ഒരു പുതിയ ഗ്രൂപ്പിൽ ചേരാൻ പ്രാപ്തിയുള്ള Signal പതിപ്പ് ഉപയോഗിക്കുമ്പോൾ, ഈ ഗ്രൂപ്പ് അപ്ഗ്രേഡ് ചെയ്യപ്പെടും.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "എല്ലാ സന്ദേശ ചരിത്രവും മീഡിയയും നവീകരിക്കുന്നതിന് മുമ്പായി സൂക്ഷിച്ച് വയ്ക്കും.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "1 അംഗം പഴയ Signal പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഈ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയില്ല. Signal അപ്‌ഡേറ്റുചെയ്‌തതിന് ശേഷം നിങ്ങൾക്ക് അവരുമായി ഒരു പുതിയ സ്റ്റൈൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കുന്നതിന് മുമ്പ് അവ നീക്കംചെയ്യുക.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "%@ അംഗങ്ങൾ പഴയ Signal പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഈ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയില്ല. Signal അപ്‌ഡേറ്റുചെയ്‌തതിന് ശേഷം നിങ്ങൾക്ക് അവരുമായി ഒരു പുതിയ സ്റ്റൈൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കുന്നതിന് മുമ്പ് അവ നീക്കംചെയ്യുക.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "1 അംഗം പഴയ Signal പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഈ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയില്ല. Signal അപ്‌ഡേറ്റുചെയ്‌തതിന് ശേഷം നിങ്ങൾക്ക് അവരുമായി ഒരു പുതിയ സ്റ്റൈൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കുന്നതിന് മുമ്പ് അവ നീക്കംചെയ്യുക. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "%1$@ അംഗങ്ങൾ പഴയ Signal പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഈ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയില്ല. Signal അപ്‌ഡേറ്റുചെയ്‌തതിന് ശേഷം നിങ്ങൾക്ക് അവരുമായി ഒരു പുതിയ സ്റ്റൈൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്ടിക്കുന്നതിന് മുമ്പ് അവ നീക്കംചെയ്യുക. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "1 അംഗം Signal ന്റെ പഴയ പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഒരു ലെഗസി ഗ്രൂപ്പ് സൃഷ്ടിക്കപ്പെടും. അവര്‍ Signal അപ്‌ഡേറ്റുചെയ്‌തതിനുശേഷം നിങ്ങൾക്ക് അവരുടെ കൂടെ പുതിയ ശൈലിയില്‍ ഒരു ഗ്രൂപ്പ് സൃഷ്‌ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്‌ടിക്കുന്നതിന് മുമ്പ് അവരെ നീക്കംചെയ്യുക.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "%@ അംഗങ്ങള്‍ Signal ന്റെ പഴയ പതിപ്പ് ഉപയോഗിക്കുന്നതിനാൽ ഒരു ലെഗസി ഗ്രൂപ്പ് സൃഷ്ടിക്കപ്പെടും. അവര്‍ Signal അപ്‌ഡേറ്റുചെയ്‌തതിനുശേഷം നിങ്ങൾക്ക് അവരുടെ കൂടെ പുതിയ ശൈലിയില്‍ ഒരു ഗ്രൂപ്പ് സൃഷ്‌ടിക്കാൻ കഴിയും, അല്ലെങ്കിൽ ഗ്രൂപ്പ് സൃഷ്‌ടിക്കുന്നതിന് മുമ്പ് അവരെ നീക്കംചെയ്യുക.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 അംഗം പുതിയ ഗ്രൂപ്പുകള്‍ പിന്തുണയ്‌ക്കുന്നില്ല, അതിനാൽ ഈ ഗ്രൂപ്പ് ഒരു ലെഗസി ഗ്രൂപ്പായിരിക്കും. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ അംഗങ്ങൾ‌ക്ക് പുതിയ ഗ്രൂപ്പുകള്‍ പിന്തുണയ്‌ക്കുന്നില്ല, അതിനാൽ ഈ ഗ്രൂപ്പ് ഒരു ലെഗസി ഗ്രൂപ്പായിരിക്കും. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "ഇതൊരു ലെഗസി ഗ്രൂപ്പാണ്. ഗ്രൂപ്പ് അഡ്മിൻ പോലുള്ള സവിശേഷതകൾ പുതിയ ഗ്രൂപ്പുകൾക്ക് മാത്രമേ ലഭ്യമാകൂ. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "ഈ ലെഗസി ഗ്രൂപ്പ് ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ ഇതുവരെ തയ്യാറായിട്ടില്ല. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "ഈ ലെഗസി ഗ്രൂപ്പിനെ ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല കാരണം ഇത് വളരെ വലുതാണ്. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "ഇതൊരു ലെഗസി ഗ്രൂപ്പാണ്. @സൂചനകള്‍ അഡ്‌മിനുകള്‍ പോലുള്ള പുതിയ സവിശേഷതകൾ ആക്‌സസ് ചെയ്യുന്നതിന്, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 അംഗത്തെ പുതിയ ഗ്രൂപ്പിലേക്ക് വീണ്ടും ചേർക്കാൻ കഴിഞ്ഞില്ല. അവരെ ഇപ്പോൾ ചേർക്കാൻ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ അംഗങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് വീണ്ടും ചേർക്കാൻ കഴിഞ്ഞില്ല. അവരെ ഇപ്പോൾ ചേർക്കാൻ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "ലെഗസി ഗ്രൂപ്പ്";
@@ -2315,28 +2315,28 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "അംഗങ്ങളെ ചേർക്കുക";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "അപ്‌ഗ്രേഡുചെയ്യുമ്പോൾ ഈ അംഗത്തെ പുതിയ ഗ്രൂപ്പിലേക്ക് സ്വയമേവ ചേർക്കാൻ കഴിഞ്ഞില്ല:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "അപ്‌ഗ്രേഡുചെയ്യുമ്പോൾ ഈ അംഗങ്ങളെ പുതിയ ഗ്രൂപ്പിലേക്ക് സ്വയമേവ ചേർക്കാൻ കഴിഞ്ഞില്ല:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "എല്ലാ സന്ദേശ ചരിത്രവും മീഡിയയും നവീകരിക്കുന്നതിന് മുമ്പായി സൂക്ഷിച്ചിരിക്കുന്നു.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "ഈ അംഗത്തെ ഗ്രൂപ്പിൽ‌ നിന്നും നീക്കംചെയ്‌തു, മാത്രമല്ല അവർ‌ അപ്ഗ്രേഡ് ചെയ്യുന്നതുവരെ വീണ്ടും ചേരാനും കഴിയില്ല:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "ഈ അംഗങ്ങളെ ഗ്രൂപ്പിൽ‌ നിന്നും നീക്കംചെയ്‌തു, മാത്രമല്ല അവർ‌ അപ്ഗ്രേഡ് ചെയ്യുന്നതുവരെ വീണ്ടും ചേരാനും കഴിയില്ല:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "ഈ അംഗത്തിന് ഈ ഗ്രൂപ്പിൽ‌ വീണ്ടും ചേരുന്നതിനുള്ള ക്ഷണം സ്വീകരിക്കേണ്ടതുണ്ട്, മാത്രമല്ല അവർ‌ അംഗീകരിക്കുന്നതുവരെ ഗ്രൂപ്പ് സന്ദേശങ്ങൾ‌ ലഭിക്കുകയുമില്ല:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "ഈ അംഗങ്ങൾക്ക് ഈ ഗ്രൂപ്പിൽ വീണ്ടും ചേരുന്നതിനുള്ള ക്ഷണം സ്വീകരിക്കേണ്ടതുണ്ട്, മാത്രമല്ല അവർ അംഗീകരിക്കുന്നതുവരെ ഗ്രൂപ്പ് സന്ദേശങ്ങൾ ലഭിക്കുകയുമില്ല:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "ഈ അംഗത്തിന് പുതിയ ഗ്രൂപ്പുകളിൽ‌ ചേരാൻ‌ കഴിയില്ല, മാത്രമല്ല ഗ്രൂപ്പിൽ‌ നിന്നും നീക്കംചെയ്യുകയും ചെയ്യും:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "ഈ അംഗങ്ങൾക്ക് പുതിയ ഗ്രൂപ്പുകളിൽ‌ ചേരാൻ‌ കഴിയില്ല, മാത്രമല്ല ഈ ഗ്രൂപ്പിൽ‌ നിന്നും നീക്കംചെയ്യുകയും ചെയ്യും:";
@@ -2372,7 +2372,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal ഗ്രൂപ്പുകൾ %@ അംഗങ്ങളോ അതിൽ കുറവോ ഉപയോഗിച്ച് മികച്ച രീതിയിൽ പ്രവർത്തിക്കുന്നു. കൂടുതൽ അംഗങ്ങളെ ചേർക്കുന്നത് സന്ദേശങ്ങൾ അയയ്‌ക്കുന്നതിനും സ്വീകരിക്കുന്നതിനും കാലതാമസമുണ്ടാക്കും.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ശുപാർശ ചെയ്യുന്ന അംഗ പരിധി എത്തി";
@@ -2447,7 +2447,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "ഫോട്ടോകൾ മാറ്റുക";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "ക്രമീകരണങ്ങളിൽ പൂർണ്ണ ആക്‌സസ് അനുവദിക്കുക അല്ലെങ്കിൽ Signal-ന് ആക്‌സസ്സുചെയ്യാനാകുന്ന ഫോട്ടോകൾ മാറ്റുക.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "നിങ്ങളുടെ ഫോട്ടോകൾ കാണാൻ കഴിയുന്നില്ലേ?";
@@ -2489,13 +2489,13 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ഈ ചാറ്റുകൾ ആർക്കൈവ് ചെയ്തിട്ടുണ്ട്, പുതിയ സന്ദേശങ്ങൾ വന്നാൽ മാത്രമേ അവ ഇൻബോക്സിൽ ദൃശ്യമാകൂ.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "ഇതുവരെ ചാറ്റുകളൊന്നുമില്ല.\nഒരു സുഹൃത്തിന് സന്ദേശമയച്ചുകൊണ്ട് ആരംഭിക്കുക.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ നിങ്ങളെ വിളിച്ചു";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "നിങ്ങളുടെ ഫോണിൽ നിന്നോ iPad-ൽ നിന്നോ സമന്വയിപ്പിച്ച സന്ദേശങ്ങൾ നിങ്ങൾക്ക് അയയ്ക്കുകയോ സ്വീകരിക്കുകയോ ചെയ്യാവുന്നതാണ്. ↵നിങ്ങളുടെ സുരക്ഷയ്‌ക്കായി, പുതിയ ലിങ്കുചെയ്‌ത ഉപകരണങ്ങളിലേക്ക് ചാറ്റ് ചരിത്രം കൈമാറില്ല.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal ലിൽ ഉണ്ട്!";
@@ -2624,7 +2624,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ഡിവൈസ് ലിങ്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടിരിക്കുന്നു";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "ലിങ്ക് പ്രിവ്യൂകൾക്ക് ഇപ്പോൾ എല്ലാ സൈറ്റുകൾക്കുമായി നിർമ്മിക്കാൻ കഴിയും.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
@@ -2789,7 +2789,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "സന്ദേശം";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "ബ്ലോക്ക്";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "തടയുക";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ബ്ലോക്ക് ചെയ്ത് ഇല്ലാതാക്കുക";
@@ -2798,7 +2798,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ബ്ലോക്ക് ചെയ്യപ്പെട്ട ആളുകൾക്ക് നിങ്ങളെ വിളിക്കാനോ നിങ്ങൾക്ക് മെസേജ് അയയ്ക്കാനോ കഴിയില്ല.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = " %@നെ ബ്ലോക്ക് ചെയ്യണോ?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = " %@നെ തടയണോ?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പ് വിട്ടുപോകും, ​​മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
@@ -2825,13 +2825,13 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ഗ്രൂപ്പ് ഡിലീറ്റ് ചെയ്ത് വിട്ടുപോവണോ?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "അഭ്യർത്ഥനകൾ ശ്രദ്ധാപൂർവ്വം അവലോകനം ചെയ്യുക. Signal ഇതേ പേരിൽ മറ്റൊരു കോൺടാക്റ്റ് കണ്ടെത്തി.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "നിങ്ങളുടെ കോൺ‌ടാക്റ്റ്";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "അഭ്യർത്ഥന ആരാണ് നിങ്ങൾക്ക് അയച്ചതെന്ന് ഉറപ്പില്ലെങ്കിൽ, ചുവടെയുള്ള കോൺടാക്റ്റുകൾ അവലോകനം ചെയ്ത് നടപടിയെടുക്കുക. ";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "അഭ്യർത്ഥിക്കുക";
@@ -2849,10 +2849,10 @@
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "സ്വീകരിക്കുക";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ബ്ലോക്ക്";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "തടയുക";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "നിങ്ങൾക്ക് %@ മെസേജ് അയയ്ക്കാൻ അനുവദിക്കണോ? നിങ്ങൾ അവരെ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതു വരെ നിങ്ങൾക്ക് മെസേജ് ഒന്നും ലഭിക്കില്ല.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പിനെ അൺ‌ബ്ലോക്ക് ചെയ്ത് നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടണോ? നിങ്ങൾ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതു വരെ നിങ്ങൾക്ക് സന്ദേശങ്ങളൊന്നും ലഭിക്കില്ല.";
@@ -2867,7 +2867,7 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ഇല്ലാതാക്കുക ";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ - മായി നിങ്ങളുടെ സംഭാഷണം തുടരുകയും നിങ്ങളുടെ പേരും ഫോട്ടോയും അവരുമായി പങ്കിടുകയും ചെയ്യണോ?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പുമായുള്ള സംഭാഷണം തുടരുകയും നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടുകയും ചെയ്യണോ?";
@@ -2891,7 +2891,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള നിങ്ങളുടെ അഭ്യർത്ഥന റദ്ദാക്കണോ?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ഗ്രൂപ്പില്‍ ചേരുന്നതിനുള്ള നിങ്ങളുടെ അഭ്യർത്ഥന അഡ്മിന് അയച്ചു. അവർ നടപടിയെടുക്കുമ്പോൾ നിങ്ങളെ അറിയിക്കും.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "കൈമാറി";
@@ -3119,7 +3119,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "ഇഷ്‌ടാനുസൃത ശബ്‌ദം ചേർക്കുക…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "പേര്, ഉള്ളടക്കം, പ്രവർത്തനങ്ങൾ";
@@ -3212,7 +3212,7 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "നിങ്ങളുടെ ഫോൺ നമ്പർ";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് കുറച്ച് മിനിറ്റ് കാത്തിരിക്കുക. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "നിങ്ങളുടെ ഫോൺ നമ്പർ നൽകുക";
@@ -3263,7 +3263,7 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "തെറ്റായ നമ്പർ?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Call Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "എന്നെ വിളിക്കൂ";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
@@ -3284,7 +3284,7 @@
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ ലേക്ക് ഞങ്ങൾ അയച്ച കോഡ് നൽകുക";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "ഉറപ്പാക്കൽ കോഡ്";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "ക്രമീകരണങ്ങൾ";
@@ -3308,7 +3308,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\"--നെ ഗ്രൂപ്പിലേക്ക് ചേർക്കണോ?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "അഭ്യർത്ഥന നിരസിക്കുക";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
@@ -3425,7 +3425,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "എല്ലാവരും";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "നിങ്ങൾ സന്ദേശമയയ്‌ക്കുന്ന ആളുകൾക്കും ഗ്രൂപ്പുകൾക്കും നിങ്ങളുടെ ഫോൺ നമ്പർ ദൃശ്യമാകും. ഫോൺ കോൺടാക്റ്റുകളിൽ നിങ്ങളുടെ നമ്പർ ഉള്ള ആളുകൾ ഇത് സിഗ്നലിൽ കാണും.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "ആരുംതന്നെയില്ല";
@@ -4337,7 +4337,7 @@
 "SETTINGS_ABOUT" = "കുറിച്ച്";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ബ്ലോക്ക്";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "തടയുക";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ  (ഒഴിവാക്കൽ)";
@@ -4466,7 +4466,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "തിരച്ചിൽ ഫലങ്ങളൊന്നുമില്ല";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "ബ്ലോക്കു ചെയ്തു";
+"SETTINGS_BLOCK_LIST_TITLE" = "തടഞ്ഞു";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "കോളുകൾ എപ്പോഴും കൈമാറുക";
