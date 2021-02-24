@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -179,9 +179,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
         offerMediaType: TSRecentCallOfferType
     ) -> SignalCall {
         // If this is a video call, we want to use in the in app call screen
-        // because CallKit has poor support for video calls.
+        // because CallKit has poor support for video calls. On iOS 14+ we
+        // always use CallKit, because as of iOS 14 AVAudioPlayer is no longer
+        // able to start playing sounds in the background.
         let callAdapterType: CallAdapterType
-        if offerMediaType == .video {
+        if #available(iOS 14, *) {
+            callAdapterType = .default
+        } else if offerMediaType == .video {
             callAdapterType = .nonCallKit
         } else {
             callAdapterType = .default

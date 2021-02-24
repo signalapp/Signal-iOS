@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -638,7 +638,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     private var isRenderingLocalVanityVideo: Bool {
-        return [.idle, .dialing, .remoteRinging].contains(call.individualCall.state) && !localVideoView.isHidden
+        return [.idle, .dialing, .remoteRinging, .localRinging].contains(call.individualCall.state) && !localVideoView.isHidden
     }
 
     private var previousOrigin: CGPoint!
@@ -818,6 +818,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         videoModeVideoButton.isSelected = call.individualCall.hasLocalVideo
 
         localVideoView.isHidden = !call.individualCall.hasLocalVideo
+
+        updateRemoteVideoTrack(
+            remoteVideoTrack: call.individualCall.isRemoteVideoEnabled ? call.individualCall.remoteVideoTrack : nil
+        )
 
         // Show Incoming vs. Ongoing call controls
         if call.individualCall.state == .localRinging {
@@ -1087,9 +1091,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         callUIAdapter.answerCall(call)
 
-        // Answer with video.
-        if sender == videoAnswerIncomingButton {
-            callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: true)
+        // Answer without video.
+        if sender == videoAnswerIncomingAudioOnlyButton {
+            callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: false)
         }
 
         // We should always be unmuted when we answer an incoming call.
