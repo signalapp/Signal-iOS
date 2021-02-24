@@ -2,13 +2,20 @@ import SessionUtilitiesKit
 
 @objc(SNExpirationTimerUpdate)
 public final class ExpirationTimerUpdate : ControlMessage {
+    /// In the case of a sync message, the public key of the person the message was targeted at.
+    ///
+    /// - Note: `nil` if this isn't a sync message.
+    public var syncTarget: String?
     public var duration: UInt32?
+
+    public override var isSelfSendValid: Bool { true }
 
     // MARK: Initialization
     public override init() { super.init() }
     
-    internal init(duration: UInt32) {
+    internal init(syncTarget: String?, duration: UInt32) {
         super.init()
+        self.syncTarget = syncTarget
         self.duration = duration
     }
 
@@ -21,11 +28,13 @@ public final class ExpirationTimerUpdate : ControlMessage {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
+        if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
         if let duration = coder.decodeObject(forKey: "durationSeconds") as! UInt32? { self.duration = duration }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
+        coder.encode(syncTarget, forKey: "syncTarget")
         coder.encode(duration, forKey: "durationSeconds")
     }
 
@@ -34,8 +43,9 @@ public final class ExpirationTimerUpdate : ControlMessage {
         guard let dataMessageProto = proto.dataMessage else { return nil }
         let isExpirationTimerUpdate = (dataMessageProto.flags & UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue)) != 0
         guard isExpirationTimerUpdate else { return nil }
+        let syncTarget = dataMessageProto.syncTarget
         let duration = dataMessageProto.expireTimer
-        return ExpirationTimerUpdate(duration: duration)
+        return ExpirationTimerUpdate(syncTarget: syncTarget, duration: duration)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
@@ -46,6 +56,7 @@ public final class ExpirationTimerUpdate : ControlMessage {
         let dataMessageProto = SNProtoDataMessage.builder()
         dataMessageProto.setFlags(UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue))
         dataMessageProto.setExpireTimer(duration)
+        if let syncTarget = syncTarget { dataMessageProto.setSyncTarget(syncTarget) }
         // Group context
         do {
             try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
@@ -67,6 +78,7 @@ public final class ExpirationTimerUpdate : ControlMessage {
     public override var description: String {
         """
         ExpirationTimerUpdate(
+            syncTarget: \(syncTarget ?? "null")
             duration: \(duration?.description ?? "null")
         )
         """
