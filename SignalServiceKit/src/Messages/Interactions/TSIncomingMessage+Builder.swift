@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,7 +36,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          serverTimestamp: NSNumber? = nil,
                          serverDeliveryTimestamp: UInt64 = 0,
                          wasReceivedByUD: Bool = false,
-                         isViewOnceMessage: Bool = false) {
+                         isViewOnceMessage: Bool = false,
+                         paymentRequest: TSPaymentRequest? = nil,
+                         paymentNotification: TSPaymentNotification? = nil,
+                         paymentCancellation: TSPaymentCancellation? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -44,14 +47,16 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    bodyRanges: bodyRanges,
                    attachmentIds: attachmentIds,
                    expiresInSeconds: expiresInSeconds,
-                   // expireStartedAt is always initialized to zero
-            // for incoming messages.
+                   // expireStartedAt is always initialized to zero for incoming messages.
             expireStartedAt: 0,
             quotedMessage: quotedMessage,
             contactShare: contactShare,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
-            isViewOnceMessage: isViewOnceMessage)
+            isViewOnceMessage: isViewOnceMessage,
+            paymentRequest: paymentRequest,
+            paymentNotification: paymentNotification,
+            paymentCancellation: paymentCancellation)
 
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
@@ -91,7 +96,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               serverTimestamp: NSNumber?,
                               serverDeliveryTimestamp: UInt64,
                               wasReceivedByUD: Bool,
-                              isViewOnceMessage: Bool) -> TSIncomingMessageBuilder {
+                              isViewOnceMessage: Bool,
+                              paymentRequest: TSPaymentRequest?,
+                              paymentNotification: TSPaymentNotification?,
+                              paymentCancellation: TSPaymentCancellation?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAddress: authorAddress,
@@ -107,7 +115,10 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         serverTimestamp: serverTimestamp,
                                         serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         wasReceivedByUD: wasReceivedByUD,
-                                        isViewOnceMessage: isViewOnceMessage)
+                                        isViewOnceMessage: isViewOnceMessage,
+                                        paymentRequest: paymentRequest,
+                                        paymentNotification: paymentNotification,
+                                        paymentCancellation: paymentCancellation)
     }
 
     private var hasBuilt = false
@@ -118,6 +129,27 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
+
+        let hasRenderableNonPaymentContent = (messageBody != nil ||
+            !attachmentIds.isEmpty ||
+            quotedMessage != nil ||
+            contactShare != nil ||
+            linkPreview != nil ||
+            messageSticker != nil)
+        // Ensure that payment properties are clear if there is
+        // renderable non-payment content. Ensure no more than
+        // one payment property is set.
+        if hasRenderableNonPaymentContent {
+            paymentRequest = nil
+            paymentNotification = nil
+            paymentCancellation = nil
+        } else if paymentRequest != nil {
+            paymentNotification = nil
+            paymentCancellation = nil
+        } else if paymentNotification != nil {
+            paymentCancellation = nil
+        }
+
         return TSIncomingMessage(incomingMessageWithBuilder: self)
     }
 }

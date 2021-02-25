@@ -1,10 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SDSAnyReadTransaction;
+@class SSKProtoSyncMessageBuilder;
 
 /**
  * Abstract base class used for the family of sync messages which take care
@@ -48,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(syncMessageBuilder(transaction:));
 
 @end
 

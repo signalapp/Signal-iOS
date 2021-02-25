@@ -87,6 +87,9 @@ public struct InteractionRecord: SDSRecord {
     public let creatorUuid: String?
     public let joinedMemberUuids: Data?
     public let wasIdentityVerified: Bool?
+    public let paymentCancellation: Data?
+    public let paymentNotification: Data?
+    public let paymentRequest: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -151,6 +154,9 @@ public struct InteractionRecord: SDSRecord {
         case creatorUuid
         case joinedMemberUuids
         case wasIdentityVerified
+        case paymentCancellation
+        case paymentNotification
+        case paymentRequest
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -236,6 +242,9 @@ public extension InteractionRecord {
         creatorUuid = row[59]
         joinedMemberUuids = row[60]
         wasIdentityVerified = row[61]
+        paymentCancellation = row[62]
+        paymentNotification = row[63]
+        paymentRequest = row[64]
     }
 }
 
@@ -287,6 +296,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -318,6 +333,9 @@ extension TSInteraction {
                                                 isViewOnceMessage: isViewOnceMessage,
                                                 linkPreview: linkPreview,
                                                 messageSticker: messageSticker,
+                                                paymentCancellation: paymentCancellation,
+                                                paymentNotification: paymentNotification,
+                                                paymentRequest: paymentRequest,
                                                 quotedMessage: quotedMessage,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                 wasRemotelyDeleted: wasRemotelyDeleted,
@@ -350,6 +368,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -381,6 +405,9 @@ extension TSInteraction {
                                                         isViewOnceMessage: isViewOnceMessage,
                                                         linkPreview: linkPreview,
                                                         messageSticker: messageSticker,
+                                                        paymentCancellation: paymentCancellation,
+                                                        paymentNotification: paymentNotification,
+                                                        paymentRequest: paymentRequest,
                                                         quotedMessage: quotedMessage,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                         wasRemotelyDeleted: wasRemotelyDeleted,
@@ -413,6 +440,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -448,6 +481,9 @@ extension TSInteraction {
                                                                  isViewOnceMessage: isViewOnceMessage,
                                                                  linkPreview: linkPreview,
                                                                  messageSticker: messageSticker,
+                                                                 paymentCancellation: paymentCancellation,
+                                                                 paymentNotification: paymentNotification,
+                                                                 paymentRequest: paymentRequest,
                                                                  quotedMessage: quotedMessage,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                                  wasRemotelyDeleted: wasRemotelyDeleted,
@@ -510,6 +546,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -539,6 +581,9 @@ extension TSInteraction {
                                                       isViewOnceMessage: isViewOnceMessage,
                                                       linkPreview: linkPreview,
                                                       messageSticker: messageSticker,
+                                                      paymentCancellation: paymentCancellation,
+                                                      paymentNotification: paymentNotification,
+                                                      paymentRequest: paymentRequest,
                                                       quotedMessage: quotedMessage,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
@@ -570,6 +615,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -604,6 +655,9 @@ extension TSInteraction {
                                                     isViewOnceMessage: isViewOnceMessage,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    paymentCancellation: paymentCancellation,
+                                                    paymentNotification: paymentNotification,
+                                                    paymentRequest: paymentRequest,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
@@ -638,6 +692,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -675,6 +735,9 @@ extension TSInteraction {
                                                      isViewOnceMessage: isViewOnceMessage,
                                                      linkPreview: linkPreview,
                                                      messageSticker: messageSticker,
+                                                     paymentCancellation: paymentCancellation,
+                                                     paymentNotification: paymentNotification,
+                                                     paymentRequest: paymentRequest,
                                                      quotedMessage: quotedMessage,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -735,6 +798,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -764,6 +833,9 @@ extension TSInteraction {
                                   isViewOnceMessage: isViewOnceMessage,
                                   linkPreview: linkPreview,
                                   messageSticker: messageSticker,
+                                  paymentCancellation: paymentCancellation,
+                                  paymentNotification: paymentNotification,
+                                  paymentRequest: paymentRequest,
                                   quotedMessage: quotedMessage,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                   wasRemotelyDeleted: wasRemotelyDeleted,
@@ -795,6 +867,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -824,6 +902,9 @@ extension TSInteraction {
                                      isViewOnceMessage: isViewOnceMessage,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     paymentCancellation: paymentCancellation,
+                                     paymentNotification: paymentNotification,
+                                     paymentRequest: paymentRequest,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -858,6 +939,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -889,6 +976,9 @@ extension TSInteraction {
                                  isViewOnceMessage: isViewOnceMessage,
                                  linkPreview: linkPreview,
                                  messageSticker: messageSticker,
+                                 paymentCancellation: paymentCancellation,
+                                 paymentNotification: paymentNotification,
+                                 paymentRequest: paymentRequest,
                                  quotedMessage: quotedMessage,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                  wasRemotelyDeleted: wasRemotelyDeleted,
@@ -936,6 +1026,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -965,6 +1061,9 @@ extension TSInteraction {
                                                     isViewOnceMessage: isViewOnceMessage,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    paymentCancellation: paymentCancellation,
+                                                    paymentNotification: paymentNotification,
+                                                    paymentRequest: paymentRequest,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
@@ -996,6 +1095,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -1027,6 +1132,9 @@ extension TSInteraction {
                                                              isViewOnceMessage: isViewOnceMessage,
                                                              linkPreview: linkPreview,
                                                              messageSticker: messageSticker,
+                                                             paymentCancellation: paymentCancellation,
+                                                             paymentNotification: paymentNotification,
+                                                             paymentRequest: paymentRequest,
                                                              quotedMessage: quotedMessage,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                              wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1060,6 +1168,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -1092,6 +1206,9 @@ extension TSInteraction {
                                                            isViewOnceMessage: isViewOnceMessage,
                                                            linkPreview: linkPreview,
                                                            messageSticker: messageSticker,
+                                                           paymentCancellation: paymentCancellation,
+                                                           paymentNotification: paymentNotification,
+                                                           paymentRequest: paymentRequest,
                                                            quotedMessage: quotedMessage,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                            wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1125,6 +1242,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -1147,6 +1270,9 @@ extension TSInteraction {
                              isViewOnceMessage: isViewOnceMessage,
                              linkPreview: linkPreview,
                              messageSticker: messageSticker,
+                             paymentCancellation: paymentCancellation,
+                             paymentNotification: paymentNotification,
+                             paymentRequest: paymentRequest,
                              quotedMessage: quotedMessage,
                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                              wasRemotelyDeleted: wasRemotelyDeleted)
@@ -1174,6 +1300,12 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let paymentCancellationSerialized: Data? = record.paymentCancellation
+            let paymentCancellation: TSPaymentCancellation? = try SDSDeserialization.optionalUnarchive(paymentCancellationSerialized, name: "paymentCancellation")
+            let paymentNotificationSerialized: Data? = record.paymentNotification
+            let paymentNotification: TSPaymentNotification? = try SDSDeserialization.optionalUnarchive(paymentNotificationSerialized, name: "paymentNotification")
+            let paymentRequestSerialized: Data? = record.paymentRequest
+            let paymentRequest: TSPaymentRequest? = try SDSDeserialization.optionalUnarchive(paymentRequestSerialized, name: "paymentRequest")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
@@ -1214,6 +1346,9 @@ extension TSInteraction {
                                      isViewOnceMessage: isViewOnceMessage,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     paymentCancellation: paymentCancellation,
+                                     paymentNotification: paymentNotification,
+                                     paymentRequest: paymentRequest,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1431,6 +1566,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -1480,6 +1654,9 @@ extension TSInteraction: DeepCopyable {
                                      isViewOnceMessage: isViewOnceMessage,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     paymentCancellation: paymentCancellation,
+                                     paymentNotification: paymentNotification,
+                                     paymentRequest: paymentRequest,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1571,6 +1748,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -1631,6 +1847,9 @@ extension TSInteraction: DeepCopyable {
                                                      isViewOnceMessage: isViewOnceMessage,
                                                      linkPreview: linkPreview,
                                                      messageSticker: messageSticker,
+                                                     paymentCancellation: paymentCancellation,
+                                                     paymentNotification: paymentNotification,
+                                                     paymentRequest: paymentRequest,
                                                      quotedMessage: quotedMessage,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1719,6 +1938,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -1788,6 +2046,9 @@ extension TSInteraction: DeepCopyable {
                                                     isViewOnceMessage: isViewOnceMessage,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    paymentCancellation: paymentCancellation,
+                                                    paymentNotification: paymentNotification,
+                                                    paymentRequest: paymentRequest,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
@@ -1875,6 +2136,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -1934,6 +2234,9 @@ extension TSInteraction: DeepCopyable {
                                                                  isViewOnceMessage: isViewOnceMessage,
                                                                  linkPreview: linkPreview,
                                                                  messageSticker: messageSticker,
+                                                                 paymentCancellation: paymentCancellation,
+                                                                 paymentNotification: paymentNotification,
+                                                                 paymentRequest: paymentRequest,
                                                                  quotedMessage: quotedMessage,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                                  wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2023,6 +2326,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2078,6 +2420,9 @@ extension TSInteraction: DeepCopyable {
                                                         isViewOnceMessage: isViewOnceMessage,
                                                         linkPreview: linkPreview,
                                                         messageSticker: messageSticker,
+                                                        paymentCancellation: paymentCancellation,
+                                                        paymentNotification: paymentNotification,
+                                                        paymentRequest: paymentRequest,
                                                         quotedMessage: quotedMessage,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                         wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2163,6 +2508,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2218,6 +2602,9 @@ extension TSInteraction: DeepCopyable {
                                                 isViewOnceMessage: isViewOnceMessage,
                                                 linkPreview: linkPreview,
                                                 messageSticker: messageSticker,
+                                                paymentCancellation: paymentCancellation,
+                                                paymentNotification: paymentNotification,
+                                                paymentRequest: paymentRequest,
                                                 quotedMessage: quotedMessage,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                 wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2303,6 +2690,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2358,6 +2784,9 @@ extension TSInteraction: DeepCopyable {
                                  isViewOnceMessage: isViewOnceMessage,
                                  linkPreview: linkPreview,
                                  messageSticker: messageSticker,
+                                 paymentCancellation: paymentCancellation,
+                                 paymentNotification: paymentNotification,
+                                 paymentRequest: paymentRequest,
                                  quotedMessage: quotedMessage,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                  wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2443,6 +2872,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2476,6 +2944,9 @@ extension TSInteraction: DeepCopyable {
                                      isViewOnceMessage: isViewOnceMessage,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     paymentCancellation: paymentCancellation,
+                                     paymentNotification: paymentNotification,
+                                     paymentRequest: paymentRequest,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2563,6 +3034,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2609,6 +3119,9 @@ extension TSInteraction: DeepCopyable {
                                                            isViewOnceMessage: isViewOnceMessage,
                                                            linkPreview: linkPreview,
                                                            messageSticker: messageSticker,
+                                                           paymentCancellation: paymentCancellation,
+                                                           paymentNotification: paymentNotification,
+                                                           paymentRequest: paymentRequest,
                                                            quotedMessage: quotedMessage,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                            wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2695,6 +3208,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2739,6 +3291,9 @@ extension TSInteraction: DeepCopyable {
                                                              isViewOnceMessage: isViewOnceMessage,
                                                              linkPreview: linkPreview,
                                                              messageSticker: messageSticker,
+                                                             paymentCancellation: paymentCancellation,
+                                                             paymentNotification: paymentNotification,
+                                                             paymentRequest: paymentRequest,
                                                              quotedMessage: quotedMessage,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                              wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2825,6 +3380,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2867,6 +3461,9 @@ extension TSInteraction: DeepCopyable {
                                                     isViewOnceMessage: isViewOnceMessage,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    paymentCancellation: paymentCancellation,
+                                                    paymentNotification: paymentNotification,
+                                                    paymentRequest: paymentRequest,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
@@ -2951,6 +3548,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2993,6 +3629,9 @@ extension TSInteraction: DeepCopyable {
                                                       isViewOnceMessage: isViewOnceMessage,
                                                       linkPreview: linkPreview,
                                                       messageSticker: messageSticker,
+                                                      paymentCancellation: paymentCancellation,
+                                                      paymentNotification: paymentNotification,
+                                                      paymentRequest: paymentRequest,
                                                       quotedMessage: quotedMessage,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
@@ -3077,6 +3716,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3119,6 +3797,9 @@ extension TSInteraction: DeepCopyable {
                                   isViewOnceMessage: isViewOnceMessage,
                                   linkPreview: linkPreview,
                                   messageSticker: messageSticker,
+                                  paymentCancellation: paymentCancellation,
+                                  paymentNotification: paymentNotification,
+                                  paymentRequest: paymentRequest,
                                   quotedMessage: quotedMessage,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                   wasRemotelyDeleted: wasRemotelyDeleted,
@@ -3203,6 +3884,45 @@ extension TSInteraction: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentCancellation: TSPaymentCancellation?
+            if let paymentCancellationForCopy = modelToCopy.paymentCancellation {
+               paymentCancellation = try DeepCopies.deepCopy(paymentCancellationForCopy)
+            } else {
+               paymentCancellation = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentNotification: TSPaymentNotification?
+            if let paymentNotificationForCopy = modelToCopy.paymentNotification {
+               paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
+            } else {
+               paymentNotification = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let paymentRequest: TSPaymentRequest?
+            if let paymentRequestForCopy = modelToCopy.paymentRequest {
+               paymentRequest = try DeepCopies.deepCopy(paymentRequestForCopy)
+            } else {
+               paymentRequest = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3229,6 +3949,9 @@ extension TSInteraction: DeepCopyable {
                              isViewOnceMessage: isViewOnceMessage,
                              linkPreview: linkPreview,
                              messageSticker: messageSticker,
+                             paymentCancellation: paymentCancellation,
+                             paymentNotification: paymentNotification,
+                             paymentRequest: paymentRequest,
                              quotedMessage: quotedMessage,
                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                              wasRemotelyDeleted: wasRemotelyDeleted)
@@ -3383,6 +4106,9 @@ extension TSInteractionSerializer {
     static let creatorUuidColumn = SDSColumnMetadata(columnName: "creatorUuid", columnType: .unicodeString, isOptional: true)
     static let joinedMemberUuidsColumn = SDSColumnMetadata(columnName: "joinedMemberUuids", columnType: .blob, isOptional: true)
     static let wasIdentityVerifiedColumn = SDSColumnMetadata(columnName: "wasIdentityVerified", columnType: .int, isOptional: true)
+    static let paymentCancellationColumn = SDSColumnMetadata(columnName: "paymentCancellation", columnType: .blob, isOptional: true)
+    static let paymentNotificationColumn = SDSColumnMetadata(columnName: "paymentNotification", columnType: .blob, isOptional: true)
+    static let paymentRequestColumn = SDSColumnMetadata(columnName: "paymentRequest", columnType: .blob, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -3450,7 +4176,10 @@ extension TSInteractionSerializer {
         hasEndedColumn,
         creatorUuidColumn,
         joinedMemberUuidsColumn,
-        wasIdentityVerifiedColumn
+        wasIdentityVerifiedColumn,
+        paymentCancellationColumn,
+        paymentNotificationColumn,
+        paymentRequestColumn
         ])
 }
 
@@ -3919,8 +4648,11 @@ class TSInteractionSerializer: SDSSerializer {
         let creatorUuid: String? = nil
         let joinedMemberUuids: Data? = nil
         let wasIdentityVerified: Bool? = nil
+        let paymentCancellation: Data? = nil
+        let paymentNotification: Data? = nil
+        let paymentRequest: Data? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest)
     }
 }
 

@@ -135,6 +135,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
+             paymentNotification:(nullable TSPaymentNotification *)paymentNotification
+                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
@@ -167,6 +170,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                  isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+               paymentCancellation:paymentCancellation
+               paymentNotification:paymentNotification
+                    paymentRequest:paymentRequest
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
                 wasRemotelyDeleted:wasRemotelyDeleted];
@@ -432,6 +438,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (BOOL)shouldBeSaved
 {
+    if (!super.shouldBeSaved) {
+        return NO;
+    }
     if (self.groupMetaMessage == TSGroupMetaMessageDeliver || self.groupMetaMessage == TSGroupMetaMessageUnspecified) {
         return YES;
     }
@@ -552,7 +561,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }]].count;
 }
 
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address;
+- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
@@ -607,7 +616,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
-- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -1105,6 +1114,36 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             } else {
                 [builder setSticker:stickerProto];
             }
+        }
+    }
+
+    // Payments
+    if (self.paymentRequest != nil) {
+        NSError *error;
+        BOOL success = [self.paymentRequest addToDataBuilder:builder error:&error];
+        if (error || !success) {
+            OWSFailDebug(@"Could not build paymentRequest proto: %@.", error);
+        }
+        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionPayments) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPayments;
+        }
+    } else if (self.paymentNotification != nil) {
+        NSError *error;
+        BOOL success = [self.paymentNotification addToDataBuilder:builder error:&error];
+        if (error || !success) {
+            OWSFailDebug(@"Could not build paymentNotification proto: %@.", error);
+        }
+        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionPayments) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPayments;
+        }
+    } else if (self.paymentCancellation != nil) {
+        NSError *error;
+        BOOL success = [self.paymentCancellation addToDataBuilder:builder error:&error];
+        if (error || !success) {
+            OWSFailDebug(@"Could not build paymentCancellation proto: %@.", error);
+        }
+        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionPayments) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionPayments;
         }
     }
 
