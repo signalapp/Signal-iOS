@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
         return YES;
     }
 
-    NSString *asPhoneNumber = [PhoneNumber removeFormattingCharacters:searchTerm];
+    NSString *asPhoneNumber = [searchTerm filterAsE164];
     if (asPhoneNumber.length > 0) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
             if ([phoneNumber.toE164 containsString:asPhoneNumber]) {
