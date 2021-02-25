@@ -114,7 +114,7 @@ public class FeatureFlags: BaseFlags {
     public static let linkedPhones = build.includes(.qa)
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -209,7 +209,8 @@ public class DebugFlags: BaseFlags {
     public static let reduceLogChatter = build.includes(.dev) && false
 
     @objc
-    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
+//    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
+    public static let logSQLQueries = false
 
     @objc
     public static let groupsV2IgnoreCapability = false

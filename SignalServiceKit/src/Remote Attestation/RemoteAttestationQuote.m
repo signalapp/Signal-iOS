@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestationQuote.h"
@@ -51,25 +51,25 @@ static const int64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8LL;
     ByteParser *_Nullable parser = [[ByteParser alloc] initWithData:quoteData littleEndian:YES];
 
     // NOTE: This version is separate from and does _NOT_ match the signature body entity version.
-    uint16_t version = parser.nextShort;
+    uint16_t version = parser.nextUInt16;
     if (version < 1 || version > 2) {
         *error = OWSErrorMakeAssertionError(@"unexpected quote version: %d", (int)version);
         return nil;
     }
 
-    uint16_t signType = parser.nextShort;
+    uint16_t signType = parser.nextUInt16;
     if ((signType & ~1) != 0) {
         *error = OWSErrorMakeAssertionError(@"invalid signType: %d", (int)signType);
         return nil;
     }
 
     BOOL isSigLinkable = signType == 1;
-    uint32_t gid = parser.nextInt;
-    uint16_t qeSvn = parser.nextShort;
+    uint32_t gid = parser.nextUInt32;
+    uint16_t qeSvn = parser.nextUInt16;
 
     uint16_t pceSvn = 0;
     if (version > 1) {
-        pceSvn = parser.nextShort;
+        pceSvn = parser.nextUInt16;
     } else {
         if (![parser readZero:2]) {
             *error = OWSErrorMakeAssertionError(@"non-zero pceSvn.");
@@ -104,13 +104,13 @@ static const int64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8LL;
         return nil;
     }
 
-    uint64_t flags = parser.nextLong;
+    uint64_t flags = parser.nextUInt64;
     if ((flags & SGX_FLAGS_RESERVED) != 0 || (flags & SGX_FLAGS_INITTED) == 0 || (flags & SGX_FLAGS_MODE64BIT) == 0) {
         *error = OWSErrorMakeAssertionError(@"invalid flags.");
         return nil;
     }
 
-    uint64_t xfrm = parser.nextLong;
+    uint64_t xfrm = parser.nextUInt64;
     if ((xfrm & SGX_XFRM_RESERVED) != 0) {
         *error = OWSErrorMakeAssertionError(@"invalid xfrm.");
         return nil;
@@ -134,8 +134,8 @@ static const int64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8LL;
         *error = OWSErrorMakeAssertionError(@"non-zero reserved3.");
         return nil;
     }
-    uint16_t isvProdId = parser.nextShort;
-    uint16_t isvSvn = parser.nextShort;
+    uint16_t isvProdId = parser.nextUInt16;
+    uint16_t isvSvn = parser.nextUInt16;
     if (![parser readZero:60]) {
         *error = OWSErrorMakeAssertionError(@"non-zero reserved4.");
         return nil;
@@ -147,7 +147,7 @@ static const int64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8LL;
     }
 
     // quote signature
-    uint32_t signatureLength = parser.nextInt;
+    uint32_t signatureLength = parser.nextUInt32;
     if (signatureLength != quoteData.length - 436) {
         *error = OWSErrorMakeAssertionError(@"invalid signatureLength.");
         return nil;

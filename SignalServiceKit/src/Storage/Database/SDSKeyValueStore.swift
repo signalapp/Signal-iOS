@@ -477,7 +477,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    var asObjC: SDSKeyValueStoreObjC {
+    public var asObjC: SDSKeyValueStoreObjC {
         return SDSKeyValueStoreObjC(sdsKeyValueStore: self)
     }
 

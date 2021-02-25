@@ -40,8 +40,19 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
-    public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, caption: String?, albumMessageId: String?, isTemporaryAttachment: Bool) {
-        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId, isBorderless: false)
+    public func add(mediaMessage: TSOutgoingMessage,
+                    dataSource: DataSource,
+                    contentType: String,
+                    sourceFilename: String?,
+                    caption: String?,
+                    albumMessageId: String?,
+                    isTemporaryAttachment: Bool) {
+        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource,
+                                                    contentType: contentType,
+                                                    sourceFilename: sourceFilename,
+                                                    caption: caption,
+                                                    albumMessageId: albumMessageId,
+                                                    isBorderless: false)
         let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
         add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }
@@ -60,7 +71,10 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
-            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord, removeMessageAfterSending: removeMessageAfterSending, label: self.jobRecordLabel, transaction: transaction)
+            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord,
+                                                          removeMessageAfterSending: removeMessageAfterSending,
+                                                          label: self.jobRecordLabel,
+                                                          transaction: transaction)
             self.add(jobRecord: jobRecord, transaction: transaction)
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
@@ -89,17 +103,23 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public var isSetup = AtomicBool(false)
 
-    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
-        if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
+    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord,
+                               transaction: SDSAnyWriteTransaction) {
+        if let messageId = oldJobRecord.messageId,
+           let message = TSOutgoingMessage.anyFetch(uniqueId: messageId,
+                                                    transaction: transaction) as? TSOutgoingMessage {
             message.updateAllUnsentRecipientsAsSending(transaction: transaction)
         }
     }
 
-    public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
+    public func buildOperation(jobRecord: SSKMessageSenderJobRecord,
+                               transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {
             message = invisibleMessage
-        } else if let messageId = jobRecord.messageId, let fetchedMessage = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
+        } else if let messageId = jobRecord.messageId,
+                  let fetchedMessage = TSOutgoingMessage.anyFetch(uniqueId: messageId,
+                                                                  transaction: transaction) as? TSOutgoingMessage {
             message = fetchedMessage
         } else {
             assert(jobRecord.messageId != nil)
@@ -172,7 +192,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     @objc
-    public static func enumerateEnqueuedInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateEnqueuedInteractions(transaction: SDSAnyReadTransaction,
+                                                     block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let finder = AnyJobRecordFinder<SSKMessageSenderJobRecord>()
         finder.enumerateJobRecords(label: self.jobRecordLabel, transaction: transaction) { job, stop in
@@ -183,7 +204,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             guard let messageId = job.messageId else {
                 return
             }
-            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId,
+                                                           transaction: transaction) else {
                 // Interaction may have been deleted.
                 Logger.warn("Missing interaction")
                 return
@@ -244,7 +266,8 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
         databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error,
+                                                            transaction: transaction)
         }
     }
 
@@ -254,7 +277,9 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     override public func didFail(error: Error) {
         databaseStorage.write { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self,
+                                                            didFailWithError: error,
+                                                            transaction: transaction)
 
             self.message.update(sendingError: error, transaction: transaction)
 

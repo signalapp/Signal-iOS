@@ -89,6 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessagePipelineSupervisor *messagePipelineSupervisor = [OWSMessagePipelineSupervisor createStandardSupervisor];
     AppExpiry *appExpiry = [AppExpiry new];
     MessageProcessor *messageProcessor = [MessageProcessor new];
+    id<Payments> payments = [MockPayments new];
+    id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -134,7 +136,9 @@ NS_ASSUME_NONNULL_BEGIN
                       earlyMessageManager:earlyMessageManager
                 messagePipelineSupervisor:messagePipelineSupervisor
                                 appExpiry:appExpiry
-                         messageProcessor:messageProcessor];
+                         messageProcessor:messageProcessor
+                                 payments:payments
+                       paymentsCurrencies:paymentsCurrencies];
 
     if (!self) {
         return nil;

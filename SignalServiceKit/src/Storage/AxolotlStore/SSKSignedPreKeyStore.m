@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SDSKeyValueStore (SSKSignedPreKeyStore)
 
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key
-                                              transaction:(SDSAnyReadTransaction *)transaction;
+                                              transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.asObjC objectForKey:key ofExpectedType:SignedPreKeyRecord.class transaction:transaction];
 }

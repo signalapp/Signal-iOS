@@ -91,6 +91,18 @@ public extension TSAccountManager {
         return updateAccountAttributesIfNecessaryAttempt()
     }
 
+    // Sets the flag to force an account attributes update,
+    // then initiates an attempt.
+    @objc
+    func updateAccountAttributes(transaction: SDSAnyWriteTransaction) {
+        self.keyValueStore.setDate(Date(),
+                                   key: Self.needsAccountAttributesUpdateKey,
+                                   transaction: transaction)
+        transaction.addAsyncCompletion {
+            self.updateAccountAttributesIfNecessary()
+        }
+    }
+
     @objc
     func updateAccountAttributesIfNecessary() {
         firstly {

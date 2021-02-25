@@ -138,7 +138,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return blockedAddresses;
 }
 
-- (BOOL)addBlockedAddressLocally:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode;
+- (BOOL)addBlockedAddressLocally:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode
 {
     OWSAssertDebug(address.isValid);
 
@@ -170,7 +170,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return didChange;
 }
 
-- (void)addBlockedAddress:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode;
+- (void)addBlockedAddress:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode
 {
     if ([self addBlockedAddressLocally:address blockMode:blockMode]) {
         BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];

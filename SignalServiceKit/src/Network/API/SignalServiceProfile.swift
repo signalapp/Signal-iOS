@@ -7,6 +7,14 @@ import Foundation
 @objc
 public class SignalServiceProfile: NSObject {
 
+    // MARK: - Dependencies
+
+    private class var payments: Payments {
+        return SSKEnvironment.shared.payments
+    }
+
+    // MARK: -
+
     public enum ValidationError: Error {
         case invalid(description: String)
         case invalidIdentityKey(description: String)
@@ -20,6 +28,7 @@ public class SignalServiceProfile: NSObject {
     public let bioEmojiEncrypted: Data?
     public let username: String?
     public let avatarUrlPath: String?
+    public let paymentAddressEncrypted: Data?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let supportsGroupsV2: Bool
@@ -63,6 +72,8 @@ public class SignalServiceProfile: NSObject {
 
         let avatarUrlPath: String? = try params.optional(key: "avatar")
         self.avatarUrlPath = avatarUrlPath
+
+        self.paymentAddressEncrypted = try params.optionalBase64EncodedData(key: "paymentAddress")
 
         self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
 

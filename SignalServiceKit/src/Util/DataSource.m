@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error
 {
     OWSAssertDebug(!self.isConsumed);
 
@@ -473,7 +473,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error
 {
     OWSAssertDebug(!self.isConsumed);
     OWSAssertDebug(self.fileUrl);

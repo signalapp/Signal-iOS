@@ -345,7 +345,7 @@ public class KeyBackupService: NSObject {
     }
 
     @objc(deleteKeys)
-    static func objc_deleteKeys() -> AnyPromise {
+    public static func objc_deleteKeys() -> AnyPromise {
         return AnyPromise(deleteKeys())
     }
 
@@ -461,7 +461,7 @@ public class KeyBackupService: NSObject {
     }
 
     @objc
-    static func deriveRegistrationLockToken() -> String? {
+    public static func deriveRegistrationLockToken() -> String? {
         return DerivedKey.registrationLock.data?.hexadecimalString
     }
 

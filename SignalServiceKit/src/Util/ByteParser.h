@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,18 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Short
 
-- (uint16_t)shortAtIndex:(NSUInteger)index;
-- (uint16_t)nextShort;
+- (uint16_t)uint16AtIndex:(NSUInteger)index;
+- (uint16_t)nextUInt16;
 
 #pragma mark - Int
 
-- (uint32_t)intAtIndex:(NSUInteger)index;
-- (uint32_t)nextInt;
+- (uint32_t)uint32AtIndex:(NSUInteger)index;
+- (uint32_t)nextUInt32;
 
 #pragma mark - Long
 
-- (uint64_t)longAtIndex:(NSUInteger)index;
-- (uint64_t)nextLong;
+- (uint64_t)uint64AtIndex:(NSUInteger)index;
+- (uint64_t)nextUInt64;
 
 #pragma mark -
 

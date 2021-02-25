@@ -125,27 +125,13 @@ public extension OWSUserProfile {
 
         // All encrypted profile names should be the same length on the server,
         // so we pad out the length with null bytes to the maximum length.
-        return encrypt(stringData: paddedNameData,
+        return encrypt(data: paddedNameData,
                        profileKey: profileKey,
                        paddedLengths: paddedLengths,
                        validBase64Lengths: validBase64Lengths)
     }
 
-    class func encrypt(string: String,
-                       profileKey: OWSAES256Key,
-                       paddedLengths: [Int],
-                       validBase64Lengths: [Int]) -> ProfileValue? {
-        guard let stringData = string.data(using: .utf8) else {
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-        return encrypt(stringData: stringData,
-                       profileKey: profileKey,
-                       paddedLengths: paddedLengths,
-                       validBase64Lengths: validBase64Lengths)
-    }
-
-    class func encrypt(stringData: Data,
+    class func encrypt(data unpaddedData: Data,
                        profileKey: OWSAES256Key,
                        paddedLengths: [Int],
                        validBase64Lengths: [Int]) -> ProfileValue? {
@@ -156,12 +142,12 @@ public extension OWSUserProfile {
         }
 
         guard let paddedData = ({ () -> Data? in
-            guard let paddedLength = paddedLengths.first(where: { $0 >= stringData.count }) else {
-                owsFailDebug("Oversize value: \(stringData.count) > \(paddedLengths)")
+            guard let paddedLength = paddedLengths.first(where: { $0 >= unpaddedData.count }) else {
+                owsFailDebug("Oversize value: \(unpaddedData.count) > \(paddedLengths)")
                 return nil
             }
 
-            var paddedData = stringData
+            var paddedData = unpaddedData
             let paddingByteCount = paddedLength - paddedData.count
             paddedData.count += paddingByteCount
 
@@ -189,7 +175,7 @@ public extension OWSUserProfile {
 
 @objc
 public class ProfileValue: NSObject {
-    let encrypted: Data
+    public let encrypted: Data
 
     let validBase64Lengths: [Int]
 

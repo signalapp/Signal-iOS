@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,12 +16,12 @@ public class DarwinNotificationName: NSObject, ExpressibleByStringLiteral {
     private let stringValue: String
 
     @objc
-    var cString: UnsafePointer<Int8> {
+    public var cString: UnsafePointer<Int8> {
         return stringValue.withCString { $0 }
     }
 
     @objc
-    var isValid: Bool {
+    public var isValid: Bool {
         return stringValue.isEmpty == false
     }
 
