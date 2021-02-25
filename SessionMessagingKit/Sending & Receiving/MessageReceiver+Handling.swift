@@ -29,10 +29,18 @@ extension MessageReceiver {
         thread.touch(with: transaction)
     }
 
+    
+    
+    // MARK: - Read Receipts
+    
     private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {
         SSKEnvironment.shared.readReceiptManager.processReadReceipts(fromRecipientId: message.sender!, sentTimestamps: message.timestamps!.map { NSNumber(value: $0) }, readTimestamp: message.receivedTimestamp!)
     }
 
+    
+    
+    // MARK: - Typing Indicators
+    
     private static func handleTypingIndicator(_ message: TypingIndicator, using transaction: Any) {
         switch message.kind! {
         case .started: showTypingIndicatorIfNeeded(for: message.sender!)
@@ -93,16 +101,20 @@ extension MessageReceiver {
             }
         }
     }
+    
+    
+    
+    // MARK: - Expiration Timers
 
     private static func handleExpirationTimerUpdate(_ message: ExpirationTimerUpdate, using transaction: Any) {
         if message.duration! > 0 {
-            setExpirationTimer(to: message.duration!, for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, using: transaction)
+            setExpirationTimer(to: message.duration!, for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, messageSentTimestamp: message.sentTimestamp!, using: transaction)
         } else {
-            disableExpirationTimer(for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, using: transaction)
+            disableExpirationTimer(for: message.sender!, syncTarget: message.syncTarget, groupPublicKey: message.groupPublicKey, messageSentTimestamp: message.sentTimestamp!, using: transaction)
         }
     }
 
-    public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, using transaction: Any) {
+    public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -116,13 +128,13 @@ extension MessageReceiver {
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
         configuration.save(with: transaction)
         let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
-        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
+        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 
-    public static func disableExpirationTimer(for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, using transaction: Any) {
+    public static func disableExpirationTimer(for senderPublicKey: String, syncTarget: String?, groupPublicKey: String?, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -136,11 +148,15 @@ extension MessageReceiver {
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
         configuration.save(with: transaction)
         let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
-        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
+        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
+    
+    
+    
+    // MARK: - Configuration Messages
     
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
         guard message.sender == getUserHexEncodedPublicKey() else { return }
@@ -199,6 +215,10 @@ extension MessageReceiver {
             }
         }
     }
+    
+    
+    
+    // MARK: - Visible Messages
 
     @discardableResult
     public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
@@ -285,6 +305,9 @@ extension MessageReceiver {
         return tsMessageID
     }
 
+    
+    
+    // MARK: - Closed Groups
     private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewClosedGroup(message, using: transaction)
