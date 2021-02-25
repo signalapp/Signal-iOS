@@ -1450,7 +1450,10 @@ typedef enum : NSUInteger {
 {
     if (self.thread.isGroupV2Thread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        [self.callService peekCallAndUpdateThread:groupThread];
+        // We dispatch async in an effort to avoid "bad food" crashes when
+        // presenting the view. peekCallAndUpdateThread() uses a write
+        // transaction.
+        dispatch_async(dispatch_get_main_queue(), ^{ [self.callService peekCallAndUpdateThread:groupThread]; });
     }
 }
 
