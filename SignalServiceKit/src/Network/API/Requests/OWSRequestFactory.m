@@ -466,8 +466,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     accountAttributes[@"capabilities"] = [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];
 
-    OWSLogVerbose(@"---- accountAttributes: %@", accountAttributes);
-
     return [accountAttributes copy];
 }
 
