@@ -669,9 +669,10 @@ typedef enum : NSUInteger {
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
 {
-    _userHasScrolled = userHasScrolled;
-
-    [self ensureBannerState];
+    if (_userHasScrolled != userHasScrolled) {
+        _userHasScrolled = userHasScrolled;
+        [self ensureBannerState];
+    }
 }
 
 // Returns a collection of the group members who are "no longer verified".

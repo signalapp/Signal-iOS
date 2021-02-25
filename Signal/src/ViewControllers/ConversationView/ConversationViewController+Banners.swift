@@ -165,9 +165,27 @@ public extension ConversationViewController {
     func createGroupMembershipCollisionBannerIfNecessary() -> UIView? {
         guard let groupThread = thread as? TSGroupThread else { return nil }
 
-        let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
+        // Collision discovery can be expensive, so we only build our banner if we've already done the expensive bit
+        guard let collisionFinder = viewState.groupNameCollisionFinder, collisionFinder.hasFetchedProfileUpdateMessages else {
+            guard viewState.groupNameCollisionFinder == nil else { return nil }
 
-        // If we discovery any collisions, pull out the necessary info to build the banner
+            let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
+            viewState.groupNameCollisionFinder = collisionFinder
+
+            firstly(on: .sharedUserInitiated) {
+                self.databaseStorage.read { readTx in
+                    // Prewarm our collision finder off the main thread
+                    _ = collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
+                }
+            }.done(on: .main) {
+                self.ensureBannerState()
+            }.catch { error in
+                owsFailDebug("\(error)")
+            }
+            return nil
+        }
+
+        // Fetch the necessary info to build the banner
         guard let (title, avatar1, avatar2) = databaseStorage.read(block: { readTx -> (String, UIImage?, UIImage?)? in
             let collisionSets = collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
             guard !collisionSets.isEmpty, collisionSets[0].elements.count >= 2 else { return nil }

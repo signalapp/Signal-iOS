@@ -48,7 +48,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
         guard contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else { return [] }
 
         let collisionCandidates = Environment.shared.contactsViewHelper.signalAccounts(
-            matchingSearch: contactThread.contactAddress.getDisplayName(transaction: transaction),
+            matchingSearch: contactThread.contactAddress.displayName(transaction: transaction),
             transaction: transaction)
 
         // ContactsViewHelper uses substring matching, so it might return false positives
@@ -65,7 +65,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
             let collision = NameCollision(collidingAddresses.map {
                 NameCollision.Element(
                     address: $0,
-                    currentName: $0.getDisplayName(transaction: transaction),
+                    currentName: $0.displayName(transaction: transaction),
                     oldName: nil,
                     latestUpdateTimestamp: nil)
             })
@@ -86,8 +86,8 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
         transaction: SDSAnyReadTransaction) -> Bool {
 
         guard address1 != address2 else { return false }
-        let name1 = address1.getDisplayName(transaction: transaction)
-        let name2 = address1.getDisplayName(transaction: transaction)
+        let name1 = address1.displayName(transaction: transaction)
+        let name2 = address1.displayName(transaction: transaction)
         return name1 == name2
     }
 }
@@ -98,8 +98,9 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
     /// Contains a list of recent profile update messages for the given address
     /// "Recent" is defined as all profile update messages since a call to `markCollisionsAsResolved`
-    /// This is only fetched once for the lifetime of the collision finder. This is okay, since the only place we use this XXXXX
-    var recentProfileUpdateMessages: [SignalServiceAddress: [TSInfoMessage]]? = nil
+    /// This is only fetched once for the lifetime of the collision finder.
+    private var recentProfileUpdateMessages: [SignalServiceAddress: [TSInfoMessage]]? = nil
+    public var hasFetchedProfileUpdateMessages: Bool { recentProfileUpdateMessages != nil }
 
     public init(thread: TSGroupThread) {
         groupThread = thread
@@ -114,7 +115,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
         let collisionMap: [String: [SignalServiceAddress]] = groupMembers.reduce(into: [:]) { (dictBuilder, address) in
-            let displayName = address.getDisplayName(transaction: transaction)
+            let displayName = address.displayName(transaction: transaction)
             dictBuilder[displayName, default: []].append(address)
         }
         let allAddressCollisions = Array(collisionMap.values.filter { $0.count >= 2 })
@@ -152,7 +153,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
                     return NameCollision.Element(
                         address: address,
-                        currentName: address.getDisplayName(transaction: transaction),
+                        currentName: address.displayName(transaction: transaction),
                         oldName: oldestUpdateMessage?.profileChangesOldFullName,
                         latestUpdateTimestamp: newestUpdateMessage?.timestamp)
                 })
@@ -210,25 +211,19 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
     private func setRecentProfileUpdateSearchStartIdToMax(transaction: SDSAnyReadTransaction) {
         // This is a perf optimization to proactively reduce our search space, so it doesn't need to be exact.
-        // - First, use our existing read transaction to get the max sortId of all TSInteractions at this moment in time
-        //   This is set AUTOINCREMENT, so it will only ever increase.
-        // - Second: Perform an async write to bump up our search start index to the max that we had fetched.
+        // `lastInteractionRowId` is the current latest interaction on the thread when we checked for collisions.
         //
-        // This is safe if any writes are inserted between our read and the async write since:
-        // - sortIds only ever increase so any interactions inserted before this write will not be
-        //   excluded from our next search
-        // - If this write doesn't happen immediately the worst that can happen is we re-fetch profile
-        //   change interactions that we know don't have any profile changes that the user needs to be informed of
-        // - If two NameCollisionFinders want to race and both update the search startId, the write function always
-        //   takes the max of the current value and the new value.
-        guard let maxId = BaseModel.maxAutoincrementingPrimaryKeyId(
-            tableMetadata: TSInteraction.table,
-            transaction: transaction.unwrapGrdbRead) else {
-            return
-        }
-
+        // - If that interaction is deleted in the future, that's okay since rowIDs are monotonic. Any future unchecked
+        // interactions will always have a rowID after the current value.
+        // - This can be called from the main thread, so we perform the write async to avoid blocking. If the write
+        // doesn't make it in time, that's okay. In the worst case, we'll just recheck interactions that we already
+        // know don't contain profile changes. As long as this is successful a majority of the time, we'll keep a lid
+        // on our search space.
+        // - In our searchStartId cache, we always set the max(currentValue, newValue). So even if maxInteractionId
+        // is unset or invalid, we'll never mistakenly grow our search space by setting the startId to a smaller value.
+        let maxInteractionId = UInt64(thread.lastInteractionRowId)
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
-            self.setRecentProfileUpdateSearchStartId(newValue: maxId, transaction: writeTx)
+            self.setRecentProfileUpdateSearchStartId(newValue: maxInteractionId, transaction: writeTx)
         }
     }
 }
@@ -236,7 +231,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 // MARK: - Helpers
 
 fileprivate extension SignalServiceAddress {
-    func getDisplayName(transaction readTx: SDSAnyReadTransaction) -> String {
+    func displayName(transaction readTx: SDSAnyReadTransaction) -> String {
         Environment.shared.contactsManager.displayName(for: self, transaction: readTx)
     }
 }

@@ -119,12 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
                                   diameter:(NSUInteger)diameter
                                transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
-    if (contactThread) {
-        return [self buildImageForThread:contactThread diameter:diameter transaction:transaction];
-    } else {
-        return nil;
-    }
+    ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
+                                                                            transaction:transaction];
+    return [[[self alloc] initWithAddress:address
+                                colorName:color
+                                 diameter:diameter
+                              transaction:transaction] buildWithTransaction:transaction];
 }
 
 #pragma mark - Dependencies

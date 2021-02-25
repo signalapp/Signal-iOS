@@ -1079,7 +1079,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .messageType) IS ?
+                AND \(interactionColumn: .messageType) = ?
                 AND \(interactionColumn: .id) > ?
             """,
             arguments: [threadUniqueId, TSInfoMessageType.profileUpdate.rawValue, sortId],
