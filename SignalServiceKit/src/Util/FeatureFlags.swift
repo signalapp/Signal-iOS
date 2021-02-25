@@ -9,6 +9,7 @@ enum FeatureBuild: Int {
     case dev
     case internalPreview
     case qa
+    case openPreview
     case beta
     case production
 }
@@ -19,7 +20,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .openPreview
 
 // MARK: -
 
@@ -145,6 +146,12 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let supportAnimatedStickers_AnimatedWebp = true
 
+    @objc
+    public static let payments = build.includes(.openPreview)
+
+    @objc
+    public static let paymentsRequests = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -176,7 +183,7 @@ public class FeatureFlags: BaseFlags {
 @objc(SSKDebugFlags)
 public class DebugFlags: BaseFlags {
     @objc
-    public static let internalLogging = build.includes(.qa)
+    public static let internalLogging = build.includes(.openPreview)
 
     @objc
     public static let betaLogging = build.includes(.beta)
@@ -344,13 +351,49 @@ public class DebugFlags: BaseFlags {
     public static let messageSendsFail = false
 
     @objc
-    public static let extraDebugLogs = build.includes(.qa)
+    public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
     public static let fakeLinkedDevices = false
 
     @objc
     public static let shouldShowColorPicker = false
+
+    @objc
+    public static let paymentsUseMockSDK = true
+
+    @objc
+    public static let paymentsUseTinyAmounts = false
+
+    @objc
+    public static let paymentsOnlyInContactThreads = true
+
+    @objc
+    public static let paymentsInternalBeta = true
+
+    @objc
+    public static let paymentsIgnoreBlockTimestamps = TestableFlag(false)
+
+    @objc
+    public static let paymentsIgnoreCurrencyConversions = TestableFlag(false)
+
+    @objc
+    public static let paymentsFakeCurrencyConversions = TestableFlag(paymentsInternalBeta)
+
+    @objc
+    public static let paymentsHaltProcessing = TestableFlag(false)
+
+    @objc
+    public static let paymentsIgnoreBadData = TestableFlag(false)
+
+    @objc
+    public static let paymentsFailOutgoingSubmission = TestableFlag(false)
+
+    @objc
+    public static let paymentsFailOutgoingVerification = TestableFlag(false)
+
+    @objc
+    public static let paymentsFailIncomingVerification = TestableFlag(false)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
@@ -429,6 +472,7 @@ public class TestableFlag: NSObject {
         self.get()
     }
 
+    @objc
     public func get() -> Bool {
         guard build.includes(.qa) else {
             return defaultValue
