@@ -93,11 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [[SignalServiceAddress alloc] initWithUuid:self.addressUuid];
 }
 
-//- (TSPaymentAmount *)paymentAmount
-//{
-//    return [[TSPaymentAmount alloc] initWithCurrency:self.currency picoMob:self.amount];
-//}
-
 @end
 
 NS_ASSUME_NONNULL_END
