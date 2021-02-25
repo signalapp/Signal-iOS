@@ -87,6 +87,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func handleLibraryButtonTapped() {
+        guard requestLibraryPermissionIfNeeded() else { return }
         let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst()
         sendMediaNavController.sendMediaNavDelegate = self
         sendMediaNavController.modalPresentationStyle = .fullScreen
