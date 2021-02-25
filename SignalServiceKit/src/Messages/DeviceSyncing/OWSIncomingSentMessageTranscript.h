@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoDataMessage;
 @class SSKProtoSyncMessageSent;
 @class SignalServiceAddress;
+@class TSPaymentCancellation;
+@class TSPaymentNotification;
+@class TSPaymentRequest;
 @class TSQuotedMessage;
 @class TSThread;
 
@@ -23,11 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSIncomingSentMessageTranscript : NSObject
 
-- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
+                       serverTimestamp:(uint64_t)serverTimestamp
+                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t dataMessageTimestamp;
+@property (nonatomic, readonly) uint64_t serverTimestamp;
 @property (nonatomic, readonly) uint64_t expirationStartedAt;
 @property (nonatomic, readonly) uint32_t expirationDuration;
 @property (nonatomic, readonly) BOOL isGroupUpdate;
@@ -44,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
+@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
+@property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
+@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
 @property (nonatomic, readonly, nullable) NSNumber *requiredProtocolVersion;
 @property (nonatomic, readonly) DisappearingMessageToken *disappearingMessageToken;
 

@@ -50,6 +50,7 @@
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/PaymentsSyncMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RemoteAttestation.h>
@@ -77,6 +78,9 @@
 #import <SignalServiceKit/TSMention.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSPaymentModel.h>
+#import <SignalServiceKit/TSPaymentModels.h>
+#import <SignalServiceKit/TSPaymentRequestModel.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>

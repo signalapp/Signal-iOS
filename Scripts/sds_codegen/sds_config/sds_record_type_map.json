@@ -61,6 +61,8 @@
     "TSMention": 64, 
     "TSMessage": 11, 
     "TSOutgoingMessage": 21, 
+    "TSPaymentModel": 67, 
+    "TSPaymentRequestModel": 66, 
     "TSRecipientReadReceipt": 12, 
     "TSThread": 2, 
     "TSUnreadIndicatorInteraction": 4, 

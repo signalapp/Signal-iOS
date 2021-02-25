@@ -110,6 +110,9 @@ CREATE
             ,"creatorUuid" TEXT
             ,"joinedMemberUuids" BLOB
             ,"wasIdentityVerified" BOOLEAN
+            ,"paymentCancellation" BLOB
+            ,"paymentNotification" BLOB
+            ,"paymentRequest" BLOB
         )
 ;
 
@@ -959,3 +962,98 @@ CREATE
     ,"recordType"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSPaymentModel" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            , "recordType" INTEGER NOT NULL
+            , "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+            , "addressUuidString" TEXT
+            , "createdTimestamp" INTEGER NOT NULL
+            , "isUnread" BOOLEAN NOT NULL
+            , "mcIncomingTransaction" BLOB
+            , "mcLedgerBlockIndex" INTEGER NOT NULL
+            , "memoMessage" TEXT
+            , "mobileCoin" BLOB
+            , "notificationMessageUniqueId" TEXT
+            , "paymentAmount" BLOB
+            , "paymentFailure" INTEGER NOT NULL
+            , "paymentState" INTEGER NOT NULL
+            , "paymentType" INTEGER NOT NULL
+            , "requestUuidString" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_uniqueId"
+        ON "model_TSPaymentModel"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_notificationMessageUniqueId"
+        ON "model_TSPaymentModel"("notificationMessageUniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_paymentState"
+        ON "model_TSPaymentModel"("paymentState"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_mcIncomingTransaction"
+        ON "model_TSPaymentModel"("mcIncomingTransaction"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_mcLedgerBlockIndex"
+        ON "model_TSPaymentModel"("mcLedgerBlockIndex"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_isUnread"
+        ON "model_TSPaymentModel"("isUnread"
+)
+;
+
+/*
+  We do not yet support payment requests.
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSPaymentRequestModel" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"recordType" INTEGER NOT NULL
+            , "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+            , "addressUuidString" TEXT
+            , "createdTimestamp" INTEGER NOT NULL
+            , "memoMessage" TEXT
+            , "paymentAmount" BLOB NOT NULL
+            , "paymentType" INTEGER NOT NULL
+            , "requestUuidString" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+        )
+;
+
+CREATE
+    INDEX "index_model_TSPaymentRequestModel_on_uniqueId"
+        ON "model_TSPaymentRequestModel"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentRequestModel_on_requestUuidString"
+        ON "model_TSPaymentRequestModel"("requestUuidString"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentRequestModel_on_createdDate"
+        ON "model_TSPaymentRequestModel"("createdDate"
+)
+;
+*/
