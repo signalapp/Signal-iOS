@@ -57,7 +57,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
-        let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2
+        let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2 + 16
         collectionView.contentInset.bottom = bottomButtonInset + 16
         view.backgroundColor = .white
 
@@ -253,9 +253,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     // MARK: 
-
+    
     var lastPageYOffset: CGFloat {
-        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom
+        var yOffset = collectionView.contentSize.height - collectionView.bounds.height + collectionView.adjustedContentInset.bottom
         if #available(iOS 11.0, *) {
             yOffset += view.safeAreaInsets.bottom
         }
