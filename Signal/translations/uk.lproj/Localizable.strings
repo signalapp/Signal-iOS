@@ -4604,10 +4604,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Шукати мене за номером телефону";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Бачити мій номер телефону";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Бачити мій номер телефону";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Відключити Нагадування";
@@ -4787,7 +4787,7 @@
 "SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
 
 /* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Ділитись стало легше";
 
 /* Disable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Вимкнути";
@@ -4808,7 +4808,7 @@
 "SOUNDS_NONE" = "Жодного";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Існуючі групи автоматично отримають ці можливості протягом наступних тижнів.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Нова група";
@@ -4820,7 +4820,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Нові Групи вже тут!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Можливості Нових груп: @згадки, адміністратори, та інше. Торкніться та спробуйте:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Повідомлення зі Cтікером";
@@ -5096,7 +5096,7 @@
 "UPDATE_GROUP_FAILED" = "Не вдалось оновити групу.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Групу не можна оновити. Перевірте з'єднання з інтернетом та спробуйте знову.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Створити PIN-код";

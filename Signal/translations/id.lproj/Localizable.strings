@@ -4700,7 +4700,7 @@
 "SETTINGS_SECURITY_TITLE" = "Layar Aman";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Tunjukkan di Saran";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";

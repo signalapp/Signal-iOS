@@ -4475,7 +4475,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Signal 服务器中继所有通话，这能防止联系人获取您的 IP 地址，但此功能会降低通话质量。";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "清空聊天记录";
+"SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "版权所有 Signal Messenger \n根据 GPLv3 授权";
@@ -4523,7 +4523,7 @@
 "SETTINGS_HELP" = "帮助";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "清空聊天记录";
+"SETTINGS_HISTORYLOG_TITLE" = "清除聊天记录";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "信息";

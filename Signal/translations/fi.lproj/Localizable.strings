@@ -1094,7 +1094,7 @@
 "DEREGISTRATION_WARNING" = "Tämä laite ei ole enää rekisteröity. Puhelinnumerosi saataa olla rekisteröity Signaliin jollain toisella laitteella. Napauta rekisteröityäksesi uudelleen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi käytetty: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Käytetty viimeksi: %@";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Yhdistetty: %@";
@@ -1559,10 +1559,10 @@
 "GROUP_CALL_ERROR_DETAILS" = "Lisätietoja";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Tämän puhelun enimmäismäärä %ld on täyttynyt. Yritä myöhemmin uudelleen.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Puhelun osallistujien enimmäismäärä %ld on täyttynyt, yritä myöhemmin uudelleen.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Tähän puheluun ei mahdu enempää osallistujia. Yritä myöhemmin uudelleen.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Puheluun ei mahdu enempää osallistujia, yritä myöhemmin uudelleen.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Puhelu on täynnä";
@@ -2222,7 +2222,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanhan tyyliset vs. uudet ryhmät";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Päivitä tämä ryhmä ottaaksesi käyttöön uudet ominaisuudet kuten @maininnat ja ylläpitäjät. Jäsenille, jotka eivät ole jakaneet nimeään tai kuvaansa tässä ryhmässä, lähetetään kutsu. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Ryhmän päivittämällä käyttöön tulee uusia ominaisuuksia, kuten @maininnat ja ylläpitäjät. Jäsenille, jotka eivät ole jakaneet nimeään tai kuvaansa tässä ryhmässä, lähetetään kutsu. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Uuteen ryhmään päivittäminen epäonnistui";
@@ -2354,7 +2354,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Tätä ryhmää ei voitu päivittää uuteen ryhmään, koska et ole yhdistettynä internettiin. Yritä myöhemmin uudelleen.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Päivitystä Ei Viimeistelty";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Päivityksen viimeistely epäonnistui";
 
 /* Message indicating the group update succeeded. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Päivitetty uuteen ryhmään";
@@ -2372,7 +2372,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Valitse uusi ylläpitäjä";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal-ryhmät toimivat parhaiten jos niissä on %@ jäsentä tai vähemmän. Jäsenten lisääminen aiheuttaa viiveitä viestien kulussa.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal-ryhmät toimivat parhaiten enintään %@ jäsenellä. Korkeampi jäsenmäärä viivästyttää viestien kulkua.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Suositeltu jäsenmäärä saavutettu";
@@ -2387,7 +2387,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Näytä pyynnöt";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Ota meihin yhteyttä";
+"HELP_CONTACT_US" = "Ota yhteyttä";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Tukikeskus";
@@ -3197,7 +3197,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Myönnä käyttöoikeudet";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Ilmoitusten ja yhteystietojen salliminen antaa sinun nähdä, kun viestejä saapuu, ja auttaa sinua löytämään tuntemiasi ihmisiä. Yhteystiedot on salattu, joten signaalipalvelu ei näe niitä.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Ilmoitusten ja yhteystietojen salliminen mahdollistaa uusista viesteistä tiedottamisen ja tuntemiesi ihmisten löytämisen. Yhteystiedot salataan, eikä Signal-sovellus käsittele niitä.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Myönnä käyttöoikeudet";
@@ -3269,7 +3269,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Soita minulle %@ kuluttua";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Vahvistetaan koodi…";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Varmennetaan koodia…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tämä koodi on virheellinen";
@@ -3485,7 +3485,7 @@
 "PIN_ACTION" = "Kiinnitä";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 merkkiä";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Vähintään 4 merkkiä";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Vaihda tunnusluku";
@@ -3527,7 +3527,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Tunnusluvut eivät täsmää. Yritä uudelleen.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 numeroa";
+"PIN_CREATION_NUMERIC_HINT" = "Vähintään 4 numeroa";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Syötä tunnusluku uudelleen";
@@ -3536,7 +3536,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Luodaan tunnuslukua…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Voit vaihtaa tunnusluvun tämän laitteen ollessa rekisteröity.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Tunnusluvun voi vaihtaa vain laitteella, joka on rekisteröity.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Vaihda tunnusluku";
@@ -3689,10 +3689,10 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Salattu";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Tule juttelemaan vapaasti";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Juttutuulella";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Puhu vapaasti";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Tule juttelemaan";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Tauolla";
@@ -3752,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Internet-yhteys vaaditaan profiilin päivittämiseen.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiilisi on salattu päästä päähän. Profiilisi ja siihen tehdyt muutokset näkyvät yhteyshenkilöillesi ja kun aloitat tai hyväksyt uudet keskustelut.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiili on salattu päästä päähän. Se näkyy yhteyshenkilöillesi, kun aloitat tai hyväksyt uusia keskusteluja.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";
@@ -3959,7 +3959,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Ei puhelinnumeroa​";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Vahvistuskoodi lähetetään tähän numeroon. Onko yllä oleva puhelinnumerosi oikea?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Varmennuskoodi lähetetään tähän numeroon. Onko yllä oleva puhelinnumero oikea?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Numeron vahvistus: %@";
@@ -3968,7 +3968,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Muokkaa";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Vahvistetaan %@…";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Varmennetaan %@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Hylkää";
@@ -4457,7 +4457,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lisää estetty käyttäjä";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "Luettelo yhteystiedoista ja ryhmistä, jotka olet estänyt.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "Luettelo estetyistä yhteystiedoista ja ryhmistä.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Sinulla ei ole yhteystietoja Signalissa.";
@@ -4580,7 +4580,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Sisällytä mykistetyt keskustelut";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Merkin laskenta";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Viestiluvun laskenta";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Valitse mitä tietoja puhelu- ja viesti-ilmoituksissa näytetään, jotka näkyvät myös puhelimen ollessa lukittu.";
@@ -4649,7 +4649,7 @@
 "SETTINGS_READ_RECEIPT" = "Lukukuittaukset";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Näe milloin muut ovat lukeneet viestisi ja päinvastoin. Valinnainen, koskee kaikkia keskusteluja.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Näytä milloin muut ovat lukeneet viestisi ja päinvastoin. Valinnainen, koskee kaikkia keskusteluja.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Poista käytöstä";
@@ -4676,7 +4676,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automaattisen ruudun lukituksen odotusaika";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Avaa Signalin ruudun lukitus Touch ID:llä, Face ID:llä tai iOS-pääsykoodilla. Puheluihin voi vastata ja viesti- ja puheluilmoitukset lähetetään poistamatta ruudun lukitusta. Ilmoituksissa näkyvää tietoa voi mukauttaa Signalin ilmoitusasetuksista.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Avaa Signalin ruudun lukitus Touch ID:llä, Face ID:llä tai iOS-pääsykoodilla. Puheluihin voi vastata ja viesti- ja puheluilmoitukset näytetään ruudun lukituksesta huolimatta. Ilmoitusten sisältöä voi mukauttaa Signalin ilmoitusasetuksista.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ruudun lukitus";
@@ -4703,7 +4703,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Näytä ehdotuksissa";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-keskustelut näkyvät ehdotuksissa jaettaessa sisältöä muista apeista";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-keskustelut näkyvät ehdotuksissa jaettaessa sisältöä muista apeista.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Rekisteröintiesto";
@@ -4715,7 +4715,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Kirjoittamisen ilmaisin";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Näe milloin muut ovat kirjoittamassa viestiä ja päinvastoin. Valinnainen, koskee kaikkia keskusteluja.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Näytä milloin muut ovat kirjoittamassa viestiä ja päinvastoin. Valinnainen, koskee kaikkia keskusteluja.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Lähettäjäsinetti";
@@ -4871,7 +4871,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Turvanumero täsmää!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Ota meihin yhteyttä";
+"SUPPORT_CONTACT_US_HEADER" = "Ota yhteyttä";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Kerro asiasi";

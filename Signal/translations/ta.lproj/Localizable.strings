@@ -599,7 +599,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "கிளிப்போர்டுடன் ஒப்பிடுக";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "தேர்ந்தெடு அல்லது ஒரு தேட Signal தொடங்க பயனர் அரட்டை உடன்.";
+"COMPOSE_BUTTON_HINT" = "உரையாடலைத் தொடங்க சிக்னல் பயனரைத் தேடுங்கள் அல்லது தேர்ந்தெடுக்கவும்.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "எழுது";
@@ -905,7 +905,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "முடக்கப்பட்டிருந்தால் அறிவிக்க வேண்டாம்";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "முடக்கிய அரட்டைகளில் மற்றவர்களால் நீங்கள் குறிப்பிடப்படும்போது அறிவிப்புகளைப் பெறவா?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ஒலியடக்கிய உரையாடல்களில் மற்றவர்களால் நீங்கள் குறிப்பிடப்படும்போது அறிவிப்புகள் பெறலாமா?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "குறிப்பிடுகிறது";
@@ -1076,7 +1076,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "பிழைத்திருத்த பதிவுகள் பற்றிய தகவல்";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "இல் உள்ள அனைத்து செய்திகளையும் நீக்குஅரட்டை?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "இந்த உரையாடலில்  உள்ள அனைத்து செய்திகளையும் நீக்கவா?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "எல்லா செய்திகளையும் நீக்கு";
@@ -1208,10 +1208,10 @@
 "DISAPPEARING_MESSAGES" = "காணாமல் போகும் செய்திகள்";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இதில் செய்திகள் அரட்டை விருப்பம் மறைந்துவிடும் பிறகு %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இந்த உரையாடலில்  செய்திகள் %@ பிறகு மறைந்துவிடும்.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "இயக்கப்பட்டால், இதில் செய்திகள் அனுப்பப்பட்டு பெறப்படுகின்றன அரட்டை விருப்பம் மறைந்துவிடும் அவர்கள் காணப்பட்ட பிறகு.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "இயக்கப்பட்டால், இதில் செய்திகள் அனுப்பப்பட்டு பெறப்படுகின்றன உரையாடல் விருப்பம் மறைந்துவிடும் அவர்கள் காணப்பட்ட பிறகு.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "தற்போது %@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்";
@@ -1262,7 +1262,7 @@
 "EDIT_ITEM_COPY_ACTION" = "நகல்";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "ஏய்,\n\nசமீபத்தில் நான் பயன்படுத்துகிறேன் Signal எனது ஐபோனில் அரட்டைகளை வைத்திருக்க தனிப்பட்ட. நீங்களும் இதை நிறுவ விரும்புகிறேன், எனவே நீங்களும் நானும் மட்டுமே எங்கள் செய்திகளைப் படிக்க முடியும் அல்லது எங்கள் அழைப்புகளைக் கேட்க முடியும் என்று நாங்கள் நம்பலாம்.\n\nSignal இருக்கிறது கிடைப்பில் ஐபோன்கள் மற்றும் ஆண்ட்ராய்டு. இங்கே பெறுங்கள்: %@\n\nSignal  உங்கள் இருக்கும் செய்தியிடல் பயன்பாடு போன்றது. நம்மால் முடியும்அனுப்பு படங்கள் மற்றும் வீடியோ, அழைப்புகளைச் செய்து தொடங்கவும் குழுஅரட்டைகள். சிறந்த பகுதி,இல்லை வேறொருவர் அதைக் காண முடியும், கூட இல்லை மக்கள் யார் செய்கிறார்கள் Signal!\n\n%@நீங்கள் பற்றி மேலும் படிக்கலாம் திற விஸ்பர் சிஸ்டம்ஸ், தி மக்கள் யார் செய்கிறார்கள் Signal, இங்கே:";
+"EMAIL_INVITE_BODY" = "வணக்கம்,\n\nசமீபத்தில் நான் பயன்படுத்துகிறேன் Signal எனது ஐபோனில் அரட்டைகளை வைத்திருக்க தனிப்பட்ட. நீங்களும் இதை நிறுவ விரும்புகிறேன், எனவே நீங்களும் நானும் மட்டுமே எங்கள் செய்திகளைப் படிக்க முடியும் அல்லது எங்கள் அழைப்புகளைக் கேட்க முடியும் என்று நாங்கள் நம்பலாம்.\n\nSignal இருக்கிறது கிடைப்பில் ஐபோன்கள் மற்றும் ஆண்ட்ராய்டு. இங்கே பெறுங்கள்: %@\n\nSignal  உங்கள் இருக்கும் செய்தியிடல் பயன்பாடு போன்றது. நம்மால் முடியும்அனுப்பு படங்கள் மற்றும் வீடியோ, அழைப்புகளைச் செய்து தொடங்கவும் குழுஅரட்டைகள். சிறந்த பகுதி,இல்லை வேறொருவர் அதைக் காண முடியும், கூட இல்லை மக்கள் யார் செய்கிறார்கள் Signal!\n\n%@நீங்கள் பற்றி மேலும் படிக்கலாம் திற விஸ்பர் சிஸ்டம்ஸ், தி மக்கள் யார் செய்கிறார்கள் Signal, இங்கே:";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal லுக்கு மாறலாம்";
@@ -1394,7 +1394,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ உடன் உங்கள் பாதுகாப்பு எண் மாற்றப்பட்டுள்ளது.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "அரட்டை அமர்வு புதுப்பிக்கப்பட்டது";
+"ERROR_MESSAGE_SESSION_REFRESH" = "உரையாடல் அமர்வு புதுப்பிக்கப்பட்டது";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "அறியப்படாத பிழை ஏற்பட்டது.";
@@ -1451,7 +1451,7 @@
 "FORWARD_MESSAGE" = "செய்தியை முன்னோக்கு ";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "உங்களிடம் எதுவும் இல்லை மீடியா இதில் அரட்டை.";
+"GALLERY_TILES_EMPTY_GALLERY" = "உங்களிடம் இந்த உரையாடலில்  மீடியா  எதுவும் இல்லை.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "புதிய மீடியாவை ஏற்றுகிறது…";
@@ -2486,7 +2486,7 @@
 "IN_CALL_TERMINATED" = "அழைப்பு முடிந்தது.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "இந்த அரட்டைகள் காப்பகப்படுத்தப்பட்டுள்ளன, அவை இன்பாக்ஸில் மட்டுமே தோன்றும் என்றால் புதிய செய்திகள் பெறப்படுகின்றன.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "இந்த உரையாடல்கள் காப்பகப்படுத்தப்பட்டுள்ளன, அவை இன்பாக்ஸில் மட்டுமே தோன்றும் என்றால் புதிய செய்திகள் பெறப்படுகின்றன.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "இன்னும் அரட்டைகள் இல்லை.\n ஒரு நண்பருக்கு செய்தி அனுப்புவதன் மூலம் தொடங்கவும்.";
@@ -2576,7 +2576,7 @@
 "KEY_COMMAND_STICKERS" = "ஓட்டிகளை காட்டு ";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "ஒழுங்கற்றது அரட்டை";
+"KEY_COMMAND_UNARCHIVE" = "காப்பகப்படுத்தப்படாத உரையாடல்";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "மேலும் அறிக";
@@ -2597,7 +2597,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "இது சாதனம் உங்கள் பார்க்க முடியும் குழுக்கள் மற்றும் தொடர்புகள், உங்கள் அரட்டைகளை அணுகலாம் மற்றும் அனுப்பு உங்கள் பெயரில் செய்திகள்.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "இது சாதனம் உங்கள் பார்க்க முடியும் குழுக்கள் மற்றும் தொடர்புகள், உங்கள் உரையாடல்களை அணுகலாம் மற்றும் அனுப்பு உங்கள் பெயரில் செய்திகள்.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "இந்த சாதனத்தை இணைக்கவா?";
@@ -2810,10 +2810,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "அழி";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "இது அரட்டை உங்கள் எல்லா சாதனங்களிலிருந்தும் நீக்கப்படும்.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "இது உரையாடல் உங்கள் எல்லா சாதனங்களிலிருந்தும் நீக்கப்படும்.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "அரட்டையை நீக்கவா?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "உரையாடலை நீக்கவா?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "அழி மற்றும் விடுங்கள்";
@@ -2870,7 +2870,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "இதைத் தொடரவும் அரட்டை உடன் %@ உங்கள் பெயரைப் பகிரவும் புகைப்படம் அவர்களுடன்?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "தொடரவும் அரட்டை இதனோடு குழு உங்கள் பெயரைப் பகிரவும் புகைப்படம் அதன் உறுப்பினர்களுடன்?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "இந்த குழுவுடன் உங்கள் அரட்டையைத் தொடர, உங்கள் பெயரையும் புகைப்படத்தையும் அதன் உறுப்பினர்களுடன் பகிர்ந்து கொள்ளவா?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "உங்களுக்கு %@ செய்தி அனுப்பவும், உங்கள் பெயரையும் புகைப்படத்தையும்  அவர்களுடன் பகிர்ந்து கொள்ளலாமா? நீங்கள் ஏற்றுக்கொள்ளும் வரை அவர்களின் செய்தியை நீங்கள் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
@@ -3602,10 +3602,10 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "நீங்கள் மட்டுமே முடியும் முள் 4 அரட்டைகள் வரை.";
+"PINNED_CONVERSATION_LIMIT" = "நீங்கள் 4 உரையாடல்களை மட்டுமே முக்கியமானதாகக் குறிக்க முடியும்";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "முக்கியமானது";
+"PINNED_SECTION_TITLE" = "முக்கியமானவை";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";
@@ -3647,7 +3647,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "இது %@  உடன் உங்கள் பாதுகாப்பு எண்ணாகத் தெரியவில்லை. சரியான தொடர்பை சரிபார்க்கிறீர்களா?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் உள்ள எண் சரியானதாகத் தெரியவில்லை பாதுகாப்பு எண் இதற்காக அரட்டை.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் உள்ள எண் இந்த உரையாடலின் சரியான பாதுகாப்பு எண்ணாகத் தெரியவில்லை.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் Signal க்கு எந்த பாதுகாப்பு எண்ணையும் கண்டுபிடிக்க முடியவில்லை. நீங்கள் அதை சரியாக நகலெடுத்துள்ளீர்களா?";
@@ -3680,7 +3680,7 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "உங்களைப் பற்றி சில வார்த்தைகளை எழுதுங்கள்…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "தயவுசெய்து இருங்கள்";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "கனிவான நபராக இருப்போம்";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "காபி காதலன்";
@@ -3689,16 +3689,16 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "மறைகுறியாக்கப்பட்ட ";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "இலவசம் அரட்டை";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "உரையாட நேரம் இருக்கிறது";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "எதுவேண்டுமானாலும் பேசுங்கள்";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "சுதந்திரமாக பேசுவோம்";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "ஓய்வு எடுத்துக்கொள்வது";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "ஓய்வெடுத்து கொண்டிருக்கிறேன்";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "புதிதாக ஏதாவது வேலை";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "ஒரு புதிய விஷயத்தில் ஈடுபட்டுள்ளேன்";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "பற்றி";
@@ -3752,7 +3752,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "உடன் இணைக்கப்படும்போது மட்டுமே சுயவிவரத்தை புதுப்பிக்க முடியும் இணையதளம்.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "உங்கள் சுயவிவரம் முடிவிலிருந்து-முடிவுவரை மறையாக்கப்பட்ட. உங்கள் சுயவிவரம் மற்றும் அதற்கான மாற்றங்கள் உங்கள் தொடர்புகளுக்கும், நீங்கள் தொடங்கும் போது அல்லது தெரியும்ஏற்றுக்கொள் புதிய பூனைகள்.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "உங்கள் சுயவிவரம்பயனரிடமிருந்து பயனருக்கு மறைகுறியாக்கப்பட்ட. உங்கள் சுயவிவரம் மற்றும் அதற்கான மாற்றங்கள் உங்கள் தொடர்புகளுக்கும், நீங்கள் தொடங்கும் போது அல்லது தெரியும்ஏற்றுக்கொள் புதிய பூனைகள்.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "சேமி";
@@ -4322,7 +4322,7 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal இருமுனை குறியாக்கத்தைப் (E2EE) பயன்படுத்துகிறது, மேலும் இது சில நேரங்களில் உங்கள் அரட்டை அமர்வை புதுப்பிக்க வேண்டியிருக்கும். இது உங்கள் அரட்டையின் பாதுகாப்பைப் பாதிக்காது, ஆனால் இந்த தொடர்பிலிருந்து நீங்கள் ஒரு செய்தியைத் தவறவிட்டிருக்கலாம், மேலும் அதை மீண்டும் அனுப்புமாறு அவர்களிடம் கேட்கலாம்.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "அரட்டை அமர்வு புதுப்பிக்கப்பட்டது";
+"SESSION_REFRESH_ALERT_TITLE" = "உரையாடல் அமர்வு புதுப்பிக்கப்பட்டது";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "புகைப்படங்களிலிருந்து தேர்வு செய்யவும்";
@@ -4538,7 +4538,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "செய்தி ஒலி";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "அரட்டை பின்னணிப்படம்";
+"SETTINGS_ITEM_WALLPAPER" = "உரையாடல் பின்னணிப்படம்";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கை";
@@ -4577,7 +4577,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "அமைப்புகள்";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "முடக்கிய அரட்டைகளை எண்ணுங்கள்";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "முடக்கிய உரையாடல்களை எண்ணுங்கள்";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "பேட்ஜ் அறிவிப்பு எண்ணிக்கை";
@@ -4703,7 +4703,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "பரிந்துரைகளில் காட்டு";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal பகிர்வதில் அரட்டைகள் பரிந்துரைகளாக காட்டப்படும் மற்றவை பயன்பாடுகள்.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal பகிர்வதில் உரையாடல்கள் பரிந்துரைகளாக காட்டப்படும் மற்றவை பயன்பாடுகள்.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "பதிவு பூட்டு";
@@ -4784,7 +4784,7 @@
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "தோல்வி முடக்கு பரிந்துரைகளைப் பகிர்தல்.";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal பகிர்வதில் அரட்டைகளை இப்போது பரிந்துரைகளாகக் காட்டலாம் மற்றவை பயன்பாடுகள்.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal பகிர்வதில் உரையாடல்களை இப்போது பரிந்துரைகளாகக் காட்டலாம் மற்றவை பயன்பாடுகள்.";
 
 /* Title for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "பகிர்வு எளிதானது";
@@ -4799,7 +4799,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "பாதுகாப்பு எண்ணைக் காட்டு";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "காட்டு அரட்டை";
+"SHOW_THREAD_BUTTON_TITLE" = "உரையாடலைக் காட்டு ";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal லை நிறுவ நான் உங்களை அழைக்கிறேன்! இங்கே இணைப்பு:";
@@ -5225,7 +5225,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "மேலும் பின்னணிப்படங்களை முன்னோட்டமிட ஸ்வைப் செய்யவும்.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "எல்லா அரட்டைகளுக்கும் பின்னணிப்படத்தை அமைக்கவும்.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "எல்லா உரையாடல்களுக்கும் பின்னணிப்படத்தை அமைக்கவும்.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@க்கு பின்னணிப்படத்தை அமைக்கவும்.";
@@ -5240,7 +5240,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "பின்னணிப்படம் நீக்கவும்";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "இந்த அரட்டைக்கு பின்னணிப்படத்தை நீக்கவா?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "இந்த உரையாடலுக்கு பின்னணிப்படத்தை நீக்கவா?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "பின்னணிப்படத்தை நீக்கவா? இது அரட்டைகளுக்காக நீங்கள் அமைத்துள்ள தனி பின்னணிப்படங்களை நீக்காது.";
@@ -5261,13 +5261,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL" = "அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவும்";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "உங்கள் அரட்டைகளுக்காக நீங்கள் அமைத்துள்ள தனிப்பட்ட பின்னணிப்படங்கள் உட்பட அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவா?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "உங்கள் உரையாடல்களுக்காக நீங்கள் அமைத்துள்ள தனிப்பட்ட பின்னணிப்படங்கள் உட்பட அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவா?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "பின்னணிப்படம் அமைக்கவும்";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "அரட்டை பின்னணிப்படம்";
+"WALLPAPER_SETTINGS_TITLE" = "உரையாடல் பின்னணிப்படம்";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "இந்த செய்தியை நீக்கிவிட்டீர்கள்.";
