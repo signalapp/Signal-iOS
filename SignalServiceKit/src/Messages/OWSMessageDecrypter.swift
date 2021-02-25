@@ -272,6 +272,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return wrappedError
         }
 
+        guard !blockingManager.isAddressBlocked(sourceAddress) else {
+            Logger.info("Ignoring decryption error for blocked user \(sourceAddress) \(wrappedError).")
+            return wrappedError
+        }
+
         let contactThread = TSContactThread.getOrCreateThread(withContactAddress: sourceAddress,
                                                               transaction: transaction)
 
@@ -355,9 +360,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func decrypt(_ envelope: SSKProtoEnvelope,
-                                envelopeData: Data,
-                                cipherType: CipherMessageType,
-                                transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
+                         envelopeData: Data,
+                         cipherType: CipherMessageType,
+                         transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
 
         do {
             guard let sourceAddress = envelope.sourceAddress else {
