@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 //
@@ -109,7 +109,7 @@ struct KeyBackupProtos_BackupRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _serviceID ?? Data()}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -118,7 +118,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _backupID ?? Data()}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.
@@ -127,7 +127,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearBackupID() {self._backupID = nil}
 
   var token: Data {
-    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    get {return _token ?? Data()}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -145,7 +145,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearValidFrom() {self._validFrom = nil}
 
   var data: Data {
-    get {return _data ?? SwiftProtobuf.Internal.emptyData}
+    get {return _data ?? Data()}
     set {_data = newValue}
   }
   /// Returns true if `data` has been explicitly set.
@@ -154,7 +154,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearData() {self._data = nil}
 
   var pin: Data {
-    get {return _pin ?? SwiftProtobuf.Internal.emptyData}
+    get {return _pin ?? Data()}
     set {_pin = newValue}
   }
   /// Returns true if `pin` has been explicitly set.
@@ -199,7 +199,7 @@ struct KeyBackupProtos_BackupResponse {
   mutating func clearStatus() {self._status = nil}
 
   var token: Data {
-    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    get {return _token ?? Data()}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -258,7 +258,7 @@ struct KeyBackupProtos_RestoreRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _serviceID ?? Data()}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -267,7 +267,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _backupID ?? Data()}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.
@@ -276,7 +276,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearBackupID() {self._backupID = nil}
 
   var token: Data {
-    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    get {return _token ?? Data()}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -294,7 +294,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearValidFrom() {self._validFrom = nil}
 
   var pin: Data {
-    get {return _pin ?? SwiftProtobuf.Internal.emptyData}
+    get {return _pin ?? Data()}
     set {_pin = newValue}
   }
   /// Returns true if `pin` has been explicitly set.
@@ -328,7 +328,7 @@ struct KeyBackupProtos_RestoreResponse {
   mutating func clearStatus() {self._status = nil}
 
   var token: Data {
-    get {return _token ?? SwiftProtobuf.Internal.emptyData}
+    get {return _token ?? Data()}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -337,7 +337,7 @@ struct KeyBackupProtos_RestoreResponse {
   mutating func clearToken() {self._token = nil}
 
   var data: Data {
-    get {return _data ?? SwiftProtobuf.Internal.emptyData}
+    get {return _data ?? Data()}
     set {_data = newValue}
   }
   /// Returns true if `data` has been explicitly set.
@@ -413,7 +413,7 @@ struct KeyBackupProtos_DeleteRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _serviceID ?? Data()}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -422,7 +422,7 @@ struct KeyBackupProtos_DeleteRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
+    get {return _backupID ?? Data()}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.
@@ -462,10 +462,13 @@ extension KeyBackupProtos_Request: SwiftProtobuf.Message, SwiftProtobuf._Message
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._backup)
-      case 2: try decoder.decodeSingularMessageField(value: &self._restore)
-      case 3: try decoder.decodeSingularMessageField(value: &self._delete)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._backup) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._restore) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._delete) }()
       default: break
       }
     }
@@ -503,10 +506,13 @@ extension KeyBackupProtos_Response: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._backup)
-      case 2: try decoder.decodeSingularMessageField(value: &self._restore)
-      case 3: try decoder.decodeSingularMessageField(value: &self._delete)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._backup) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._restore) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._delete) }()
       default: break
       }
     }
@@ -548,14 +554,17 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._serviceID)
-      case 2: try decoder.decodeSingularBytesField(value: &self._backupID)
-      case 3: try decoder.decodeSingularBytesField(value: &self._token)
-      case 4: try decoder.decodeSingularUInt64Field(value: &self._validFrom)
-      case 5: try decoder.decodeSingularBytesField(value: &self._data)
-      case 6: try decoder.decodeSingularBytesField(value: &self._pin)
-      case 7: try decoder.decodeSingularUInt32Field(value: &self._tries)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._serviceID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._backupID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._token) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._validFrom) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._data) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._pin) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self._tries) }()
       default: break
       }
     }
@@ -608,9 +617,12 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._status)
-      case 2: try decoder.decodeSingularBytesField(value: &self._token)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._status) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._token) }()
       default: break
       }
     }
@@ -654,12 +666,15 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._serviceID)
-      case 2: try decoder.decodeSingularBytesField(value: &self._backupID)
-      case 3: try decoder.decodeSingularBytesField(value: &self._token)
-      case 4: try decoder.decodeSingularUInt64Field(value: &self._validFrom)
-      case 5: try decoder.decodeSingularBytesField(value: &self._pin)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._serviceID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._backupID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._token) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._validFrom) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._pin) }()
       default: break
       }
     }
@@ -706,11 +721,14 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._status)
-      case 2: try decoder.decodeSingularBytesField(value: &self._token)
-      case 3: try decoder.decodeSingularBytesField(value: &self._data)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._tries)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._status) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._token) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._data) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._tries) }()
       default: break
       }
     }
@@ -761,9 +779,12 @@ extension KeyBackupProtos_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._M
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._serviceID)
-      case 2: try decoder.decodeSingularBytesField(value: &self._backupID)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._serviceID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._backupID) }()
       default: break
       }
     }

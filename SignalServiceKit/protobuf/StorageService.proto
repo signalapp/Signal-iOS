@@ -130,6 +130,14 @@ message AccountRecord {
     }
   }
 
+  message Payments {
+    message MobileCoin {
+      bytes rootEntropy = 1;
+    }
+    bool       enabled    = 1;
+    MobileCoin mobileCoin = 2;
+  }
+
            bytes                  profileKey                   = 1;
            string                 givenName                    = 2;
            string                 familyName                   = 3;
@@ -145,4 +153,5 @@ message AccountRecord {
            bool                   notDiscoverableByPhoneNumber = 13;
   repeated PinnedConversation     pinnedConversations          = 14;
            bool                   preferContactAvatars         = 15;
+           Payments               payments                     = 16;
 }

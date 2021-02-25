@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-//*
+// *
 // Copyright (C) 2014-2016 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
@@ -49,7 +49,7 @@ struct WebSocketProtos_WebSocketRequestMessage {
   mutating func clearPath() {self._path = nil}
 
   var body: Data {
-    get {return _body ?? SwiftProtobuf.Internal.emptyData}
+    get {return _body ?? Data()}
     set {_body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
@@ -116,7 +116,7 @@ struct WebSocketProtos_WebSocketResponseMessage {
   var headers: [String] = []
 
   var body: Data {
-    get {return _body ?? SwiftProtobuf.Internal.emptyData}
+    get {return _body ?? Data()}
     set {_body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
@@ -228,12 +228,15 @@ extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftP
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._verb)
-      case 2: try decoder.decodeSingularStringField(value: &self._path)
-      case 3: try decoder.decodeSingularBytesField(value: &self._body)
-      case 4: try decoder.decodeSingularUInt64Field(value: &self._requestID)
-      case 5: try decoder.decodeRepeatedStringField(value: &self.headers)
+      case 1: try { try decoder.decodeSingularStringField(value: &self._verb) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._path) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._body) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._requestID) }()
+      case 5: try { try decoder.decodeRepeatedStringField(value: &self.headers) }()
       default: break
       }
     }
@@ -281,12 +284,15 @@ extension WebSocketProtos_WebSocketResponseMessage: SwiftProtobuf.Message, Swift
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._requestID)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self._status)
-      case 3: try decoder.decodeSingularStringField(value: &self._message)
-      case 4: try decoder.decodeSingularBytesField(value: &self._body)
-      case 5: try decoder.decodeRepeatedStringField(value: &self.headers)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._requestID) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self._status) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._message) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._body) }()
+      case 5: try { try decoder.decodeRepeatedStringField(value: &self.headers) }()
       default: break
       }
     }
@@ -332,10 +338,13 @@ extension WebSocketProtos_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularMessageField(value: &self._request)
-      case 3: try decoder.decodeSingularMessageField(value: &self._response)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._request) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._response) }()
       default: break
       }
     }

@@ -75,6 +75,8 @@ def swift_type_for_proto_primitive_type(proto_type):
         return 'Bool'
     elif proto_type == 'bytes':
         return 'Data'
+    elif proto_type == 'double':
+        return 'Double'
     else:
         return None
 
@@ -295,7 +297,8 @@ class BaseContext(object):
         return field.proto_type in ('uint64',
             'uint32',
             'fixed64',
-            'bool', )
+            'bool', 
+            'double', )
 
     def can_field_be_optional(self, field):
         if self.is_field_primitive(field):
@@ -356,6 +359,8 @@ class BaseContext(object):
         elif field.proto_type == 'uint32':
             return '0'
         elif field.proto_type == 'fixed64':
+            return '0'
+        elif field.proto_type == 'double':
             return '0'
         elif field.proto_type == 'bool':
             return 'false'

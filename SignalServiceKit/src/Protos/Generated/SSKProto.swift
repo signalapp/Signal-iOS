@@ -5606,6 +5606,1214 @@ extension SSKProtoDataMessageGroupCallUpdate.SSKProtoDataMessageGroupCallUpdateB
 
 #endif
 
+// MARK: - SSKProtoDataMessagePaymentAmountMobileCoin
+
+@objc
+public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentAmountMobileCoinBuilder
+
+    @objc
+    public static func builder(picoMob: UInt64) -> SSKProtoDataMessagePaymentAmountMobileCoinBuilder {
+        return SSKProtoDataMessagePaymentAmountMobileCoinBuilder(picoMob: picoMob)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentAmountMobileCoinBuilder {
+        let builder = SSKProtoDataMessagePaymentAmountMobileCoinBuilder(picoMob: picoMob)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentAmountMobileCoinBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(picoMob: UInt64) {
+            super.init()
+
+            setPicoMob(picoMob)
+        }
+
+        @objc
+        public func setPicoMob(_ valueParam: UInt64) {
+            proto.picoMob = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentAmountMobileCoin {
+            return try SSKProtoDataMessagePaymentAmountMobileCoin(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentAmountMobileCoin(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin
+
+    @objc
+    public let picoMob: UInt64
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin,
+                 picoMob: UInt64) {
+        self.proto = proto
+        self.picoMob = picoMob
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin) throws {
+        guard proto.hasPicoMob else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: picoMob")
+        }
+        let picoMob = proto.picoMob
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentAmountMobileCoin -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentAmountMobileCoin -
+
+        self.init(proto: proto,
+                  picoMob: picoMob)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentAmountMobileCoin {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentAmountMobileCoin.SSKProtoDataMessagePaymentAmountMobileCoinBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentAmountMobileCoin? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentAmount
+
+@objc
+public class SSKProtoDataMessagePaymentAmount: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentAmountBuilder
+
+    @objc
+    public static func builder() -> SSKProtoDataMessagePaymentAmountBuilder {
+        return SSKProtoDataMessagePaymentAmountBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentAmountBuilder {
+        let builder = SSKProtoDataMessagePaymentAmountBuilder()
+        if let _value = mobileCoin {
+            builder.setMobileCoin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentAmountBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Amount()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMobileCoin(_ valueParam: SSKProtoDataMessagePaymentAmountMobileCoin?) {
+            guard let valueParam = valueParam else { return }
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setMobileCoin(_ valueParam: SSKProtoDataMessagePaymentAmountMobileCoin) {
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentAmount {
+            return try SSKProtoDataMessagePaymentAmount(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentAmount(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Amount
+
+    @objc
+    public let mobileCoin: SSKProtoDataMessagePaymentAmountMobileCoin?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Amount,
+                 mobileCoin: SSKProtoDataMessagePaymentAmountMobileCoin?) {
+        self.proto = proto
+        self.mobileCoin = mobileCoin
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Amount(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Amount) throws {
+        var mobileCoin: SSKProtoDataMessagePaymentAmountMobileCoin?
+        if proto.hasMobileCoin {
+            mobileCoin = try SSKProtoDataMessagePaymentAmountMobileCoin(proto.mobileCoin)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentAmount -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentAmount -
+
+        self.init(proto: proto,
+                  mobileCoin: mobileCoin)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentAmount {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentAmount.SSKProtoDataMessagePaymentAmountBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentAmount? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentRequestId
+
+@objc
+public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentRequestIdBuilder
+
+    @objc
+    public static func builder(uuid: String) -> SSKProtoDataMessagePaymentRequestIdBuilder {
+        return SSKProtoDataMessagePaymentRequestIdBuilder(uuid: uuid)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentRequestIdBuilder {
+        let builder = SSKProtoDataMessagePaymentRequestIdBuilder(uuid: uuid)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentRequestIdBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.RequestId()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(uuid: String) {
+            super.init()
+
+            setUuid(uuid)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentRequestId {
+            return try SSKProtoDataMessagePaymentRequestId(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentRequestId(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.RequestId
+
+    @objc
+    public let uuid: String
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.RequestId,
+                 uuid: String) {
+        self.proto = proto
+        self.uuid = uuid
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.RequestId(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.RequestId) throws {
+        guard proto.hasUuid else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: uuid")
+        }
+        let uuid = proto.uuid
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentRequestId -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentRequestId -
+
+        self.init(proto: proto,
+                  uuid: uuid)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentRequestId {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentRequestId.SSKProtoDataMessagePaymentRequestIdBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentRequestId? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentRequest
+
+@objc
+public class SSKProtoDataMessagePaymentRequest: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentRequestBuilder
+
+    @objc
+    public static func builder(requestID: SSKProtoDataMessagePaymentRequestId, amount: SSKProtoDataMessagePaymentAmount) -> SSKProtoDataMessagePaymentRequestBuilder {
+        return SSKProtoDataMessagePaymentRequestBuilder(requestID: requestID, amount: amount)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentRequestBuilder {
+        let builder = SSKProtoDataMessagePaymentRequestBuilder(requestID: requestID, amount: amount)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentRequestBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Request()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(requestID: SSKProtoDataMessagePaymentRequestId, amount: SSKProtoDataMessagePaymentAmount) {
+            super.init()
+
+            setRequestID(requestID)
+            setAmount(amount)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId?) {
+            guard let valueParam = valueParam else { return }
+            proto.requestID = valueParam.proto
+        }
+
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId) {
+            proto.requestID = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAmount(_ valueParam: SSKProtoDataMessagePaymentAmount?) {
+            guard let valueParam = valueParam else { return }
+            proto.amount = valueParam.proto
+        }
+
+        public func setAmount(_ valueParam: SSKProtoDataMessagePaymentAmount) {
+            proto.amount = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentRequest {
+            return try SSKProtoDataMessagePaymentRequest(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentRequest(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Request
+
+    @objc
+    public let requestID: SSKProtoDataMessagePaymentRequestId
+
+    @objc
+    public let amount: SSKProtoDataMessagePaymentAmount
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Request,
+                 requestID: SSKProtoDataMessagePaymentRequestId,
+                 amount: SSKProtoDataMessagePaymentAmount) {
+        self.proto = proto
+        self.requestID = requestID
+        self.amount = amount
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Request(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Request) throws {
+        guard proto.hasRequestID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestID")
+        }
+        let requestID = try SSKProtoDataMessagePaymentRequestId(proto.requestID)
+
+        guard proto.hasAmount else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: amount")
+        }
+        let amount = try SSKProtoDataMessagePaymentAmount(proto.amount)
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentRequest -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentRequest -
+
+        self.init(proto: proto,
+                  requestID: requestID,
+                  amount: amount)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentRequest {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentRequest.SSKProtoDataMessagePaymentRequestBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentRequest? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentNotificationMobileCoin
+
+@objc
+public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentNotificationMobileCoinBuilder
+
+    @objc
+    public static func builder(receipt: Data) -> SSKProtoDataMessagePaymentNotificationMobileCoinBuilder {
+        return SSKProtoDataMessagePaymentNotificationMobileCoinBuilder(receipt: receipt)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentNotificationMobileCoinBuilder {
+        let builder = SSKProtoDataMessagePaymentNotificationMobileCoinBuilder(receipt: receipt)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentNotificationMobileCoinBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(receipt: Data) {
+            super.init()
+
+            setReceipt(receipt)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setReceipt(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.receipt = valueParam
+        }
+
+        public func setReceipt(_ valueParam: Data) {
+            proto.receipt = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentNotificationMobileCoin {
+            return try SSKProtoDataMessagePaymentNotificationMobileCoin(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentNotificationMobileCoin(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin
+
+    @objc
+    public let receipt: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin,
+                 receipt: Data) {
+        self.proto = proto
+        self.receipt = receipt
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin) throws {
+        guard proto.hasReceipt else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: receipt")
+        }
+        let receipt = proto.receipt
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentNotificationMobileCoin -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentNotificationMobileCoin -
+
+        self.init(proto: proto,
+                  receipt: receipt)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentNotificationMobileCoin {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentNotificationMobileCoin.SSKProtoDataMessagePaymentNotificationMobileCoinBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentNotificationMobileCoin? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentNotification
+
+@objc
+public class SSKProtoDataMessagePaymentNotification: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentNotificationBuilder
+
+    @objc
+    public static func builder() -> SSKProtoDataMessagePaymentNotificationBuilder {
+        return SSKProtoDataMessagePaymentNotificationBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentNotificationBuilder {
+        let builder = SSKProtoDataMessagePaymentNotificationBuilder()
+        if let _value = mobileCoin {
+            builder.setMobileCoin(_value)
+        }
+        if let _value = requestID {
+            builder.setRequestID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentNotificationBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Notification()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMobileCoin(_ valueParam: SSKProtoDataMessagePaymentNotificationMobileCoin?) {
+            guard let valueParam = valueParam else { return }
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setMobileCoin(_ valueParam: SSKProtoDataMessagePaymentNotificationMobileCoin) {
+            proto.mobileCoin = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId?) {
+            guard let valueParam = valueParam else { return }
+            proto.requestID = valueParam.proto
+        }
+
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId) {
+            proto.requestID = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentNotification {
+            return try SSKProtoDataMessagePaymentNotification(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentNotification(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Notification
+
+    @objc
+    public let mobileCoin: SSKProtoDataMessagePaymentNotificationMobileCoin?
+
+    @objc
+    public let requestID: SSKProtoDataMessagePaymentRequestId?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Notification,
+                 mobileCoin: SSKProtoDataMessagePaymentNotificationMobileCoin?,
+                 requestID: SSKProtoDataMessagePaymentRequestId?) {
+        self.proto = proto
+        self.mobileCoin = mobileCoin
+        self.requestID = requestID
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Notification(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Notification) throws {
+        var mobileCoin: SSKProtoDataMessagePaymentNotificationMobileCoin?
+        if proto.hasMobileCoin {
+            mobileCoin = try SSKProtoDataMessagePaymentNotificationMobileCoin(proto.mobileCoin)
+        }
+
+        var requestID: SSKProtoDataMessagePaymentRequestId?
+        if proto.hasRequestID {
+            requestID = try SSKProtoDataMessagePaymentRequestId(proto.requestID)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentNotification -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentNotification -
+
+        self.init(proto: proto,
+                  mobileCoin: mobileCoin,
+                  requestID: requestID)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentNotification {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentNotification.SSKProtoDataMessagePaymentNotificationBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentNotification? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePaymentCancellation
+
+@objc
+public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentCancellationBuilder
+
+    @objc
+    public static func builder(requestID: SSKProtoDataMessagePaymentRequestId) -> SSKProtoDataMessagePaymentCancellationBuilder {
+        return SSKProtoDataMessagePaymentCancellationBuilder(requestID: requestID)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentCancellationBuilder {
+        let builder = SSKProtoDataMessagePaymentCancellationBuilder(requestID: requestID)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentCancellationBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment.Cancellation()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(requestID: SSKProtoDataMessagePaymentRequestId) {
+            super.init()
+
+            setRequestID(requestID)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId?) {
+            guard let valueParam = valueParam else { return }
+            proto.requestID = valueParam.proto
+        }
+
+        public func setRequestID(_ valueParam: SSKProtoDataMessagePaymentRequestId) {
+            proto.requestID = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePaymentCancellation {
+            return try SSKProtoDataMessagePaymentCancellation(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePaymentCancellation(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment.Cancellation
+
+    @objc
+    public let requestID: SSKProtoDataMessagePaymentRequestId
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment.Cancellation,
+                 requestID: SSKProtoDataMessagePaymentRequestId) {
+        self.proto = proto
+        self.requestID = requestID
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment.Cancellation(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment.Cancellation) throws {
+        guard proto.hasRequestID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestID")
+        }
+        let requestID = try SSKProtoDataMessagePaymentRequestId(proto.requestID)
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentCancellation -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentCancellation -
+
+        self.init(proto: proto,
+                  requestID: requestID)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePaymentCancellation {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePaymentCancellation.SSKProtoDataMessagePaymentCancellationBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePaymentCancellation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDataMessagePayment
+
+@objc
+public class SSKProtoDataMessagePayment: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessagePaymentBuilder
+
+    @objc
+    public static func builder() -> SSKProtoDataMessagePaymentBuilder {
+        return SSKProtoDataMessagePaymentBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessagePaymentBuilder {
+        let builder = SSKProtoDataMessagePaymentBuilder()
+        if let _value = notification {
+            builder.setNotification(_value)
+        }
+        if let _value = request {
+            builder.setRequest(_value)
+        }
+        if let _value = cancellation {
+            builder.setCancellation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessagePaymentBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Payment()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNotification(_ valueParam: SSKProtoDataMessagePaymentNotification?) {
+            guard let valueParam = valueParam else { return }
+            proto.notification = valueParam.proto
+        }
+
+        public func setNotification(_ valueParam: SSKProtoDataMessagePaymentNotification) {
+            proto.notification = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequest(_ valueParam: SSKProtoDataMessagePaymentRequest?) {
+            guard let valueParam = valueParam else { return }
+            proto.request = valueParam.proto
+        }
+
+        public func setRequest(_ valueParam: SSKProtoDataMessagePaymentRequest) {
+            proto.request = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setCancellation(_ valueParam: SSKProtoDataMessagePaymentCancellation?) {
+            guard let valueParam = valueParam else { return }
+            proto.cancellation = valueParam.proto
+        }
+
+        public func setCancellation(_ valueParam: SSKProtoDataMessagePaymentCancellation) {
+            proto.cancellation = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessagePayment {
+            return try SSKProtoDataMessagePayment(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePayment(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Payment
+
+    @objc
+    public let notification: SSKProtoDataMessagePaymentNotification?
+
+    @objc
+    public let request: SSKProtoDataMessagePaymentRequest?
+
+    @objc
+    public let cancellation: SSKProtoDataMessagePaymentCancellation?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Payment,
+                 notification: SSKProtoDataMessagePaymentNotification?,
+                 request: SSKProtoDataMessagePaymentRequest?,
+                 cancellation: SSKProtoDataMessagePaymentCancellation?) {
+        self.proto = proto
+        self.notification = notification
+        self.request = request
+        self.cancellation = cancellation
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Payment(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Payment) throws {
+        var notification: SSKProtoDataMessagePaymentNotification?
+        if proto.hasNotification {
+            notification = try SSKProtoDataMessagePaymentNotification(proto.notification)
+        }
+
+        var request: SSKProtoDataMessagePaymentRequest?
+        if proto.hasRequest {
+            request = try SSKProtoDataMessagePaymentRequest(proto.request)
+        }
+
+        var cancellation: SSKProtoDataMessagePaymentCancellation?
+        if proto.hasCancellation {
+            cancellation = try SSKProtoDataMessagePaymentCancellation(proto.cancellation)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePayment -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePayment -
+
+        self.init(proto: proto,
+                  notification: notification,
+                  request: request,
+                  cancellation: cancellation)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePayment {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePayment.SSKProtoDataMessagePaymentBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessagePayment? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -5642,6 +6850,7 @@ public enum SSKProtoDataMessageProtocolVersion: Int32 {
     case reactions = 4
     case cdnSelectorAttachments = 5
     case mentions = 6
+    case payments = 7
 }
 
 private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -5653,6 +6862,7 @@ private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos
     case .reactions: return .reactions
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
     case .mentions: return .mentions
+    case .payments: return .payments
     }
 }
 
@@ -5665,6 +6875,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
     case .reactions: return .reactions
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
     case .mentions: return .mentions
+    case .payments: return .payments
     }
 }
 
@@ -5729,6 +6940,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
         builder.setBodyRanges(bodyRanges)
         if let _value = groupCallUpdate {
             builder.setGroupCallUpdate(_value)
+        }
+        if let _value = payment {
+            builder.setPayment(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -5908,6 +7122,17 @@ public class SSKProtoDataMessage: NSObject, Codable {
             proto.groupCallUpdate = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPayment(_ valueParam: SSKProtoDataMessagePayment?) {
+            guard let valueParam = valueParam else { return }
+            proto.payment = valueParam.proto
+        }
+
+        public func setPayment(_ valueParam: SSKProtoDataMessagePayment) {
+            proto.payment = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -5957,6 +7182,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
 
     @objc
     public let groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
+
+    @objc
+    public let payment: SSKProtoDataMessagePayment?
 
     @objc
     public var body: String? {
@@ -6046,7 +7274,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                  reaction: SSKProtoDataMessageReaction?,
                  delete: SSKProtoDataMessageDelete?,
                  bodyRanges: [SSKProtoDataMessageBodyRange],
-                 groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?) {
+                 groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?,
+                 payment: SSKProtoDataMessagePayment?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -6059,6 +7288,7 @@ public class SSKProtoDataMessage: NSObject, Codable {
         self.delete = delete
         self.bodyRanges = bodyRanges
         self.groupCallUpdate = groupCallUpdate
+        self.payment = payment
     }
 
     @objc
@@ -6120,6 +7350,11 @@ public class SSKProtoDataMessage: NSObject, Codable {
             groupCallUpdate = try SSKProtoDataMessageGroupCallUpdate(proto.groupCallUpdate)
         }
 
+        var payment: SSKProtoDataMessagePayment?
+        if proto.hasPayment {
+            payment = try SSKProtoDataMessagePayment(proto.payment)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -6135,7 +7370,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                   reaction: reaction,
                   delete: delete,
                   bodyRanges: bodyRanges,
-                  groupCallUpdate: groupCallUpdate)
+                  groupCallUpdate: groupCallUpdate,
+                  payment: payment)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -9476,6 +10712,859 @@ extension SSKProtoSyncMessageMessageRequestResponse.SSKProtoSyncMessageMessageRe
 
 #endif
 
+// MARK: - SSKProtoSyncMessagePaymentOutgoingMobileCoin
+
+@objc
+public class SSKProtoSyncMessagePaymentOutgoingMobileCoin: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder
+
+    @objc
+    public static func builder(recipientUuid: String, picoMob: UInt64, receipt: Data, ledgerBlockIndex: UInt64) -> SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder {
+        return SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder(recipientUuid: recipientUuid, picoMob: picoMob, receipt: receipt, ledgerBlockIndex: ledgerBlockIndex)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder {
+        let builder = SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder(recipientUuid: recipientUuid, picoMob: picoMob, receipt: receipt, ledgerBlockIndex: ledgerBlockIndex)
+        if hasLedgerBlockTimestamp {
+            builder.setLedgerBlockTimestamp(ledgerBlockTimestamp)
+        }
+        builder.setSpentKeyImage(spentKeyImage)
+        builder.setOutputPublicKey(outputPublicKey)
+        if let _value = memoMessage {
+            builder.setMemoMessage(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(recipientUuid: String, picoMob: UInt64, receipt: Data, ledgerBlockIndex: UInt64) {
+            super.init()
+
+            setRecipientUuid(recipientUuid)
+            setPicoMob(picoMob)
+            setReceipt(receipt)
+            setLedgerBlockIndex(ledgerBlockIndex)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRecipientUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.recipientUuid = valueParam
+        }
+
+        public func setRecipientUuid(_ valueParam: String) {
+            proto.recipientUuid = valueParam
+        }
+
+        @objc
+        public func setPicoMob(_ valueParam: UInt64) {
+            proto.picoMob = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setReceipt(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.receipt = valueParam
+        }
+
+        public func setReceipt(_ valueParam: Data) {
+            proto.receipt = valueParam
+        }
+
+        @objc
+        public func setLedgerBlockTimestamp(_ valueParam: UInt64) {
+            proto.ledgerBlockTimestamp = valueParam
+        }
+
+        @objc
+        public func setLedgerBlockIndex(_ valueParam: UInt64) {
+            proto.ledgerBlockIndex = valueParam
+        }
+
+        @objc
+        public func addSpentKeyImage(_ valueParam: Data) {
+            proto.spentKeyImage.append(valueParam)
+        }
+
+        @objc
+        public func setSpentKeyImage(_ wrappedItems: [Data]) {
+            proto.spentKeyImage = wrappedItems
+        }
+
+        @objc
+        public func addOutputPublicKey(_ valueParam: Data) {
+            proto.outputPublicKey.append(valueParam)
+        }
+
+        @objc
+        public func setOutputPublicKey(_ wrappedItems: [Data]) {
+            proto.outputPublicKey = wrappedItems
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMemoMessage(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.memoMessage = valueParam
+        }
+
+        public func setMemoMessage(_ valueParam: String) {
+            proto.memoMessage = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessagePaymentOutgoingMobileCoin {
+            return try SSKProtoSyncMessagePaymentOutgoingMobileCoin(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessagePaymentOutgoingMobileCoin(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin
+
+    @objc
+    public let recipientUuid: String
+
+    @objc
+    public let picoMob: UInt64
+
+    @objc
+    public let receipt: Data
+
+    @objc
+    public let ledgerBlockIndex: UInt64
+
+    @objc
+    public var ledgerBlockTimestamp: UInt64 {
+        return proto.ledgerBlockTimestamp
+    }
+    @objc
+    public var hasLedgerBlockTimestamp: Bool {
+        return proto.hasLedgerBlockTimestamp
+    }
+
+    @objc
+    public var spentKeyImage: [Data] {
+        return proto.spentKeyImage
+    }
+
+    @objc
+    public var outputPublicKey: [Data] {
+        return proto.outputPublicKey
+    }
+
+    @objc
+    public var memoMessage: String? {
+        guard hasMemoMessage else {
+            return nil
+        }
+        return proto.memoMessage
+    }
+    @objc
+    public var hasMemoMessage: Bool {
+        return proto.hasMemoMessage
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin,
+                 recipientUuid: String,
+                 picoMob: UInt64,
+                 receipt: Data,
+                 ledgerBlockIndex: UInt64) {
+        self.proto = proto
+        self.recipientUuid = recipientUuid
+        self.picoMob = picoMob
+        self.receipt = receipt
+        self.ledgerBlockIndex = ledgerBlockIndex
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin) throws {
+        guard proto.hasRecipientUuid else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: recipientUuid")
+        }
+        let recipientUuid = proto.recipientUuid
+
+        guard proto.hasPicoMob else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: picoMob")
+        }
+        let picoMob = proto.picoMob
+
+        guard proto.hasReceipt else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: receipt")
+        }
+        let receipt = proto.receipt
+
+        guard proto.hasLedgerBlockIndex else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: ledgerBlockIndex")
+        }
+        let ledgerBlockIndex = proto.ledgerBlockIndex
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePaymentOutgoingMobileCoin -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessagePaymentOutgoingMobileCoin -
+
+        self.init(proto: proto,
+                  recipientUuid: recipientUuid,
+                  picoMob: picoMob,
+                  receipt: receipt,
+                  ledgerBlockIndex: ledgerBlockIndex)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessagePaymentOutgoingMobileCoin {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePaymentOutgoingMobileCoin.SSKProtoSyncMessagePaymentOutgoingMobileCoinBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePaymentOutgoingMobileCoin? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessagePaymentOutgoing
+
+@objc
+public class SSKProtoSyncMessagePaymentOutgoing: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessagePaymentOutgoingBuilder
+
+    @objc
+    public static func builder() -> SSKProtoSyncMessagePaymentOutgoingBuilder {
+        return SSKProtoSyncMessagePaymentOutgoingBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePaymentOutgoingBuilder {
+        let builder = SSKProtoSyncMessagePaymentOutgoingBuilder()
+        if let _value = mobileCoin {
+            builder.setMobileCoin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessagePaymentOutgoingBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Payment.Outgoing()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMobileCoin(_ valueParam: SSKProtoSyncMessagePaymentOutgoingMobileCoin?) {
+            guard let valueParam = valueParam else { return }
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setMobileCoin(_ valueParam: SSKProtoSyncMessagePaymentOutgoingMobileCoin) {
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessagePaymentOutgoing {
+            return try SSKProtoSyncMessagePaymentOutgoing(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessagePaymentOutgoing(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Payment.Outgoing
+
+    @objc
+    public let mobileCoin: SSKProtoSyncMessagePaymentOutgoingMobileCoin?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Payment.Outgoing,
+                 mobileCoin: SSKProtoSyncMessagePaymentOutgoingMobileCoin?) {
+        self.proto = proto
+        self.mobileCoin = mobileCoin
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Payment.Outgoing(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Payment.Outgoing) throws {
+        var mobileCoin: SSKProtoSyncMessagePaymentOutgoingMobileCoin?
+        if proto.hasMobileCoin {
+            mobileCoin = try SSKProtoSyncMessagePaymentOutgoingMobileCoin(proto.mobileCoin)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePaymentOutgoing -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessagePaymentOutgoing -
+
+        self.init(proto: proto,
+                  mobileCoin: mobileCoin)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessagePaymentOutgoing {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePaymentOutgoing.SSKProtoSyncMessagePaymentOutgoingBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePaymentOutgoing? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessagePaymentDefragmentationMobileCoin
+
+@objc
+public class SSKProtoSyncMessagePaymentDefragmentationMobileCoin: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder
+
+    @objc
+    public static func builder() -> SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder {
+        return SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder {
+        let builder = SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder()
+        builder.setSpentKeyImage(spentKeyImage)
+        builder.setOutputPublicKey(outputPublicKey)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        public func addSpentKeyImage(_ valueParam: Data) {
+            proto.spentKeyImage.append(valueParam)
+        }
+
+        @objc
+        public func setSpentKeyImage(_ wrappedItems: [Data]) {
+            proto.spentKeyImage = wrappedItems
+        }
+
+        @objc
+        public func addOutputPublicKey(_ valueParam: Data) {
+            proto.outputPublicKey.append(valueParam)
+        }
+
+        @objc
+        public func setOutputPublicKey(_ wrappedItems: [Data]) {
+            proto.outputPublicKey = wrappedItems
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessagePaymentDefragmentationMobileCoin {
+            return try SSKProtoSyncMessagePaymentDefragmentationMobileCoin(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessagePaymentDefragmentationMobileCoin(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin
+
+    @objc
+    public var spentKeyImage: [Data] {
+        return proto.spentKeyImage
+    }
+
+    @objc
+    public var outputPublicKey: [Data] {
+        return proto.outputPublicKey
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin) throws {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePaymentDefragmentationMobileCoin -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessagePaymentDefragmentationMobileCoin -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessagePaymentDefragmentationMobileCoin {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePaymentDefragmentationMobileCoin.SSKProtoSyncMessagePaymentDefragmentationMobileCoinBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePaymentDefragmentationMobileCoin? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessagePaymentDefragmentation
+
+@objc
+public class SSKProtoSyncMessagePaymentDefragmentation: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessagePaymentDefragmentationBuilder
+
+    @objc
+    public static func builder() -> SSKProtoSyncMessagePaymentDefragmentationBuilder {
+        return SSKProtoSyncMessagePaymentDefragmentationBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePaymentDefragmentationBuilder {
+        let builder = SSKProtoSyncMessagePaymentDefragmentationBuilder()
+        if let _value = mobileCoin {
+            builder.setMobileCoin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessagePaymentDefragmentationBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Payment.Defragmentation()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMobileCoin(_ valueParam: SSKProtoSyncMessagePaymentDefragmentationMobileCoin?) {
+            guard let valueParam = valueParam else { return }
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setMobileCoin(_ valueParam: SSKProtoSyncMessagePaymentDefragmentationMobileCoin) {
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessagePaymentDefragmentation {
+            return try SSKProtoSyncMessagePaymentDefragmentation(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessagePaymentDefragmentation(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation
+
+    @objc
+    public let mobileCoin: SSKProtoSyncMessagePaymentDefragmentationMobileCoin?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation,
+                 mobileCoin: SSKProtoSyncMessagePaymentDefragmentationMobileCoin?) {
+        self.proto = proto
+        self.mobileCoin = mobileCoin
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Payment.Defragmentation(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Payment.Defragmentation) throws {
+        var mobileCoin: SSKProtoSyncMessagePaymentDefragmentationMobileCoin?
+        if proto.hasMobileCoin {
+            mobileCoin = try SSKProtoSyncMessagePaymentDefragmentationMobileCoin(proto.mobileCoin)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePaymentDefragmentation -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessagePaymentDefragmentation -
+
+        self.init(proto: proto,
+                  mobileCoin: mobileCoin)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessagePaymentDefragmentation {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePaymentDefragmentation.SSKProtoSyncMessagePaymentDefragmentationBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePaymentDefragmentation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessagePayment
+
+@objc
+public class SSKProtoSyncMessagePayment: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessagePaymentBuilder
+
+    @objc
+    public static func builder() -> SSKProtoSyncMessagePaymentBuilder {
+        return SSKProtoSyncMessagePaymentBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessagePaymentBuilder {
+        let builder = SSKProtoSyncMessagePaymentBuilder()
+        if let _value = outgoing {
+            builder.setOutgoing(_value)
+        }
+        if let _value = defragmentation {
+            builder.setDefragmentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessagePaymentBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Payment()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOutgoing(_ valueParam: SSKProtoSyncMessagePaymentOutgoing?) {
+            guard let valueParam = valueParam else { return }
+            proto.outgoing = valueParam.proto
+        }
+
+        public func setOutgoing(_ valueParam: SSKProtoSyncMessagePaymentOutgoing) {
+            proto.outgoing = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDefragmentation(_ valueParam: SSKProtoSyncMessagePaymentDefragmentation?) {
+            guard let valueParam = valueParam else { return }
+            proto.defragmentation = valueParam.proto
+        }
+
+        public func setDefragmentation(_ valueParam: SSKProtoSyncMessagePaymentDefragmentation) {
+            proto.defragmentation = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessagePayment {
+            return try SSKProtoSyncMessagePayment(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessagePayment(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Payment
+
+    @objc
+    public let outgoing: SSKProtoSyncMessagePaymentOutgoing?
+
+    @objc
+    public let defragmentation: SSKProtoSyncMessagePaymentDefragmentation?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Payment,
+                 outgoing: SSKProtoSyncMessagePaymentOutgoing?,
+                 defragmentation: SSKProtoSyncMessagePaymentDefragmentation?) {
+        self.proto = proto
+        self.outgoing = outgoing
+        self.defragmentation = defragmentation
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Payment(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Payment) throws {
+        var outgoing: SSKProtoSyncMessagePaymentOutgoing?
+        if proto.hasOutgoing {
+            outgoing = try SSKProtoSyncMessagePaymentOutgoing(proto.outgoing)
+        }
+
+        var defragmentation: SSKProtoSyncMessagePaymentDefragmentation?
+        if proto.hasDefragmentation {
+            defragmentation = try SSKProtoSyncMessagePaymentDefragmentation(proto.defragmentation)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePayment -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessagePayment -
+
+        self.init(proto: proto,
+                  outgoing: outgoing,
+                  defragmentation: defragmentation)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessagePayment {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessagePayment.SSKProtoSyncMessagePaymentBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessagePayment? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -9529,6 +11618,9 @@ public class SSKProtoSyncMessage: NSObject, Codable {
         }
         if let _value = messageRequestResponse {
             builder.setMessageRequestResponse(_value)
+        }
+        if let _value = payment {
+            builder.setPayment(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -9696,6 +11788,17 @@ public class SSKProtoSyncMessage: NSObject, Codable {
             proto.messageRequestResponse = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPayment(_ valueParam: SSKProtoSyncMessagePayment?) {
+            guard let valueParam = valueParam else { return }
+            proto.payment = valueParam.proto
+        }
+
+        public func setPayment(_ valueParam: SSKProtoSyncMessagePayment) {
+            proto.payment = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -9753,6 +11856,9 @@ public class SSKProtoSyncMessage: NSObject, Codable {
     public let messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?
 
     @objc
+    public let payment: SSKProtoSyncMessagePayment?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -9785,7 +11891,8 @@ public class SSKProtoSyncMessage: NSObject, Codable {
                  viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?,
                  fetchLatest: SSKProtoSyncMessageFetchLatest?,
                  keys: SSKProtoSyncMessageKeys?,
-                 messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?) {
+                 messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?,
+                 payment: SSKProtoSyncMessagePayment?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -9800,6 +11907,7 @@ public class SSKProtoSyncMessage: NSObject, Codable {
         self.fetchLatest = fetchLatest
         self.keys = keys
         self.messageRequestResponse = messageRequestResponse
+        self.payment = payment
     }
 
     @objc
@@ -9875,6 +11983,11 @@ public class SSKProtoSyncMessage: NSObject, Codable {
             messageRequestResponse = try SSKProtoSyncMessageMessageRequestResponse(proto.messageRequestResponse)
         }
 
+        var payment: SSKProtoSyncMessagePayment?
+        if proto.hasPayment {
+            payment = try SSKProtoSyncMessagePayment(proto.payment)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -9892,7 +12005,8 @@ public class SSKProtoSyncMessage: NSObject, Codable {
                   viewOnceOpen: viewOnceOpen,
                   fetchLatest: fetchLatest,
                   keys: keys,
-                  messageRequestResponse: messageRequestResponse)
+                  messageRequestResponse: messageRequestResponse,
+                  payment: payment)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -12585,6 +14699,284 @@ extension SSKProtoPack {
 extension SSKProtoPack.SSKProtoPackBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoPack? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPaymentAddressMobileCoin
+
+@objc
+public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
+
+    // MARK: - SSKProtoPaymentAddressMobileCoinBuilder
+
+    @objc
+    public static func builder(publicAddress: Data) -> SSKProtoPaymentAddressMobileCoinBuilder {
+        return SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoPaymentAddressMobileCoinBuilder {
+        let builder = SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoPaymentAddressMobileCoinBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_PaymentAddress.MobileCoin()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(publicAddress: Data) {
+            super.init()
+
+            setPublicAddress(publicAddress)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPublicAddress(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.publicAddress = valueParam
+        }
+
+        public func setPublicAddress(_ valueParam: Data) {
+            proto.publicAddress = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoPaymentAddressMobileCoin {
+            return try SSKProtoPaymentAddressMobileCoin(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoPaymentAddressMobileCoin(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_PaymentAddress.MobileCoin
+
+    @objc
+    public let publicAddress: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_PaymentAddress.MobileCoin,
+                 publicAddress: Data) {
+        self.proto = proto
+        self.publicAddress = publicAddress
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_PaymentAddress.MobileCoin(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_PaymentAddress.MobileCoin) throws {
+        guard proto.hasPublicAddress else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: publicAddress")
+        }
+        let publicAddress = proto.publicAddress
+
+        // MARK: - Begin Validation Logic for SSKProtoPaymentAddressMobileCoin -
+
+        // MARK: - End Validation Logic for SSKProtoPaymentAddressMobileCoin -
+
+        self.init(proto: proto,
+                  publicAddress: publicAddress)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPaymentAddressMobileCoin {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPaymentAddressMobileCoin.SSKProtoPaymentAddressMobileCoinBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoPaymentAddressMobileCoin? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPaymentAddress
+
+@objc
+public class SSKProtoPaymentAddress: NSObject, Codable {
+
+    // MARK: - SSKProtoPaymentAddressBuilder
+
+    @objc
+    public static func builder() -> SSKProtoPaymentAddressBuilder {
+        return SSKProtoPaymentAddressBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoPaymentAddressBuilder {
+        let builder = SSKProtoPaymentAddressBuilder()
+        if let _value = mobileCoin {
+            builder.setMobileCoin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoPaymentAddressBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_PaymentAddress()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMobileCoin(_ valueParam: SSKProtoPaymentAddressMobileCoin?) {
+            guard let valueParam = valueParam else { return }
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setMobileCoin(_ valueParam: SSKProtoPaymentAddressMobileCoin) {
+            proto.mobileCoin = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoPaymentAddress {
+            return try SSKProtoPaymentAddress(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoPaymentAddress(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_PaymentAddress
+
+    @objc
+    public let mobileCoin: SSKProtoPaymentAddressMobileCoin?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_PaymentAddress,
+                 mobileCoin: SSKProtoPaymentAddressMobileCoin?) {
+        self.proto = proto
+        self.mobileCoin = mobileCoin
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_PaymentAddress(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_PaymentAddress) throws {
+        var mobileCoin: SSKProtoPaymentAddressMobileCoin?
+        if proto.hasMobileCoin {
+            mobileCoin = try SSKProtoPaymentAddressMobileCoin(proto.mobileCoin)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoPaymentAddress -
+
+        // MARK: - End Validation Logic for SSKProtoPaymentAddress -
+
+        self.init(proto: proto,
+                  mobileCoin: mobileCoin)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPaymentAddress {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPaymentAddress.SSKProtoPaymentAddressBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoPaymentAddress? {
         return try! self.build()
     }
 }
