@@ -172,6 +172,18 @@ extension MessageReceiver {
         if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
             UserDefaults.standard[.hasSyncedInitialConfiguration] = true
             NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+            // Contacts
+            for contact in message.contacts {
+                let sessionID = contact.publicKey!
+                let userProfile = OWSUserProfile.getOrBuild(forRecipientId: sessionID, transaction: transaction)
+                userProfile.profileKey = given(contact.profileKey) { OWSAES256Key(data: $0)! }
+                userProfile.avatarUrlPath = contact.profilePictureURL
+                userProfile.profileName = contact.displayName
+                userProfile.save(with: transaction)
+                let thread = TSContactThread.getOrCreateThread(withContactId: sessionID, transaction: transaction)
+                thread.shouldThreadBeVisible = true
+                thread.save(with: transaction)
+            }
             // Closed groups
             let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
             for closedGroup in message.closedGroups {
