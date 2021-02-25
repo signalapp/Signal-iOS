@@ -7,7 +7,10 @@ use_frameworks!
 # OWS Pods
 ###
 
-pod 'SwiftProtobuf', "1.7.0"
+source 'git@github.com:mobilecoinofficial/CocoaPods-Specs.git'
+source 'https://cdn.cocoapods.org/'
+
+pod 'SwiftProtobuf', ">= 1.14.0"
 
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
@@ -72,6 +75,9 @@ pod 'BonMot', inhibit_warnings: true
 
 # For catalyst we need to be on master until 3.6.7 or later is released
 pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
+
+pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git'
+# pod 'MobileCoin', path: '../MobileCoin-Swift'
 
 target 'Signal' do
   project 'Signal.xcodeproj', 'Debug' => :debug, 'Release' => :release
