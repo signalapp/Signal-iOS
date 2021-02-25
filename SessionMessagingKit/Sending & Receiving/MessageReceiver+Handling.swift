@@ -321,7 +321,7 @@ extension MessageReceiver {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
             // Notify the user
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
+            let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .typeGroupUpdate)
             infoMessage.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for
@@ -391,7 +391,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard name != group.groupName else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -414,7 +414,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -457,7 +457,7 @@ extension MessageReceiver {
             guard members != Set(group.groupMemberIds) else { return }
             let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .typeGroupQuit : .typeGroupUpdate
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: infoMessageType, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -495,7 +495,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
