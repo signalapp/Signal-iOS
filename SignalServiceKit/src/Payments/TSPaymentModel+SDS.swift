@@ -35,7 +35,6 @@ public struct PaymentModelRecord: SDSRecord {
     public let mcLedgerBlockIndex: UInt64
     public let memoMessage: String?
     public let mobileCoin: Data?
-    public let notificationMessageUniqueId: String?
     public let paymentAmount: Data?
     public let paymentFailure: TSPaymentFailure
     public let paymentState: TSPaymentState
@@ -53,7 +52,6 @@ public struct PaymentModelRecord: SDSRecord {
         case mcLedgerBlockIndex
         case memoMessage
         case mobileCoin
-        case notificationMessageUniqueId
         case paymentAmount
         case paymentFailure
         case paymentState
@@ -92,12 +90,11 @@ public extension PaymentModelRecord {
         mcLedgerBlockIndex = row[7]
         memoMessage = row[8]
         mobileCoin = row[9]
-        notificationMessageUniqueId = row[10]
-        paymentAmount = row[11]
-        paymentFailure = row[12]
-        paymentState = row[13]
-        paymentType = row[14]
-        requestUuidString = row[15]
+        paymentAmount = row[10]
+        paymentFailure = row[11]
+        paymentState = row[12]
+        paymentType = row[13]
+        requestUuidString = row[14]
     }
 }
 
@@ -137,7 +134,6 @@ extension TSPaymentModel {
             let memoMessage: String? = record.memoMessage
             let mobileCoinSerialized: Data? = record.mobileCoin
             let mobileCoin: MobileCoinPayment? = try SDSDeserialization.optionalUnarchive(mobileCoinSerialized, name: "mobileCoin")
-            let notificationMessageUniqueId: String? = record.notificationMessageUniqueId
             let paymentAmountSerialized: Data? = record.paymentAmount
             let paymentAmount: TSPaymentAmount? = try SDSDeserialization.optionalUnarchive(paymentAmountSerialized, name: "paymentAmount")
             let paymentFailure: TSPaymentFailure = record.paymentFailure
@@ -154,7 +150,6 @@ extension TSPaymentModel {
                                   mcLedgerBlockIndex: mcLedgerBlockIndex,
                                   memoMessage: memoMessage,
                                   mobileCoin: mobileCoin,
-                                  notificationMessageUniqueId: notificationMessageUniqueId,
                                   paymentAmount: paymentAmount,
                                   paymentFailure: paymentFailure,
                                   paymentState: paymentState,
@@ -229,7 +224,6 @@ extension TSPaymentModel: DeepCopyable {
             } else {
                mobileCoin = nil
             }
-            let notificationMessageUniqueId: String? = modelToCopy.notificationMessageUniqueId
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
@@ -257,7 +251,6 @@ extension TSPaymentModel: DeepCopyable {
                                   mcLedgerBlockIndex: mcLedgerBlockIndex,
                                   memoMessage: memoMessage,
                                   mobileCoin: mobileCoin,
-                                  notificationMessageUniqueId: notificationMessageUniqueId,
                                   paymentAmount: paymentAmount,
                                   paymentFailure: paymentFailure,
                                   paymentState: paymentState,
@@ -285,7 +278,6 @@ extension TSPaymentModelSerializer {
     static let mcLedgerBlockIndexColumn = SDSColumnMetadata(columnName: "mcLedgerBlockIndex", columnType: .int64)
     static let memoMessageColumn = SDSColumnMetadata(columnName: "memoMessage", columnType: .unicodeString, isOptional: true)
     static let mobileCoinColumn = SDSColumnMetadata(columnName: "mobileCoin", columnType: .blob, isOptional: true)
-    static let notificationMessageUniqueIdColumn = SDSColumnMetadata(columnName: "notificationMessageUniqueId", columnType: .unicodeString, isOptional: true)
     static let paymentAmountColumn = SDSColumnMetadata(columnName: "paymentAmount", columnType: .blob, isOptional: true)
     static let paymentFailureColumn = SDSColumnMetadata(columnName: "paymentFailure", columnType: .int)
     static let paymentStateColumn = SDSColumnMetadata(columnName: "paymentState", columnType: .int)
@@ -307,7 +299,6 @@ extension TSPaymentModelSerializer {
         mcLedgerBlockIndexColumn,
         memoMessageColumn,
         mobileCoinColumn,
-        notificationMessageUniqueIdColumn,
         paymentAmountColumn,
         paymentFailureColumn,
         paymentStateColumn,
@@ -731,14 +722,13 @@ class TSPaymentModelSerializer: SDSSerializer {
         let mcLedgerBlockIndex: UInt64 = model.mcLedgerBlockIndex
         let memoMessage: String? = model.memoMessage
         let mobileCoin: Data? = optionalArchive(model.mobileCoin)
-        let notificationMessageUniqueId: String? = model.notificationMessageUniqueId
         let paymentAmount: Data? = optionalArchive(model.paymentAmount)
         let paymentFailure: TSPaymentFailure = model.paymentFailure
         let paymentState: TSPaymentState = model.paymentState
         let paymentType: TSPaymentType = model.paymentType
         let requestUuidString: String? = model.requestUuidString
 
-        return PaymentModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, addressUuidString: addressUuidString, createdTimestamp: createdTimestamp, isUnread: isUnread, mcIncomingTransaction: mcIncomingTransaction, mcLedgerBlockIndex: mcLedgerBlockIndex, memoMessage: memoMessage, mobileCoin: mobileCoin, notificationMessageUniqueId: notificationMessageUniqueId, paymentAmount: paymentAmount, paymentFailure: paymentFailure, paymentState: paymentState, paymentType: paymentType, requestUuidString: requestUuidString)
+        return PaymentModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, addressUuidString: addressUuidString, createdTimestamp: createdTimestamp, isUnread: isUnread, mcIncomingTransaction: mcIncomingTransaction, mcLedgerBlockIndex: mcLedgerBlockIndex, memoMessage: memoMessage, mobileCoin: mobileCoin, paymentAmount: paymentAmount, paymentFailure: paymentFailure, paymentState: paymentState, paymentType: paymentType, requestUuidString: requestUuidString)
     }
 }
 

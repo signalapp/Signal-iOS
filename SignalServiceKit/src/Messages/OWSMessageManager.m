@@ -1715,8 +1715,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.messageRequestResponse) {
         [self.syncManager processIncomingMessageRequestResponseSyncMessage:syncMessage.messageRequestResponse
                                                                transaction:transaction];
-    } else if (syncMessage.payment) {
-        [self.payments processIncomingPaymentSyncMessage:syncMessage.payment
+    } else if (syncMessage.outgoingPayment) {
+        // An "incoming" sync message notifies us of an "outgoing" payment.
+        [self.payments processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
                                         messageTimestamp:serverDeliveryTimestamp
                                              transaction:transaction];
     } else {
@@ -2039,13 +2040,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSString *_Nullable body = nil;
+    NSString *_Nullable body = dataMessage.body;
     MessageBodyRanges *_Nullable bodyRanges;
-    if (!dataMessage.hasPaymentProtos) {
-        body = dataMessage.body;
-        if (dataMessage.bodyRanges.count > 0) {
-            bodyRanges = [[MessageBodyRanges alloc] initWithProtos:dataMessage.bodyRanges];
-        }
+    if (dataMessage.bodyRanges.count > 0) {
+        bodyRanges = [[MessageBodyRanges alloc] initWithProtos:dataMessage.bodyRanges];
     }
 
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
@@ -2133,10 +2131,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     serverTimestamp:serverTimestamp
                             serverDeliveryTimestamp:serverDeliveryTimestamp
                                     wasReceivedByUD:wasReceivedByUD
-                                  isViewOnceMessage:isViewOnceMessage
-                                     paymentRequest:nil
-                                paymentNotification:nil
-                                paymentCancellation:nil];
+                                  isViewOnceMessage:isViewOnceMessage];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");

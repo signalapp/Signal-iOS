@@ -58,10 +58,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic) BOOL isViewOnceComplete;
 @property (nonatomic) BOOL wasRemotelyDeleted;
 
-@property (nonatomic, nullable) TSPaymentRequest *paymentRequest;
-@property (nonatomic, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, nullable) TSPaymentCancellation *paymentCancellation;
-
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
 
@@ -96,9 +92,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageBuilder.messageSticker;
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = NO;
-    _paymentRequest = messageBuilder.paymentRequest;
-    _paymentNotification = messageBuilder.paymentNotification;
-    _paymentCancellation = messageBuilder.paymentCancellation;
 
 #ifdef DEBUG
     [self verifyPerConversationExpiration];
@@ -130,9 +123,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-             paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
@@ -159,9 +149,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
-    _paymentCancellation = paymentCancellation;
-    _paymentNotification = paymentNotification;
-    _paymentRequest = paymentRequest;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
     _wasRemotelyDeleted = wasRemotelyDeleted;
@@ -174,11 +161,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (BOOL)shouldBeSaved
-{
-    return (self.paymentRequest == nil && self.paymentNotification == nil && self.paymentCancellation == nil);
-}
 
 - (void)sdsFinalizeMessage
 {
@@ -854,9 +836,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
                                         message.attachmentIds = @[];
-                                        message.paymentRequest = nil;
-                                        message.paymentNotification = nil;
-                                        message.paymentCancellation = nil;
                                         OWSAssertDebug(!message.hasRenderableContent);
 
                                         block(message);

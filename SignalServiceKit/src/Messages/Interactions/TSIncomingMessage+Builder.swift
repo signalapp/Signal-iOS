@@ -36,10 +36,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          serverTimestamp: NSNumber? = nil,
                          serverDeliveryTimestamp: UInt64 = 0,
                          wasReceivedByUD: Bool = false,
-                         isViewOnceMessage: Bool = false,
-                         paymentRequest: TSPaymentRequest? = nil,
-                         paymentNotification: TSPaymentNotification? = nil,
-                         paymentCancellation: TSPaymentCancellation? = nil) {
+                         isViewOnceMessage: Bool = false) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -53,10 +50,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             contactShare: contactShare,
             linkPreview: linkPreview,
             messageSticker: messageSticker,
-            isViewOnceMessage: isViewOnceMessage,
-            paymentRequest: paymentRequest,
-            paymentNotification: paymentNotification,
-            paymentCancellation: paymentCancellation)
+            isViewOnceMessage: isViewOnceMessage)
 
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
@@ -96,10 +90,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               serverTimestamp: NSNumber?,
                               serverDeliveryTimestamp: UInt64,
                               wasReceivedByUD: Bool,
-                              isViewOnceMessage: Bool,
-                              paymentRequest: TSPaymentRequest?,
-                              paymentNotification: TSPaymentNotification?,
-                              paymentCancellation: TSPaymentCancellation?) -> TSIncomingMessageBuilder {
+                              isViewOnceMessage: Bool) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAddress: authorAddress,
@@ -115,10 +106,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         serverTimestamp: serverTimestamp,
                                         serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         wasReceivedByUD: wasReceivedByUD,
-                                        isViewOnceMessage: isViewOnceMessage,
-                                        paymentRequest: paymentRequest,
-                                        paymentNotification: paymentNotification,
-                                        paymentCancellation: paymentCancellation)
+                                        isViewOnceMessage: isViewOnceMessage)
     }
 
     private var hasBuilt = false
@@ -129,26 +117,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
-
-        let hasRenderableNonPaymentContent = (messageBody != nil ||
-            !attachmentIds.isEmpty ||
-            quotedMessage != nil ||
-            contactShare != nil ||
-            linkPreview != nil ||
-            messageSticker != nil)
-        // Ensure that payment properties are clear if there is
-        // renderable non-payment content. Ensure no more than
-        // one payment property is set.
-        if hasRenderableNonPaymentContent {
-            paymentRequest = nil
-            paymentNotification = nil
-            paymentCancellation = nil
-        } else if paymentRequest != nil {
-            paymentNotification = nil
-            paymentCancellation = nil
-        } else if paymentNotification != nil {
-            paymentCancellation = nil
-        }
 
         return TSIncomingMessage(incomingMessageWithBuilder: self)
     }

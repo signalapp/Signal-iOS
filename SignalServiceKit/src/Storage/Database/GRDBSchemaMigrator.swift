@@ -99,7 +99,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addWasIdentityVerified
         case storeMutedUntilDateAsMillisecondTimestamp
         case addPaymentModels15
-        case addPaymentModels36
+        case addPaymentModels37
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -961,7 +961,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addPaymentModels36.rawValue) { db in
+        migrator.registerMigration(MigrationId.addPaymentModels37.rawValue) { db in
             do {
                 // PAYMENTS TODO: Remove.
                 try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")
@@ -985,7 +985,6 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                     table.column("memoMessage", .text)
                     table.column("mobileCoin", .blob)
-                    table.column("notificationMessageUniqueId", .text)
                     table.column("paymentAmount", .blob)
                     table.column("paymentFailure", .integer)
                         .notNull()
@@ -996,45 +995,11 @@ public class GRDBSchemaMigrator: NSObject {
                     table.column("requestUuidString", .text)
                 }
 
-                // PAYMENTS TODO: Review.
                 try db.create(index: "index_model_TSPaymentModel_on_uniqueId", on: "model_TSPaymentModel", columns: ["uniqueId"])
-                try db.create(index: "index_model_TSPaymentModel_on_notificationMessageUniqueId", on: "model_TSPaymentModel", columns: ["notificationMessageUniqueId"])
                 try db.create(index: "index_model_TSPaymentModel_on_paymentState", on: "model_TSPaymentModel", columns: ["paymentState"])
                 try db.create(index: "index_model_TSPaymentModel_on_mcIncomingTransaction", on: "model_TSPaymentModel", columns: ["mcIncomingTransaction"])
                 try db.create(index: "index_model_TSPaymentModel_on_mcLedgerBlockIndex", on: "model_TSPaymentModel", columns: ["mcLedgerBlockIndex"])
                 try db.create(index: "index_model_TSPaymentModel_on_isUnread", on: "model_TSPaymentModel", columns: ["isUnread"])
-                // PAYMENTS TODO: sortDate?
-
-                #if UNSUPPORTED_PAYMENTS_FEATURES
-                //                // We do not yet support payment requests.
-                //                try db.create(table: "model_TSPaymentRequestModel") { table in
-                //                    table.autoIncrementedPrimaryKey("id")
-                //                        .notNull()
-                //                    table.column("recordType", .integer)
-                //                        .notNull()
-                //                    table.column("uniqueId", .text)
-                //                        .notNull()
-                //                        .unique(onConflict: .fail)
-                //                    table.column("addressUuidString", .text)
-                //                    table.column("createdTimestamp", .integer)
-                //                        .notNull()
-                //                    table.column("memoMessage", .text)
-                //                    table.column("paymentAmount", .blob)
-                //                        .notNull()
-                //                    table.column("paymentType", .integer)
-                //                        .notNull()
-                //                    table.column("requestUuidString", .text)
-                //                        .notNull()
-                //                        .unique(onConflict: .fail)
-                //                }
-                //
-                //                // PAYMENTS TODO: Review.
-                //                try db.create(index: "index_model_TSPaymentRequestModel_on_uniqueId", on: "model_TSPaymentRequestModel", columns: ["uniqueId"])
-                //                try db.create(index: "index_model_TSPaymentRequestModel_on_requestUuidString", on: "model_TSPaymentRequestModel", columns: ["requestUuidString"])
-                //                try db.create(index: "index_model_TSPaymentRequestModel_on_createdDate", on: "model_TSPaymentRequestModel", columns: ["createdDate"])
-                //                // PAYMENTS TODO: sortDate?
-                #endif
-
             } catch {
                 owsFail("Error: \(error)")
             }

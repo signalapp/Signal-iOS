@@ -361,25 +361,16 @@ public class DebugFlags: BaseFlags {
     public static let shouldShowColorPicker = false
 
     @objc
-    public static let paymentsUseMockSDK = true
-
-    @objc
-    public static let paymentsUseTinyAmounts = false
-
-    @objc
     public static let paymentsOnlyInContactThreads = true
 
     @objc
-    public static let paymentsInternalBeta = true
+    public static let paymentsInternalBeta = build.includes(.openPreview)
 
     @objc
     public static let paymentsIgnoreBlockTimestamps = TestableFlag(false)
 
     @objc
     public static let paymentsIgnoreCurrencyConversions = TestableFlag(false)
-
-    @objc
-    public static let paymentsFakeCurrencyConversions = TestableFlag(paymentsInternalBeta)
 
     @objc
     public static let paymentsHaltProcessing = TestableFlag(false)

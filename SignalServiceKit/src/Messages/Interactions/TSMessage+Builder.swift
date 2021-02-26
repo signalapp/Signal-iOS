@@ -35,12 +35,6 @@ public class TSMessageBuilder: NSObject {
     public var messageSticker: MessageSticker?
     @objc
     public var isViewOnceMessage = false
-    @objc
-    public var paymentRequest: TSPaymentRequest?
-    @objc
-    public var paymentNotification: TSPaymentNotification?
-    @objc
-    public var paymentCancellation: TSPaymentCancellation?
 
     init(thread: TSThread,
          timestamp: UInt64? = nil,
@@ -53,10 +47,7 @@ public class TSMessageBuilder: NSObject {
          contactShare: OWSContact? = nil,
          linkPreview: OWSLinkPreview? = nil,
          messageSticker: MessageSticker? = nil,
-         isViewOnceMessage: Bool = false,
-         paymentRequest: TSPaymentRequest? = nil,
-         paymentNotification: TSPaymentNotification? = nil,
-         paymentCancellation: TSPaymentCancellation? = nil) {
+         isViewOnceMessage: Bool = false) {
         self.thread = thread
 
         if let timestamp = timestamp {
@@ -74,9 +65,6 @@ public class TSMessageBuilder: NSObject {
         self.linkPreview = linkPreview
         self.messageSticker = messageSticker
         self.isViewOnceMessage = isViewOnceMessage
-        self.paymentRequest = paymentRequest
-        self.paymentNotification = paymentNotification
-        self.paymentCancellation = paymentCancellation
     }
 
     @objc

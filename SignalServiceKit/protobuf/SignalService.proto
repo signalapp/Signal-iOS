@@ -306,12 +306,13 @@ message DataMessage {
       optional RequestId requestId = 1;
       // @required
       optional Amount    amount    = 2;
+      optional string    note      = 3;
     }
  
     message Notification {
       message MobileCoin {
         // @required
-        optional bytes  receipt              = 1;
+        optional bytes  receipt = 1;
       }
  
       // oneof commented out
@@ -320,7 +321,8 @@ message DataMessage {
       // }
  
       // Optional, Refers to the PaymentRequest message, if any.
-      optional RequestId requestId = 2;
+      optional string    note          = 2;
+      optional RequestId requestId     = 1003;
     }
  
     message Cancellation {
@@ -331,8 +333,8 @@ message DataMessage {
     // oneof commented out
     // oneof Item {
       optional Notification notification = 1;
-      optional Request      request      = 2;
-      optional Cancellation cancellation = 3;
+      optional Request      request      = 1002;
+      optional Cancellation cancellation = 1003;
     // }
   }
     
@@ -510,34 +512,27 @@ message SyncMessage {
     optional Type   type       = 4;
   }
   
-  message Payment {
-    message Outgoing {
-      message MobileCoin {
-        // @required
-        optional string recipientUuid        = 1;
-        // @required
-        optional uint64 picoMob              = 2;
-        // @required
-        optional bytes  receipt              = 3;
-        optional uint64 ledgerBlockTimestamp = 4;
-        // @required
-        optional uint64 ledgerBlockIndex     = 5;
-        repeated bytes  spentKeyImage        = 6;
-        repeated bytes  outputPublicKey      = 7;
-        optional string memoMessage          = 8;		
-      }
-      optional MobileCoin mobileCoin = 1;
-	}
-    message Defragmentation {
-      message MobileCoin {
-        repeated bytes  spentKeyImage        = 3;
-        repeated bytes  outputPublicKey      = 4;
-	    // TODO:
-      }
-      optional MobileCoin mobileCoin = 1;
-	}
-    optional Outgoing        outgoing        = 1;
-    optional Defragmentation defragmentation = 2;
+  message OutgoingPayment {
+    message MobileCoin {
+      optional bytes  recipientAddress     = 1;
+      // @required
+      optional uint64 amountPicoMob        = 2;
+      // @required
+      optional uint64 feePicoMob           = 3;
+      // @required
+      optional bytes  receipt              = 4;
+      // @required
+      optional bytes  transaction          = 5;
+      optional uint64 ledgerBlockTimestamp = 6;
+      // @required
+      optional uint64 ledgerBlockIndex     = 7;
+    }
+    // @required
+    optional string     recipientUuid = 1;
+    optional string     note          = 2;		
+    // oneof attachment_identifier {
+    optional MobileCoin mobileCoin    = 3;
+    // }
   }
 
   optional Sent                   sent                   = 1;
@@ -554,7 +549,7 @@ message SyncMessage {
   optional FetchLatest            fetchLatest            = 12;
   optional Keys                   keys                   = 13;
   optional MessageRequestResponse messageRequestResponse = 14;
-  optional Payment                payment                = 15;
+  optional OutgoingPayment        outgoingPayment        = 15;
 }
 
 message AttachmentPointer {

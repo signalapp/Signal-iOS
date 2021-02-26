@@ -94,9 +94,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-             paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
@@ -125,9 +122,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                  isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-               paymentCancellation:paymentCancellation
-               paymentNotification:paymentNotification
-                    paymentRequest:paymentRequest
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
                 wasRemotelyDeleted:wasRemotelyDeleted];

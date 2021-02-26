@@ -11,6 +11,7 @@ public enum PaymentsError: Error {
     case invalidCurrency
     case invalidWalletKey
     case invalidAmount
+    case invalidFee
     case insufficientFunds
     case timeout
     case userNotRegisteredOrAppNotReady
@@ -30,7 +31,7 @@ public protocol Payments: AnyObject {
 
     func walletAddressQRUrl() -> URL?
 
-    func localPaymentAddressProtoData(ignoreMissingState: Bool) -> Data?
+    func localPaymentAddressProtoData() -> Data?
 
     var arePaymentsEnabled: Bool { get }
 
@@ -73,7 +74,7 @@ public protocol Payments: AnyObject {
     func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction)
 
     @objc(processIncomingPaymentSyncMessage:messageTimestamp:transaction:)
-    func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessagePayment,
+    func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction)
 
@@ -195,10 +196,6 @@ extension MockPayments: PaymentsSwift {
 
     public var mcRootEntropy: Data? { nil }
 
-    //    func buildLocalPaymentAddress(ignoreMissingState: Bool) -> TSPaymentAddress? {
-    //        owsFail("Not implemented.")
-    //    }
-
     public func walletAddressBase58() -> String? {
         owsFail("Not implemented.")
     }
@@ -207,7 +204,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func localPaymentAddressProtoData(ignoreMissingState: Bool) -> Data? {
+    public func localPaymentAddressProtoData() -> Data? {
         owsFail("Not implemented.")
     }
 
@@ -291,7 +288,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessagePayment,
+    public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                                   messageTimestamp: UInt64,
                                                   transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
@@ -362,6 +359,14 @@ public class PaymentsConstants {
 
     @objc
     public static let mobileCoinCurrencyIdentifier = "MOB"
+
+    public static func convertMobToPicoMob(_ mob: Double) -> UInt64 {
+        UInt64(round(mob * Double(picoMobPerMob)))
+    }
+
+    public static func convertPicoMobToMob(_ picoMob: UInt64) -> Double {
+        Double(picoMob) / Double(picoMobPerMob)
+    }
 }
 
 // MARK: -
@@ -401,15 +406,17 @@ public struct CurrencyConversionInfo {
             owsFailDebug("Unknown currency: \(paymentAmount.currency).")
             return nil
         }
-        return conversionRate * Double(paymentAmount.picoMob) / Double(PaymentsConstants.picoMobPerMob)
+        let mob = PaymentsConstants.convertPicoMobToMob(paymentAmount.picoMob)
+        return conversionRate * mob
     }
 
-    public func convertFromFiatCurrencyToMOB(_ value: Double) -> TSPaymentAmount? {
+    public func convertFromFiatCurrencyToMOB(_ value: Double) -> TSPaymentAmount {
         guard value >= 0 else {
             owsFailDebug("Invalid amount: \(value).")
-            return nil
+            return TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
         }
-        let picoMob = UInt64(round(value * Double(PaymentsConstants.picoMobPerMob) / conversionRate))
+        let mob = value / conversionRate
+        let picoMob = PaymentsConstants.convertMobToPicoMob(mob)
         return TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
     }
 

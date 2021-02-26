@@ -110,9 +110,6 @@ CREATE
             ,"creatorUuid" TEXT
             ,"joinedMemberUuids" BLOB
             ,"wasIdentityVerified" BOOLEAN
-            ,"paymentCancellation" BLOB
-            ,"paymentNotification" BLOB
-            ,"paymentRequest" BLOB
         )
 ;
 
@@ -976,7 +973,6 @@ CREATE
             , "mcLedgerBlockIndex" INTEGER NOT NULL
             , "memoMessage" TEXT
             , "mobileCoin" BLOB
-            , "notificationMessageUniqueId" TEXT
             , "paymentAmount" BLOB
             , "paymentFailure" INTEGER NOT NULL
             , "paymentState" INTEGER NOT NULL
@@ -988,12 +984,6 @@ CREATE
 CREATE
     INDEX "index_model_TSPaymentModel_on_uniqueId"
         ON "model_TSPaymentModel"("uniqueId"
-)
-;
-
-CREATE
-    INDEX "index_model_TSPaymentModel_on_notificationMessageUniqueId"
-        ON "model_TSPaymentModel"("notificationMessageUniqueId"
 )
 ;
 
@@ -1020,40 +1010,3 @@ CREATE
         ON "model_TSPaymentModel"("isUnread"
 )
 ;
-
-/*
-  We do not yet support payment requests.
-
-CREATE
-    TABLE
-        IF NOT EXISTS "model_TSPaymentRequestModel" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT
-            ,"recordType" INTEGER NOT NULL
-            , "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
-            , "addressUuidString" TEXT
-            , "createdTimestamp" INTEGER NOT NULL
-            , "memoMessage" TEXT
-            , "paymentAmount" BLOB NOT NULL
-            , "paymentType" INTEGER NOT NULL
-            , "requestUuidString" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
-        )
-;
-
-CREATE
-    INDEX "index_model_TSPaymentRequestModel_on_uniqueId"
-        ON "model_TSPaymentRequestModel"("uniqueId"
-)
-;
-
-CREATE
-    INDEX "index_model_TSPaymentRequestModel_on_requestUuidString"
-        ON "model_TSPaymentRequestModel"("requestUuidString"
-)
-;
-
-CREATE
-    INDEX "index_model_TSPaymentRequestModel_on_createdDate"
-        ON "model_TSPaymentRequestModel"("createdDate"
-)
-;
-*/

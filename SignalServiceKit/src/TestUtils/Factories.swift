@@ -138,9 +138,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 linkPreview: linkPreviewBuilder(),
                                                 messageSticker: messageStickerBuilder(),
                                                 isViewOnceMessage: isViewOnceMessageBuilder(),
-                                                paymentRequest: paymentRequestBuilder(),
-                                                paymentNotification: paymentNotificationBuilder(),
-                                                paymentCancellation: paymentCancellationBuilder(),
                                                 changeActionsProtoData: changeActionsProtoDataBuilder(),
                                                 additionalRecipients: additionalRecipientsBuilder()).build()
     }
@@ -228,21 +225,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var paymentRequestBuilder: () -> TSPaymentRequest? = {
-        return nil
-    }
-
-    @objc
-    public var paymentNotificationBuilder: () -> TSPaymentNotification? = {
-        return nil
-    }
-
-    @objc
-    public var paymentCancellationBuilder: () -> TSPaymentCancellation? = {
-        return nil
-    }
-
-    @objc
     public var changeActionsProtoDataBuilder: () -> Data? = {
         return nil
     }
@@ -303,10 +285,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        serverTimestamp: serverTimestampBuilder(),
                                                        serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
                                                        wasReceivedByUD: wasReceivedByUDBuilder(),
-                                                       isViewOnceMessage: isViewOnceMessageBuilder(),
-                                                       paymentRequest: paymentRequestBuilder(),
-                                                       paymentNotification: paymentNotificationBuilder(),
-                                                       paymentCancellation: paymentCancellationBuilder())
+                                                       isViewOnceMessage: isViewOnceMessageBuilder())
         let item = builder.build()
         item.anyInsert(transaction: transaction)
         return item
@@ -403,21 +382,6 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
-    }
-
-    @objc
-    public var paymentRequestBuilder: () -> TSPaymentRequest? = {
-        return nil
-    }
-
-    @objc
-    public var paymentNotificationBuilder: () -> TSPaymentNotification? = {
-        return nil
-    }
-
-    @objc
-    public var paymentCancellationBuilder: () -> TSPaymentCancellation? = {
-        return nil
     }
 }
 

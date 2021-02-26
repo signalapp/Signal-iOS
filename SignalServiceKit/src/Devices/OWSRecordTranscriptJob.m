@@ -124,9 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           linkPreview:transcript.linkPreview
                                                                        messageSticker:transcript.messageSticker
                                                                     isViewOnceMessage:transcript.isViewOnceMessage
-                                                                       paymentRequest:nil
-                                                                  paymentNotification:nil
-                                                                  paymentCancellation:nil
                                                                changeActionsProtoData:nil
                                                                  additionalRecipients:nil] build];
 

@@ -34,9 +34,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          linkPreview: OWSLinkPreview? = nil,
                          messageSticker: MessageSticker? = nil,
                          isViewOnceMessage: Bool = false,
-                         paymentRequest: TSPaymentRequest? = nil,
-                         paymentNotification: TSPaymentNotification? = nil,
-                         paymentCancellation: TSPaymentCancellation? = nil,
                          changeActionsProtoData: Data? = nil,
                          additionalRecipients: [SignalServiceAddress]? = nil) {
 
@@ -51,10 +48,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                    contactShare: contactShare,
                    linkPreview: linkPreview,
                    messageSticker: messageSticker,
-                   isViewOnceMessage: isViewOnceMessage,
-                   paymentRequest: paymentRequest,
-                   paymentNotification: paymentNotification,
-                   paymentCancellation: paymentCancellation)
+                   isViewOnceMessage: isViewOnceMessage)
 
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
@@ -92,9 +86,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               linkPreview: OWSLinkPreview?,
                               messageSticker: MessageSticker?,
                               isViewOnceMessage: Bool,
-                              paymentRequest: TSPaymentRequest?,
-                              paymentNotification: TSPaymentNotification?,
-                              paymentCancellation: TSPaymentCancellation?,
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(thread: thread,
@@ -111,9 +102,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         linkPreview: linkPreview,
                                         messageSticker: messageSticker,
                                         isViewOnceMessage: isViewOnceMessage,
-                                        paymentRequest: paymentRequest,
-                                        paymentNotification: paymentNotification,
-                                        paymentCancellation: paymentCancellation,
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients)
     }

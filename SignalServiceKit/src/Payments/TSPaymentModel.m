@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *memoMessage;
 
-@property (nonatomic, nullable) NSString *notificationMessageUniqueId;
 @property (nonatomic, nullable) NSString *requestUuidString;
 
 @property (nonatomic) BOOL isUnread;
@@ -72,7 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
                         createdDate:(NSDate *)createdDate
                   addressUuidString:(nullable NSString *)addressUuidString
                         memoMessage:(nullable NSString *)memoMessage
-        notificationMessageUniqueId:(nullable NSString *)notificationMessageUniqueId
                   requestUuidString:(nullable NSString *)requestUuidString
                            isUnread:(BOOL)isUnread
                          mobileCoin:(MobileCoinPayment *)mobileCoin
@@ -89,7 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
     _createdTimestamp = createdDate.ows_millisecondsSince1970;
     _addressUuidString = addressUuidString;
     _memoMessage = memoMessage;
-    _notificationMessageUniqueId = notificationMessageUniqueId;
     _requestUuidString = requestUuidString;
     _isUnread = isUnread;
     _mobileCoin = mobileCoin;
@@ -125,7 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
               mcLedgerBlockIndex:(uint64_t)mcLedgerBlockIndex
                      memoMessage:(nullable NSString *)memoMessage
                       mobileCoin:(nullable MobileCoinPayment *)mobileCoin
-     notificationMessageUniqueId:(nullable NSString *)notificationMessageUniqueId
                    paymentAmount:(nullable TSPaymentAmount *)paymentAmount
                   paymentFailure:(TSPaymentFailure)paymentFailure
                     paymentState:(TSPaymentState)paymentState
@@ -146,7 +142,6 @@ NS_ASSUME_NONNULL_BEGIN
     _mcLedgerBlockIndex = mcLedgerBlockIndex;
     _memoMessage = memoMessage;
     _mobileCoin = mobileCoin;
-    _notificationMessageUniqueId = notificationMessageUniqueId;
     _paymentAmount = paymentAmount;
     _paymentFailure = paymentFailure;
     _paymentState = paymentState;
@@ -282,39 +277,6 @@ NS_ASSUME_NONNULL_BEGIN
                              block:^(TSPaymentModel *paymentModel) { paymentModel.isUnread = isUnread; }];
 }
 
-- (BOOL)updateWithNotificationMessageUniqueId:(nullable NSString *)notificationMessageUniqueId
-                                    fromState:(TSPaymentState)fromState
-                                      toState:(TSPaymentState)toState
-                                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (![self isCurrentPaymentState:fromState transaction:transaction]) {
-        OWSFailDebug(@"Could not transition fromState: %@, toState: %@",
-            NSStringFromTSPaymentState(fromState),
-            NSStringFromTSPaymentState(toState));
-        return NO;
-    }
-    if (notificationMessageUniqueId == nil) {
-        OWSAssertDebug(fromState == TSPaymentStateOutgoingSending);
-        OWSAssertDebug(toState == TSPaymentStateOutgoingSent);
-    } else {
-        OWSAssertDebug(fromState == TSPaymentStateOutgoingVerified);
-        OWSAssertDebug(toState == TSPaymentStateOutgoingSending);
-    }
-
-    OWSLogVerbose(@"[%@] fromState: %@, toState: %@",
-        self.uniqueId,
-        NSStringFromTSPaymentState(fromState),
-        NSStringFromTSPaymentState(toState));
-
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSPaymentModel *paymentModel) {
-                                 OWSAssertDebug(paymentModel.paymentState == fromState);
-                                 paymentModel.notificationMessageUniqueId = notificationMessageUniqueId;
-                                 paymentModel.paymentState = toState;
-                             }];
-    return YES;
-}
-
 #pragma mark -
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -375,6 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   outputPublicKeys:(nullable NSArray<NSData *> *)outputPublicKeys
                               ledgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp
                                   ledgerBlockIndex:(uint64_t)ledgerBlockIndex
+                                         feeAmount:(nullable TSPaymentAmount *)feeAmount
 {
     self = [super init];
 
@@ -390,6 +353,7 @@ NS_ASSUME_NONNULL_BEGIN
     _outputPublicKeys = outputPublicKeys;
     _ledgerBlockTimestamp = ledgerBlockTimestamp;
     _ledgerBlockIndex = ledgerBlockIndex;
+    _feeAmount = feeAmount;
 
     return self;
 }

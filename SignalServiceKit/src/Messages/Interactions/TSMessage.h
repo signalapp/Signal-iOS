@@ -4,7 +4,6 @@
 
 #import "OWSContact.h"
 #import "TSInteraction.h"
-#import "TSPaymentModels.h"
 #import "TSQuotedMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,9 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSMessageBuilder;
-@class TSPaymentCancellation;
-@class TSPaymentNotification;
-@class TSPaymentRequest;
 @class TSQuotedMessage;
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
@@ -49,11 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly) BOOL isViewOnceComplete;
 @property (nonatomic, readonly) BOOL wasRemotelyDeleted;
-
-// TODO: Wrap in TSPaymentItem?
-@property (nonatomic, readonly, nullable) TSPaymentRequest *paymentRequest;
-@property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
-@property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -98,13 +89,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(messageWithBuilder:));
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-             paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
-             paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                  paymentRequest:(nullable TSPaymentRequest *)paymentRequest
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:paymentCancellation:paymentNotification:paymentRequest:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:));
 
 // clang-format on
 

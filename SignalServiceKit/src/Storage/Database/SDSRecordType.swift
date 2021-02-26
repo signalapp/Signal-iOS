@@ -78,4 +78,5 @@ public enum SDSRecordType: UInt {
     case groupCallMessage = 65
     case paymentRequestModel = 66
     case paymentModel = 67
+    case outgoingPaymentMessage = 68
 }

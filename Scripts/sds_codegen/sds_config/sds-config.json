@@ -61,6 +61,7 @@
 		"OWSContactOffersInteraction",
 		"OWSOutgoingSyncMessage",
 		"OWSOutgoingReactionMessage",
+		"OWSOutgoingPaymentMessage",
 		"OWSEndSessionMessage",
 		"OWSDynamicOutgoingMessage",
 		"OWSDisappearingMessagesConfigurationMessage",

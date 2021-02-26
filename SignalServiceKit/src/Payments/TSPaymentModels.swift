@@ -117,6 +117,9 @@ extension TSPaymentRequest: TSPaymentBaseModel {
         let requestIdBuilder = SSKProtoDataMessagePaymentRequestId.builder(uuid: requestUuidString)
         let builder = SSKProtoDataMessagePaymentRequest.builder(requestID: try requestIdBuilder.build(),
                                                                 amount: try paymentAmount.buildProto())
+        if let memoMessage = memoMessage {
+            builder.setNote(memoMessage)
+        }
         return try builder.build()
     }
 
@@ -125,9 +128,6 @@ extension TSPaymentRequest: TSPaymentBaseModel {
         let paymentBuilder = SSKProtoDataMessagePayment.builder()
         paymentBuilder.setRequest(try buildProto())
         dataBuilder.setPayment(try paymentBuilder.build())
-        if let memoMessage = memoMessage {
-            dataBuilder.setBody(memoMessage)
-        }
     }
 
     public class func fromProto(_ proto: SSKProtoDataMessagePaymentRequest,
@@ -138,7 +138,7 @@ extension TSPaymentRequest: TSPaymentBaseModel {
         let paymentAmount = try TSPaymentAmount.fromProto(proto.amount)
         let instance = TSPaymentRequest(requestUuidString: requestUuidString,
                                         paymentAmount: paymentAmount,
-                                        memoMessage: dataMessage.body)
+                                        memoMessage: proto.note)
         guard instance.isValid else {
             throw PaymentsError.invalidModel
         }
@@ -179,6 +179,9 @@ extension TSPaymentNotification: TSPaymentBaseModel {
             let requestIdBuilder = SSKProtoDataMessagePaymentRequestId.builder(uuid: requestUuidString)
             builder.setRequestID(try requestIdBuilder.build())
         }
+        if let memoMessage = memoMessage {
+            builder.setNote(memoMessage)
+        }
         return try builder.build()
     }
 
@@ -187,9 +190,6 @@ extension TSPaymentNotification: TSPaymentBaseModel {
         let paymentBuilder = SSKProtoDataMessagePayment.builder()
         paymentBuilder.setNotification(try buildProto())
         dataBuilder.setPayment(try paymentBuilder.build())
-        if let memoMessage = memoMessage {
-            dataBuilder.setBody(memoMessage)
-        }
     }
 
     public class func fromProto(_ proto: SSKProtoDataMessagePaymentNotification,
@@ -200,7 +200,7 @@ extension TSPaymentNotification: TSPaymentBaseModel {
             throw PaymentsError.invalidModel
         }
         let mcReceiptData = mobileCoin.receipt
-        let instance = TSPaymentNotification(memoMessage: dataMessage.body,
+        let instance = TSPaymentNotification(memoMessage: proto.note,
                                              requestUuidString: requestUuidString,
                                              mcReceiptData: mcReceiptData)
         guard instance.isValid else {
@@ -334,20 +334,6 @@ public class TSPaymentModels: NSObject {
 // MARK: -
 
 @objc
-public extension SSKProtoDataMessage {
-    var hasPaymentProtos: Bool {
-        guard let payment = payment else {
-            return false
-        }
-        return (payment.request != nil ||
-                    payment.notification != nil ||
-                    payment.cancellation != nil)
-    }
-}
-
-// MARK: -
-
-@objc
 public extension TSPaymentModel {
 
     // We need to be cautious when updating the state of payment records,
@@ -409,7 +395,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
 
         if let paymentAmount = paymentAmount {
-            if !paymentAmount.isValid {
+            if !paymentAmount.isValidAmount(canBeEmpty: false) {
                 owsFailDebug("Invalid paymentAmount: \(formattedState).")
                 isValid = false
             }
@@ -417,6 +403,19 @@ extension TSPaymentModel: TSPaymentBaseModel {
             let shouldHavePaymentAmount = paymentState != .incomingUnverified && !isFailed
             if shouldHavePaymentAmount {
                 owsFailDebug("Missing paymentAmount: \(formattedState).")
+                isValid = false
+            }
+        }
+
+        if let feeAmount = mobileCoin?.feeAmount {
+            if !feeAmount.isValidAmount(canBeEmpty: false) {
+                owsFailDebug("Invalid feeAmount: \(formattedState).")
+                isValid = false
+            }
+        } else {
+            let shouldHaveFeeAmount = !isUnidentified && isOutgoing && !isFailed
+            if shouldHaveFeeAmount {
+                owsFailDebug("Missing feeAmount: \(formattedState).")
                 isValid = false
             }
         }
@@ -468,18 +467,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         if shouldHaveRecipient, !hasRecipient {
             owsFailDebug("Missing recipient: \(formattedState).")
             isValid = false
-        }
-
-        let shouldHaveNotificationMessageUniqueId = paymentState == .outgoingSending
-        if shouldHaveNotificationMessageUniqueId,
-           notificationMessageUniqueId == nil {
-            owsFailDebug("Missing notificationMessageUniqueId: \(formattedState).")
-            isValid = false
-        } else if !shouldHaveNotificationMessageUniqueId,
-                  notificationMessageUniqueId != nil {
-            // TODO: We should eventually remove notificationMessageUniqueId when
-            //       sending completes.
-            Logger.warn("Unexpected notificationMessageUniqueId: \(formattedState).")
         }
 
         let shouldHaveMCSpentKeyImages = isOutgoing
@@ -787,6 +774,7 @@ extension TSPaymentFailure {
 // MARK: -
 
 @objc
+@available(swift, obsoleted: 1.0)
 public class PaymentUtils: NSObject {
 
     @available(*, unavailable, message:"Do not instantiate this class.")

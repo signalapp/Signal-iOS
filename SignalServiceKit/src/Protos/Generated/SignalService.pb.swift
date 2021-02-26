@@ -1949,12 +1949,22 @@ struct SignalServiceProtos_DataMessage {
       /// Clears the value of `amount`. Subsequent reads from it will return its default value.
       mutating func clearAmount() {self._amount = nil}
 
+      var note: String {
+        get {return _note ?? String()}
+        set {_note = newValue}
+      }
+      /// Returns true if `note` has been explicitly set.
+      var hasNote: Bool {return self._note != nil}
+      /// Clears the value of `note`. Subsequent reads from it will return its default value.
+      mutating func clearNote() {self._note = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
 
       fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId?
       fileprivate var _amount: SignalServiceProtos_DataMessage.Payment.Amount?
+      fileprivate var _note: String?
     }
 
     struct Notification {
@@ -1974,6 +1984,15 @@ struct SignalServiceProtos_DataMessage {
       mutating func clearMobileCoin() {self._mobileCoin = nil}
 
       /// Optional, Refers to the PaymentRequest message, if any.
+      var note: String {
+        get {return _note ?? String()}
+        set {_note = newValue}
+      }
+      /// Returns true if `note` has been explicitly set.
+      var hasNote: Bool {return self._note != nil}
+      /// Clears the value of `note`. Subsequent reads from it will return its default value.
+      mutating func clearNote() {self._note = nil}
+
       var requestID: SignalServiceProtos_DataMessage.Payment.RequestId {
         get {return _requestID ?? SignalServiceProtos_DataMessage.Payment.RequestId()}
         set {_requestID = newValue}
@@ -2010,6 +2029,7 @@ struct SignalServiceProtos_DataMessage {
       init() {}
 
       fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin?
+      fileprivate var _note: String?
       fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId?
     }
 
@@ -2374,14 +2394,14 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `messageRequestResponse`. Subsequent reads from it will return its default value.
   mutating func clearMessageRequestResponse() {_uniqueStorage()._messageRequestResponse = nil}
 
-  var payment: SignalServiceProtos_SyncMessage.Payment {
-    get {return _storage._payment ?? SignalServiceProtos_SyncMessage.Payment()}
-    set {_uniqueStorage()._payment = newValue}
+  var outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment {
+    get {return _storage._outgoingPayment ?? SignalServiceProtos_SyncMessage.OutgoingPayment()}
+    set {_uniqueStorage()._outgoingPayment = newValue}
   }
-  /// Returns true if `payment` has been explicitly set.
-  var hasPayment: Bool {return _storage._payment != nil}
-  /// Clears the value of `payment`. Subsequent reads from it will return its default value.
-  mutating func clearPayment() {_uniqueStorage()._payment = nil}
+  /// Returns true if `outgoingPayment` has been explicitly set.
+  var hasOutgoingPayment: Bool {return _storage._outgoingPayment != nil}
+  /// Clears the value of `outgoingPayment`. Subsequent reads from it will return its default value.
+  mutating func clearOutgoingPayment() {_uniqueStorage()._outgoingPayment = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3000,171 +3020,133 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum?
   }
 
-  struct Payment {
+  struct OutgoingPayment {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var outgoing: SignalServiceProtos_SyncMessage.Payment.Outgoing {
-      get {return _outgoing ?? SignalServiceProtos_SyncMessage.Payment.Outgoing()}
-      set {_outgoing = newValue}
+    /// @required
+    var recipientUuid: String {
+      get {return _recipientUuid ?? String()}
+      set {_recipientUuid = newValue}
     }
-    /// Returns true if `outgoing` has been explicitly set.
-    var hasOutgoing: Bool {return self._outgoing != nil}
-    /// Clears the value of `outgoing`. Subsequent reads from it will return its default value.
-    mutating func clearOutgoing() {self._outgoing = nil}
+    /// Returns true if `recipientUuid` has been explicitly set.
+    var hasRecipientUuid: Bool {return self._recipientUuid != nil}
+    /// Clears the value of `recipientUuid`. Subsequent reads from it will return its default value.
+    mutating func clearRecipientUuid() {self._recipientUuid = nil}
 
-    var defragmentation: SignalServiceProtos_SyncMessage.Payment.Defragmentation {
-      get {return _defragmentation ?? SignalServiceProtos_SyncMessage.Payment.Defragmentation()}
-      set {_defragmentation = newValue}
+    var note: String {
+      get {return _note ?? String()}
+      set {_note = newValue}
     }
-    /// Returns true if `defragmentation` has been explicitly set.
-    var hasDefragmentation: Bool {return self._defragmentation != nil}
-    /// Clears the value of `defragmentation`. Subsequent reads from it will return its default value.
-    mutating func clearDefragmentation() {self._defragmentation = nil}
+    /// Returns true if `note` has been explicitly set.
+    var hasNote: Bool {return self._note != nil}
+    /// Clears the value of `note`. Subsequent reads from it will return its default value.
+    mutating func clearNote() {self._note = nil}
+
+    /// oneof attachment_identifier {
+    var mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin {
+      get {return _mobileCoin ?? SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin()}
+      set {_mobileCoin = newValue}
+    }
+    /// Returns true if `mobileCoin` has been explicitly set.
+    var hasMobileCoin: Bool {return self._mobileCoin != nil}
+    /// Clears the value of `mobileCoin`. Subsequent reads from it will return its default value.
+    mutating func clearMobileCoin() {self._mobileCoin = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct Outgoing {
+    struct MobileCoin {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var mobileCoin: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin {
-        get {return _mobileCoin ?? SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin()}
-        set {_mobileCoin = newValue}
+      var recipientAddress: Data {
+        get {return _recipientAddress ?? Data()}
+        set {_recipientAddress = newValue}
       }
-      /// Returns true if `mobileCoin` has been explicitly set.
-      var hasMobileCoin: Bool {return self._mobileCoin != nil}
-      /// Clears the value of `mobileCoin`. Subsequent reads from it will return its default value.
-      mutating func clearMobileCoin() {self._mobileCoin = nil}
+      /// Returns true if `recipientAddress` has been explicitly set.
+      var hasRecipientAddress: Bool {return self._recipientAddress != nil}
+      /// Clears the value of `recipientAddress`. Subsequent reads from it will return its default value.
+      mutating func clearRecipientAddress() {self._recipientAddress = nil}
+
+      /// @required
+      var amountPicoMob: UInt64 {
+        get {return _amountPicoMob ?? 0}
+        set {_amountPicoMob = newValue}
+      }
+      /// Returns true if `amountPicoMob` has been explicitly set.
+      var hasAmountPicoMob: Bool {return self._amountPicoMob != nil}
+      /// Clears the value of `amountPicoMob`. Subsequent reads from it will return its default value.
+      mutating func clearAmountPicoMob() {self._amountPicoMob = nil}
+
+      /// @required
+      var feePicoMob: UInt64 {
+        get {return _feePicoMob ?? 0}
+        set {_feePicoMob = newValue}
+      }
+      /// Returns true if `feePicoMob` has been explicitly set.
+      var hasFeePicoMob: Bool {return self._feePicoMob != nil}
+      /// Clears the value of `feePicoMob`. Subsequent reads from it will return its default value.
+      mutating func clearFeePicoMob() {self._feePicoMob = nil}
+
+      /// @required
+      var receipt: Data {
+        get {return _receipt ?? Data()}
+        set {_receipt = newValue}
+      }
+      /// Returns true if `receipt` has been explicitly set.
+      var hasReceipt: Bool {return self._receipt != nil}
+      /// Clears the value of `receipt`. Subsequent reads from it will return its default value.
+      mutating func clearReceipt() {self._receipt = nil}
+
+      /// @required
+      var transaction: Data {
+        get {return _transaction ?? Data()}
+        set {_transaction = newValue}
+      }
+      /// Returns true if `transaction` has been explicitly set.
+      var hasTransaction: Bool {return self._transaction != nil}
+      /// Clears the value of `transaction`. Subsequent reads from it will return its default value.
+      mutating func clearTransaction() {self._transaction = nil}
+
+      var ledgerBlockTimestamp: UInt64 {
+        get {return _ledgerBlockTimestamp ?? 0}
+        set {_ledgerBlockTimestamp = newValue}
+      }
+      /// Returns true if `ledgerBlockTimestamp` has been explicitly set.
+      var hasLedgerBlockTimestamp: Bool {return self._ledgerBlockTimestamp != nil}
+      /// Clears the value of `ledgerBlockTimestamp`. Subsequent reads from it will return its default value.
+      mutating func clearLedgerBlockTimestamp() {self._ledgerBlockTimestamp = nil}
+
+      /// @required
+      var ledgerBlockIndex: UInt64 {
+        get {return _ledgerBlockIndex ?? 0}
+        set {_ledgerBlockIndex = newValue}
+      }
+      /// Returns true if `ledgerBlockIndex` has been explicitly set.
+      var hasLedgerBlockIndex: Bool {return self._ledgerBlockIndex != nil}
+      /// Clears the value of `ledgerBlockIndex`. Subsequent reads from it will return its default value.
+      mutating func clearLedgerBlockIndex() {self._ledgerBlockIndex = nil}
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      struct MobileCoin {
-        // SwiftProtobuf.Message conformance is added in an extension below. See the
-        // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-        // methods supported on all messages.
-
-        /// @required
-        var recipientUuid: String {
-          get {return _recipientUuid ?? String()}
-          set {_recipientUuid = newValue}
-        }
-        /// Returns true if `recipientUuid` has been explicitly set.
-        var hasRecipientUuid: Bool {return self._recipientUuid != nil}
-        /// Clears the value of `recipientUuid`. Subsequent reads from it will return its default value.
-        mutating func clearRecipientUuid() {self._recipientUuid = nil}
-
-        /// @required
-        var picoMob: UInt64 {
-          get {return _picoMob ?? 0}
-          set {_picoMob = newValue}
-        }
-        /// Returns true if `picoMob` has been explicitly set.
-        var hasPicoMob: Bool {return self._picoMob != nil}
-        /// Clears the value of `picoMob`. Subsequent reads from it will return its default value.
-        mutating func clearPicoMob() {self._picoMob = nil}
-
-        /// @required
-        var receipt: Data {
-          get {return _receipt ?? Data()}
-          set {_receipt = newValue}
-        }
-        /// Returns true if `receipt` has been explicitly set.
-        var hasReceipt: Bool {return self._receipt != nil}
-        /// Clears the value of `receipt`. Subsequent reads from it will return its default value.
-        mutating func clearReceipt() {self._receipt = nil}
-
-        var ledgerBlockTimestamp: UInt64 {
-          get {return _ledgerBlockTimestamp ?? 0}
-          set {_ledgerBlockTimestamp = newValue}
-        }
-        /// Returns true if `ledgerBlockTimestamp` has been explicitly set.
-        var hasLedgerBlockTimestamp: Bool {return self._ledgerBlockTimestamp != nil}
-        /// Clears the value of `ledgerBlockTimestamp`. Subsequent reads from it will return its default value.
-        mutating func clearLedgerBlockTimestamp() {self._ledgerBlockTimestamp = nil}
-
-        /// @required
-        var ledgerBlockIndex: UInt64 {
-          get {return _ledgerBlockIndex ?? 0}
-          set {_ledgerBlockIndex = newValue}
-        }
-        /// Returns true if `ledgerBlockIndex` has been explicitly set.
-        var hasLedgerBlockIndex: Bool {return self._ledgerBlockIndex != nil}
-        /// Clears the value of `ledgerBlockIndex`. Subsequent reads from it will return its default value.
-        mutating func clearLedgerBlockIndex() {self._ledgerBlockIndex = nil}
-
-        var spentKeyImage: [Data] = []
-
-        var outputPublicKey: [Data] = []
-
-        var memoMessage: String {
-          get {return _memoMessage ?? String()}
-          set {_memoMessage = newValue}
-        }
-        /// Returns true if `memoMessage` has been explicitly set.
-        var hasMemoMessage: Bool {return self._memoMessage != nil}
-        /// Clears the value of `memoMessage`. Subsequent reads from it will return its default value.
-        mutating func clearMemoMessage() {self._memoMessage = nil}
-
-        var unknownFields = SwiftProtobuf.UnknownStorage()
-
-        init() {}
-
-        fileprivate var _recipientUuid: String?
-        fileprivate var _picoMob: UInt64?
-        fileprivate var _receipt: Data?
-        fileprivate var _ledgerBlockTimestamp: UInt64?
-        fileprivate var _ledgerBlockIndex: UInt64?
-        fileprivate var _memoMessage: String?
-      }
-
       init() {}
 
-      fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin?
-    }
-
-    struct Defragmentation {
-      // SwiftProtobuf.Message conformance is added in an extension below. See the
-      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-      // methods supported on all messages.
-
-      var mobileCoin: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin {
-        get {return _mobileCoin ?? SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin()}
-        set {_mobileCoin = newValue}
-      }
-      /// Returns true if `mobileCoin` has been explicitly set.
-      var hasMobileCoin: Bool {return self._mobileCoin != nil}
-      /// Clears the value of `mobileCoin`. Subsequent reads from it will return its default value.
-      mutating func clearMobileCoin() {self._mobileCoin = nil}
-
-      var unknownFields = SwiftProtobuf.UnknownStorage()
-
-      struct MobileCoin {
-        // SwiftProtobuf.Message conformance is added in an extension below. See the
-        // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-        // methods supported on all messages.
-
-        var spentKeyImage: [Data] = []
-
-        /// TODO:
-        var outputPublicKey: [Data] = []
-
-        var unknownFields = SwiftProtobuf.UnknownStorage()
-
-        init() {}
-      }
-
-      init() {}
-
-      fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin?
+      fileprivate var _recipientAddress: Data?
+      fileprivate var _amountPicoMob: UInt64?
+      fileprivate var _feePicoMob: UInt64?
+      fileprivate var _receipt: Data?
+      fileprivate var _transaction: Data?
+      fileprivate var _ledgerBlockTimestamp: UInt64?
+      fileprivate var _ledgerBlockIndex: UInt64?
     }
 
     init() {}
 
-    fileprivate var _outgoing: SignalServiceProtos_SyncMessage.Payment.Outgoing?
-    fileprivate var _defragmentation: SignalServiceProtos_SyncMessage.Payment.Defragmentation?
+    fileprivate var _recipientUuid: String?
+    fileprivate var _note: String?
+    fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin?
   }
 
   init() {}
@@ -5769,8 +5751,8 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Payment"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "notification"),
-    2: .same(proto: "request"),
-    3: .same(proto: "cancellation")
+    1002: .same(proto: "request"),
+    1003: .same(proto: "cancellation")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5780,8 +5762,8 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._notification) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._request) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._cancellation) }()
+      case 1002: try { try decoder.decodeSingularMessageField(value: &self._request) }()
+      case 1003: try { try decoder.decodeSingularMessageField(value: &self._cancellation) }()
       default: break
       }
     }
@@ -5792,10 +5774,10 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }
     if let v = self._request {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1002)
     }
     if let v = self._cancellation {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1003)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5909,7 +5891,8 @@ extension SignalServiceProtos_DataMessage.Payment.Request: SwiftProtobuf.Message
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Request"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "requestId"),
-    2: .same(proto: "amount")
+    2: .same(proto: "amount"),
+    3: .same(proto: "note")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5920,6 +5903,7 @@ extension SignalServiceProtos_DataMessage.Payment.Request: SwiftProtobuf.Message
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._requestID) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._amount) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._note) }()
       default: break
       }
     }
@@ -5932,12 +5916,16 @@ extension SignalServiceProtos_DataMessage.Payment.Request: SwiftProtobuf.Message
     if let v = self._amount {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     }
+    if let v = self._note {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Payment.Request, rhs: SignalServiceProtos_DataMessage.Payment.Request) -> Bool {
     if lhs._requestID != rhs._requestID {return false}
     if lhs._amount != rhs._amount {return false}
+    if lhs._note != rhs._note {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5947,7 +5935,8 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Notification"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "mobileCoin"),
-    2: .same(proto: "requestId")
+    2: .same(proto: "note"),
+    1003: .same(proto: "requestId")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5957,7 +5946,8 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._mobileCoin) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._requestID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._note) }()
+      case 1003: try { try decoder.decodeSingularMessageField(value: &self._requestID) }()
       default: break
       }
     }
@@ -5967,14 +5957,18 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
     if let v = self._mobileCoin {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }
+    if let v = self._note {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
     if let v = self._requestID {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1003)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Payment.Notification, rhs: SignalServiceProtos_DataMessage.Payment.Notification) -> Bool {
     if lhs._mobileCoin != rhs._mobileCoin {return false}
+    if lhs._note != rhs._note {return false}
     if lhs._requestID != rhs._requestID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -6203,7 +6197,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     12: .same(proto: "fetchLatest"),
     13: .same(proto: "keys"),
     14: .same(proto: "messageRequestResponse"),
-    15: .same(proto: "payment")
+    15: .same(proto: "outgoingPayment")
   ]
 
   fileprivate class _StorageClass {
@@ -6221,7 +6215,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _fetchLatest: SignalServiceProtos_SyncMessage.FetchLatest?
     var _keys: SignalServiceProtos_SyncMessage.Keys?
     var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse?
-    var _payment: SignalServiceProtos_SyncMessage.Payment?
+    var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment?
 
     static let defaultInstance = _StorageClass()
 
@@ -6242,7 +6236,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _fetchLatest = source._fetchLatest
       _keys = source._keys
       _messageRequestResponse = source._messageRequestResponse
-      _payment = source._payment
+      _outgoingPayment = source._outgoingPayment
     }
   }
 
@@ -6275,7 +6269,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 12: try { try decoder.decodeSingularMessageField(value: &_storage._fetchLatest) }()
         case 13: try { try decoder.decodeSingularMessageField(value: &_storage._keys) }()
         case 14: try { try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse) }()
-        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._payment) }()
+        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._outgoingPayment) }()
         default: break
         }
       }
@@ -6326,7 +6320,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._messageRequestResponse {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
       }
-      if let v = _storage._payment {
+      if let v = _storage._outgoingPayment {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
       }
     }
@@ -6352,7 +6346,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._fetchLatest != rhs_storage._fetchLatest {return false}
         if _storage._keys != rhs_storage._keys {return false}
         if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
-        if _storage._payment != rhs_storage._payment {return false}
+        if _storage._outgoingPayment != rhs_storage._outgoingPayment {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6958,87 +6952,12 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: Swift
   ]
 }
 
-extension SignalServiceProtos_SyncMessage.Payment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Payment"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outgoing"),
-    2: .same(proto: "defragmentation")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._outgoing) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._defragmentation) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._outgoing {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._defragmentation {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_SyncMessage.Payment, rhs: SignalServiceProtos_SyncMessage.Payment) -> Bool {
-    if lhs._outgoing != rhs._outgoing {return false}
-    if lhs._defragmentation != rhs._defragmentation {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_SyncMessage.Payment.Outgoing: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.Payment.protoMessageName + ".Outgoing"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "mobileCoin")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._mobileCoin) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._mobileCoin {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_SyncMessage.Payment.Outgoing, rhs: SignalServiceProtos_SyncMessage.Payment.Outgoing) -> Bool {
-    if lhs._mobileCoin != rhs._mobileCoin {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.Payment.Outgoing.protoMessageName + ".MobileCoin"
+extension SignalServiceProtos_SyncMessage.OutgoingPayment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".OutgoingPayment"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "recipientUuid"),
-    2: .same(proto: "picoMob"),
-    3: .same(proto: "receipt"),
-    4: .same(proto: "ledgerBlockTimestamp"),
-    5: .same(proto: "ledgerBlockIndex"),
-    6: .same(proto: "spentKeyImage"),
-    7: .same(proto: "outputPublicKey"),
-    8: .same(proto: "memoMessage")
+    2: .same(proto: "note"),
+    3: .same(proto: "mobileCoin")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7048,13 +6967,8 @@ extension SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin: SwiftProt
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self._recipientUuid) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._picoMob) }()
-      case 3: try { try decoder.decodeSingularBytesField(value: &self._receipt) }()
-      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockTimestamp) }()
-      case 5: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockIndex) }()
-      case 6: try { try decoder.decodeRepeatedBytesField(value: &self.spentKeyImage) }()
-      case 7: try { try decoder.decodeRepeatedBytesField(value: &self.outputPublicKey) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self._memoMessage) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._note) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._mobileCoin) }()
       default: break
       }
     }
@@ -7064,81 +6978,34 @@ extension SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin: SwiftProt
     if let v = self._recipientUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
-    if let v = self._picoMob {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    if let v = self._note {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
-    if let v = self._receipt {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    }
-    if let v = self._ledgerBlockTimestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
-    }
-    if let v = self._ledgerBlockIndex {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
-    }
-    if !self.spentKeyImage.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.spentKeyImage, fieldNumber: 6)
-    }
-    if !self.outputPublicKey.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.outputPublicKey, fieldNumber: 7)
-    }
-    if let v = self._memoMessage {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin, rhs: SignalServiceProtos_SyncMessage.Payment.Outgoing.MobileCoin) -> Bool {
-    if lhs._recipientUuid != rhs._recipientUuid {return false}
-    if lhs._picoMob != rhs._picoMob {return false}
-    if lhs._receipt != rhs._receipt {return false}
-    if lhs._ledgerBlockTimestamp != rhs._ledgerBlockTimestamp {return false}
-    if lhs._ledgerBlockIndex != rhs._ledgerBlockIndex {return false}
-    if lhs.spentKeyImage != rhs.spentKeyImage {return false}
-    if lhs.outputPublicKey != rhs.outputPublicKey {return false}
-    if lhs._memoMessage != rhs._memoMessage {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SignalServiceProtos_SyncMessage.Payment.Defragmentation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.Payment.protoMessageName + ".Defragmentation"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "mobileCoin")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._mobileCoin) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if let v = self._mobileCoin {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_SyncMessage.Payment.Defragmentation, rhs: SignalServiceProtos_SyncMessage.Payment.Defragmentation) -> Bool {
+  static func ==(lhs: SignalServiceProtos_SyncMessage.OutgoingPayment, rhs: SignalServiceProtos_SyncMessage.OutgoingPayment) -> Bool {
+    if lhs._recipientUuid != rhs._recipientUuid {return false}
+    if lhs._note != rhs._note {return false}
     if lhs._mobileCoin != rhs._mobileCoin {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.Payment.Defragmentation.protoMessageName + ".MobileCoin"
+extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.OutgoingPayment.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    3: .same(proto: "spentKeyImage"),
-    4: .same(proto: "outputPublicKey")
+    1: .same(proto: "recipientAddress"),
+    2: .same(proto: "amountPicoMob"),
+    3: .same(proto: "feePicoMob"),
+    4: .same(proto: "receipt"),
+    5: .same(proto: "transaction"),
+    6: .same(proto: "ledgerBlockTimestamp"),
+    7: .same(proto: "ledgerBlockIndex")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7147,26 +7014,51 @@ extension SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin: Sw
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 3: try { try decoder.decodeRepeatedBytesField(value: &self.spentKeyImage) }()
-      case 4: try { try decoder.decodeRepeatedBytesField(value: &self.outputPublicKey) }()
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._recipientAddress) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._amountPicoMob) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self._feePicoMob) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._receipt) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._transaction) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockTimestamp) }()
+      case 7: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockIndex) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.spentKeyImage.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.spentKeyImage, fieldNumber: 3)
+    if let v = self._recipientAddress {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     }
-    if !self.outputPublicKey.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.outputPublicKey, fieldNumber: 4)
+    if let v = self._amountPicoMob {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    }
+    if let v = self._feePicoMob {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
+    }
+    if let v = self._receipt {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }
+    if let v = self._transaction {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    }
+    if let v = self._ledgerBlockTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+    }
+    if let v = self._ledgerBlockIndex {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin, rhs: SignalServiceProtos_SyncMessage.Payment.Defragmentation.MobileCoin) -> Bool {
-    if lhs.spentKeyImage != rhs.spentKeyImage {return false}
-    if lhs.outputPublicKey != rhs.outputPublicKey {return false}
+  static func ==(lhs: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin, rhs: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin) -> Bool {
+    if lhs._recipientAddress != rhs._recipientAddress {return false}
+    if lhs._amountPicoMob != rhs._amountPicoMob {return false}
+    if lhs._feePicoMob != rhs._feePicoMob {return false}
+    if lhs._receipt != rhs._receipt {return false}
+    if lhs._transaction != rhs._transaction {return false}
+    if lhs._ledgerBlockTimestamp != rhs._ledgerBlockTimestamp {return false}
+    if lhs._ledgerBlockIndex != rhs._ledgerBlockIndex {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
