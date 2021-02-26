@@ -471,7 +471,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             decryptResult = try cipher.throwswrapped_decryptMessage(
                 certificateValidator: certificateValidator,
                 cipherTextData: encryptedData,
-                timestamp: envelope.timestamp,
+                timestamp: envelope.serverTimestamp,
                 localE164: localAddress.phoneNumber,
                 localUuid: localAddress.uuid,
                 localDeviceId: Int32(localDeviceId),
@@ -530,7 +530,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 return .failure(underlyingError)
             }
 
-            owsFailDebug("Could not decrypt UD message: \(underlyingError)")
+            owsFailDebug("Could not decrypt UD message: \(underlyingError), identified envelope: \(description(for: identifiedEnvelope))")
             return .failure(underlyingError)
         }
 

@@ -837,7 +837,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                 [MessageProcessor.shared processEncryptedEnvelopeData:encryptedEnvelope
                                                     encryptedEnvelope:nil
                                               serverDeliveryTimestamp:serverDeliveryTimestamp
-                                                           completion:^(NSError *error) { ackMessage(error == nil); }];
+                                                           completion:^(NSError *error) { ackMessage(YES); }];
             }
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
