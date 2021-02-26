@@ -146,11 +146,11 @@ public final class MessageSender : NSObject {
         }
         // Attach the user's profile if needed
         if let message = message as? VisibleMessage {
-            let displayName = storage.getUserDisplayName()!
-            if let profileKey = storage.getUserProfileKey(), let profilePictureURL = storage.getUserProfilePictureURL() {
-                message.profile = VisibleMessage.Profile(displayName: displayName, profileKey: profileKey, profilePictureURL: profilePictureURL)
+            let name = storage.getUser()!.name!
+            if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+                message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
             } else {
-                message.profile = VisibleMessage.Profile(displayName: displayName)
+                message.profile = VisibleMessage.Profile(displayName: name)
             }
         }
         // Convert it to protobuf

@@ -41,28 +41,30 @@ public final class OpenGroupManager : NSObject {
 
     // MARK: Adding & Removing
     public func add(with url: String, using transaction: Any) -> Promise<Void> {
+        let storage = Storage.shared
         guard let url = URL(string: url), let scheme = url.scheme, scheme == "https", url.host != nil else {
             return Promise(error: Error.invalidURL)
         }
         let channel: UInt64 = 1
         let server = url.absoluteString
         let userPublicKey = getUserHexEncodedPublicKey()
-        let profileManager = SSKEnvironment.shared.profileManager
-        let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
-        let profilePictureURL = profileManager.profilePictureURL()
-        let profileKey = profileManager.localProfileKey().keyData
-        Storage.shared.removeLastMessageServerID(for: channel, on: server, using: transaction)
-        Storage.shared.removeLastDeletionServerID(for: channel, on: server, using: transaction)
+        let name = storage.getUser()?.name
+        let profilePictureURL = storage.getUser()?.profilePictureURL
+        let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData
+        storage.removeLastMessageServerID(for: channel, on: server, using: transaction)
+        storage.removeLastDeletionServerID(for: channel, on: server, using: transaction)
         return OpenGroupAPI.getInfo(for: channel, on: server).done { info in
             let openGroup = OpenGroup(channel: channel, server: server, displayName: info.displayName, isDeletable: true)!
             let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
             let model = TSGroupModel(title: openGroup.displayName, memberIds: [ userPublicKey ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
-            Storage.shared.write(with: { transaction in
+            storage.write(with: { transaction in
                 let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction as! YapDatabaseReadWriteTransaction)
-                Storage.shared.setOpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+                storage.setOpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
             }, completion: {
-                let _ = OpenGroupAPI.setDisplayName(to: displayName, on: server)
-                let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: server)
+                let _ = OpenGroupAPI.setDisplayName(to: name, on: server)
+                if let profilePictureURL = profilePictureURL, let profileKey = profileKey {
+                    let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: server)
+                }
                 let _ = OpenGroupAPI.join(channel, on: server)
                 if let poller = OpenGroupManager.shared.pollers[openGroup.id] {
                     poller.stop()

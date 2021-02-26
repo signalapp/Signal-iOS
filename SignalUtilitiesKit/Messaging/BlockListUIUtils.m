@@ -47,7 +47,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                         blockingManager:(OWSBlockingManager *)blockingManager
                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:phoneNumber avoidingWriteTransaction:YES];
+    NSString *displayName = [[LKStorage.shared getContactWithSessionID:phoneNumber] displayNameFor:SNContactContextRegular] ?: phoneNumber;
     [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
                                displayName:displayName
                         fromViewController:fromViewController
@@ -60,7 +60,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           blockingManager:(OWSBlockingManager *)blockingManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:signalAccount.recipientId avoidingWriteTransaction:YES];
+    NSString *displayName = [[LKStorage.shared getContactWithSessionID:signalAccount.recipientId] displayNameFor:SNContactContextRegular] ?: signalAccount.recipientId;
     [self showBlockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                displayName:displayName
                         fromViewController:fromViewController
@@ -279,7 +279,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           blockingManager:(OWSBlockingManager *)blockingManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:phoneNumber] ?: phoneNumber;
+    NSString *displayName = [[LKStorage.shared getContactWithSessionID:phoneNumber] displayNameFor:SNContactContextRegular] ?: phoneNumber;
     [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
                                  displayName:displayName
                           fromViewController:fromViewController
@@ -292,7 +292,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                             blockingManager:(OWSBlockingManager *)blockingManager
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:signalAccount.recipientId avoidingWriteTransaction:YES];
+    NSString *displayName = [[LKStorage.shared getContactWithSessionID:signalAccount.recipientId] displayNameFor:SNContactContextRegular] ?: signalAccount.recipientId;
     [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
                                  displayName:displayName
                           fromViewController:fromViewController

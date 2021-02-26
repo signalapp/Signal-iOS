@@ -1320,7 +1320,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 }
                 
                 if (shouldShowSenderName) {
-                    senderName = [[NSAttributedString alloc] initWithString:[SSKEnvironment.shared.profileManager profileNameForRecipientWithID:incomingSenderId avoidingWriteTransaction:YES]];
+                    SNContactContext context = [SNContact contextForThread:self.thread];
+                    senderName = [[NSAttributedString alloc] initWithString:[[LKStorage.shared getContactWithSessionID:incomingSenderId] displayNameFor:context] ?: incomingSenderId];
                 }
 
                 // Show the sender profile picture for incoming group messages unless the

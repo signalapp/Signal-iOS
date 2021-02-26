@@ -66,7 +66,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         func getDisplayName(for publicKey: String) -> String {
-            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+            return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         }
         setUpViewHierarchy()
         members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
@@ -233,7 +233,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             var members = self.members
             members.append(contentsOf: selectedUsers)
             func getDisplayName(for publicKey: String) -> String {
-                return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+                return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
             }
             self.members = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
             let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty

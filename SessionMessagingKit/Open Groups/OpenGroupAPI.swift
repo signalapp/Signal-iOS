@@ -142,8 +142,8 @@ public final class OpenGroupAPI : DotNetAPI {
     public static func sendMessage(_ message: OpenGroupMessage, to channel: UInt64, on server: String) -> Promise<OpenGroupMessage> {
         SNLog("Sending message to open group channel with ID: \(channel) on server: \(server).")
         let storage = SNMessagingKitConfiguration.shared.storage
-        guard let userKeyPair = storage.getUserKeyPair() else { return Promise(error: Error.generic) }
-        guard let userDisplayName = storage.getUserDisplayName() else { return Promise(error: Error.generic) }
+        guard let userKeyPair = storage.getUserKeyPair(),
+            let userName = storage.getUser()?.name else { return Promise(error: Error.generic) }
         let (promise, seal) = Promise<OpenGroupMessage>.pending()
         DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey] in
             guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(Error.signingFailed) }
@@ -154,7 +154,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         let parameters = signedMessage.toJSON()
                         let request = TSRequest(url: url, method: "POST", parameters: parameters)
                         request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                        let displayName = userDisplayName
+                        let userName = userName
                         return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                             // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                             let dateFormatter = DateFormatter()
@@ -165,7 +165,7 @@ public final class OpenGroupAPI : DotNetAPI {
                                 throw Error.parsingFailed
                             }
                             let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                            return OpenGroupMessage(serverID: serverID, senderPublicKey: userKeyPair.publicKey.toHexString(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: openGroupMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
+                            return OpenGroupMessage(serverID: serverID, senderPublicKey: userKeyPair.publicKey.toHexString(), displayName: userName, profilePicture: signedMessage.profilePicture, body: body, type: openGroupMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
                         }
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)

@@ -84,7 +84,7 @@ final class UserCell : UITableViewCell {
     func update() {
         profilePictureView.publicKey = publicKey
         profilePictureView.update()
-        displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+        displayNameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         switch accessory {
         case .none: accessoryImageView.isHidden = true
         case .lock:

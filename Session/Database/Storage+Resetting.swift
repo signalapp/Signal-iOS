@@ -9,7 +9,7 @@ extension Storage {
             let token = Data(hex: hexEncodedToken)
             PushNotificationAPI.unregister(token).retainUntilComplete() // TODO: Wait for this to complete?
         }
-        let displayName = OWSProfileManager.shared().localProfileName()
+        let name = Storage.shared.getUser()!.name!
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.stopPoller()
         appDelegate.stopClosedGroupPoller()
@@ -19,7 +19,7 @@ extension Storage {
         Environment.shared.preferences.clear()
         AppEnvironment.shared.notificationPresenter.clearAllNotifications()
         userDefaults[.isUsingFullAPNs] = isUsingAPNs
-        userDefaults[.displayName] = displayName
+        userDefaults[.displayName] = name
         userDefaults[.isMigratingToV2KeyPair] = true
         exit(0)
     }

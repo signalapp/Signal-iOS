@@ -9,7 +9,6 @@ public final class MentionUtilities : NSObject {
     }
 
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
-        let userPublicKey = getUserHexEncodedPublicKey()
         let openGroup = Storage.shared.getOpenGroup(for: threadID)
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
@@ -23,16 +22,8 @@ public final class MentionUtilities : NSObject {
             let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
             if knownPublicKeys.contains(publicKey) {
-                var displayName: String?
-                if publicKey == userPublicKey {
-                    displayName = OWSProfileManager.shared().localProfileName()
-                } else {
-                    if let publicChat = openGroup {
-                        displayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)
-                    } else {
-                        displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
-                    }
-                }
+                let context: Contact.Context = (openGroup != nil) ? .openGroup : .regular
+                let displayName = Storage.shared.getContact(with: publicKey)?.displayName(for: context)
                 if let displayName = displayName {
                     string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
                     mentions.append((range: NSRange(location: match.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @

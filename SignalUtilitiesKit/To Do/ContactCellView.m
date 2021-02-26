@@ -141,7 +141,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                     NSFontAttributeName : self.nameLabel.font,
                 }];
     } else {
-        self.nameLabel.text = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:recipientId avoidingWriteTransaction:YES];
+        SNContactContext context = [SNContact contextForThread:self.thread];
+        self.nameLabel.text = [[LKStorage.shared getContactWithSessionID:recipientId] displayNameFor:context] ?: recipientId;
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -219,10 +220,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     NSString *publicKey = self.recipientId;
     NSString *threadID = self.thread.uniqueId;
-    __block NSString *displayName = nil;
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        displayName = [LKDisplayNameUtilities2 getDisplayNameForPublicKey:publicKey threadID:threadID transaction:transaction];
-    }];
+    SNContactContext context = [SNContact contextForThread:self.thread];
+    NSString *displayName = [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:context] ?: publicKey;
     self.nameLabel.text = displayName;
     [self.nameLabel setNeedsLayout];
 }

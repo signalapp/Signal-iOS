@@ -3,9 +3,10 @@ extension ConfigurationMessage {
 
     public static func getCurrent() -> ConfigurationMessage {
         let storage = Storage.shared
-        let displayName = storage.getUserDisplayName()!
-        let profilePictureURL = SSKEnvironment.shared.profileManager.profilePictureURL()
-        let profileKey = storage.getUserProfileKey()
+        let user = storage.getUser()!
+        let displayName = user.name
+        let profilePictureURL = user.profilePictureURL
+        let profileKey = user.profilePictureEncryptionKey?.keyData
         var closedGroups: Set<ClosedGroup> = []
         var openGroups: Set<String> = []
         var contacts: Set<Contact> = []

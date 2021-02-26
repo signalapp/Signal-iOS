@@ -93,7 +93,8 @@ public final class ProfilePictureView : UIView {
             if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
                 return profilePicture
             } else {
-                let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey) ?? publicKey
+                // TODO: Pass in context?
+                let displayName = Storage.shared.getContact(with: publicKey)?.name ?? publicKey
                 return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
             }
         }

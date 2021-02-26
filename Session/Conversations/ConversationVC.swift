@@ -90,7 +90,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let name: String
         if let thread = thread as? TSContactThread {
             let publicKey = thread.contactIdentifier()
-            name = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, avoidingWriteTransaction: true) ?? publicKey
+            let context = Contact.context(for: thread)
+            name = Storage.shared.getContact(with: publicKey)?.displayName(for: context) ?? publicKey
         } else {
             name = "Thread"
         }

@@ -82,7 +82,7 @@ public final class OpenGroupPoller : NSObject {
                     let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
                     return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
                 }
-                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: openGroup.channel, on: openGroup.server)
+                let senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .openGroup)
                     ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
                 let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
                 // Main message

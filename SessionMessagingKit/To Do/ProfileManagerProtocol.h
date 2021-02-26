@@ -11,23 +11,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ProfileManagerProtocol <NSObject>
 
-- (OWSAES256Key *)localProfileKey;
+#pragma mark - Local Profile
 
-- (nullable NSString *)localProfileName;
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidingWriteTransaction:(BOOL)avoidWriteTransaction;
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID;
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (nullable NSString *)profilePictureURL;
+- (void)ensureLocalProfileCached;
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarURL:(nullable NSString *)avatarURL;
+
+#pragma mark - Other User's Profiles
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId avatarURL:(nullable NSString *)avatarURL;
-
 - (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarURL:(nullable NSString *)avatarURL;
-
-- (void)ensureLocalProfileCached;
 - (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction;
+
+#pragma mark - Other
 
 - (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile;
 

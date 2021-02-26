@@ -915,7 +915,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    NSData *_Nullable localProfileAvatarData = self.profileManager.localProfileAvatarData;
+    NSData *_Nullable localProfileAvatarData = nil; // TODO: self.profileManager.localProfileAvatarData;
     if (localProfileAvatarData.length < 1) {
         // No profile avatar to backup.
         return [AnyPromise promiseWithValue:@(1)];
@@ -975,7 +975,7 @@ NS_ASSUME_NONNULL_BEGIN
         kOWSBackup_ManifestKey_AttachmentFiles : [self jsonForItems:self.savedAttachmentItems],
     } mutableCopy];
 
-    NSString *_Nullable localProfileName = self.profileManager.localProfileName;
+    NSString *_Nullable localProfileName = [[LKStorage.shared getUser] name];
     if (localProfileName.length > 0) {
         json[kOWSBackup_ManifestKey_LocalProfileName] = localProfileName;
     }

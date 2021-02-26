@@ -3,7 +3,6 @@
 //
 
 #import "OWSConversationSettingsViewController.h"
-#import "BlockListUIUtils.h"
 #import "OWSBlockingManager.h"
 #import "OWSSoundSettingsViewController.h"
 #import "Session-Swift.h"
@@ -138,7 +137,7 @@ CGFloat kIconViewLength = 24;
 {
     NSString *threadName = self.thread.name;
     if (self.thread.contactIdentifier) {
-        return [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.thread.contactIdentifier avoidingWriteTransaction:YES];
+        return [[LKStorage.shared getContactWithSessionID:self.thread.contactIdentifier] displayNameFor:SNContactContextRegular] ?: @"Anonymous";
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -335,7 +334,7 @@ CGFloat kIconViewLength = 24;
                                      if (self.thread.isGroupThread) {
                                          displayName = @"the group";
                                      } else {
-                                         displayName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier];
+                                         displayName = [[LKStorage.shared getContactWithSessionID:self.thread.contactIdentifier] displayNameFor:SNContactContextRegular] ?: @"anonymous";
                                      }
                                      subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), displayName];
                                      subtitleLabel.textColor = LKColors.text;

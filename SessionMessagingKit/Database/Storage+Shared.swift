@@ -35,15 +35,12 @@ extension Storage {
         return Box.KeyPair(publicKey: publicKey, secretKey: secretKey)
     }
 
-    public func getUserDisplayName() -> String? {
-        return SSKEnvironment.shared.profileManager.localProfileName()
-    }
-    
-    public func getUserProfileKey() -> Data? {
-        return SSKEnvironment.shared.profileManager.localProfileKey().keyData
-    }
-    
-    public func getUserProfilePictureURL() -> String? {
-        return SSKEnvironment.shared.profileManager.profilePictureURL()
+    @objc public func getUser() -> Contact? {
+        guard let userPublicKey = getUserPublicKey() else { return nil }
+        var result: Contact?
+        Storage.read { transaction in
+            result = Storage.shared.getContact(with: userPublicKey)
+        }
+        return result
     }
 }

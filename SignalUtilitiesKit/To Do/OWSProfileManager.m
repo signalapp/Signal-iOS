@@ -25,7 +25,6 @@
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
@@ -104,10 +103,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)observeNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive:)
-                                                 name:OWSApplicationDidBecomeActiveNotification
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
                                                  name:kNSNotificationName_BlockListDidChange
@@ -453,11 +448,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (void)rotateLocalProfileKeyIfNecessary {
-    [self
-        rotateLocalProfileKeyIfNecessaryWithSuccess:^{
-        }
-                                            failure:^(NSError *error) {
-                                            }];
+    [self rotateLocalProfileKeyIfNecessaryWithSuccess:^{ } failure:^(NSError *error) { }];
 }
 
 - (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success
@@ -662,38 +653,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-#pragma mark - Profile Whitelist
-
-- (void)clearProfileWhitelist
-{
-    OWSLogWarn(@"Clearing the profile whitelist.");
-
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:kOWSProfileManager_UserWhitelistCollection];
-        [transaction removeAllObjectsInCollection:kOWSProfileManager_GroupWhitelistCollection];
-        OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
-        OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
-    }];
-}
-
-- (void)logProfileWhitelist
-{
-    [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        OWSLogError(@"kOWSProfileManager_UserWhitelistCollection: %lu",
-            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
-        [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
-                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        OWSLogError(@"\t profile whitelist user: %@", key);
-                                    }];
-        OWSLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
-            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
-        [transaction enumerateKeysInCollection:kOWSProfileManager_GroupWhitelistCollection
-                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        OWSLogError(@"\t profile whitelist group: %@", key);
-                                    }];
-    }];
-}
-
 - (void)regenerateLocalProfile
 {
     OWSUserProfile *userProfile = self.localUserProfile;
@@ -701,178 +660,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    [self addUsersToProfileWhitelist:@[ recipientId ]];
-}
-
-- (void)addUsersToProfileWhitelist:(NSArray<NSString *> *)recipientIds
-{
-    OWSAssertDebug(recipientIds);
-
-    NSMutableSet<NSString *> *newRecipientIds = [NSMutableSet new];
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (NSString *recipientId in recipientIds) {
-            NSNumber *_Nullable oldValue =
-                [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-            if (oldValue && oldValue.boolValue) {
-                continue;
-            }
-
-            // Normally we add all system contacts to the whitelist, but we don't want to do that for
-            // blocked contacts.
-            if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
-                continue;
-            }
-
-            [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-            [newRecipientIds addObject:recipientId];
-        }
-    }
-    completion:^{
-        for (NSString *recipientId in newRecipientIds) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileRecipientId : recipientId,
-                                 }];
-        }
-    }];
-}
-
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
-        return NO;
-    }
-
-    __block BOOL result = NO;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSNumber *_Nullable oldValue =
-            [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-        result = (oldValue && oldValue.boolValue);
-    }];
-    return result;
-}
-
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-
-    __block BOOL didChange = NO;
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSNumber *_Nullable oldValue =
-            [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
-        if (oldValue && oldValue.boolValue) {
-            // Do nothing.
-        } else {
-            [transaction setObject:@(YES) forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
-            didChange = YES;
-        }
-    }
-    completion:^{
-        if (didChange) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                   object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileGroupId : groupId,
-                                 }];
-        }
-    }];
-}
-
-- (void)addThreadToProfileWhitelist:(TSThread *)thread
-{
-    OWSAssertDebug(thread);
-
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        [self addGroupIdToProfileWhitelist:groupId];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        for (NSString *recipientId in groupThread.recipientIdentifiers) {
-            [self addUserToProfileWhitelist:recipientId];
-        }
-    } else {
-        NSString *recipientId = thread.contactIdentifier;
-        [self addUserToProfileWhitelist:recipientId];
-    }
-}
-
-- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    if ([self.blockingManager isGroupIdBlocked:groupId]) {
-        return NO;
-    }
-
-    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-
-    __block BOOL result = NO;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSNumber *_Nullable oldValue =
-            [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
-        result = (oldValue && oldValue.boolValue);
-    }];
-    return result;
-}
-
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
-{
-    OWSAssertDebug(thread);
-
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        return [self isGroupIdInProfileWhitelist:groupId];
-    } else {
-//        NSString *recipientId = thread.contactIdentifier;
-//        return [self isUserInProfileWhitelist:recipientId];
-        return true;
-    }
-}
-
-- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds
-{
-    OWSAssertDebug(contactRecipientIds);
-
-    [self addUsersToProfileWhitelist:contactRecipientIds];
-}
-
-#pragma mark - Other User's Profiles
-
-- (void)logUserProfiles
-{
-    [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        OWSLogError(@"logUserProfiles: %ld", (unsigned long) [transaction numberOfKeysInCollection:OWSUserProfile.collection]);
-        [transaction
-            enumerateKeysAndObjectsInCollection:OWSUserProfile.collection
-                                     usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
-                                         OWSAssertDebug([object isKindOfClass:[OWSUserProfile class]]);
-                                         OWSUserProfile *userProfile = object;
-                                         OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                     @"avatar file: %d, name: %@",
-                                             userProfile.recipientId,
-                                             userProfile.profileKey != nil,
-                                             userProfile.avatarUrlPath != nil,
-                                             userProfile.avatarFileName != nil,
-                                             userProfile.profileName);
-                                     }];
-    }];
-}
+#pragma mark - Other Users' Profiles
 
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId avatarURL:(nullable NSString *)avatarURL
 {
@@ -924,57 +712,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(userProfile);
 
     return userProfile.profileKey;
-}
-
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID
-{
-    return [self profileNameForRecipientWithID:recipientID avoidingWriteTransaction:NO];
-}
-
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidingWriteTransaction:(BOOL)avoidWriteTransaction
-{
-    if ([self.tsAccountManager.localNumber isEqualToString:recipientID]) {
-        return self.localUserProfile.profileName;
-    }
-
-    __block OWSUserProfile *userProfile;
-
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientID transaction:transaction];
-    }];
-
-    if (userProfile != nil) {
-        NSString *result = userProfile.profileName;
-        NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
-        NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
-        if ([result hasSuffix:suffix]) {
-            return [result substringToIndex:result.length - suffix.length];
-        } else {
-            return result;
-        }
-    }
-
-    if (!avoidWriteTransaction) {
-        __block NSString *result;
-
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
-        }];
-
-        if (recipientID.length > 8) {
-            NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
-            NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
-            if ([result hasSuffix:suffix]) {
-                return [result substringToIndex:result.length - suffix.length];
-            } else {
-                return result;
-            }
-        } else {
-            return result; // Should never occur
-        }
-    } else {
-        return recipientID;
-    }
 }
 
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -1328,38 +1065,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
-#pragma mark - User Interface
-
-- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
-                        fromViewController:(UIViewController *)fromViewController
-                                   success:(void (^)(void))successHandler
-{
-    OWSAssertIsOnMainThread();
-
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
-        @"Button to confirm that user wants to share their profile with a user or group.");
-    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                successHandler();
-                                            }]];
-    [alert addAction:[OWSAlerts cancelAction]];
-
-    [fromViewController presentAlert:alert];
-}
-
 #pragma mark - Notifications
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    // TODO: Sync if necessary.
-}
 
 - (void)blockListDidChange:(NSNotification *)notification {
     OWSAssertIsOnMainThread();

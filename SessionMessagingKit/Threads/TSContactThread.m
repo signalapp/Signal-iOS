@@ -69,7 +69,7 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (NSString *)name
 {
-    return [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.contactIdentifier avoidingWriteTransaction:YES] ?: self.contactIdentifier;
+    return [[LKStorage.shared getContactWithSessionID:self.contactIdentifier] displayNameFor:SNContactContextRegular] ?: self.contactIdentifier;
 }
 
 + (NSString *)threadIdFromContactId:(NSString *)contactId {

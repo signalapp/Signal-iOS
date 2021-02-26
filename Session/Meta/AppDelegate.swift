@@ -4,7 +4,7 @@ extension AppDelegate {
 
     @objc(syncConfigurationIfNeeded)
     func syncConfigurationIfNeeded() {
-        guard Storage.shared.getUserDisplayName() != nil else { return }
+        guard Storage.shared.getUser()?.name != nil else { return }
         let userDefaults = UserDefaults.standard
         let lastSync = userDefaults[.lastConfigurationSync] ?? .distantPast
         guard Date().timeIntervalSince(lastSync) > 2 * 24 * 60 * 60 else { return } // Sync every 2 days
@@ -18,7 +18,7 @@ extension AppDelegate {
     }
 
     func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
-        guard Storage.shared.getUserDisplayName() != nil else { return Promise.value(()) }
+        guard Storage.shared.getUser()?.name != nil else { return Promise.value(()) }
         let configurationMessage = ConfigurationMessage.getCurrent()
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()

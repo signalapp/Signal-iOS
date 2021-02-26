@@ -10,7 +10,7 @@ enum ContactUtilities {
             }
         }
         func getDisplayName(for publicKey: String) -> String {
-            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+            return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         }
         if let index = result.firstIndex(of: getUserHexEncodedPublicKey()) {
             result.remove(at: index)
