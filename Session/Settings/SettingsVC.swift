@@ -69,7 +69,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         // Set up profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
         profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)
-        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
+        profilePictureView.publicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         // Set up display name label
         displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())

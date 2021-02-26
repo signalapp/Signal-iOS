@@ -244,7 +244,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let profilePictureView = ProfilePictureView()
         profilePictureView.accessibilityLabel = "Settings button"
         profilePictureView.size = profilePictureSize
-        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
+        profilePictureView.publicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)

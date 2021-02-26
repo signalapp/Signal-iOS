@@ -2,16 +2,17 @@ import SessionUIKit
 
 @objc(LKProfilePictureView)
 public final class ProfilePictureView : UIView {
+    private var hasTappableProfilePicture: Bool = false
+    @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    @objc public var useFallbackPicture = false
+    @objc public var publicKey: String!
+    @objc public var additionalPublicKey: String?
+    @objc public var openGroupProfilePicture: UIImage?
+    // Constraints
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
     private var additionalImageViewWidthConstraint: NSLayoutConstraint!
     private var additionalImageViewHeightConstraint: NSLayoutConstraint!
-    private var hasTappableProfilePicture: Bool = false
-    @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
-    @objc public var isRSSFeed = false
-    @objc public var hexEncodedPublicKey: String!
-    @objc public var additionalHexEncodedPublicKey: String?
-    @objc public var openGroupProfilePicture: UIImage?
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -50,9 +51,9 @@ public final class ProfilePictureView : UIView {
     @objc(updateForContact:)
     public func update(for publicKey: String) {
         openGroupProfilePicture = nil
-        hexEncodedPublicKey = publicKey
-        additionalHexEncodedPublicKey = nil
-        isRSSFeed = false
+        self.publicKey = publicKey
+        additionalPublicKey = nil
+        useFallbackPicture = false
         update()
     }
 
@@ -62,11 +63,11 @@ public final class ProfilePictureView : UIView {
         if let thread = thread as? TSGroupThread {
             if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
                 self.openGroupProfilePicture = openGroupProfilePicture
-                isRSSFeed = false
+                useFallbackPicture = false
                 hasTappableProfilePicture = true
             } else if thread.groupModel.groupType == .openGroup { // An open group without a profile picture or an RSS feed
-                hexEncodedPublicKey = ""
-                isRSSFeed = true
+                publicKey = ""
+                useFallbackPicture = true
             } else { // A closed group
                 var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
                 users.remove(getUserHexEncodedPublicKey())
@@ -74,9 +75,9 @@ public final class ProfilePictureView : UIView {
                 if users.count == 1 {
                     randomUsers.insert(getUserHexEncodedPublicKey(), at: 0) // Ensure the current user is at the back visually
                 }
-                hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
-                additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
-                isRSSFeed = false
+                publicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
+                additionalPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                useFallbackPicture = false
             }
             update()
         } else { // A one-to-one chat
@@ -97,7 +98,7 @@ public final class ProfilePictureView : UIView {
             }
         }
         let size: CGFloat
-        if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed, openGroupProfilePicture == nil {
+        if let additionalPublicKey = additionalPublicKey, !useFallbackPicture, openGroupProfilePicture == nil {
             if self.size == 40 {
                 size = 32
             } else if self.size == Values.largeProfilePictureSize {
@@ -110,7 +111,7 @@ public final class ProfilePictureView : UIView {
             additionalImageViewWidthConstraint.constant = size
             additionalImageViewHeightConstraint.constant = size
             additionalImageView.isHidden = false
-            additionalImageView.image = getProfilePicture(of: size, for: additionalHexEncodedPublicKey)
+            additionalImageView.image = getProfilePicture(of: size, for: additionalPublicKey)
         } else {
             size = self.size
             imageViewWidthConstraint.constant = size
@@ -118,13 +119,13 @@ public final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
-        guard hexEncodedPublicKey != nil || openGroupProfilePicture != nil else { return }
-        imageView.image = isRSSFeed ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: hexEncodedPublicKey))
-        imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : Colors.unimportant
+        guard publicKey != nil || openGroupProfilePicture != nil else { return }
+        imageView.image = useFallbackPicture ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: publicKey))
+        imageView.backgroundColor = useFallbackPicture ? UIColor(rgbHex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         additionalImageView.layer.cornerRadius = size / 2
-        imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
-        if isRSSFeed {
+        imageView.contentMode = useFallbackPicture ? .center : .scaleAspectFit
+        if useFallbackPicture {
             switch size {
             case Values.smallProfilePictureSize..<Values.mediumProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite16")
             case Values.mediumProfilePictureSize..<Values.largeProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite24")

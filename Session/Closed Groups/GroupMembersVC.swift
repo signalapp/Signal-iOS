@@ -148,7 +148,7 @@ private extension GroupMembersVC {
         
         // MARK: Updating
         private func update() {
-            profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
+            profilePictureView.publicKey = hexEncodedPublicKey
             profilePictureView.update()
             displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
         }

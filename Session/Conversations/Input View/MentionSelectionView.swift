@@ -157,7 +157,7 @@ private extension MentionSelectionView {
         // MARK: Updating
         private func update() {
             displayNameLabel.text = mentionCandidate.displayName
-            profilePictureView.hexEncodedPublicKey = mentionCandidate.publicKey
+            profilePictureView.publicKey = mentionCandidate.publicKey
             profilePictureView.update()
             if let server = openGroupServer, let channel = openGroupChannel {
                 let isUserModerator = OpenGroupAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
