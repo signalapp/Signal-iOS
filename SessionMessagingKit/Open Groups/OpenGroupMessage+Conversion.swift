@@ -29,7 +29,7 @@ internal extension OpenGroupMessage {
         // Link preview
         if let linkPreview = message.linkPreview {
             guard linkPreview.isValid, let attachmentID = linkPreview.attachmentID,
-                let attachment = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction) else { return nil }
+                let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream else { return nil }
             if let index = attachmentIDs.firstIndex(of: attachmentID) {
                 attachmentIDs.remove(at: index)
             }
@@ -55,7 +55,7 @@ internal extension OpenGroupMessage {
         }
         // Attachments
         let attachments: [OpenGroupMessage.Attachment] = attachmentIDs.compactMap { attachmentID in
-            guard let attachment = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction) else { return nil } // Should never occur
+            guard let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream else { return nil } // Should never occur
             let fileName = attachment.sourceFilename ?? UUID().uuidString
             let width = attachment.shouldHaveImageSize() ? attachment.imageSize().width : 0
             let height = attachment.shouldHaveImageSize() ? attachment.imageSize().height : 0

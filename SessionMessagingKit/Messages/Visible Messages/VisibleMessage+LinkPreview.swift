@@ -45,7 +45,7 @@ public extension VisibleMessage {
             }
             let linkPreviewProto = SNProtoDataMessagePreview.builder(url: url)
             if let title = title { linkPreviewProto.setTitle(title) }
-            if let attachmentID = attachmentID, let stream = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction),
+            if let attachmentID = attachmentID, let stream = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream,
                 let attachmentProto = stream.buildProto() {
                 linkPreviewProto.setImage(attachmentProto)
             }

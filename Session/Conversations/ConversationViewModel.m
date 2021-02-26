@@ -570,8 +570,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"");
-
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
 }
@@ -584,8 +582,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
 
     NSArray<NSNotification *> *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
     OWSAssertDebug([notifications isKindOfClass:[NSArray class]]);

@@ -86,7 +86,7 @@ public final class VisibleMessage : Message {
         }
         if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto(using: transaction) { dataMessage.setPreview([ linkPreviewProto ]) }
         // Attachments
-        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
+        let attachments = attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0, transaction: transaction) as? TSAttachmentStream }
         if !attachments.allSatisfy({ $0.isUploaded }) {
             #if DEBUG
             preconditionFailure("Sending a message before all associated attachments have been uploaded.")

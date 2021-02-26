@@ -15,13 +15,6 @@ extension MessageSender {
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)
         JobQueue.shared.add(job, using: transaction)
-        guard let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { return }
-        if case .contact(let recipientPublicKey) = destination, message is VisibleMessage, recipientPublicKey != userPublicKey {
-            DispatchQueue.main.async {
-                // Not strictly true, but nicer from a UX perspective
-                NotificationCenter.default.post(name: .encryptingMessage, object: NSNumber(value: message.sentTimestamp!))
-            }
-        }
     }
 
     // MARK: Non-Durable
@@ -46,7 +39,7 @@ extension MessageSender {
     }
     
     public static func sendNonDurably(_ message: VisibleMessage, with attachmentIDs: [String], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
+        let attachments = attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0, transaction: transaction) as? TSAttachmentStream }
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
         let attachmentUploadPromises: [Promise<Void>] = attachmentsToUpload.map { stream in
             let openGroup = SNMessagingKitConfiguration.shared.storage.getOpenGroup(for: thread.uniqueId!)

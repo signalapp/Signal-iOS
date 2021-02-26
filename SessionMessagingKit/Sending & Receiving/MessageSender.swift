@@ -128,11 +128,6 @@ public final class MessageSender : NSObject {
         // Set the failure handler (need it here already for precondition failure handling)
         func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
             MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
-            if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
-                }
-            }
             seal.reject(error)
         }
         // Validate the message
@@ -170,11 +165,6 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Encrypt the serialized protobuf
-        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .encryptingMessage, object: NSNumber(value: message.sentTimestamp!))
-            }
-        }
         let ciphertext: Data
         do {
             switch destination {
@@ -211,11 +201,6 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Calculate proof of work
-        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .calculatingMessagePoW, object: NSNumber(value: message.sentTimestamp!))
-            }
-        }
         let recipient = message.recipient!
         let base64EncodedData = wrappedMessage.base64EncodedString()
         guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: message.ttl, publicKey: recipient, data: base64EncodedData) else {
@@ -224,11 +209,6 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Send the result
-        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
-            }
-        }
         let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp, nonce: nonce)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
@@ -238,11 +218,6 @@ public final class MessageSender : NSObject {
                 let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
-                    if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
-                        }
-                    }
                     storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
                         var shouldNotify = (message is VisibleMessage && !isSyncMessage)

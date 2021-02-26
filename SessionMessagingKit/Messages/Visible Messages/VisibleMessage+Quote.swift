@@ -63,7 +63,7 @@ public extension VisibleMessage {
 
         private func addAttachmentsIfNeeded(to quoteProto: SNProtoDataMessageQuote.SNProtoDataMessageQuoteBuilder, using transaction: YapDatabaseReadWriteTransaction) {
             guard let attachmentID = attachmentID else { return }
-            guard let stream = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction), stream.isUploaded else {
+            guard let stream = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream, stream.isUploaded else {
                 #if DEBUG
                 preconditionFailure("Sending a message before all associated attachments have been uploaded.")
                 #else

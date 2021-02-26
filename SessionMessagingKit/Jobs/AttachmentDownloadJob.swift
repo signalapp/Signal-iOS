@@ -49,7 +49,12 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     // MARK: Running
     public func execute() {
-        guard let pointer = TSAttachmentPointer.fetch(uniqueId: attachmentID) else {
+        if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
+            // FIXME: It's not clear * how * this happens, but apparently we can get to this point
+            // from time to time with an already downloaded attachment.
+            return handleSuccess()
+        }
+        guard let pointer = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentPointer else {
             return handleFailure(error: Error.noAttachment)
         }
         let storage = SNMessagingKitConfiguration.shared.storage
