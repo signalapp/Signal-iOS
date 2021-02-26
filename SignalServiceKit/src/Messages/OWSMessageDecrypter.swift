@@ -471,7 +471,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             decryptResult = try cipher.throwswrapped_decryptMessage(
                 certificateValidator: certificateValidator,
                 cipherTextData: encryptedData,
-                timestamp: envelope.timestamp,
+                timestamp: envelope.serverTimestamp,
                 localE164: localAddress.phoneNumber,
                 localUuid: localAddress.uuid,
                 localDeviceId: Int32(localDeviceId),
