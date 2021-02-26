@@ -244,7 +244,7 @@ extension MessageReceiver {
             let contact = Storage.shared.getContact(with: sessionID) ?? Contact(sessionID: sessionID)
             if let displayName = newProfile.displayName, displayName != oldProfile?.profileName {
                 profileManager.updateProfileForContact(withID: sessionID, displayName: displayName, with: transaction)
-                contact.displayName = displayName
+                contact.name = displayName
             }
             if let profileKey = newProfile.profileKey, let profilePictureURL = newProfile.profilePictureURL, profileKey.count == kAES256_KeyByteLength,
                 profileKey != oldProfile?.profileKey?.keyData {

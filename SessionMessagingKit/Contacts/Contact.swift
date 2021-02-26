@@ -2,10 +2,12 @@
 @objc(SNContact)
 public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     @objc public let sessionID: String
-    /// The display name of the contact.
+    /// The name of the contact.
     ///
     /// - Note: In open groups use `openGroupDisplayName`.
-    @objc public var displayName: String?
+    @objc public var name: String?
+    /// The contact's nickname.
+    @objc public var nickname: String?
     /// The URL from which to fetch the contact's profile picture.
     @objc public var profilePictureURL: String?
     /// The file name of the contact's profile picture on local storage.
@@ -17,11 +19,25 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     
     /// In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
     /// a user's display name for added context.
-    public var openGroupDisplayName: String? {
-        guard let displayName = displayName else { return nil }
+    @objc public var openGroupDisplayName: String? {
+        guard let name = name else { return nil }
         let endIndex = sessionID.endIndex
         let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
-        return "\(displayName) (...\(sessionID[cutoffIndex..<endIndex]))"
+        return "\(name) (...\(sessionID[cutoffIndex..<endIndex]))"
+    }
+    
+    @objc public func displayName(for context: Context) -> String? {
+        if let nickname = nickname { return nickname }
+        switch context {
+        case .regular: return name
+        case .openGroup: return openGroupDisplayName
+        }
+    }
+    
+    // MARK: Context
+    @objc(SNContactContext)
+    public enum Context : Int {
+        case regular, openGroup
     }
     
     // MARK: Initialization
@@ -43,7 +59,8 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public required init?(coder: NSCoder) {
         guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
         self.sessionID = sessionID
-        if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
+        if let name = coder.decodeObject(forKey: "displayName") as! String? { self.name = name }
+        if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
         if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
         if let profilePictureFileName = coder.decodeObject(forKey: "profilePictureFileName") as! String? { self.profilePictureFileName = profilePictureFileName }
         if let profilePictureEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profilePictureEncryptionKey = profilePictureEncryptionKey }
@@ -52,7 +69,8 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     public func encode(with coder: NSCoder) {
         coder.encode(sessionID, forKey: "sessionID")
-        coder.encode(displayName, forKey: "displayName")
+        coder.encode(name, forKey: "displayName")
+        coder.encode(nickname, forKey: "nickname")
         coder.encode(profilePictureURL, forKey: "profilePictureURL")
         coder.encode(profilePictureFileName, forKey: "profilePictureFileName")
         coder.encode(profilePictureEncryptionKey, forKey: "profilePictureEncryptionKey")
@@ -72,10 +90,6 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     // MARK: Description
     override public var description: String {
-        if let displayName = displayName {
-            return displayName
-        } else {
-            return sessionID
-        }
+        nickname ?? name ?? sessionID
     }
 }

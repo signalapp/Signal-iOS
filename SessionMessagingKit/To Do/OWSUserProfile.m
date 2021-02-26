@@ -280,7 +280,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             completion:completion];
         
         SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
-        contact.displayName = [profileName ows_stripped];
+        contact.name = [profileName ows_stripped];
         contact.profilePictureURL = avatarUrlPath;
         contact.profilePictureFileName = avatarFileName;
         [LKStorage.shared setContact:contact usingTransaction:transaction];
@@ -304,7 +304,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             completion:completion];
         
         SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
-        contact.displayName = [profileName ows_stripped];
+        contact.name = [profileName ows_stripped];
         contact.profilePictureURL = avatarUrlPath;
         contact.profilePictureFileName = avatarFileName;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -326,7 +326,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             completion:completion];
     
     SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
-    contact.displayName = [profileName ows_stripped];
+    contact.name = [profileName ows_stripped];
     contact.profilePictureURL = avatarUrlPath;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [LKStorage.shared setContact:contact usingTransaction:transaction];

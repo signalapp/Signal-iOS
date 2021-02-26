@@ -74,7 +74,7 @@ final class ConversationTitleView : UIView {
             let sessionID = thread.contactIdentifier()!
             var result = sessionID
             Storage.read { transaction in
-                result = Storage.shared.getContact(with: sessionID)?.displayName ?? "Anonymous"
+                result = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? "Anonymous"
             }
             return result
         }

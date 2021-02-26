@@ -26,7 +26,7 @@ public class ContactsMigration : OWSDatabaseMigration {
                     profileOrNil = profile
                 }
                 if let profile = profileOrNil {
-                    contact.displayName = profile.profileName
+                    contact.name = profile.profileName
                     contact.profilePictureURL = profile.avatarUrlPath
                     contact.profilePictureFileName = profile.avatarFileName
                     contact.profilePictureEncryptionKey = profile.profileKey
@@ -42,7 +42,7 @@ public class ContactsMigration : OWSDatabaseMigration {
                     guard !contacts.contains(where: { $0.sessionID == memberSessionID }) else { return }
                     let contact = Contact(sessionID: memberSessionID)
                     if let profile = OWSUserProfile.fetch(uniqueId: memberSessionID, transaction: transaction) {
-                        contact.displayName = profile.profileName
+                        contact.name = profile.profileName
                         contact.profilePictureURL = profile.avatarUrlPath
                         contact.profilePictureFileName = profile.avatarFileName
                         contact.profilePictureEncryptionKey = profile.profileKey
