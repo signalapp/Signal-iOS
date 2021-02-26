@@ -530,7 +530,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 return .failure(underlyingError)
             }
 
-            owsFailDebug("Could not decrypt UD message: \(underlyingError)")
+            owsFailDebug("Could not decrypt UD message: \(underlyingError), identified envelope: \(description(for: identifiedEnvelope))")
             return .failure(underlyingError)
         }
 
