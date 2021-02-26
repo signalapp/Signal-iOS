@@ -53,11 +53,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     
     private lazy var inputTextView = InputTextView(delegate: self)
 
-    private lazy var additionalContentContainer: UIView = {
-        let result = UIView()
-        result.heightAnchor.constraint(greaterThanOrEqualToConstant: 4).isActive = true
-        return result
-    }()
+    private lazy var additionalContentContainer = UIView()
 
     // MARK: Settings
     private static let linkPreviewViewInset: CGFloat = 6
@@ -108,7 +104,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         addSubview(mainStackView)
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
-        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
+        mainStackView.pin(.bottom, to: .bottom, of: self)
         // Mentions
         insertSubview(mentionsViewContainer, belowSubview: mainStackView)
         mentionsViewContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
