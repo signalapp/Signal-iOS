@@ -1,6 +1,5 @@
-• This update introduces a few major accessibility enhancements, including VoiceOver descriptions of conversation messages.
-• Even if your thumbs are slow, sending messages will still be faster whenever you tap the send button in large groups.
-• The new design for the attachment upload and download progress indicators might look even better than the attachment that they sent you.
-• Several low-memory crashes have become distant-memory crashes, so you can forget about them.
+• Between the improvements in this update and the improvements in the last update, Signal can now process 16,500% more messages per second. Now you can immediately see the mountain of unread messages that arrived while your cellular reception was taking a hike.
+• Incoming video calls weren't always ringing for some users on iOS 14, but we aren't hung up on this bug anymore.
+• People with tons and tons of contacts may still struggle to handle the weight of their own popularity, but Signal no longer makes them wait as long or struggles to handle their super-large address books.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
