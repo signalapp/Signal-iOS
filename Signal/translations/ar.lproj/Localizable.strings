@@ -2606,10 +2606,10 @@
 "LINK_DEVICE_RESTART" = "إعادة المُحاولة";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "قم بمسح رمز الاستجابة السريعة الظاهر على الجهاز الذي تُريد ربطه.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "اِمسَح رَمز الاِستِجابَة السَّريعَة الظَّاهِر عَلَى الجِهاز الَّذي تُريدُ رَبطَه.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "مسح رمز الاستجابة السريعة";
+"LINK_NEW_DEVICE_SUBTITLE" = "مَسح رَمز الاِستِجابَة السَّريعَة";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ربط جهاز جديد";
@@ -3695,7 +3695,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ما عليك إلا التحدث بكل حرية";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخذُ اِستِراحةً";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخُذُ اِستِراحة";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أَعمَلُ عَلَى شَيءٍ جَدِيد";
@@ -4040,7 +4040,7 @@
 "SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "مسح رمز الاستجابة السريعة";
+"SCAN_QR_CODE_VIEW_TITLE" = "مَسح رَمز الاِستِجابَة السَّريعَة";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فوراً";
@@ -4274,7 +4274,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الـiPad الخاص بك";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "امسح رمز الاستجابة السريعة عن طريق هاتفك";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اِمسَح رَمز الاِستِجابَة السَّريعَة عَن طَريق هاتِفك";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "قُم بتشغيل Signal على جهاز الـiPad القديم الخاص بك حتى تنقل الحساب الخاص بك";
@@ -5165,16 +5165,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "إنَّ اسم الجهاز طويل جدًا";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "أنتَ قد علََّمتَ %@ كغير مُتحقَّق منه.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %@ كغير مُتحقَّق منه.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علََّمتَ %@ كغير مُتحقَّق منه على جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %@ كغير مُتحقَّق منه على جهاز آخر.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "أنتَ قد علََّمتَ %@ كمُتحقَّق منه.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %@ كمُتحقَّق منه.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علََّمتَ %@ كمُتحقَّق منه على جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %@ كمُتحقَّق منه على جهاز آخر.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "لقد تغيَّرت حالة التَحقُّق.";

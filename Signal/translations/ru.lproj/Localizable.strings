@@ -89,7 +89,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Добавить в %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ — уже участник(-ца) %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ — уже в группе %@";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "Недавние";
@@ -437,7 +437,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить вам или отправлять вам сообщения.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Новинка: размойте лица или рисуйте, чтобы размыть.";
+"BLUR_TOOLTIP" = "Новинка: размытие лиц и любых других фрагментов";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Добавить";
@@ -530,7 +530,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Отключить микрофон";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ получит от вас запрос на общение. Вы сможете звонить после того, как ваш запрос на общение будет принят.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ получит от вас запрос на общение. Вы сможете позвонить после того, как ваш запрос будет принят.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Переключить направление камеры";
@@ -785,7 +785,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Удалить чат?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Вы не можете выбрать больше, чем %@ чатов.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Вы не можете выбрать больше %@ чатов.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Группы";
@@ -1154,10 +1154,10 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Не удалось завершить перенос. Пожалуйста, убедитесь, что ваши устройства находятся рядом друг с другом и попробуйте ещё раз";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Чтобы настроить этот iPad как привязанное устройство, вы должны сканировать с помощью своего старого iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Чтобы настроить этот iPad как привязанное устройство, вам нужно просканировать с помощью своего старого iPad";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Чтобы перенести свою учётную запись, вы должны сканировать с помощью своего iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Чтобы перенести свою учётную запись, вам нужно просканировать с помощью своего iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Недостаточно свободного места, чтобы завершить перенос";
@@ -1184,7 +1184,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Ожидание другого устройства…";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Держите оба устройства рядом друг с другом. Не выключайте ни одно из устройств и оставляйте Signal открытым. Переносы защищены сквозным шифрованием.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Держите оба устройства рядом друг с другом. Не выключайте ни одно из них и оставьте Signal открытым. Переносы защищены сквозным шифрованием.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Получение данных";
@@ -1193,13 +1193,13 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Подключение…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поместите этот QR-код внутри круга";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поместите этот QR-код внутрь круга";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Поднесите своё новое устройство к камере";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Держите оба устройства рядом друг с другом. Не выключайте ни одно из устройств и оставляйте Signal открытым.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Держите оба устройства рядом друг с другом. Не выключайте ни одно из них и оставьте Signal открытым.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Передача данных";
@@ -1511,22 +1511,22 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ изменил(-а), кто может редактировать информацию группы, на «%2$@».";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Информация группы может быть изменена «%@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Информацию группы теперь могут изменять «%@».";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Только администраторы";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Любой пользователь";
+"GROUP_ACCESS_LEVEL_ANY" = "Любые пользователи";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "Все участники";
 
 /* Description of the 'unknown' access level. */
-"GROUP_ACCESS_LEVEL_UNKNOWN" = "Неизвестный";
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "Неизвестно";
 
 /* Description of the 'unsatisfiable' access level. */
-"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Отключена";
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Отключено";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Вы изменили, кто может редактировать членство в группе, на «%@».";
@@ -1535,7 +1535,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ изменил(-а), кто может редактировать членство в группе, на «%2$@».";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Членство в группе может быть изменено «%@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Членство в группе теперь могут изменять «%@».";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Только администраторы могут изменять эту опцию.";
@@ -1577,13 +1577,13 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "В этом звонке · %ld человек(-а)";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ и ещё %3$@ человек(-а) в этом звонке";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ и ещё %3$@ в этом звонке";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Невозможно получать аудио и видео от %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Причина может заключаться в том, что этот участник не проверил изменение вашего кода безопасности, что есть какая-то проблема с его устройством или что он вас заблокировал.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Возможно, это из-за того, что этот участник не подтвердил изменение вашего кода безопасности, что есть какая-то проблема с его устройством или что он вас заблокировал.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Невозможно получать аудио и видео от %@";
@@ -1595,10 +1595,10 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "В этом звонке ещё никого нет.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ и ещё %ld человек(-а) присоединились к звонку";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ и ещё %ld присоединились к звонку";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ и ещё %ld человек(-а) покинули звонок";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ и ещё %ld покинули звонок";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ присоединился(-лась) к звонку";
@@ -1619,7 +1619,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ в этом звонке";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Пересоединяемся";
+"GROUP_CALL_RECONNECTING" = "Переподключаемся";
 
 /* notification body when a group call participant joins with an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Кто-то с изменившимся кодом безопасности присоединился к этому звонку.";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ начал(-а) групповой звонок";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ и ещё 1 человек в этом звонке";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ и ещё 1 в этом звонке";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ и %2$@ в этом звонке";
@@ -1724,22 +1724,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ отключил(-а) ссылку на группу.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Была включена ссылка на группу со включённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Была включена ссылка на группу (одобрение администратором включено).";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу со включённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу (одобрение администратором включено).";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) ссылку на группу со включённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) ссылку на группу  (одобрение администратором включено).";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Была включена ссылка на группу с отключённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Была включена ссылка на группу (одобрение администратором отключено).";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу с отключённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Вы включили ссылку на группу (одобрение администратором отключено).";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) ссылку на группу с отключённым одобрением администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) ссылку на группу (одобрение администратором отключено).";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "Ссылка на группу была сброшена.";
@@ -1769,7 +1769,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ включил(-а) одобрение администратора для ссылки на группу.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ не может быть автоматически добавлен(-а) вами в эту группу. Он(-а) был(-а) приглашен(-а) присоединиться и не увидит никакие сообщения группы до того, как примет приглашение.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Вы не можете автоматически добавить %@ в эту группу. Ему (ей) было отправлено приглашение присоединиться, и он(-а) не увидит сообщений в группе, пока не примет приглашение.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Приглашение отправлено";
@@ -1778,7 +1778,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ приглашений отправлено";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Эти пользователи не могут быть автоматически добавлены вами в эту группу. Они были приглашены присоединиться и не увидят никакие сообщения группы до того, как примут приглашение.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Вы не можете автоматически добавить этих пользователей в эту группу. Им было отправлено приглашение присоединиться, и они не увидят сообщений в группе, пока не примут приглашение.";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "Приглашения участников";
@@ -1799,7 +1799,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Загружаем…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Вы хотите присоединиться к этой группе и поделиться своими именем и фото с её участниками?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Вы хотите присоединиться к этой группе и открыть своё имя и фото её участникам?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Пожалуйста, убедитесь, что вы онлайн, и попробуйте снова.";
@@ -1808,7 +1808,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Пожалуйста, попробуйте ещё раз.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Это недействительная ссылка на группу. Убедитесь, что вся ссылка неповреждённая и правильная перед тем, как пытаться присоединиться.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Это недействительная ссылка на группу. Убедитесь, что вся ссылка не повреждена и верна перед тем, как пытаться присоединиться.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Недействительная ссылка";
@@ -1817,13 +1817,13 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Обновите Signal на этом устройстве, чтобы присоединиться к этой группе.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Требовать принятия администратором новых участников, присоединяющихся по ссылке на группу.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Требовать одобрения администратором новых участников, присоединяющихся по ссылке на группу.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Одобрение новых участников";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Включить и поделиться ссылкой";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Включить ссылку и поделиться ей";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Поделиться ссылкой";
@@ -1859,7 +1859,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Управлять и поделиться";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Требовать принятия администратором новых участников, присоединяющихся по ссылке на группу.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Требовать одобрения администратором новых участников, присоединяющихся по ссылке на группу.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Запросы на участие";
@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Поделиться через Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Любой, у кого есть эта ссылка, может просмотреть имя и участников этой группы и отправить запрос на присоединение. Делитесь ей с людьми, которым вы доверяете.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Любой, у кого есть эта ссылка, может просмотреть имя этой группы и её участников, а также отправить запрос на присоединение. Делитесь ей с людьми, которым вы доверяете.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Ссылка на группу";
@@ -2063,7 +2063,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ присоединился(-лась) к группе.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ присоединился(-лась) к группе по ссылке на группу.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ присоединился(-лась) к группе по ссылке.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ покинул(-а) группу.";
@@ -2093,10 +2093,10 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Запрос на присоединение к группе от %@ был отклонён.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ запросил(-а) присоединиться по ссылке на группу.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ запросил(-а) присоединение к группе по ссылке.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Привилегии администратора у %@ были отозваны.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "У %@ были отозваны привилегии администратора.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Вы отозвали привилегии администратора у %@.";
@@ -2162,22 +2162,22 @@
 "GROUP_WAS_MIGRATED" = "Эта группа была обновлена до Новой группы.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Один из участников не мог быть добавлен в Новую группу, поэтому был удалён из группы.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Одного из участников невозможно было добавить в Новую группу, и он был удалён.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Вы не могли быть добавлены в Новую группу, поэтому были удалены из группы.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Вас невозможно было добавить в Новую группу, и вы были удалены.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ участников не могли быть добавлены в Новую группу, поэтому были удалены из группы.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ участников невозможно было добавить в Новую группу, и они были удалены.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Один из участников не мог быть добавлен в Новую группу, поэтому был приглашён присоединиться";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Одного из участников невозможно было добавить в Новую группу, и ему было отправлено приглашение.";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Вы не могли быть добавлены в Новую группу, поэтому были приглашены присоединиться";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Вас невозможно было добавить в Новую группу, поэтому вы получили приглашение присоединиться.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ участников не могли быть добавлены в Новую группу, поэтому были приглашены присоединиться.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ участников невозможно было добавить в Новую группу, и им было отправлено приглашение.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Вы покинули группу.";
@@ -2234,7 +2234,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Когда все существующие участники группы станут использовать версию Signal, которая может присоединяться к Новым группам, эта группа будет обновлена.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Вся история сообщений и все медиа будут оставлены при обновлении.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Вся история сообщений и все медиафайлы будут оставлены при обновлении.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Эта группа не может быть создана, потому что 1 участник использует старую версию Signal. Вы можете создать группу нового типа после того, как этот участник обновит Signal или удалить его перед созданием группы.";
@@ -2273,31 +2273,31 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Это Старая группа. Чтобы получить доступ к таким функциям, как @упоминания и администраторы групп, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Один из участников не мог быть заново добавлен в Новую группу. Вы хотите добавить его сейчас?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Одного из участников не удалось автоматически добавить в Новую группу. Добавить его сейчас?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ участников не могли быть заново добавлены в Новую группу. Вы хотите добавить их сейчас?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ участников не удалось автоматически добавить в Новую группу. Добавить их сейчас?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Старая группа";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Вам будет необходимо принять приглашение, чтобы заново присоединиться к этой группе. Вы не будете получать сообщения группы до того, как примете его.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Вам будет необходимо принять приглашение, чтобы заново присоединиться к этой группе. Вы не будете получать сообщения группы, пока не примете его.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Обновить группу";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Чтобы получить доступ к таким новым функциям, как @упоминания и администраторы групп, обновите эту группу.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Чтобы получить доступ к новым функциям, таким как @упоминания и администраторы групп, обновите эту группу.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Что такое Новые группы?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Вся история сообщений и все медиа были оставлены при обновлении.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "История сообщений и все медиафайлы при обновлении остались на своих местах.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "В Новых группах есть такие функции, как @упоминания и администраторы групп, и они будут поддерживать больше функций в будущем.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "В Новых группах есть такие функции, как @упоминания и администраторы групп, и в будущем они будут поддерживать больше функций.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Новые группы";
@@ -2321,13 +2321,13 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Эти участники не могли быть добавлены в Новую группу автоматически, когда группа была обновлена:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Вся история сообщений и все медиа были оставлены при обновлении.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "История сообщений и все медиафайлы при обновлении остались на своих местах.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Этот участник был удалён из группы и не сможет присоединиться заново до того, как обновит Signal до новейшей версии:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Этот участник был удалён из группы и не сможет присоединиться заново, пока не обновит Signal до новейшей версии:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Эти участники были удалены из группы и не смогут присоединиться заново до того, как обновят Signal до новейшей версии:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Эти участники были удалены из группы и не смогут присоединиться заново, пока не обновят Signal до новейшей версии:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Этому участнику будет необходимо принять приглашение, чтобы заново присоединиться к этой группе, и он не будет получать сообщения группы до того, как примет приглашение:";
@@ -2432,7 +2432,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Рисуйте в любом месте, чтобы размыть";
+"IMAGE_EDITOR_BLUR_HINT" = "Зарисуйте участок, чтобы размыть его";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Размыть лица";
@@ -2462,7 +2462,7 @@
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Принят на другом устройстве.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Пропущен, потому что выполняется звонок на другом устройстве.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Пропущен, потому что идёт звонок на другом устройстве.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Отклонён на другом устройстве.";
@@ -2495,7 +2495,7 @@
 "INCOMING_CALL_FORMAT" = "%@ звонил(-а) вам";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Сообщения, которые вы теперь отправляете и получаете с телефона или iPad, будут синхронизироваться.\nДля вашей безопасности история переписки не переносится на новые привязанные устройства.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Сообщения, которые вы теперь отправляете и получаете с телефона или iPad, будут синхронизироваться.\nДля вашей безопасности история переписки не переносится на вновь привязанные устройства.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ теперь в Signal!";
@@ -2831,7 +2831,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Ваш контакт";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Если вы не уверены, от кого этот запрос, просмотрите контактов ниже и примите меры.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Если вы не уверены, от кого этот запрос, просмотрите участников ниже и примите меры.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Запрос";
@@ -2852,10 +2852,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своими именем и фото с этим человеком? Вы не получите никаких сообщений, пока не разблокируете его.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и открыть ваше имя и фото этому человеку? Вы не получите никаких сообщений, пока не разблокируете его.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблокировать эту группу и поделиться своими именем и фото с её участниками? Вы не будете получать сообщений, пока не разблокируете эту группу.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблокировать эту группу и открыть ваше имя и фото её участникам? Вы не будете получать сообщений, пока не разблокируете эту группу.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Разблокировать эту группу? Её участники не узнают, что вы видели их сообщения, пока вы не разблокируете группу.";
@@ -2867,16 +2867,16 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Удалить";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Продолжить этот чат с %@ и поделиться своими именем и фото с этим человеком?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Продолжить этот чат с %@ и открыть ваши имя и фото этому человеку?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Продолжить ваш чат с этой группой и поделиться своими именем и фото с её участниками?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Продолжить ваш чат с этой группой и открыть ваше имя и фото её участникам?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своими именем и фото с этим человеком? Он не узнает, что вы видели его сообщение, пока вы не примете.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и открыть ваше имя и фото этому человеку? Он не узнает, что вы видели его сообщение, пока вы не примете запрос.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Присоединиться к этой группе и поделиться своими именем и фото с её участниками? Они не узнают, что вы видели их сообщения, пока вы не примете.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Присоединиться к этой группе и открыть ваше имя и фото её участникам? Они не узнают, что вы видели их сообщения, пока вы не примете запрос.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Присоединиться к этой группе? Её участники не узнают, что вы видели их сообщения, пока вы не примете запрос.";
@@ -3359,7 +3359,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Отозвать приглашение в группу для «%@»?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Подробности людей, приглашённых другими участниками группы, не показываются. Если приглашённые решат присоединиться, их информация станет доступна группе. Они не увидят никаких сообщений в группе до того, как присоединятся.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Подробности о людях, приглашённых другими участниками группы, не показываются. Если приглашённые решат присоединиться, их информация станет доступна группе. Они не увидят никаких сообщений в группе, пока не присоединятся.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Люди в этом списке пытаются присоединиться к «%@» по ссылке на группу.";
@@ -3518,7 +3518,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Не удалось создать PIN-код";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваши настройки, контакты и профиль будут восстановлены, если вы переустановите Signal. Ваш PIN-код не нужен для открытия приложения.";
+"PIN_CREATION_EXPLANATION" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal. Ваш PIN-код не нужен, чтобы открыть приложение.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Узнать больше о PIN-кодах";
@@ -3611,7 +3611,7 @@
 "PINS_MEGAPHONE_ACTION" = "Создать PIN-код";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN-коды хранят информацию в сервисе Signal зашифрованной";
+"PINS_MEGAPHONE_BODY" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Мы напомним вам позже. Создание PIN-кода станет обязательным через %ld дней.";
@@ -3923,7 +3923,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Мы не можем активировать ваш аккаунт, пока вы не подтвердите код, который был вам отправлен.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Чтобы продолжить, проверьте подключение к интернету вашего телефона и попробуйте ещё раз.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Чтобы продолжить, проверьте, подключён ли ваш телефон к интернету, и попробуйте ещё раз.";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Проверьте подключение";
@@ -3959,7 +3959,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Нет номера телефона";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "На этот номер будет отправлен код подтверждения. Правильный ли ваш номер телефона выше?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "На этот номер будет отправлен код подтверждения. Правильно ли указан ваш номер телефона выше?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Подтверждение номера: %@";
@@ -3983,7 +3983,7 @@
 "REREGISTER_FOR_PUSH" = "Зарегистрироваться заново";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Чтобы сделать Signal лучшим приложением для обмена сообщениями на планете, мы были бы рады услышать вашу обратную связь.";
+"RESEARCH_MEGAPHONE_BODY" = "Чтобы сделать Signal лучшим мессенджером на свете, мы были бы рады услышать ваши комментарии.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "Расскажите Signal, что вы думаете";
@@ -3995,7 +3995,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Нет, спасибо";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Мы верим в конфиденциальность.</bold>\n\nSignal не следит за вами и не собирает ваши данные. Чтобы улучшать Signal для всех, мы полагаемся на обратную связь от пользователей, <bold>и мы были бы рады услышать вашу</bold>.\n\nМы проводим опрос, чтобы понять, как вы используете Signal. Наш опрос не собирает никаких данных, которые идентифицируют вас. Если вам интересно поделиться дополнительной обратной связью, у вас будет опция предоставить контактную информацию.\n\nЕсли у вас есть несколько минут и обратная связь, которой вы хотите поделиться, мы были бы рады услышать от вас.";
+"RESEARCH_MODAL_PLEA" = "<bold>Мы верим в конфиденциальность.</bold>\n\nSignal не следит за вами и не собирает ваши данные. Чтобы улучшать Signal для всех, мы полагаемся на обратную связь от пользователей, <bold>и мы были бы рады услышать ваши комментарии</bold>.\n\nМы проводим опрос, чтобы понять, как вы используете Signal. Наш опрос не собирает никаких данных, которые идентифицируют вас. Если вам интересно поделиться дополнительными комментариями, вы сможете оставить свою контактную информацию.\n\nЕсли у вас есть несколько минут и комментарии, которыми вы хотите поделиться, мы были бы рады услышать вас.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Пройти опрос";
@@ -4079,7 +4079,7 @@
 "SCREENSHOT_NAME_CONTACT_FIVE" = "Али Смирнов";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
-"SCREENSHOT_NAME_CONTACT_FOUR" = "Саша Ченг";
+"SCREENSHOT_NAME_CONTACT_FOUR" = "Саша Чен";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_NINE" = "Зевс Лехтонен";
@@ -4139,7 +4139,7 @@
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Спасибо! Какое прекрасное сообщение :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Льёт дождь, и я сижу здесь, просто слушая его.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Льёт дождь, а я сижу здесь и просто слушаю.";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "Я делала то же самое сегодня утром.";
@@ -4319,7 +4319,7 @@
 "SEND_SMS_INVITE_TITLE" = "Вы хотите пригласить следующий номер в Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal использует сквозное шифрование, и ему иногда может быть необходимо обновить сессию вашего чата. Это не затрагивает безопасность чата, но вы могли пропустить сообщение от этого собеседника. Вы можете попросить его отправить сообщение заново.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal использует сквозное шифрование, и ему иногда бывает нужно обновить сессию вашего чата. Это не затрагивает безопасность чата, но вы могли пропустить сообщение от этого собеседника. Вы можете попросить его отправить сообщение заново.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Сессия чата обновлена";
@@ -4484,10 +4484,10 @@
 "SETTINGS_DATA" = "Использование данных";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Использовать меньше данных";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Экономить трафик";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Использование меньшего количества данных может улучшить звонки при плохой связи";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Экономия трафика может улучшить звонки при плохой связи";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Звонки";
@@ -4547,7 +4547,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Создавать предпросмотры ссылок";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Получать предпросмотры ссылок напрямую от сайтов для сообщений, которые вы отправляете.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Скачивать предпросмотры ссылок напрямую с сайтов при отправке вами сообщений.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Никогда";
@@ -4613,19 +4613,19 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Отключить напоминания";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Убедитесь, что вы запомнили или безопасно сохранили свой PIN-код, так как он не может быть восстановлен. Если вы забудете свой PIN-код, вы можете потерять данные при повторной регистрации своей учётной записи Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Убедитесь, что вы запомнили или надёжно сохранили свой PIN-код, так как он не может быть восстановлен. Если вы забудете свой PIN-код, вы можете потерять данные при повторной регистрации своей учётной записи Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Подтвердите свой PIN-код Signal";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Подтвердите свой PIN-код";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Напоминания помогают вам запомнить свой PIN-код, так как он не может быть восстановлен. Напоминания будут появляться реже с течением времени.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Напоминания помогают вам запомнить свой PIN-код, так как восстановить его невозможно. Напоминания будут появляться реже со временем.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Напоминания PIN-кода";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Изменить свой PIN-код";
@@ -4634,7 +4634,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Создать PIN-код";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN-код SIGNAL";
+"SETTINGS_PINS_TITLE" = "PIN-КОД SIGNAL";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Показывать звонки в списке «Недавние» в приложении «Tелефон» iOS.";
@@ -4781,7 +4781,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Поделиться в Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Не удалось отключить предложения поделиться.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Не удалось отключить предложения.";
 
 /* Body for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Чаты Signal теперь могут показываться как предложения, когда вы используете функцию «Поделиться» в других приложениях.";

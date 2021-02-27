@@ -854,7 +854,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "సరిచేయు";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "సమూహ సమాచారాన్ని ఎవరు సవరించగలరు";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "సమూహ వివరణను ఎవరు సవరించగలరు";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "నిర్వాహకులు మాత్రమే";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_ONE_IN_THIS_CALL" = "ఈ కాల్‌లో · 1 వ్యక్తి";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ ఈ కాల్‌లో ఉంది";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ఈ కాల్‌లో ఉన్నారు";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "తిరిగి కనెక్ట్ చేస్తోంది";
@@ -2270,7 +2270,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "ఈ లెగసీ సమూహం  క్రొత్త సమూహానికి అప్‌గ్రేడ్ చేయబడదు ఎందుకంటే ఇది చాలా పెద్దది. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "ఇది లెగసీ సమూహం . Feations ప్రస్తావనలు మరియు నిర్వాహకులు వంటి క్రొత్త లక్షణాలను ప్రాప్తి చేయడానికి, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "ఇది లెగసీ గ్రూప్. @ ప్రస్తావనలు మరియు నిర్వాహకులు వంటి క్రొత్త లక్షణాలను ప్రాప్తి చేయడానికి, %@";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 సభ్యుడిని క్రొత్త గుంపుకు తిరిగి చేర్చలేరు. మీరు ఇప్పుడు వాటిని జోడించాలనుకుంటున్నారా?";
@@ -4325,7 +4325,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "చాట్ సెషన్ రిఫ్రెష్ చేయబడింది";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "ఫోటోల నుండి ఎంచుకోండి";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "ఛాయాచిత్రల నుండి ఎంచుకోండి";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "పూర్వఆకారాలు ";
@@ -4544,7 +4544,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "నిబంధనలు & గోప్యతా విధానం";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "v రూపొందించండి";
+"SETTINGS_LINK_PREVIEWS" = "లింక్ పూర్వప్రదర్శన రూపొందించండి";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "మీరు పంపే సందేశాల కోసం వెబ్‌సైట్ల నుండి నేరుగా లింక్ పూర్వప్రదర్శనలు తిరిగి పొందండి.";

@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "پیام صوتی";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "پیام صوتی %@ ثانیه";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "تماس با سیگنال";
@@ -902,7 +902,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "همیشه اطلاع دهید";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "در صورت بی‌صدا اعلان نفرست";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "دریافت اعلان وقتی به شما در گفت‌گو‌های صامت شده اشاره می‌شود؟";
@@ -965,7 +965,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "خارج کردن از حالت سکوت";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "آیا مایل به ذخیره تغییراتی که در این گفتگو ایجاد کرده‌اید، هستید؟";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "تغییرات ذخیره نشده";

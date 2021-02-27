@@ -1883,7 +1883,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal経由で共有する";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "誰でもこのリンクから、グループの名前とメンバーを見て、参加を申請できます。信頼できる人と共有してください。";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "誰でもこのリンクから、グループの名前とメンバーを見たり、参加を申請できます。信頼できる人と共有してください。";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "グループリンク";

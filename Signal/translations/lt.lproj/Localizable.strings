@@ -3197,7 +3197,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Suteikti leidimus";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Leidę prieigą prie pranešimų ir adresatų, matysite žinutes, kai jos atkeliaus ir lengviau rasite pažįstamus žmones. Adresatai yra šifruoti, todėl Signal paslauga negali jų matyti.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Suteikite leidimus";
