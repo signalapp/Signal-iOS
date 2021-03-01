@@ -1,14 +1,13 @@
 
-// TODO
-// • Slight paging glitch
-// • Photo rounding
-// • Scroll button behind mentions view
+// TODO:
+// • Slight paging glitch when scrolling up and loading more content
+// • Photo rounding (the small corners don't have the correct rounding)
 // • Remaining search glitchiness
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
-    let focusedMessageID: String?
-    var didConstrainScrollButton = false
+    let focusedMessageID: String? // This isn't actually used ATM
+    var didConstrainScrollButton = false // Part of a workaround to get the scroll button to show up in the right place
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -42,11 +41,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
     }
 
+    /// The height of the visible part of the table view, i.e. the distance from the navigation bar (where the table view's origin is)
+    /// to the top of the input view (`messagesTableView.adjustedContentInset.bottom`).
     var tableViewUnobscuredHeight: CGFloat {
         let bottomInset = messagesTableView.adjustedContentInset.bottom
         return messagesTableView.bounds.height - bottomInset
     }
 
+    /// The offset at which the table view is exactly scrolled to the bottom.
     var lastPageTop: CGFloat {
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
@@ -107,7 +109,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
     
     // MARK: Settings
+    /// The table view's bottom inset (content will have this distance to the bottom if the table view is fully scrolled down).
     static let bottomInset = Values.mediumSpacing
+    /// The table view will start loading more content when the content offset becomes less than this.
     static let loadMoreThreshold: CGFloat = 120
     /// The button will be fully visible once the user has scrolled this amount from the bottom of the table view.
     static let scrollButtonFullVisibilityThreshold: CGFloat = 80
@@ -162,6 +166,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if !didFinishInitialLayout {
+            // Scroll to the last unread message if possible; otherwise scroll to the bottom.
             var unreadCount: UInt = 0
             Storage.read { transaction in
                 unreadCount = self.thread.unreadMessageCount(transaction: transaction)
@@ -244,8 +249,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if !didConstrainScrollButton {
-            // Bit of a hack to do this here, but it works out.
-            scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16))
+            // HACK: Part of a workaround to get the scroll button to show up in the right place
+            scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
         let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
@@ -266,12 +271,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func conversationViewModelWillUpdate() {
-        
+        // Not currently in use
     }
     
     func conversationViewModelDidUpdate(_ conversationUpdate: ConversationUpdate) {
         guard self.isViewLoaded else { return }
-        // TODO: Reload the thread if it's a group thread?
         let updateType = conversationUpdate.conversationUpdateType
         guard updateType != .minor else { return } // No view items were affected
         if updateType == .reload {
@@ -298,11 +302,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             }
         }
         let batchUpdatesCompletion: (Bool) -> Void = { isFinished in
-            // TODO: Update last visible sort ID?
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: true)
             }
-            // TODO: Update last known distance from bottom
         }
         if shouldAnimate {
             messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)
@@ -327,11 +329,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 }
             }
         }
-        // TODO: Set last reload date?
     }
     
     func conversationViewModelWillLoadMoreItems() {
         view.layoutIfNeeded()
+        // The scroll distance to bottom will be restored in conversationViewModelDidLoadMoreItems
         scrollDistanceToBottomBeforeUpdate = messagesTableView.contentSize.height - messagesTableView.contentOffset.y
     }
     
@@ -343,19 +345,19 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func conversationViewModelDidLoadPrevPage() {
-        
+        // Not currently in use
     }
     
     func conversationViewModelRangeDidChange() {
-        
+        // Not currently in use
     }
     
     func conversationViewModelDidReset() {
-        
+        // Not currently in use
     }
     
     @objc private func handleGroupUpdatedNotification() {
-        thread.reload()
+        thread.reload() // Needed so that thread.isCurrentUserMemberInGroup() is up to date
         reloadInputViews()
     }
     
@@ -398,7 +400,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let firstContentPageTop: CGFloat = 0
         let contentOffsetY = max(firstContentPageTop, lastPageTop)
         messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
-        // TODO: Did scroll to bottom
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -430,14 +431,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func groupWasUpdated(_ groupModel: TSGroupModel) {
-        // Do nothing
+        // Not currently in use
     }
     
     // MARK: Search
     func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {
         showSearchUI()
         popAllConversationSettingsViews {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // Without this delay the search bar doesn't show
                 self.searchController.uiSearchController.searchBar.becomeFirstResponder()
             }
         }

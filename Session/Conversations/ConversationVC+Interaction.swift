@@ -92,6 +92,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func handleLibraryButtonTapped() {
+        // FIXME: We're not yet handling the case where the user only gives access to selected photos/videos
         guard requestLibraryPermissionIfNeeded() else { return }
         let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst()
         sendMediaNavController.sendMediaNavDelegate = self
@@ -122,7 +123,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        SNAppearance.switchToSessionAppearance()
+        SNAppearance.switchToSessionAppearance() // Switch back to the correct appearance
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -337,6 +338,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     // MARK: View Item Interaction
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
+        // Show the context menu if applicable
         guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
             let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
             let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false), contextMenuWindow == nil,
@@ -363,6 +365,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {
         if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
+            // Show the failed message sheet
             showFailedMessageSheet(for: message)
         } else {
             switch viewItem.messageCellType {
@@ -371,12 +374,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell, let albumView = cell.albumView else { return }
                 let locationInCell = gestureRecognizer.location(in: cell)
+                // Figure out whether the "read more" button was tapped
                 if let overlayView = cell.mediaTextOverlayView {
                     let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
                     if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
-                        return showFullText(viewItem) // FIXME: Bit of a hack to do it this way
+                        return showFullText(viewItem) // HACK: This is a dirty way to do this
                     }
                 }
+                // Otherwise, figure out which of the media views was tapped
                 let locationInAlbumView = cell.convert(locationInCell, to: albumView)
                 guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
                 if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
@@ -392,13 +397,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
                 gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
             case .genericAttachment:
+                // Open the document if possible
                 guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                 let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
                 navigationController!.present(shareVC, animated: true, completion: nil)
             case .textOnlyMessage:
                 if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
+                    // Open the link preview URL
                     openURL(url)
                 } else if let reply = viewItem.quotedReply {
+                    // Scroll to the source of the reply
                     guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
                     messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
                 }
@@ -436,7 +444,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem) {
         switch viewItem.messageCellType {
-        case .audio: speedUpAudio(for: viewItem)
+        case .audio: speedUpAudio(for: viewItem) // The user can double tap a voice message when it's playing to speed it up
         default: break
         }
     }
@@ -466,6 +474,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func copySessionID(_ viewItem: ConversationViewItem) {
+        // FIXME: Copying media
         guard let message = viewItem.interaction as? TSIncomingMessage else { return }
         UIPasteboard.general.string = message.authorId
     }
@@ -497,6 +506,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func openURL(_ url: URL) {
+        // URLs can be unsafe, so always ask the user whether they want to open one
         let urlModal = URLModal(url: url)
         urlModal.modalPresentationStyle = .overFullScreen
         urlModal.modalTransitionStyle = .crossDissolve
@@ -509,6 +519,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     // MARK: Voice Message Playback
     @objc func handleAudioDidFinishPlayingNotification(_ notification: Notification) {
+        // Play the next voice message if there is one
         guard let audioPlayer = audioPlayer, let viewItem = audioPlayer.owner as? ConversationViewItem,
             let index = viewItems.firstIndex(where: { $0 === viewItem }), index < (viewItems.endIndex - 1) else { return }
         let nextViewItem = viewItems[index + 1]

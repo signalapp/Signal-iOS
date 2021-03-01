@@ -93,6 +93,9 @@ final class InputViewButton : UIView {
     }
     
     // MARK: Interaction
+    
+    // We want to detect both taps and long presses
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         expand()

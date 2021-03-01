@@ -122,6 +122,12 @@ final class QuoteView : UIView {
     }
 
     private func setUpViewHierarchy() {
+        // There's quite a bit of calculation going on here. It's a bit complex so don't make changes
+        // if you don't need to. If you do then test:
+        // • Quoted text in both private chats and group chats
+        // • Quoted images and videos in both private chats and group chats
+        // • Quoted voice messages and documents in both private chats and group chats
+        // • All of the above in both dark mode and light mode
         let hasAttachments = !attachments.isEmpty
         let thumbnailSize = QuoteView.thumbnailSize
         let iconSize = QuoteView.iconSize
