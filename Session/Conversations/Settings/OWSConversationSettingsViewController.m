@@ -264,6 +264,8 @@ CGFloat kIconViewLength = 24;
     }
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:title customBackButton:YES];
     self.tableView.backgroundColor = UIColor.clearColor;
+    
+    [self updateNavBarButtons];
 }
 
 - (void)updateTableContents
