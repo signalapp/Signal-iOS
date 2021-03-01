@@ -125,8 +125,8 @@ const int32_t kGroupIdLength = 16;
 
 
     if ([membersWhoLeft count] > 0) {
-        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* item) {
-            return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:item] ?: item;
+        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* publicKey) {
+            return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
@@ -135,8 +135,8 @@ const int32_t kGroupIdLength = 16;
     }
     
     if (membersWhoJoined.count > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:item] ?: item;
+        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* publicKey) {
+            return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
@@ -150,7 +150,7 @@ const int32_t kGroupIdLength = 16;
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
         } else {
             NSArray *removedMemberNames = [newModel.removedMembers.allObjects map:^NSString*(NSString* publicKey) {
-                return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:publicKey] ?: publicKey;
+                return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
             }];
             if ([removedMemberNames count] > 1) {
                 updatedGroupInfoString = [updatedGroupInfoString

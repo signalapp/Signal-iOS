@@ -192,7 +192,8 @@ final class QuoteView : UIView {
         if isGroupThread {
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
-            authorLabel.text = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: authorID, avoidingWriteTransaction: true)
+            let context: Contact.Context = (TSGroupThread.fetch(uniqueId: threadID)?.isOpenGroup == true) ? .openGroup : .regular
+            authorLabel.text = Storage.shared.getContact(with: authorID)?.displayName(for: context) ?? authorID
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
             let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)

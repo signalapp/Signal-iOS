@@ -1,5 +1,6 @@
 import UIKit
 
+@objc(SNTextField)
 public final class TextField : UITextField {
     private let usesDefaultHeight: Bool
     private let height: CGFloat
@@ -8,6 +9,11 @@ public final class TextField : UITextField {
 
     static let height: CGFloat = isIPhone5OrSmaller ? CGFloat(48) : CGFloat(80)
     public static let cornerRadius: CGFloat = 8
+    
+    @objc(initWithPlaceholder:usesDefaultHeight:)
+    public convenience init(placeholder: String, usesDefaultHeight: Bool) {
+        self.init(placeholder: placeholder, usesDefaultHeight: usesDefaultHeight, customHeight: nil, customHorizontalInset: nil, customVerticalInset: nil)
+    }
     
     public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight

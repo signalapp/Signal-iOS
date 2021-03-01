@@ -383,8 +383,7 @@ public class FullTextSearcher: NSObject {
     }
 
     private func indexingString(recipientId: String) -> String {
-        let profileName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)
-
+        let profileName = Storage.shared.getContact(with: recipientId)?.name
         return "\(recipientId) \(profileName ?? "")"
     }
 }

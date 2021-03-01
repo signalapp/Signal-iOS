@@ -986,47 +986,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SNProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    SNProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
-    if (builder == nil) {
-        return nil;
-    }
-
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
-
-    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    NSString *displayName;
-    NSString *masterPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
-    if (masterPublicKey != nil) {
-        displayName = [profileManager profileNameForRecipientWithID:masterPublicKey];
-    } else {
-        displayName = profileManager.localProfileName;
-    }
-    NSString *profilePictureURL = profileManager.profilePictureURL;
-    SNProtoDataMessageLokiProfileBuilder *profileBuilder = [SNProtoDataMessageLokiProfile builder];
-    [profileBuilder setDisplayName:displayName];
-    [profileBuilder setProfilePicture:profilePictureURL ?: @""];
-    SNProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
-    [builder setProfile:profile];
-    
-    NSError *error;
-    SNProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
-    if (error != nil || dataProto == nil) {
-        return nil;
-    }
-    return dataProto;
-}
-
-- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    SNProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
-
-    if (dataMessage == nil) {
-        return nil;
-    }
-    
-    SNProtoContentBuilder *contentBuilder = SNProtoContent.builder;
-    [contentBuilder setDataMessage:dataMessage];
-    
-    return contentBuilder;
+    return nil; // Shouldn't be in use anymore
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient

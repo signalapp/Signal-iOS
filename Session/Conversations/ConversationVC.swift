@@ -90,7 +90,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let name: String
         if let thread = thread as? TSContactThread {
             let publicKey = thread.contactIdentifier()
-            name = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, avoidingWriteTransaction: true) ?? publicKey
+            let context = Contact.context(for: thread)
+            name = Storage.shared.getContact(with: publicKey)?.displayName(for: context) ?? publicKey
         } else {
             name = "Thread"
         }
@@ -149,8 +150,16 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if !didFinishInitialLayout {
+            var unreadCount: UInt = 0
+            Storage.read { transaction in
+                unreadCount = self.thread.unreadMessageCount(transaction: transaction)
+            }
             DispatchQueue.main.async {
-                self.scrollToBottom(isAnimated: false)
+                if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
+                    self.scrollToInteraction(with: interactionID, isAnimated: false)
+                } else {
+                    self.scrollToBottom(isAnimated: false)
+                }
             }
         }
     }
@@ -503,8 +512,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         scrollToInteraction(with: interactionID)
     }
     
-    func scrollToInteraction(with interactionID: String) {
+    func scrollToInteraction(with interactionID: String, isAnimated: Bool = true) {
         guard let indexPath = viewModel.ensureLoadWindowContainsInteractionId(interactionID) else { return }
-        messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
+        messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: isAnimated)
     }
 }

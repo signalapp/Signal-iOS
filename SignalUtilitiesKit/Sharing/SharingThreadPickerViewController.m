@@ -335,7 +335,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:untrustedRecipientId avoidingWriteTransaction:YES];
+        SNContactContext context = [SNContact contextForThread:self.thread];
+        NSString *displayName = [[LKStorage.shared getContactWithSessionID:untrustedRecipientId] displayNameFor:context] ?: untrustedRecipientId;
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle

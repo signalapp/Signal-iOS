@@ -188,7 +188,8 @@ void AssertIsOnDisappearingMessagesQueue()
 
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipientId) {
-        remoteContactName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:remoteRecipientId avoidingWriteTransaction:YES] ?: remoteRecipientId;
+        SNContactContext context = [SNContact contextForThread:thread];
+        remoteContactName = [[LKStorage.shared getContactWithSessionID:remoteRecipientId] displayNameFor:context] ?: remoteRecipientId;
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.

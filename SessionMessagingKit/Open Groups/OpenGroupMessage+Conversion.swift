@@ -22,9 +22,9 @@ internal extension OpenGroupMessage {
             }
         }()
         // Message
-        let displayName = storage.getUserDisplayName() ?? "Anonymous"
+        let name = storage.getUser()?.name ?? "Anonymous"
         let body = message.text ?? String(message.sentTimestamp!) // The back-end doesn't accept messages without a body so we use this as a workaround
-        let result = OpenGroupMessage(serverID: nil, senderPublicKey: userPublicKey, displayName: displayName, profilePicture: nil, body: body,
+        let result = OpenGroupMessage(serverID: nil, senderPublicKey: userPublicKey, displayName: name, profilePicture: nil, body: body,
             type: OpenGroupAPI.openGroupMessageType, timestamp: message.sentTimestamp!, quote: quote, attachments: [], signature: nil, serverTimestamp: 0)
         // Link preview
         if let linkPreview = message.linkPreview {

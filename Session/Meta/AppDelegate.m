@@ -402,9 +402,9 @@ static NSTimeInterval launchStartedAt;
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
             if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 4 * 24 * 60 * 60) {
                 OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
-                NSString *displayName = [profileManager profileNameForRecipientWithID:userPublicKey];
+                NSString *name = [[LKStorage.shared getUser] name];
                 UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userPublicKey];
-                [profileManager updateLocalProfileName:displayName avatarImage:profilePicture success:^{
+                [profileManager updateLocalProfileName:name avatarImage:profilePicture success:^{
                     // Do nothing; the user defaults flag is updated in LokiFileServerAPI
                 } failure:^(NSError *error) {
                     // Do nothing

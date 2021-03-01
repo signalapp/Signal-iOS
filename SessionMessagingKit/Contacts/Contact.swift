@@ -2,12 +2,6 @@
 @objc(SNContact)
 public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     @objc public let sessionID: String
-    /// The name of the contact.
-    ///
-    /// - Note: In open groups use `openGroupDisplayName`.
-    @objc public var name: String?
-    /// The contact's nickname.
-    @objc public var nickname: String?
     /// The URL from which to fetch the contact's profile picture.
     @objc public var profilePictureURL: String?
     /// The file name of the contact's profile picture on local storage.
@@ -17,20 +11,23 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     /// The ID of the thread associated with this contact.
     @objc public var threadID: String?
     
-    /// In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
-    /// a user's display name for added context.
-    @objc public var openGroupDisplayName: String? {
-        guard let name = name else { return nil }
-        let endIndex = sessionID.endIndex
-        let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
-        return "\(name) (...\(sessionID[cutoffIndex..<endIndex]))"
-    }
-    
+    // MARK: Name
+    /// The name of the contact. Use this whenever you need the "real", underlying name of a user (e.g. when sending a message).
+    @objc public var name: String?
+    /// The contact's nickname, if the user set one.
+    @objc public var nickname: String?
+    /// The name to display in the UI. For local use only.
     @objc public func displayName(for context: Context) -> String? {
         if let nickname = nickname { return nickname }
         switch context {
         case .regular: return name
-        case .openGroup: return openGroupDisplayName
+        case .openGroup:
+            // In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
+            // a user's display name for added context.
+            guard let name = name else { return nil }
+            let endIndex = sessionID.endIndex
+            let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
+            return "\(name) (...\(sessionID[cutoffIndex..<endIndex]))"
         }
     }
     
@@ -91,5 +88,11 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     // MARK: Description
     override public var description: String {
         nickname ?? name ?? sessionID
+    }
+    
+    // MARK: Convenience
+    @objc(contextForThread:)
+    public static func context(for thread: TSThread) -> Context {
+        return ((thread as? TSGroupThread)?.isOpenGroup == true) ? .openGroup : .regular
     }
 }

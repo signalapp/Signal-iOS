@@ -16,9 +16,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserPublicKey() -> String?
     func getUserKeyPair() -> ECKeyPair?
     func getUserED25519KeyPair() -> Box.KeyPair?
-    func getUserDisplayName() -> String?
-    func getUserProfileKey() -> Data?
-    func getUserProfilePictureURL() -> String?
+    func getUser() -> Contact?
     func getUserProfile(using transaction: Any) -> OWSUserProfile
 
     // MARK: - Closed Groups

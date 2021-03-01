@@ -5,7 +5,7 @@ final class GroupMembersVC : BaseVC, UITableViewDataSource {
     
     private lazy var members: [String] = {
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
-            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
+            return Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey
         }
         return GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
     }()
@@ -150,7 +150,7 @@ private extension GroupMembersVC {
         private func update() {
             profilePictureView.publicKey = hexEncodedPublicKey
             profilePictureView.update()
-            displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
+            displayNameLabel.text = Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey
         }
     }
 }

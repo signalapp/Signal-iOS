@@ -120,8 +120,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                 NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
                     @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
-                NSString *recipientDisplayName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.recipientId avoidingWriteTransaction:YES];
-                return [NSString stringWithFormat:messageFormat, recipientDisplayName];
+                return [NSString stringWithFormat:messageFormat, self.recipientId];
             } else {
                 // recipientId will be nil for legacy errors
                 return NSLocalizedString(

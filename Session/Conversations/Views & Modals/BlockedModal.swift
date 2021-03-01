@@ -18,7 +18,7 @@ final class BlockedModal : Modal {
     
     override func populateContentView() {
         // Name
-        let name = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, avoidingWriteTransaction: true) ?? publicKey
+        let name = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text

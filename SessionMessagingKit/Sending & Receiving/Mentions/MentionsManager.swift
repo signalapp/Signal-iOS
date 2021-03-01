@@ -33,12 +33,8 @@ public final class MentionsManager : NSObject {
         let openGroup = Storage.shared.getOpenGroup(for: threadID)
         storage.dbReadConnection.read { transaction in
             candidates = cache.compactMap { publicKey in
-                let displayNameOrNil: String?
-                if let openGroup = openGroup {
-                    displayNameOrNil = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: openGroup.channel, on: openGroup.server)
-                } else {
-                    displayNameOrNil = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
-                }
+                let context: Contact.Context = (openGroup != nil) ? .openGroup : .regular
+                let displayNameOrNil = Storage.shared.getContact(with: publicKey)?.displayName(for: context)
                 guard let displayName = displayNameOrNil else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }
                 return Mention(publicKey: publicKey, displayName: displayName)

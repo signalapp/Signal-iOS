@@ -30,16 +30,10 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 #pragma mark - Local Profile
 
-// These two methods should only be called from the main thread.
-- (OWSAES256Key *)localProfileKey;
 // localUserProfileExists is true if there is _ANY_ local profile.
 - (BOOL)localProfileExists;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
-- (nullable NSString *)localProfileName;
-- (nullable UIImage *)localProfileAvatarImage;
-- (nullable NSData *)localProfileAvatarData;
-- (nullable NSString *)profilePictureURL;
 
 - (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
@@ -56,27 +50,9 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
-#pragma mark - Profile Whitelist
-
-// These methods are for debugging.
-- (void)clearProfileWhitelist;
-- (void)logProfileWhitelist;
 - (void)regenerateLocalProfile;
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread;
-
-- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
-
-#pragma mark - Other User's Profiles
-
-// This method is for debugging.
-- (void)logUserProfiles;
-
-- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
-
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidWriteTransaction:(BOOL)avoidWriteTransaction;
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID;
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction;
+#pragma mark - Other Users' Profiles
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
 - (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
@@ -86,12 +62,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
 - (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction;
-
-#pragma mark - User Interface
-
-- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
-                        fromViewController:(UIViewController *)fromViewController
-                                   success:(void (^)(void))successHandler;
 
 #pragma mark - Other
 

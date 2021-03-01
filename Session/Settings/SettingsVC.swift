@@ -72,7 +72,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         profilePictureView.publicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         // Set up display name label
-        displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
+        displayNameLabel.text = Storage.shared.getUser()?.name
         // Set up display name container
         let displayNameContainer = UIView()
         displayNameContainer.accessibilityLabel = "Edit display name text field"
@@ -297,10 +297,10 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
         let userDefaults = UserDefaults.standard
-        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
+        let name = displayNameToBeUploaded ?? Storage.shared.getUser()?.name
         let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: getUserHexEncodedPublicKey())
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
-            OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: profilePicture, success: {
+            OWSProfileManager.shared().updateLocalProfileName(name, avatarImage: profilePicture, success: {
                 if displayNameToBeUploaded != nil {
                     userDefaults[.lastDisplayNameUpdate] = Date()
                 }
@@ -313,7 +313,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                     modalActivityIndicator.dismiss {
                         guard let self = self else { return }
                         self.profilePictureView.update()
-                        self.displayNameLabel.text = displayName
+                        self.displayNameLabel.text = name
                         self.profilePictureToBeUploaded = nil
                         self.displayNameToBeUploaded = nil
                     }
