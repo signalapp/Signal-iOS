@@ -13,7 +13,6 @@
 #import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSSounds.h>
-#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -41,6 +40,10 @@ CGFloat kIconViewLength = 24;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
+@property (nonatomic) UILabel *displayNameLabel;
+@property (nonatomic) SNTextField *displayNameTextField;
+@property (nonatomic) UIView *displayNameContainer;
+@property (nonatomic) BOOL isEditingDisplayName;
 
 @end
 
@@ -209,6 +212,32 @@ CGFloat kIconViewLength = 24;
 {
     [super viewDidLoad];
 
+    self.displayNameLabel = [UILabel new];
+    self.displayNameLabel.textColor = LKColors.text;
+    self.displayNameLabel.font = [UIFont boldSystemFontOfSize:LKValues.largeFontSize];
+    self.displayNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.displayNameLabel.textAlignment = NSTextAlignmentCenter;
+        
+    self.displayNameTextField = [[SNTextField alloc] initWithPlaceholder:@"Enter a name" usesDefaultHeight:NO];
+    self.displayNameTextField.textAlignment = NSTextAlignmentCenter;
+    self.displayNameTextField.accessibilityLabel = @"Edit name text field";
+    self.displayNameTextField.alpha = 0;
+
+    self.displayNameContainer = [UIView new];
+    self.displayNameContainer.accessibilityLabel = @"Edit name text field";
+    self.displayNameContainer.isAccessibilityElement = YES;
+    
+    [self.displayNameContainer autoSetDimension:ALDimensionHeight toSize:40];
+    [self.displayNameContainer addSubview:self.displayNameLabel];
+    [self.displayNameLabel autoPinToEdgesOfView:self.displayNameContainer];
+    [self.displayNameContainer addSubview:self.displayNameTextField];
+    [self.displayNameTextField autoPinToEdgesOfView:self.displayNameContainer];
+    
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showEditNameUI)];
+        [self.displayNameContainer addGestureRecognizer:tapGestureRecognizer];
+    }
+    
     self.tableView.estimatedRowHeight = 45;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
@@ -683,13 +712,13 @@ CGFloat kIconViewLength = 24;
     [profilePictureView autoSetDimension:ALDimensionHeight toSize:size];
     [profilePictureView addGestureRecognizer:profilePictureTapGestureRecognizer];
     
-    UILabel *titleView = [UILabel new];
-    titleView.textColor = LKColors.text;
-    titleView.font = [UIFont boldSystemFontOfSize:LKValues.largeFontSize];
-    titleView.lineBreakMode = NSLineBreakByTruncatingTail;
-    titleView.text = (self.threadName != nil && self.threadName.length > 0) ? self.threadName : @"Anonymous";
+    self.displayNameLabel.text = (self.threadName != nil && self.threadName.length > 0) ? self.threadName : @"Anonymous";
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showEditNameUI)];
+        [self.displayNameContainer addGestureRecognizer:tapGestureRecognizer];
+    }
     
-    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ profilePictureView, titleView ]];
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ profilePictureView, self.displayNameContainer ]];
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.spacing = LKValues.mediumSpacing;
     stackView.distribution = UIStackViewDistributionEqualCentering; 
@@ -1070,6 +1099,70 @@ CGFloat kIconViewLength = 24;
 - (void)tappedConversationSearch
 {
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
+}
+
+- (void)hideEditNameUI
+{
+    self.isEditingDisplayName = NO;
+}
+
+- (void)showEditNameUI
+{
+    self.isEditingDisplayName = YES;
+}
+
+- (void)setIsEditingDisplayName:(BOOL)isEditingDisplayName
+{
+    _isEditingDisplayName = isEditingDisplayName;
+    
+    [self updateNavBarButtons];
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        self.displayNameLabel.alpha = self.isEditingDisplayName ? 0 : 1;
+        self.displayNameTextField.alpha = self.isEditingDisplayName ? 1 : 0;
+    }];
+    if (self.isEditingDisplayName) {
+        [self.displayNameTextField becomeFirstResponder];
+    } else {
+        [self.displayNameTextField resignFirstResponder];
+    }
+}
+
+- (void)saveName
+{
+    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:self.thread.contactIdentifier];
+    if (contact == nil) { return; }
+    NSString *text = [self.displayNameTextField.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    contact.nickname = text.length > 0 ? text : nil;
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
+    }];
+    self.displayNameLabel.text = text.length > 0 ? text : contact.name;
+    [self hideEditNameUI];
+}
+
+- (void)updateNavBarButtons
+{
+    if (self.isEditingDisplayName) {
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(hideEditNameUI)];
+        cancelButton.tintColor = LKColors.text;
+        cancelButton.accessibilityLabel = @"Cancel button";
+        cancelButton.isAccessibilityElement = YES;
+        self.navigationItem.leftBarButtonItem = cancelButton;
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveName)];
+        doneButton.tintColor = LKColors.text;
+        doneButton.accessibilityLabel = @"Done button";
+        doneButton.isAccessibilityElement = YES;
+        self.navigationItem.rightBarButtonItem = doneButton;
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
+        UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(showEditNameUI)];
+        editButton.tintColor = LKColors.text;
+        editButton.accessibilityLabel = @"Done button";
+        editButton.isAccessibilityElement = YES;
+        self.navigationItem.rightBarButtonItem = editButton;
+    }
 }
 
 #pragma mark - Notifications

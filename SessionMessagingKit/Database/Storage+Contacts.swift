@@ -15,6 +15,9 @@ extension Storage {
     @objc(setContact:usingTransaction:)
     public func setContact(_ contact: Contact, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .contactUpdated, object: contact.sessionID)
+        }
     }
     
     public func getAllContacts() -> Set<Contact> {

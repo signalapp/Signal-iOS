@@ -46,8 +46,10 @@ final class ConversationTitleView : UIView {
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
         addSubview(stackView)
         stackView.pin(to: self)
-        NotificationCenter.default.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.contactUpdated, object: nil)
         update()
     }
 

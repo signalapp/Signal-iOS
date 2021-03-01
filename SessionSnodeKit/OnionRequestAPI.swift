@@ -285,7 +285,7 @@ public enum OnionRequestAPI {
         }.map2 { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
     }
 
-    // MARK: Internal API
+    // MARK: Public API
     /// Sends an onion request to `snode`. Builds new paths as needed.
     public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
