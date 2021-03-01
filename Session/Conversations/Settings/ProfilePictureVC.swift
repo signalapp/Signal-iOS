@@ -1,4 +1,5 @@
 
+/// Shown when the user taps a profile picture in the conversation settings.
 @objc(SNProfilePictureVC)
 final class ProfilePictureVC : BaseVC {
     private let image: UIImage
