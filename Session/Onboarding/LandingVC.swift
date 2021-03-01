@@ -59,10 +59,10 @@ final class LandingVC : BaseVC {
         // Link button container
         let linkButtonContainer = UIView()
         linkButtonContainer.set(.height, to: Values.onboardingButtonBottomOffset)
-//        linkButtonContainer.addSubview(linkButton)
-//        linkButton.center(.horizontal, in: linkButtonContainer)
-//        let isIPhoneX = (UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0)
-//        linkButton.centerYAnchor.constraint(equalTo: linkButtonContainer.centerYAnchor, constant: isIPhoneX ? -4 : 0).isActive = true
+        linkButtonContainer.addSubview(linkButton)
+        linkButton.center(.horizontal, in: linkButtonContainer)
+        let isIPhoneX = (UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0)
+        linkButton.centerYAnchor.constraint(equalTo: linkButtonContainer.centerYAnchor, constant: isIPhoneX ? -4 : 0).isActive = true
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
