@@ -149,6 +149,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         notificationCenter.addObserver(self, selector: #selector(handleGroupUpdatedNotification), name: .groupThreadUpdated, object: nil)
         // Mentions
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
+        // Draft
+        var draft = ""
+        Storage.read { transaction in
+            draft = self.thread.currentDraft(with: transaction)
+        }
+        if !draft.isEmpty {
+            snInputView.text = draft
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -172,6 +180,16 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         super.viewDidAppear(animated)
         didFinishInitialLayout = true
         markAllAsRead()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let text = snInputView.text
+        if !text.isEmpty {
+            Storage.write { transaction in
+                self.thread.setDraft(text, transaction: transaction)
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {

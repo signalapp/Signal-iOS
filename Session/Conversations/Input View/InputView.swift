@@ -51,7 +51,11 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         return result
     }()
     
-    private lazy var inputTextView = InputTextView(delegate: self)
+    private lazy var inputTextView: InputTextView = {
+        let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
+        let maxWidth = UIScreen.main.bounds.width - 2 * InputViewButton.expandedSize - 2 * Values.smallSpacing - 2 * (Values.mediumSpacing - adjustment)
+        return InputTextView(delegate: self, maxWidth: maxWidth)
+    }()
 
     private lazy var additionalContentContainer = UIView()
 
