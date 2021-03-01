@@ -1,6 +1,7 @@
 
 final class ConversationTitleView : UIView {
     private let thread: TSThread
+    var delegate: ConversationTitleViewDelegate?
 
     override var intrinsicContentSize: CGSize {
         return UIView.layoutFittingExpandedSize
@@ -46,6 +47,8 @@ final class ConversationTitleView : UIView {
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
         addSubview(stackView)
         stackView.pin(to: self)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(tapGestureRecognizer)
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
@@ -108,4 +111,15 @@ final class ConversationTitleView : UIView {
         }
         return nil
     }
+    
+    // MARK: Interaction
+    @objc private func handleTap() {
+        delegate?.handleTitleViewTapped()
+    }
+}
+
+// MARK: Delegate
+protocol ConversationTitleViewDelegate {
+    
+    func handleTitleViewTapped()
 }

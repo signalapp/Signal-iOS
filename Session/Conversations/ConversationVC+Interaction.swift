@@ -2,8 +2,13 @@ import CoreServices
 import Photos
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
-    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate {
+    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
+    ConversationTitleViewDelegate {
 
+    func handleTitleViewTapped() {
+        openSettings()
+    }
+    
     @objc func openSettings() {
         let settingsVC = OWSConversationSettingsViewController()
         settingsVC.configure(with: thread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
