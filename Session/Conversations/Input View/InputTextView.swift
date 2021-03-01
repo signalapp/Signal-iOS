@@ -1,6 +1,7 @@
 
 public final class InputTextView : UITextView, UITextViewDelegate {
     private let snDelegate: InputTextViewDelegate
+    private let maxWidth: CGFloat
     private lazy var heightConstraint = self.set(.height, to: minHeight)
     
     public override var text: String! { didSet { handleTextChanged() } }
@@ -19,8 +20,9 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     private let maxHeight: CGFloat = 80
 
     // MARK: Lifecycle
-    init(delegate: InputTextViewDelegate) {
+    init(delegate: InputTextViewDelegate, maxWidth: CGFloat) {
         snDelegate = delegate
+        self.maxWidth = maxWidth
         super.init(frame: CGRect.zero, textContainer: nil)
         setUpViewHierarchy()
         self.delegate = self
@@ -60,9 +62,8 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     private func handleTextChanged() {
         defer { snDelegate.inputTextViewDidChangeContent(self) }
         placeholderLabel.isHidden = !text.isEmpty
-        let width = frame.width
         let height = frame.height
-        let size = sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        let size = sizeThatFits(CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         // `textView.contentSize` isn't accurate when restoring a multiline draft, so we set it here manually
         self.contentSize = size
         let newHeight = size.height.clamp(minHeight, maxHeight)

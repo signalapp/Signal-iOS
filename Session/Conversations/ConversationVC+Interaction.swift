@@ -250,6 +250,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             AudioServicesPlaySystemSound(soundID)
         }
         SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
+        Storage.write { transaction in
+            self.thread.setDraft("", transaction: transaction)
+        }
     }
 
     // MARK: Input View
