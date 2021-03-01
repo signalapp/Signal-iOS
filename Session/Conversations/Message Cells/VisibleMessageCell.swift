@@ -396,14 +396,16 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+        return true // Needed for the pan gesture recognizer to work with the table view's pan gesture recognizer
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == panGestureRecognizer {
             let v = panGestureRecognizer.velocity(in: self)
+            // Only allow swipes to the left; allowing swipes to the right gets in the way of the default
+            // iOS swipe to go back gesture
             guard v.x < 0 else { return false }
-            return abs(v.x) > abs(v.y)
+            return abs(v.x) > abs(v.y) // It has to be more horizontal than vertical
         } else {
             return true
         }
@@ -435,13 +437,14 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         switch gestureRecognizer.state {
         case .changed:
+            // The idea here is to asymptotically approach a maximum drag distance
             let damping: CGFloat = 20
             let sign: CGFloat = -1
             let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
             viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
             replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
             if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold && abs(previousX) < VisibleMessageCell.swipeToReplyThreshold {
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred() // Let the user know when they've hit the swipe to reply threshold
             }
             previousX = translationX
         case .ended, .cancelled:
@@ -566,6 +569,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, searchText: String?, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
+        // Take care of:
+        // • Highlighting mentions
+        // • Linkification
+        // • Highlighting search results
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
         let isOutgoing = (message.interactionType() == .outgoingMessage)
         let result = BodyTextView(snDelegate: delegate)

@@ -1,4 +1,5 @@
 
+/// Shown over a media message if it has a message body.
 final class MediaTextOverlayView : UIView {
     private let viewItem: ConversationViewItem
     private let albumViewWidth: CGFloat

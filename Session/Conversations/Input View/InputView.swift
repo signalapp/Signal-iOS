@@ -52,6 +52,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }()
     
     private lazy var inputTextView: InputTextView = {
+        // HACK: When restoring a draft the input text view won't have a frame yet, and therefore it won't
+        // be able to calculate what size it should be to accommodate the draft text. As a workaround, we
+        // just calculate the max width that the input text view is allowed to be and pass it in. See
+        // setUpViewHierarchy() for why these values are the way they are.
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
         let maxWidth = UIScreen.main.bounds.width - 2 * InputViewButton.expandedSize - 2 * Values.smallSpacing - 2 * (Values.mediumSpacing - adjustment)
         return InputTextView(delegate: self, maxWidth: maxWidth)
@@ -134,12 +138,16 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         delegate.inputTextViewDidChangeContent(inputTextView)
     }
 
+    // We want to show either a link preview or a quote draft, but never both at the same time. When trying to
+    // generate a link preview, wait until we're sure that we'll be able to build a link preview from the given
+    // URL before removing the quote draft.
+    
     private func handleQuoteDraftChanged() {
         additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         linkPreviewInfo = nil
         guard let quoteDraftInfo = quoteDraftInfo else { return }
         let direction: QuoteView.Direction = quoteDraftInfo.isOutgoing ? .outgoing : .incoming
-        let hInset: CGFloat = 6
+        let hInset: CGFloat = 6 // Slight visual adjustment
         let maxWidth = additionalContentContainer.bounds.width
         let quoteView = QuoteView(for: quoteDraftInfo.model, direction: direction, hInset: hInset, maxWidth: maxWidth, delegate: self)
         additionalContentContainer.addSubview(quoteView)
@@ -200,6 +208,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     
     // MARK: Interaction
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        // Needed so that the user can tap the buttons when the expanding attachments button is expanded
         let buttonContainers = [ attachmentsButton.mainButton, attachmentsButton.cameraButton,
             attachmentsButton.libraryButton, attachmentsButton.documentButton, attachmentsButton.gifButton ]
         let buttonContainer = buttonContainers.first { $0.superview!.convert($0.frame, to: self).contains(point) }
@@ -215,8 +224,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             attachmentsButton.libraryButtonContainer, attachmentsButton.cameraButtonContainer, attachmentsButton.mainButtonContainer ]
         let isPointInsideAttachmentsButton = buttonContainers.contains { $0.superview!.convert($0.frame, to: self).contains(point) }
         if isPointInsideAttachmentsButton {
+            // Needed so that the user can tap the buttons when the expanding attachments button is expanded
             return true
         } else if mentionsViewContainer.frame.contains(point) {
+            // Needed so that the user can tap mentions
             return true
         } else {
             return super.point(inside: point, with: event)
