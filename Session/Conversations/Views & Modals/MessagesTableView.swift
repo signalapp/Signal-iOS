@@ -37,13 +37,4 @@ final class MessagesTableView : UITableView {
         contentInsetAdjustmentBehavior = .never
         keyboardDismissMode = .interactive
     }
-
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer == panGestureRecognizer {
-            let v = panGestureRecognizer.velocity(in: self)
-            return abs(v.x) < 160
-        } else {
-            return true
-        }
-    }
 }
