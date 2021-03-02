@@ -35,11 +35,11 @@ message TypingMessage {
 }
 
 message Content {
-  optional DataMessage          dataMessage          = 1;
-  optional ReceiptMessage       receiptMessage       = 5;
-  optional TypingMessage        typingMessage        = 6;
-  optional ConfigurationMessage configurationMessage = 7;
-  optional InfoMessage          infoMessage          = 82;
+  optional DataMessage                dataMessage                = 1;
+  optional ReceiptMessage             receiptMessage             = 5;
+  optional TypingMessage              typingMessage              = 6;
+  optional ConfigurationMessage       configurationMessage       = 7;
+  optional DataExtractionNotification dataExtractionNotification = 82;
 }
 
 message KeyPair {
@@ -49,7 +49,7 @@ message KeyPair {
   required bytes privateKey = 2;
 }
 
-message InfoMessage {
+message DataExtractionNotification {
 
   enum Type {
     SCREENSHOT  = 1;

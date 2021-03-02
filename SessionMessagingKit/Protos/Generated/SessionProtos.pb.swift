@@ -236,14 +236,14 @@ struct SessionProtos_Content {
   /// Clears the value of `configurationMessage`. Subsequent reads from it will return its default value.
   mutating func clearConfigurationMessage() {_uniqueStorage()._configurationMessage = nil}
 
-  var infoMessage: SessionProtos_InfoMessage {
-    get {return _storage._infoMessage ?? SessionProtos_InfoMessage()}
-    set {_uniqueStorage()._infoMessage = newValue}
+  var dataExtractionNotification: SessionProtos_DataExtractionNotification {
+    get {return _storage._dataExtractionNotification ?? SessionProtos_DataExtractionNotification()}
+    set {_uniqueStorage()._dataExtractionNotification = newValue}
   }
-  /// Returns true if `infoMessage` has been explicitly set.
-  var hasInfoMessage: Bool {return _storage._infoMessage != nil}
-  /// Clears the value of `infoMessage`. Subsequent reads from it will return its default value.
-  mutating func clearInfoMessage() {_uniqueStorage()._infoMessage = nil}
+  /// Returns true if `dataExtractionNotification` has been explicitly set.
+  var hasDataExtractionNotification: Bool {return _storage._dataExtractionNotification != nil}
+  /// Clears the value of `dataExtractionNotification`. Subsequent reads from it will return its default value.
+  mutating func clearDataExtractionNotification() {_uniqueStorage()._dataExtractionNotification = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -285,13 +285,13 @@ struct SessionProtos_KeyPair {
   fileprivate var _privateKey: Data? = nil
 }
 
-struct SessionProtos_InfoMessage {
+struct SessionProtos_DataExtractionNotification {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// @required
-  var type: SessionProtos_InfoMessage.TypeEnum {
+  var type: SessionProtos_DataExtractionNotification.TypeEnum {
     get {return _type ?? .screenshot}
     set {_type = newValue}
   }
@@ -341,13 +341,13 @@ struct SessionProtos_InfoMessage {
 
   init() {}
 
-  fileprivate var _type: SessionProtos_InfoMessage.TypeEnum? = nil
+  fileprivate var _type: SessionProtos_DataExtractionNotification.TypeEnum? = nil
   fileprivate var _timestamp: UInt64? = nil
 }
 
 #if swift(>=4.2)
 
-extension SessionProtos_InfoMessage.TypeEnum: CaseIterable {
+extension SessionProtos_DataExtractionNotification.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -1435,7 +1435,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     5: .same(proto: "receiptMessage"),
     6: .same(proto: "typingMessage"),
     7: .same(proto: "configurationMessage"),
-    82: .same(proto: "infoMessage"),
+    82: .same(proto: "dataExtractionNotification"),
   ]
 
   fileprivate class _StorageClass {
@@ -1443,7 +1443,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _receiptMessage: SessionProtos_ReceiptMessage? = nil
     var _typingMessage: SessionProtos_TypingMessage? = nil
     var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
-    var _infoMessage: SessionProtos_InfoMessage? = nil
+    var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -1454,7 +1454,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       _receiptMessage = source._receiptMessage
       _typingMessage = source._typingMessage
       _configurationMessage = source._configurationMessage
-      _infoMessage = source._infoMessage
+      _dataExtractionNotification = source._dataExtractionNotification
     }
   }
 
@@ -1471,7 +1471,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if let v = _storage._receiptMessage, !v.isInitialized {return false}
       if let v = _storage._typingMessage, !v.isInitialized {return false}
       if let v = _storage._configurationMessage, !v.isInitialized {return false}
-      if let v = _storage._infoMessage, !v.isInitialized {return false}
+      if let v = _storage._dataExtractionNotification, !v.isInitialized {return false}
       return true
     }
   }
@@ -1485,7 +1485,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 5: try decoder.decodeSingularMessageField(value: &_storage._receiptMessage)
         case 6: try decoder.decodeSingularMessageField(value: &_storage._typingMessage)
         case 7: try decoder.decodeSingularMessageField(value: &_storage._configurationMessage)
-        case 82: try decoder.decodeSingularMessageField(value: &_storage._infoMessage)
+        case 82: try decoder.decodeSingularMessageField(value: &_storage._dataExtractionNotification)
         default: break
         }
       }
@@ -1506,7 +1506,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if let v = _storage._configurationMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
       }
-      if let v = _storage._infoMessage {
+      if let v = _storage._dataExtractionNotification {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 82)
       }
     }
@@ -1522,7 +1522,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         if _storage._receiptMessage != rhs_storage._receiptMessage {return false}
         if _storage._typingMessage != rhs_storage._typingMessage {return false}
         if _storage._configurationMessage != rhs_storage._configurationMessage {return false}
-        if _storage._infoMessage != rhs_storage._infoMessage {return false}
+        if _storage._dataExtractionNotification != rhs_storage._dataExtractionNotification {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -1573,8 +1573,8 @@ extension SessionProtos_KeyPair: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension SessionProtos_InfoMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".InfoMessage"
+extension SessionProtos_DataExtractionNotification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DataExtractionNotification"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "timestamp"),
@@ -1605,7 +1605,7 @@ extension SessionProtos_InfoMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SessionProtos_InfoMessage, rhs: SessionProtos_InfoMessage) -> Bool {
+  static func ==(lhs: SessionProtos_DataExtractionNotification, rhs: SessionProtos_DataExtractionNotification) -> Bool {
     if lhs._type != rhs._type {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1613,7 +1613,7 @@ extension SessionProtos_InfoMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension SessionProtos_InfoMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+extension SessionProtos_DataExtractionNotification.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "SCREENSHOT"),
     2: .same(proto: "MEDIA_SAVED"),
