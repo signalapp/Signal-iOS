@@ -1,35 +1,29 @@
 
 @objc(SNDataExtractionNotificationInfoMessage)
 final class DataExtractionNotificationInfoMessage : TSInfoMessage {
-    private let kind: DataExtractionNotification.Kind
     
-    init(kind: DataExtractionNotification.Kind, timestamp: UInt64, thread: TSThread) {
-        self.kind = kind
-        let infoMessageType: TSInfoMessageType
-        switch kind {
-        case .screenshot: infoMessageType = .screenshotNotification
-        case .mediaSaved: infoMessageType = .mediaSavedNotification
-        }
-        super.init(timestamp: timestamp, in: thread, messageType: infoMessageType)
+    init(type: TSInfoMessageType, sentTimestamp: UInt64, thread: TSThread, referencedAttachmentTimestamp: UInt64?) {
+        super.init(timestamp: sentTimestamp, in: thread, messageType: type)
     }
     
     required init(coder: NSCoder) {
-        preconditionFailure("Not implemented.")
+        super.init(coder: coder)
     }
     
     required init(dictionary dictionaryValue: [String:Any]!) throws {
-        preconditionFailure("Not implemented.")
+        try super.init(dictionary: dictionaryValue)
     }
     
     override func previewText(with transaction: YapDatabaseReadTransaction) -> String {
         guard let thread = thread as? TSContactThread else { return "" } // Should never occur
         let sessionID = thread.contactIdentifier()
         let displayName = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? sessionID
-        switch kind {
-        case .screenshot: return "\(displayName) took a screenshot."
-        case .mediaSaved:
-            // TODO: Use the timestamp and tell the user * which * media was saved
+        switch messageType {
+        case .screenshotNotification: return "\(displayName) took a screenshot."
+        case .mediaSavedNotification:
+            // TODO: Use referencedAttachmentTimestamp to tell the user * which * media was saved
             return "Media saved by \(displayName)."
+        default: preconditionFailure()
         }
     }
 }

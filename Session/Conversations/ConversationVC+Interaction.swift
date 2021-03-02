@@ -653,6 +653,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         audioRecorder?.stop()
         audioSession.endAudioActivity(recordVoiceMessageActivity)
     }
+    
+    // MARK: Screenshot Notifications
+    @objc func sendScreenshotNotificationIfNeeded() {
+        guard thread is TSContactThread else { return }
+        let message = DataExtractionNotification()
+        message.kind = .screenshot
+        Storage.write { transaction in
+            MessageSender.send(message, in: self.thread, using: transaction)
+        }
+    }
 
     // MARK: Requesting Permission
     func requestCameraPermissionIfNeeded() -> Bool {
