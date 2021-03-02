@@ -363,6 +363,9 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
         if let _value = configurationMessage {
             builder.setConfigurationMessage(_value)
         }
+        if let _value = infoMessage {
+            builder.setInfoMessage(_value)
+        }
         return builder
     }
 
@@ -388,6 +391,10 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
             proto.configurationMessage = valueParam.proto
         }
 
+        @objc public func setInfoMessage(_ valueParam: SNProtoInfoMessage) {
+            proto.infoMessage = valueParam.proto
+        }
+
         @objc public func build() throws -> SNProtoContent {
             return try SNProtoContent.parseProto(proto)
         }
@@ -407,16 +414,20 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
     @objc public let configurationMessage: SNProtoConfigurationMessage?
 
+    @objc public let infoMessage: SNProtoInfoMessage?
+
     private init(proto: SessionProtos_Content,
                  dataMessage: SNProtoDataMessage?,
                  receiptMessage: SNProtoReceiptMessage?,
                  typingMessage: SNProtoTypingMessage?,
-                 configurationMessage: SNProtoConfigurationMessage?) {
+                 configurationMessage: SNProtoConfigurationMessage?,
+                 infoMessage: SNProtoInfoMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.configurationMessage = configurationMessage
+        self.infoMessage = infoMessage
     }
 
     @objc
@@ -450,6 +461,11 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
             configurationMessage = try SNProtoConfigurationMessage.parseProto(proto.configurationMessage)
         }
 
+        var infoMessage: SNProtoInfoMessage? = nil
+        if proto.hasInfoMessage {
+            infoMessage = try SNProtoInfoMessage.parseProto(proto.infoMessage)
+        }
+
         // MARK: - Begin Validation Logic for SNProtoContent -
 
         // MARK: - End Validation Logic for SNProtoContent -
@@ -458,7 +474,8 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
                                     dataMessage: dataMessage,
                                     receiptMessage: receiptMessage,
                                     typingMessage: typingMessage,
-                                    configurationMessage: configurationMessage)
+                                    configurationMessage: configurationMessage,
+                                    infoMessage: infoMessage)
         return result
     }
 
@@ -589,6 +606,138 @@ extension SNProtoKeyPair {
 
 extension SNProtoKeyPair.SNProtoKeyPairBuilder {
     @objc public func buildIgnoringErrors() -> SNProtoKeyPair? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoInfoMessage
+
+@objc public class SNProtoInfoMessage: NSObject {
+
+    // MARK: - SNProtoInfoMessageType
+
+    @objc public enum SNProtoInfoMessageType: Int32 {
+        case screenshot = 1
+        case mediaSaved = 2
+    }
+
+    private class func SNProtoInfoMessageTypeWrap(_ value: SessionProtos_InfoMessage.TypeEnum) -> SNProtoInfoMessageType {
+        switch value {
+        case .screenshot: return .screenshot
+        case .mediaSaved: return .mediaSaved
+        }
+    }
+
+    private class func SNProtoInfoMessageTypeUnwrap(_ value: SNProtoInfoMessageType) -> SessionProtos_InfoMessage.TypeEnum {
+        switch value {
+        case .screenshot: return .screenshot
+        case .mediaSaved: return .mediaSaved
+        }
+    }
+
+    // MARK: - SNProtoInfoMessageBuilder
+
+    @objc public class func builder(type: SNProtoInfoMessageType) -> SNProtoInfoMessageBuilder {
+        return SNProtoInfoMessageBuilder(type: type)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoInfoMessageBuilder {
+        let builder = SNProtoInfoMessageBuilder(type: type)
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoInfoMessageBuilder: NSObject {
+
+        private var proto = SessionProtos_InfoMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(type: SNProtoInfoMessageType) {
+            super.init()
+
+            setType(type)
+        }
+
+        @objc public func setType(_ valueParam: SNProtoInfoMessageType) {
+            proto.type = SNProtoInfoMessageTypeUnwrap(valueParam)
+        }
+
+        @objc public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoInfoMessage {
+            return try SNProtoInfoMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoInfoMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_InfoMessage
+
+    @objc public let type: SNProtoInfoMessageType
+
+    @objc public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    private init(proto: SessionProtos_InfoMessage,
+                 type: SNProtoInfoMessageType) {
+        self.proto = proto
+        self.type = type
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoInfoMessage {
+        let proto = try SessionProtos_InfoMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_InfoMessage) throws -> SNProtoInfoMessage {
+        guard proto.hasType else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = SNProtoInfoMessageTypeWrap(proto.type)
+
+        // MARK: - Begin Validation Logic for SNProtoInfoMessage -
+
+        // MARK: - End Validation Logic for SNProtoInfoMessage -
+
+        let result = SNProtoInfoMessage(proto: proto,
+                                        type: type)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoInfoMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoInfoMessage.SNProtoInfoMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoInfoMessage? {
         return try! self.build()
     }
 }
