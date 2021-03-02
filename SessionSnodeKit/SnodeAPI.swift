@@ -1,5 +1,6 @@
 import PromiseKit
 import SessionUtilitiesKit
+import Sodium
 
 @objc(SNSnodeAPI)
 public final class SnodeAPI : NSObject {
@@ -31,12 +32,20 @@ public final class SnodeAPI : NSObject {
         case generic
         case clockOutOfSync
         case snodePoolUpdatingFailed
+        // ONS
+        case decryptionFailed
+        case hashingFailed
+        case validationFailed
 
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
             case .clockOutOfSync: return "Your clock is out of sync with the Service Node network. Please check that your device's clock is set to automatic time."
             case .snodePoolUpdatingFailed: return "Failed to update the Service Node pool."
+            // ONS
+            case .decryptionFailed: return "Couldn't decrypt ONS name."
+            case .hashingFailed: return "Couldn't compute ONS name hash."
+            case .validationFailed: return "ONS name validation failed."
             }
         }
     }
@@ -109,7 +118,7 @@ public final class SnodeAPI : NSObject {
     }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String, parameters: JSON) -> RawResponsePromise {
+    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
         if useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
         } else {
@@ -181,6 +190,64 @@ public final class SnodeAPI : NSObject {
     }
 
     // MARK: Public API
+    public static func getSessionID(for onsName: String) -> Promise<String> {
+        let sodium = Sodium()
+        let validationCount = 3
+        // The name must be lowercased
+        let onsName = onsName.lowercased()
+        // Hash the ONS name using BLAKE2b
+        let nameAsData = [UInt8](onsName.data(using: String.Encoding.utf8)!)
+        guard let nameHash = sodium.genericHash.hash(message: nameAsData),
+            let base64EncodedNameHash = nameHash.toBase64() else { return Promise(error: Error.hashingFailed) }
+        // Ask 3 different snodes for the Session ID associated with the given name hash
+        let parameters: [String:Any] = [ "name_hash" : base64EncodedNameHash ]
+        let promises = (0..<validationCount).map { _ in
+            return getRandomSnode().then2 { snode in
+                attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                    invoke(.getSessionIDForONSName, on: snode, parameters: parameters)
+                }
+            }
+        }
+        let (promise, seal) = Promise<String>.pending()
+        when(resolved: promises).done2 { results in
+            var sessionIDs: [String] = []
+            for result in results {
+                switch result {
+                case .rejected(let error): return seal.reject(error)
+                case .fulfilled(let rawResponse):
+                    guard let json = rawResponse as? JSON, let x0 = json["result"] as? JSON,
+                        let x1 = x0["entries"] as? [JSON], let x2 = x1.first,
+                        let hexEncodedEncryptedSessionID = x2["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
+                    let encryptedSessionID = [UInt8](Data(hex: hexEncodedEncryptedSessionID))
+                    let sessionIDByteCount = 33
+                    let isArgon2Based = (encryptedSessionID.count == sessionIDByteCount + sodium.secretBox.MacBytes)
+                    if isArgon2Based {
+                        // Handle old Argon2-based encryption used before HF16
+                        let salt = [UInt8](Data(repeating: 0, count: sodium.pwHash.SaltBytes))
+                        guard let key = sodium.pwHash.hash(outputLength: sodium.secretBox.KeyBytes, passwd: nameAsData, salt: salt,
+                            opsLimit: sodium.pwHash.OpsLimitModerate, memLimit: sodium.pwHash.MemLimitModerate, alg: .Argon2ID13) else { return seal.reject(Error.hashingFailed) }
+                        let nonce = [UInt8](Data(repeating: 0, count: sodium.secretBox.NonceBytes))
+                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: encryptedSessionID, secretKey: key, nonce: nonce) else {
+                            return seal.reject(Error.decryptionFailed)
+                        }
+                        sessionIDs.append(sessionIDAsData.toHexString())
+                    } else {
+                        // BLAKE2b-based encryption
+                        // key = H(name, key=H(name))
+                        guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { return seal.reject(Error.hashingFailed) }
+                        guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(nonceAndAuthenticatedCipherText: encryptedSessionID, secretKey: key) else {
+                            return seal.reject(Error.decryptionFailed)
+                        }
+                        sessionIDs.append(sessionIDAsData.toHexString())
+                    }
+                }
+            }
+            guard sessionIDs.count == validationCount && Set(sessionIDs).count == 1 else { return seal.reject(Error.validationFailed) }
+            seal.fulfill(sessionIDs.first!)
+        }
+        return promise
+    }
+    
     public static func getTargetSnodes(for publicKey: String) -> Promise<[Snode]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
         return getSwarm(for: publicKey).map2 { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
