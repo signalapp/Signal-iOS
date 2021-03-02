@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestationSigningCertificate.h"
@@ -395,6 +395,8 @@ NSError *RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCe
         }
         certificateProperties[oid] = entryString;
     }
+
+    X509_free(certificateX509);
     return certificateProperties;
 }
 
