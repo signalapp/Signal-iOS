@@ -109,14 +109,6 @@ extension ProfileRequestSubject: CustomStringConvertible {
 
 // MARK: -
 
-public struct FetchedProfile {
-    let profile: SignalServiceProfile
-    let versionedProfileRequest: VersionedProfileRequest?
-    let profileKey: OWSAES256Key?
-}
-
-// MARK: -
-
 @objc
 public class ProfileFetcherJob: NSObject {
 
@@ -521,13 +513,14 @@ public class ProfileFetcherJob: NSObject {
         var bio: String?
         var bioEmoji: String?
         var paymentAddress: TSPaymentAddress?
-        if let decryptedProfile = fetchedProfile.decrypt() {
+        if let decryptedProfile = fetchedProfile.decryptedProfile {
             givenName = decryptedProfile.givenName
             familyName = decryptedProfile.familyName
             bio = decryptedProfile.bio
             bioEmoji = decryptedProfile.bioEmoji
             paymentAddress = decryptedProfile.paymentAddress
         }
+        let username = profile.username
 
         if DebugFlags.internalLogging {
             let isVersionedProfile = fetchedProfile.versionedProfileRequest != nil
@@ -538,6 +531,7 @@ public class ProfileFetcherJob: NSObject {
             let hasFamilyName = familyName?.count ?? 0 > 0
             let hasBio = bio?.count ?? 0 > 0
             let hasBioEmoji = bioEmoji?.count ?? 0 > 0
+            let hasUsername = username?.count ?? 0 > 0
             let hasPaymentAddress = paymentAddress != nil
 
             Logger.info("address: \(address), " +
@@ -548,6 +542,7 @@ public class ProfileFetcherJob: NSObject {
                             "hasFamilyName: \(hasFamilyName), " +
                             "hasBio: \(hasBio), " +
                             "hasBioEmoji: \(hasBioEmoji), " +
+                            "hasUsername: \(hasUsername), " +
                             "hasPaymentAddress: \(hasPaymentAddress), " +
                             "profileKey: \(profileKeyDescription)")
         }
@@ -676,8 +671,26 @@ public struct DecryptedProfile {
 
 // MARK: -
 
-public extension FetchedProfile {
-    func decrypt() -> DecryptedProfile? {
+public struct FetchedProfile {
+    let profile: SignalServiceProfile
+    let versionedProfileRequest: VersionedProfileRequest?
+    let profileKey: OWSAES256Key?
+    public let decryptedProfile: DecryptedProfile?
+
+    init(profile: SignalServiceProfile,
+         versionedProfileRequest: VersionedProfileRequest?,
+         profileKey: OWSAES256Key?) {
+        self.profile = profile
+        self.versionedProfileRequest = versionedProfileRequest
+        self.profileKey = profileKey
+        self.decryptedProfile = Self.decrypt(profile: profile,
+                                             versionedProfileRequest: versionedProfileRequest,
+                                             profileKey: profileKey)
+    }
+
+    private static func decrypt(profile: SignalServiceProfile,
+                                versionedProfileRequest: VersionedProfileRequest?,
+                                profileKey: OWSAES256Key?) -> DecryptedProfile? {
         guard let profileKey = profileKey else {
             return nil
         }

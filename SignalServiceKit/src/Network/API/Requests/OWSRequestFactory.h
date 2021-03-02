@@ -98,7 +98,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                             encryptedDeviceName:(NSData *)encryptedDeviceName
     NS_SWIFT_NAME(verifySecondaryDeviceRequest(verificationCode:phoneNumber:authKey:encryptedDeviceName:));
 
-+ (TSRequest *)currentConversionRequest NS_SWIFT_NAME(currentConversionRequest());
++ (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest());
 
 #pragma mark - Attributes and Capabilities
 

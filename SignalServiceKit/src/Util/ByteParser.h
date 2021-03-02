@@ -13,17 +13,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithData:(NSData *)data littleEndian:(BOOL)littleEndian;
 
-#pragma mark - Short
+#pragma mark - UInt16
 
 - (uint16_t)uint16AtIndex:(NSUInteger)index;
 - (uint16_t)nextUInt16;
 
-#pragma mark - Int
+#pragma mark - UInt32
 
 - (uint32_t)uint32AtIndex:(NSUInteger)index;
 - (uint32_t)nextUInt32;
 
-#pragma mark - Long
+#pragma mark - UInt64
 
 - (uint64_t)uint64AtIndex:(NSUInteger)index;
 - (uint64_t)nextUInt64;

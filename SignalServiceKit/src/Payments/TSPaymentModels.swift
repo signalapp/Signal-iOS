@@ -62,6 +62,12 @@ extension TSPaymentAmount: TSPaymentBaseModel {
 
         return TSPaymentAmount(currency: currency, picoMob: self.picoMob + other.picoMob)
     }
+
+    public var formatted: String {
+        owsAssertDebug(currency == .mobileCoin)
+
+        return "picoMob: \(picoMob)"
+    }
 }
 
 // MARK: -
@@ -376,11 +382,11 @@ extension TSPaymentModel: TSPaymentBaseModel {
     public var isValid: Bool {
         var isValid = true
 
-        let formattedState = "paymentType: \(paymentType.formatted), paymentState: \(paymentState.formatted)"
+        let formattedState = descriptionForLogs
 
         if isIncoming != paymentState.isIncoming {
             Logger.verbose("isIncoming: \(isIncoming), paymentState.isIncoming: \(paymentState.isIncoming), ")
-            owsFailDebug("paymentType: \(paymentType.formatted), paymentState: \(paymentState.formatted).")
+            owsFailDebug("Invalid payment: \(formattedState).")
             isValid = false
         }
 
@@ -637,6 +643,40 @@ extension TSPaymentModel: TSPaymentBaseModel {
             return NSDate.ows_date(withMillisecondsSince1970: mcLedgerBlockTimestamp)
         }
         return nil
+    }
+
+    public var descriptionForLogs: String {
+        DebugFlags.internalLogging ? descriptionInternal : descriptionProduction
+    }
+
+    public var descriptionInternal: String {
+        buildDescription(isForProduction: false)
+    }
+
+    public var descriptionProduction: String {
+        buildDescription(isForProduction: true)
+    }
+
+    private func buildDescription(isForProduction: Bool) -> String {
+        var components = [String]()
+        components.append("paymentType: \(paymentType.formatted)")
+        components.append("paymentState: \(paymentState.formatted)")
+        if isFailed {
+            components.append("paymentFailure: \(paymentFailure.formatted)")
+        }
+        if !isForProduction {
+            if let paymentAmount = paymentAmount {
+                components.append("paymentAmount: \(paymentAmount.formatted)")
+            }
+
+            if let address = address {
+                components.append("address: \(address)")
+            }
+            if let memoMessage = memoMessage {
+                components.append("memoMessage: '\(memoMessage)'")
+            }
+        }
+        return "[" + components.joined(separator: ", ") + "]"
     }
 }
 

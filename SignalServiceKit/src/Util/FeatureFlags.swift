@@ -152,6 +152,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let paymentsRequests = false
 
+    @objc
+    public static let paymentsScrubDetails = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -208,6 +211,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let reduceLogChatter = build.includes(.dev) && false
 
+    // TODO:
     @objc
 //    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
     public static let logSQLQueries = false

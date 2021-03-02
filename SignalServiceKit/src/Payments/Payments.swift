@@ -209,7 +209,7 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func warmCaches() {
-        owsFail("Not implemented.")
+        // Do nothing.
     }
 
     public var currentPaymentBalance: PaymentBalance? {
@@ -367,6 +367,16 @@ public class PaymentsConstants {
     public static func convertPicoMobToMob(_ picoMob: UInt64) -> Double {
         Double(picoMob) / Double(picoMobPerMob)
     }
+
+    // The number of decimal digits in a picoMob.
+    public static let maxMobDecimalDigits: UInt = 12
+
+    // The largest number of non-decimal digits a user can enter
+    // that can be safely expressed as picoMob in UInt64.
+    //
+    // Safe:    9,999,999.999,999,999,999.
+    // Unsafe: 99,999,999.999,999,999,999.
+    public static let maxMobNonDecimalDigits: UInt = 7
 }
 
 // MARK: -

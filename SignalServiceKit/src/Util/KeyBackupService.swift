@@ -777,7 +777,9 @@ public class KeyBackupService: NSObject {
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
         // Sync our new keys with linked devices.
-        syncManager.sendKeysSyncMessage()
+        if tsAccountManager.isPrimaryDevice {
+            syncManager.sendKeysSyncMessage()
+        }
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {

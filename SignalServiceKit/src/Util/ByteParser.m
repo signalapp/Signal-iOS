@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Short
+#pragma mark - UInt16
 
 - (uint16_t)uint16AtIndex:(NSUInteger)index
 {
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
-#pragma mark - Int
+#pragma mark - UInt32
 
 - (uint32_t)uint32AtIndex:(NSUInteger)index
 {
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
-#pragma mark - Long
+#pragma mark - UInt64
 
 - (uint64_t)uint64AtIndex:(NSUInteger)index
 {

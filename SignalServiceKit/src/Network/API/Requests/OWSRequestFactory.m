@@ -414,7 +414,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)currentConversionRequest NS_SWIFT_NAME(currentConversionRequest())
++ (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest())
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
 }

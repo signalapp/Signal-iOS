@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -21,7 +21,7 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextShort())
+        XCTAssertEqual(0, parser.nextUInt16())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -31,16 +31,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextShort())
+        XCTAssertEqual(1, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextShort())
+        XCTAssertEqual(256, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextShort())
+        XCTAssertEqual(257, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextShort())
+        XCTAssertEqual(0, parser.nextUInt16())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -50,16 +50,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextShort())
+        XCTAssertEqual(256, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextShort())
+        XCTAssertEqual(1, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextShort())
+        XCTAssertEqual(257, parser.nextUInt16())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextShort())
+        XCTAssertEqual(0, parser.nextUInt16())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -68,7 +68,7 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextInt())
+        XCTAssertEqual(0, parser.nextUInt32())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -78,16 +78,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextInt())
+        XCTAssertEqual(1, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextInt())
+        XCTAssertEqual(256, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextInt())
+        XCTAssertEqual(257, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextInt())
+        XCTAssertEqual(0, parser.nextUInt32())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -97,16 +97,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextInt())
+        XCTAssertEqual(1, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextInt())
+        XCTAssertEqual(256, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextInt())
+        XCTAssertEqual(257, parser.nextUInt32())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextInt())
+        XCTAssertEqual(0, parser.nextUInt32())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -115,7 +115,7 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextLong())
+        XCTAssertEqual(0, parser.nextUInt64())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -125,16 +125,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextLong())
+        XCTAssertEqual(1, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextLong())
+        XCTAssertEqual(256, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextLong())
+        XCTAssertEqual(257, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextLong())
+        XCTAssertEqual(0, parser.nextUInt64())
         XCTAssertTrue(parser.hasError)
     }
 
@@ -144,16 +144,16 @@ class ByteParserTest: SignalBaseTest {
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(1, parser.nextLong())
+        XCTAssertEqual(1, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(256, parser.nextLong())
+        XCTAssertEqual(256, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(257, parser.nextLong())
+        XCTAssertEqual(257, parser.nextUInt64())
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(0, parser.nextLong())
+        XCTAssertEqual(0, parser.nextUInt64())
         XCTAssertTrue(parser.hasError)
     }
 
