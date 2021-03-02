@@ -68,10 +68,10 @@ public enum MessageReceiver {
             (plaintext, sender) = (envelope.content!, envelope.source!)
         } else {
             switch envelope.type {
-            case .unidentifiedSender:
+            case .sessionMessage:
                 guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { throw Error.noUserX25519KeyPair }
                 (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
-            case .closedGroupCiphertext:
+            case .closedGroupMessage:
                 guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
                 var encryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
                 guard !encryptionKeyPairs.isEmpty else { throw Error.noGroupKeyPair }
@@ -126,6 +126,7 @@ public enum MessageReceiver {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
             if let closedGroupControlMessage = ClosedGroupControlMessage.fromProto(proto) { return closedGroupControlMessage }
+            if let dataExtractionNotification = DataExtractionNotification.fromProto(proto) { return dataExtractionNotification }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
             if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
