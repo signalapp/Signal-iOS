@@ -311,7 +311,6 @@ extension MessageReceiver {
     private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewClosedGroup(message, using: transaction)
-        case .update: handleClosedGroupUpdated(message, using: transaction) // Deprecated
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
         case .nameChange: handleClosedGroupNameChanged(message, using: transaction)
         case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
@@ -560,69 +559,5 @@ extension MessageReceiver {
         }
         // Perform the update
         update(groupID, thread, group)
-    }
-    
-    
-    
-    // MARK: - Deprecated
-    
-    /// - Note: Deprecated.
-    private static func handleClosedGroupUpdated(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        // Prepare
-        guard case let .update(name, membersAsData) = message.kind else { return }
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        // Unwrap the message
-        guard let groupPublicKey = message.groupPublicKey else { return }
-        let members = membersAsData.map { $0.toHexString() }
-        // Get the group
-        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
-        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            return SNLog("Ignoring closed group update message for nonexistent group.")
-        }
-        let group = thread.groupModel
-        let oldMembers = group.groupMemberIds
-        // Check that the message isn't from before the group was created
-        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 * 1000 else {
-            return SNLog("Ignoring closed group update from before thread was created.")
-        }
-        // Check that the sender is a member of the group (before the update)
-        guard Set(group.groupMemberIds).contains(message.sender!) else {
-            return SNLog("Ignoring closed group update message from non-member.")
-        }
-        // Check that the admin wasn't removed unless the group was destroyed entirely
-        if !members.contains(group.groupAdminIds.first!) && !members.isEmpty {
-            return SNLog("Ignoring invalid closed group update message.")
-        }
-        // Remove the group from the user's set of public keys to poll for if the current user was removed
-        let userPublicKey = getUserHexEncodedPublicKey()
-        let wasCurrentUserRemoved = !members.contains(userPublicKey)
-        if wasCurrentUserRemoved {
-            Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
-            // Remove the key pairs
-            Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
-            // Notify the PN server
-            let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
-        }
-        // Generate and distribute a new encryption key pair if needed
-        let wasAnyUserRemoved = (Set(members).intersection(oldMembers) != Set(oldMembers))
-        let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
-        if wasAnyUserRemoved && isCurrentUserAdmin {
-            do {
-                try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: Set(members), using: transaction)
-            } catch {
-                SNLog("Couldn't distribute new encryption key pair.")
-            }
-        }
-        // Update the group
-        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
-        thread.setGroupModel(newGroupModel, with: transaction)
-        // Notify the user if needed
-        if Set(members) != Set(oldMembers) || name != group.groupName {
-            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .typeGroupQuit : .typeGroupUpdate
-            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
-            infoMessage.save(with: transaction)
-        }
     }
 }

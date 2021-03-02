@@ -184,10 +184,10 @@ public final class MessageSender : NSObject {
         let senderPublicKey: String
         switch destination {
         case .contact(_):
-            kind = .unidentifiedSender
+            kind = .sessionMessage
             senderPublicKey = ""
         case .closedGroup(let groupPublicKey):
-            kind = .closedGroupCiphertext
+            kind = .closedGroupMessage
             senderPublicKey = groupPublicKey
         case .openGroup(_, _): preconditionFailure()
         }

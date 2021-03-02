@@ -147,7 +147,7 @@ public final class OpenGroupPoller : NSObject {
                 let content = SNProtoContent.builder()
                 content.setDataMessage(try! dataMessageProto.build())
                 // Envelope
-                let envelope = SNProtoEnvelope.builder(type: .unidentifiedSender, timestamp: message.timestamp)
+                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: message.timestamp)
                 envelope.setSource(senderPublicKey)
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())
