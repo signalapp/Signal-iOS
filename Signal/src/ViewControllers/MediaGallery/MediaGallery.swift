@@ -231,8 +231,9 @@ class MediaGallery {
 
     // MARK: -
 
-    var deletedAttachments: Set<TSAttachment> = Set()
+    var deletedAttachmentIds: Set<String> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
+    var isCurrentlyProcessingExternalDeletion = false
 
     private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
@@ -264,9 +265,15 @@ class MediaGallery {
 
     // MARK: - 
 
-    func process(deletedAttachmentIds: [String]) {
+    func process(deletedAttachmentIds incomingDeletedAttachmentIds: [String]) {
+        let newlyDeletedAttachmentIds = Set(incomingDeletedAttachmentIds).subtracting(deletedAttachmentIds)
+        if newlyDeletedAttachmentIds.isEmpty {
+            return
+        }
+
         let allItems = sections.lazy.map { $0.value }.joined()
-        let deletedItems: [MediaGalleryItem] = deletedAttachmentIds.compactMap { attachmentId in
+        let deletedItems: [MediaGalleryItem] = newlyDeletedAttachmentIds.compactMap { attachmentId in
+            // FIXME: extremely slow repeated linear search
             guard let deletedItem = allItems.first(where: { galleryItem in
                 galleryItem?.attachmentStream.uniqueId == attachmentId
             }) else {
@@ -333,6 +340,10 @@ class MediaGallery {
                                   amount: UInt,
                                   shouldLoadAlbumRemainder: Bool,
                                   completion: ((_ newSections: IndexSet) -> Void)? = nil) {
+        if isCurrentlyProcessingExternalDeletion {
+            owsFailDebug("cannot access database while model is being updated")
+            return
+        }
 
         var numNewlyLoadedEarlierSections: Int = 0
         var numNewlyLoadedLaterSections: Int = 0
@@ -396,6 +407,7 @@ class MediaGallery {
                 let finder = mediaGalleryFinder.grdbAdapter
                 var offset = 0
                 finder.enumerateMediaAttachments(in: interval,
+                                                 excluding: deletedAttachmentIds,
                                                  range: requestRange,
                                                  transaction: transaction.unwrapGrdbRead) { i, attachment in
                     owsAssertDebug(i >= offset, "does not support reverse traversal")
@@ -424,8 +436,8 @@ class MediaGallery {
                             return tryAddNewItem()
                         }
 
-                        guard !self.deletedAttachments.contains(attachment) else {
-                            Logger.debug("skipping \(attachment) which has been deleted.")
+                        guard !self.deletedAttachmentIds.contains(attachment.uniqueId) else {
+                            owsFailDebug("\(attachment) has already been deleted; should not have been fetched.")
                             return
                         }
 
@@ -485,6 +497,7 @@ class MediaGallery {
                 let finder = mediaGalleryFinder.grdbAdapter
                 guard let offset = finder.mediaIndex(of: focusedItem.attachmentStream,
                                                      in: focusedItem.galleryDate.asInterval,
+                                                     excluding: deletedAttachmentIds,
                                                      transaction: transaction.unwrapGrdbRead) else {
                     owsFailDebug("showing detail for item not in the database")
                     return
@@ -504,6 +517,7 @@ class MediaGallery {
 
     private func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
         return Int(mediaGalleryFinder.grdbAdapter.mediaCount(in: date.asInterval,
+                                                             excluding: deletedAttachmentIds,
                                                              transaction: transaction.unwrapGrdbRead))
     }
 
@@ -517,7 +531,9 @@ class MediaGallery {
 
         var newEarliestDate: GalleryDate? = nil
         let finder = self.mediaGalleryFinder.grdbAdapter
-        let result = finder.enumerateTimestamps(before: earliestDate, count: 50,
+        let result = finder.enumerateTimestamps(before: earliestDate,
+                                                excluding: deletedAttachmentIds,
+                                                count: 50,
                                                 transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
@@ -552,7 +568,9 @@ class MediaGallery {
 
         var newLatestDate: GalleryDate? = nil
         let finder = self.mediaGalleryFinder.grdbAdapter
-        let result = finder.enumerateTimestamps(after: latestDate, count: 50,
+        let result = finder.enumerateTimestamps(after: latestDate,
+                                                excluding: deletedAttachmentIds,
+                                                count: 50,
                                                 transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
@@ -589,7 +607,10 @@ class MediaGallery {
         _delegates = _delegates.filter({ $0.value != nil}) + [Weak(value: delegate)]
     }
 
-    func delete(items: [MediaGalleryItem], initiatedBy: AnyObject, deleteFromDB: Bool) {
+    func delete(items: [MediaGalleryItem],
+                atIndexPaths givenIndexPaths: [IndexPath]? = nil,
+                initiatedBy: AnyObject,
+                deleteFromDB: Bool) {
         AssertIsOnMainThread()
 
         guard items.count > 0 else {
@@ -597,15 +618,15 @@ class MediaGallery {
         }
 
         Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
+        isCurrentlyProcessingExternalDeletion = !deleteFromDB
+        defer { isCurrentlyProcessingExternalDeletion = false }
 
         deletedGalleryItems.formUnion(items)
         delegates.forEach { $0.mediaGallery(self, willDelete: items, initiatedBy: initiatedBy) }
 
-        for item in items {
-            self.deletedAttachments.insert(item.attachmentStream)
-        }
-
         if deleteFromDB {
+            deletedAttachmentIds.formUnion(items.lazy.map { $0.attachmentStream.uniqueId })
+
             self.databaseStorage.asyncWrite { transaction in
                 for item in items {
                     let message = item.message
@@ -616,51 +637,59 @@ class MediaGallery {
                         message.anyRemove(transaction: transaction)
                     }
                 }
+
+                transaction.addSyncCompletion {
+                    self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
+                }
             }
         }
+
+        var deletedIndexPaths: [IndexPath]
+        if let indexPaths = givenIndexPaths {
+            deletedIndexPaths = indexPaths
+        } else {
+            deletedIndexPaths = []
+            deletedIndexPaths.reserveCapacity(items.count)
+            for item in items {
+                guard let sectionIndex = self.sections.orderedKeys.firstIndex(of: item.galleryDate) else {
+                    owsFailDebug("item with unknown date")
+                    return
+                }
+
+                guard let itemIndex = self.sections[sectionIndex].value.firstIndex(of: item) else {
+                    owsFailDebug("item was never loaded")
+                    return
+                }
+
+                deletedIndexPaths.append(IndexPath(item: itemIndex, section: sectionIndex))
+            }
+        }
+        deletedIndexPaths.sort()
 
         var deletedSections: IndexSet = IndexSet()
-        var deletedIndexPaths: [IndexPath] = []
-        let originalSections = self.sections
+        let deletedItemsForChecking = Set(items)
 
-        for item in items {
-            guard var sectionItems = self.sections[item.galleryDate] else {
-                owsFailDebug("item with unknown date")
-                return
-            }
+        // Iterate in reverse so the index paths don't get disrupted.
+        for path in deletedIndexPaths.reversed() {
+            let sectionKey = self.sections.orderedKeys[path.section]
+            // Swap out / swap in to avoid copy-on-write.
+            var section = self.sections.replace(key: sectionKey, value: [])
 
-            guard let sectionRowIndex = sectionItems.firstIndex(of: item) else {
-                owsFailDebug("item was never loaded")
-                return
-            }
-
-            // We need to calculate the index of the deleted item with respect to it's original position.
-            guard let originalSectionIndex =
-                    originalSections.orderedKeys.firstIndex(where: { $0 == item.galleryDate }) else {
-                owsFailDebug("item with unknown date.")
-                return
-            }
-
-            let originalSectionItems = originalSections[originalSectionIndex].value
-
-            guard let originalSectionRowIndex = originalSectionItems.firstIndex(of: item) else {
-                owsFailDebug("item with unknown sectionRowIndex")
-                return
-            }
-
-            if sectionItems.count == 1 {
-                // Last item in section. Delete section.
-                self.sections.remove(key: item.galleryDate)
-
-                deletedSections.insert(originalSectionIndex + 1)
-                deletedIndexPaths.append(IndexPath(row: originalSectionRowIndex, section: originalSectionIndex + 1))
+            if let removedItem = section.remove(at: path.item) {
+                owsAssertDebug(deletedItemsForChecking.contains(removedItem), "removed the wrong item")
             } else {
-                sectionItems.remove(at: sectionRowIndex)
-                self.sections.replace(key: item.galleryDate, value: sectionItems)
+                owsFailDebug("removed an item that wasn't loaded, which can't be correct")
+            }
 
-                deletedIndexPaths.append(IndexPath(row: originalSectionRowIndex, section: originalSectionIndex + 1))
+            if section.isEmpty {
+                self.sections.remove(at: path.section)
+                deletedSections.insert(path.section)
+            } else {
+                self.sections.replace(key: sectionKey, value: section)
             }
         }
+
+        isCurrentlyProcessingExternalDeletion = false
 
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
@@ -670,7 +699,12 @@ class MediaGallery {
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
-        self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize, shouldLoadAlbumRemainder: true)
+        if !isCurrentlyProcessingExternalDeletion {
+            self.ensureGalleryItemsLoaded(.after,
+                                          item: currentItem,
+                                          amount: kGallerySwipeLoadBatchSize,
+                                          shouldLoadAlbumRemainder: true)
+        }
 
         let allItems = sections.lazy.map { $0.value }.joined()
 
@@ -682,7 +716,8 @@ class MediaGallery {
 
         for nextItem in allItems[currentIndex...].dropFirst() {
             guard let loadedNextItem = nextItem else {
-                owsFailDebug("should have loaded the next item already")
+                owsAssertDebug(isCurrentlyProcessingExternalDeletion,
+                               "should have loaded the next item already")
                 return nil
             }
 
@@ -698,7 +733,12 @@ class MediaGallery {
     internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
-        self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize, shouldLoadAlbumRemainder: true)
+        if !isCurrentlyProcessingExternalDeletion {
+            self.ensureGalleryItemsLoaded(.before,
+                                          item: currentItem,
+                                          amount: kGallerySwipeLoadBatchSize,
+                                          shouldLoadAlbumRemainder: true)
+        }
 
         let allItems = sections.lazy.map { $0.value }.joined()
 
@@ -710,7 +750,8 @@ class MediaGallery {
 
         for previousItem in allItems[..<currentIndex].reversed() {
             guard let loadedPreviousItem = previousItem else {
-                owsFailDebug("should have loaded the previous item already")
+                owsAssertDebug(isCurrentlyProcessingExternalDeletion,
+                               "should have loaded the previous item already")
                 return nil
             }
 
@@ -727,7 +768,7 @@ class MediaGallery {
         let count: UInt = databaseStorage.uiRead { transaction in
             return self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
-        return Int(count) - deletedAttachments.count
+        return Int(count) - deletedAttachmentIds.count
     }
 }
 

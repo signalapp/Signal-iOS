@@ -591,6 +591,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
 
         let items: [MediaGalleryItem] = indexPaths.compactMap { return self.galleryItem(at: $0) }
+        guard items.count == indexPaths.count else {
+            owsFailDebug("trying to delete an item that never loaded")
+            return
+        }
 
         let confirmationTitle: String = {
             if indexPaths.count == 1 {
@@ -602,7 +606,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }()
 
         let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
-            self.mediaGallery.delete(items: items, initiatedBy: self, deleteFromDB: true)
+            let galleryIndexPaths = indexPaths.map { IndexPath(item: $0.item, section: $0.section - 1) }
+            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self, deleteFromDB: true)
             self.endSelectMode()
         }
 
@@ -646,8 +651,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
 
         collectionView.performBatchUpdates({
-            collectionView.deleteSections(deletedSections)
-            collectionView.deleteItems(at: deletedItems)
+            collectionView.deleteSections(deletedSections.shifted(by: 1))
+            collectionView.deleteItems(at: deletedItems.map { IndexPath(item: $0.item, section: $0.section + 1) })
         })
     }
 

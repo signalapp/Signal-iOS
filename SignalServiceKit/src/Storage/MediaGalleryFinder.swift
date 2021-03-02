@@ -244,6 +244,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
 
         init(for interaction: TSInteraction? = nil,
              in dateInterval: DateInterval? = nil,
+             excluding deletedAttachmentIds: Set<String>,
              order: Order = .ascending,
              limit: Int? = nil,
              offset: Int? = nil) {
@@ -261,6 +262,8 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
                 return "AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"
             } ?? ""
 
+            let deletedAttachmentIdList = "(\"\(deletedAttachmentIds.joined(separator: "\",\""))\")"
+
             let limitModifier = limit.map { "LIMIT \($0)" } ?? ""
             let offsetModifier = offset.map { "OFFSET \($0)" } ?? ""
 
@@ -273,6 +276,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
                     ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
                     AND \(interactionColumn: .isViewOnceMessage) = FALSE
                 WHERE media_gallery_items.threadId = ?
+                    AND media_gallery_items.attachmentId NOT IN \(deletedAttachmentIdList)
                     \(whereCondition)
             """
 
@@ -304,31 +308,39 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
                                    for interaction: TSInteraction? = nil,
                                    in dateInterval: DateInterval? = nil,
+                                   excluding deletedAttachmentIds: Set<String>,
                                    order: Order = .ascending,
                                    limit: Int? = nil,
                                    offset: Int? = nil) -> String {
-        let queryParts = QueryParts(for: interaction, in: dateInterval, order: order, limit: limit, offset: offset)
+        let queryParts = QueryParts(for: interaction,
+                                    in: dateInterval,
+                                    excluding: deletedAttachmentIds,
+                                    order: order,
+                                    limit: limit,
+                                    offset: offset)
         return queryParts.select(result)
     }
 
     func mostRecentMediaAttachment(transaction: GRDBReadTransaction) -> TSAttachment? {
-        let sql = Self.itemsQuery(order: .descending, limit: 1)
+        let sql = Self.itemsQuery(excluding: [], order: .descending, limit: 1)
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         return try! cursor.next()
     }
 
     func mediaCount(transaction: GRDBReadTransaction) -> UInt {
-        let sql = Self.itemsQuery(result: "COUNT(*)")
+        let sql = Self.itemsQuery(result: "COUNT(*)", excluding: [])
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
     }
 
-    public func mediaCount(in dateInterval: DateInterval, transaction: GRDBReadTransaction) -> UInt {
-        let sql = Self.itemsQuery(result: "COUNT(*)", in: dateInterval)
+    public func mediaCount(in dateInterval: DateInterval,
+                           excluding deletedAttachmentIds: Set<String>,
+                           transaction: GRDBReadTransaction) -> UInt {
+        let sql = Self.itemsQuery(result: "COUNT(*)", in: dateInterval, excluding: deletedAttachmentIds)
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
     }
 
     func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: (TSAttachment) -> Void) {
-        let sql = Self.itemsQuery(limit: range.length, offset: range.lowerBound)
+        let sql = Self.itemsQuery(excluding: [], limit: range.length, offset: range.lowerBound)
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         while let next = try! cursor.next() {
@@ -337,10 +349,14 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     }
 
     public func enumerateMediaAttachments(in dateInterval: DateInterval,
+                                          excluding deletedAttachmentIds: Set<String>,
                                           range: NSRange,
                                           transaction: GRDBReadTransaction,
                                           block: (Int, TSAttachment) -> Void) {
-        let sql = Self.itemsQuery(in: dateInterval, limit: range.length, offset: range.lowerBound)
+        let sql = Self.itemsQuery(in: dateInterval,
+                                  excluding: deletedAttachmentIds,
+                                  limit: range.length,
+                                  offset: range.lowerBound)
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         var index = range.lowerBound
@@ -354,7 +370,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     public func enumerateMediaAttachments(for interaction: TSInteraction,
                                           transaction: GRDBReadTransaction,
                                           block: (TSAttachment) -> Void) {
-        let sql = Self.itemsQuery(for: interaction)
+        let sql = Self.itemsQuery(for: interaction, excluding: [])
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         while let next = try! cursor.next() {
@@ -363,12 +379,14 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     }
 
     private func enumerateTimestamps(in interval: DateInterval,
+                                     excluding deletedAttachmentIds: Set<String>,
                                      order: Order,
                                      count: Int,
                                      transaction: GRDBReadTransaction,
                                      block: (Date) -> Void) -> EnumerationCompletion {
         let sql = Self.itemsQuery(result: "\(interactionColumn: .receivedAtTimestamp)",
                                   in: interval,
+                                  excluding: deletedAttachmentIds,
                                   order: order,
                                   limit: count)
 
@@ -386,11 +404,13 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     }
 
     public func enumerateTimestamps(before date: Date,
+                                    excluding deletedAttachmentIds: Set<String>,
                                     count: Int,
                                     transaction: GRDBReadTransaction,
                                     block: (Date) -> Void) -> EnumerationCompletion {
         let interval = DateInterval(start: Date(timeIntervalSince1970: 0), end: date)
         return enumerateTimestamps(in: interval,
+                                   excluding: deletedAttachmentIds,
                                    order: .descending,
                                    count: count,
                                    transaction: transaction,
@@ -398,11 +418,13 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     }
 
     public func enumerateTimestamps(after date: Date,
+                                    excluding deletedAttachmentIds: Set<String>,
                                     count: Int,
                                     transaction: GRDBReadTransaction,
                                     block: (Date) -> Void) -> EnumerationCompletion {
         let interval = DateInterval(start: date, end: .distantFutureForMillisecondTimestamp)
         return enumerateTimestamps(in: interval,
+                                   excluding: deletedAttachmentIds,
                                    order: .ascending,
                                    count: count,
                                    transaction: transaction,
@@ -443,13 +465,14 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
 
     public func mediaIndex(of attachment: TSAttachmentStream,
                            in interval: DateInterval,
+                           excluding deletedAttachmentIds: Set<String>,
                            transaction: GRDBReadTransaction) -> Int? {
         guard let attachmentRowId = attachment.grdbId else {
             owsFailDebug("attachment.grdbId was unexpectedly nil")
             return nil
         }
 
-        let queryParts = QueryParts(in: interval)
+        let queryParts = QueryParts(in: interval, excluding: deletedAttachmentIds)
         let sql = """
         SELECT mediaIndex
         FROM (

@@ -71,6 +71,15 @@ public struct OrderedDictionary<KeyType: Hashable, ValueType> {
         return value
     }
 
+    public mutating func remove(at index: Int) {
+        let key = orderedKeys[index]
+        guard keyValueMap.removeValue(forKey: key) != nil else {
+            owsFailDebug("Missing key in dictionary: \(key)")
+            return
+        }
+        orderedKeys.remove(at: index)
+    }
+
     public mutating func removeSubrange<R: RangeExpression>(_ range: R) where R.Bound == Int {
         orderedKeys[range].forEach { key in
             guard keyValueMap.removeValue(forKey: key) != nil else {
