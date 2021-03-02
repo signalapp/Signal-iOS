@@ -7,6 +7,7 @@
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
     let focusedMessageID: String? // This isn't actually used ATM
+    var unreadViewItems: [ConversationViewItem] = []
     var didConstrainScrollButton = false // Part of a workaround to get the scroll button to show up in the right place
     // Search
     var isShowingSearchUI = false
@@ -90,6 +91,25 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     lazy var snInputView = InputView(delegate: self)
     
+    lazy var unreadCountView: UIView = {
+        let result = UIView()
+        result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
+        let size = ConversationVC.unreadCountViewSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.layer.masksToBounds = true
+        result.layer.cornerRadius = size / 2
+        return result
+    }()
+    
+    lazy var unreadCountLabel: UILabel = {
+        let result = UILabel()
+        result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        return result
+    }()
+    
     lazy var scrollButton = ScrollToBottomButton(delegate: self)
     
     lazy var blockedBanner: InfoBanner = {
@@ -109,6 +129,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
     
     // MARK: Settings
+    static let unreadCountViewSize: CGFloat = 20
     /// The table view's bottom inset (content will have this distance to the bottom if the table view is fully scrolled down).
     static let bottomInset = Values.mediumSpacing
     /// The table view will start loading more content when the content offset becomes less than this.
@@ -123,6 +144,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         self.thread = thread
         self.focusedMessageID = focusedMessageID
         super.init(nibName: nil, bundle: nil)
+        var unreadCount: UInt = 0
+        Storage.read { transaction in
+            unreadCount = self.thread.unreadMessageCount(transaction: transaction)
+        }
+        unreadViewItems = unreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(unreadCount) ..< viewItems.endIndex]) : []
     }
     
     required init?(coder: NSCoder) {
@@ -142,6 +168,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         messagesTableView.pin(to: view)
         view.addSubview(scrollButton)
         scrollButton.pin(.right, to: .right, of: view, withInset: -16)
+        // Unread count view
+        view.addSubview(unreadCountView)
+        unreadCountView.addSubview(unreadCountLabel)
+        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
+        unreadCountView.center(.horizontal, in: scrollButton)
+        updateUnreadCountView()
         // Blocked banner
         addOrRemoveBlockedBanner()
         // Notifications
@@ -174,6 +207,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             DispatchQueue.main.async {
                 if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
+                    self.scrollButton.alpha = self.getScrollButtonOpacity()
+                    self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
                     self.scrollToBottom(isAnimated: false)
                 }
@@ -267,6 +302,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         UIView.animate(withDuration: 0.25) {
             self.messagesTableView.keyboardHeight = 0
             self.scrollButton.alpha = self.getScrollButtonOpacity()
+            self.unreadCountView.alpha = self.scrollButton.alpha
         }
     }
     
@@ -412,7 +448,22 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollButton.alpha = getScrollButtonOpacity()
+        unreadCountView.alpha = scrollButton.alpha
         autoLoadMoreIfNeeded()
+        updateUnreadCountView()
+    }
+    
+    func updateUnreadCountView() {
+        let visibleViewItems = (messagesTableView.indexPathsForVisibleRows ?? []).map { viewItems[$0.row] }
+        for visibleItem in visibleViewItems {
+            guard let index = unreadViewItems.firstIndex(where: { $0 === visibleItem }) else { continue }
+            unreadViewItems.remove(at: index)
+        }
+        let unreadCount = unreadViewItems.count
+        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
+        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
+        unreadCountView.isHidden = (unreadCount == 0)
     }
     
     func autoLoadMoreIfNeeded() {

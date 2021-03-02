@@ -354,6 +354,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.scrollButton.alpha = 0
             UIView.animate(withDuration: 0.25) {
                 self.scrollButton.alpha = self.getScrollButtonOpacity()
+                self.unreadCountView.alpha = self.scrollButton.alpha
             }
         }
         self.contextMenuVC = contextMenuVC
