@@ -47,7 +47,7 @@ final class InfoMessageCell : MessageCell {
         guard let message = viewItem?.interaction as? TSInfoMessage else { return }
         let icon: UIImage?
         switch message.messageType {
-        case .typeDisappearingMessagesUpdate:
+        case .disappearingMessagesUpdate:
             var configuration: OWSDisappearingMessagesConfiguration?
             Storage.read { transaction in
                 configuration = message.thread(with: transaction).disappearingMessagesConfiguration(with: transaction)

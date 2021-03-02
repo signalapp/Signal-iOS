@@ -10,19 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType) {
-    TSInfoMessageTypeSessionDidEnd,
-    TSInfoMessageUserNotRegistered,
-    // TSInfoMessageTypeUnsupportedMessage appears to be obsolete.
-    TSInfoMessageTypeUnsupportedMessage,
     TSInfoMessageTypeGroupUpdate,
     TSInfoMessageTypeGroupQuit,
     TSInfoMessageTypeDisappearingMessagesUpdate,
-    TSInfoMessageAddToContactsOffer,
-    TSInfoMessageAddUserToProfileWhitelistOffer,
-    TSInfoMessageAddGroupToProfileWhitelistOffer
+    TSInfoMessageTypeScreenshotNotification,
+    TSInfoMessageTypeMediaSavedNotification
 };
-
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
 
 @property (atomic, readonly) TSInfoMessageType messageType;
 @property (atomic, readonly, nullable) NSString *customMessage;

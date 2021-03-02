@@ -95,15 +95,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return self;
 }
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
-{
-    // MJK TODO - remove senderTimestamp
-    return [[self alloc] initWithTimestamp:[NSDate millisecondTimestamp]
-                                  inThread:thread
-                               messageType:TSInfoMessageUserNotRegistered
-                   unregisteredRecipientId:recipientId];
-}
-
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Info;
@@ -112,33 +103,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     switch (_messageType) {
-        case TSInfoMessageTypeSessionDidEnd:
-            return NSLocalizedString(@"SECURE_SESSION_RESET", nil);
-        case TSInfoMessageTypeUnsupportedMessage:
-            return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
-        case TSInfoMessageUserNotRegistered:
-            if (self.unregisteredRecipientId.length > 0) {
-                NSString *recipientName = @"";
-                return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
-                                                      @"Format string for 'unregistered user' error. Embeds {{the "
-                                                      @"unregistered user's name or signal id}}."),
-                                 recipientName];
-            } else {
-                return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
-            }
         case TSInfoMessageTypeGroupQuit:
             return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
-        case TSInfoMessageAddToContactsOffer:
-            return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
-                @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
-        case TSInfoMessageAddUserToProfileWhitelistOffer:
-            return NSLocalizedString(@"ADD_USER_TO_PROFILE_WHITELIST_OFFER",
-                @"Message shown in conversation view that offers to share your profile with a user.");
-        case TSInfoMessageAddGroupToProfileWhitelistOffer:
-            return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
-                @"Message shown in conversation view that offers to share your profile with a group.");
         default:
             break;
     }
