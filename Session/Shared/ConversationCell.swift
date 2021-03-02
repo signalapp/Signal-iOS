@@ -98,7 +98,6 @@ final class ConversationCell : UITableViewCell {
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
         unreadCountLabel.pin(to: unreadCountView)
-        unreadCountLabel.text = "4"
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
         let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, unreadCountView, topLabelSpacer, timestampLabel ])
