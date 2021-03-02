@@ -57,6 +57,7 @@ final class InfoMessageCell : MessageCell {
             } else {
                 icon = nil
             }
+        case .mediaSavedNotification: icon = UIImage(named: "ic_download")
         default: icon = nil
         }
         if let icon = icon {

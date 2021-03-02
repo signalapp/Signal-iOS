@@ -487,6 +487,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func save(_ viewItem: ConversationViewItem) {
         guard viewItem.canSaveMedia() else { return }
         viewItem.saveMediaAction()
+        sendMediaSavedNotificationIfNeeded(with: viewItem.interaction.timestamp)
     }
     
     func ban(_ viewItem: ConversationViewItem) {
@@ -654,11 +655,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         audioSession.endAudioActivity(recordVoiceMessageActivity)
     }
     
-    // MARK: Screenshot Notifications
+    // MARK: Data Extraction Notifications
     @objc func sendScreenshotNotificationIfNeeded() {
         guard thread is TSContactThread else { return }
         let message = DataExtractionNotification()
         message.kind = .screenshot
+        Storage.write { transaction in
+            MessageSender.send(message, in: self.thread, using: transaction)
+        }
+    }
+    
+    func sendMediaSavedNotificationIfNeeded(with timestamp: UInt64) {
+        guard thread is TSContactThread else { return }
+        let message = DataExtractionNotification()
+        message.kind = .mediaSaved(timestamp: timestamp)
         Storage.write { transaction in
             MessageSender.send(message, in: self.thread, using: transaction)
         }

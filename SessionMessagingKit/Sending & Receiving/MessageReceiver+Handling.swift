@@ -111,8 +111,12 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard message.groupPublicKey == nil,
             let thread = TSContactThread.getWithContactId(message.sender!, transaction: transaction) else { return }
-        // TODO: Handle media saved type notifications
-        let message = DataExtractionNotificationInfoMessage(type: .screenshotNotification, sentTimestamp: message.sentTimestamp!, thread: thread, referencedAttachmentTimestamp: nil)
+        let type: TSInfoMessageType
+        switch message.kind! {
+        case .screenshot: type = .screenshotNotification
+        case .mediaSaved: type = .mediaSavedNotification
+        }
+        let message = DataExtractionNotificationInfoMessage(type: type, sentTimestamp: message.sentTimestamp!, thread: thread, referencedAttachmentTimestamp: nil)
         message.save(with: transaction)
     }
     
