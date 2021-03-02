@@ -110,7 +110,7 @@ extension MessageReceiver {
     private static func handleDataExtractionNotification(_ message: DataExtractionNotification, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard message.groupPublicKey == nil,
-            let thread = TSContactThread.getWithContactId(message.sender!, transaction: transaction) else { return }
+            let thread = TSContactThread.getWithContactId(message.sender!, transaction: transaction), case .screenshot = message.kind else { return }
         let type: TSInfoMessageType
         switch message.kind! {
         case .screenshot: type = .screenshotNotification
