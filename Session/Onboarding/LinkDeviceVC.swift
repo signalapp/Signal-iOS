@@ -268,7 +268,7 @@ private final class RecoveryPhraseVC : UIViewController {
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
-        let mnemonic = mnemonicTextView.text!
+        let mnemonic = mnemonicTextView.text!.lowercased()
         do {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
             let seed = Data(hex: hexEncodedSeed)
