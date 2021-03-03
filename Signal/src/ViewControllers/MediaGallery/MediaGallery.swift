@@ -395,45 +395,124 @@ class MediaGallery {
             return
         }
 
+        let anchorItem: MediaGalleryItem? = sections[sectionIndex].value[safe: itemIndex] ?? nil
+
+        // May include a negative start location.
+        let naiveRequestRange: Range<Int> = {
+            let range: Range<Int> = {
+                switch direction {
+                case .around:
+                    // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
+                    // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
+                    let start: Int = itemIndex - Int(amount) / 2
+                    let end: Int = itemIndex + Int(amount) / 2
+
+                    return start..<end
+                case .before:
+                    let start: Int = itemIndex + 1 - Int(amount)
+                    let end: Int = itemIndex + 1
+
+                    return start..<end
+                case .after:
+                    let start: Int = itemIndex
+                    let end: Int = itemIndex + Int(amount)
+
+                    return start..<end
+                }
+            }()
+
+            if shouldLoadAlbumRemainder, let item = anchorItem {
+                let albumStart = (itemIndex - item.albumIndex)
+                let albumEnd = albumStart + item.message.attachmentIds.count
+                return (min(range.lowerBound, albumStart)..<max(range.upperBound, albumEnd))
+            }
+
+            return range
+        }()
+
+        func isSubstantialRequest() -> Bool {
+            // If we have not loaded the item at the given path yet, it's substantial.
+            guard let item = anchorItem else {
+                return true
+            }
+
+            let sectionItems = sections[sectionIndex].value
+
+            // If we're loading the remainder of an album, check to see if any items in the album are not loaded yet.
+            if shouldLoadAlbumRemainder {
+                let albumStart = itemIndex - item.albumIndex
+                let albumEnd = albumStart + item.message.attachmentIds.count
+                if sectionItems[albumStart..<albumEnd].contains(nil) {
+                    return true
+                }
+            }
+
+            // Count unfetched items forward and backward.
+            func countUnfetched(in slice: ArraySlice<MediaGalleryItem?>) -> Int {
+                return slice.lazy.filter { $0 == nil }.count
+            }
+            let sectionSlice = sectionItems[max(0, naiveRequestRange.lowerBound) ..<
+                                                min(sectionItems.count, naiveRequestRange.upperBound)]
+            var unfetchedCount = countUnfetched(in: sectionSlice)
+
+            if naiveRequestRange.upperBound > sectionItems.count {
+                var currentSectionIndex = sectionIndex + 1
+                var remainingForward = naiveRequestRange.upperBound - sectionItems.count
+                repeat {
+                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
+                        // We've reached the end of the fetched sections. If there are more sections, or the last item
+                        // isn't fetched yet, assume it's substantial.
+                        if !hasFetchedMostRecent || (sections.last?.value.last ?? nil) == nil {
+                            return true
+                        }
+                        break
+                    }
+                    unfetchedCount += countUnfetched(in: currentSectionItems.prefix(remainingForward))
+                    if remainingForward <= currentSectionItems.count {
+                        break
+                    }
+                    remainingForward -= currentSectionItems.count
+                    currentSectionIndex += 1
+                } while true
+            }
+
+            if naiveRequestRange.lowerBound < 0 {
+                var currentSectionIndex = sectionIndex - 1
+                var remainingBackward = -naiveRequestRange.lowerBound - sectionItems.count
+                repeat {
+                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
+                        // We've reached the start of the fetched sections. If there are more sections, or the first
+                        // item isn't fetched yet, assume it's substantial.
+                        if !hasFetchedOldest || (sections.first?.value.first ?? nil) == nil {
+                            return true
+                        }
+                        break
+                    }
+                    unfetchedCount += countUnfetched(in: currentSectionItems.suffix(remainingBackward))
+                    if remainingBackward <= currentSectionItems.count {
+                        break
+                    }
+                    remainingBackward -= currentSectionItems.count
+                    currentSectionIndex -= 1
+                } while true
+            }
+
+            // If we haven't hit the start or end, and more than half the items are unfetched, it's substantial.
+            return unfetchedCount > (naiveRequestRange.count / 2)
+        }
+
+        if !isSubstantialRequest() {
+            return
+        }
+
         var numNewlyLoadedEarlierSections: Int = 0
         var numNewlyLoadedLaterSections: Int = 0
 
         Bench(title: "fetching gallery items") {
             self.databaseStorage.uiRead { transaction in
-                var requestRange: NSRange = {
-                    var range: Range<Int> = {
-                        switch direction {
-                        case .around:
-                            // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
-                            // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
-                            let start: Int = itemIndex - Int(amount) / 2
-                            let end: Int = itemIndex + Int(amount) / 2
-
-                            return start..<end
-                        case .before:
-                            let start: Int = itemIndex + 1 - Int(amount)
-                            let end: Int = itemIndex + 1
-
-                            return start..<end
-                        case .after:
-                            let start: Int = itemIndex
-                            let end: Int = itemIndex + Int(amount)
-
-                            return start..<end
-                        }
-                    }()
-
-                    if shouldLoadAlbumRemainder, let item = sections[sectionIndex].value[safe: itemIndex] ?? nil {
-                        let albumStart = (itemIndex - item.albumIndex)
-                        let albumEnd = albumStart + item.message.attachmentIds.count
-                        range = (min(range.lowerBound, albumStart)..<max(range.upperBound, albumEnd))
-                    }
-
-                    return NSRange(range)
-                }()
-
                 // Figure out the earliest section this request will cross.
                 var currentSectionIndex = sectionIndex
+                var requestRange = NSRange(naiveRequestRange)
                 while requestRange.location < 0 {
                     if currentSectionIndex == 0 {
                         let newlyLoadedCount = loadEarlierSections(transaction: transaction)
@@ -451,6 +530,7 @@ class MediaGallery {
                     let items = sections[currentSectionIndex].value
                     requestRange.location += items.count
                 }
+
                 let interval = DateInterval(start: sections.orderedKeys[currentSectionIndex].date,
                                             end: .distantFutureForMillisecondTimestamp)
 
@@ -488,6 +568,11 @@ class MediaGallery {
 
                         guard !self.deletedAttachmentIds.contains(attachment.uniqueId) else {
                             owsFailDebug("\(attachment) has already been deleted; should not have been fetched.")
+                            return
+                        }
+
+                        if let loadedItem = items[itemIndex] {
+                            owsAssert(loadedItem.attachmentStream.uniqueId == attachment.uniqueId)
                             return
                         }
 
