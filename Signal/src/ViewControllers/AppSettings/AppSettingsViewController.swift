@@ -63,8 +63,9 @@ class AppSettingsViewController: OWSTableViewController2 {
             icon: .settingsAccount,
             name: NSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "account"),
-            actionBlock: {
-                // TODO:
+            actionBlock: { [weak self] in
+                let vc = AccountSettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
         section1.add(.disclosureItem(

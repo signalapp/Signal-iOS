@@ -18,8 +18,6 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let pinsSection = OWSTableSection()
-        pinsSection.headerTitle = NSLocalizedString("SETTINGS_ADVANCED_PINS_HEADER",
-                                                     comment: "Table header for the 'pins' section.")
 
         pinsSection.add(OWSTableItem.actionItem(
             withText: (KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey)

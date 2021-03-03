@@ -43,6 +43,7 @@
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "RecipientPickerViewController.h"
+#import "RegistrationUtils.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
