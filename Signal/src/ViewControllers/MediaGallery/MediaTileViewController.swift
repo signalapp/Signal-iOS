@@ -97,7 +97,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func viewWillAppear(_ animated: Bool) {
         if mediaGallery.sections.isEmpty {
             databaseStorage.uiRead { transaction in
-                _ = self.mediaGallery.loadEarlierSections(transaction: transaction)
+                _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, transaction: transaction)
             }
         }
 
@@ -375,7 +375,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         mediaGallery.ensureGalleryItemsLoaded(.after,
                                               sectionIndex: underlyingPath.section,
                                               itemIndex: underlyingPath.item,
-                                              amount: 50,
+                                              amount: kLoadBatchSize,
                                               shouldLoadAlbumRemainder: false) { newSectionIndexes in
             UIView.performWithoutAnimation {
                 self.collectionView.insertSections(newSectionIndexes.shifted(by: 1))
@@ -643,8 +643,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: Lazy Loading
 
     var isFetchingMoreData: Bool = false
+    let kLoadBatchSize: Int = 50
 
-    let kLoadOlderSectionIdx = 0
+    let kLoadOlderSectionIdx: Int = 0
     var loadNewerSectionIdx: Int {
         return galleryDates.count + 1
     }
@@ -694,9 +695,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     let newSections: Range<Int>
                     switch direction {
                     case .before:
-                        newSections = 0..<mediaGallery.loadEarlierSections(transaction: transaction)
+                        newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize,
+                                                                           transaction: transaction)
                     case .after:
-                        let newSectionCount = mediaGallery.loadLaterSections(transaction: transaction)
+                        let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize,
+                                                                             transaction: transaction)
                         newSections = (mediaGallery.sections.count - newSectionCount)..<mediaGallery.sections.count
                     case .around:
                         preconditionFailure() // unused

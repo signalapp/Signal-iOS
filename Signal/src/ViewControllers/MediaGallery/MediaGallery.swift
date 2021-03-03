@@ -243,9 +243,6 @@ class MediaGallery {
 
     private let mediaGalleryFinder: AnyMediaGalleryFinder
 
-    // we start with a small range size for quick loading.
-    private let fetchRangeSize: UInt = 10
-
     deinit {
         Logger.debug("")
     }
@@ -387,7 +384,7 @@ class MediaGallery {
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
                                   sectionIndex: Int,
                                   itemIndex: Int,
-                                  amount: UInt,
+                                  amount: Int,
                                   shouldLoadAlbumRemainder: Bool,
                                   completion: ((_ newSections: IndexSet) -> Void)? = nil) {
         if isCurrentlyProcessingExternalDeletion {
@@ -515,7 +512,7 @@ class MediaGallery {
                 var requestRange = NSRange(naiveRequestRange)
                 while requestRange.location < 0 {
                     if currentSectionIndex == 0 {
-                        let newlyLoadedCount = loadEarlierSections(transaction: transaction)
+                        let newlyLoadedCount = loadEarlierSections(batchSize: amount, transaction: transaction)
                         currentSectionIndex = newlyLoadedCount
                         numNewlyLoadedEarlierSections += newlyLoadedCount
 
@@ -549,7 +546,8 @@ class MediaGallery {
                                 owsAssertDebug(sections.count == 1, "should only be used in single-album page view")
                                 return
                             }
-                            numNewlyLoadedLaterSections += loadLaterSections(transaction: transaction)
+                            numNewlyLoadedLaterSections += loadLaterSections(batchSize: amount,
+                                                                             transaction: transaction)
                             if currentSectionIndex >= sections.count {
                                 owsFailDebug("attachment \(attachment) is beyond the last section")
                                 return
@@ -606,7 +604,7 @@ class MediaGallery {
 
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
                                   item: MediaGalleryItem,
-                                  amount: UInt,
+                                  amount: Int,
                                   shouldLoadAlbumRemainder: Bool,
                                   completion: ((_ newSections: IndexSet) -> Void)? = nil) {
         guard let path = indexPath(for: item) else {
@@ -668,7 +666,10 @@ class MediaGallery {
 
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
-        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 10, shouldLoadAlbumRemainder: true)
+        ensureGalleryItemsLoaded(.around,
+                                 item: focusedItem,
+                                 amount: kGallerySwipeLoadBatchSize * 2,
+                                 shouldLoadAlbumRemainder: true)
 
         return focusedItem
     }
@@ -686,7 +687,7 @@ class MediaGallery {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded, which can be used to update section indexes.
-    func loadEarlierSections(transaction: SDSAnyReadTransaction) -> Int {
+    func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
         if hasFetchedOldest {
             return 0
         }
@@ -698,7 +699,7 @@ class MediaGallery {
         let finder = self.mediaGalleryFinder.grdbAdapter
         let result = finder.enumerateTimestamps(before: earliestDate,
                                                 excluding: deletedAttachmentIds,
-                                                count: 50,
+                                                count: batchSize,
                                                 transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
@@ -728,7 +729,7 @@ class MediaGallery {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded.
-    func loadLaterSections(transaction: SDSAnyReadTransaction) -> Int {
+    func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
         if hasFetchedMostRecent {
             return 0
         }
@@ -740,7 +741,7 @@ class MediaGallery {
         let finder = self.mediaGalleryFinder.grdbAdapter
         let result = finder.enumerateTimestamps(after: latestDate,
                                                 excluding: deletedAttachmentIds,
-                                                count: 50,
+                                                count: batchSize,
                                                 transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
@@ -851,7 +852,7 @@ class MediaGallery {
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
 
-    let kGallerySwipeLoadBatchSize: UInt = 5
+    let kGallerySwipeLoadBatchSize: Int = 5
 
     /// Searches the appropriate section for this item.
     internal func indexPath(for item: MediaGalleryItem) -> IndexPath? {
