@@ -13,6 +13,7 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
     public enum Method : String {
         case getSwarm = "get_snodes_for_pubkey"
         case getMessages = "retrieve"
+        case getSessionIDForONSName = "get_lns_mapping"
         case sendMessage = "store"
     }
 
