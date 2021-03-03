@@ -95,7 +95,7 @@ class UsernameViewController: OWSTableViewController2 {
     }
 
     private func createViews() {
-        usernameTextField.returnKeyType = .next
+        usernameTextField.returnKeyType = .done
         usernameTextField.autocorrectionType = .no
         usernameTextField.spellCheckingType = .no
         usernameTextField.placeholder = NSLocalizedString(

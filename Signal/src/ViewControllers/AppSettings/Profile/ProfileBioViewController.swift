@@ -63,11 +63,15 @@ class ProfileBioViewController: OWSTableViewController2 {
     }
 
     private var normalizedProfileBio: String? {
-        bioTextField.text?.ows_stripped()
+        let normalizedProfileBio = bioTextField.text?.ows_stripped()
+        if normalizedProfileBio?.isEmpty == true { return nil }
+        return normalizedProfileBio
     }
 
     private var normalizedProfileBioEmoji: String? {
-        bioEmojiLabel.text?.ows_stripped()
+        let normalizedProfileBioEmoji = bioEmojiLabel.text?.ows_stripped()
+        if normalizedProfileBioEmoji?.isEmpty == true { return nil }
+        return normalizedProfileBioEmoji
     }
 
     private var hasUnsavedChanges: Bool {
