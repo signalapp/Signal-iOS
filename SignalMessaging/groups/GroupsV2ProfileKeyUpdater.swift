@@ -229,7 +229,8 @@ class GroupsV2ProfileKeyUpdater {
 
     private func tryToUpdate(groupId: Data) -> Promise<Void> {
         let profileKeyData = profileManager.localProfileKey().keyData
-        guard let localAddress = tsAccountManager.localAddress else {
+        guard let localAddress = tsAccountManager.localAddress,
+              let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("missing local address")
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
@@ -259,9 +260,18 @@ class GroupsV2ProfileKeyUpdater {
                     // Group state already has our current key.
                     throw GroupsV2Error.redundantChange
                 }
+                if DebugFlags.internalLogging {
+                    for (uuid, profileKey) in groupV2Snapshot.profileKeys {
+                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid)")
+                    }
+                }
                 return groupThread
             }
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<Void> in
+            if DebugFlags.internalLogging {
+                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid)")
+            }
+
             return firstly {
                 return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.map(on: .global()) { () throws -> GroupsV2OutgoingChanges in
