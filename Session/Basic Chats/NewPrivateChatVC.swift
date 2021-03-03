@@ -124,16 +124,38 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
     }
     
-    fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
-        if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
+    fileprivate func startNewPrivateChatIfPossible(with onsNameOrPublicKey: String) {
+        if ECKeyPair.isValidHexEncodedPublicKey(candidate: onsNameOrPublicKey) {
+            startNewPrivateChatIfPossible(with: onsNameOrPublicKey)
         } else {
-            let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
-            presentingViewController?.dismiss(animated: true, completion: nil)
-            SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+            // This could be an ONS name
+            ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+                SnodeAPI.getSessionID(for: onsNameOrPublicKey).done { sessionID in
+                    modalActivityIndicator.dismiss {
+                        self?.startNewPrivateChat(with: sessionID)
+                    }
+                }.catch { error in
+                    var messageOrNil: String?
+                    if let error = error as? SnodeAPI.Error {
+                        switch error {
+                        case .decryptionFailed, .hashingFailed, .validationFailed: messageOrNil = error.errorDescription
+                        default: break
+                        }
+                    }
+                    let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"
+
+                    let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                    self?.presentAlert(alert)
+                }
+            }
         }
+    }
+
+    private func startNewPrivateChat(with sessionID: String) {
+        let thread = TSContactThread.getOrCreateThread(contactId: sessionID)
+        presentingViewController?.dismiss(animated: true, completion: nil)
+        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
     }
 }
 
@@ -292,8 +314,8 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc fileprivate func startNewPrivateChatIfPossible() {
-        let publicKey = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        newPrivateChatVC.startNewPrivateChatIfPossible(with: publicKey)
+        let text = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        newPrivateChatVC.startNewPrivateChatIfPossible(with: text)
     }
 }
 
