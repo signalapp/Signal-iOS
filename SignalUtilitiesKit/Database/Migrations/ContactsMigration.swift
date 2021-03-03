@@ -4,7 +4,7 @@ public class ContactsMigration : OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
-        return "005"
+        return "112"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
@@ -14,6 +14,16 @@ public class ContactsMigration : OWSDatabaseMigration {
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
         var contacts: Set<Contact> = []
         Storage.write(with: { transaction in
+            // Current user
+            if let profile = OWSUserProfile.fetch(uniqueId: kLocalProfileUniqueId, transaction: transaction),
+                let sessionID = TSAccountManager.sharedInstance().localNumber() { // Should always exist
+                let contact = Contact(sessionID: sessionID)
+                contact.name = profile.profileName
+                contact.profilePictureURL = profile.avatarUrlPath
+                contact.profilePictureFileName = profile.avatarFileName
+                contact.profilePictureEncryptionKey = profile.profileKey
+                contacts.insert(contact)
+            }
             // One-on-one chats
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard let thread = object as? TSContactThread else { return }
