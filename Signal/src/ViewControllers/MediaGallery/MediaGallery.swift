@@ -219,6 +219,8 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
 protocol MediaGalleryDelegate: class {
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject)
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath])
+
+    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet)
 }
 
 class MediaGallery {
@@ -265,8 +267,8 @@ class MediaGallery {
 
     // MARK: - 
 
-    func process(deletedAttachmentIds incomingDeletedAttachmentIds: [String]) {
-        let newlyDeletedAttachmentIds = Set(incomingDeletedAttachmentIds).subtracting(deletedAttachmentIds)
+    func process(deletedAttachmentIds incomingDeletedAttachmentIds: Set<String>) {
+        let newlyDeletedAttachmentIds = incomingDeletedAttachmentIds.subtracting(deletedAttachmentIds)
         if newlyDeletedAttachmentIds.isEmpty {
             return
         }
@@ -287,6 +289,44 @@ class MediaGallery {
         delete(items: deletedItems, initiatedBy: self, deleteFromDB: false)
     }
 
+    func process(newAttachmentIds: Set<String>) {
+        if newAttachmentIds.isEmpty {
+            return
+        }
+
+        var sectionsNeedingUpdate = IndexSet()
+
+        databaseStorage.uiRead { transaction in
+            for attachmentId in newAttachmentIds {
+                let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
+                guard let attachmentStream = attachment as? TSAttachmentStream else {
+                    // not downloaded yet
+                    return
+                }
+                guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
+                    owsFailDebug("message was unexpectedly nil")
+                    return
+                }
+
+                let sectionDate = GalleryDate(message: message)
+                // Do a backwards search assuming new messages usually arrive at the end.
+                // Still, this is kept sorted, so we ought to be able to do a binary search instead.
+                if let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) {
+                    sectionsNeedingUpdate.insert(sectionIndex)
+                }
+            }
+
+            for sectionIndex in sectionsNeedingUpdate {
+                // Throw out everything in that section.
+                let sectionDate = sections.orderedKeys[sectionIndex]
+                let newCount = numberOfItemsInSection(for: sectionDate, transaction: transaction)
+                sections.replace(key: sectionDate, value: Array(repeating: nil, count: newCount))
+            }
+        }
+
+        delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+    }
+
     // MARK: -
 
     /// All sections we know about.
@@ -298,7 +338,7 @@ class MediaGallery {
     private(set) var hasFetchedOldest = false
     private(set) var hasFetchedMostRecent = false
 
-    func buildGalleryItem(attachment: TSAttachment, transaction: SDSAnyReadTransaction) -> MediaGalleryItem? {
+    private func buildGalleryItem(attachment: TSAttachment, transaction: SDSAnyReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
@@ -487,30 +527,56 @@ class MediaGallery {
                                  completion: completion)
     }
 
-    public func ensureLoadedForDetailView(focusedItem: MediaGalleryItem) {
-        if sections.isEmpty {
-            // Set up the current section only.
-            databaseStorage.uiRead { transaction in
+    public func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
+        let newItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
+            guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
+                return nil
+            }
+
+            let finder = mediaGalleryFinder.grdbAdapter
+            guard let offsetInSection = finder.mediaIndex(of: focusedItem.attachmentStream,
+                                                          in: focusedItem.galleryDate.asInterval,
+                                                          excluding: deletedAttachmentIds,
+                                                          transaction: transaction.unwrapGrdbRead) else {
+                owsFailDebug("showing detail for item not in the database")
+                return nil
+            }
+
+            if sections.isEmpty {
+                // Set up the current section only.
                 let count = numberOfItemsInSection(for: focusedItem.galleryDate, transaction: transaction)
                 var items: [MediaGalleryItem?] = Array(repeating: nil, count: count)
-
-                let finder = mediaGalleryFinder.grdbAdapter
-                guard let offset = finder.mediaIndex(of: focusedItem.attachmentStream,
-                                                     in: focusedItem.galleryDate.asInterval,
-                                                     excluding: deletedAttachmentIds,
-                                                     transaction: transaction.unwrapGrdbRead) else {
-                    owsFailDebug("showing detail for item not in the database")
-                    return
-                }
-
-                items[offset] = focusedItem
+                items[offsetInSection] = focusedItem
                 sections.append(key: focusedItem.galleryDate, value: items)
+                return focusedItem
             }
+
+            // Assume we've set up this section, but may or may not have initialized the item.
+            guard var items = sections[focusedItem.galleryDate] else {
+                owsFailDebug("section for focused item not found")
+                return nil
+            }
+
+            if let existingItem = items[safe: offsetInSection] ?? nil {
+                return existingItem
+            }
+
+            // Swap out the section items to avoid copy-on-write.
+            sections.replace(key: focusedItem.galleryDate, value: [])
+            items[offsetInSection] = focusedItem
+            sections.replace(key: focusedItem.galleryDate, value: items)
+            return focusedItem
+        }
+
+        guard let focusedItem = newItem else {
+            return nil
         }
 
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
         ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 10, shouldLoadAlbumRemainder: true)
+
+        return focusedItem
     }
 
     // MARK: - Section-based API
@@ -779,11 +845,10 @@ extension MediaGallery: UIDatabaseSnapshotDelegate {
     }
 
     func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
-        let deletedAttachmentIds = databaseChanges.attachmentDeletedUniqueIds
-        guard deletedAttachmentIds.count > 0 else {
-            return
-        }
-        process(deletedAttachmentIds: Array(deletedAttachmentIds))
+        // Process deletions before insertions,
+        // because we can modify our existing model for deletions but have to reset with insertions.
+        process(deletedAttachmentIds: databaseChanges.attachmentDeletedUniqueIds)
+        process(newAttachmentIds: databaseChanges.attachmentUniqueIds)
     }
 
     func uiDatabaseSnapshotDidUpdateExternally() {

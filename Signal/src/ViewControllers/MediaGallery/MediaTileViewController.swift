@@ -656,6 +656,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         })
     }
 
+    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+        collectionView.reloadSections(sections.shifted(by: 1))
+    }
+
     // MARK: Lazy Loading
 
     var isFetchingMoreData: Bool = false

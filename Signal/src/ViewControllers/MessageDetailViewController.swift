@@ -570,6 +570,10 @@ extension MessageDetailViewController: MediaGalleryDelegate {
             self.navigationController?.popViewController(animated: true)
         }
     }
+
+    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+        // No action needed
+    }
 }
 
 // MARK: -
