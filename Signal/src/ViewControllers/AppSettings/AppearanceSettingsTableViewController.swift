@@ -26,22 +26,16 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let firstSection = OWSTableSection()
-
-        // Starting with iOS 13, show them in appearance section to allow setting the app
-        // theme to match the "system" dark/light mode settings..
-        if #available(iOS 13, *) {
-            firstSection.add(OWSTableItem.disclosureItem(
-                withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                            comment: "The title for the theme section in the appearance settings."),
-                detailText: ThemeSettingsTableViewController.currentThemeName,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
-            ) { [weak self] in
-                guard let self = self else { return }
-                let vc = ThemeSettingsTableViewController()
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
-        }
-
+        firstSection.add(OWSTableItem.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+                                        comment: "The title for the theme section in the appearance settings."),
+            detailText: ThemeSettingsTableViewController.currentThemeName,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
+        ) { [weak self] in
+            guard let self = self else { return }
+            let vc = ThemeSettingsTableViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
         firstSection.add(OWSTableItem.disclosureItem(
             withText: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
                                         comment: "Label for settings view that allows user to change the wallpaper."),
