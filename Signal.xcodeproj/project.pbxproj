@@ -750,6 +750,7 @@
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
 		887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889AF247F2E72001B5FCF /* Emoji+Category.swift */; };
 		887889B2247F2E72001B5FCF /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B0247F2E72001B5FCF /* Emoji.swift */; };
+		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
 		887C6A7824DBB16E00141B64 /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
@@ -1830,6 +1831,7 @@
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AF247F2E72001B5FCF /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
 		887889B0247F2E72001B5FCF /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
 		887B6B2324895F1F0075EBC7 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
@@ -2281,9 +2283,9 @@
 			isa = PBXGroup;
 			children = (
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
-				88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */,
 				340FC884204DAC8C007AEB0F /* AboutTableViewController.h */,
 				340FC893204DAC8C007AEB0F /* AboutTableViewController.m */,
+				88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */,
 				88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */,
 				340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */,
 				340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */,
@@ -2291,6 +2293,7 @@
 				8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */,
 				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
 				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
+				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
 				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
 				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
@@ -5461,6 +5464,7 @@
 				880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */,
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
+				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
 				348815BE2552EB2900D4F4C4 /* OWSStackView.swift in Sources */,
 				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,

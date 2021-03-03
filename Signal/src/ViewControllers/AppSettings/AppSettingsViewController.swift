@@ -93,8 +93,9 @@ class AppSettingsViewController: OWSTableViewController2 {
             icon: .settingsChats,
             name: NSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "chats"),
-            actionBlock: {
-                // TODO:
+            actionBlock: { [weak self] in
+                let vc = ChatsSettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
         section2.add(.disclosureItem(

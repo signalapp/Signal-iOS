@@ -276,6 +276,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             cell.selectedBackgroundView = nil
             cell.backgroundColor = .clear
             cell.contentView.backgroundColor = .clear
+            cell.tintColor = Theme.primaryIconColor
 
             guard section.hasBackground else {
                 return

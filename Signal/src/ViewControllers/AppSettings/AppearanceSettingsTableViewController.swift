@@ -48,26 +48,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
 
         contents.addSection(firstSection)
 
-        let contactSection = OWSTableSection()
-        contactSection.footerTitle = NSLocalizedString(
-            "SETTINGS_APPEARANCE_AVATAR_FOOTER",
-            comment: "Footer for avatar section in appearance settings")
-
-        contactSection.add(
-            OWSTableItem.switch(
-                withText: NSLocalizedString(
-                    "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
-                    comment: "Title for switch to toggle preference between contact and profile avatars"),
-                isOn: {
-                    SDSDatabaseStorage.shared.read { SSKPreferences.preferContactAvatars(transaction: $0) }
-                },
-                target: self,
-                selector: #selector(didToggleAvatarPreference(_:))
-            )
-        )
-
-        contents.addSection(contactSection)
-
         // TODO iOS 13 – maybe expose the preferred language settings here to match android
         // It not longer seems to exist in iOS 13.1 so not sure if Apple got rid of it
         // or it has just temporarily been disabled.
@@ -102,13 +82,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
             return NSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME", comment: "Name indicating that the light theme is enabled.")
         case .system:
             return NSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME", comment: "Name indicating that the system theme is enabled.")
-        }
-    }
-
-    @objc func didToggleAvatarPreference(_ sender: UISwitch) {
-        Logger.info("Avatar preference toggled: \(sender.isOn)")
-        SDSDatabaseStorage.shared.asyncWrite { writeTx in
-            SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: writeTx)
         }
     }
 }
