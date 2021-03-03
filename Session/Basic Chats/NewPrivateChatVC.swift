@@ -135,18 +135,19 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
                         self?.startNewPrivateChat(with: sessionID)
                     }
                 }.catch { error in
-                    var messageOrNil: String?
-                    if let error = error as? SnodeAPI.Error {
-                        switch error {
-                        case .decryptionFailed, .hashingFailed, .validationFailed: messageOrNil = error.errorDescription
-                        default: break
+                    modalActivityIndicator.dismiss {
+                        var messageOrNil: String?
+                        if let error = error as? SnodeAPI.Error {
+                            switch error {
+                            case .decryptionFailed, .hashingFailed, .validationFailed: messageOrNil = error.errorDescription
+                            default: break
+                            }
                         }
+                        let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"
+                        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                        self?.presentAlert(alert)
                     }
-                    let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"
-
-                    let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
-                    self?.presentAlert(alert)
                 }
             }
         }
@@ -165,7 +166,11 @@ private final class EnterPublicKeyVC : UIViewController {
     private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private let publicKeyTextView = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
+    private lazy var publicKeyTextView: TextView = {
+        let result = TextView(placeholder: "Enter Session ID or ONS name")
+        result.autocapitalizationType = .none
+        return result
+    }()
     
     private lazy var copyButton: Button = {
         let result = Button(style: .unimportant, size: .medium)

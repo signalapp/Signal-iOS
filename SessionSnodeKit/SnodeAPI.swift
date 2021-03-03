@@ -193,6 +193,7 @@ public final class SnodeAPI : NSObject {
     public static func getSessionID(for onsName: String) -> Promise<String> {
         let sodium = Sodium()
         let validationCount = 3
+        let sessionIDByteCount = 33
         // The name must be lowercased
         let onsName = onsName.lowercased()
         // Hash the ONS name using BLAKE2b
@@ -217,25 +218,31 @@ public final class SnodeAPI : NSObject {
                 case .fulfilled(let rawResponse):
                     guard let json = rawResponse as? JSON, let x0 = json["result"] as? JSON,
                         let x1 = x0["entries"] as? [JSON], let x2 = x1.first,
-                        let hexEncodedEncryptedSessionID = x2["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
-                    let encryptedSessionID = [UInt8](Data(hex: hexEncodedEncryptedSessionID))
-                    let sessionIDByteCount = 33
-                    let isArgon2Based = (encryptedSessionID.count == sessionIDByteCount + sodium.secretBox.MacBytes)
+                        let hexEncodedEncryptedBlob = x2["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
+                    let encryptedBlob = [UInt8](Data(hex: hexEncodedEncryptedBlob))
+                    let isArgon2Based = (encryptedBlob.count == sessionIDByteCount + sodium.secretBox.MacBytes)
                     if isArgon2Based {
                         // Handle old Argon2-based encryption used before HF16
                         let salt = [UInt8](Data(repeating: 0, count: sodium.pwHash.SaltBytes))
                         guard let key = sodium.pwHash.hash(outputLength: sodium.secretBox.KeyBytes, passwd: nameAsData, salt: salt,
                             opsLimit: sodium.pwHash.OpsLimitModerate, memLimit: sodium.pwHash.MemLimitModerate, alg: .Argon2ID13) else { return seal.reject(Error.hashingFailed) }
                         let nonce = [UInt8](Data(repeating: 0, count: sodium.secretBox.NonceBytes))
-                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: encryptedSessionID, secretKey: key, nonce: nonce) else {
+                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: encryptedBlob, secretKey: key, nonce: nonce) else {
                             return seal.reject(Error.decryptionFailed)
                         }
                         sessionIDs.append(sessionIDAsData.toHexString())
                     } else {
                         // BLAKE2b-based encryption
-                        // key = H(name, key=H(name))
-                        guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { return seal.reject(Error.hashingFailed) }
-                        guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(nonceAndAuthenticatedCipherText: encryptedSessionID, secretKey: key) else {
+                        guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { // key = H(name, key=H(name))
+                            return seal.reject(Error.hashingFailed)
+                        }
+                        let nonceSize = sodium.aead.xchacha20poly1305ietf.NonceBytes
+                        guard encryptedBlob.count >= (sessionIDByteCount + sodium.aead.xchacha20poly1305ietf.ABytes + nonceSize) else { // Should always be equal in practice
+                            return seal.reject(Error.decryptionFailed)
+                        }
+                        let nonce = [UInt8](encryptedBlob[(encryptedBlob.endIndex - nonceSize) ..< encryptedBlob.endIndex])
+                        let ciphertext = [UInt8](encryptedBlob[0 ..< (encryptedBlob.endIndex - nonceSize)])
+                        guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
                             return seal.reject(Error.decryptionFailed)
                         }
                         sessionIDs.append(sessionIDAsData.toHexString())
