@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 private protocol TSConstantsProtocol: class {
@@ -236,7 +236,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves = [] as [KeyBackupEnclave]
+    public let keyBackupPreviousEnclaves = [KeyBackupEnclave]()
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 
