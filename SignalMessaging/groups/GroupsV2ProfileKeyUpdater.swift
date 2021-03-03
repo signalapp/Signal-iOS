@@ -271,6 +271,8 @@ class GroupsV2ProfileKeyUpdater {
         }.then(on: .global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
             if DebugFlags.internalLogging {
                 Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid)")
+            } else {
+                Logger.info("Updating profile key for group.")
             }
 
             return firstly {
