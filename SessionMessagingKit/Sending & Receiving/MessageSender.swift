@@ -14,6 +14,7 @@ public final class MessageSender : NSObject {
         case noUserED25519KeyPair
         case signingFailed
         case encryptionFailed
+        case noUsername
         // Closed groups
         case noThread
         case noKeyPair
@@ -35,6 +36,7 @@ public final class MessageSender : NSObject {
             case .noUserED25519KeyPair: return "Couldn't find user ED25519 key pair."
             case .signingFailed: return "Couldn't sign message."
             case .encryptionFailed: return "Couldn't encrypt message."
+            case .noUsername: return "Missing username."
             // Closed groups
             case .noThread: return "Couldn't find a thread associated with the given group public key."
             case .noKeyPair: return "Couldn't find a private key associated with the given group public key."
@@ -146,7 +148,7 @@ public final class MessageSender : NSObject {
         }
         // Attach the user's profile if needed
         if let message = message as? VisibleMessage {
-            let name = storage.getUser()!.name!
+            guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
             if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
                 message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
             } else {
