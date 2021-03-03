@@ -540,6 +540,9 @@ import SignalMessaging
             var isUnknownCaller = false
             if call.individualCall.direction == .incoming {
                 isUnknownCaller = !self.contactsManager.hasSignalAccount(for: call.individualCall.thread.contactAddress)
+                if isUnknownCaller {
+                    Logger.warn("Using relay server because remote user is an unknown caller")
+                }
             }
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
