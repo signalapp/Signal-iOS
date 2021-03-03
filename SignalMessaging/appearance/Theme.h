@@ -82,6 +82,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *tableCell2PresentedSelectedBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableView2BackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableView2PresentedBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *tableView2SeparatorColor;
+@property (class, readonly, nonatomic) UIColor *tableView2PresentedSeparatorColor;
 
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
 // users chosen theme.

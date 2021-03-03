@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceTableViewCell.h"
@@ -48,8 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(device);
 
     self.nameLabel.font = OWSTableItem.primaryLabelFont;
-    self.linkedLabel.font = UIFont.ows_dynamicTypeCaption1Font;
-    self.lastSeenLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.linkedLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    self.lastSeenLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
 
     self.nameLabel.text = device.displayName;
 

@@ -168,7 +168,8 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController presentFromViewController:fromViewController];
 }
 
-+ (BOOL)useDebugUI {
++ (BOOL)useDebugUI
+{
 #ifdef USE_DEBUG_UI
     return YES;
 #else

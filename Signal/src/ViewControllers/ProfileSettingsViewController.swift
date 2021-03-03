@@ -7,7 +7,7 @@ import SafariServices
 import PromiseKit
 
 @objc
-public class ProfileSettingsViewController: OWSTableViewController {
+public class ProfileSettingsViewController: OWSTableViewController2 {
 
     private let avatarViewHelper = AvatarViewHelper()
 
@@ -49,8 +49,6 @@ public class ProfileSettingsViewController: OWSTableViewController {
 
     public override func loadView() {
         super.loadView()
-
-        self.useThemeBackgroundColors = true
 
         self.title = NSLocalizedString("PROFILE_VIEW_TITLE", comment: "Title for the profile view.")
 

@@ -4,7 +4,7 @@
 
 import Foundation
 
-class NetworkInterfacePreferenceViewController: OWSTableViewController {
+class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
     private var selectedOption: NetworkInterfaceSet?
     private let availableOptions: [NetworkInterfaceSet]
     private let updateHandler: (NetworkInterfaceSet) -> Void
@@ -22,7 +22,6 @@ class NetworkInterfacePreferenceViewController: OWSTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.useThemeBackgroundColors = true
         updateTableContents()
     }
 

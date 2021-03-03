@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class AdvancedPinSettingsTableViewController: OWSTableViewController {
+class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_ADVANCED_PIN_TITLE", comment: "The title for the advanced pin settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

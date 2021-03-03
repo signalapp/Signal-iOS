@@ -4,7 +4,7 @@
 
 import Foundation
 
-class MediaDownloadSettingsViewController: OWSTableViewController {
+class MediaDownloadSettingsViewController: OWSTableViewController2 {
 
     private let mediaDownloadType: MediaDownloadType
 
@@ -18,8 +18,6 @@ class MediaDownloadSettingsViewController: OWSTableViewController {
         super.viewDidLoad()
 
         title = Self.name(forMediaDownloadType: mediaDownloadType)
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

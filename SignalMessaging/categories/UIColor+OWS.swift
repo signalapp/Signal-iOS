@@ -120,7 +120,7 @@ public extension UIColor {
 
     @objc(ows_gray10Color)
     class var ows_gray10: UIColor {
-        return UIColor(rgbHex: 0xD4D4D4)
+        return UIColor(rgbHex: 0xf0f0f0)
     }
 
     @objc(ows_gray15Color)

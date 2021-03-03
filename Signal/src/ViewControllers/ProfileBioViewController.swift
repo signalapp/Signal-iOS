@@ -12,7 +12,7 @@ protocol ProfileBioViewControllerDelegate: class {
 // MARK: -
 
 @objc
-class ProfileBioViewController: OWSTableViewController {
+class ProfileBioViewController: OWSTableViewController2 {
 
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
 
@@ -47,8 +47,6 @@ class ProfileBioViewController: OWSTableViewController {
 
     public override func loadView() {
         super.loadView()
-
-        self.useThemeBackgroundColors = true
 
         updateNavigation()
 

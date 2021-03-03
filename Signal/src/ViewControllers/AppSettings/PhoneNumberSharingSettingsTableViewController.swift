@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-class PhoneNumberSharingSettingsTableViewController: OWSTableViewController {
+class PhoneNumberSharingSettingsTableViewController: OWSTableViewController2 {
 
     @objc
     class var nameForCurrentMode: String {
@@ -47,8 +47,6 @@ class PhoneNumberSharingSettingsTableViewController: OWSTableViewController {
 
         title = NSLocalizedString("SETTINGS_PHONE_NUMBER_SHARING_TITLE",
                                   comment: "The title for the phone number sharing settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

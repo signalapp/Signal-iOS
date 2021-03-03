@@ -1,17 +1,15 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-class FlagsViewController: OWSTableViewController {
+class FlagsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Flags"
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

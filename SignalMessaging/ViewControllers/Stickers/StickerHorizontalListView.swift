@@ -196,7 +196,7 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
             let selectionView = UIView()
             selectionView.backgroundColor = (Theme.isDarkThemeEnabled
                 ? UIColor.ows_gray75
-                : UIColor.ows_gray10)
+                : UIColor.ows_gray15)
             selectionView.layer.cornerRadius = 8
             cell.contentView.addSubview(selectionView)
             selectionView.autoPinEdgesToSuperviewEdges()

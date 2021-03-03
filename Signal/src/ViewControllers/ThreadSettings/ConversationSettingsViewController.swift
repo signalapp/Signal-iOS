@@ -33,7 +33,7 @@ public protocol ConversationSettingsViewDelegate: class {
 
 // TODO: We should describe which state updates & when it is committed.
 @objc
-class ConversationSettingsViewController: OWSTableViewController {
+class ConversationSettingsViewController: OWSTableViewController2 {
 
     @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
@@ -129,10 +129,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         return OWSDisappearingMessagesConfiguration.validDurationsSeconds()
     }
 
-    class var headerBackgroundColor: UIColor {
-        return (Theme.isDarkThemeEnabled ? Theme.tableViewBackgroundColor : Theme.tableCellBackgroundColor)
-    }
-
     // MARK: - View Lifecycle
 
     @objc
@@ -146,14 +142,10 @@ class ConversationSettingsViewController: OWSTableViewController {
                 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
         }
 
-        self.useThemeBackgroundColors = true
-        tableView.estimatedRowHeight = 45
-        tableView.rowHeight = UITableView.automaticDimension
-
         // The header should "extend" offscreen so that we
         // don't see the root view's background color if we scroll down.
         let backgroundTopView = UIView()
-        backgroundTopView.backgroundColor = Self.headerBackgroundColor
+        backgroundTopView.backgroundColor = tableBackgroundColor
         tableView.addSubview(backgroundTopView)
         backgroundTopView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 0)
         backgroundTopView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 0)

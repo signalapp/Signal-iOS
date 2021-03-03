@@ -198,8 +198,11 @@ public extension OWSTableItem {
             nameLabel.textColor = Theme.primaryTextColor
         }
         nameLabel.font = OWSTableItem.primaryLabelFont
-        nameLabel.lineBreakMode = .byTruncatingTail
-        nameLabel.setCompressionResistanceHorizontalLow()
+        nameLabel.adjustsFontForContentSizeCategory = true
+        nameLabel.numberOfLines = 0
+        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.setCompressionResistanceHorizontalHigh()
+        nameLabel.setContentHuggingHorizontalHigh()
         arrangedSubviews.append(nameLabel)
         if let customColor = customColor {
             nameLabel.textColor = customColor
@@ -210,7 +213,11 @@ public extension OWSTableItem {
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = Theme.secondaryTextAndIconColor
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
-            accessoryLabel.lineBreakMode = .byTruncatingTail
+            accessoryLabel.adjustsFontForContentSizeCategory = true
+            accessoryLabel.numberOfLines = 0
+            accessoryLabel.lineBreakMode = .byWordWrapping
+            accessoryLabel.setCompressionResistanceHorizontalHigh()
+            accessoryLabel.setContentHuggingHorizontalHigh()
             arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]
         }
 

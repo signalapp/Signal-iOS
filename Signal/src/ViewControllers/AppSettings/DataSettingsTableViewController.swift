@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class DataSettingsTableViewController: OWSTableViewController {
+class DataSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_DATA_TITLE", comment: "The title for the data settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
 

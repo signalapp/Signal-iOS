@@ -4,7 +4,7 @@
 
 import Foundation
 
-class SetWallpaperViewController: OWSTableViewController {
+class SetWallpaperViewController: OWSTableViewController2 {
     lazy var collectionView = WallpaperCollectionView { [weak self] wallpaper in
         guard let self = self else { return }
         let vc = PreviewWallpaperViewController(
@@ -32,7 +32,7 @@ class SetWallpaperViewController: OWSTableViewController {
         super.viewDidLoad()
 
         title = NSLocalizedString("SET_WALLPAPER_TITLE", comment: "Title for the set wallpaper settings view.")
-        useThemeBackgroundColors = true
+
         updateTableContents()
     }
 

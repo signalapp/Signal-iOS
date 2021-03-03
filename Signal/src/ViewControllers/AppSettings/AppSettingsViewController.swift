@@ -21,6 +21,17 @@ class AppSettingsViewController: OWSTableViewController2 {
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
         updateTableContents()
+
+        if let localAddress = tsAccountManager.localAddress {
+            bulkProfileFetch.fetchProfile(address: localAddress)
+        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localProfileDidChange),
+            name: .localProfileDidChange,
+            object: nil
+        )
     }
 
     @objc
@@ -28,8 +39,24 @@ class AppSettingsViewController: OWSTableViewController2 {
         dismiss(animated: true)
     }
 
+    @objc
+    func localProfileDidChange() {
+        AssertIsOnMainThread()
+        updateTableContents()
+    }
+
     func updateTableContents() {
         let contents = OWSTableContents()
+
+        let profileSection = OWSTableSection()
+        profileSection.add(.init(
+            customCellBlock: { self.profileCell() },
+            actionBlock: { [weak self] in
+                let vc = ProfileSettingsViewController { $0.navigationController?.popViewController(animated: true) }
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        contents.addSection(profileSection)
 
         let section1 = OWSTableSection()
         section1.add(.disclosureItem(
@@ -152,5 +179,93 @@ class AppSettingsViewController: OWSTableViewController2 {
         let inviteFlow = InviteFlow(presentingViewController: self)
         self.inviteFlow = inviteFlow
         inviteFlow.present(isAnimated: true, completion: nil)
+    }
+
+    private func profileCell() -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.accessoryType = .disclosureIndicator
+
+        let hStackView = UIStackView()
+        hStackView.axis = .horizontal
+        hStackView.spacing = 12
+
+        cell.contentView.addSubview(hStackView)
+        hStackView.autoPinEdgesToSuperviewMargins()
+
+        let snapshot = profileManager.localProfileSnapshot(shouldIncludeAvatar: true)
+
+        let avatarDiameter: CGFloat = 64
+        let avatarImageView = AvatarImageView()
+        avatarImageView.contentMode = .scaleAspectFit
+        if let avatarData = snapshot.avatarData {
+            avatarImageView.image = UIImage(data: avatarData)
+        } else {
+            avatarImageView.image = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter)).buildDefaultImage()
+        }
+        avatarImageView.clipsToBounds = true
+        avatarImageView.layer.cornerRadius = avatarDiameter / 2
+        avatarImageView.autoSetDimensions(to: CGSize(square: avatarDiameter))
+
+        let avatarContainer = UIView()
+        avatarContainer.addSubview(avatarImageView)
+        avatarImageView.autoPinWidthToSuperview()
+        avatarImageView.autoVCenterInSuperview()
+        avatarContainer.autoSetDimension(.height, toSize: avatarDiameter, relation: .greaterThanOrEqual)
+
+        hStackView.addArrangedSubview(avatarContainer)
+
+        let vStackView = UIStackView()
+        vStackView.axis = .vertical
+        vStackView.spacing = 0
+        hStackView.addArrangedSubview(vStackView)
+
+        let nameLabel = UILabel()
+        vStackView.addArrangedSubview(nameLabel)
+        nameLabel.font = .ows_dynamicTypeTitle2Clamped
+        if let fullName = snapshot.fullName, !fullName.isEmpty {
+            nameLabel.text = fullName
+            nameLabel.textColor = Theme.primaryTextColor
+        } else {
+            nameLabel.text = NSLocalizedString(
+                "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT",
+                comment: "Text prompting user to edit their profile name."
+            )
+            nameLabel.textColor = Theme.accentBlueColor
+        }
+
+        func addSubtitleLabel(text: String?, isLast: Bool = false) {
+            guard let text = text, !text.isEmpty else { return }
+
+            let label = UILabel()
+            label.font = .ows_dynamicTypeFootnoteClamped
+            label.text = text
+            label.textColor = Theme.secondaryTextAndIconColor
+
+            let containerView = UIView()
+            containerView.layoutMargins = UIEdgeInsets(top: 2, left: 0, bottom: isLast ? 0 : 2, right: 0)
+            containerView.addSubview(label)
+            label.autoPinEdgesToSuperviewMargins()
+
+            vStackView.addArrangedSubview(containerView)
+        }
+
+        addSubtitleLabel(text: OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji))
+
+        if let phoneNumber = tsAccountManager.localNumber {
+            addSubtitleLabel(
+                text: PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber),
+                isLast: true
+            )
+        } else {
+            owsFailDebug("Missing local number")
+        }
+
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
+        vStackView.insertArrangedSubview(topSpacer, at: 0)
+        vStackView.addArrangedSubview(bottomSpacer)
+        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+        return cell
     }
 }
