@@ -436,7 +436,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         return kOWSTable_DefaultCellHeight
     }
 
-    private static let cellRounding: CGFloat = 10
+    public static let cellRounding: CGFloat = 10
 
     // The distance from the edge of the view to the cell border.
     public static var cellHOuterMargin: CGFloat {
