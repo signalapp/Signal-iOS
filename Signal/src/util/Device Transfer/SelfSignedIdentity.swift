@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -80,12 +80,14 @@ struct SelfSignedIdentity {
         guard let x509 = X509_new() else {
             throw OWSAssertionError("failed to allocate a new X509")
         }
+        defer { X509_free(x509) }
 
         // Keys
 
         guard let pkey = EVP_PKEY_new() else {
             throw OWSAssertionError("failed to allocate a new EVP_PKEY")
         }
+        defer { EVP_PKEY_free(pkey) }
 
         guard let rsa = RSA_generate_key(4096, UInt(RSA_F4), nil, nil) else {
             throw OWSAssertionError("failed to generate RSA keypair")
@@ -110,6 +112,7 @@ struct SelfSignedIdentity {
         guard let serialNumber = ASN1_INTEGER_new() else {
             throw OWSAssertionError("failed to allocate a new ASN1_INTEGER")
         }
+        defer { ASN1_INTEGER_free(serialNumber) }
 
         guard generateRandomSerial(serialNumber) > 0 else {
             throw OWSAssertionError("failed to create random serial")
@@ -173,6 +176,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get certificate DER data")
             }
+            defer { CRYPTO_free(bytes) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 
@@ -189,6 +193,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get private key DER data")
             }
+            defer { CRYPTO_free(bytes) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 
