@@ -28,6 +28,7 @@ public enum GroupsV2Error: Error {
     case groupCannotBeMigrated
     case groupDowngradeNotAllowed
     case missingGroupChangeProtos
+    case unexpectedRevision
 }
 
 // MARK: -
@@ -112,7 +113,8 @@ public protocol GroupsV2Swift: GroupsV2 {
     // On success returns a group thread model that reflects the
     // latest state in the service, which (due to races) might
     // reflect changes after the change set.
-    func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread>
+    func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
+                                      requiredRevision: UInt32?) -> Promise<TSGroupThread>
 
     func updateGroupV2(groupModel: TSGroupModelV2,
                        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread>
@@ -552,7 +554,8 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> {
+    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
+                                             requiredRevision: UInt32?) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

@@ -917,7 +917,8 @@ public class GroupManager: NSObject {
                 return (updateInfo, changes)
             }
         }.then(on: .global()) { (_: UpdateInfo, changes: GroupsV2OutgoingChanges) throws -> Promise<TSGroupThread> in
-            return self.groupsV2.updateExistingGroupOnService(changes: changes)
+            return self.groupsV2.updateExistingGroupOnService(changes: changes,
+                                                              requiredRevision: nil)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update existing group") {
             GroupsV2Error.timeout

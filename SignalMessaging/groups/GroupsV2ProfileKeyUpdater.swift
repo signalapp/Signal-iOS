@@ -244,14 +244,14 @@ class GroupsV2ProfileKeyUpdater {
                 }
                 return groupThread
             }
-        }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<TSGroupThread> in
+        }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<(TSGroupThread, UInt32)> in
             // Get latest group state from service and verify that this update is still necessary.
             return firstly { () throws -> Promise<GroupV2Snapshot> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
                 return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
-            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupThread in
+            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
                 guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
                     // We're not a full member, no need to update profile key.
                     throw GroupsV2Error.redundantChange
@@ -265,9 +265,10 @@ class GroupsV2ProfileKeyUpdater {
                         Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid)")
                     }
                 }
-                return groupThread
+                let checkedRevision = groupV2Snapshot.revision
+                return (groupThread, checkedRevision)
             }
-        }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<Void> in
+        }.then(on: .global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
             if DebugFlags.internalLogging {
                 Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid)")
             }
@@ -287,7 +288,8 @@ class GroupsV2ProfileKeyUpdater {
                 changes.setShouldUpdateLocalProfileKey()
                 return changes
             }.then(on: DispatchQueue.global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-                return self.groupsV2.updateExistingGroupOnService(changes: changes)
+                return self.groupsV2.updateExistingGroupOnService(changes: changes,
+                                                                  requiredRevision: checkedRevision)
             }.asVoid()
         }
     }
