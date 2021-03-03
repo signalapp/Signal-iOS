@@ -66,7 +66,6 @@
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
-		340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */; };
 		340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */; };
 		340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC893204DAC8C007AEB0F /* AboutTableViewController.m */; };
 		340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
@@ -836,6 +835,7 @@
 		88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */; };
 		88F15F9925AD4A9B008ABD47 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9AC3236095CC00FA362C /* AttachmentMultisend.swift */; };
 		88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
+		88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */; };
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F819592383569A007914E8 /* CNContactViewController+OWS.m */; };
@@ -1045,7 +1045,6 @@
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupSettingsViewController.h; sourceTree = "<group>"; };
-		340FC880204DAC8C007AEB0F /* AppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingsViewController.h; sourceTree = "<group>"; };
 		340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
 		340FC884204DAC8C007AEB0F /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
@@ -1056,7 +1055,7 @@
 		340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsViewController.h; sourceTree = "<group>"; };
 		340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
 		340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
-		340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSettingsViewController.m; sourceTree = "<group>"; };
+		340FC88D204DAC8C007AEB0F /* AppSettingsViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSettingsViewController2.m; sourceTree = "<group>"; };
 		340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupSettingsViewController.m; sourceTree = "<group>"; };
 		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
@@ -1959,6 +1958,7 @@
 		88EAD79123764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
 		88EFF4DD25AD0566000FAFBA /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = translations/is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerViewController.swift; sourceTree = "<group>"; };
+		88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewController.swift; sourceTree = "<group>"; };
 		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88F819582383569A007914E8 /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
 		88F819592383569A007914E8 /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
@@ -2277,6 +2277,7 @@
 		340FC87A204DAC8C007AEB0F /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
+				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
 				340FC884204DAC8C007AEB0F /* AboutTableViewController.h */,
 				340FC893204DAC8C007AEB0F /* AboutTableViewController.m */,
 				88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */,
@@ -2284,8 +2285,7 @@
 				340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */,
 				8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */,
 				8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */,
-				340FC880204DAC8C007AEB0F /* AppSettingsViewController.h */,
-				340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */,
+				340FC88D204DAC8C007AEB0F /* AppSettingsViewController2.m */,
 				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
 				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
@@ -5167,6 +5167,7 @@
 				34386A52207D0C01009F5D9C /* ConversationListCell.m in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
+				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,
 				88D23D1023CEBF7F00B0E74B /* NotificationActionHandler.swift in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
@@ -5509,7 +5510,6 @@
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
 				3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
-				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */,

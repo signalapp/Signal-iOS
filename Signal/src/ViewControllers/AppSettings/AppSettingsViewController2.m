@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "AppSettingsViewController.h"
 #import "AboutTableViewController.h"
 #import "AdvancedSettingsTableViewController.h"
+#import "AppSettingsViewController.h"
 #import "DebugUITableViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSBackup.h"

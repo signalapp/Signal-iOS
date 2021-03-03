@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class AppearanceSettingsTableViewController: OWSTableViewController {
+class AppearanceSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
 
@@ -28,7 +26,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         let contents = OWSTableContents()
 
         let firstSection = OWSTableSection()
-        firstSection.customHeaderHeight = 14
 
         // Starting with iOS 13, show them in appearance section to allow setting the app
         // theme to match the "system" dark/light mode settings..
@@ -58,7 +55,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         contents.addSection(firstSection)
 
         let contactSection = OWSTableSection()
-        contactSection.customHeaderHeight = 14
         contactSection.footerTitle = NSLocalizedString(
             "SETTINGS_APPEARANCE_AVATAR_FOOTER",
             comment: "Footer for avatar section in appearance settings")

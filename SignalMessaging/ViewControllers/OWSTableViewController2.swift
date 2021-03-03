@@ -58,7 +58,9 @@ open class OWSTableViewController2: OWSViewController {
 
     public var defaultHeaderHeight: CGFloat? = 0
     public var defaultFooterHeight: CGFloat? = 0
-    public var defaultSpacingBetweenSections: CGFloat? = 24
+    public var defaultSpacingBetweenSections: CGFloat? = 20
+    public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
+    public var defaultSeparatorInsetTrailing: CGFloat = 0
 
     private static let cellIdentifier = "cellIdentifier"
 
@@ -160,11 +162,8 @@ open class OWSTableViewController2: OWSViewController {
     private func applyContents() {
         AssertIsOnMainThread()
 
-        if let title = contents.title,
-           !title.isEmpty {
+        if let title = contents.title, !title.isEmpty {
             self.title = title
-        } else {
-            self.title = nil
         }
 
         tableView.reloadData()
@@ -263,7 +262,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             }
 
             cell.backgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
-            cell.selectedBackgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
+            cell.selectedBackgroundView = buildCellSelectedBackgroundView(indexPath: indexPath, section: section)
 
             // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
             // _inside_.
@@ -285,7 +284,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             }
             cell.contentView.layoutMargins = contentMargins
         } else if useThemeBackgroundColors {
-            cell.backgroundColor = Theme.tableCellBackgroundColor
+            cell.backgroundColor = cellBackgroundColor
         }
     }
 
@@ -328,22 +327,80 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 let separatorThickness: CGFloat = 1
                 separatorFrame.y = pillFrame.height - separatorThickness
                 separatorFrame.size.height = separatorThickness
-                separatorFrame.x += section.separatorInsetLeading
-                separatorFrame.size.width -= (section.separatorInsetLeading + section.separatorInsetTrailing)
+
+                let separatorInsetLeading: CGFloat
+                if let sectionSeparatorInsetLeading = section.separatorInsetLeading {
+                    separatorInsetLeading = CGFloat(sectionSeparatorInsetLeading.floatValue)
+                } else {
+                    separatorInsetLeading = self.defaultSeparatorInsetLeading
+                }
+
+                let separatorInsetTrailing: CGFloat
+                if let sectionSeparatorInsetTrailing = section.separatorInsetTrailing {
+                    separatorInsetTrailing = CGFloat(sectionSeparatorInsetTrailing.floatValue)
+                } else {
+                    separatorInsetTrailing = self.defaultSeparatorInsetTrailing
+                }
+
+                separatorFrame.x += separatorInsetLeading
+                separatorFrame.size.width -= (separatorInsetLeading + separatorInsetTrailing)
                 separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
             }
         }
 
-        pillLayer.fillColor = Theme.tableCell2BackgroundColor.cgColor
+        pillLayer.fillColor = cellBackgroundColor.cgColor
         backgroundView.layer.addSublayer(pillLayer)
 
         if section.hasSeparators,
            !isLastInSection {
             let separator = CAShapeLayer()
-            separator.fillColor = Theme.tableView2BackgroundColor.cgColor
+            separator.fillColor = tableBackgroundColor.cgColor
             backgroundView.layer.addSublayer(separator)
             separatorLayer = separator
         }
+
+        return backgroundView
+    }
+
+    private func buildCellSelectedBackgroundView(indexPath: IndexPath,
+                                                 section: OWSTableSection) -> UIView {
+
+        let isFirstInSection = indexPath.row == 0
+        let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
+
+        let pillLayer = CAShapeLayer()
+        let backgroundView = OWSLayerView(frame: .zero) { view in
+            var pillFrame = view.bounds.inset(
+                by: UIEdgeInsets(
+                    hMargin: OWSTableViewController2.cellHOuterMargin,
+                    vMargin: 0
+                )
+            )
+            pillFrame.x += view.safeAreaInsets.left
+            pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
+            pillLayer.frame = view.bounds
+            if pillFrame.width > 0,
+               pillFrame.height > 0 {
+                var roundingCorners: UIRectCorner = []
+                if isFirstInSection {
+                    roundingCorners.formUnion(.topLeft)
+                    roundingCorners.formUnion(.topRight)
+                }
+                if isLastInSection {
+                    roundingCorners.formUnion(.bottomLeft)
+                    roundingCorners.formUnion(.bottomRight)
+                }
+                let cornerRadii: CGSize = .square(OWSTableViewController2.cellRounding)
+                pillLayer.path = UIBezierPath(roundedRect: pillFrame,
+                                              byRoundingCorners: roundingCorners,
+                                              cornerRadii: cornerRadii).cgPath
+            } else {
+                pillLayer.path = nil
+            }
+        }
+
+        pillLayer.fillColor = cellSelectedBackgroundColor.cgColor
+        backgroundView.layer.addSublayer(pillLayer)
 
         return backgroundView
     }
@@ -406,9 +463,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
             let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
-            var textContainerInset = UIEdgeInsets(top: 12,
+            var textContainerInset = UIEdgeInsets(top: defaultSpacingBetweenSections ?? 0 + 12,
                                                   leading: cellHMargin,
-                                                  bottom: 12,
+                                                  bottom: 10,
                                                   trailing: cellHMargin)
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
@@ -435,6 +492,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         } else if let defaultHeaderHeight = defaultHeaderHeight,
                   defaultHeaderHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultHeaderHeight)
+        } else if let defaultSpacingBetweenSections = defaultSpacingBetweenSections,
+                  defaultSpacingBetweenSections > 0 {
+            return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
         } else {
             return nil
         }
@@ -468,9 +528,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             textView.linkTextAttributes = linkTextAttributes
 
             let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin
-            var textContainerInset = UIEdgeInsets(top: 16,
+            var textContainerInset = UIEdgeInsets(top: 12,
                                                   leading: cellHMargin,
-                                                  bottom: 6,
+                                                  bottom: 0,
                                                   trailing: cellHMargin)
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
@@ -497,14 +557,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         } else if let defaultFooterHeight = defaultFooterHeight,
                   defaultFooterHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
-        } else if let defaultSpacingBetweenSections = defaultSpacingBetweenSections,
-                  defaultSpacingBetweenSections > 0 {
-            let isLastSection = sectionIndex == numberOfSections(in: tableView) - 1
-            if isLastSection {
-                return nil
-            } else {
-                return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
-            }
         } else {
             return nil
         }
@@ -622,9 +674,33 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         AssertIsOnMainThread()
 
         if useNewStyle {
-            return Theme.tableView2BackgroundColor
+            if presentingViewController != nil {
+                return Theme.tableView2PresentedBackgroundColor
+            } else {
+                return Theme.tableView2BackgroundColor
+            }
         } else {
             return (useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor)
+        }
+    }
+
+    private var cellBackgroundColor: UIColor {
+        if useNewStyle {
+            if presentingViewController != nil {
+                return Theme.tableCell2PresentedBackgroundColor
+            } else {
+                return Theme.tableCell2BackgroundColor
+            }
+        } else {
+            return (useThemeBackgroundColors ? Theme.tableCellBackgroundColor : Theme.backgroundColor)
+        }
+    }
+
+    private var cellSelectedBackgroundColor: UIColor {
+        if presentingViewController != nil {
+            return Theme.tableCell2PresentedSelectedBackgroundColor
+        } else {
+            return Theme.tableCell2SelectedBackgroundColor
         }
     }
 

@@ -32,6 +32,16 @@ public enum ThemeIcon: UInt {
     case settingsMention
     case settingsLink
     case settingsWallpaper
+    case settingsAccount
+    case settingsLinkedDevices
+    case settingsAppearance
+    case settingsChats
+    case settingsNotifications
+    case settingsPrivacy
+    case settingsDataUsage
+    case settingsHelp
+    case settingsInvite
+    case settingsDonate
 
     case stickerButton
     case cameraButton
@@ -191,6 +201,27 @@ public extension Theme {
             return "link-24"
         case .settingsWallpaper:
             return isDarkThemeEnabled ? "wallpaper-solid-24" : "wallpaper-outline-24"
+        case .settingsAccount:
+            return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
+        case .settingsLinkedDevices:
+            return "linked-devices-24"
+        case .settingsAppearance:
+            return isDarkThemeEnabled ? "appearance-solid-24" : "appearance-outline-24"
+        case .settingsChats:
+            return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
+        case .settingsNotifications:
+            return isDarkThemeEnabled ? "bell-solid-24" : "bell-outline-24"
+        case .settingsPrivacy:
+            return isDarkThemeEnabled ? "lock-solid-24" : "lock-outline-24"
+        case .settingsDataUsage:
+            return isDarkThemeEnabled ? "archive-solid-24" : "archive-outline-24"
+        case .settingsHelp:
+            return isDarkThemeEnabled ? "help-solid-24" : "help-outline-24"
+        case .settingsInvite:
+            // TODO: waiting on design
+            return "more-horiz-24"
+        case .settingsDonate:
+            return isDarkThemeEnabled ? "heart-solid-24" : "heart-outline-24"
 
         // Input Toolbar
         case .stickerButton:

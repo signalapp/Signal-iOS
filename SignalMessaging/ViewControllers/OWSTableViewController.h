@@ -40,8 +40,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @property (nonatomic) BOOL hasBackground;
 
 @property (nonatomic) BOOL hasSeparators;
-@property (nonatomic) CGFloat separatorInsetLeading;
-@property (nonatomic) CGFloat separatorInsetTrailing;
+@property (nonatomic, nullable) NSNumber *separatorInsetLeading;
+@property (nonatomic, nullable) NSNumber *separatorInsetTrailing;
 
 @property (nonatomic, readonly) NSArray<OWSTableItem *> *items;
 
