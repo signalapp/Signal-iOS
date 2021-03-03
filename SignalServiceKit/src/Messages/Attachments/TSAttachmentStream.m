@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentStream.h"
@@ -465,7 +465,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
-    [AnyMediaGalleryFinder didInsertAttachmentStream:self transaction:transaction];
+    [MediaGalleryManager didInsertAttachmentStream:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -473,7 +473,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
-    [AnyMediaGalleryFinder didRemoveAttachmentStream:self transaction:transaction];
+    [MediaGalleryManager didRemoveAttachmentStream:self transaction:transaction];
 }
 
 - (BOOL)isValidVisualMedia

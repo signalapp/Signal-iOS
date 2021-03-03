@@ -119,7 +119,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
-#import <SignalServiceKit/YAPDBMediaGalleryFinder.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

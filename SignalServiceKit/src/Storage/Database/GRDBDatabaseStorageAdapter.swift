@@ -61,7 +61,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // This adapter may have been discarded after running
             // schema migrations.            
             guard let self = self else { return }
-            
+
             BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
             defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
@@ -140,7 +140,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     func setup() throws {
-        GRDBMediaGalleryFinder.setup(storage: self)
+        MediaGalleryManager.setup(storage: self)
         try setupUIDatabase()
     }
 

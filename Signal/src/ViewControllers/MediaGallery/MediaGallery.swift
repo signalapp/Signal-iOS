@@ -241,7 +241,7 @@ class MediaGallery {
         return SDSDatabaseStorage.shared
     }
 
-    private let mediaGalleryFinder: AnyMediaGalleryFinder
+    private let mediaGalleryFinder: MediaGalleryFinder
 
     deinit {
         Logger.debug("")
@@ -249,7 +249,7 @@ class MediaGallery {
 
     @objc
     init(thread: TSThread) {
-        self.mediaGalleryFinder = AnyMediaGalleryFinder(thread: thread)
+        self.mediaGalleryFinder = MediaGalleryFinder(thread: thread)
 
         setupDatabaseObservation()
     }
@@ -531,12 +531,11 @@ class MediaGallery {
                 let interval = DateInterval(start: sections.orderedKeys[currentSectionIndex].date,
                                             end: .distantFutureForMillisecondTimestamp)
 
-                let finder = mediaGalleryFinder.grdbAdapter
                 var offset = 0
-                finder.enumerateMediaAttachments(in: interval,
-                                                 excluding: deletedAttachmentIds,
-                                                 range: requestRange,
-                                                 transaction: transaction.unwrapGrdbRead) { i, attachment in
+                mediaGalleryFinder.enumerateMediaAttachments(in: interval,
+                                                             excluding: deletedAttachmentIds,
+                                                             range: requestRange,
+                                                             transaction: transaction.unwrapGrdbRead) { i, attachment in
                     owsAssertDebug(i >= offset, "does not support reverse traversal")
 
                     func tryAddNewItem() {
@@ -625,11 +624,10 @@ class MediaGallery {
                 return nil
             }
 
-            let finder = mediaGalleryFinder.grdbAdapter
-            guard let offsetInSection = finder.mediaIndex(of: focusedItem.attachmentStream,
-                                                          in: focusedItem.galleryDate.asInterval,
-                                                          excluding: deletedAttachmentIds,
-                                                          transaction: transaction.unwrapGrdbRead) else {
+            guard let offsetInSection = mediaGalleryFinder.mediaIndex(of: focusedItem.attachmentStream,
+                                                                      in: focusedItem.galleryDate.asInterval,
+                                                                      excluding: deletedAttachmentIds,
+                                                                      transaction: transaction.unwrapGrdbRead) else {
                 owsFailDebug("showing detail for item not in the database")
                 return nil
             }
@@ -677,9 +675,9 @@ class MediaGallery {
     // MARK: - Section-based API
 
     private func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-        return Int(mediaGalleryFinder.grdbAdapter.mediaCount(in: date.asInterval,
-                                                             excluding: deletedAttachmentIds,
-                                                             transaction: transaction.unwrapGrdbRead))
+        return Int(mediaGalleryFinder.mediaCount(in: date.asInterval,
+                                                 excluding: deletedAttachmentIds,
+                                                 transaction: transaction.unwrapGrdbRead))
     }
 
     /// Loads at least one section before the oldest section, though not any of the items in it.
@@ -695,12 +693,11 @@ class MediaGallery {
         var newSectionCounts: [GalleryDate: Int] = [:]
         let earliestDate = sections.orderedKeys.first?.date ?? .distantFutureForMillisecondTimestamp
 
-        var newEarliestDate: GalleryDate? = nil
-        let finder = self.mediaGalleryFinder.grdbAdapter
-        let result = finder.enumerateTimestamps(before: earliestDate,
-                                                excluding: deletedAttachmentIds,
-                                                count: batchSize,
-                                                transaction: transaction.unwrapGrdbRead) { timestamp in
+        var newEarliestDate: GalleryDate?
+        let result = mediaGalleryFinder.enumerateTimestamps(before: earliestDate,
+                                                            excluding: deletedAttachmentIds,
+                                                            count: batchSize,
+                                                            transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
             owsAssertDebug(newEarliestDate == nil || galleryDate <= newEarliestDate!,
@@ -737,12 +734,11 @@ class MediaGallery {
         var newSectionCounts: [GalleryDate: Int] = [:]
         let latestDate = sections.orderedKeys.last?.asInterval.end ?? Date(millisecondsSince1970: 0)
 
-        var newLatestDate: GalleryDate? = nil
-        let finder = self.mediaGalleryFinder.grdbAdapter
-        let result = finder.enumerateTimestamps(after: latestDate,
-                                                excluding: deletedAttachmentIds,
-                                                count: batchSize,
-                                                transaction: transaction.unwrapGrdbRead) { timestamp in
+        var newLatestDate: GalleryDate?
+        let result = mediaGalleryFinder.enumerateTimestamps(after: latestDate,
+                                                            excluding: deletedAttachmentIds,
+                                                            count: batchSize,
+                                                            transaction: transaction.unwrapGrdbRead) { timestamp in
             let galleryDate = GalleryDate(date: timestamp)
             newSectionCounts[galleryDate, default: 0] += 1
             owsAssertDebug(newLatestDate == nil || newLatestDate! <= galleryDate,
@@ -999,7 +995,7 @@ class MediaGallery {
 
     var galleryItemCount: Int {
         let count: UInt = databaseStorage.uiRead { transaction in
-            return self.mediaGalleryFinder.mediaCount(transaction: transaction)
+            return self.mediaGalleryFinder.mediaCount(transaction: transaction.unwrapGrdbRead)
         }
         return Int(count) - deletedAttachmentIds.count
     }

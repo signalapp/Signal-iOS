@@ -350,7 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Deleting attachments above should be enough to remove any gallery items, but
         // we redunantly clean up *all* gallery items to be safe.
-        [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
+        [MediaGalleryManager didRemoveAllContentWithTransaction:transaction];
     });
     [TSAttachmentStream deleteAttachmentsFromDisk];
 }

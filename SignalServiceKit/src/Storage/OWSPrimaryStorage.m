@@ -15,7 +15,7 @@
 #import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
-#import "YAPDBMediaGalleryFinder.h"
+#import "YAPDBMediaGalleryManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -154,7 +154,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [OWSFailedAttachmentDownloadsJob
                                           asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-                                      [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [YAPDBMediaGalleryManager asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
