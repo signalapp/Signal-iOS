@@ -172,6 +172,9 @@ class GroupsV2ProfileKeyUpdater {
                 }
 
                 switch error {
+                case GroupsV2Error.unexpectedRevision:
+                    // Race with another client; retry later.
+                    return self.didFail(groupId: groupId, retryDelay: retryDelay)
                 case GroupsV2Error.shouldDiscard:
                     // If a non-recoverable error occurs (e.g. we've
                     // delete the thread from the database), give up.
@@ -217,8 +220,7 @@ class GroupsV2ProfileKeyUpdater {
         }
     }
 
-    private func didFail(groupId: Data,
-                         retryDelay: TimeInterval) {
+    private func didFail(groupId: Data, retryDelay: TimeInterval) {
         serialQueue.asyncAfter(deadline: DispatchTime.now() + retryDelay) {
             self.isUpdating = false
 
