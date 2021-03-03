@@ -255,7 +255,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     //
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
-    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> {
+    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
+                                             requiredRevision: UInt32?) -> Promise<TSGroupThread> {
 
         let groupId = changes.groupId
         let groupSecretParamsData = changes.groupSecretParamsData
@@ -311,6 +312,16 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
             let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                                          ignoreSignature: true)
+
+            if let requiredRevision = requiredRevision,
+               changeActionsProto.revision != requiredRevision {
+                if DebugFlags.internalLogging {
+                    Logger.info("requiredRevision: \(requiredRevision) != revision: \(changeActionsProto.revision).")
+                } else {
+                    Logger.info("requiredRevision: != revision.")
+                }
+                throw GroupsV2Error.unexpectedRevision
+            }
 
             // Collect avatar state from our change set so that we can
             // avoid downloading any avatars we just uploaded while
@@ -820,7 +831,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             changesBlock(changes)
             return changes
         }.then(on: .global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changes: changes)
+            return self.updateExistingGroupOnService(changes: changes,
+                                                     requiredRevision: nil)
         }
     }
 
