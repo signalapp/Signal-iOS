@@ -3745,6 +3745,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
+
 /* Button to add a 'bio' to the user's profile in the profile view. */
 "PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
 
@@ -3770,13 +3782,13 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
 
 /* Label for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
 
 /* Label for the given name field of the profile view. */
 "PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
@@ -4517,7 +4529,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Data Usage";

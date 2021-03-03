@@ -42,6 +42,8 @@ public enum ThemeIcon: UInt {
     case settingsHelp
     case settingsInvite
     case settingsDonate
+    case settingsAdvanced
+    case settingsAbout
 
     case stickerButton
     case cameraButton
@@ -222,6 +224,10 @@ public extension Theme {
             return "more-horiz-24"
         case .settingsDonate:
             return isDarkThemeEnabled ? "heart-solid-24" : "heart-outline-24"
+        case .settingsAdvanced:
+            return "advanced-24"
+        case .settingsAbout:
+            return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
 
         // Input Toolbar
         case .stickerButton:

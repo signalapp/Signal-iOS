@@ -17,6 +17,9 @@ class ProfileBioViewController: OWSTableViewController2 {
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
 
     private lazy var bioTextField = OWSTextField()
+    private lazy var cancelButton = OWSButton { [weak self] in
+        self?.didTapResetButton()
+    }
 
     private let bioEmojiLabel = UILabel()
 
@@ -46,12 +49,16 @@ class ProfileBioViewController: OWSTableViewController2 {
     // MARK: -
 
     public override func loadView() {
-        super.loadView()
+        view = UIView()
+        createViews()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + Self.bioButtonHeight + OWSTableItem.iconSpacing
 
         updateNavigation()
-
-        createViews()
-
         updateTableContents()
     }
 
@@ -79,17 +86,23 @@ class ProfileBioViewController: OWSTableViewController2 {
             title = NSLocalizedString("PROFILE_BIO_VIEW_TITLE", comment: "Title for the profile bio view.")
         }
 
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didTapCancel),
+            accessibilityIdentifier: "cancel_button"
+        )
+
+        cancelButton.isHiddenInStackView = normalizedProfileBio?.isEmpty != false && normalizedProfileBioEmoji?.isEmpty != false
+
         if hasUnsavedChanges {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                               target: self,
-                                                               action: #selector(didTapCancel),
-                                                               accessibilityIdentifier: "cancel_button")
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                                target: self,
-                                                                action: #selector(didTapDone),
-                                                                accessibilityIdentifier: "done_button")
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .done,
+                target: self,
+                action: #selector(didTapDone),
+                accessibilityIdentifier: "done_button"
+            )
         } else {
-            navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItem = nil
         }
     }
@@ -138,7 +151,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         }
         addEmojiImageView.setTemplateImageName("add-emoji-outline-24",
                                                tintColor: Theme.secondaryTextAndIconColor)
-        addEmojiImageView.autoSetDimensions(to: .square(24))
+        addEmojiImageView.autoSetDimensions(to: .square(Self.bioButtonHeight))
         emojiButton.addSubview(bioEmojiLabel)
         emojiButton.addSubview(addEmojiImageView)
         bioEmojiLabel.autoCenterInSuperview()
@@ -156,9 +169,17 @@ class ProfileBioViewController: OWSTableViewController2 {
         bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
         bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
+
+        let cancelColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray45 : UIColor.ows_gray25
+        let cancelIcon = UIImageView.withTemplateImageName("x-circle-solid-16", tintColor: cancelColor)
+
+        cancelIcon.autoSetDimensions(to: .square(16))
+        cancelButton.autoSetDimensions(to: .square(Self.bioButtonHeight))
+        cancelButton.addSubview(cancelIcon)
+        cancelIcon.autoCenterInSuperview()
     }
 
-    private static let bioButtonHeight: CGFloat = 28
+    private static let bioButtonHeight: CGFloat = 24
 
     func updateTableContents() {
         let contents = OWSTableContents()
@@ -166,10 +187,9 @@ class ProfileBioViewController: OWSTableViewController2 {
         let bioEmojiLabel = self.bioEmojiLabel
         let emojiButton = self.emojiButton
         let bioTextField = self.bioTextField
+        let cancelButton = self.cancelButton
 
         let bioSection = OWSTableSection()
-        bioSection.customHeaderHeight = 32
-        bioSection.customFooterHeight = 24
         bioSection.add(OWSTableItem(customCellBlock: { [weak self] () -> UITableViewCell in
             let cell = OWSTableItem.newCell()
 
@@ -183,21 +203,10 @@ class ProfileBioViewController: OWSTableViewController2 {
             bioTextField.setContentHuggingHorizontalLow()
             bioTextField.setCompressionResistanceHorizontalLow()
 
-            let cancelColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray45 : UIColor.ows_gray25
-            let cancelIcon = UIImageView.withTemplateImageName("x-circle-solid-16",
-                                                               tintColor: cancelColor)
-            let cancelButton = OWSButton {
-                self?.didTapResetButton()
-            }
-            cancelIcon.autoSetDimensions(to: .square(16))
-            cancelButton.autoSetDimensions(to: .square(Self.bioButtonHeight))
-            cancelButton.addSubview(cancelIcon)
-            cancelIcon.autoCenterInSuperview()
-
             let stackView = UIStackView(arrangedSubviews: [emojiButton, bioTextField, cancelButton])
             stackView.axis = .horizontal
             stackView.alignment = .center
-            stackView.spacing = 10
+            stackView.spacing = OWSTableItem.iconSpacing
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewMargins()
 
@@ -230,7 +239,7 @@ class ProfileBioViewController: OWSTableViewController2 {
                 let stackView = UIStackView(arrangedSubviews: [emojiLabel, bioLabel])
                 stackView.axis = .horizontal
                 stackView.alignment = .center
-                stackView.spacing = 10
+                stackView.spacing = OWSTableItem.iconSpacing
                 cell.contentView.addSubview(stackView)
                 stackView.autoPinEdgesToSuperviewMargins()
 
@@ -276,7 +285,14 @@ class ProfileBioViewController: OWSTableViewController2 {
 
     @objc
     func didTapCancel() {
-        navigationController?.popViewController(animated: true)
+        guard hasUnsavedChanges else {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+
+        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        })
     }
 
     @objc

@@ -52,7 +52,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         profileSection.add(.init(
             customCellBlock: { self.profileCell() },
             actionBlock: { [weak self] in
-                let vc = ProfileSettingsViewController { $0.navigationController?.popViewController(animated: true) }
+                let vc = ProfileSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
@@ -182,7 +182,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     private func profileCell() -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell = OWSTableItem.newCell()
         cell.accessoryType = .disclosureIndicator
 
         let hStackView = UIStackView()

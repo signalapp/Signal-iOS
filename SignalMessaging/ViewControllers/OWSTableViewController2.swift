@@ -535,13 +535,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
-            textView.textColor = (Theme.isDarkThemeEnabled
-                                  ? UIColor.ows_gray25
-                                    : UIColor.ows_gray60)
+            textView.textColor = Theme.secondaryTextAndIconColor
             textView.font = UIFont.ows_dynamicTypeCaption1Clamped
 
             let linkTextAttributes: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.foregroundColor: Theme.accentBlueColor,
+                NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
                 NSAttributedString.Key.font: UIFont.ows_dynamicTypeCaption1Clamped,
                 NSAttributedString.Key.underlineStyle: 0
             ]
@@ -683,7 +681,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Theme
 
     @objc
-    func themeDidChange() {
+    open func themeDidChange() {
         AssertIsOnMainThread()
 
         applyTheme()
