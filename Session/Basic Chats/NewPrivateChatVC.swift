@@ -126,7 +126,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     
     fileprivate func startNewPrivateChatIfPossible(with onsNameOrPublicKey: String) {
         if ECKeyPair.isValidHexEncodedPublicKey(candidate: onsNameOrPublicKey) {
-            startNewPrivateChatIfPossible(with: onsNameOrPublicKey)
+            startNewPrivateChat(with: onsNameOrPublicKey)
         } else {
             // This could be an ONS name
             ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
