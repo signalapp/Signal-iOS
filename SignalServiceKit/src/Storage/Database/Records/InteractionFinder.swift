@@ -1073,6 +1073,31 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     // MARK: - instance methods
 
+    public func profileUpdateInteractions(afterSortId sortId: UInt64, transaction: GRDBReadTransaction) -> [TSInfoMessage] {
+        let cursor = TSInteraction.grdbFetchCursor(
+            sql: """
+                SELECT *
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .messageType) = ?
+                AND \(interactionColumn: .id) > ?
+            """,
+            arguments: [threadUniqueId, TSInfoMessageType.profileUpdate.rawValue, sortId],
+            transaction: transaction)
+
+        let allResults: [TSInteraction]
+        do {
+            // Every result should be an info message with associated profile changes
+            allResults = try cursor.all()
+            owsAssertDebug(allResults.allSatisfy({ ($0 as? TSInfoMessage)?.profileChangeAddress != nil }))
+        } catch {
+            owsFailDebug("Unexpected error \(error)")
+            allResults = []
+        }
+
+        return allResults.compactMap { $0 as? TSInfoMessage }
+    }
+
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
         let interactionsSql = """
                 SELECT *

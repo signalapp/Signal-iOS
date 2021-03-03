@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -103,7 +103,6 @@ fileprivate extension SDSRecord {
 // MARK: -
 
 extension BaseModel {
-
     static func grdbIdByUniqueId(tableMetadata: SDSTableMetadata,
                                  uniqueIdColumnName: String,
                                  uniqueIdColumnValue: String,

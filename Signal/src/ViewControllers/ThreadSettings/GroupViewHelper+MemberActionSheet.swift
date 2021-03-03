@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,7 +137,7 @@ extension GroupViewHelper {
     // MARK: - Remove From Group
 
     // This action can be used to remove members _or_ revoke invites.
-    func memberActionSheetCanRemoveFromGroup(address: SignalServiceAddress) -> Bool {
+    func canRemoveFromGroup(address: SignalServiceAddress) -> Bool {
         guard let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread else {
                 return false
@@ -150,10 +150,11 @@ extension GroupViewHelper {
         let groupMembership = groupThread.groupModel.groupMembership
         let isLocalUserAdmin = groupMembership.isFullMemberAndAdministrator(localAddress)
         let isAddressInGroup = groupMembership.isMemberOfAnyKind(address)
-        return canEditConversationMembership && isLocalUserAdmin && isAddressInGroup
+        let isRemovalTargetLocalAdress = address.isLocalAddress
+        return canEditConversationMembership && isLocalUserAdmin && isAddressInGroup && !isRemovalTargetLocalAdress
     }
 
-    func memberActionSheetRemoveFromGroupWasSelected(address: SignalServiceAddress) {
+    func presentRemoveFromGroupActionSheet(address: SignalServiceAddress) {
         let titleFormat = NSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT",
                                             comment: "Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}.")
         let actionTitle =  NSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",

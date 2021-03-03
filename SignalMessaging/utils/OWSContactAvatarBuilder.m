@@ -121,10 +121,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
                                                                             transaction:transaction];
-    return [[[self alloc] initWithAddress:address
-                                colorName:color
-                                 diameter:diameter
-                              transaction:transaction] build];
+    return [[[self alloc] initWithAddress:address colorName:color diameter:diameter
+                              transaction:transaction] buildWithTransaction:transaction];
 }
 
 #pragma mark - Dependencies

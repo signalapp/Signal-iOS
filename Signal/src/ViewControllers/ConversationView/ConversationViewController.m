@@ -669,9 +669,10 @@ typedef enum : NSUInteger {
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
 {
-    _userHasScrolled = userHasScrolled;
-
-    [self ensureBannerState];
+    if (_userHasScrolled != userHasScrolled) {
+        _userHasScrolled = userHasScrolled;
+        [self ensureBannerState];
+    }
 }
 
 // Returns a collection of the group members who are "no longer verified".
@@ -776,6 +777,12 @@ typedef enum : NSUInteger {
     messageRequestNameCollisionBanner = [self createMessageRequestNameCollisionBannerIfNecessaryWithViewState:self.viewState];
     if (messageRequestNameCollisionBanner != nil) {
         [banners addObject:messageRequestNameCollisionBanner];
+    }
+
+    UIView *_Nullable groupMembershipNameCollisionBanner;
+    groupMembershipNameCollisionBanner = [self createGroupMembershipCollisionBannerIfNecessary];
+    if (groupMembershipNameCollisionBanner != nil) {
+        [banners addObject:groupMembershipNameCollisionBanner];
     }
 
     if (banners.count < 1) {

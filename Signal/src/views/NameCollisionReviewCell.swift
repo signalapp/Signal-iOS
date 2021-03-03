@@ -1,20 +1,87 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-struct NameCollisionModel {
+struct NameCollisionCellModel {
     let address: SignalServiceAddress
     let name: String
+
+    let oldName: String?
+    let updateTimestamp: UInt64?
+
     let commonGroupsString: String
     let avatar: UIImage?
-    let oldName: String?
     let isBlocked: Bool
+    let isSystemContact: Bool
 
     var phoneNumber: String? {
         address.phoneNumber.map {
             PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: $0)
+        }
+    }
+}
+
+extension NameCollision {
+    private func avatar(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> UIImage? {
+        if address.isLocalAddress, let localProfileAvatar = OWSProfileManager.shared().localProfileAvatarImage() {
+            return localProfileAvatar.resizedImage(to: CGSize(square: 64))
+        } else {
+            return OWSContactAvatarBuilder.buildImage(
+                address: address,
+                diameter: 64,
+                transaction: transaction)
+        }
+    }
+
+    private func commonGroupsString(
+        for address: SignalServiceAddress,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction) -> String {
+
+        let commonGroups = TSGroupThread.groupThreads(with: address, transaction: transaction)
+        switch (thread, commonGroups.count) {
+        case (_, 2...):
+            let formatString = NSLocalizedString(
+                "MANY_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
+            return String(format: formatString, String(commonGroups.count))
+
+        case (is TSContactThread, 1):
+            let formatString = NSLocalizedString(
+                "THREAD_DETAILS_ONE_MUTUAL_GROUP",
+                comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}")
+            return String(format: formatString, commonGroups[0].groupNameOrDefault)
+
+        case (is TSGroupThread, 1):
+            return NSLocalizedString(
+                "NO_OTHER_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has no groups in common other than the group implied by the current UI context")
+
+        case (is TSContactThread, 0):
+            return NSLocalizedString(
+                "NO_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has no groups in common with another user")
+
+        default:
+            owsFailDebug("Unexpected common group count")
+            return ""
+        }
+    }
+
+    func collisionCellModels(thread: TSThread, transaction: SDSAnyReadTransaction) -> [NameCollisionCellModel] {
+        elements.map {
+            NameCollisionCellModel(
+                address: $0.address,
+                name: $0.currentName,
+                oldName: $0.oldName,
+                updateTimestamp: $0.latestUpdateTimestamp,
+                commonGroupsString: commonGroupsString(for: $0.address, thread: thread, transaction: transaction),
+                avatar: avatar(for: $0.address, transaction: transaction),
+                isBlocked: OWSBlockingManager.shared().isAddressBlocked($0.address),
+                isSystemContact: Environment.shared.contactsManager.isSystemContact(address: $0.address)
+            )
         }
     }
 }
@@ -40,6 +107,20 @@ class NameCollisionReviewContactCell: UITableViewCell {
         label.font = UIFont.ows_dynamicTypeFootnote
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
+
+        return label
+    }()
+
+    let blockedLabel: UILabel = {
+        let label = UILabel()
+
+        label.textColor = Theme.secondaryTextAndIconColor
+        label.font = UIFont.ows_dynamicTypeFootnote
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        label.text = NSLocalizedString(
+            "CONTACT_CELL_IS_BLOCKED",
+            comment: "An indicator that a contact or group has been blocked.")
 
         return label
     }()
@@ -82,7 +163,7 @@ class NameCollisionReviewContactCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let verticalStack = UIStackView(arrangedSubviews: [
-            nameLabel, phoneNumberLabel, commonGroupsLabel, nameChangeSpacer, recentNameChangeLabel
+            nameLabel, phoneNumberLabel, blockedLabel, commonGroupsLabel, nameChangeSpacer, recentNameChangeLabel
         ])
         let horizontalStack = UIStackView(arrangedSubviews: [
             avatarView, verticalStack
@@ -111,7 +192,7 @@ class NameCollisionReviewContactCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    static func createWithModel(_ model: NameCollisionModel) -> Self {
+    static func createWithModel(_ model: NameCollisionCellModel) -> Self {
         let cell = self.init(style: .default, reuseIdentifier: nil)
         cell.configure(model: model)
         return cell
@@ -121,27 +202,36 @@ class NameCollisionReviewContactCell: UITableViewCell {
         avatarView.image = nil
         nameLabel.text = ""
         phoneNumberLabel.text = ""
+        blockedLabel.isHidden = true
         commonGroupsLabel.text = ""
         nameChangeSpacer.isHidden = false
         recentNameChangeLabel.text = ""
     }
 
-    func configure(model: NameCollisionModel) {
+    func configure(model: NameCollisionCellModel) {
         avatarView.image = model.avatar
-        nameLabel.text = model.name
+        if model.address.isLocalAddress {
+            nameLabel.text = NSLocalizedString("GROUP_MEMBER_LOCAL_USER", comment: "Label indicating the local user.")
+        } else {
+            nameLabel.text = model.name
+        }
 
         if let phoneNumber = model.phoneNumber {
             phoneNumberLabel.text = phoneNumber
         } else {
             phoneNumberLabel.isHidden = true
         }
-
+        blockedLabel.isHidden = !model.isBlocked
+        commonGroupsLabel.isHidden = model.address.isLocalAddress
         commonGroupsLabel.text = model.commonGroupsString
 
-        if let _ = model.oldName {
+        if let oldName = model.oldName {
             nameChangeSpacer.isHidden = false
             recentNameChangeLabel.isHidden = false
-            recentNameChangeLabel.text = "" // TODO
+            let formatString = NSLocalizedString(
+                "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING",
+                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }}")
+            recentNameChangeLabel.text = String(format: formatString, oldName, model.name)
         } else {
             nameChangeSpacer.isHidden = true
             recentNameChangeLabel.isHidden = true

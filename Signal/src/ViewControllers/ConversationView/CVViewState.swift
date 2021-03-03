@@ -40,6 +40,7 @@ public class CVViewState: NSObject {
     public var requestView: UIView?
     @objc
     public var bannerView: UIView?
+    public var groupNameCollisionFinder: GroupMembershipNameCollisionFinder?
 
     @objc
     public var isDismissingInteractively = false
