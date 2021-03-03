@@ -167,7 +167,10 @@ public extension ConversationViewController {
 
         // Collision discovery can be expensive, so we only build our banner if we've already done the expensive bit
         guard let collisionFinder = viewState.groupNameCollisionFinder, collisionFinder.hasFetchedProfileUpdateMessages else {
-            guard viewState.groupNameCollisionFinder == nil else { return nil }
+            guard viewState.groupNameCollisionFinder == nil else {
+                // We already have a collision finder. It just hasn't finished fetching.
+                return nil
+            }
 
             let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
             viewState.groupNameCollisionFinder = collisionFinder
@@ -175,7 +178,7 @@ public extension ConversationViewController {
             firstly(on: .sharedUserInitiated) {
                 self.databaseStorage.read { readTx in
                     // Prewarm our collision finder off the main thread
-                    _ = collisionFinder.findCollisions(transaction: readTx).standardSort(readTx: readTx)
+                    _ = collisionFinder.findCollisions(transaction: readTx)
                 }
             }.done(on: .main) {
                 self.ensureBannerState()

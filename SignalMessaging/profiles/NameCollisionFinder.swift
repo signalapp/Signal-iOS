@@ -93,14 +93,17 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
 }
 
 public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
-    var groupThread: TSGroupThread
+    private var groupThread: TSGroupThread
     public var thread: TSThread { groupThread }
 
     /// Contains a list of recent profile update messages for the given address
     /// "Recent" is defined as all profile update messages since a call to `markCollisionsAsResolved`
-    /// This is only fetched once for the lifetime of the collision finder.
+    /// This is only fetched once for the lifetime of the collision finder. Thread-safe.
+    let lock = UnfairLock()
     private var recentProfileUpdateMessages: [SignalServiceAddress: [TSInfoMessage]]? = nil
-    public var hasFetchedProfileUpdateMessages: Bool { recentProfileUpdateMessages != nil }
+    public var hasFetchedProfileUpdateMessages: Bool {
+        lock.withLock { recentProfileUpdateMessages != nil }
+    }
 
     public init(thread: TSGroupThread) {
         groupThread = thread
@@ -171,29 +174,33 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
     }
 
     private func fetchRecentProfileUpdates(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: [TSInfoMessage]] {
-        if let cachedResults = recentProfileUpdateMessages { return cachedResults }
+        lock.withLock {
+            if let cachedResults = recentProfileUpdateMessages { return cachedResults }
 
-        let sortId = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
-        let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
+            let sortId = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
+            let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
 
-        // Build a map from (SignalServiceAddress) -> (List of recent profile update messages)
-        let results: [SignalServiceAddress: [TSInfoMessage]] = finder
-            .profileUpdateInteractions(afterSortId: sortId, transaction: transaction.unwrapGrdbRead)
-            .reduce(into: [:]) { dictBuilder, message in
-                guard let address = message.profileChangeAddress else { return }
-                dictBuilder[address, default: []].append(message)
-            }
+            // Build a map from (SignalServiceAddress) -> (List of recent profile update messages)
+            let results: [SignalServiceAddress: [TSInfoMessage]] = finder
+                .profileUpdateInteractions(afterSortId: sortId, transaction: transaction.unwrapGrdbRead)
+                .reduce(into: [:]) { dictBuilder, message in
+                    guard let address = message.profileChangeAddress else { return }
+                    dictBuilder[address, default: []].append(message)
+                }
 
-        recentProfileUpdateMessages = results
-        return results
+            recentProfileUpdateMessages = results
+            return results
+        }
     }
 
     public func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction) {
-        let allRecentMessages = recentProfileUpdateMessages?.values.flatMap({ $0 })
-        guard let newMaxSortId = allRecentMessages?.max(by: { $0.sortId < $1.sortId })?.sortId else { return }
+        lock.withLock {
+            let allRecentMessages = recentProfileUpdateMessages?.values.flatMap({ $0 })
+            guard let newMaxSortId = allRecentMessages?.max(by: { $0.sortId < $1.sortId })?.sortId else { return }
 
-        setRecentProfileUpdateSearchStartId(newValue: newMaxSortId, transaction: transaction)
-        recentProfileUpdateMessages?.removeAll()
+            setRecentProfileUpdateSearchStartId(newValue: newMaxSortId, transaction: transaction)
+            recentProfileUpdateMessages?.removeAll()
+        }
     }
 
     // MARK: Storage
