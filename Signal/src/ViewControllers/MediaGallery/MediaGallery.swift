@@ -273,20 +273,27 @@ class MediaGallery {
             return
         }
 
-        let allItems = sections.lazy.map { $0.value }.joined()
-        let deletedItems: [MediaGalleryItem] = newlyDeletedAttachmentIds.compactMap { attachmentId in
-            // FIXME: extremely slow repeated linear search
-            guard let deletedItem = allItems.first(where: { galleryItem in
-                galleryItem?.attachmentStream.uniqueId == attachmentId
-            }) else {
-                Logger.debug("deletedItem was never loaded - no need to remove.")
-                return nil
-            }
-
-            return deletedItem
+        if sections.isEmpty {
+            return
         }
 
-        delete(items: deletedItems, initiatedBy: self, deleteFromDB: false)
+        var deletedItems: [MediaGalleryItem] = []
+        var deletedIndexPaths: [IndexPath] = []
+
+        let allPaths = sequence(first: IndexPath(item: 0, section: 0), next: { self.indexPath(after: $0) })
+        // This is not very efficient, but we have no index of attachment IDs -> loaded items.
+        // An alternate approach would be to load the deleted attachments and check them by section.
+        for path in allPaths {
+            guard let loadedItem = galleryItem(at: path) else {
+                continue
+            }
+            if newlyDeletedAttachmentIds.contains(loadedItem.attachmentStream.uniqueId) {
+                deletedItems.append(loadedItem)
+                deletedIndexPaths.append(path)
+            }
+        }
+
+        delete(items: deletedItems, atIndexPaths: deletedIndexPaths, initiatedBy: self, deleteFromDB: false)
     }
 
     func process(newAttachmentIds: Set<String>) {
@@ -374,6 +381,9 @@ class MediaGallery {
 
     // MARK: - Loading
 
+    /// Loads more items relative to the path `(sectionIndex, itemIndex)`.
+    ///
+    /// If `direction` is anything but `after`, section indexes may be invalidated.
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
                                   sectionIndex: Int,
                                   itemIndex: Int,
@@ -514,20 +524,19 @@ class MediaGallery {
                                   amount: UInt,
                                   shouldLoadAlbumRemainder: Bool,
                                   completion: ((_ newSections: IndexSet) -> Void)? = nil) {
-        guard let sectionIndex = sections.orderedKeys.firstIndex(of: item.galleryDate),
-              let itemIndex = sections[sectionIndex].value.firstIndex(of: item) else {
+        guard let path = indexPath(for: item) else {
             owsFail("showing detail view for an item that hasn't been loaded: \(item.attachmentStream)")
         }
 
         ensureGalleryItemsLoaded(direction,
-                                 sectionIndex: sectionIndex,
-                                 itemIndex: itemIndex,
+                                 sectionIndex: path.section,
+                                 itemIndex: path.item,
                                  amount: amount,
                                  shouldLoadAlbumRemainder: shouldLoadAlbumRemainder,
                                  completion: completion)
     }
 
-    public func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
+    func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
         let newItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
             guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
                 return nil
@@ -587,6 +596,11 @@ class MediaGallery {
                                                              transaction: transaction.unwrapGrdbRead))
     }
 
+    /// Loads at least one section before the oldest section, though not any of the items in it.
+    ///
+    /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
+    ///
+    /// Returns the number of new sections loaded, which can be used to update section indexes.
     func loadEarlierSections(transaction: SDSAnyReadTransaction) -> Int {
         if hasFetchedOldest {
             return 0
@@ -624,6 +638,11 @@ class MediaGallery {
         return sortedDates.count
     }
 
+    /// Loads at least one section after the latest section, though not any of the items in it.
+    ///
+    /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
+    ///
+    /// Returns the number of new sections loaded.
     func loadLaterSections(transaction: SDSAnyReadTransaction) -> Int {
         if hasFetchedMostRecent {
             return 0
@@ -714,21 +733,8 @@ class MediaGallery {
         if let indexPaths = givenIndexPaths {
             deletedIndexPaths = indexPaths
         } else {
-            deletedIndexPaths = []
-            deletedIndexPaths.reserveCapacity(items.count)
-            for item in items {
-                guard let sectionIndex = self.sections.orderedKeys.firstIndex(of: item.galleryDate) else {
-                    owsFailDebug("item with unknown date")
-                    return
-                }
-
-                guard let itemIndex = self.sections[sectionIndex].value.firstIndex(of: item) else {
-                    owsFailDebug("item was never loaded")
-                    return
-                }
-
-                deletedIndexPaths.append(IndexPath(item: itemIndex, section: sectionIndex))
-            }
+            deletedIndexPaths = items.compactMap { indexPath(for: $0) }
+            owsAssertDebug(deletedIndexPaths.count == items.count, "removing an item that wasn't loaded")
         }
         deletedIndexPaths.sort()
 
@@ -762,6 +768,81 @@ class MediaGallery {
 
     let kGallerySwipeLoadBatchSize: UInt = 5
 
+    /// Searches the appropriate section for this item.
+    internal func indexPath(for item: MediaGalleryItem) -> IndexPath? {
+        // Search backwards because people view recent items.
+        // Note: we could use binary search because orderedKeys is sorted.
+        guard let sectionIndex = sections.orderedKeys.lastIndex(of: item.galleryDate),
+              let itemIndex = sections[sectionIndex].value.lastIndex(of: item) else {
+            return nil
+        }
+
+        return IndexPath(item: itemIndex, section: sectionIndex)
+    }
+
+    /// Returns the path to the next item after `path` (ignoring sections).
+    ///
+    /// If `path` refers to the last item in the gallery, returns `nil`.
+    private func indexPath(after path: IndexPath) -> IndexPath? {
+        owsAssert(path.count == 2)
+        var result = path
+
+        // Next item?
+        result.item += 1
+        if result.item < sections[result.section].value.count {
+            return result
+        }
+
+        // Next section?
+        result.item = 0
+        result.section += 1
+        if result.section < sections.count {
+            owsAssertDebug(!sections[result.section].value.isEmpty, "no empty sections")
+            return result
+        }
+
+        // Reached the end.
+        return nil
+    }
+
+    /// Returns the path to the item just before `path` (ignoring sections).
+    ///
+    /// If `path` refers to the first item in the gallery, returns `nil`.
+    private func indexPath(before path: IndexPath) -> IndexPath? {
+        owsAssert(path.count == 2)
+        var result = path
+
+        // Previous item?
+        if result.item > 0 {
+            result.item -= 1
+            return result
+        }
+
+        // Previous section?
+        if result.section > 0 {
+            result.section -= 1
+            owsAssertDebug(!sections[result.section].value.isEmpty, "no empty sections")
+            result.item = sections[result.section].value.count - 1
+            return result
+        }
+
+        // Reached the start.
+        return nil
+    }
+
+    /// Returns the item at `path`, which will be `nil` if not yet loaded.
+    ///
+    /// `path` must be a valid path for the items currently loaded.
+    internal func galleryItem(at path: IndexPath) -> MediaGalleryItem? {
+        owsAssert(path.count == 2)
+        guard let validItem: MediaGalleryItem? = sections[safe: path.section]?.value[safe: path.item] else {
+            owsFailDebug("invalid path")
+            return nil
+        }
+        // The result might still be nil if the item hasn't been loaded.
+        return validItem
+    }
+
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
@@ -772,16 +853,16 @@ class MediaGallery {
                                           shouldLoadAlbumRemainder: true)
         }
 
-        let allItems = sections.lazy.map { $0.value }.joined()
-
-        // FIXME: This doesn't need to start searching from the start.
-        guard let currentIndex = allItems.firstIndex(of: currentItem) else {
-            owsFailDebug("currentIndex was unexpectedly nil")
+        guard let currentPath = indexPath(for: currentItem) else {
+            owsFailDebug("current item not found")
             return nil
         }
 
-        for nextItem in allItems[currentIndex...].dropFirst() {
-            guard let loadedNextItem = nextItem else {
+        // Repeatedly calling indexPath(after:) isn't super efficient,
+        // but we don't expect it to be more than a few steps.
+        let laterItemPaths = sequence(first: currentPath, next: { self.indexPath(after: $0) }).dropFirst()
+        for nextPath in laterItemPaths {
+            guard let loadedNextItem = galleryItem(at: nextPath) else {
                 owsAssertDebug(isCurrentlyProcessingExternalDeletion,
                                "should have loaded the next item already")
                 return nil
@@ -806,16 +887,16 @@ class MediaGallery {
                                           shouldLoadAlbumRemainder: true)
         }
 
-        let allItems = sections.lazy.map { $0.value }.joined()
-
-        // FIXME: This doesn't need to start searching from the start.
-        guard let currentIndex = allItems.firstIndex(of: currentItem) else {
-            owsFailDebug("currentIndex was unexpectedly nil")
+        guard let currentPath = indexPath(for: currentItem) else {
+            owsFailDebug("current item not found")
             return nil
         }
 
-        for previousItem in allItems[..<currentIndex].reversed() {
-            guard let loadedPreviousItem = previousItem else {
+        // Repeatedly calling indexPath(before:) isn't super efficient,
+        // but we don't expect it to be more than a few steps.
+        let olderItemPaths = sequence(first: currentPath, next: { self.indexPath(before: $0) }).dropFirst()
+        for previousPath in olderItemPaths {
+            guard let loadedPreviousItem = galleryItem(at: previousPath) else {
                 owsAssertDebug(isCurrentlyProcessingExternalDeletion,
                                "should have loaded the previous item already")
                 return nil

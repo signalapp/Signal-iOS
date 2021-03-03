@@ -94,17 +94,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
     }
 
-    private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
-        guard let sectionIdx = galleryDates.firstIndex(of: galleryItem.galleryDate) else {
-            return nil
-        }
-        guard let rowIdx = mediaGallery.sections[sectionIdx].value.firstIndex(of: galleryItem) else {
-            return nil
-        }
-
-        return IndexPath(row: rowIdx, section: sectionIdx + 1)
-    }
-
     override public func viewWillAppear(_ animated: Bool) {
         if mediaGallery.sections.isEmpty {
             databaseStorage.uiRead { transaction in
@@ -376,25 +365,16 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
-        let realSection = indexPath.section - 1
-        guard let sectionItems = mediaGallery.sections[safe: realSection]?.value else {
-            owsFailDebug("unknown section: \(indexPath.section)")
-            return nil
-        }
-
-        guard let galleryItem = sectionItems[safe: indexPath.item] else {
-            owsFailDebug("no message for row: \(indexPath.item)")
-            return nil
-        }
-
-        if let loadedGalleryItem = galleryItem {
+        var underlyingPath = indexPath
+        underlyingPath.section -= 1
+        if let loadedGalleryItem = mediaGallery.galleryItem(at: underlyingPath) {
             return loadedGalleryItem
         }
 
         // Only load "after" the current item in this function, to avoid shifting section indexes.
         mediaGallery.ensureGalleryItemsLoaded(.after,
-                                              sectionIndex: indexPath.section - 1,
-                                              itemIndex: indexPath.item,
+                                              sectionIndex: underlyingPath.section,
+                                              itemIndex: underlyingPath.item,
                                               amount: 50,
                                               shouldLoadAlbumRemainder: false) { newSectionIndexes in
             UIView.performWithoutAnimation {
@@ -402,7 +382,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
         }
 
-        return mediaGallery.sections[realSection].value[indexPath.item]!
+        return mediaGallery.galleryItem(at: underlyingPath)
     }
 
     func updateVisibleCells() {
@@ -742,10 +722,12 @@ extension MediaTileViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        guard let indexPath = indexPath(galleryItem: galleryItem) else {
+        guard let underlyingPath = mediaGallery.indexPath(for: galleryItem) else {
             owsFailDebug("galleryItemIndexPath was unexpectedly nil")
             return nil
         }
+        var indexPath = underlyingPath
+        indexPath.section += 1
 
         guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
             Logger.debug("visibleIndex was nil, swiped to offscreen gallery item")
