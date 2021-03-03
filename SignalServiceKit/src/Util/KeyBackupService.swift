@@ -719,6 +719,8 @@ public class KeyBackupService: NSObject {
         enclaveName: String,
         transaction: SDSAnyWriteTransaction
     ) {
+        owsAssertDebug(tsAccountManager.isPrimaryDevice)
+
         let previousState = getOrLoadState(transaction: transaction)
 
         guard masterKey != previousState.masterKey
@@ -777,9 +779,7 @@ public class KeyBackupService: NSObject {
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
         // Sync our new keys with linked devices.
-        if tsAccountManager.isPrimaryDevice {
-            syncManager.sendKeysSyncMessage()
-        }
+        syncManager.sendKeysSyncMessage()
     }
 
     public static func storeSyncedKey(type: DerivedKey, data: Data?, transaction: SDSAnyWriteTransaction) {
