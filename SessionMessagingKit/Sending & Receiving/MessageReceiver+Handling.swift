@@ -207,6 +207,9 @@ extension MessageReceiver {
         userProfile.save(with: transaction)
         Storage.shared.setContact(user, using: transaction)
         transaction.addCompletionQueue(DispatchQueue.main) {
+            NotificationCenter.default.post(name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
+        }
+        transaction.addCompletionQueue(DispatchQueue.main) {
             SSKEnvironment.shared.profileManager.downloadAvatar(for: userProfile)
         }
         // Initial configuration sync
