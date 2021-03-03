@@ -3,16 +3,17 @@
 //
 
 import Foundation
+import SafariServices
 
 @objc(OWSHelpViewController)
 final class HelpViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        contents = constructContents()
+        updateTableContents()
     }
 
-    private func constructContents() -> OWSTableContents {
+    private func updateTableContents() {
         let helpTitle = NSLocalizedString("SETTINGS_HELP",
                                           comment: "Title for support page in app settings.")
         let supportCenterLabel = NSLocalizedString("HELP_SUPPORT_CENTER",
@@ -27,14 +28,15 @@ final class HelpViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         contents.title = helpTitle
 
-        let firstSection = OWSTableSection()
-        firstSection.add(.disclosureItem(
+        let helpSection = OWSTableSection()
+        helpSection.add(.disclosureItem(
             withText: supportCenterLabel,
-            actionBlock: {
-                UIApplication.shared.open(SupportConstants.supportURL, options: [:])
+            actionBlock: { [weak self] in
+                let vc = SFSafariViewController(url: SupportConstants.supportURL)
+                self?.present(vc, animated: true, completion: nil)
             }
         ))
-        firstSection.add(.disclosureItem(
+        helpSection.add(.disclosureItem(
             withText: contactLabel,
             actionBlock: {
                 guard ComposeSupportEmailOperation.canSendEmails else {
@@ -50,8 +52,75 @@ final class HelpViewController: OWSTableViewController2 {
                 self.presentFormSheet(navVC, animated: true)
             }
         ))
-        contents.addSection(firstSection)
+        contents.addSection(helpSection)
 
-        return contents
+        let loggingSection = OWSTableSection()
+        loggingSection.headerTitle = NSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
+        loggingSection.footerTitle = NSLocalizedString("LOGGING_SECTION_FOOTER", comment: "Footer for the 'logging' help section.")
+        loggingSection.add(.switch(
+            withText: NSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
+            isOn: { OWSPreferences.isLoggingEnabled() },
+            isEnabledBlock: { true },
+            target: self,
+            selector: #selector(didToggleEnableLogSwitch)
+        ))
+        if OWSPreferences.isLoggingEnabled() {
+            loggingSection.add(.actionItem(
+                name: NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
+                actionBlock: {
+                    Logger.info("Submitting debug logs")
+                    DDLog.flushLog()
+                    Pastelog.submitLogs()
+                }
+            ))
+        }
+        if DebugFlags.audibleErrorLogging {
+            loggingSection.add(.disclosureItem(
+                withText: NSLocalizedString("SETTINGS_ADVANCED_VIEW_ERROR_LOG", comment: ""),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "error_logs"),
+                actionBlock: { [weak self] in
+                    DDLog.flushLog()
+                    let vc = LogPickerViewController(logDirUrl: DebugLogger.shared().errorLogsDir)
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
+        contents.addSection(loggingSection)
+
+        let aboutSection = OWSTableSection()
+        aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
+        aboutSection.footerTitle = NSLocalizedString("SETTINGS_COPYRIGHT", comment: "Footer for the 'about' help section")
+        aboutSection.add(.label(
+            withText: NSLocalizedString("SETTINGS_VERSION", comment: ""),
+            accessoryText: AppVersion.shared().currentAppVersionLong
+        ))
+        aboutSection.add(.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
+            actionBlock: { [weak self] in
+                let vc = SFSafariViewController(url: URL(string: kLegalTermsUrlString)!)
+                self?.present(vc, animated: true, completion: nil)
+            }
+        ))
+        contents.addSection(aboutSection)
+
+        self.contents = contents
+    }
+
+    @objc
+    func didToggleEnableLogSwitch(sender: UISwitch) {
+        if sender.isOn {
+            Logger.info("disabling logging.")
+            DebugLogger.shared().wipeLogs()
+            DebugLogger.shared().disableFileLogging()
+        } else {
+            DebugLogger.shared().enableFileLogging()
+            Logger.info("enabling logging.")
+        }
+
+        OWSPreferences.setIsLoggingEnabled(sender.isOn)
+
+        updateTableContents()
     }
 }
