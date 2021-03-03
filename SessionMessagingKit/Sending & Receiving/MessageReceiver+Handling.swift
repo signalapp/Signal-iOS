@@ -177,16 +177,20 @@ extension MessageReceiver {
     // MARK: - Configuration Messages
     
     private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
-        guard message.sender == getUserHexEncodedPublicKey() else { return }
+        let userPublicKey = getUserHexEncodedPublicKey()
+        guard message.sender == userPublicKey else { return }
+        SNLog("Configuration message received.")
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userDefaults = UserDefaults.standard
         // Profile
         let userProfile = storage.getUserProfile(using: transaction)
-        if let displayName = message.displayName {
+        let user = storage.getUser() ?? Contact(sessionID: userPublicKey)
+        if let name = message.displayName {
             let shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
             if shouldUpdate {
-                userProfile.profileName = displayName
+                userProfile.profileName = name
+                user.name = name
                 userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
             }
         }
@@ -194,11 +198,14 @@ extension MessageReceiver {
             let shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
             if shouldUpdate {
                 userProfile.avatarUrlPath = profilePictureURL
+                user.profilePictureURL = profilePictureURL
                 userProfile.profileKey = OWSAES256Key(data: profileKeyAsData)
+                user.profilePictureEncryptionKey = OWSAES256Key(data: profileKeyAsData)
                 userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
             }
         }
         userProfile.save(with: transaction)
+        Storage.shared.setContact(user, using: transaction)
         transaction.addCompletionQueue(DispatchQueue.main) {
             SSKEnvironment.shared.profileManager.downloadAvatar(for: userProfile)
         }
