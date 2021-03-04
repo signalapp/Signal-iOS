@@ -67,7 +67,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             separator.backgroundColor = Colors.separator
             separator.set(.height, to: Values.separatorThickness)
             mainStackView.addArrangedSubview(separator)
-            tableView.set(.height, to: CGFloat(contacts.count * 67)) // A cell is exactly 67 points high
+            tableView.set(.height, to: CGFloat(contacts.count * 65)) // A cell is exactly 65 points high
             tableView.set(.width, to: UIScreen.main.bounds.width)
             mainStackView.addArrangedSubview(tableView)
             let scrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)

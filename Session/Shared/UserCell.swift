@@ -50,34 +50,31 @@ final class UserCell : UITableViewCell {
     }
 
     private func setUpViewHierarchy() {
-        // Set the cell background color
+        // Background color
         backgroundColor = Colors.cellBackground
-        // Set up the highlight color
+        // Highlight color
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = .clear // Disabled for now
         self.selectedBackgroundView = selectedBackgroundView
-        // Set up the profile picture image view
+        // Profile picture image view
         let profilePictureViewSize = Values.smallProfilePictureSize
         profilePictureView.set(.width, to: profilePictureViewSize)
         profilePictureView.set(.height, to: profilePictureViewSize)
         profilePictureView.size = profilePictureViewSize
-        // Set up the main stack view
-        let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, accessoryImageView ])
+        // Main stack view
+        let spacer = UIView.hStretchingSpacer()
+        spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: Values.mediumSpacing).isActive = true
+        let stackView = UIStackView(arrangedSubviews: [ profilePictureView, UIView.hSpacer(Values.mediumSpacing), displayNameLabel, spacer, accessoryImageView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = Values.mediumSpacing
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(uniform: Values.mediumSpacing)
         contentView.addSubview(stackView)
-        stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
-        stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
-        stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
+        stackView.pin(to: contentView)
+        stackView.set(.width, to: UIScreen.main.bounds.width)
         // Set up the separator
         contentView.addSubview(separator)
-        separator.pin(.leading, to: .leading, of: contentView)
-        contentView.pin(.trailing, to: .trailing, of: separator)
-        separator.pin(.bottom, to: .bottom, of: contentView)
-        separator.set(.width, to: UIScreen.main.bounds.width)
+        separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.trailing ], to: contentView)
     }
 
     // MARK: Updating
