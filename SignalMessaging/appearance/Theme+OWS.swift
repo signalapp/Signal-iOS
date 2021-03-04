@@ -54,6 +54,7 @@ public enum ThemeIcon: UInt {
     case attachmentFile
     case attachmentGif
     case attachmentLocation
+    case attachmentPayment
 
     case messageActionReply
     case messageActionForward
@@ -92,6 +93,7 @@ public enum ThemeIcon: UInt {
     case memberAdded16
     case memberDeclined16
     case memberRemove16
+    case paymentNotification
     case phoneIncoming16
     case phoneoutgoing16
     case phoneX16
@@ -250,7 +252,10 @@ public extension Theme {
             return "gif-outline-32"
         case .attachmentLocation:
             return "location-outline-32"
-
+        case .attachmentPayment:
+//            // PAYMENTS TODO:
+//            return "location-outline-32"
+            return "payment-outline-32"
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
         case .messageActionForward:
@@ -324,6 +329,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "member-declined-solid-16" : "member-declined-outline-16"
         case .memberRemove16:
             return isDarkThemeEnabled ? "member-remove-solid-16" : "member-remove-outline-16"
+        case .paymentNotification:
+            return isDarkThemeEnabled ? "payments-solid-24" : "payments-outline-24"
         case .phoneIncoming16:
             return isDarkThemeEnabled ? "phone-incoming-solid-16" : "phone-incoming-outline-16"
         case .phoneoutgoing16:
@@ -380,6 +387,8 @@ public extension Theme {
         }
     }
 }
+
+// MARK: -
 
 extension Theme {
 
@@ -464,5 +473,14 @@ extension Theme {
                 return background
             }
         }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIImageView {
+    func setThemeIcon(_ themeIcon: ThemeIcon, tintColor: UIColor) {
+        self.setTemplateImageName(Theme.iconName(themeIcon), tintColor: tintColor)
     }
 }

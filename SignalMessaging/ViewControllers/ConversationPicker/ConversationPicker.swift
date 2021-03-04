@@ -548,7 +548,6 @@ extension ConversationPickerViewController: UITableViewDelegate {
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
 
         let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
-
         let toastController = ToastController(text: toastText)
 
         let bottomInset = (view.bounds.height - tableView.frame.height)

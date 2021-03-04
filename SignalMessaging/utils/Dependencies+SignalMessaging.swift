@@ -172,6 +172,14 @@ public extension Dependencies {
         Environment.shared.launchJobsRef
     }
 
+    var payments: Payments {
+       SSKEnvironment.shared.payments
+    }
+
+    static var payments: Payments {
+       SSKEnvironment.shared.payments
+    }
+
     var preferences: OWSPreferences {
         Environment.shared.preferencesRef
     }
@@ -322,5 +330,21 @@ public extension OWSWindowManager {
 public extension OWSSyncManager {
     static var shared: SyncManagerProtocol {
         SSKEnvironment.shared.syncManagerRef
+    }
+
+    var paymentsSwift: PaymentsSwift {
+       SSKEnvironment.shared.payments as! PaymentsSwift
+    }
+
+    static var paymentsSwift: PaymentsSwift {
+       SSKEnvironment.shared.payments as! PaymentsSwift
+    }
+
+    var paymentsCurrencies: PaymentsCurrenciesSwift {
+        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
+    }
+
+    static var paymentsCurrencies: PaymentsCurrenciesSwift {
+        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
     }
 }

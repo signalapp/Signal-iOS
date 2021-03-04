@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,6 +13,8 @@ import PromiseKit
 public class ModalActivityIndicatorViewController: OWSViewController {
 
     let canCancel: Bool
+
+    private let isInvisible: Bool
 
     private let _wasCancelled = AtomicBool(false)
     @objc
@@ -33,9 +35,10 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: Initializers
 
-    public required init(canCancel: Bool, presentationDelay: TimeInterval) {
+    public required init(canCancel: Bool, presentationDelay: TimeInterval, isInvisible: Bool = false) {
         self.canCancel = canCancel
         self.presentationDelay = presentationDelay
+        self.isInvisible = isInvisible
 
         let (promise, resolver) = Promise<Void>.pending()
         self.wasCancelledPromise = promise
@@ -51,6 +54,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         present(fromViewController: fromViewController,
                 canCancel: canCancel,
                 presentationDelay: kPresentationDelayDefault,
+                isInvisible: false,
                 backgroundBlock: backgroundBlock)
     }
 
@@ -59,16 +63,41 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
                               backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+        present(fromViewController: fromViewController,
+                canCancel: canCancel,
+                presentationDelay: presentationDelay,
+                isInvisible: false,
+                backgroundBlock: backgroundBlock)
+    }
+
+    @objc
+    public class func presentAsInvisible(fromViewController: UIViewController,
+                                         backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+        present(fromViewController: fromViewController,
+                canCancel: false,
+                presentationDelay: kPresentationDelayDefault,
+                isInvisible: true,
+                backgroundBlock: backgroundBlock)
+    }
+
+    @objc
+    public class func present(fromViewController: UIViewController,
+                              canCancel: Bool,
+                              presentationDelay: TimeInterval,
+                              isInvisible: Bool,
+                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel, presentationDelay: presentationDelay)
+        let view = ModalActivityIndicatorViewController(canCancel: canCancel,
+                                                        presentationDelay: presentationDelay,
+                                                        isInvisible: isInvisible)
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
         fromViewController.present(view,
                                    animated: false) {
-                                    DispatchQueue.global().async {
-                                        backgroundBlock(view)
-                                    }
+            DispatchQueue.global().async {
+                backgroundBlock(view)
+            }
         }
     }
 
@@ -96,33 +125,38 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor(white: 0.35, alpha: 0.35)
-            : UIColor(white: 0, alpha: 0.25))
-        self.view.isOpaque = false
+        if isInvisible {
+            self.view.backgroundColor = .clear
+            self.view.isOpaque = false
+        } else {
+            self.view.backgroundColor = (Theme.isDarkThemeEnabled
+                                            ? UIColor(white: 0.35, alpha: 0.35)
+                                            : UIColor(white: 0, alpha: 0.25))
+            self.view.isOpaque = false
 
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
-        self.activityIndicator = activityIndicator
-        self.view.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
+            let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+            self.activityIndicator = activityIndicator
+            self.view.addSubview(activityIndicator)
+            activityIndicator.autoCenterInSuperview()
 
-        if canCancel {
-            let cancelButton = UIButton(type: .custom)
-            cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
-            cancelButton.setTitleColor(UIColor.white, for: .normal)
-            cancelButton.backgroundColor = UIColor.ows_gray80
-            let font = UIFont.ows_dynamicTypeBody.ows_semibold
-            cancelButton.titleLabel?.font = font
-            cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
-            cancelButton.clipsToBounds = true
-            cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
-            let buttonWidth = ScaleFromIPhone5To7Plus(140, 160)
-            let buttonHeight = OWSFlatButton.heightForFont(font)
-            self.view.addSubview(cancelButton)
-            cancelButton.autoHCenterInSuperview()
-            cancelButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 50)
-            cancelButton.autoSetDimension(.width, toSize: buttonWidth)
-            cancelButton.autoSetDimension(.height, toSize: buttonHeight)
+            if canCancel {
+                let cancelButton = UIButton(type: .custom)
+                cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
+                cancelButton.setTitleColor(UIColor.white, for: .normal)
+                cancelButton.backgroundColor = UIColor.ows_gray80
+                let font = UIFont.ows_dynamicTypeBody.ows_semibold
+                cancelButton.titleLabel?.font = font
+                cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
+                cancelButton.clipsToBounds = true
+                cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
+                let buttonWidth = ScaleFromIPhone5To7Plus(140, 160)
+                let buttonHeight = OWSFlatButton.heightForFont(font)
+                self.view.addSubview(cancelButton)
+                cancelButton.autoHCenterInSuperview()
+                cancelButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 50)
+                cancelButton.autoSetDimension(.width, toSize: buttonWidth)
+                cancelButton.autoSetDimension(.height, toSize: buttonHeight)
+            }
         }
 
         guard presentationDelay > 0 else {

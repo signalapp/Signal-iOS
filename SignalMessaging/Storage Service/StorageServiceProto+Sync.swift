@@ -65,6 +65,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
         }
 
+        // Unknown
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -548,6 +550,16 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         builder.setPreferContactAvatars(preferContactAvatars)
 
+        let paymentsState = paymentsSwift.paymentsState
+        var paymentsBuilder = StorageServiceProtoAccountRecordPayments.builder()
+        paymentsBuilder.setEnabled(paymentsState.isEnabled)
+        if let mcRootEntropy = paymentsState.mcRootEntropy {
+            var mobileCoinBuilder = StorageServiceProtoAccountRecordPaymentsMobileCoin.builder()
+            mobileCoinBuilder.setRootEntropy(mcRootEntropy)
+            paymentsBuilder.setMobileCoin(try mobileCoinBuilder.build())
+        }
+        builder.setPayments(try paymentsBuilder.build())
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -698,6 +710,23 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                 preferContactAvatars,
                 updateStorageService: false,
                 transaction: transaction)
+        }
+
+        let localPaymentsState = Self.paymentsSwift.paymentsState
+        let servicePaymentsState = PaymentsState.build(arePaymentsEnabled: self.payments?.enabled ?? false,
+                                                       mcRootEntropy: self.payments?.mobileCoin?.rootEntropy)
+        if localPaymentsState != servicePaymentsState {
+            // Merge with payments states.
+            //
+            // 1. Honor "arePaymentsEnabled" from the service.
+            let arePaymentsEnabled = servicePaymentsState.isEnabled
+            // 2. Prefer mcRootEntropy from service, but try to retain local
+            //    mcRootEntropy otherwise.
+            let mcRootEntropy = servicePaymentsState.mcRootEntropy ?? localPaymentsState.mcRootEntropy
+            let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
+                                                          mcRootEntropy: mcRootEntropy)
+
+            Self.paymentsSwift.setPaymentsState(mergedPaymentsState, transaction: transaction)
         }
 
         return mergeState

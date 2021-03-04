@@ -1089,7 +1089,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                 mainAppOnly: false,
                                                                 ignoreThrottling: true,
                                                                 fetchType: .versioned)
-                .map(on: .global()) { (_: SignalServiceProfile) -> (UUID) in
+                .map(on: .global()) { (_: FetchedProfile) -> (UUID) in
                     // Ideally we'd pull the credential off of SignalServiceProfile here,
                     // but the credential response needs to be parsed and verified
                     // which requires the VersionedProfileRequest.

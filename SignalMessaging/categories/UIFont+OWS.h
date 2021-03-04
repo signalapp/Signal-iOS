@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle3ClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeHeadlineClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBodyClampedFont;
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBody2ClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeCalloutClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeSubheadlineClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeFootnoteClampedFont;
