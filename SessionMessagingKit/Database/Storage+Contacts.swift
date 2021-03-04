@@ -14,9 +14,16 @@ extension Storage {
     
     @objc(setContact:usingTransaction:)
     public func setContact(_ contact: Contact, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .contactUpdated, object: contact.sessionID)
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
+        transaction.addCompletionQueue(DispatchQueue.main) {
+            let notificationCenter = NotificationCenter.default
+            notificationCenter.post(name: .contactUpdated, object: contact.sessionID)
+            if contact.sessionID == getUserHexEncodedPublicKey() {
+                notificationCenter.post(name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
+            } else {
+                notificationCenter.post(name: Notification.Name(kNSNotificationName_OtherUsersProfileDidChange), object: nil)
+            }
         }
     }
     
