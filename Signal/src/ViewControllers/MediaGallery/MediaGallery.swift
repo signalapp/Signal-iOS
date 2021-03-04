@@ -240,8 +240,16 @@ class MediaGallery {
 
     // MARK: -
 
-    private var deletedAttachmentIds: Set<String> = Set()
-    fileprivate var deletedGalleryItems: Set<MediaGalleryItem> = Set()
+    private var deletedAttachmentIds: Set<String> = Set() {
+        didSet {
+            AssertIsOnMainThread()
+        }
+    }
+    fileprivate var deletedGalleryItems: Set<MediaGalleryItem> = Set() {
+        didSet {
+            AssertIsOnMainThread()
+        }
+    }
     private var isCurrentlyProcessingExternalDeletion = false
 
     private var databaseStorage: SDSDatabaseStorage {
@@ -815,7 +823,7 @@ class MediaGallery {
                     }
                 }
 
-                transaction.addSyncCompletion {
+                transaction.addAsyncCompletion {
                     self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
                 }
             }
@@ -1006,10 +1014,10 @@ class MediaGallery {
     }
 
     internal var galleryItemCount: Int {
-        let count: UInt = databaseStorage.uiRead { transaction in
-            return self.mediaGalleryFinder.mediaCount(transaction: transaction.unwrapGrdbRead)
+        return databaseStorage.uiRead { transaction in
+            return Int(mediaGalleryFinder.mediaCount(excluding: deletedAttachmentIds,
+                                                     transaction: transaction.unwrapGrdbRead))
         }
-        return Int(count) - deletedAttachmentIds.count
     }
 }
 

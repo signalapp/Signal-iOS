@@ -254,15 +254,12 @@ extension MediaGalleryFinder {
         return queryParts.select(result)
     }
 
-    public func mediaCount(transaction: GRDBReadTransaction) -> UInt {
-        let sql = Self.itemsQuery(result: "COUNT(*)", excluding: [])
-        return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
-    }
-
-    public func mediaCount(in dateInterval: DateInterval,
+    public func mediaCount(in givenInterval: DateInterval? = nil,
                            excluding deletedAttachmentIds: Set<String>,
                            transaction: GRDBReadTransaction) -> UInt {
-        let sql = Self.itemsQuery(result: "COUNT(*)", in: dateInterval, excluding: deletedAttachmentIds)
+        let interval = givenInterval ?? DateInterval.init(start: Date(timeIntervalSince1970: 0),
+                                                          end: .distantFutureForMillisecondTimestamp)
+        let sql = Self.itemsQuery(result: "COUNT(*)", in: interval, excluding: deletedAttachmentIds)
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
     }
 
