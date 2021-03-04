@@ -9,7 +9,7 @@ import GRDB
 public class PaymentFinder: NSObject {
 
     public class func paymentModels(paymentStates: [TSPaymentState],
-                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+                                    transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
             return paymentModels(paymentStates: paymentStates, grdbTransaction: grdbTransaction)
@@ -19,7 +19,7 @@ public class PaymentFinder: NSObject {
     }
 
     private class func paymentModels(paymentStates: [TSPaymentState],
-                                      grdbTransaction transaction: GRDBReadTransaction) -> [TSPaymentModel] {
+                                     grdbTransaction transaction: GRDBReadTransaction) -> [TSPaymentModel] {
 
         let paymentStatesToLookup = paymentStates.compactMap { $0.rawValue }.map { "\($0)" }.joined(separator: ",")
 
@@ -38,23 +38,6 @@ public class PaymentFinder: NSObject {
             owsFailDebug("unexpected error \(error)")
         }
         return paymentModels
-    }
-
-    public class func paymentModel(forMCIncomingTransaction mcIncomingTransaction: Data,
-                                   transaction: SDSAnyReadTransaction) -> TSPaymentModel? {
-        guard !mcIncomingTransaction.isEmpty else {
-            owsFailDebug("Invalid mcIncomingTransaction.")
-            return nil
-        }
-        let sql = """
-        SELECT * FROM \(PaymentModelRecord.databaseTableName)
-        WHERE \(paymentModelColumn: .mcIncomingTransaction) = ?
-        LIMIT 1
-        """
-        let arguments: StatementArguments = [mcIncomingTransaction]
-        return TSPaymentModel.grdbFetchOne(sql: sql,
-                                           arguments: arguments,
-                                           transaction: transaction.unwrapGrdbRead)
     }
 
     @objc
@@ -131,6 +114,38 @@ public class PaymentFinder: NSObject {
         do {
             return try TSPaymentModel.grdbFetchCursor(sql: sql,
                                                       arguments: [mcLedgerBlockIndex],
+                                                      transaction: transaction.unwrapGrdbRead).all()
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    @objc
+    public class func paymentModels(forMcReceiptData mcReceiptData: Data,
+                                    transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+        let sql = """
+        SELECT * FROM \(PaymentModelRecord.databaseTableName)
+        WHERE \(paymentModelColumn: .mcReceiptData) = ?
+        """
+        do {
+            return try TSPaymentModel.grdbFetchCursor(sql: sql,
+                                                      arguments: [mcReceiptData],
+                                                      transaction: transaction.unwrapGrdbRead).all()
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    @objc
+    public class func paymentModels(forMcTransactionData mcTransactionData: Data,
+                                    transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+        let sql = """
+        SELECT * FROM \(PaymentModelRecord.databaseTableName)
+        WHERE \(paymentModelColumn: .mcTransactionData) = ?
+        """
+        do {
+            return try TSPaymentModel.grdbFetchCursor(sql: sql,
+                                                      arguments: [mcTransactionData],
                                                       transaction: transaction.unwrapGrdbRead).all()
         } catch {
             owsFail("error: \(error)")

@@ -31,8 +31,9 @@ public struct PaymentModelRecord: SDSRecord {
     public let addressUuidString: String?
     public let createdTimestamp: UInt64
     public let isUnread: Bool
-    public let mcIncomingTransaction: Data?
     public let mcLedgerBlockIndex: UInt64
+    public let mcReceiptData: Data?
+    public let mcTransactionData: Data?
     public let memoMessage: String?
     public let mobileCoin: Data?
     public let paymentAmount: Data?
@@ -48,8 +49,9 @@ public struct PaymentModelRecord: SDSRecord {
         case addressUuidString
         case createdTimestamp
         case isUnread
-        case mcIncomingTransaction
         case mcLedgerBlockIndex
+        case mcReceiptData
+        case mcTransactionData
         case memoMessage
         case mobileCoin
         case paymentAmount
@@ -86,15 +88,16 @@ public extension PaymentModelRecord {
         addressUuidString = row[3]
         createdTimestamp = row[4]
         isUnread = row[5]
-        mcIncomingTransaction = row[6]
-        mcLedgerBlockIndex = row[7]
-        memoMessage = row[8]
-        mobileCoin = row[9]
-        paymentAmount = row[10]
-        paymentFailure = row[11]
-        paymentState = row[12]
-        paymentType = row[13]
-        requestUuidString = row[14]
+        mcLedgerBlockIndex = row[6]
+        mcReceiptData = row[7]
+        mcTransactionData = row[8]
+        memoMessage = row[9]
+        mobileCoin = row[10]
+        paymentAmount = row[11]
+        paymentFailure = row[12]
+        paymentState = row[13]
+        paymentType = row[14]
+        requestUuidString = row[15]
     }
 }
 
@@ -129,8 +132,9 @@ extension TSPaymentModel {
             let addressUuidString: String? = record.addressUuidString
             let createdTimestamp: UInt64 = record.createdTimestamp
             let isUnread: Bool = record.isUnread
-            let mcIncomingTransaction: Data? = SDSDeserialization.optionalData(record.mcIncomingTransaction, name: "mcIncomingTransaction")
             let mcLedgerBlockIndex: UInt64 = record.mcLedgerBlockIndex
+            let mcReceiptData: Data? = SDSDeserialization.optionalData(record.mcReceiptData, name: "mcReceiptData")
+            let mcTransactionData: Data? = SDSDeserialization.optionalData(record.mcTransactionData, name: "mcTransactionData")
             let memoMessage: String? = record.memoMessage
             let mobileCoinSerialized: Data? = record.mobileCoin
             let mobileCoin: MobileCoinPayment? = try SDSDeserialization.optionalUnarchive(mobileCoinSerialized, name: "mobileCoin")
@@ -146,8 +150,9 @@ extension TSPaymentModel {
                                   addressUuidString: addressUuidString,
                                   createdTimestamp: createdTimestamp,
                                   isUnread: isUnread,
-                                  mcIncomingTransaction: mcIncomingTransaction,
                                   mcLedgerBlockIndex: mcLedgerBlockIndex,
+                                  mcReceiptData: mcReceiptData,
+                                  mcTransactionData: mcTransactionData,
                                   memoMessage: memoMessage,
                                   mobileCoin: mobileCoin,
                                   paymentAmount: paymentAmount,
@@ -208,8 +213,9 @@ extension TSPaymentModel: DeepCopyable {
             let addressUuidString: String? = modelToCopy.addressUuidString
             let createdTimestamp: UInt64 = modelToCopy.createdTimestamp
             let isUnread: Bool = modelToCopy.isUnread
-            let mcIncomingTransaction: Data? = modelToCopy.mcIncomingTransaction
             let mcLedgerBlockIndex: UInt64 = modelToCopy.mcLedgerBlockIndex
+            let mcReceiptData: Data? = modelToCopy.mcReceiptData
+            let mcTransactionData: Data? = modelToCopy.mcTransactionData
             let memoMessage: String? = modelToCopy.memoMessage
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -247,8 +253,9 @@ extension TSPaymentModel: DeepCopyable {
                                   addressUuidString: addressUuidString,
                                   createdTimestamp: createdTimestamp,
                                   isUnread: isUnread,
-                                  mcIncomingTransaction: mcIncomingTransaction,
                                   mcLedgerBlockIndex: mcLedgerBlockIndex,
+                                  mcReceiptData: mcReceiptData,
+                                  mcTransactionData: mcTransactionData,
                                   memoMessage: memoMessage,
                                   mobileCoin: mobileCoin,
                                   paymentAmount: paymentAmount,
@@ -274,8 +281,9 @@ extension TSPaymentModelSerializer {
     static let addressUuidStringColumn = SDSColumnMetadata(columnName: "addressUuidString", columnType: .unicodeString, isOptional: true)
     static let createdTimestampColumn = SDSColumnMetadata(columnName: "createdTimestamp", columnType: .int64)
     static let isUnreadColumn = SDSColumnMetadata(columnName: "isUnread", columnType: .int)
-    static let mcIncomingTransactionColumn = SDSColumnMetadata(columnName: "mcIncomingTransaction", columnType: .blob, isOptional: true)
     static let mcLedgerBlockIndexColumn = SDSColumnMetadata(columnName: "mcLedgerBlockIndex", columnType: .int64)
+    static let mcReceiptDataColumn = SDSColumnMetadata(columnName: "mcReceiptData", columnType: .blob, isOptional: true)
+    static let mcTransactionDataColumn = SDSColumnMetadata(columnName: "mcTransactionData", columnType: .blob, isOptional: true)
     static let memoMessageColumn = SDSColumnMetadata(columnName: "memoMessage", columnType: .unicodeString, isOptional: true)
     static let mobileCoinColumn = SDSColumnMetadata(columnName: "mobileCoin", columnType: .blob, isOptional: true)
     static let paymentAmountColumn = SDSColumnMetadata(columnName: "paymentAmount", columnType: .blob, isOptional: true)
@@ -295,8 +303,9 @@ extension TSPaymentModelSerializer {
         addressUuidStringColumn,
         createdTimestampColumn,
         isUnreadColumn,
-        mcIncomingTransactionColumn,
         mcLedgerBlockIndexColumn,
+        mcReceiptDataColumn,
+        mcTransactionDataColumn,
         memoMessageColumn,
         mobileCoinColumn,
         paymentAmountColumn,
@@ -718,8 +727,9 @@ class TSPaymentModelSerializer: SDSSerializer {
         let addressUuidString: String? = model.addressUuidString
         let createdTimestamp: UInt64 = model.createdTimestamp
         let isUnread: Bool = model.isUnread
-        let mcIncomingTransaction: Data? = model.mcIncomingTransaction
         let mcLedgerBlockIndex: UInt64 = model.mcLedgerBlockIndex
+        let mcReceiptData: Data? = model.mcReceiptData
+        let mcTransactionData: Data? = model.mcTransactionData
         let memoMessage: String? = model.memoMessage
         let mobileCoin: Data? = optionalArchive(model.mobileCoin)
         let paymentAmount: Data? = optionalArchive(model.paymentAmount)
@@ -728,7 +738,7 @@ class TSPaymentModelSerializer: SDSSerializer {
         let paymentType: TSPaymentType = model.paymentType
         let requestUuidString: String? = model.requestUuidString
 
-        return PaymentModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, addressUuidString: addressUuidString, createdTimestamp: createdTimestamp, isUnread: isUnread, mcIncomingTransaction: mcIncomingTransaction, mcLedgerBlockIndex: mcLedgerBlockIndex, memoMessage: memoMessage, mobileCoin: mobileCoin, paymentAmount: paymentAmount, paymentFailure: paymentFailure, paymentState: paymentState, paymentType: paymentType, requestUuidString: requestUuidString)
+        return PaymentModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, addressUuidString: addressUuidString, createdTimestamp: createdTimestamp, isUnread: isUnread, mcLedgerBlockIndex: mcLedgerBlockIndex, mcReceiptData: mcReceiptData, mcTransactionData: mcTransactionData, memoMessage: memoMessage, mobileCoin: mobileCoin, paymentAmount: paymentAmount, paymentFailure: paymentFailure, paymentState: paymentState, paymentType: paymentType, requestUuidString: requestUuidString)
     }
 }
 

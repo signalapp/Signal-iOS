@@ -460,6 +460,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
 
         let shouldHaveMCIncomingTransaction = isIncoming && !isFailed
+        let hasMCIncomingTransaction = !(self.mobileCoin?.incomingTransactionPublicKeys ?? []).isEmpty
         if shouldHaveMCIncomingTransaction, !hasMCIncomingTransaction {
             owsFailDebug("Missing mcIncomingTransaction: \(formattedState).")
             isValid = false
@@ -582,15 +583,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         paymentType.isUnidentified
     }
 
-    public var hasMCIncomingTransaction: Bool {
-        if let mcIncomingTransaction = mcIncomingTransaction,
-           !mcIncomingTransaction.isEmpty {
-            return true
-        } else {
-            return false
-        }
-    }
-
     public var hasMCLedgerBlockIndex: Bool {
         mcLedgerBlockIndex > 0
     }
@@ -604,18 +596,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
     // This only applies to mobilecoin.
     public var mcRecipientPublicAddressData: Data? {
         mobileCoin?.recipientPublicAddressData
-    }
-
-    // Only set for outgoing mobileCoin payments.
-    //
-    // This only applies to mobilecoin.
-    public var mcTransactionData: Data? {
-        mobileCoin?.transactionData
-    }
-
-    // This only applies to mobilecoin.
-    public var mcReceiptData: Data? {
-        mobileCoin?.receiptData
     }
 
     // Only set for outgoing mobileCoin payments.

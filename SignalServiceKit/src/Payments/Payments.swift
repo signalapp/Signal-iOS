@@ -20,6 +20,7 @@ public enum PaymentsError: Error {
     case unknownCurrency
     case tooOldToSubmit
     case indeterminateState
+    case unsavedChanges
 }
 
 // MARK: -
@@ -82,6 +83,13 @@ public protocol Payments: AnyObject {
 
     func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
                                transaction: SDSAnyWriteTransaction)
+
+    func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
+                           mcIncomingTransactionPublicKey: Data,
+                           transaction: SDSAnyReadTransaction) -> [TSPaymentModel]
+
+    func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
+                                 transaction: SDSAnyWriteTransaction) throws
 
     func warmCaches()
 }
@@ -308,6 +316,17 @@ extension MockPayments: PaymentsSwift {
 
     public func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
                                       transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
+                                  mcIncomingTransactionPublicKey: Data,
+                                  transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
+                                        transaction: SDSAnyWriteTransaction) throws {
         owsFail("Not implemented.")
     }
 }

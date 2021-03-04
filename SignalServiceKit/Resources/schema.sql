@@ -969,8 +969,9 @@ CREATE
             , "addressUuidString" TEXT
             , "createdTimestamp" INTEGER NOT NULL
             , "isUnread" BOOLEAN NOT NULL
-            , "mcIncomingTransaction" BLOB
             , "mcLedgerBlockIndex" INTEGER NOT NULL
+            , "mcReceiptData" BLOB
+            , "mcTransactionData" BLOB
             , "memoMessage" TEXT
             , "mobileCoin" BLOB
             , "paymentAmount" BLOB
@@ -994,14 +995,20 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSPaymentModel_on_mcIncomingTransaction"
-        ON "model_TSPaymentModel"("mcIncomingTransaction"
+    INDEX "index_model_TSPaymentModel_on_mcLedgerBlockIndex"
+        ON "model_TSPaymentModel"("mcLedgerBlockIndex"
 )
 ;
 
 CREATE
-    INDEX "index_model_TSPaymentModel_on_mcLedgerBlockIndex"
-        ON "model_TSPaymentModel"("mcLedgerBlockIndex"
+    INDEX "index_model_TSPaymentModel_on_mcReceiptData"
+        ON "model_TSPaymentModel"("mcReceiptData"
+)
+;
+
+CREATE
+    INDEX "index_model_TSPaymentModel_on_mcTransactionData"
+        ON "model_TSPaymentModel"("mcTransactionData"
 )
 ;
 

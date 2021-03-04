@@ -41,7 +41,6 @@ def set_feature_flags(new_flags_level):
     # lines = [line.strip() for line in lines]
     new_lines = []
     for line in lines:
-        print line
         if line.strip().startswith('let build: FeatureBuild'):
             line = "let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .%s" % ( new_flags_level, )
             new_lines.append(line)

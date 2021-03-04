@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isUnread;
 
 @property (nonatomic, nullable) MobileCoinPayment *mobileCoin;
-@property (nonatomic, nullable) NSData *mcIncomingTransaction;
 @property (nonatomic) uint64_t mcLedgerBlockIndex;
 
 @end
@@ -91,10 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
     _isUnread = isUnread;
     _mobileCoin = mobileCoin;
 
-    if (mobileCoin.incomingTransactionPublicKey != nil) {
-        _mcIncomingTransaction = mobileCoin.incomingTransactionPublicKey;
-    }
     _mcLedgerBlockIndex = mobileCoin.ledgerBlockIndex;
+    _mcTransactionData = mobileCoin.transactionData;
+    _mcReceiptData = mobileCoin.receiptData;
 
     OWSAssertDebug(self.isValid);
 
@@ -118,8 +116,9 @@ NS_ASSUME_NONNULL_BEGIN
                addressUuidString:(nullable NSString *)addressUuidString
                 createdTimestamp:(uint64_t)createdTimestamp
                         isUnread:(BOOL)isUnread
-           mcIncomingTransaction:(nullable NSData *)mcIncomingTransaction
               mcLedgerBlockIndex:(uint64_t)mcLedgerBlockIndex
+                   mcReceiptData:(nullable NSData *)mcReceiptData
+               mcTransactionData:(nullable NSData *)mcTransactionData
                      memoMessage:(nullable NSString *)memoMessage
                       mobileCoin:(nullable MobileCoinPayment *)mobileCoin
                    paymentAmount:(nullable TSPaymentAmount *)paymentAmount
@@ -138,8 +137,9 @@ NS_ASSUME_NONNULL_BEGIN
     _addressUuidString = addressUuidString;
     _createdTimestamp = createdTimestamp;
     _isUnread = isUnread;
-    _mcIncomingTransaction = mcIncomingTransaction;
     _mcLedgerBlockIndex = mcLedgerBlockIndex;
+    _mcReceiptData = mcReceiptData;
+    _mcTransactionData = mcTransactionData;
     _memoMessage = memoMessage;
     _mobileCoin = mobileCoin;
     _paymentAmount = paymentAmount;
@@ -255,7 +255,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                                  // Scrub any MC state associated with the failure payment.
                                  paymentModel.mobileCoin = nil;
-                                 paymentModel.mcIncomingTransaction = nil;
                                  paymentModel.mcLedgerBlockIndex = 0;
                              }];
 }
@@ -332,7 +331,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRecipientPublicAddressData:(nullable NSData *)recipientPublicAddressData
                                    transactionData:(nullable NSData *)transactionData
                                        receiptData:(nullable NSData *)receiptData
-                      incomingTransactionPublicKey:(nullable NSData *)incomingTransactionPublicKey
+                     incomingTransactionPublicKeys:(nullable NSArray<NSData *> *)incomingTransactionPublicKeys
                                     spentKeyImages:(nullable NSArray<NSData *> *)spentKeyImages
                                   outputPublicKeys:(nullable NSArray<NSData *> *)outputPublicKeys
                               ledgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp
@@ -348,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     _recipientPublicAddressData = recipientPublicAddressData;
     _transactionData = transactionData;
     _receiptData = receiptData;
-    _incomingTransactionPublicKey = incomingTransactionPublicKey;
+    _incomingTransactionPublicKeys = incomingTransactionPublicKeys;
     _spentKeyImages = spentKeyImages;
     _outputPublicKeys = outputPublicKeys;
     _ledgerBlockTimestamp = ledgerBlockTimestamp;

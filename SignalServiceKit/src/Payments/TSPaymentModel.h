@@ -61,16 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
 // This only applies to mobilecoin.
 @property (nonatomic, readonly, nullable) MobileCoinPayment *mobileCoin;
 
-// The hexadecimal string for the incoming MC transaction.
-// Used by PaymentFinder.
-//
-// This only applies to mobilecoin.
-@property (nonatomic, readonly, nullable) NSData *mcIncomingTransaction;
-
 // This only applies to mobilecoin.
 // Used by PaymentFinder.
 // This value is zero if not set.
 @property (nonatomic, readonly) uint64_t mcLedgerBlockIndex;
+
+// Only set for outgoing mobileCoin payments.
+// This only applies to mobilecoin.
+// Used by PaymentFinder.
+@property (nonatomic, readonly, nullable) NSData *mcTransactionData;
+
+// This only applies to mobilecoin.
+// Used by PaymentFinder.
+@property (nonatomic, readonly, nullable) NSData *mcReceiptData;
 
 #pragma mark -
 
@@ -102,8 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
                addressUuidString:(nullable NSString *)addressUuidString
                 createdTimestamp:(uint64_t)createdTimestamp
                         isUnread:(BOOL)isUnread
-           mcIncomingTransaction:(nullable NSData *)mcIncomingTransaction
               mcLedgerBlockIndex:(uint64_t)mcLedgerBlockIndex
+                   mcReceiptData:(nullable NSData *)mcReceiptData
+               mcTransactionData:(nullable NSData *)mcTransactionData
                      memoMessage:(nullable NSString *)memoMessage
                       mobileCoin:(nullable MobileCoinPayment *)mobileCoin
                    paymentAmount:(nullable TSPaymentAmount *)paymentAmount
@@ -111,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                     paymentState:(TSPaymentState)paymentState
                      paymentType:(TSPaymentType)paymentType
                requestUuidString:(nullable NSString *)requestUuidString
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:createdTimestamp:isUnread:mcIncomingTransaction:mcLedgerBlockIndex:memoMessage:mobileCoin:paymentAmount:paymentFailure:paymentState:paymentType:requestUuidString:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:createdTimestamp:isUnread:mcLedgerBlockIndex:mcReceiptData:mcTransactionData:memoMessage:mobileCoin:paymentAmount:paymentFailure:paymentState:paymentType:requestUuidString:));
 
 // clang-format on
 
@@ -155,7 +159,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:c
 @property (nonatomic, readonly, nullable) NSData *receiptData;
 
 // Optional. Set for incoming and outgoing mobileCoin payments.
-@property (nonatomic, readonly, nullable) NSData *incomingTransactionPublicKey;
+@property (nonatomic, readonly, nullable) NSArray<NSData *> *incomingTransactionPublicKeys;
 
 // The image keys for the TXOs spent in this outgoing MC transaction.
 @property (nonatomic, readonly, nullable) NSArray<NSData *> *spentKeyImages;
@@ -178,7 +182,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:c
 - (instancetype)initWithRecipientPublicAddressData:(nullable NSData *)recipientPublicAddressData
                                    transactionData:(nullable NSData *)transactionData
                                        receiptData:(nullable NSData *)receiptData
-                      incomingTransactionPublicKey:(nullable NSData *)incomingTransactionPublicKey
+                     incomingTransactionPublicKeys:(nullable NSArray<NSData *> *)incomingTransactionPublicKeys
                                     spentKeyImages:(nullable NSArray<NSData *> *)spentKeyImages
                                   outputPublicKeys:(nullable NSArray<NSData *> *)outputPublicKeys
                               ledgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp

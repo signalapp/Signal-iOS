@@ -391,6 +391,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let paymentsFailIncomingVerification = TestableFlag(false)
 
+    @objc
+    public static let paymentsDoubleNotify = TestableFlag(false)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)

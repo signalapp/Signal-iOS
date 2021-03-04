@@ -99,7 +99,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addWasIdentityVerified
         case storeMutedUntilDateAsMillisecondTimestamp
         case addPaymentModels15
-        case addPaymentModels37
+        case addPaymentModels39
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -961,7 +961,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addPaymentModels37.rawValue) { db in
+        migrator.registerMigration(MigrationId.addPaymentModels39.rawValue) { db in
             do {
                 // PAYMENTS TODO: Remove.
                 try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")
@@ -980,9 +980,10 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                     table.column("isUnread", .boolean)
                         .notNull()
-                    table.column("mcIncomingTransaction", .blob)
                     table.column("mcLedgerBlockIndex", .integer)
                         .notNull()
+                    table.column("mcReceiptData", .blob)
+                    table.column("mcTransactionData", .blob)
                     table.column("memoMessage", .text)
                     table.column("mobileCoin", .blob)
                     table.column("paymentAmount", .blob)
@@ -997,8 +998,9 @@ public class GRDBSchemaMigrator: NSObject {
 
                 try db.create(index: "index_model_TSPaymentModel_on_uniqueId", on: "model_TSPaymentModel", columns: ["uniqueId"])
                 try db.create(index: "index_model_TSPaymentModel_on_paymentState", on: "model_TSPaymentModel", columns: ["paymentState"])
-                try db.create(index: "index_model_TSPaymentModel_on_mcIncomingTransaction", on: "model_TSPaymentModel", columns: ["mcIncomingTransaction"])
                 try db.create(index: "index_model_TSPaymentModel_on_mcLedgerBlockIndex", on: "model_TSPaymentModel", columns: ["mcLedgerBlockIndex"])
+                try db.create(index: "index_model_TSPaymentModel_on_mcReceiptData", on: "model_TSPaymentModel", columns: ["mcReceiptData"])
+                try db.create(index: "index_model_TSPaymentModel_on_mcTransactionData", on: "model_TSPaymentModel", columns: ["mcTransactionData"])
                 try db.create(index: "index_model_TSPaymentModel_on_isUnread", on: "model_TSPaymentModel", columns: ["isUnread"])
             } catch {
                 owsFail("Error: \(error)")
