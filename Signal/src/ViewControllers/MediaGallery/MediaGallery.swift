@@ -119,9 +119,11 @@ public class MediaGalleryItem: Equatable, Hashable {
     }
 }
 
-public struct GalleryDate: Hashable, Comparable, Equatable {
-    let year: Int
-    let month: Int
+/// A "date" (actually an interval, such as a month) that represents a single section in a MediaGallery.
+///
+/// GalleryDates must be non-overlapping.
+struct GalleryDate: Hashable, Comparable, Equatable {
+    let interval: DateInterval
 
     init(message: TSMessage) {
         let date = message.receivedAtDate()
@@ -129,53 +131,27 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     }
 
     init(date: Date) {
-        self.year = Calendar.current.component(.year, from: date)
-        self.month = Calendar.current.component(.month, from: date)
-    }
-
-    init(year: Int, month: Int) {
-        self.year = year
-        self.month = month
+        self.interval = Calendar.current.dateInterval(of: .month, for: date)!
     }
 
     private var isThisMonth: Bool {
-        let now = Date()
-        let year = Calendar.current.component(.year, from: now)
-        let month = Calendar.current.component(.month, from: now)
-        let thisMonth = GalleryDate(year: year, month: month)
-
-        return self == thisMonth
-    }
-
-    public var date: Date {
-        var components = DateComponents()
-        components.month = self.month
-        components.year = self.year
-
-        return Calendar.current.date(from: components)!
-    }
-
-    public var asInterval: DateInterval {
-        return Calendar.current.dateInterval(of: .month, for: date)!
+        return interval.contains(Date())
     }
 
     private var isThisYear: Bool {
-        let now = Date()
-        let thisYear = Calendar.current.component(.year, from: now)
-
-        return self.year == thisYear
+        return Calendar.current.isDate(Date(), equalTo: interval.start, toGranularity: .year)
     }
 
     static let thisYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .autoupdatingCurrent
+        formatter.locale = .current
         formatter.setLocalizedDateFormatFromTemplate("MMMM")
         return formatter
     }()
 
     static let olderFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .autoupdatingCurrent
+        formatter.locale = .current
         formatter.setLocalizedDateFormatFromTemplate("MMMMyyyy")
         return formatter
     }()
@@ -184,35 +160,21 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
         if isThisMonth {
             return NSLocalizedString("MEDIA_GALLERY_THIS_MONTH_HEADER", comment: "Section header in media gallery collection view")
         } else if isThisYear {
-            return type(of: self).thisYearFormatter.string(from: self.date)
+            return type(of: self).thisYearFormatter.string(from: self.interval.start)
         } else {
-            return type(of: self).olderFormatter.string(from: self.date)
+            return type(of: self).olderFormatter.string(from: self.interval.start)
         }
-    }
-
-    // MARK: Hashable
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(month)
-        hasher.combine(year)
     }
 
     // MARK: Comparable
 
-    public static func < (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
-        if lhs.year != rhs.year {
-            return lhs.year < rhs.year
-        } else if lhs.month != rhs.month {
-            return lhs.month < rhs.month
-        } else {
-            return false
-        }
-    }
-
-    // MARK: Equatable
-
-    public static func == (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
-        return lhs.month == rhs.month && lhs.year == rhs.year
+    static func < (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
+        // Check for incorrectly-overlapping ranges.
+        owsAssertDebug(lhs.interval == rhs.interval ||
+                        !lhs.interval.intersects(rhs.interval) ||
+                        lhs.interval.start == rhs.interval.end ||
+                        lhs.interval.end == rhs.interval.start)
+        return lhs.interval.start < rhs.interval.start
     }
 }
 
@@ -548,7 +510,7 @@ class MediaGallery {
                     requestRange.location += items.count
                 }
 
-                let interval = DateInterval(start: sections.orderedKeys[currentSectionIndex].date,
+                let interval = DateInterval(start: sections.orderedKeys[currentSectionIndex].interval.start,
                                             end: .distantFutureForMillisecondTimestamp)
 
                 var offset = 0
@@ -643,7 +605,7 @@ class MediaGallery {
             }
 
             guard let offsetInSection = mediaGalleryFinder.mediaIndex(of: focusedItem.attachmentStream,
-                                                                      in: focusedItem.galleryDate.asInterval,
+                                                                      in: focusedItem.galleryDate.interval,
                                                                       excluding: deletedAttachmentIds,
                                                                       transaction: transaction.unwrapGrdbRead) else {
                 owsFailDebug("showing detail for item not in the database")
@@ -693,7 +655,7 @@ class MediaGallery {
     // MARK: - Section-based API
 
     private func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-        return Int(mediaGalleryFinder.mediaCount(in: date.asInterval,
+        return Int(mediaGalleryFinder.mediaCount(in: date.interval,
                                                  excluding: deletedAttachmentIds,
                                                  transaction: transaction.unwrapGrdbRead))
     }
@@ -709,7 +671,7 @@ class MediaGallery {
         }
 
         var newSectionCounts: [GalleryDate: Int] = [:]
-        let earliestDate = sections.orderedKeys.first?.date ?? .distantFutureForMillisecondTimestamp
+        let earliestDate = sections.orderedKeys.first?.interval.start ?? .distantFutureForMillisecondTimestamp
 
         var newEarliestDate: GalleryDate?
         let result = mediaGalleryFinder.enumerateTimestamps(before: earliestDate,
@@ -750,7 +712,7 @@ class MediaGallery {
         }
 
         var newSectionCounts: [GalleryDate: Int] = [:]
-        let latestDate = sections.orderedKeys.last?.asInterval.end ?? Date(millisecondsSince1970: 0)
+        let latestDate = sections.orderedKeys.last?.interval.end ?? Date(millisecondsSince1970: 0)
 
         var newLatestDate: GalleryDate?
         let result = mediaGalleryFinder.enumerateTimestamps(after: latestDate,
