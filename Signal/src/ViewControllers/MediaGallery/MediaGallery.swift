@@ -223,6 +223,13 @@ protocol MediaGalleryDelegate: class {
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet)
 }
 
+/// A backing store for media views (page-based or tile-based)
+///
+/// MediaGallery models a list of GalleryDate-based sections, each of which has a certain number of items.
+/// Sections are loaded on demand (that is, there may be newer and older sections that are not in the model), and always
+/// know their number of items. Items are also loaded on demand, potentially non-contiguously.
+///
+/// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
 class MediaGallery {
 
     // MARK: - Dependencies
@@ -233,9 +240,9 @@ class MediaGallery {
 
     // MARK: -
 
-    var deletedAttachmentIds: Set<String> = Set()
-    var deletedGalleryItems: Set<MediaGalleryItem> = Set()
-    var isCurrentlyProcessingExternalDeletion = false
+    private var deletedAttachmentIds: Set<String> = Set()
+    fileprivate var deletedGalleryItems: Set<MediaGalleryItem> = Set()
+    private var isCurrentlyProcessingExternalDeletion = false
 
     private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
@@ -265,12 +272,15 @@ class MediaGallery {
     // MARK: - 
 
     func process(deletedAttachmentIds incomingDeletedAttachmentIds: Set<String>) {
+        AssertIsOnMainThread()
+
         let newlyDeletedAttachmentIds = incomingDeletedAttachmentIds.subtracting(deletedAttachmentIds)
-        if newlyDeletedAttachmentIds.isEmpty {
+        guard !newlyDeletedAttachmentIds.isEmpty else {
             return
         }
 
-        if sections.isEmpty {
+        guard !sections.isEmpty else {
+            // Haven't loaded anything yet.
             return
         }
 
@@ -294,7 +304,9 @@ class MediaGallery {
     }
 
     func process(newAttachmentIds: Set<String>) {
-        if newAttachmentIds.isEmpty {
+        AssertIsOnMainThread()
+
+        guard !newAttachmentIds.isEmpty else {
             return
         }
 
@@ -381,13 +393,13 @@ class MediaGallery {
     /// Loads more items relative to the path `(sectionIndex, itemIndex)`.
     ///
     /// If `direction` is anything but `after`, section indexes may be invalidated.
-    func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
-                                  sectionIndex: Int,
-                                  itemIndex: Int,
-                                  amount: Int,
-                                  shouldLoadAlbumRemainder: Bool,
-                                  completion: ((_ newSections: IndexSet) -> Void)? = nil) {
-        if isCurrentlyProcessingExternalDeletion {
+    internal func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
+                                           sectionIndex: Int,
+                                           itemIndex: Int,
+                                           amount: Int,
+                                           shouldLoadAlbumRemainder: Bool,
+                                           completion: ((_ newSections: IndexSet) -> Void)? = nil) {
+        guard !isCurrentlyProcessingExternalDeletion else {
             owsFailDebug("cannot access database while model is being updated")
             return
         }
@@ -498,7 +510,7 @@ class MediaGallery {
             return unfetchedCount > (naiveRequestRange.count / 2)
         }
 
-        if !isSubstantialRequest() {
+        guard isSubstantialRequest() else {
             return
         }
 
@@ -601,11 +613,10 @@ class MediaGallery {
         }
     }
 
-    func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
-                                  item: MediaGalleryItem,
-                                  amount: Int,
-                                  shouldLoadAlbumRemainder: Bool,
-                                  completion: ((_ newSections: IndexSet) -> Void)? = nil) {
+    private func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
+                                          item: MediaGalleryItem,
+                                          amount: Int,
+                                          shouldLoadAlbumRemainder: Bool) {
         guard let path = indexPath(for: item) else {
             owsFail("showing detail view for an item that hasn't been loaded: \(item.attachmentStream)")
         }
@@ -614,11 +625,10 @@ class MediaGallery {
                                  sectionIndex: path.section,
                                  itemIndex: path.item,
                                  amount: amount,
-                                 shouldLoadAlbumRemainder: shouldLoadAlbumRemainder,
-                                 completion: completion)
+                                 shouldLoadAlbumRemainder: shouldLoadAlbumRemainder)
     }
 
-    func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
+    internal func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
         let newItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
             guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
                 return nil
@@ -685,8 +695,8 @@ class MediaGallery {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded, which can be used to update section indexes.
-    func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        if hasFetchedOldest {
+    internal func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
+        guard !hasFetchedOldest else {
             return 0
         }
 
@@ -726,8 +736,8 @@ class MediaGallery {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded.
-    func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        if hasFetchedMostRecent {
+    internal func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
+        guard !hasFetchedMostRecent else {
             return 0
         }
 
@@ -766,18 +776,18 @@ class MediaGallery {
 
     private var _delegates: [Weak<MediaGalleryDelegate>] = []
 
-    var delegates: [MediaGalleryDelegate] {
+    private var delegates: [MediaGalleryDelegate] {
         return _delegates.compactMap { $0.value }
     }
 
-    func addDelegate(_ delegate: MediaGalleryDelegate) {
+    internal func addDelegate(_ delegate: MediaGalleryDelegate) {
         _delegates = _delegates.filter({ $0.value != nil}) + [Weak(value: delegate)]
     }
 
-    func delete(items: [MediaGalleryItem],
-                atIndexPaths givenIndexPaths: [IndexPath]? = nil,
-                initiatedBy: AnyObject,
-                deleteFromDB: Bool) {
+    internal func delete(items: [MediaGalleryItem],
+                         atIndexPaths givenIndexPaths: [IndexPath]? = nil,
+                         initiatedBy: AnyObject,
+                         deleteFromDB: Bool) {
         AssertIsOnMainThread()
 
         guard items.count > 0 else {
@@ -848,7 +858,7 @@ class MediaGallery {
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
 
-    let kGallerySwipeLoadBatchSize: Int = 5
+    // MARK: -
 
     /// Searches the appropriate section for this item.
     internal func indexPath(for item: MediaGalleryItem) -> IndexPath? {
@@ -925,6 +935,8 @@ class MediaGallery {
         return validItem
     }
 
+    private let kGallerySwipeLoadBatchSize: Int = 5
+
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
 
@@ -993,7 +1005,7 @@ class MediaGallery {
         return nil
     }
 
-    var galleryItemCount: Int {
+    internal var galleryItemCount: Int {
         let count: UInt = databaseStorage.uiRead { transaction in
             return self.mediaGalleryFinder.mediaCount(transaction: transaction.unwrapGrdbRead)
         }
