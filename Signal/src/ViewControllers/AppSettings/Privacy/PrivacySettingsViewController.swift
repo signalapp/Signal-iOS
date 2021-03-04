@@ -107,7 +107,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             withText: NSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: { Self.preferences.screenSecurityIsEnabled() },
             target: self,
-            selector: #selector(didToggleReadReceiptsSwitch)
+            selector: #selector(didToggleScreenSecuritySwitch)
         ))
         appSecuritySection.add(.switch(
             withText: NSLocalizedString(
@@ -116,7 +116,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             ),
             isOn: { OWSScreenLock.shared.isScreenLockEnabled() },
             target: self,
-            selector: #selector(didToggleScreenScreenLockSwitch)
+            selector: #selector(didToggleScreenLockSwitch)
         ))
         if OWSScreenLock.shared.isScreenLockEnabled() {
             appSecuritySection.add(.disclosureItem(
@@ -182,7 +182,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleScreenScreenLockSwitch(_ sender: UISwitch) {
+    func didToggleScreenLockSwitch(_ sender: UISwitch) {
         OWSScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
     }
