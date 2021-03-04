@@ -7,8 +7,8 @@ extension AppDelegate {
         guard Storage.shared.getUser()?.name != nil else { return }
         let userDefaults = UserDefaults.standard
         let lastSync = userDefaults[.lastConfigurationSync] ?? .distantPast
-        guard Date().timeIntervalSince(lastSync) > 2 * 24 * 60 * 60 else { return } // Sync every 2 days
-        let configurationMessage = ConfigurationMessage.getCurrent()
+        guard Date().timeIntervalSince(lastSync) > 2 * 24 * 60 * 60,
+            let configurationMessage = ConfigurationMessage.getCurrent() else { return } // Sync every 2 days
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         Storage.shared.write { transaction in
             let job = MessageSendJob(message: configurationMessage, destination: destination)
@@ -18,8 +18,8 @@ extension AppDelegate {
     }
 
     func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
-        guard Storage.shared.getUser()?.name != nil else { return Promise.value(()) }
-        let configurationMessage = ConfigurationMessage.getCurrent()
+        guard Storage.shared.getUser()?.name != nil,
+            let configurationMessage = ConfigurationMessage.getCurrent() else { return Promise.value(()) }
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()
         Storage.writeSync { transaction in

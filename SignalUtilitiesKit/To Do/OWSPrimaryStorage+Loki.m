@@ -8,31 +8,9 @@
 #import "NSObject+Casting.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
-@implementation OWSPrimaryStorage (Loki)
-
-# pragma mark - Convenience
-
-- (OWSIdentityManager *)identityManager {
-    return OWSIdentityManager.sharedManager;
-}
-
-- (TSAccountManager *)accountManager {
-    return TSAccountManager.sharedInstance;
-}
-
-# pragma mark - Open Groups
-
 #define LKMessageIDCollection @"LKMessageIDCollection"
 
-- (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction {
-    NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
-    [transaction setObject:messageID forKey:key inCollection:LKMessageIDCollection];
-}
-
-- (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
-    NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
-    return [transaction objectForKey:key inCollection:LKMessageIDCollection];
-}
+@implementation OWSPrimaryStorage (Loki)
 
 - (void)updateMessageIDCollectionByPruningMessagesWithIDs:(NSSet<NSString *> *)targetMessageIDs in:(YapDatabaseReadWriteTransaction *)transaction {
     NSMutableArray<NSString *> *serverIDs = [NSMutableArray new];
@@ -43,18 +21,6 @@
         [serverIDs addObject:key];
     }];
     [transaction removeObjectsForKeys:serverIDs inCollection:LKMessageIDCollection];
-}
-
-# pragma mark - Restoration from Seed
-
-#define LKGeneralCollection @"Loki"
-
-- (void)setRestorationTime:(NSTimeInterval)time {
-    [self.dbReadWriteConnection setDouble:time forKey:@"restoration_time" inCollection:LKGeneralCollection];
-}
-
-- (NSTimeInterval)getRestorationTime {
-    return [self.dbReadConnection doubleForKey:@"restoration_time" inCollection:LKGeneralCollection defaultValue:0];
 }
 
 @end

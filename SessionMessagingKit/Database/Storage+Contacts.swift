@@ -22,7 +22,8 @@ extension Storage {
             if contact.sessionID == getUserHexEncodedPublicKey() {
                 notificationCenter.post(name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
             } else {
-                notificationCenter.post(name: Notification.Name(kNSNotificationName_OtherUsersProfileDidChange), object: nil)
+                let userInfo = [ kNSNotificationKey_ProfileRecipientId : contact.sessionID ]
+                notificationCenter.post(name: Notification.Name(kNSNotificationName_OtherUsersProfileDidChange), object: nil, userInfo: userInfo)
             }
         }
     }

@@ -1,9 +1,9 @@
 
 extension ConfigurationMessage {
 
-    public static func getCurrent() -> ConfigurationMessage {
+    public static func getCurrent() -> ConfigurationMessage? {
         let storage = Storage.shared
-        let user = storage.getUser()!
+        guard let user = storage.getUser() else { return nil }
         let displayName = user.name
         let profilePictureURL = user.profilePictureURL
         let profileKey = user.profilePictureEncryptionKey?.keyData

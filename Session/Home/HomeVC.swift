@@ -72,6 +72,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         result.axis = .vertical
         result.spacing = Values.mediumSpacing
         result.alignment = .center
+        result.isHidden = true
         return result
     }()
     
@@ -193,7 +194,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
         guard hasChanges else { return }
-        guard !notifications.isEmpty else { return }
         if let firstChangeSet = notifications[0].userInfo {
             let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
             if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
