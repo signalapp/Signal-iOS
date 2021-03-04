@@ -2,33 +2,30 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 12.3
+As of this writing, that's Xcode 12.4
 
 ## Prerequistes
 
-Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage).
+Install [CocoaPods](https://guides.cocoapods.org/using/getting-started.html).
 
 ## 1. Clone
 
 Clone the repo to a working directory:
 
 ```
-git clone --recurse-submodules https://github.com/loki-project/session-ios
+git clone https://github.com/oxen-io/session-ios.git
 ```
-
-Since we make use of submodules, you must use `git clone`, rather than
-downloading a prepared zip file from Github.
 
 We recommend you fork the repo on GitHub, then clone your fork:
 
 ```
-git clone --recurse-submodules https://github.com/<USERNAME>/session-ios.git
+git clone https://github.com/<USERNAME>/session-ios.git
 ```
 
 You can then add the Session repo to sync with upstream changes:
 
 ```
-git remote add upstream https://github.com/loki-project/session-ios
+git remote add upstream https://github.com/oxen-io/session-ios
 ```
 
 ## 2. Pods
