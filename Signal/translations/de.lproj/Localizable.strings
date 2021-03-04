@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jetzt nicht";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Neue Sicherheitsnummer akzeptieren";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "Gerät nicht mehr registriert. Deine Rufnummer ist möglicherweise auf einem anderen Gerät bei Signal registriert. Zum erneuten Registrieren antippen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Gekoppelt: %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Geräteliste konnte nicht aktualisiert werden.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanne den auf dem zu koppelnden Gerät angezeigten QR-Code ein.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "QR-Code einscannen";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Neues Gerät koppeln";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Ort auswählen";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "Protokollierung";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Nachricht";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Töne bei geöffneter App";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Töne";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Personalisierten Ton hinzufügen …";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ hat den Profilnamen zu %@ geändert.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Zu Profil hinzufügen";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Dein Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Über";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nutzername";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profilfoto festlegen";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "Über";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Foto entfernen";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Nutzername erstellen";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Dein Nachname ist zu lang.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Dein Vorname ist zu lang.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Nachname";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Nachname (optional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Erforderlich)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Vorname";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Vorname (erforderlich)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Profil kann nur bei verbundenem Internet aktualisiert werden.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Nutzername";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Als gelesen markieren";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Für Push-Mitteilungen erfolgreich erneut registriert.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push-Mitteilungen";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Neuen Admin wählen";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Push-Registrierung erneuern";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Damit Signal die beste Messaging-App der Welt wird, möchten wir gerne deine Meinung hören.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Hintergrund festlegen";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "Über";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blockieren";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Zensurumgehung";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Ort: %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Standort";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Bei Aktivierung wird Signal versuchen, Zensurmaßnahmen zu umgehen. Aktiviere diese Funktion nur dann, wenn du dich an einem Ort befindest, an dem Signal zensiert wird.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Die Zensurumgehung ist nicht notwendig, da bereits eine Verbindung mit dem Signal-Dienst besteht.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Zensurumgehung";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Diagnoseprotokoll aktivieren";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN aktivieren";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal-PIN";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Diagnoseprotokoll übermitteln";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "Erweitert";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Diagnoseprotokolle";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Kontaktfotos des Systems anzeigen, falls verfügbar";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "System-Kontaktfotos verwenden";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Design";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Nutzer hinzufügen";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "Liste von blockierten Kontakten und Gruppen.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du hast bei Signal keine Kontakte.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Alle Anrufe über den Signal-Server leiten, um die eigene IP-Adresse gegenüber Kontakten nicht offenzulegen. Dies verringert die Anrufqualität.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Unterhaltungen";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Unterhaltungsverlauf löschen";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Urheberrecht Signal Messenger \nLizensiert unter GPLv3";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Datennutzung";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Datenverbrauch reduzieren";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Das Reduzieren des Datenverbrauchs kann Anrufe bei schlechtem Netz verbessern";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Anrufe";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Sprachnachrichten, einmalig anzeigbare Medien und Sticker (kleiner als 100 kB) werden immer automatisch heruntergeladen.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "AUTOM. HERUNTERLADEN VON MEDIEN";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Einstellungen für autom. Herunterladen zurücksetzen";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Hilfe";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Unterhaltungsverlauf löschen";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "Informationen";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Freunde einladen";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "Hintergrund";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Bedingungen & Datenschutzerklärung";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Nachrichtenübermittlung";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Einstellungen";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Stummgeschaltete Unterhaltungen zählen";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Zähler für ungelesene Nachrichten";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Anruf‑ und Nachrichtenmitteilungen können auch bei gesperrtem Telefon erscheinen. Vielleicht möchtest du begrenzen, was in diesen Mitteilungen dann angezeigt wird.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Mitteilungsinhalt";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Neue Signal-Kontakte";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Ereignisse";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Mitteilungen";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Bestätige deine Signal-PIN";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Erinnerungen helfen dir dabei, dir deine PIN zu merken, da diese nicht wiederhergestellt werden kann. Sie wird mit der Zeit seltener abgefragt.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN-Erinnerungen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs halten deine bei Signal gespeicherten Informationen verschlüsselt, sodass nur du auf sie zugreifen kannst. Falls du Signal erneut installierst, werden so dein Profil und deine Einstellungen und Kontakte wiederhergestellt.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "PIN ändern";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "PIN erstellen";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL-PIN";
+"SETTINGS_PINS_TITLE" = "Signal-PIN";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Anrufe in der Anrufliste der Telefon-App von iOS anzeigen.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Weitere Einstellungen";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Anrufe in Anrufliste anzeigen";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Datenschutz";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "Lesebestätigungen";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Sehe und teile, wann Nachrichten gelesen wurden. Diese Einstellung ist optional und betrifft alle Unterhaltungen.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Ausschalten";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Autom. Sperre bei Inaktivität";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signals Bildschirm entsperren via Touch ID, Face ID oder deinem iOS-Gerätepasscode. Bei aktivierter Bildschirmsperre ist es immer noch möglich, eingehende Anrufe anzunehmen und Anruf‑ bzw. Nachrichtenmitteilungen zu erhalten. Die angezeigten Informationen können in Signals Mitteilungseinstellungen angepasst werden.";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bildschirmsperre";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Bildschirmsperre";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Bildschirmschutz aktivieren";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Erscheinen von Signal-Vorschauen im App-Umschalter verhindern.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Töne";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Anrufe";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Bildschirmschutz";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "In Vorschlägen anzeigen";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Beim Teilen durch andere Apps werden Signal-Unterhaltungen als Vorschläge angezeigt.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrierungssperre";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Schalte als zusätzliche Sicherheitsmaßnahme die Registrierungssperre ein. Damit wird deine Signal-PIN erforderlich, sobald du deine Telefonnummer erneut bei Signal registrierst.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Tipp-Indikatoren";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Sehe und teile, wann Nachrichten eingetippt werden. Diese Einstellung ist optional und betrifft alle Unterhaltungen.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Vertraulicher Absender";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Indikatoren anzeigen";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Anzeigen eines Statussymbols unter »Mehr Details« von Nachrichten, die mittels »Vertraulicher Absender« zugestellt wurden.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Von jedem erlauben";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Nutzernamen sind bei Signal optional. Falls du dich dafür entscheidest, einen Nutzernamen zu erstellen, werden andere Nutzer dich über diesen finden und kontaktieren können, ohne deine Rufnummer zu kennen.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Nutzername";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Nutzernamen dürfen nur a-z, 0-9 und »_« enthalten";

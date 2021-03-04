@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jo Tani";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Prano Numër të Ri Sigurie";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "Pajisja s’është më e regjistruar. Numri juaj i telefoni mund të regjistrohet me Signal-in në një pajisje tjetër. Prekeni që të riregjistrohet.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Aktive së fundi më: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Lidhur më: %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "S’u arrit të përditësohet lista e pajisjeve.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanoni kodin QR që shfaqet te pajisja që doni të lidhet.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Skanoni Kodin QR";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Lidhni Pajisje të Re";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Përzgjidhni Vendndodhje";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "Regjistrim";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mesazh";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Luaje Kur Aplikacioni është i Hapur";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Tinguj";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Shtoni tingull vetjak…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ndryshoi emrin e tij të profilit në %@.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Shtoje te Profili";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Emri Juaj";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Mbi";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Emër përdoruesi";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Caktoni Foto Profili";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "Mbi";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Hiqe Foton";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Krijoni Emër Përdoruesi";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Mbiemri juaj është shumë i gjatë.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Emri juaj është shumë i gjatë.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Opsionale)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Mbiemër";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Mbiemër (Në daçi)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(I domosdoshëm)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Emër";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Emër (I domosdoshëm)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Profili mund të përditësohet vetëm kur jeni të lidhur në internet.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Emër përdoruesi";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Vëri Shenjë si i Lexuar";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "U ribë me sukses regjistrimi për njoftime push.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Njoftime Push";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Zgjidhni Përgjegjës të Ri";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Riregjistrojeni për njoftime push";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Për ta bërë Signal-in aplikacionin më të mirë në planet për shkëmbim mesazhesh, do të na pëlqente fort të dinim mendimin tuaj.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Vëre Si Sfond";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "Mbi";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bllokoje";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Anashkalim Censurimi";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Vend: %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Vendndodhje";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Në u aktivizoftë, Signal-i do të përpiqet të anashkalojë censurime. Mos e aktivizoni këtë veçori, po qe se nuk gjendeni diku ku Signal-i censurohet.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Anashkalimi i censurimit s’është i nevojshëm; jeni tashmë i lidhur me shërbimin Signal.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Anashkalim Censurimi";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktivizoni Regjistër Diagnostikimesh";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivizoje PIN-in";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "PIN Signal-i";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Parashtroni Regjistër Diagnostikimesh";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "Të mëtejshme";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Regjistra Gabimesh";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Shfaq foto kontakti të sistemit, në pastë";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Shfaq foto kontakti të sistemit";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Temë";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Shtoni Përdorues të Bllokuar";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "Listë kontaktesh dhe grupesh që keni bllokuar.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "S’keni kontakte në Signal.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Kaloji krejt thirrjet përmes një shërbyesi Signal, për shmangie zbulimi të adresës tuaj IP nga kontakti juaj. Aktivizimi do të ulë cilësinë e thirrjes.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Fjalosje";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Spastro Historik Fjalosjesh";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Të drejta kopjimi: Signal Messenger \n Licencuar sipas termave të GPLv3";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Përdorim të Dhënash";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Përdor Më Pak të Dhëna";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Përdorim i më pak të dhënave mund të përmirësojë thirrjet në rrjete të dobët";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Thirrje";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mesazhet zanore, media shiheni-vetëm-njëherë, dhe ngjitësit (nën 100kb) shkarkohen përherë vetvetiu.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "VETËSHKARKIM MEDIASH";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Rikthe te Parazgjedhjet Rregullimet për Vetëshkarkim";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Ndihmë";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Spastro Historik Fjalosjesh";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "Informacion";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Ftoni Shokët Tuaj";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "Sfond Fjalosjesh";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Kushte & Rregulla Privatësie";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Shkëmbim Mesazhesh";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Rregullime";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Numëro Fjalosje të Heshtuara";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Numër Stemash";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Njoftimet për Thirrje dhe Mesazhe mund të shfaqen edhe me telefon të kyçur. Mund të doni të kufizoni se çfarë shfaqet në këto njoftime.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Lëndë Njoftimesh";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakti U Bë Pjesë e Signal-it";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Veprimtari";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Njoftime";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Ripohoni PIN-in tuaj për Signal";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Kujtuesit ju ndihmojnë të mbani mend PIN-in tuaj, ngaqë ky s’mund të rimerret. Me kalimin e kohës, do t’ju kërkohet më rrallë.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Kujtues PIN-i";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-et i mbajnë të fshehtëzuara të dhëna e depozituara me Signal, që kështu të mund t’i përdorni. Profili, rregullimet dhe kontaktet tuaja do të rikthehen, kur të riinstaloni Signal-in.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Ndryshoni PIN-in tuaj";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Krijoni PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN SIGNAL-i";
+"SETTINGS_PINS_TITLE" = "PIN Signal-i";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Shfaq thirrje te lista \"Së fundi\" e aplikacionit iOS Phone.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Të mëtejshme";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Shfaq Thirrje te Së Fundi";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Privatësi";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "Lexoni Fatura";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Shihni dhe ndani me të tjerë kur lexohen mesazhe të rinj. Ky rregullim është opsional dhe vlen për krejt fjalosjet.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Çaktivizoje";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skadim Kyçjeje Ekrani";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalimin e pajisjes tuaj iOS. Mundeni prapë t’u përgjigjeni thirrjeve ardhëse dhe të merrni thirrje dhe njoftime mesazhesh teksa Kyçja e Ekranit është e aktivizuar. Rregullimet e njoftimeve nga Signal-i ju lejojnë të përshtatni të dhënat që shfaqen.";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kyçje Ekrani";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Kyçje Ekrani";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Aktivizoni Siguri Ekrani";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Parandaloni shfaqjen e paraparjeve Signal te këmbyesi i aplikacioneve.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Tinguj";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Thirrje";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Siguri Ekrani";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Shfaqe në Sugjerime";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Fjalosjet Signal shfaqen si sugjerime, kur bëhen ndarje me të tjerë që nga aplikacione të tjera.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kyçje Regjistrimi";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Për siguri më të madhe, aktivizoni kyçje regjistrimesh, çka do të kërkojë PIN-in tuaj Signal për të riregjistruar numrin tuaj të telefonit me Signal-in.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Shihni dhe ndani me të tjerë kur shtypen mesazhe. Ky rregullim është opsional dhe vlen për krejt fjalosjet.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Dërgues i Vulosur";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Shfaqi Indikatorët";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Shfaq një ikonë gjendjesh kur përzgjidhni \"Më Tepër të Dhëna\" rreth mesazhesh që janë dorëzuar duke përdorur dërguesin e vulosur.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Lejoje prej Kujtdo";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Emrat e përdoruesve në Signal janë opsionalë. Nëse vendosni të krijoni një emër përdoruesi, përdorues të tjerë të Signal-it do të jenë në gjendje t’ju gjejnë me këtë emër përdoruesi dhe të lidhen me ju pa ditur numrin tuaj të telefonit.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Emër përdoruesi";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Emrat e përdoruesve mund të përmbajnë vetëm a-z, 0-9, dhe _";

@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "稍後";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "接受新的安全碼";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "本裝置不再被註冊。你的電話號碼可能被註冊於不同的裝置。點取來重新註冊。";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "最近一次上線時間：%@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "從%@已連結";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "更新裝置列表失敗";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "請掃描要連接的裝置上顯示的 QR 碼。";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "掃描 QR code";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "連結新的裝置";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "選擇位置";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "紀錄中";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "訊息";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "在程式開啟時播放";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "音效";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "新增自定義聲音…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@將他們的個人資料名稱更改為%@。";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "新增到個人資訊";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "設定個人資訊照片";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "關於";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "移除照片";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "新創使用者名稱";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "你的姓太長了。";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "你的名字太長了。";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(選擇性)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "姓";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(必須的)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "名字";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "當連接到網際網路，你的個人資料可以上傳。";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "個人資訊";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "使用者名稱";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "標記為已讀";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "成功重新註冊了推播通知。";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "推播通知";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "？";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "選擇新的管理者";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "重新註冊推播通知";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "為了使Signal成為地球上最好的訊息傳遞應用程式，我們很想聽聽你的意見。";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "設定桌布";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "關於";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "封鎖";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "審查規避";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "位置：%@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "如果啟用，Signal 將嘗試避開審查。除非Signal於你的所在地受到審查，否則不要開啟此功能。";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "你已經連接上 Signal服務，所以不需要啟動審查規避。";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "審查規避";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "啟用除錯日誌";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "啟用PIN碼";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN碼";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "提交除錯日誌";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "進階";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "錯誤日誌";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "耴果有的話，顯示系統聯絡人照片";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "使用系統聯絡人照片";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "主題";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "新增封鎖的聯絡人";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "你已封鎖的聯絡人和群組清單。";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "你沒有使用Signal的連絡人。";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "透過 Signal 伺服器轉發通話，來避免透露你的 IP 位址給你的聯絡人。啟用時，會降低通話品質。";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清除聊天歷史紀錄";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\n Licensed under the GPLv3";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "資料使用量";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "使用較少的數據";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "使用較少的數據可能改善不良網路上的通話";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "通話";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "語音訊息，一次性多媒體和貼圖（小於100kb）會自動下載。";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "媒體自動下載";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "重置自動下載設定";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "幫助";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "清除聊天歷史紀錄";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "資訊";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "邀請你的朋友們";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "聊天桌布";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "條款和隱私政策";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "傳送訊息中";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "計算靜音聊天";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "圖示訊息數顯示";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "電話與訊息通知可以在你的手機鎖定時顯示。你可以限制那些內容可以顯示在通知欄。";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知欄內容";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "聯絡人已加入 Signal 通知";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "事件";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "確認你的 Signal PIN碼";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "提醒可以幫助你記住你的PIN碼，因為它無法回復。 隨著時間的流逝，你的詢問頻率會降低。";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN碼提醒";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN碼會以Signal加密方式儲存資訊，因此只有你可以讀取。 重新安裝Signal時，你的個人資料，設定和聯絡人將復元。";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "變更你的 PIN 碼";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "建立一個PIN碼";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL PIN碼";
+"SETTINGS_PINS_TITLE" = "Signal PIN";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "顯示來電於 iOS 電話中的通話紀錄。";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Advanced";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "顯示來電於通話紀錄";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "隱私權";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "已讀回執";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "閱讀訊息後查看並分享。 此設定是可選的，並且適用於所有聊天。";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "關閉";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定逾時";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "使用Touch ID，Face ID或你的 iOS 裝置密碼解鎖 Signal的螢幕。 啟用螢幕鎖定後，你仍然可以接聽來電並接收電話和訊息通知。 Signal的通知設定讓你可以自定顯示的資訊。        ";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "螢幕鎖定";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "螢幕鎖定";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "開啟程式切換時隱藏畫面功能";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "避免Signal預覽畫面在應用軟體切換時顯示。";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "音效";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "撥打中";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "螢幕安全";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "在建議中顯示";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "從其他應用程式共享時，Signal聊天會顯示為建議。";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "為了提高安全性，請開啟註冊鎖，這將需要你的Signal PIN碼才能再次向Signal註冊你的電話號碼。";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "打字狀態";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "輸入訊息時查看並分享。 此設定是可選的，並且適用於所有聊天。";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "密封發件人";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "顯示指標";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "在使用密封發件人傳遞的訊息上選擇“更多訊息”時顯示狀態圖示。";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "允許任何人";
@@ -4763,7 +4727,7 @@
 "SETTINGS_VERSION" = "版本";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "誰可以...";
+"SETTINGS_WHO_CAN" = "Who can…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "電子郵件";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal上的使用者名稱是選則性的。 如果你選擇創建使用者名稱，其他Signal 使用者將能透過使用者名稱找到你，並在不知道你的電話號碼的情況下與你聯繫。";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "使用者名稱";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "使用者名稱只能包涵a-z、0-9、及_";

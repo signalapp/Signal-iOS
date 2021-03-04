@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Не зараз";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Прийняти новий код безпеки";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "Пристрій не зареєстровано. Можливо, ви зареєстрували цей номер телефону в Signal на іншому пристрої. Натисніть, щоб зареєструватися знову.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Остання активність: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Прив’язано %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Не вдалося оновити список пристроїв.";
@@ -1628,7 +1631,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Хтось почав груповий дзвінок";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Потягніть вгору для зміни вигляду";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Почати дзвінок";
@@ -1991,13 +1994,13 @@
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap to review";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Натисніть для перегляду";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Учасник";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Review Members";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Перегляд учасників";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Відскануйте OR-код на пристрої, який ви хочете прив’язати.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Сканувати QR-код";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Прив’язати новий пристрій";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Обрати місце";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "Логування";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Повідомлення";
@@ -2894,7 +2900,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Продовжувати спілкуватися з цією групою та ділитися своїм ім’ям та фото з її учасниками?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Дозволити %@ писати вам та ділитись з ним своїм ім'ям та фото? Користувач не знатиме, що ви бачили його повідомлення, допоки ви не схвалите запит.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Приєднатися до цієї групи та поділитися своїм ім’ям та фото з її учасниками? Вони не знатимуть, що ви бачили їхні повідомлення, поки ви не приймете.";
@@ -3002,7 +3008,7 @@
 "MUTED_BADGE" = "Сповіщення вимкнені";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Нещодавно змінив ім'я профілю з %1$@ на %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустити";
@@ -3086,7 +3092,7 @@
 "NO_GROUPS_IN_COMMON" = "Спільних груп немає";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
+"NO_OTHER_GROUPS_IN_COMMON" = "Інших спільних груп немає.";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Оберіть контакт чи групу щоб почати спілкування.";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Відтворювати, коли програма відкрита";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Звуки";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Додати власний звук…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "У %@ ім'я профілю змінено на %@.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Написати про себе";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Ваше ім'я";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Про додаток";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Ім'я користувача";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Встановити фото профілю";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "Про додаток";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Видалити фото";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Створити ім'я користувача";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Ваше прізвище задовге.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Ваше ім'я задовге.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Необов'язково)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Прізвище";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Прізвище (за бажанням)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Обов'язково)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Ім'я";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Ім'я (обов'язково)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Профіль може бути оновлено лише за наявності підключення до інтернету.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профіль";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Ім'я користувача";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Позначити прочитаним";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Успішна перереєстрація для одержання push-сповіщень.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Push-сповіщення";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Виберіть Нового Адміністратора";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Перереєструватися для одержання push-сповіщень";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Щоб зробити Signal найкращим застосунком для листування на планеті, ми б хотіли почути ваш відгук.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Задати шпалери";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "Про додаток";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокувати";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Обхід цензури";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Розташування %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Розташування";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Якщо увімкнено, Signal намагатиметься обійти цензуру. Не вмикайте цю функцію, якщо ви не в місці, де Signal заблоковано.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Обхід цензури не потрібен. З'єднання з Signal вже встановлено.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Обхід цензури";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Вести журнал відладки";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Ввімкнути PIN";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "PIN Signal";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Відіслати журнал відладки";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "Додаткові функції";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Журнали Помилок";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Відображати фотографії системних контактів за наявності";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Використовувати фотографії системних контактів";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Тема";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Додати заблокованого користувача";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "Список контактів та груп, заблоковані вами.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "У вас немає контактів у Signal.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Ретранслювати усі виклики через сервери Signal, щоб не розкривати власну IP-адресу вашим контактам. Ввімкнення погіршить якість дзвінка.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Чати";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Очистити історію чату";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Усі права застережено Signal Messenger \n Ліцензія GPLv3";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Споживання даних";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Споживати менше даних";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Використання обмеженої кількості даних може покращити якість дзвінків у мережах з поганим зв'язком";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Виклики";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Голосові повідомлення, зникаючі медіа-файли та стікери (менше 100 кб) завжди автоматично завантажуються.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "АВТОЗАВАНТАЖЕННЯ МЕДІА";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Скинути налаштування автозавантаження";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Допомога";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Очистити історію чату";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "Інформація";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Запросити ваших друзів";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "Шпалери чату";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Умови використання та політика конфіденційності";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Листування";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Налаштування";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Ураховувати стишені чати";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Кількість непрочитаних повідомлень";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Сповіщення про виклики і повідомлення відображаються коли ваш телефон замкнено. Можна обмежити інформацію, що відображається у цих сповіщеннях.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Вміст сповіщень";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт приєднався до Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Події";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Сповіщення";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердіть свій PIN-код Signal";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Нагадування допомагають вам запам'ятати свій PIN-код, так як він не може бути відновлений. Нагадування будуть з'являтися рідше з плином часу.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадування PIN-коду";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коди зберігають інформацію в сервісі Signal зашифрованою, так що тільки ви можете отримати до неї доступ.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Змінити PIN-код";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Створіть PIN-код";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN-код SIGNAL";
+"SETTINGS_PINS_TITLE" = "PIN Signal";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Показувати виклики у розділі Недавні у застосунку Контакти iOS.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Додаткові функції";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показувати виклики у розділі Недавні";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Конфіденційність";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "Звіти про прочитання";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Відключити";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Затримка блокування екрану";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Вимагати Touch ID, Face ID або код-пароль вашого пристрою iOS для відкриття Signal. Ви як і раніше зможете відповідати на вхідні дзвінки та отримувати повідомлення про дзвінки й повідомлення при включеному \"Блокування екрану\". Налаштування повідомлень Signal дозволяють вам налаштовувати інформацію яка відображається.";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Блокування екрану";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Блокування екрану";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Увімкнути захист екрану";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Не дозволяти бачити вміст Signal у переліку відкритих застосунків.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Звуки";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Телефонуємо";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Екран безпеки";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Показувати у рекомендаціях";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Чати Signal відображаються як пропозиції під час поширення з інших застосунків.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокування реєстрації";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Для додаткової безпеки включіть блокування реєстрації, яка вимагатиме ваш PIN-код Signal при повторній реєстрації вашого номеру телефону в Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Сповіщення про набір тексту";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Прихований відправник";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Показувати сповіщення";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Показувати значок, коли ви натискаєте на \"Детальніше\" в повідомленнях, доставлених з використанням запечатаного відправника.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Дозволити від усіх";
@@ -4763,7 +4727,7 @@
 "SETTINGS_VERSION" = "Версія";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Хто може...";
+"SETTINGS_WHO_CAN" = "Who can…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Пошта";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Імена користувачів в Signal необов'язкові. Якщо ви вирішите створити ім'я користувача, інші користувачі Signal зможуть знайти вас по цьому імені і зв'язатися з вами, не знаючи ваш номер телефону.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Ім'я користувача";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Ім'я користувача може містити лише a-z, 0-9, та _";

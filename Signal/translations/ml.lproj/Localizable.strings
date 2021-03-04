@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ഇപ്പോൾ വേണ്ട";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "പുതിയ സുരക്ഷാ നമ്പർ സ്വീകരിക്കുക";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "ഡിവൈസ് ഇതുവരെ രജിസ്റ്റർ ചെയ്യപ്പെട്ടിട്ടില്ല.  നിങ്ങളുടെ ഫോൺ നമ്പർ Signal ലുമായി രജിസ്റ്റർ ചെയ്തിരിക്കുന്നത് മറ്റൊരു ഡിവൈസിൽ ആയിരിക്കും. റീ-രജിസ്റ്റർ ചെയ്യാൻ ടാപ് ചെയ്യുക.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "അവസാനം സജീവമായത്: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "ലിങ്ക് ചെയ്തു: %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ഡിവൈസ് ലിസ്റ്റ് അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "നിങ്ങൾ ലിങ്ക് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന ഡിവൈസിൽ ഡിസ്പ്ലേ ചെയ്തിരിക്കുന്ന QR കോഡ് സ്‌കാൻ ചെയ്യുക.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "QR കോഡ് സ്‌കാൻ ചെയ്യുക";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "പുതിയ ഡിവൈസ് ലിങ്ക് ചെയ്യുക";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "ലൊക്കേഷൻ തിരെഞ്ഞെടുക്കുക";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "ലോഗിംഗ്";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "സന്ദേശം";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "ആപ്പ് ഓപ്പൺ ആയിരിക്കുമ്പോൾ പ്ലേ ചെയ്യുക";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "ഇഷ്‌ടാനുസൃത ശബ്‌ദം ചേർക്കുക…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "പ്രൊഫൈൽ ഫോട്ടോ സജ്ജമാക്കുക";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "കുറിച്ച്";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "ഫോട്ടോ ഇല്ലാതാക്കുക";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "യൂസർ പേര് സൃഷ്ടിക്കുക";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "നിങ്ങളുടെ പേരിൻ്റെ അവസാന ഭാഗം ദൈർഘ്യം കൂടുതലാണ്.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "നിങ്ങളുടെ പേരിൻ്റെ ആദ്യ ഭാഗം ദൈർഘ്യം കൂടുതലാണ്.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(ഓപ്ഷണൽ)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "പേരിൻ്റെ അവസാന ഭാഗം";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(ആവശ്യമുണ്ട്)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "പേരിൻ്റെ ആദ്യ ഭാഗം";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "ഇൻ്റർനെറ്റുമായി കണക്ട് ചെയ്യുമ്പോൾ മാത്രമേ പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്യാൻ സാധിക്കുകയുള്ളൂ.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "പ്രൊഫൈൽ";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "യൂസേർനേമ്";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "വായിച്ചതായി അടയാളപ്പെടുത്തുക";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "പുഷ് നോട്ടിഫിക്കേഷനുകൾക്ക് വേണ്ടി വിജയകരമായി റീ-രജിസ്റ്റർ ചെയ്തിരിക്കുന്നു.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "നോട്ടിഫിക്കേഷനുകൾ";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "പുഷ് നോട്ടിഫിക്കേഷനുകൾക്ക് വേണ്ടി  റീ-രജിസ്റ്റർ ചെയ്യുക";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "ഭൂമിയിലെ മികച്ച സന്ദേശമയയ്‌ക്കൽ അപ്ലിക്കേഷനായി Signal - നെ മാറ്റുന്നതിന്, നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "വാള്‍പേപ്പര്‍ സജ്ജമാക്കു";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "കുറിച്ച്";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "തടയുക";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ  (ഒഴിവാക്കൽ)";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "ലൊക്കേഷൻ: %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "പ്രാപ്യമാക്കിയിട്ടുണ്ടെങ്കിൽ, സെൻസർഷിപ്പ് ഒഴിവാക്കാൻ Signal ശ്രമം നടത്തും.  Signal സെൻസർ ചെയ്യുന്ന ഒരു ലൊക്കേഷനിൽ ആണ് നിങ്ങളെങ്കിൽ ഈ ഫീച്ചർ പ്രാപ്യമാക്കരുത്.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "സെൻസർഷിപ്പ് ഒഴിവാക്കൽ നിർബന്ധമല്ല; നിങ്ങൾ ഇതിനകം തന്നെ Signal സേവനങ്ങളുമായി കണക്ട് ആയിരിക്കുന്നു.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ (ഒഴിവാക്കൽ)";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "ഡീബഗ് ലോഗ് പ്രാപ്തമാക്കുക";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "പിൻ പ്രവർത്തനക്ഷമമാക്കുക";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ഡീബഗ് ലോഗ് സമർപ്പിക്കുക";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "അഡ്വാൻസ്‌ഡ്";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "എറർ ലോഗുകൾ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "ലഭ്യമെങ്കിൽ സിസ്റ്റം കോൺടാക്റ്റ് ഫോട്ടോകൾ പ്രദർശിപ്പിക്കുക";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "തീം";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ബ്ലോക്ക് ചെയ്ത യൂസറെ ചേർക്കുക";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "നിങ്ങൾക്ക് Signal ൽ കോൺടാക്ടുകൾ ഇല്ല.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = " നിങ്ങളുടെ കോൺടാക്ടിന് നിങ്ങളുടെ ഐപി വിലാസം വെളിപ്പെടുന്നത് ഒഴിവാക്കാൻ ഒരു Signal സെർവറിലൂടെ എല്ലാ കോളുകളും കൈമാറുക.  ഇത് പ്രാപ്തമാക്കുന്നത് കോളിൻ്റെ ഗുണമേന്മ കുറയ്ക്കും.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "ചാറ്റിന്റെ ചരിത്രം മായ്ക്കുക";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "പകർപ്പവകാശം Signal മെസഞ്ചർ\nGPLv3 ന് കീഴിൽ ലൈസൻസ് ഉള്ളത്";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ഡാറ്റ ഉപയോഗം";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "കുറഞ്ഞ ഡാറ്റ ഉപയോഗിക്കുന്നത് ബലഹീന നെറ്വർക്കിൽ ഗുണമേന്മ ഉയർത്തിയേക്കാം.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "കോളുകൾ";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "സഹായം";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "ചാറ്റിന്റെ ചരിത്രം മായ്ക്കുക";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "വിവരം";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "നിങ്ങളുടെ സുഹൃത്തുക്കളെ ക്ഷണിക്കുക";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "ചാറ്റ് വാൾപേപ്പർ";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "നിബന്ധനകളും സ്വകാര്യതാ നയവും";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Messaging";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ക്രമീകരണങ്ങൾ";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "നിശബ്ദമാക്കിയ ചാറ്റുകൾ എണ്ണുക";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "നിങ്ങളുടെ ഫോൺ ലോക്ക് ആയിരിക്കുമ്പോഴും കോൾ, സന്ദേശ നോട്ടിഫിക്കേഷനുകൾ ദൃശ്യമാകും.  ഈ നോട്ടിഫിക്കേഷനുകളിൽ എന്തൊക്കെ ദൃശ്യമാകണമെന്ന് നിങ്ങളുടെ താത്പര്യത്തിനനുസരിച്ച് പരിമിതപ്പെടുത്താം.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "നോട്ടിഫിക്കേഷൻ ഉള്ളടക്കം";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "കോൺടാക്ട് Signal ൽ ചേർന്നിരിക്കുന്നു";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "ഇവന്റുകൾ";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "നിങ്ങളുടെ Signal പിൻ സ്ഥിരീകരിക്കുക";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "നിങ്ങളുടെ പിൻ വീണ്ടെടുക്കാൻ കഴിയാത്തതിനാൽ ഓർമ്മിക്കാൻ ഓർമ്മപ്പെടുത്തലുകൾ സഹായിക്കുന്നു. കാലക്രമേണ നിങ്ങളോട് പതിവായി ചോദിക്കപ്പെടും.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "പിൻ ഓർമ്മപ്പെടുത്തലുകൾ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Signal എൻക്രിപ്റ്റ് ചെയ്ത് സ്റ്റോർ ചെയ്ത വിവരങ്ങൾ PIN കൾ സൂക്ഷിക്കുന്നു, അതിനാൽ നിങ്ങൾക്ക് മാത്രമെ അത് പ്രാപ്യമാവുകയുള്ളു.  നിങ്ങൾ Signal റീഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പ്രൊഫൈൽ, സെറ്റിംഗ്സ്, കോണ്ടാക്റ്റുകൾ എന്നിവ റീസ്റ്റോർ ചെയ്യപ്പെടും.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "നിങ്ങളുടെ പിൻ മാറ്റുക";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "ഒരു പിൻ സൃഷ്ടിക്കുക";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
+"SETTINGS_PINS_TITLE" = "Signal PIN";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ഫോൺ ആപ്പിലെ \"Recents\" ലിസ്റ്റിൽ കോളുകൾ കാണിക്കുക.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Advanced";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "റീസൻ്റ്‌സിൽ കോളുകൾ കാണിക്കുക";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "സ്വകാര്യത";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "റീഡ് റെസീപ്റ്റ്സ്";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "ഓഫ് ആക്കുക";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "സ്ക്രീൻ ലോക്ക് സമയം കഴിഞ്ഞിരിക്കുന്നു";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = " ടച്ച് ID, ഫേസ് ID  അല്ലെങ്കിൽ നിങ്ങളുടെ  iOS ഡിവൈസ് പാസ്കോഡ് ഉപയോഗിച്ച് Signal ൻ്റെ സ്ക്രീൻ അൺലോക്ക് ചെയ്യുക.  നിങ്ങൾക്ക് ഇപ്പോഴും വരുന്ന കോളുകൾക്ക് ഉത്തരം നൽകാനും സ്ക്രീൻ ലോക്ക് പ്രാപ്തമാക്കിയിരിക്കുമ്പോഴും കോൾ, സന്ദേശ നോട്ടിഫിക്കേഷനുകൾ സ്വീകരിക്കാനും  കഴിയും. ഡിസ്പ്ലേ ചെയ്യേണ്ട വിവരങ്ങൾ ഏതൊക്കെയെന്ന് കസ്റ്റമൈസ് ചെയ്യാൻ Signal ൻ്റെ നോട്ടിഫിക്കേഷൻ സെറ്റിംഗ്സ് നിങ്ങളെ അനുവദിക്കുന്നു. ";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "സ്‌ക്രീൻ ലോക്ക്";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "സ്‌ക്രീൻ ലോക്ക്";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "സ്ക്രീൻ സുരക്ഷ പ്രാപ്തമാക്കുക";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "ആപ്പ് സ്വിച്ചറിൽ Signal പ്രിവ്യൂകൾ ദൃശ്യമാകുന്നത് തടയുക.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "കോളിംഗ്";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "സ്ക്രീൻ സുരക്ഷ";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "അധിക സുരക്ഷയ്ക്ക് വേണ്ടി, രജിസ്ട്രേഷൻ ലോക്ക് സജീവമാക്കുക, അതിനായി നിങ്ങളുടെ ഫോൺ നമ്പർ Signal മായി വീണ്ടും രജിസ്റ്റർ ചെയ്യുന്നതിന് നിങ്ങളുടെ Signal PIN ആവശ്യമുണ്ട്.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "ടൈപ്പിംഗ് ഇൻഡിക്കേറ്ററുകൾ";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "സന്ദേശങ്ങൾ ടൈപ്പുചെയ്യുന്നുവെന്ന്കാണുകയും പങ്കിടുകയും ചെയ്യുക. ഈ ക്രമീകരണം ഓപ്‌ഷണലാണ് ഒപ്പം എല്ലാ ചാറ്റുകൾക്കും ഇത് ബാധകമാണ്.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ഡിസ്പ്ലേ ഇൻഡിക്കേറ്ററുകൾ";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ ഉപയോഗിച്ച് ഡെലിവർ ചെയ്ത സന്ദേശങ്ങൾക്ക് മേൽ  \"More Info\"  നിങ്ങൾ തിരെഞ്ഞെടുക്കുമ്പോൾ  ഒരു സ്റ്റാറ്റസ് ഐക്കൺ കാണിക്കുക.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ഏതൊരാളിൽ നിന്നും അനുവദിക്കുക";
@@ -4763,7 +4727,7 @@
 "SETTINGS_VERSION" = "പതിപ്പ്";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "Who can…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "മെയിൽ";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal ൽ യൂസർ പേര് ഓപ്ഷണൽ ആണ്.  നിങ്ങൾ ഒരു യൂസർ പേര് സൃഷ്ടിക്കുകയാണെങ്കിൽ, മറ്റ് Signal യൂസർമാർക്ക് നിങ്ങളുടെ ഈ യൂസർ പേര് വച്ച് നിങ്ങളെ കണ്ടുപിടിക്കാനും നിങ്ങളുടെ ഫോൺ നമ്പർ അറിയാതെ തന്നെ നിങ്ങളെ ബന്ധപ്പെടാനും സാധിക്കും.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "യൂസേർനേമ്";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "യൂസർ പേരിൽ a-Z, 0-9, _ എന്നിവ മാത്രമേ ഉൾപ്പെടുത്താനാകൂ.";

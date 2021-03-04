@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ఇప్పుడు కాదు";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "క్రొత్త భద్రతా సంఖ్యను అంగీకరించండి";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "పరికరం ఇకపై నమోదు కాలేదు. మీ ఫోన్ నంబర్ వేరే పరికరంలో Signal తో నమోదు చేయబడదిండి. తిరిగి నమోదు చేయడానికి నొక్కండి.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "చివరి క్రియాశీల: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "సంబంధించిన: %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "పరికర జాబితాను నవీకరించడంలో విఫలమైంది.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "మీరు లింక్ చేయదలిచిన పరికరంలో ప్రదర్శించబడే QR కోడ్‌ను స్కాన్ చేయండి.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "QR కోడ్‌ను స్కాన్ చేయండి";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "కొత్త పరికరాన్ని అనుసంధానించు";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "స్థానాన్ని ఎంచుకోండి";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "లాగింగ్";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "సందేశం";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "అనువర్తనం తెరిచినప్పుడు ప్లే చేయండి";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "శబ్దాలు ";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "అనుకూల ధ్వనిని జోడించండి…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ వారి ప్రొఫైల్ పేరును %@ గా మార్చారు.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "ప్రొఫైల్‌కు జోడించు‌కు జోడించు";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "ప్రొఫైల్ ఛాయాచిత్రంని సెట్ చేయండి";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "గురించి";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "ఛాయాచిత్రంని  తీసివేయండి";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "వినియోగదారు పేరుని సృష్టించండి";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "మీ చివరి పేరు చాలా పెద్దది.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "మీ మొదటి పేరు చాలా పెద్దది.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(ఆప్షనల్)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "చివరి పేరు";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(అవసరం)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "మొదటి పేరు";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "ఇంటర్నెట్‌కు కనెక్ట్ అయినప్పుడు మాత్రమే ప్రొఫైల్ నవీకరించబడుతుంది.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "వ్యక్తిత్వవర్ణన";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "వినియోగదారుడు ";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "చదివినట్లుగా గుర్తించు";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "సాగిపోవు ప్రకటనలు కోసం విజయవంతంగా తిరిగి నమోదు చేయబడింది.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "సాగిపోవు ప్రకటనలు";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "క్రొత్త నిర్వాహకుడిని ఎంచుకోండి";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "పుష్ నోటిఫికేషన్ల కోసం తిరిగి నమోదు చేయండి";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Signal‌ను గ్రహం మీద ఉత్తమ సందేశ అనువర్తనంగా మార్చడానికి, మీ అభిప్రాయాన్ని వినడానికి మేము ఇష్టపడతాము.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "వాల్‌పేపర్‌ను జత చేయండి";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "గురించి";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "నిరోధించు";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "ప్రదర్శన వంచన నిషేధం";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "స్థానం: %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "ప్రారంభించబడితే, Signal ప్రదర్శన నిషేధం తప్పించుకోవడానికి ప్రయత్నిస్తుంది. మీరు Signal నిషేధించ చేయబడిన ప్రదేశంలో ఉంటే తప్ప ఈ లక్షణాన్ని ప్రారంభించవద్దు.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ప్రదర్శన వంచన నిషేధం అవసరం లేదు; మీరు ఇప్పటికే Signal సేవకు కనెక్ట్ అయ్యారు.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "ప్రదర్శన వంచన నిషేధం";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "డీబగ్ లాగ్‌ను ప్రారంభించండి";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "పిన్ ప్రారంభించండి";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal పిన్";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "డీబగ్ లాగ్ను సమర్పించండి";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "ఆధునిక";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "పొరపాటు సంఘటన లేకరి";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "అందుబాటులో ఉంటే సిస్టమ్ సంప్రదింపు ఛాయాచిత్రాలను ప్రదర్శించండి";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "సిస్టమ్ సంప్రదింపు ఛాయాచిత్రాలను ఉపయోగించండి";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "థీమ్";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "నిరోధించిన వినియోగదారుని జోడించండి";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "మీరు బ్లాక్ చేసిన పరిచయాలు మరియు సమూహాల జాబితా.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal లో మీకు పరిచయాలు లేవు.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "మీ పరిచయం మీ IP చిరునామా బహిర్గతం నివారించేందుకు Signal సర్వర్ ద్వారా అన్ని కాల్స్ ప్రసారం. సమర్ధించే కాల్ నాణ్యత తగ్గిస్తుంది.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "మాటామంతీ చరిత్రను క్లియర్ చేయండి";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "రచనాస్వామ్యం Signal Messenger\nGPLv3  క్రింద అనుమతిపత్రము";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "డేటా వినియోగం";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "తక్కువ డేటాను ఉపయోగించండి";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "తక్కువ డేటాను ఉపయోగించడం సరికాని నెట్‌వర్క్‌లలో కాల్‌లను మెరుగుపరుస్తుంది";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "కాల్స్";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "వాయిస్ సందేశాలు, ఒకసారి-వీక్షణ మీడియా మరియు స్టిక్కర్లు (100kb లోపు) ఎల్లప్పుడూ ఆటో-డౌన్‌లోడ్ చేయబడతాయి.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "మీడియా స్వీయ-సమాచారాన్ని బదిలీచేయడం";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "స్వీయ-సమాచారాన్ని బదిలీచేయడం సెట్టింగ్‌లను రీసెట్ చేయండి";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "సహాయం";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "మాటామంతీ చరిత్రను క్లియర్ చేయండి";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "సమాచారం";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "మీ స్నేహితులను ఆహ్వానించండి!";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "చాట్ వాల్పేపర్";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "నిబంధనలు & గోప్యతా విధానం";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "సందేశం";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "అమరికలు";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "మ్యూట్ చేసిన మాటామంతీ‌లను లెక్కించండి";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "బ్యాడ్జ్ కౌంట్";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "మీ ఫోన్ లాక్ చేయబడినప్పుడు కాల్ మరియు సందేశ నోటిఫికేషన్‌లు కనిపిస్తాయి. మీరు ఈ నోటిఫికేషన్లలో చూపిన వాటిని పరిమితం చేయాలనుకోవచ్చు.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ప్రకటనల ధ్వని";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "పరిచయం Signal లొ చేరారు";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "సంఘటనలు";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "మీ Signal పిన్ను నిర్ధారించండి";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "మీ పిన్ను తిరిగి పొందలేనందున దాన్ని గుర్తుంచుకోవడానికి రిమైండర్‌లు మీకు సహాయపడతాయి. కాలక్రమేణా మిమ్మల్ని తక్కువసార్లు అడుగుతారు.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "పిన్ రిమైండర్‌లు";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "పిన్‌లు Signal గుప్తీకరించిన సమాచారాన్ని నిల్వ చేస్తాయి కాబట్టి మీరు మాత్రమే దీన్ని యాక్సెస్ చేయవచ్చు. మీరు Signal ‌ను మళ్లీ ఇన్‌స్టాల్ చేసినప్పుడు మీ ప్రొఫైల్, సెట్టింగ్‌లు మరియు పరిచయాలు పునరుద్ధరించబడతాయి.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "మీ పిన్ మార్చండి";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "పిన్ సృష్టించండి";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL పిన్";
+"SETTINGS_PINS_TITLE" = "Signal PIN";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ఫోన్ అనువర్తనంలో \"రీసెంట్స్\" జాబితాలో కాల్‌లను చూపించు.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Advanced";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "క్రొత్తగా వచ్చిన కాల్స్ చూపించు";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "గోప్యత";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "చదివిన రసీదులు";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "సందేశాలు ఎప్పుడు చదివారో చూడండి మరియు భాగస్వామ్యం చేయండి. ఈ సెట్టింగ్ ఐచ్ఛికం మరియు అన్ని చాట్‌లకు వర్తిస్తుంది.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "ఆపివేయండి";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "స్క్రీన్ లాక్ సమయం ముగిసింది";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID లేదా మీ iOS డివైస్ పాస్‌కోడ్ ఉపయోగించి Signal స్క్రీన్‌ను అన్‌లాక్ చేయండి. స్క్రీన్ లాక్ ప్రారంభించబడినప్పుడు మీరు ఇన్‌కమింగ్ కాల్‌లకు సమాధానం ఇవ్వవచ్చు మరియు సందేశ నోటిఫికేషన్‌లను స్వీకరించవచ్చు. Signal యొక్క నోటిఫికేషన్ సెట్టింగులు ప్రదర్శించబడే సమాచారాన్ని అనుకూలీకరించడానికి మిమ్మల్ని అనుమతిస్తాయి.";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "స్క్రీన్ తాళం";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "స్క్రీన్ తాళం";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "స్క్రీన్ భద్రతను ప్రారంభించండి";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "అనువర్తన స్విచ్చర్‌లో Signal పూర్వప్రదర్శన కనిపించకుండా నిరోధించండి.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "శబ్దాలు ";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "కాలింగ్";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "స్క్రీన్ భద్రత";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "సూచనలలో చూపించు";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "ఇతర అనువర్తనాల నుండి భాగస్వామ్యం చేసేటప్పుడు Signal మాటామంతీ‌లు సూచనలుగా ప్రదర్శించబడతాయి.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "నమోదు లాక్";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "అదనపు భద్రత కోసం, రిజిస్ట్రేషన్ లాక్‌ని ఆన్ చేయండి, మీ ఫోన్ నంబర్‌ను Signal ‌తో మళ్లీ నమోదు చేయడానికి మీ Signal పిన్ అవసరం.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "టైపింగ్ సూచికలు";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "సందేశాలు టైప్ చేస్తున్నప్పుడు చూడండి మరియు భాగస్వామ్యం చేయండి. ఈ సెట్టింగ్ ఐచ్ఛికం మరియు అన్ని మాటామంతీ‌లకు వర్తిస్తుంది.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ముద్రవేసిన ప్రేషకుడు";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ప్రదర్శన సూచికలు";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "ముద్రవేసిన ప్రేషకుడు ఉపయోగించి పంపిన సందేశాలపై \"మరింత సమాచారం\" ఎంచుకున్నప్పుడు స్థితి చిహ్నాన్ని చూపండి.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ఎవరి నుండి అయినా అనుమతించు";
@@ -4763,7 +4727,7 @@
 "SETTINGS_VERSION" = "వివరణము";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "ఎవరు చేయగలరు...";
+"SETTINGS_WHO_CAN" = "Who can…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Mail";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal లోని వినియోగదారు పేర్లు ఐచ్ఛికం. మీరు వినియోగదారు పేరును సృష్టించాలని ఎంచుకుంటే ఇతర Signal వినియోగదారులు ఈ వినియోగదారు పేరు ద్వారా మిమ్మల్ని కనుగొని, మీ ఫోన్ నంబర్ తెలియకుండానే మిమ్మల్ని సంప్రదించగలరు.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "వినియోగదారుడు ";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "వినియోగదారు పేర్లు a-z, 0-9 మరియు _ మాత్రమే కలిగి ఉండవచ్చు";

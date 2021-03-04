@@ -1,6 +1,9 @@
 /* Button text to dismiss missing contacts permission alert */
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "आता नाही";
 
+/* Title for the 'about' help section */
+"ABOUT_SECTION_TITLE" = "About Signal";
+
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "नवीन सुरक्षितता क्रमांक स्वीकार करा";
 
@@ -1094,10 +1097,10 @@
 "DEREGISTRATION_WARNING" = "डिव्हाईस नोंदणीकृत नाही. आपला फोन नंबर एका वेगळ्या डिव्हाईस सोबत Signal वर नोंदणीकृत असू शकतो. पुन्हा-नोंदणी करण्यासाठी टॅप करा.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "शवेटचे सक्रिय: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "जोडलेले: %@";
+"DEVICE_LINKED_AT_LABEL" = "Linked %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिव्हाईस यादी अद्यतनित करण्यात अयशस्वी.";
@@ -2630,7 +2633,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "आपल्याला लिंक करावयाचा डिव्हाईस वर प्रदर्शित केलेला QR कोड स्कॅन करा. ";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "QR कोड स्कॅन करा";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "नवीन डिव्हाईस जोडा";
@@ -2677,8 +2680,11 @@
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "स्थान निवडा";
 
-/* No comment provided by engineer. */
+/* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "लॉगिंग";
+
+/* Footer for the 'logging' help section. */
+"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "संदेश";
@@ -3141,9 +3147,6 @@
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "अॅप उघडे असे पर्यंत चालवा";
-
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "ध्वनी";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "सानुकूलित ध्वनी जोडा…";
@@ -3739,20 +3742,23 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ने त्यांचे प्रोफाईल नाव %@ वर बदलले.";
 
-/* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "प्रोफाईलवर जोडा";
+/* Title for the profile name view. */
+"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+
+/* Placeholder when the user doesn't have an 'about' for profile settings screen. */
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "याबद्दल";
+
+/* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+
+/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "वापरकर्तानाव";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "प्रोफाईल फोटो सेट करा";
 
-/* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "याबद्दल";
-
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "फोटो काढा";
-
-/* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "वापरकर्तानाव तयार करा";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "आपले अडनाव खूप लांब आहे.";
@@ -3764,16 +3770,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "आपले नाव खूप लांब आहे.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(पर्यायी)";
-
-/* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "अडनाव";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "शेवटचे नाव (पर्यायी)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(आवश्यक)";
-
-/* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "नाव";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "पहिले नाव (आवश्यक)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "इंटरनेटला कनेक्ट केल्यावरच प्रोफाईल अद्यतनित करता येईल.";
@@ -3787,9 +3787,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "प्रोफाईल";
 
-/* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "वापरकर्तानाव";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "वाचले म्हणून चिन्हांकित करा";
 
@@ -3801,9 +3798,6 @@
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "पुश सूचनांकरिता यशस्वीरीत्या पुनर्नोंदणी झाली.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "पुश सूचना";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4007,7 +4001,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "नवीन प्रशासक निवडा";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "पुश सूचनांकरिता पुनर्नोंदणी करा";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "या ग्रहावरील Signal ला सर्वोत्कृष्ट संदेशन अॅप बनवण्यासाठी, आम्हाला आपला अभिप्राय ऐकायला आवडेल.";
@@ -4360,8 +4354,8 @@
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "वॉलपेपर सेट करा";
 
-/* Navbar title */
-"SETTINGS_ABOUT" = "याबद्दल";
+/* Title for the 'account' link in settings. */
+"SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "अवरोधित करा";
@@ -4369,8 +4363,8 @@
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "सेंसॉरशिप सर्कंवेंशन";
 
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "स्थान: %@";
+/* Label for the 'manual censorship circumvention' country. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "स्थान";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "जर सक्षम केले, तर Signal सेंसॉरशिप सर्कंमवेंट करण्याचा प्रयत्न करेल. आपण Signal सेंसॉर केलेल्या स्थानावर असल्याखेरीज हे वैशिष्ट्य सक्षम करू नये.";
@@ -4387,9 +4381,6 @@
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "सेंसॉरशिप सर्कंवेंशन गरजेचे नाही, आपण आधीपासून Signal सेवेला कनेक्ट केलेले आहात.";
 
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "सेंसॉरशिप सर्कंवेंशन";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "डीबग लॉग सक्षम करा";
 
@@ -4405,23 +4396,17 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN सक्षम करा";
 
-/* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
-
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "डीबग लॉग प्रविष्ट करा";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "प्रगत";
-
-/* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "त्रुटी लॉग";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "उपलब्ध असल्यास सिस्टिम संपर्क फोटो डिस्प्ले करा";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "सिस्टिम संपर्क फोटो वापरा";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "थीम";
@@ -4483,9 +4468,6 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "अवरोधित वापरकर्ता जोडा";
 
-/* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "आपण ब्लॉक केलेल्या संपर्कांची आणि गटांची यादी.";
-
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "आपले कुठलेही संपर्क Signal वर नाहीत.";
 
@@ -4501,11 +4483,14 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "आपल्या संपर्काला आपला IP पत्ता कळू न देण्यासाठी सर्व कॉल Signal सर्व्हर वरून रीले करा. सक्षम केल्याने कॉल दर्जा कमी होईल.";
 
+/* Title for the 'chats' link in settings. */
+"SETTINGS_CHATS" = "चॅट";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "चॅट इतिहास साफ करा";
 
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "कॉपीराईट Signal संदेशक\nGPLv3 अतंर्गत परवानाकृत";
+/* Footer for the 'about' help section */
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "डेटा वापर";
@@ -4514,7 +4499,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "कमी डेटा वापरा";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "कमी डेटा वापरल्याने खराब नेटवर्कवर कॉल सुधारित होऊ शकतात";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "कॉल";
@@ -4523,7 +4508,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "व्हॉईस संदेश, एकदा-पहा मिडिया, आणि स्टिकर (100केबी खालील) नेहमी स्वयं-डाउनलोड केले जातात.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "मिडिया स्वयं-डाउनलोड";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "स्वयं-डाउनलोड सेटिंग रीसेट करा";
@@ -4549,12 +4534,6 @@
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "मदत";
 
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "चॅट इतिहास साफ करा";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "माहिती";
-
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "आपल्या मित्रांना आमंत्रित करा";
 
@@ -4567,7 +4546,7 @@
 /* Label for settings view that allows user to change the wallpaper. */
 "SETTINGS_ITEM_WALLPAPER" = "चॅट वॉलपेपर";
 
-/* table cell label */
+/* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "अटी आणि गोपनीयता धोरण";
 
 /* Setting for enabling & disabling link previews. */
@@ -4600,28 +4579,31 @@
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "संदेशन";
 
+/* Explanation for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "सेटिंग";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "म्यूट केलेल्या चॅटची गणना करा";
+/* A setting controlling whether muted conversations are shown in the badge count */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "बॅज गणना";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "कॉल आणि संदेश सूचना आपला फोन लॉक असताना दिसू शकतात. या सूचनांमध्ये काय दाखवले जाते हे आपणास मर्यादित करावे असे वाटू शकते. ";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "सूचना मजकूर";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "संपर्क Signal मध्ये सामील झाला";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "इव्हेंट";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
-/* No comment provided by engineer. */
+/* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "सूचना";
 
 /* Label for the 'phone number discoverability' setting. */
@@ -4645,14 +4627,11 @@
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "आपल्या Signal PIN याची पुष्टी करा";
 
-/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "ज्याअर्थी ते पुनर्स्थित केले जाऊ शकत नाहीत स्मरणपत्र आपल्याला PIN लक्षात ठेवण्यास मदत करतात. काही काळानंतर आपल्याला विचारण्याची वारंवारता कमी होईल.";
-
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN स्मरणपत्र";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "आपला PIN बदला";
@@ -4661,22 +4640,19 @@
 "SETTINGS_PINS_ITEM_CREATE" = "PIN तयार करा.";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
+"SETTINGS_PINS_TITLE" = "Signal PIN";
 
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS फोन अॅप मध्ये कॉल \"अलीकडील\" यादीमध्ये दाखवा.";
+/* Title for the advanced privacy settings */
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "प्रगत";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "अलीकडील मध्ये कॉल दाखवा";
 
-/* Settings table view cell label */
+/* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "गोपनीयता";
 
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "वाचन पावत्या";
-
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "संदेश कधी पहिले ते पहा आणि सामायिक करा ही सेटिंग पर्यायी आहे आणि सर्व चॅटला लागू होते.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "बंद करा";
@@ -4702,20 +4678,11 @@
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "स्क्रीन लॉक टाईमआऊट";
 
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID, किंवा आपल्या iOS डिव्हाईस पासकोड वापरून Signal चे स्क्रीन अनलॉक करा. स्क्रीन लॉक सक्षम केलेले असताना देखील आपण येणारे कॉलला उत्तर देऊ शकता आणि कॉल प्राप्त करू शकता आणि संदेश सूचना प्राप्त करू शकता.Signal चेसूचना सेटिंग आपल्याला प्रदर्शित होणारी माहिती सानुकूल करण्यास अनुमती देते.";
-
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "स्क्रीन लॉक";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "स्क्रीन लॉक";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "स्क्रीन सुरक्षा सक्षम करा";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "अॅप स्विचर मध्ये Signal पुनरावलोकन येण्यापासून प्रतिबंधित करा.";
+"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ध्वनी";
@@ -4723,11 +4690,14 @@
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "कॉलिंग";
 
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "स्क्रीन सुरक्षा";
+"SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "सूचनांमध्ये दाखवा";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "इतर अॅप वरून शेअर करताना Signal चॅट सूचना म्हणून दाखवले जातात.";
@@ -4736,22 +4706,16 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "नोंदणी लॉक";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "अतिरिक्त सुरक्षेसाठी, नोंदणी लॉक चालू करा, ज्यामध्ये Signal सोबत आपला फोन नंबर पुन्हा नोंदवण्यासाठी आपला Signal PIN आवश्यक असेल.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "टाईपिंग निर्देशक";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "संदेश टाइप होत असताना ते बघा आणि सामायिक करा. ही सेटिंग पर्यायी आहे आणि सर्व चॅटला लागू होते.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "सीलबंद प्रेषक";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "प्रदर्शन निर्देशक";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "जे सीलबंद प्रेषकद्वारे पोहोचवले होते त्या संदेशांवर आपण \"अधिक माहिती\" निवडल्यावर स्थिती चिन्ह दाखवा.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "कुणाकडूनही अनुमती द्या";
@@ -5148,9 +5112,6 @@
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal वर वापरकर्तानाव पर्यायी आहेत. जर आपण वापरकर्तानाव तयार करायचे ठरवले तर इतर Signal वापरकर्ते आपल्याला आपल्या वापरकर्तानावाद्वारे शोधू शकतील आणि आपला फोन नंबर न जाणता देखील आपल्याला संपर्क साधू शकतील.";
-
-/* Label for the username field in the username view. */
-"USERNAME_FIELD" = "वापरकर्तानाव";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "वापरकर्तानावामध्ये फक्त a-z, 0-9, आणि _ राहू शकतात";
