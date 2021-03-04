@@ -245,7 +245,7 @@ public class DebugFlags: BaseFlags {
     public static let audibleErrorLogging = build.includes(.qa)
 
     @objc
-    public static let verboseAboutView = build.includes(.qa)
+    public static let internalSettings = build.includes(.qa)
 
     // This can be used to shut down various background operations.
     @objc

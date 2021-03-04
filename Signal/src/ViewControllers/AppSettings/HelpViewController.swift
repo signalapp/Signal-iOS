@@ -76,17 +76,6 @@ final class HelpViewController: OWSTableViewController2 {
                 }
             ))
         }
-        if DebugFlags.audibleErrorLogging {
-            loggingSection.add(.disclosureItem(
-                withText: NSLocalizedString("SETTINGS_ADVANCED_VIEW_ERROR_LOG", comment: ""),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "error_logs"),
-                actionBlock: { [weak self] in
-                    DDLog.flushLog()
-                    let vc = LogPickerViewController(logDirUrl: DebugLogger.shared().errorLogsDir)
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        }
         contents.addSection(loggingSection)
 
         let aboutSection = OWSTableSection()

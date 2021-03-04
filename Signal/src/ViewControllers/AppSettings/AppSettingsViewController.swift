@@ -159,19 +159,19 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         contents.addSection(section4)
 
-        #if DEBUG
-        if DebugUITableViewController.useDebugUI() {
-            let debugSection = OWSTableSection()
-            debugSection.add(.disclosureItem(
-                withText: "Debug UI",
+        if DebugFlags.internalSettings {
+            let internalSection = OWSTableSection()
+            internalSection.add(.disclosureItem(
+                icon: .settingsAdvanced,
+                name: "Internal",
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"),
                 actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    DebugUITableViewController.presentDebugUI(from: self)
+                    let vc = InternalSettingsViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
-            contents.addSection(debugSection)
+            contents.addSection(internalSection)
         }
-        #endif
 
         self.contents = contents
     }
