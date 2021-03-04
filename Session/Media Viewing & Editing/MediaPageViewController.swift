@@ -381,7 +381,16 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let attachmentStream = currentViewController.galleryItem.attachmentStream
 
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream) { activityType in
+            guard let activityType = activityType, activityType == .saveToCameraRoll,
+                let tsMessage = currentViewController.galleryItem.message as? TSIncomingMessage, let thread = tsMessage.thread as? TSContactThread else { return }
+            let message = DataExtractionNotification()
+            message.kind = .mediaSaved(timestamp: tsMessage.timestamp)
+            Storage.write { transaction in
+                MessageSender.send(message, in: thread, using: transaction)
+            }
+            
+        }
     }
 
     @objc

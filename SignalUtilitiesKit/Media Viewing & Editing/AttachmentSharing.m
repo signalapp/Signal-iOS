@@ -28,7 +28,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(stream);
 
-    [self showShareUIForURL:stream.originalMediaURL];
+    [self showShareUIForAttachment:stream completion:nil];
+}
+
++ (void)showShareUIForAttachment:(TSAttachmentStream *)stream completion:(nullable AttachmentSharingCompletion)completion
+{
+    OWSAssertDebug(stream);
+
+    [self showShareUIForURL:stream.originalMediaURL completion:completion];
 }
 
 + (void)showShareUIForURL:(NSURL *)url
@@ -95,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (completion) {
-                DispatchMainThreadSafe(completion);
+                DispatchMainThreadSafe(^{ completion(activityType); });
             }
         }];
 
