@@ -59,6 +59,7 @@ open class OWSTableViewController2: OWSViewController {
     public var defaultHeaderHeight: CGFloat? = 0
     public var defaultFooterHeight: CGFloat? = 0
     public var defaultSpacingBetweenSections: CGFloat? = 20
+    public var defaultLastSectionFooter: CGFloat = 20
 
     @objc
     public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
@@ -454,7 +455,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     // The distance from the edge of the view to the cell border.
     @objc
     public static var cellHOuterMargin: CGFloat {
-        if CurrentAppContext().interfaceOrientation.isLandscape {
+        if CurrentAppContext().interfaceOrientation.isLandscape,
+           !UIDevice.current.isIPad {
             // We use a small value in landscape orientation;
             // safeAreaInsets will ensure the correct spacing.
             return 0
@@ -590,9 +592,16 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         } else if let defaultFooterHeight = defaultFooterHeight,
                   defaultFooterHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultFooterHeight)
+        } else if isLastSection(tableView, sectionIndex: sectionIndex),
+                  defaultLastSectionFooter > 0 {
+            return buildDefaultHeaderOrFooter(height: defaultLastSectionFooter)
         } else {
             return nil
         }
+    }
+
+    private func isLastSection(_ tableView: UITableView, sectionIndex: Int) -> Bool {
+        sectionIndex == numberOfSections(in: tableView) - 1
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection sectionIndex: Int) -> CGFloat {
@@ -643,7 +652,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: false)
 
         guard let item = self.item(for: indexPath) else {
             owsFailDebug("Missing item: \(indexPath)")
