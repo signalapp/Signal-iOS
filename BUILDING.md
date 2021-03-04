@@ -16,6 +16,8 @@ Clone the repo to a working directory:
 git clone https://github.com/oxen-io/session-ios.git
 ```
 
+**Recommendation:**
+
 We recommend you fork the repo on GitHub, then clone your fork:
 
 ```
