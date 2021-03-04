@@ -65,7 +65,6 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
-        section.footerTitle = NSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
 
         for sound in OWSSounds.allNotificationSounds().map({ $0.uintValue }) {
             let soundName: String

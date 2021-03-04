@@ -142,6 +142,11 @@ class UsernameViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
     private var errorText: String? {
         switch validationState {
         case .valid:

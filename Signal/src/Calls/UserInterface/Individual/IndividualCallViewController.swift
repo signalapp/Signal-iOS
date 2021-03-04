@@ -1129,23 +1129,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc func didPressShowCallSettings(sender: UIButton) {
-        Logger.info("")
-
-        dismissIfPossible(shouldDelay: false, completion: {
-            // Find the frontmost presented UIViewController from which to present the
-            // settings views.
-            let fromViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
-            assert(fromViewController != nil)
-
-            // Construct the "settings" view & push the "privacy settings" view.
-            let navigationController = AppSettingsViewController.inModalNavigationController()
-            navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
-
-            fromViewController?.present(navigationController, animated: true, completion: nil)
-        })
-    }
-
     @objc func didTapLeaveCall(sender: UIButton) {
         OWSWindowManager.shared.leaveCallView()
     }

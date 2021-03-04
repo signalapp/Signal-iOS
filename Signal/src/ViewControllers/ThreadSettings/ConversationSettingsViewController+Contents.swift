@@ -372,8 +372,6 @@ extension ConversationSettingsViewController {
 
     private func buildNotificationsSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 14
-        section.customFooterHeight = 14
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
@@ -476,7 +474,6 @@ extension ConversationSettingsViewController {
 
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 14
 
         section.footerTitle = isGroupThread
             ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
@@ -549,7 +546,6 @@ extension ConversationSettingsViewController {
                                           contents: OWSTableContents) {
 
         let section = OWSTableSection()
-        section.customHeaderHeight = 14
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
@@ -612,7 +608,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel) -> OWSTableSection {
         let section = OWSTableSection()
-        section.customFooterHeight = 14
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
 
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
@@ -801,8 +797,6 @@ extension ConversationSettingsViewController {
                                                     contents: OWSTableContents) {
 
         let section = OWSTableSection()
-        section.customHeaderHeight = 14
-        section.customFooterHeight = 14
 
         let itemTitle = (RemoteConfig.groupsV2InviteLinks
             ? NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",

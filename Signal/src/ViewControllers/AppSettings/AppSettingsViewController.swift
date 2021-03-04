@@ -112,7 +112,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             name: NSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "The title for the privacy settings."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "privacy"),
             actionBlock: { [weak self] in
-                let vc = PrivacySettingsTableViewController()
+                let vc = PrivacySettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))

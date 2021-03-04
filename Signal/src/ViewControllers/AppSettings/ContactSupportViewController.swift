@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import PromiseKit
 }
 
 @objc(OWSContactSupportViewController)
-final class ContactSupportViewController: OWSTableViewController {
+final class ContactSupportViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,6 @@ final class ContactSupportViewController: OWSTableViewController {
         tableView.keyboardDismissMode = .interactive
         tableView.separatorInsetReference = .fromCellEdges
         tableView.separatorInset = .zero
-        useThemeBackgroundColors = false
 
         rebuildTableContents()
         setupNavigationBar()
@@ -68,7 +67,7 @@ final class ContactSupportViewController: OWSTableViewController {
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
 
-    @objc override func applyTheme() {
+    override func applyTheme() {
         super.applyTheme()
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
@@ -169,7 +168,7 @@ final class ContactSupportViewController: OWSTableViewController {
 
 // MARK: - <SupportRequestTextViewDelegate>
 
-extension ContactSupportViewController: SupportRequestTextViewDelegate, UIScrollViewDelegate {
+extension ContactSupportViewController: SupportRequestTextViewDelegate {
 
     func textViewDidUpdateSelection(_ textView: SupportRequestTextView) {
         scrollToFocus(animated: true)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectThreadViewController.h"
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
 
@@ -103,9 +103,8 @@ NS_ASSUME_NONNULL_BEGIN
     [header setContentHuggingVerticalHigh];
 
     // Table
-    _tableViewController = [OWSTableViewController new];
+    _tableViewController = [OWSTableViewController2 new];
     _tableViewController.delegate = self;
-    _tableViewController.customSectionHeaderFooterBackgroundColor = Theme.backgroundColor;
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];

@@ -135,6 +135,8 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
+
         if isGroupThread {
             updateNavigationBar()
         } else {

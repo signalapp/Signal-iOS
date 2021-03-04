@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldShowNewGroup;
 /// Defaults to `NO`
 @property (nonatomic) BOOL showUseAsyncSelection;
+
+@property (nonatomic, readonly) UIColor *tableBackgroundColor;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 

@@ -59,8 +59,20 @@ open class OWSTableViewController2: OWSViewController {
     public var defaultHeaderHeight: CGFloat? = 0
     public var defaultFooterHeight: CGFloat? = 0
     public var defaultSpacingBetweenSections: CGFloat? = 20
+
+    @objc
     public lazy var defaultSeparatorInsetLeading: CGFloat = Self.cellHInnerMargin
+
+    @objc
     public var defaultSeparatorInsetTrailing: CGFloat = 0
+
+    @objc
+    public var forcePresentedStyle = false
+
+    @objc
+    public var isUsingPresentedStyle: Bool {
+        return forcePresentedStyle || presentingViewController != nil
+    }
 
     private static let cellIdentifier = "cellIdentifier"
 
@@ -440,6 +452,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public static let cellRounding: CGFloat = 10
 
     // The distance from the edge of the view to the cell border.
+    @objc
     public static var cellHOuterMargin: CGFloat {
         if CurrentAppContext().interfaceOrientation.isLandscape {
             // We use a small value in landscape orientation;
@@ -451,6 +464,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     // The distance from the the cell border to the cell content.
+    @objc
     public static var cellHInnerMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
@@ -514,7 +528,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                   defaultHeaderHeight > 0 {
             return buildDefaultHeaderOrFooter(height: defaultHeaderHeight)
         } else if let defaultSpacingBetweenSections = defaultSpacingBetweenSections,
-                  defaultSpacingBetweenSections > 0 {
+                  defaultSpacingBetweenSections > 0, !section.items.isEmpty {
             return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
         } else {
             return nil
@@ -689,11 +703,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         tableView.reloadData()
     }
 
+    @objc
     public var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
         if useNewStyle {
-            if presentingViewController != nil {
+            if isUsingPresentedStyle {
                 return Theme.tableView2PresentedBackgroundColor
             } else {
                 return Theme.tableView2BackgroundColor
@@ -705,7 +720,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public var cellBackgroundColor: UIColor {
         if useNewStyle {
-            if presentingViewController != nil {
+            if isUsingPresentedStyle {
                 return Theme.tableCell2PresentedBackgroundColor
             } else {
                 return Theme.tableCell2BackgroundColor
@@ -716,7 +731,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public var cellSelectedBackgroundColor: UIColor {
-        if presentingViewController != nil {
+        if isUsingPresentedStyle {
             return Theme.tableCell2PresentedSelectedBackgroundColor
         } else {
             return Theme.tableCell2SelectedBackgroundColor
@@ -724,14 +739,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public var separatorColor: UIColor {
-        if presentingViewController != nil {
+        if isUsingPresentedStyle {
             return Theme.tableView2PresentedSeparatorColor
         } else {
             return Theme.tableView2SeparatorColor
         }
     }
 
-    private func applyTheme() {
+    @objc
+    open func applyTheme() {
         AssertIsOnMainThread()
 
         view.backgroundColor = self.tableBackgroundColor

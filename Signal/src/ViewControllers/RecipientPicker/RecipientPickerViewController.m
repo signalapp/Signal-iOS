@@ -49,11 +49,11 @@ const NSUInteger kMinimumSearchLength = 2;
 
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
 
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
-@property (nonatomic, nullable, readonly) UISearchBar *searchBar;
+@property (nonatomic, nullable, readonly) OWSSearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
 @property (nonatomic, nullable) NSString *lastSearchText;
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
@@ -109,7 +109,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _collation = [UILocalizedIndexedCollation currentCollation];
 
     // Search
-    UISearchBar *searchBar = [OWSSearchBar new];
+    OWSSearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
     if (RemoteConfig.usernames) {
@@ -120,6 +120,9 @@ const NSUInteger kMinimumSearchLength = 2;
             @"Placeholder text indicating the user can search for contacts by name or phone number.");
     }
     [searchBar sizeToFit];
+    searchBar.layoutMargins
+        = UIEdgeInsetsMake(0, OWSTableViewController2.cellHOuterMargin, 0, OWSTableViewController2.cellHOuterMargin);
+
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
     searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
     [self.signalContactsStackView addArrangedSubview:searchBar];
@@ -130,18 +133,16 @@ const NSUInteger kMinimumSearchLength = 2;
         [self.signalContactsStackView addArrangedSubview:view];
     }
 
-    _tableViewController = [OWSTableViewController new];
+    _tableViewController = [OWSTableViewController2 new];
     _tableViewController.delegate = self;
-    _tableViewController.tableViewStyle = UITableViewStylePlain;
+
+    self.tableViewController.defaultSeparatorInsetLeading
+        = OWSTableViewController2.cellHInnerMargin + kStandardAvatarSize + kContactCellAvatarTextMargin;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
     [self.tableViewController.view setCompressionResistanceVerticalLow];
     [self.tableViewController.view setContentHuggingVerticalLow];
-    // separatorStyle must be set _after_ the table view is added to the view hierarchy.
-    self.tableViewController.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableViewController.tableView.estimatedRowHeight = 60;
 
     _noSignalContactsView = [self createNoSignalContactsView];
     self.noSignalContactsView.hidden = YES;
@@ -160,8 +161,6 @@ const NSUInteger kMinimumSearchLength = 2;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 
     [self updateTableContents];
-
-    [self applyTheme];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
@@ -321,6 +320,8 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
 
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
+
+    [self applyTheme];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -485,9 +486,8 @@ const NSUInteger kMinimumSearchLength = 2;
 
         // If we have non-contact selections, add a title to the static section
         if (hadNonContactRecipient) {
-            staticSection.customHeaderView = [self
-                buildSectionHeaderWithTitle:NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
-                                                @"a title for the selected section of the 'recipient picker' view.")];
+            staticSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+                @"a title for the selected section of the 'recipient picker' view.");
         }
     }
 
@@ -656,28 +656,10 @@ const NSUInteger kMinimumSearchLength = 2;
     [section addItems:items];
 
     if (sectionTitle != nil) {
-        section.customHeaderView = [self buildSectionHeaderWithTitle:sectionTitle];
+        section.headerTitle = sectionTitle;
     }
 
     return section;
-}
-
-- (UIView *)buildSectionHeaderWithTitle:(NSString *)sectionTitle
-{
-    UITextView *textView = [UITextView new];
-    textView.backgroundColor = UIColor.clearColor;
-    textView.opaque = NO;
-    textView.editable = NO;
-    textView.contentInset = UIEdgeInsetsZero;
-    textView.textContainer.lineFragmentPadding = 0;
-    textView.scrollEnabled = NO;
-    textView.textColor = Theme.primaryTextColor;
-    textView.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
-    textView.backgroundColor = Theme.washColor;
-    CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-    textView.textContainerInset = UIEdgeInsetsMake(5, tableEdgeInsets, 5, tableEdgeInsets);
-    textView.text = sectionTitle;
-    return textView;
 }
 
 - (NSArray<OWSTableSection *> *)contactsSectionsForSearchResults:(ComposeScreenSearchResultSet *)searchResults
@@ -1333,7 +1315,14 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = self.tableBackgroundColor;
+    self.searchBar.searchFieldBackgroundColorOverride
+        = Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xe0e0e0];
+}
+
+- (UIColor *)tableBackgroundColor
+{
+    return self.tableViewController.tableBackgroundColor;
 }
 
 @end

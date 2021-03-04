@@ -4,6 +4,7 @@
 
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/OWSTableViewController.h>
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DomainFrontingCountryViewController ()
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
 
 @end
 
@@ -39,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
-    _tableViewController = [OWSTableViewController new];
+    _tableViewController = [OWSTableViewController2 new];
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];

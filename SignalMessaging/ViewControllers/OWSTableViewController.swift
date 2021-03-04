@@ -199,8 +199,7 @@ public extension OWSTableItem {
         }
         nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.adjustsFontForContentSizeCategory = true
-        nameLabel.numberOfLines = 0
-        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalHigh()
         nameLabel.setContentHuggingHorizontalHigh()
         arrangedSubviews.append(nameLabel)
@@ -214,8 +213,7 @@ public extension OWSTableItem {
             accessoryLabel.textColor = Theme.secondaryTextAndIconColor
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true
-            accessoryLabel.numberOfLines = 0
-            accessoryLabel.lineBreakMode = .byWordWrapping
+            accessoryLabel.lineBreakMode = .byTruncatingTail
             accessoryLabel.setCompressionResistanceHorizontalHigh()
             accessoryLabel.setContentHuggingHorizontalHigh()
             arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]

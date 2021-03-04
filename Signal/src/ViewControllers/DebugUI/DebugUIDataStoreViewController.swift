@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-class DebugUIReportsViewController: OWSTableViewController {
+class DebugUIReportsViewController: OWSTableViewController2 {
 
     public override func viewDidLoad() {
         super.viewDidLoad()

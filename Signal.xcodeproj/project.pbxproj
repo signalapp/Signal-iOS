@@ -59,7 +59,6 @@
 		340CCB722305962B005243B3 /* YDBToGRDBMigrationModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
-		340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
@@ -751,6 +750,8 @@
 		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
 		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
 		887B380F25F056FD00685845 /* NotificationSettingsSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */; };
+		887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B381025F05F3100685845 /* PrivacySettingsViewController.swift */; };
+		887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */; };
 		887C6A7824DBB16E00141B64 /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
@@ -1044,7 +1045,6 @@
 		340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageNavigationController.swift; sourceTree = "<group>"; };
 		340E9AC3236095CC00FA362C /* AttachmentMultisend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
-		340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupSettingsViewController.h; sourceTree = "<group>"; };
 		340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC884204DAC8C007AEB0F /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
@@ -1054,7 +1054,6 @@
 		340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
 		340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupSettingsViewController.m; sourceTree = "<group>"; };
-		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
 		340FC893204DAC8C007AEB0F /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
@@ -1829,6 +1828,8 @@
 		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
 		887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsSoundViewController.swift; sourceTree = "<group>"; };
+		887B381025F05F3100685845 /* PrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingsViewController.swift; sourceTree = "<group>"; };
+		887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		887B6B2324895F1F0075EBC7 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
@@ -2308,8 +2309,7 @@
 				340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */,
 				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
 				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
-				340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */,
-				340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */,
+				887B381425F0681B00685845 /* Privacy */,
 				8871B16D25F007CE00D4E070 /* Profile */,
 				344A761224B36C8C009D69A5 /* TestingViewController.swift */,
 			);
@@ -3564,6 +3564,15 @@
 				887B380925F0427F00685845 /* NotificationSettingsViewController.swift */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		887B381425F0681B00685845 /* Privacy */ = {
+			isa = PBXGroup;
+			children = (
+				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
+				887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */,
+			);
+			path = Privacy;
 			sourceTree = "<group>";
 		};
 		888B6D4325B2223200E2A662 /* Wallpapers */ = {
@@ -5439,6 +5448,7 @@
 				329E631F25D64971002ED315 /* OnboardingProfileCreationViewController.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
+				887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */,
 				34DE9C02256575300080E4AF /* CVMessageMapping.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				347C382C252CE69400F3D941 /* CVStackView.swift in Sources */,
@@ -5455,6 +5465,7 @@
 				8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */,
 				340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
+				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
 				888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
@@ -5516,7 +5527,6 @@
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
-				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
