@@ -21,7 +21,6 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - FeedKit (9.1.2)
   - GRKOpenSSLFramework (1.0.2.20)
   - HKDFKit (0.0.3)
   - Mantle (2.1.0):
@@ -51,7 +50,6 @@ PODS:
   - SQLCipher/common (4.4.0)
   - SQLCipher/standard (4.4.0):
     - SQLCipher/common
-  - SSZipArchive (2.2.3)
   - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
@@ -126,7 +124,6 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
-  - FeedKit
   - GRKOpenSSLFramework
   - HKDFKit
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
@@ -137,7 +134,6 @@ DEPENDENCIES:
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - Sodium (~> 0.8.0)
-  - SSZipArchive
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -148,7 +144,6 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
-    - FeedKit
     - GRKOpenSSLFramework
     - HKDFKit
     - NVActivityIndicatorView
@@ -158,7 +153,6 @@ SPEC REPOS:
     - SAMKeychain
     - Sodium
     - SQLCipher
-    - SSZipArchive
     - SwiftProtobuf
     - ZXingObjC
 
@@ -198,7 +192,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  FeedKit: 71653273ab08e618cd6fd1301ca08fc02dca6a9e
   GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -210,12 +203,11 @@ SPEC CHECKSUMS:
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
-  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 39a581f238201cd5bfb849a79ba3d503bca71260
+PODFILE CHECKSUM: 523f27e57b63690fcbf629f49664dabac3876654
 
 COCOAPODS: 1.10.1

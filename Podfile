@@ -6,14 +6,12 @@ use_frameworks!
 target 'Session' do
   pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'FeedKit', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'Sodium', '~> 0.8.0', :inhibit_warnings => true
-  pod 'SSZipArchive', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
   pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
   pod 'ZXingObjC', :inhibit_warnings => true
