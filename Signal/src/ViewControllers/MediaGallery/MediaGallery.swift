@@ -495,7 +495,7 @@ class MediaGallery {
 
             if naiveRequestRange.lowerBound < 0 {
                 var currentSectionIndex = sectionIndex - 1
-                var remainingBackward = -naiveRequestRange.lowerBound - sectionItems.count
+                var remainingBackward = -naiveRequestRange.lowerBound
                 repeat {
                     guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
                         // We've reached the start of the fetched sections. If there are more sections, or the first
