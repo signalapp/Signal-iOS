@@ -1987,6 +1987,27 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "Asiwel s tvidyut";
 
+/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+
+/* Button to allow user to review known name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Senned i ucegger";
+
+/* A header string above a group member's contact info */
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Aεeggal";
+
+/* A title string for a view that allows a user to review name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Senqed iɛeggalen";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+
+/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Isem n ugraw (yettusra)";
 
@@ -2980,6 +3001,9 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Asusam";
 
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Zgel";
 
@@ -3060,6 +3084,9 @@
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Ulac igrawen i tcerkem";
+
+/* A string describing that the user has no groups in common other than the group implied by the current UI context */
+"NO_OTHER_GROUPS_IN_COMMON" = "Ulac igrawen nniḍen i tcerkem.";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Fren anermis neɣ agraw i wakken ad tebduḍ ameslay.";
@@ -3194,13 +3221,13 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Tuqqna n iPhone-ik·im s umata ur d-yettuselleh ara yerna ad yeg talast i ra n tmahlin.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Sireg tisirag";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "Sireg tisirag";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Fren anwa i izemren ad ak·akem-yaf deg ṣignal s wuṭṭun-ik·im n tilifun %@";
@@ -3209,7 +3236,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Anwa i izemren ad ak·akem-yaf s wuṭṭun-ik·im?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Uṭṭun-ik·im n tilifun";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
@@ -3245,13 +3272,13 @@
 "ONBOARDING_PIN_TITLE" = "Sekcem PIN inek";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "Amaɣnu-inek·inem";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Isem (d afrayan)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Aɣara (yettwasra)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Tiwtilin & Tasertit n tbaḍnit";
@@ -3263,13 +3290,13 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Yir uṭṭun?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Call Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Siwel-iyi-d";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Siwel-iyi-d deg %@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Asentem n tengalt...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tangalt-a d tarameɣtut";
@@ -3278,13 +3305,13 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Ales tuzna n tengalt";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Ales tuzna n tengalt deg %@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Sekcem tangalt i nuzen ɣer %@";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Asenqed n tengalt";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Iɣewwaṛen";
@@ -3926,7 +3953,7 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Senqed tuqqna";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Amasal n wuṭṭun-a n tilifun ur yettusefra ara, ttxil-k·m rmes tallalt.";
@@ -3962,13 +3989,13 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Uṭṭun n usentem: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Ẓreg";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Asenqed n %@...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Aggi";

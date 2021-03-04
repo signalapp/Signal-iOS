@@ -707,10 +707,10 @@
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "轻按下面的“去设置”";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "加入“联系人”功能";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "开启“联系人”";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "加入联系人";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "开启联系人";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "以后再说";
@@ -722,7 +722,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "查看联系人名称以及聊天中的图片。";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "加入联系人吗？";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "是否开启联系人？";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "电话";
@@ -1247,7 +1247,7 @@
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "无效照片。";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "群名称";
+"EDIT_GROUP_GROUP_NAME" = "群组名称";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "更新";
@@ -1442,7 +1442,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "重置会话";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
+"FINISH_GROUP_CREATION_LABEL" = "完成群组创建";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "转发联系方式";
@@ -1847,7 +1847,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR 代码";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "审核新成员";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "批准新成员";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "复制链接";
@@ -1987,8 +1987,29 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "视频通话";
 
+/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+
+/* Button to allow user to review known name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "点击开始审核";
+
+/* A header string above a group member's contact info */
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "成员";
+
+/* A title string for a view that allows a user to review name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "审查成员";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+
+/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "群名称（必填）";
+"GROUP_NAME_PLACEHOLDER" = "群组名称（必填）";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ 接受了入群邀请。";
@@ -2426,7 +2447,7 @@
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "没有找到“%@”的相关结果。";
 
 /* Title for the conversation list's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "归档";
+"HOME_VIEW_TITLE_ARCHIVE" = "存档";
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -2585,7 +2606,7 @@
 "LEAVE_BUTTON_TITLE" = "离开群组";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "离开群聊";
+"LEAVE_GROUP_ACTION" = "离开群组";
 
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "退出群组时，出现了问题。";
@@ -2980,6 +3001,9 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "已静音";
 
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
 
@@ -3002,7 +3026,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过电话号码寻找";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "设置组群照片";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "设置群组照片";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "新群组";
@@ -3038,7 +3062,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "其他用户";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "选择群成员";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "选择成员";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "您是否要撤销这些修改？";
@@ -3060,6 +3084,9 @@
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "无共同群组";
+
+/* A string describing that the user has no groups in common other than the group implied by the current UI context */
+"NO_OTHER_GROUPS_IN_COMMON" = "没有其它共同群组。";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "选择一个联系人或群组来开始聊天。";
@@ -4658,7 +4685,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "关闭注册锁定？";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "启用";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "开启";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "如果在再次登录时，你忘记了你的 Signal PIN 码，你将在7天内都无法登录。";
@@ -4694,7 +4721,7 @@
 "SETTINGS_SECTION_SOUNDS" = "声音";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "拨号中";
+"SETTINGS_SECTION_TITLE_CALLING" = "呼叫时";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "屏幕安全";
@@ -5009,7 +5036,7 @@
 "TXT_DELETE_TITLE" = "删除";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "未存档";
+"UNARCHIVE_ACTION" = "取消存档";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "该用户不在你的联系人里，是否将其加入黑名单？";
@@ -5114,7 +5141,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "禁用 PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal 很快将需要 iOS 11 或更高版本。请通过设置 >> 常规 >> 软件更新，进行升级。";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal 很快将需要 iOS 11 或更高版本。请通过设置 >> 通用 >> 软件更新，进行升级。";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "升级 iOS";

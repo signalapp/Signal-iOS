@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "جهة الاتصال";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "جهة الاتصال لـ %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "جِهةُ الاِتِّصال لِـ %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "الوسائط";
@@ -551,7 +551,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "مُستخدم Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "اِلتَقِط صُّورَة ثُمَّ أرسِلها";
+"CAMERA_BUTTON_HINT" = "اِلتَقِط صُّورَةً ثُمَّ أرسِلها";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "الكاميرا";
@@ -629,7 +629,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "هَذَا سوف يُعيد تعيِّين التَطبيق عبر حَذف جَميع الرَّسائل مِن هَذَا الجِهاز. يُمكِنُكَ دائمًا إعادة رَبط هاتفك مَرة أُخرى، لكن ذلك لن يستعيد رَسائلك المَحذوفة. سيُغلَق التَطبيق بعد اِنتهاء هَذه العَملية.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = " هل أنتَ مُتأكد مِن رَغبتك في حَذف جَميع البَيانات ؟";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "أنتَ لن تَتمكن مِن إرسال أو إستقبال رَسائِل في هَذِه المَجموعة بَعد الآن.";
@@ -992,7 +992,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "إنَّ %@ قد أرسلَ:";
 
 /* Format for sender info for outgoing messages. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "أنتَ قد أرسلتَ:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "أنتَ قَد أرسلتَ:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "حذف الكل";
@@ -1163,7 +1163,7 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "لا توجد مساحة خالية بشكل كافي لإتمام النقل";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "قم بالتحديث إلى آخر إصدار من Signal ثم حاول مرة أُخرى";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "حَدِّث إلى آخَر إصدار مِن Signal ثُمَّ حاوِل مَرة أُخرى";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "إنقل حساب Signal الخاص بك إلى جهاز iOS جديد. تأكد من أن جهازك الجديد قريب و قيد التشغيل.";
@@ -1187,10 +1187,10 @@
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على Signal مفتوحاً. عمليات النقل مُعمّاة من النهاية إلى النهاية.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "جارِ استقبال البيانات";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "يَجري اِستِقبال البَيانات";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "جارِ الرّبط…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "يَجري الرّبط…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "مَوضِع رمز الاستجابة السريعة ضمن الدائرة";
@@ -1202,7 +1202,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على Signal مفتوحاً.";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "نقل البيانات";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "نَقل البيانات";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "الرسائل المُختفية";
@@ -1454,10 +1454,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "ليس لديك أي وسائط في هذه المُحادثة.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "جار تحميل وسائط أحدث...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "يَجري تحميل وسائط أحدث...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "جار تحميل وسائط أقدم...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "يَجري تحميل وسائط أقدم...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "مُرفق";
@@ -1502,13 +1502,13 @@
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "يتضمن هذا الإصدار من Signal تنظيم لقاعدة البيانات وتحسينات في الأداء. قد تحتاج إلى فتح التطبيق لإكمال العملية.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "جاري تحسين قاعدة البيانات";
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "يَجري تحسين قاعدة البيانات";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "لقد غيرتَ من يمكنه تعديل معلومات المجموعة إلى \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيرتَ من يمكنه تعديل معلومات المجموعة إلى \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد غيّر مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّرَ %1$@ مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%@\" التعديل على معلومات المجموعة.";
@@ -1529,10 +1529,10 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "مُعطل";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "لقد غيرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيَّرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "غيرَ %1$@ مَن يُمكنه تعديل عُضوية المجموعة إلى \"%2$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّرَ %1$@ مَن يُمكنه تعديل عُضوية المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%@\".";
@@ -1670,7 +1670,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "أنت قد أنشأتَ المجموعة.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أضافك إلى المجموعة.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %@ إلى المجموعة.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "لقد أُنشأَت المجموعة.";
@@ -1688,10 +1688,10 @@
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "أنت قد أضفت دعوات غير صالحة.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "إنَّ %@ قد أضاف دعوة غير صالحة.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "لَقَد أضاف %@ دعوة غير صالحة.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "إنَّ %@ قد أضاف دعوات غير صالحة.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "لَقَد أضاف %@ دعوات غير صالحة.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
 "GROUP_INVALID_INVITES_ADDED_N" = "تمت إضافة دعوات غير صالحة.";
@@ -1706,10 +1706,10 @@
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "أنت قد سحبت دعوات غير صالحة.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "إنَّ %@ قد سحب دعوة غير صالحة.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "لَقَد سحب %@ دعوة غير صالحة.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "إنَّ %@ قد سحب دعوات غير صالحة.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "لَقَد سحب %@ دعوات غير صالحة.";
 
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "تم سحب الدعوات غير الصالحة.";
@@ -1721,7 +1721,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "أنت قد أوقفت رابط المجموعة.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد عطَّلَ رابط المجموعة.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %@ رابط المجموعة.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "تمَّ تفعيل رابط المجموعة مع مُتطلب موافقة المشرف.";
@@ -1730,7 +1730,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "أنت قد فعَّلت رابط المجموعة مع مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد فعَّل رابط المجموعة مع مُتطلب موافقة المشرف.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ رابط المجموعة مع مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "تم تفعيل رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
@@ -1739,7 +1739,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "أنت قد فعَّلت رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد فعَّل رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "تمَّ إعادة تعيين رابط المجموعة.";
@@ -1757,7 +1757,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "أنت قد عطَّلتَ مُتطلب موافق المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد عطَّلَ مُتطلب موافق المشرف لرابط المجموعة.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %@ مُتطلب موافق المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "تمَّ تفعيل مُتطلب مُوافقة المشرف لرابط المجموعة.";
@@ -1766,7 +1766,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "أنت قد فعّلت مُتطلب مُوافقة المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد فعَّل مُتطلب مُوافقة المشرف لرابط المجموعة.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ مُتطلب مُوافقة المشرف لرابط المجموعة.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "بواسطتك لا يُمكن إضافة %@ بشكل تلقائي للمجموعة. لقد دُعي للانضمام حقاً، لكن لن يرى أي رسالة في المجموعة حتى يقبل بالانضمام إليها.";
@@ -1808,7 +1808,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "يُرجى إعادة المُحاولة.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "إن رابط المجموعة غير صالح. تأكد من سلامة وصحة الرابط بأكمله قبل مُحاولة الانضمام.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "إنَّ رابط المجموعة غير صالح. تأكد من سلامة وصحة الرابط بأكمله قبل مُحاولة الانضمام.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "رابط غير صالح";
@@ -1889,25 +1889,25 @@
 "GROUP_LINK_VIEW_TITLE" = "رابط المجموعة";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أضافك.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %@.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "أنت الآن مُشرف.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "أنتَ الآن مُشرِف.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد جعلَكَ مُشرفاً.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد جعلَكَ %@ مُشرفاً.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "لقد قبلتَ الدعوة للمجموعة.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "أنتَ قَد قبلتَ الدعوة إلى المجموعة.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "لقد قبلتَ دعوة إلى المجموعة من طرف %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "أنتَ قَد قبلتَ دعوة إلى المجموعة من طرف %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "لقد رفضتَ الدعوة للمجموعة.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "أنتَ قد رفضتَ الدعوة للمجموعة.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "لقد رفضتَ الدعوة إلى المجموعة من طرف %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "أنتَ قَد رفضتَ الدعوة إلى المجموعة من طرف %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "لقد أبطل %@ دعوتك إلى المجموعة.";
@@ -1916,40 +1916,40 @@
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "لقد أُبطلَت دعوتك إلى المجموعة.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد دَعاك.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "لَقَد دَعاكَ %@.";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "لقد دُعيتَ إلى المجموعة.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "أنت قد انضممت إلى المجموعة.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "أنتَ قَد انضممت إلى المجموعة.";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "أنت قد انضممت للمجموعة بواسطة رابط المجموعة.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أزالك.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالكَ %@.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "أُزلتَ من المجموعة.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد وافق على طلب انضمامك إلى المجموعة.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %@ على طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "أنت قد ألغيتَ طلب انضمامك للمجموعة.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "أنتَ قَد ألغيتَ طلب انضمامك للمجموعة.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "رُفضَ طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "أنت قد أرسلت طلب إنضمام للمجموعة.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "أنتَ قَد أرسلت طلب إنضمام للمجموعة.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "أُبطلَت صلاحياتك كمشرف على المجموعة.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أبطلَ صلاحياتك كمشرف على المجموعة.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد أبطلَ %@ صلاحياتكَ كَمُشرِف عَلَى المَجموعَة.";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "عضو قد أضافك إلى المجموعة.";
@@ -1987,26 +1987,47 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "اتصال فيديو";
 
+/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+
+/* Button to allow user to review known name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "يُرجى اللمس للمراجعة";
+
+/* A header string above a group member's contact info */
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "عضو";
+
+/* A title string for a view that allows a user to review name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "مراجعة الأعضاء";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+
+/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "اسم المجموعة ( مُتطلب )";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "إنَّ %@ قد قبلَ الدعوة للمجموعة.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "لَقَد قَبَلَ %@ الدعوة إلى المجموعة.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "إنَّ %@ قد قبلَ إنضمامك للمجموعة.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "لَقَد قَبَلَ %@ إنضمامك للمجموعة.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد قبلَ دعوة للمجموعة من طرف %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "لَقَد قَبَلَ %1$@ دعوة إلى لمجموعة من طرف %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "أنت قد أضفت %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "أنتَ قد أضفت %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد أضاف %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "إنَّ %@ قد أُضيف إلى المجموعة.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "لَقَد أُضيفَ %@ إلى المجموعة.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "شخص واحد قد رفض الانضمام إلى المجموعة.";
@@ -2021,7 +2042,7 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "إنَّ %@ مُشرِفٌ الآن";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "أنت قد جعلت %@ مشرفاً.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "أنتَ قَد جعلت %@ مشرفاً.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد جعلَ %2$@ مُشرفاً.";
@@ -2033,10 +2054,10 @@
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "دعوة %@ إلى المجموعة قد أُلغيت.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "إنَّ %@ قد ألغى دعوةٌ إلى المجموعة لشخص واحد.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "لَقَد ألغى %@ دعوة إلى المجموعة لشخص واحد.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "إنَّ %1$@ قد ألغى دعوةٌ إلى المجموعة لعدد %2$@ شخص.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "لَقَد ألغى %1$@ دعوة إلى المجموعة لعدد %2$@ شخص.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "أُلغيت دعوة عدد %@ شخص إلى المجموعة.";
@@ -2051,22 +2072,22 @@
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "أنت قد دعوت %@ إلى المجموعة.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "إنَّ %@ قد دعا شخصٌ واحدٌ إلى المجموعة.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "لَقَد دعا %@ شخصٌ واحدٌ إلى المجموعة.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ قد دعا عدد %2$@ شخص للمجموعة.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "لَقَد دعا %1$@ عدد %2$@ شخص للمجموعة.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
 "GROUP_REMOTE_USER_INVITED_N_FORMAT" = "دُعيَ عدد %@ شخص  إلى المجموعة.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "إنَّ %@ قد انضمَ إلى المجموعة.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "لَقَد اِنضمَ %@ إلى المجموعة.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "إنَّ %@ قد انضمَ إلى لمجموعة عبر رابط المجموعة.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "لَقَد اِنضمَ %@ إلى لمجموعة عبر رابط المجموعة.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "إنَّ %@ قد غادرَ المجموعة.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "لَقَد غادرَ %@ المجموعة.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "أنتَ قد أزلتَ %@.";
@@ -2078,31 +2099,31 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "أنت قد وافقت على طلب انضمام إلى المجموعة من طرف %@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "إنَّ %2$@ قد وافق على طلبُ إنضمام إلى المجموعة من طرفِ %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %2$@ على طلب اِنضمام إلى المجموعة من طرفِ %1$@.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد ألغى طلبهُ في الإنضمام إلى المجموعة.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "لَقَد ألغى %@ طلبهُ في الاِنضمام إلى المجموعة.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "أنت قد رفضت طلب إنضمام للمجموعة من طرف %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "أنت قد رفضت طلب اِنضمام للمجموعة من طرف %@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "إنَّ %2$@ قد رفض طلب إنضمام إلى المجموعة من طرف %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "لَقَد رفض %2$@ طلب اِنضمام إلى المجموعة من طرف %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "رُفضَ طلب انضمام %@ إلى المجموعة.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "رُفضَ طلب اِنضمام %@ إلى المجموعة.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "إنَّ %@ قد طلبَ الانضمام إلى المجموعة بواسطة رابط المجموعة.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "لَقَد طلبَ %@ الانضمام إلى المجموعة بواسطة رابط المجموعة.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "إنًّ %@ قد أُبطلَت صلاحياته كمُشرِف.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "لَقَد أُبطلَت صلاحيات %@ كمُشرِف.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "أنت قد أبطلت صلاحيات %@ كمشرف.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد أبطلَ صلاحيات %2$@ كمُشرِف.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد أبطلَ %1$@ صلاحيات %2$@ كمُشرِف.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "طلبات الأعضاء";
@@ -2123,7 +2144,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "أنت قد أزلت الصورة.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أزال الصُّورة.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %@ الصُّورة.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "تمَّ تحديث صورة المجموعة.";
@@ -2132,31 +2153,31 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "أنت قد حدّثتَ الصورة.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "إنًّ %@ قد حدّثَ الصُّورة.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %@ الصُّورة.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "أنت قد حدّثتَ المجموعة.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد حدّثَ المجموعة.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %@ المجموعة.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "قد أُزيلَ اسم المجموعة.";
+"GROUP_UPDATED_NAME_REMOVED" = "لَقَد أُزيلَ اِسم المجموعة.";
 
 /* Message indicating that the group's name was removed by the local user. */
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "أنت قد أزلتَ اسم المجموعة.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أزالَ اسم المجموعة.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %@ اِسم المجموعة.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "أنت قد غيرت اسم المجموعة إلى \"%@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد غيَّر اسم المجموعة إلى \"%2$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّر %1$@ اِسم المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اسم المجموعة هو \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اِسم المجموعة هو \"%@\".";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "تمَّ ترقية هذه المجموعة إلى مجموعة جديدة.";
@@ -2390,7 +2411,7 @@
 "HELP_CONTACT_US" = "تواصل معنا";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "مركز الدَّعم";
+"HELP_SUPPORT_CENTER" = "مَركَزُ الدَّعم";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "المُحادثات المؤرشفة";
@@ -2414,10 +2435,10 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@، %@ و%@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "أبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اِبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "إنَّ %@ قد أضافكَ إلى المجموعة";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "لَقَد أضافكَ %@ إلى المجموعة";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "طلب تراسُل";
@@ -2456,7 +2477,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "فشل في تحديد المُرفق.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "جار الاتصال…";
+"IN_CALL_CONNECTING" = "يَجري الاتصال…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "تمت الإجابة عليه من جهاز آخر.";
@@ -2468,7 +2489,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "رُفضت من جهاز آخر.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "إعادة الاتصال..";
+"IN_CALL_RECONNECTING" = "يَجري إعادة الاِتصال..";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "رنين…";
@@ -2759,7 +2780,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "تمت القراءة";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "جار الإرسال";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "يَجري الإرسال";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "تمَّ الإرسال";
@@ -2768,7 +2789,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تمَّ التخطي";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "جار الرفع";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "يَجري الرَّفع";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "الرسالة لا تحمل مُحتوى أو مُرفق.";
@@ -2897,10 +2918,10 @@
 "MESSAGE_STATUS_DELIVERED" = "تم الاستلام";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "جار التنزيل";
+"MESSAGE_STATUS_DOWNLOADING" = "يَجري التَّنزيل";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "فشل الإرسال.";
+"MESSAGE_STATUS_FAILED" = "فَشَلَ الإرسال.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "فشل";
@@ -2918,13 +2939,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "فشل الإرسال";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "جار الإرسال...";
+"MESSAGE_STATUS_SENDING" = "يَجري الإرسال...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "تمّ الارسال";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "جار الرفع...";
+"MESSAGE_STATUS_UPLOADING" = "يَجري الرَّفع...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "رِسالة جديدة";
@@ -2979,6 +3000,9 @@
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
+
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "تخطي";
@@ -3061,6 +3085,9 @@
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
 
+/* A string describing that the user has no groups in common other than the group implied by the current UI context */
+"NO_OTHER_GROUPS_IN_COMMON" = "لا وجود لمجموعات أخرى مشتركة.";
+
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "حدِّد جهة اتصال أو مجموعة لبدء المُحادثة.";
 
@@ -3122,10 +3149,10 @@
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة صوت مُخصصة…";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم، المُحتوى والإجراءات";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاِسم، المُحتَوَى والإجراءات";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "الاسم فقط";
+"NOTIFICATIONS_SENDER_ONLY" = "الاِسمُ فَقَط";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "إظهار";
@@ -3137,34 +3164,34 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN غير صحيح. انتهت المُحاولات.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء إنشاء رقم تعريفي شخصي جديد";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء PIN جديد";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل رقما تعريفيا شخصيا أبجدي رقمي";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل PIN أبجدي رَقمي";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقما تعريفيا شخصيا أبجدي رقمي";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل PIN رَقمي";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هل تُريد مُساعدة؟";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هَل تُريدُ مُساعَدَة؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "الرقم التعريفي الشخصي غير صحيح";
+"ONBOARDING_2FA_INVALID_PIN" = "PIN غير صحيح";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "الرقم التعريفي الشخصي غير صحيح. بقيت %lu محاولة.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN غير صحيح. يتبقى عَدَد %lu مُحاوَلَة.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "الرقم التعريفي الشخصي غير صحيح. بقيت محاولة واحدة.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN غير صحيح. تتبقى مُحاولة واحدة.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "التجاهل وإنشاء إنشاء رقم تعريفي شخصي جديد";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "التَّجاهُل وإنشاء PIN جَديد";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر إنشاء رقمك التعريفي الشخصي، يُمكنك إنشاء واحد جديد. كما يمكنك التسجيل واستخدام حسابك لكن سوف تضيع بعض إعداداتك المحفوظة، مثل معلومات حسابك الشخصي.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات ملفك الشخصي.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال الرقم التعريفي الشخصي ؟";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال PIN؟";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "أضف لمسة إنسانية إلى رسائلك";
@@ -3269,7 +3296,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتَّصل بي بَعد %@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "جار التحقُّق مِنَ الرَّمز...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "التَّحَقُّقُ مِنَ الرَّمزِ جارٍ...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "هذا الرمز غير صحيح";
@@ -3290,10 +3317,10 @@
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "إنَّ %@ قد عطَّلَ الرَّسائل المُختفية.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لَقَد عطَّلَ %@ الرَّسائِل المُختَفية.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "إنَّ %@ ضبطَ وقت الرَّسائل المُختفية إلى %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لَقَد ضَبَطَ %@ وقت الرَّسائل المُختَفية إلى %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "إنَّ Signal يواجِهُ صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
@@ -3314,10 +3341,10 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض الطلب مِن \"%@\"؟";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "إنَّ %@ قد دعا شخصٌ واحدٌ";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "لَقَد دعا %@ شخص واحد";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "إنَّ %1$@ قد دعا عدد %2$@ شخص";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "لَقَد دعا %1$@ عدد %2$@ شخص";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "لا توجد طلبات أعضاء مُعلّقة.";
@@ -3326,7 +3353,7 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات للعرض.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "إنَّ \"%@\" قد تمَّت إضافته.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "لَقَد تمَّت إضافة \"%@\".";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "عدد %@ طلب عضو مُعلّق.";
@@ -3335,7 +3362,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "إنَّ \"%@\" قد تمَّ رفضه.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "لَقَد تمَّ رفض \"%@\".";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "إلغاء دعوة غير صالحة";
@@ -3533,7 +3560,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعِد إدخال الـPIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "جار إنشاء الـPIN...";
+"PIN_CREATION_PIN_PROGRESS" = "يَجري إنشاء الـPIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "يُمكنك تغيير الـPIN الخاص بك طالما أن هذا الجهاز مُسجّل.";
@@ -3707,10 +3734,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "حَول (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "إنَّ %@ قد غيَّر اسم ملفهُ الشخصي مِن %@ إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %@ اِسم ملفه الشخصي مِن %@ إلى %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "إنَّ %@ قد غيَّر اسم ملفه الشخصي إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %@ اِسم ملفه الشخصي إلى %@.";
 
 /* Button to add a 'bio' to the user's profile in the profile view. */
 "PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "الإضافة إلى الملف الشخصي";
@@ -3761,7 +3788,7 @@
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "اسم المُستخدم";
+"PROFILE_VIEW_USERNAME_FIELD" = "اِسمُ المُستخدِم";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "تَعليم كَمقروء";
@@ -3782,10 +3809,10 @@
 "QUESTIONMARK_PUNCTUATION" = "؟";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "الرَّدّ على %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "رَدًا عَلَى %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "الرَّدّ عليكَ أنت";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "رَدًا عَلَيكَ أنت";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "لم يُعثَر على الرسالة الأصلية.";
@@ -3890,7 +3917,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "إنَّ الـPIN غير صحيح";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "جار التحقق من الـPIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "يَجري التَّحَقُّق مِن الـPIN...";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "تسليم";
@@ -3968,7 +3995,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "جار التَّحقُّق مِن %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "يَجري التَّحَقُّق مِن %@...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -4070,7 +4097,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَك قفل Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَكّ قُفل Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "مَريَم";
@@ -4238,7 +4265,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من Signal وهو لا يدعم مسح رُموز الاستجابة السريعة للـiPad. يُرجى تثبيت آخر إصدار من Signal ثم المُحاولة مرة أُخرى.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "قُم بتحديث الجهاز الماسِح";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "حَدِّث الجِهاز الماسِح";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "فشل ربط الجهاز الخاص بك";
@@ -4277,7 +4304,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اِمسَح رَمز الاِستِجابَة السَّريعَة عَن طَريق هاتِفك";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "قُم بتشغيل Signal على جهاز الـiPad القديم الخاص بك حتى تنقل الحساب الخاص بك";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل Signal على جهاز الـiPad القديم الخاص بك لكي تنقل الحساب الخاص بك";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "لقد تمَّ إعادة تعيين الجلسة الآمنة.";
@@ -4352,7 +4379,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تمَّ تنشيط تجاوز الرقابة إستنادًا على رقم الهاتف الخاص بحسابك.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "أنت قد عطّلتَ يدويًا تجاوز الرقابة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "أنتَ قَد عطَّلتَ يدويًا تجاوز الرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل تجاوز الرقابة إلا عند الاتصال بالإنترنت.";
@@ -4445,10 +4472,10 @@
 "SETTINGS_BACKUP_STATUS_FAILED" = "فشل النَسخ الاِحتياطي";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "جار الانتظار";
+"SETTINGS_BACKUP_STATUS_IDLE" = "يَجري الاِنتِظار";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "جار عمل النَسخ الاِحتياطي";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "يَجري عمل النَسخ الاِحتياطي";
 
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "نجحَ النَسخ الاِحتياطي";
@@ -4751,7 +4778,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم أمانك أنت مع %@ قد تغير. رُبما قد ترغب في التحقق منه في التطبيق الرئيس قبل إعادة الإرسال.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "جار التحميل..";
+"SHARE_EXTENSION_LOADING" = "يَجري التَّحميل..";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "شغِّل تطبيق Signal للتسجيل.";
@@ -4769,10 +4796,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "تعذّر إرسال المُرفق";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "جار رَفع %1$@ مِن %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "يَجري رَفع %1$@ مِن %2$@...";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "جار الرَفع...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "يَجري الرَّفع...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذَّر تجهيز  المُرفق";
@@ -4781,7 +4808,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "شارك على Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فشل تعطيل اقتراحات المُشاركة.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فَشَلَ تعطيل اقتراحات المُشاركة.";
 
 /* Body for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "يُمكن الآن عَرض مُحادثات Signal كاِقتراحات عِند المُشاركة مِن تطبيقات أُخرى.";
@@ -4841,7 +4868,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "حزم المُلصقات المُثبَّتة";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "جار التحميل..";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "يَجري التَّحميل..";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "لا توجد أي حزم مُلصقات مُثبتة";
@@ -4919,7 +4946,7 @@
 "SUPPORT_INCLUDE_DEBUG_LOG" = "تضمِّين سِجل التَّصحِيح";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "جار التحميل";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "يَجري التَّحميل";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "مُعطَّل";
@@ -5024,7 +5051,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "إنَّ %@ قد أرسلَ لكَ رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "لَقَد أرسلَ لكَ %@ رِسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "أنت قد تلقيت رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
@@ -5072,7 +5099,7 @@
 "UNNAMED_DEVICE" = "جهاز بدون اسم";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "فك التثبيت";
+"UNPIN_ACTION" = "فَكّ التَّثبيت";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "المُحادثات";

@@ -1583,7 +1583,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Неможливо отримати аудіо та відео від %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Це могло статись через те, що користувач не підтвердив вашу зміну коду безпеки, виникла проблема з пристроєм користувача, або цей користувач вас заблокував.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Неможливо отримати аудіо та відео від %@";
@@ -1622,7 +1622,7 @@
 "GROUP_CALL_RECONNECTING" = "Перепідключення";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Хтось щойно приєднався до дзвінка зі зміненим кодом безпеки.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Хтось почав груповий дзвінок";
@@ -1649,7 +1649,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ та %2$@ у цьому дзвінку";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Дзвінок було перервано. Перевірте з'єднання та спробуйте знов.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Ви";
@@ -1987,6 +1987,27 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "Відеовиклик";
 
+/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+
+/* Button to allow user to review known name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap to review";
+
+/* A header string above a group member's contact info */
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Учасник";
+
+/* A title string for a view that allows a user to review name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Review Members";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+
+/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Ім'я групи (обов'язково)";
 
@@ -2081,7 +2102,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ схвалив запит на приєднання до групи від %1$@.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ скасував надіслання запиту на приєднання до групи.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Ви відхилили запит на приєднання до групи від %@.";
@@ -2093,7 +2114,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Запит на приєднання до групи від %@ було відхилено.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ бажає приєднатись за допомогою посилання.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Привілеї адміністратора у %@ були відкликані.";
@@ -2980,6 +3001,9 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Сповіщення вимкнені";
 
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустити";
 
@@ -3060,6 +3084,9 @@
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Спільних груп немає";
+
+/* A string describing that the user has no groups in common other than the group implied by the current UI context */
+"NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Оберіть контакт чи групу щоб почати спілкування.";
@@ -3518,7 +3545,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Не вдалося створити PIN-код";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-коди зберігають інформацію в Signal зашифрованою, тому тільки ви можете отримати до неї доступ. Ваш профіль, налаштування та контакти буде відновлено, коли ви встановите застосунок знов. PIN-код не потрібен, щоб відкрити застосунок.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Дізнатись більше про PIN";
@@ -3545,7 +3572,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Відключити";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Щоб вимкнути PIN-код, спочатку потрібно вимкнути блокування реєстрації.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Відключити Блокування Реєстрації?";
@@ -3560,7 +3587,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Виберіть більш надійний PIN-код";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Не вдалось вимкнути PIN-код. Ми нагадаємо про це пізніше.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Помилка вимкнення PIN";
@@ -4703,7 +4730,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Показувати у рекомендаціях";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Чати Signal відображаються як пропозиції під час поширення з інших застосунків.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокування реєстрації";
@@ -4781,10 +4808,10 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Поділитись у Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Не вдалось вимкнути пропозиції поширення.";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Чати Signal відтепер відображатимуться як пропозиції під час поширення з інших застосунків.";
 
 /* Title for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Ділитись стало легше";
@@ -5105,7 +5132,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Дізнатись більше про PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-коди зберігають інформацію в Signal зашифрованою, тому тільки ви можете отримати до неї доступ. Ваш профіль, налаштування та контакти буде відновлено, коли ви встановите застосунок знов. PIN-код не потрібен, щоб відкрити застосунок.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Представляємо PIN-коди";
@@ -5249,10 +5276,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Темний вигляд затемнює шпалеру";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Шпалери не вдається скинути, будь ласка, спробуйте пізніше чи зв'яжіться зі службою підтримки, якщо помилка не зникає.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Не вдається скинути усі шпалери, будь ласка, спробуйте пізініше чи зв'яжіться зі службою підтримки, якщо помилка не зникає.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Попередній перегляд";
@@ -5261,7 +5288,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL" = "Скинути усі шпалери";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Скинути усі шпалери, у тому числі ті, що ви задали для своїх чатів?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Задати шпалери";

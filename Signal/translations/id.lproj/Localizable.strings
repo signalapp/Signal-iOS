@@ -1987,6 +1987,27 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_VIDEO_CALL" = "Panggilan Video";
 
+/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+
+/* Button to allow user to review known name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Ketuk untuk meninjau";
+
+/* A header string above a group member's contact info */
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Anggota";
+
+/* A title string for a view that allows a user to review name collisions in group membership */
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Tinjau Anggota";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+
+/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+
+/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nama grup (diperlukan)";
 
@@ -2980,6 +3001,9 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Disenyapkan";
 
+/* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Lewati";
 
@@ -2987,13 +3011,13 @@
 "NETWORK_ERROR_RECOVERY" = "Mohon cek apakah anda tersambung dalam jaringan dan coba lagi.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Hanya Data Seluler";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Tidak pernah";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+"NETWORK_INTERFACE_SET_WIFI" = "Hanya Wi-Fi";
 
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi dan Seluler";
@@ -3060,6 +3084,9 @@
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Tidak ada grup yang sama";
+
+/* A string describing that the user has no groups in common other than the group implied by the current UI context */
+"NO_OTHER_GROUPS_IN_COMMON" = "Tidak ada grup lain yang sama.";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Pilih kontak atau grup untuk mulai mengobrol.";
@@ -3197,7 +3224,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Berikan Perizinan";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Mengizinkan pemberitahuan dan akses kontak memungkinkan Anda melihat saat pesan sampai dan membantu Anda menemukan orang yang Anda cari. Kontak-kontak dienkripsi sehingga layanan Signal tidak dapat melihatnya.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Berikan Perizinan";
@@ -3410,7 +3437,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Tak seorangpun";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Tidak seorangpun di Signal dapat menemukan Anda melalui nomor telepon Anda. Anda tidak akan terlihat sebagai kontak untuk orang yang memiliki nomor Anda di kontaknya dan yang lain tidak akan dapat mencari Anda dengan nomor telepon.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Misalnya: %@";
@@ -3587,7 +3614,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Signal akan mengonfirmasi PIN lagi besok.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Kami akan mengingatkan Anda dalam beberapa minggu lagi.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Signal akan mengonfirmasi PIN dalam sepekan.";
@@ -3602,7 +3629,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN harus berisi minimal 4 digit.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "Anda hanya dapat menandai maksimal 4 percakapan.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Disematkan";
@@ -3623,7 +3650,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN telah dibuat. Anda dapat mengubah PIN dari Pengaturan.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Dinonaktifkan.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
@@ -3647,7 +3674,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ini tidak terlihat seperti nomor keamanan Anda dengan %@. Apakah Anda memverifikasi nomor yang benar?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nomor di papan klip Anda tidak terlihat seperti nomor keamanan yang benar untuk percakapan ini.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal tak dapat menemukan sejumlah nomor keamanan di dalam papan klip Anda. Apakah Anda sudah menyalin dengan benar?";
@@ -3692,7 +3719,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Seggang untuk mengobrol";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Bicara dengan Bebas";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Istirahat";
@@ -3704,19 +3731,19 @@
 "PROFILE_BIO_VIEW_TITLE" = "Tentang";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Tentang (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ mengganti nama profilnya dari %@ ke %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ mengganti nama profilnya menjadi %@.";
 
 /* Button to add a 'bio' to the user's profile in the profile view. */
-"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Tambahkan ke Profil";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Atur Foto Profil";
 
 /* Header for the 'bio' section of the profile view. */
 "PROFILE_VIEW_BIO_SECTION_HEADER" = "Tentang";
@@ -3752,7 +3779,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil hanya bisa diubah saat Anda terhubung ke Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profil Anda dienkripsi ujung-ke-ujung. Profil Anda dan perubahannya akan terlihat oleh kontak Anda dan saat Anda memulai atau menerima percakapan baru.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Simpan";
@@ -3923,10 +3950,10 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Kami tidak bisa mengaktifkan akun Anda hingga setelah Anda memverifikasi kode yang kami kirimkan.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Untuk melanjutkan, periksa koneksi Internet Anda dan coba lagi.";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Periksa Koneksi";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Format nomor telfon ini tidak didukung, silahkan untuk menghubungi bantuan";
@@ -3959,16 +3986,16 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Tidak ada nomer telepon";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Kode verifikasi akan dikirimkan ke nomor ini. Apakah nomor telepon Anda di atas sudah benar?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Konfirmasi Nomor: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Sunting";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Memverifikasi %@...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Tolak";
@@ -3983,19 +4010,19 @@
 "REREGISTER_FOR_PUSH" = "Daftar-Ulang penanda notifikasi";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "Untuk menjadikan Signal sebagai aplikasi bertukar pesan terbaik di planet, kami sangat menunggu umpan balik Anda.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "Berikan Signal pendapat Anda ";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "Survei ini dijalankan oleh Surveygizmo pada domain yang aman surveys.signalusers.org";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "Tidak, terima kasih";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>Kami percaya pada privasi.</bold>\n\nSignal tidak melacak atau mengumpulkan data Anda. Untuk meningkatkan performa Signal untuk semua, kami mengandalkan umpan balik pengguna, <bold>dan kami ingin sekali umpan balik dari Anda</bold>.\n\nKami menjalankan sebuah survei untuk dapat mengerti bagaimana Anda menggunakan Signal. Survei kami tidak mengumpulkan data apapun yang akan mengidentifikasi Anda. Jika Anda tertarik membagikan umpan balik tambahan, Anda memiliki pilihan untuk memberikan informasi kontak.\n\nJika Anda memiliki beberapa menit dan umpan balik untuk diberikan, kami ingin sekali mendengarnya dari Anda.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Ikuti survei";
@@ -4007,7 +4034,7 @@
 "RETRY_BUTTON_TEXT" = "Coba lagi";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Kembali";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Tambahkan saja pada kelompok ";
@@ -4022,7 +4049,7 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Orang-orang berikut mungkin telah memasang ulang atau mengganti perangkat. Verifikasi nomor keamanan Anda dengan mereka untuk memastikan privasi.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Terverifikasi Sebelumnya";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Nomor Keamanan Berubah";
@@ -4229,10 +4256,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Tidak Dapat Memperoleh Kode Penghubung";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Perbarui Signal pada perangkat ini untuk menyambungkannya dengan ponsel Anda.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versi Tidak Didukung";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Perangkat Anda yang lain menggunakan versi Signal yang lama dan belum mendukung kode QR iPad. Silahkan install Signal versi terbaru dan coba lagi.";
@@ -4319,19 +4346,19 @@
 "SEND_SMS_INVITE_TITLE" = "Apakah kamu akan mengundang beberapa nomor untuk bergabung Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal menggunakan enkripsi ujung-ke-ujung dan mungkin membutuhkan Anda untuk menyegarkan percakapan Anda sewaktu-waktu. Ini tidak mempengaruhi keamanan percakapan Anda namun Anda mungkin akan melewatkan pesan dari kontak ini dan Anda dapat memintanya untuk mengirimkan ulang.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sesi percakapan diperbarui";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Pilih dari Galeri";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "Preset";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Atur Wallpaper";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Tentang";
@@ -4367,10 +4394,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Ijinkan Catatan Debug";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Pengaturan PIN Lanjutan";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Pengaturan PIN Lanjutan";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Nonaktifkan PIN";
@@ -4391,10 +4418,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Catatan Kesalahan";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Tampilkan foto kontak sistem jika tersedia";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Gunakan foto kontak sistem";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -4457,7 +4484,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Tambah Pengguna yang Diblokir";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "Daftar kontak dan grup yang telah Anda blokir.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Anda tidak mempunyai kontak di Signal.";
@@ -4475,16 +4502,16 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Sampaikan semua panggilan melalui peladen Signal untuk menghindari pengungkapan alamat IP Anda oleh kontak Anda. Mengaktifkannya akan mengurangi kualitas panggilan.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Bersihkan Riwayat Percakapan";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Hak Cipta Signal Messenger\nBerlisensi di bawah GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Penggunaan Data";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Kurangi Penggunaan Data";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Mengurangi penggunaan data mungkin dapat memperbaiki panggilan pada jaringan buruk";
@@ -4493,16 +4520,16 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Panggilan";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Pesan suara, media sekali-tayang, dan stiker (dibawah 100kb) selalu diunduh secara otomatis.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "UNDUH-OTOMATIS MEDIA";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Atur Ulang Pengaturan Unduh-Otomatis ";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Penggunaan Data";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Hapus Akun";
@@ -4523,7 +4550,7 @@
 "SETTINGS_HELP" = "Bantuan";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "Bersihkan Riwayat Percakapan";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informasi";
@@ -4544,7 +4571,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Syarat & Kebijakan Privasi";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Buat Pratinjau Tautan";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Mengambil pratinjau dari tautan secara langsung dari situs web untuk pesan yang dikirimkan.";
@@ -4571,16 +4598,16 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Video";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "Olah pesan";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Pengaturan";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Hitung Percakapan yang Disenyapkan";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Hitungan Spanduk";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Pemberitahuan Panggilan dan Pesan dapat tampil ketika telpon Anda terkunci. Anda mungkin ingin membatasi apa yang ditunjukkan dalam pemberitahuan ini.";
@@ -4598,16 +4625,16 @@
 "SETTINGS_NOTIFICATIONS" = "Notifikasi";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Temukan Saya dengan Nomor Telepon";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Temukan Saya dengan Nomor Telepon";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Lihat Nomor Telepon Saya";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Lihat Nomor Telepon Saya";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Matikan Pengingat";
@@ -4649,7 +4676,7 @@
 "SETTINGS_READ_RECEIPT" = "Pesan terbaca diterima";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Lihat dan bagikan saat pesan telah dibaca. Pengaturan ini opsional dan berlaku untuk semua percakapan.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Matikan";
@@ -4703,7 +4730,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Tunjukkan di Saran";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Percakapan Signal ditampilkan sebagai saran saat berbagi dari aplikasi lain.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kunci Pendaftaran";
@@ -4715,7 +4742,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indikator Pengetikan";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Lihat dan bagikan saat pesan sedang diketik. Pengaturan ini opsional dan berlaku pada semua percakapan.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Pengirim Tertutup";
@@ -4736,7 +4763,7 @@
 "SETTINGS_VERSION" = "Versi";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "Siapa yang dapat...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Surat";
@@ -4769,7 +4796,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Tidak Dapat Mengirimkan Lampiran";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Mengunggah %1$@ dari %2$@...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Mengunggah...";
@@ -4781,13 +4808,13 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Bagikan ke Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Gagal menonaktifkan saran berbagi.";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Pesan Signal sekarang dapat ditampilkan sebagai saran saat berbagi dari aplikasi lain.";
 
 /* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Berbagi Menjadi Lebih Mudah";
 
 /* Disable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Nonaktifkan";
@@ -4799,7 +4826,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Tunjukkan nomor keamanan";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "Tampilkan Percakapan";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Saya mengundang Anda untuk memasang Signal! Tautan tersedia di sini:";
@@ -4808,7 +4835,7 @@
 "SOUNDS_NONE" = "Kosong";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Grup yang ada akan secara otomatis mendapatkan fitur-fitur ini dalam minggu-minggu ke depan.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Grup Baru";
@@ -4817,10 +4844,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Grup Baru telah tiba!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Fitur-fitur Grup Baru termasuk @mention, admin, dan lainnya. Coba dengan mengetuk:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Pesan Stiker";
@@ -4877,37 +4904,37 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Sebutkan galat yang terjadi";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Beritahu kami tentang masalahnya:";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Mohon kirimkan surel permintaan dukungan Anda ke support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Perangkat keras: %@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Informasi Dukungan ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "Versi iOS: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
 "SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "URL Panjang: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Versi Signal: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Permintaan Dukungan Signal iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Saran dan kesan (opsional)";
@@ -4916,7 +4943,7 @@
 "SUPPORT_FAQ_PROMPT" = "Sudahkah Anda membaca FAQ?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Cantumkan catatan awakutu";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Memuat";
@@ -4937,7 +4964,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Anggota dari %@,%@, dan %lu grup tambahan";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Anda dapat membuat catatan untuk diri sendiri dalam percakapan ini. Jika akun Anda tersambung ke perangkat lain, catatan baru akan disinkronisasikan.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Anggota dari %@";
@@ -4982,13 +5009,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ menit";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ detik";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@minggu";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ tahun";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@minggu";
@@ -4997,10 +5024,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ tahun";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 detik";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Batal";
@@ -5078,7 +5105,7 @@
 "UNPINNED_SECTION_TITLE" = "Obrolan";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Belum dibaca";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Gagal unregister dari Signal";
@@ -5090,13 +5117,13 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Perangkat Anda tidak mendukung fitur ini.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Perbarui Kontak";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Grup tidak dapat diperbarui.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grup tidak dapat diperbarui. Periksa koneksi internet Anda dan coba lagi.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Buat PIN Anda";
@@ -5213,31 +5240,31 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Selesaikan setelan pada Signal Desktop";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nama Kontak";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Buramkan Foto";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Cubit untuk memperbesar, geser untuk menyesuaikan.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Usap untuk melihat lebih banyak wallpaper.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Atur gambar latar semua percakapan.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Atur wallpaper untuk %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Atur";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Pratinjau";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Bersihkan Wallpaper";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Hapus gambar latar percakapan ini?";
@@ -5246,25 +5273,25 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Hapus gambar latar? Anda akan menghapus gambar latar semua percakapan.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Mode Gelap Meredupkan Wallpaper";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Wallpaper ini tidak dapat dibersihkan, mohon coba lagi nanti atau kontak dukungan jika terjadi lagi.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Semua wallpaper tidak dapat diatur ulang, mohon coba lagi nanti atau kontak dukungan jika terjadi lagi.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Pratinjau";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Atur Ulang Semua Wallpaper";
 
 /* Confirmation dialog when resetting all wallpapers. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Kembalikan semua gambar latar, termasuk gambar untuk percakapan?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Atur Wallpaper";
 
 /* Title for the wallpaper settings view. */
 "WALLPAPER_SETTINGS_TITLE" = "Wallpaper Percakapan";
