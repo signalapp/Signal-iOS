@@ -182,30 +182,10 @@ extension MessageReceiver {
         SNLog("Configuration message received.")
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let userDefaults = UserDefaults.standard
         // Profile
-        let userProfile = storage.getUserProfile(using: transaction)
-        let user = storage.getUser() ?? Contact(sessionID: userPublicKey)
-        if let name = message.displayName {
-            let shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
-            if shouldUpdate {
-                userProfile.profileName = name
-                user.name = name
-                userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
-            }
-        }
-        if let profilePictureURL = message.profilePictureURL, let profileKeyAsData = message.profileKey {
-            let shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { message.sentTimestamp! > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
-            if shouldUpdate {
-                userProfile.avatarUrlPath = profilePictureURL
-                user.profilePictureURL = profilePictureURL
-                userProfile.profileKey = OWSAES256Key(data: profileKeyAsData)
-                user.profilePictureEncryptionKey = OWSAES256Key(data: profileKeyAsData)
-                userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(message.sentTimestamp! / 1000))
-            }
-        }
-        userProfile.save(with: transaction)
-        Storage.shared.setContact(user, using: transaction)
+        let userProfile = SNMessagingKitConfiguration.shared.storage.getUserProfile(using: transaction)
+        updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
+            profileKey: given(message.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         transaction.addCompletionQueue(DispatchQueue.main) {
             SSKEnvironment.shared.profileManager.downloadAvatar(for: userProfile)
         }
@@ -263,20 +243,9 @@ extension MessageReceiver {
         var attachmentsToDownload = attachmentIDs
         // Update profile if needed
         if let newProfile = message.profile {
-            let profileManager = SSKEnvironment.shared.profileManager
             let sessionID = message.sender!
-            let oldProfile = OWSUserProfile.fetch(uniqueId: sessionID, transaction: transaction)
-            let contact = Storage.shared.getContact(with: sessionID) ?? Contact(sessionID: sessionID)
-            if let displayName = newProfile.displayName, displayName != oldProfile?.profileName {
-                profileManager.updateProfileForContact(withID: sessionID, displayName: displayName, with: transaction)
-                contact.name = displayName
-            }
-            if let profileKey = newProfile.profileKey, let profilePictureURL = newProfile.profilePictureURL, profileKey.count == kAES256_KeyByteLength,
-                profileKey != oldProfile?.profileKey?.keyData {
-                profileManager.setProfileKeyData(profileKey, forRecipientId: sessionID, avatarURL: profilePictureURL)
-                contact.profilePictureURL = profilePictureURL
-                contact.profilePictureEncryptionKey = OWSAES256Key(data: profileKey)
-            }
+            updateProfileIfNeeded(publicKey: sessionID, name: newProfile.displayName, profilePictureURL: newProfile.profilePictureURL,
+                profileKey: given(newProfile.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
             if let rawDisplayName = newProfile.displayName, let openGroupID = openGroupID {
                 let endIndex = sessionID.endIndex
                 let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
@@ -328,6 +297,63 @@ extension MessageReceiver {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsMessageID
+    }
+    
+    
+    
+    // MARK: - Profile Updating
+    private static func updateProfileIfNeeded(publicKey: String, name: String?, profilePictureURL: String?,
+        profileKey: OWSAES256Key?, sentTimestamp: UInt64, transaction: YapDatabaseReadWriteTransaction) {
+        let isCurrentUser = (publicKey == getUserHexEncodedPublicKey())
+        let profileManager = SSKEnvironment.shared.profileManager
+        let userDefaults = UserDefaults.standard
+        let owsProfile = isCurrentUser ? SNMessagingKitConfiguration.shared.storage.getUserProfile(using: transaction)
+            : OWSUserProfile.fetch(uniqueId: publicKey, transaction: transaction) // Old API
+        let contact = Storage.shared.getContact(with: publicKey) ?? Contact(sessionID: publicKey) // New API
+        // Name
+        if let name = name, name != owsProfile?.profileName {
+            let shouldUpdate: Bool
+            if isCurrentUser {
+                shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
+            } else {
+                shouldUpdate = true
+            }
+            if shouldUpdate {
+                if isCurrentUser {
+                    owsProfile?.profileName = name
+                    userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(sentTimestamp / 1000))
+                } else {
+                    profileManager.updateProfileForContact(withID: publicKey, displayName: name, with: transaction)
+                }
+                contact.name = name
+            }
+        }
+        // Profile picture & profile key
+        if let profileKey = profileKey, let profilePictureURL = profilePictureURL, profileKey.keyData.count == kAES256_KeyByteLength,
+            profileKey != owsProfile?.profileKey {
+            let shouldUpdate: Bool
+            if isCurrentUser {
+                shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
+            } else {
+                shouldUpdate = true
+            }
+            if shouldUpdate {
+                if isCurrentUser {
+                    owsProfile?.avatarUrlPath = profilePictureURL
+                    owsProfile?.profileKey = profileKey
+                    userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(sentTimestamp / 1000))
+                } else {
+                    profileManager.setProfileKeyData(profileKey.keyData, forRecipientId: publicKey, avatarURL: profilePictureURL)
+                }
+                contact.profilePictureURL = profilePictureURL
+                contact.profilePictureEncryptionKey = profileKey
+            }
+        }
+        // Persist changes
+        if isCurrentUser {
+            owsProfile?.save(with: transaction)
+        }
+        Storage.shared.setContact(contact, using: transaction)
     }
 
     
