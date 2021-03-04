@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The users privacy preference for what kind of content to show in lock screen notifications.
  */
-typedef NS_CLOSED_ENUM(NSUInteger, NotificationType){
+typedef NS_CLOSED_ENUM(NSUInteger, NotificationType) {
     NotificationNoNameNoPreview = 0,
     NotificationNameNoPreview = 1,
     NotificationNamePreview = 2,

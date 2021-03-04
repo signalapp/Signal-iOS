@@ -89,6 +89,8 @@ class ProfileNameViewController: OWSTableViewController2 {
         super.viewWillAppear(animated)
 
         updateNavigation()
+
+        firstTextField.becomeFirstResponder()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -174,12 +176,12 @@ class ProfileNameViewController: OWSTableViewController2 {
     @objc
     func didTapCancel() {
         guard hasUnsavedChanges else {
-            navigationController?.popViewController(animated: true)
+            dismiss(animated: true)
             return
         }
 
         OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.dismiss(animated: true)
         })
     }
 
@@ -210,7 +212,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         }
 
         profileDelegate?.profileNameViewDidComplete(givenName: normalizedGivenName, familyName: normalizedFamilyName)
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
 }
 

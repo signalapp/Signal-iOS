@@ -290,12 +290,12 @@ class ProfileBioViewController: OWSTableViewController2 {
     @objc
     func didTapCancel() {
         guard hasUnsavedChanges else {
-            navigationController?.popViewController(animated: true)
+            dismiss(animated: true)
             return
         }
 
         OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.dismiss(animated: true)
         })
     }
 
@@ -304,7 +304,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         profileDelegate?.profileBioViewDidComplete(bio: normalizedProfileBio,
                                                    bioEmoji: normalizedProfileBioEmoji)
 
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
 
     private func didTapEmojiButton() {

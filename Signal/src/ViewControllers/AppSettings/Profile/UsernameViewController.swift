@@ -265,7 +265,7 @@ class UsernameViewController: OWSTableViewController2 {
     func usernameSavedOrCanceled() {
         usernameTextField.resignFirstResponder()
 
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
 }
 
