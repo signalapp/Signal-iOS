@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class TestingViewController: OWSTableViewController {
+class TestingViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = LocalizationNotNeeded("Testing")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

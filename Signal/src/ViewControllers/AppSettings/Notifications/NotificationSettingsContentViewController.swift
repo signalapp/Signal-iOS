@@ -1,0 +1,42 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+
+@objc
+class NotificationSettingsContentViewController: OWSTableViewController2 {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        updateTableContents()
+    }
+
+    func updateTableContents() {
+        let contents = OWSTableContents()
+
+        let section = OWSTableSection()
+        section.footerTitle = NSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
+
+        let selectedType = preferences.notificationPreviewType()
+        let allTypes: [NotificationType] = [.namePreview, .nameNoPreview, .noNameNoPreview]
+        for type in allTypes {
+            section.add(.init(
+                text: preferences.name(forNotificationPreviewType: type),
+                actionBlock: { [weak self] in
+                    self?.preferences.setNotificationPreviewType(type)
+
+                    // rebuild callUIAdapter since notification configuration changed.
+                    AppEnvironment.shared.callService.individualCallService.createCallUIAdapter()
+
+                    self?.updateTableContents()
+                },
+                accessoryType: type == selectedType ? .checkmark : .none
+            ))
+        }
+
+        contents.addSection(section)
+
+        self.contents = contents
+    }
+}

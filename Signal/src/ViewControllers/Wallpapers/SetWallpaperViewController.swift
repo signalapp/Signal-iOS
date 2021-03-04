@@ -4,7 +4,7 @@
 
 import Foundation
 
-class SetWallpaperViewController: OWSTableViewController {
+class SetWallpaperViewController: OWSTableViewController2 {
     lazy var collectionView = WallpaperCollectionView { [weak self] wallpaper in
         guard let self = self else { return }
         let vc = PreviewWallpaperViewController(
@@ -32,7 +32,7 @@ class SetWallpaperViewController: OWSTableViewController {
         super.viewDidLoad()
 
         title = NSLocalizedString("SET_WALLPAPER_TITLE", comment: "Title for the set wallpaper settings view.")
-        useThemeBackgroundColors = true
+
         updateTableContents()
     }
 
@@ -93,7 +93,7 @@ class SetWallpaperViewController: OWSTableViewController {
             let cell = OWSTableItem.newCell()
             guard let self = self else { return cell }
             cell.contentView.addSubview(self.collectionView)
-            self.collectionView.autoPinEdgesToSuperviewEdges()
+            self.collectionView.autoPinEdgesToSuperviewMargins()
             return cell
         } actionBlock: {}
         presetsSection.add(presetsItem)
@@ -155,7 +155,7 @@ class WallpaperCollectionView: UICollectionView {
 
         delegate = self
         dataSource = self
-        contentInset = UIEdgeInsets(hMargin: 16, vMargin: 16)
+        contentInset = UIEdgeInsets(hMargin: 0, vMargin: 8)
         isScrollEnabled = false
         backgroundColor = .clear
 
@@ -168,7 +168,7 @@ class WallpaperCollectionView: UICollectionView {
         let numberOfColumns: CGFloat = 3
         let numberOfRows = CGFloat(Wallpaper.defaultWallpapers.count) / numberOfColumns
 
-        let availableWidth = reference.width - contentInset.totalWidth - 8 - safeAreaInsets.totalWidth
+        let availableWidth = reference.width - ((OWSTableViewController2.cellHOuterMargin * 2) + (OWSTableViewController2.cellHInnerMargin * 2) + 8 + safeAreaInsets.totalWidth)
 
         let itemWidth = availableWidth / numberOfColumns
         let itemHeight = itemWidth / CurrentAppContext().frame.size.aspectRatio

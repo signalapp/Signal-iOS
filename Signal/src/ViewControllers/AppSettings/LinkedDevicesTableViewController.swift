@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class LinkedDevicesTableViewController: OWSTableViewController {
+class LinkedDevicesTableViewController: OWSTableViewController2 {
 
     private var devices = [OWSDevice]()
 
@@ -19,8 +19,6 @@ class LinkedDevicesTableViewController: OWSTableViewController {
         super.viewDidLoad()
 
         title = NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager")
-
-        self.useThemeBackgroundColors = true
 
         refreshControl.addTarget(self, action: #selector(refreshDevices), for: .valueChanged)
 
@@ -48,18 +46,6 @@ class LinkedDevicesTableViewController: OWSTableViewController {
                                                selector: #selector(deviceListUpdateModifiedDeviceList),
                                                name: .deviceListUpdateModifiedDeviceList,
                                                object: nil)
-    }
-
-    // TODO: Could we DRY this up in OWSTableViewController when
-    // useThemeBackgroundColors = true?
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        view.backgroundColor = Theme.backgroundColor
-        tableView.backgroundColor = Theme.backgroundColor
-        tableView.separatorColor = Theme.cellSeparatorColor
-
-        updateTableContents()
     }
 
     // MARK: -
@@ -194,6 +180,23 @@ class LinkedDevicesTableViewController: OWSTableViewController {
 
         let contents = OWSTableContents()
 
+        let addDeviceSection = OWSTableSection()
+        addDeviceSection.footerTitle = NSLocalizedString(
+            "LINK_NEW_DEVICE_SUBTITLE",
+            comment: "Subheading for 'Link New Device' navigation"
+        )
+        addDeviceSection.add(.disclosureItem(
+            withText: NSLocalizedString(
+                "LINK_NEW_DEVICE_TITLE",
+                comment: "Navigation title when scanning QR code to add new device."
+            ),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_new_linked_device"),
+            actionBlock: { [weak self] in
+                self?.getCameraPermissionsThenShowLinkNewDeviceView()
+            }
+        ))
+        contents.addSection(addDeviceSection)
+
         if !devices.isEmpty {
             let devicesSection = OWSTableSection()
             for device in devices {
@@ -212,23 +215,6 @@ class LinkedDevicesTableViewController: OWSTableViewController {
             }
             contents.addSection(devicesSection)
         }
-
-        let addDeviceSection = OWSTableSection()
-        addDeviceSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "AddNewDevice")
-            OWSTableItem.configureCell(cell)
-            cell.textLabel?.text = NSLocalizedString("LINK_NEW_DEVICE_TITLE",
-                                                    comment: "Navigation title when scanning QR code to add new device.")
-            cell.detailTextLabel?.text = NSLocalizedString("LINK_NEW_DEVICE_SUBTITLE",
-                                                          comment: "Subheading for 'Link New Device' navigation")
-            cell.accessoryType = .disclosureIndicator
-            cell.accessibilityIdentifier = "add_new_linked_device"
-            return cell
-        }) { [weak self] in
-                self?.getCameraPermissionsThenShowLinkNewDeviceView()
-
-            })
-        contents.addSection(addDeviceSection)
 
         self.contents = contents
     }

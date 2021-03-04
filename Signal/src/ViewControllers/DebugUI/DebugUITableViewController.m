@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUITableViewController.h"
@@ -166,6 +166,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     viewController.contents = contents;
     [viewController presentFromViewController:fromViewController];
+}
+
++ (BOOL)useDebugUI
+{
+#ifdef USE_DEBUG_UI
+    return YES;
+#else
+    return NO;
+#endif
 }
 
 @end

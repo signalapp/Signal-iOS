@@ -12,7 +12,7 @@ protocol GroupLinkViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class GroupLinkViewController: OWSTableViewController {
+public class GroupLinkViewController: OWSTableViewController2 {
 
     weak var groupLinkViewControllerDelegate: GroupLinkViewControllerDelegate?
 
@@ -32,9 +32,6 @@ public class GroupLinkViewController: OWSTableViewController {
 
         title = NSLocalizedString("GROUP_LINK_VIEW_TITLE",
                                   comment: "The title for the 'group link' view.")
-
-        self.useThemeBackgroundColors = true
-
         updateTableContents()
     }
 

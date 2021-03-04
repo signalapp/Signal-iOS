@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class AdvancedPinSettingsTableViewController: OWSTableViewController {
+class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_ADVANCED_PIN_TITLE", comment: "The title for the advanced pin settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }
@@ -20,8 +18,6 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController {
         let contents = OWSTableContents()
 
         let pinsSection = OWSTableSection()
-        pinsSection.headerTitle = NSLocalizedString("SETTINGS_ADVANCED_PINS_HEADER",
-                                                     comment: "Table header for the 'pins' section.")
 
         pinsSection.add(OWSTableItem.actionItem(
             withText: (KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey)

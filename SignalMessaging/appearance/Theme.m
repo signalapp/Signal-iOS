@@ -425,9 +425,39 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_whiteColor;
 }
 
++ (UIColor *)tableCell2PresentedBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_whiteColor;
+}
+
++ (UIColor *)tableCell2SelectedBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
+}
+
++ (UIColor *)tableCell2PresentedSelectedBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray60Color : UIColor.ows_gray15Color;
+}
+
 + (UIColor *)tableView2BackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray02Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_gray10Color);
+}
+
++ (UIColor *)tableView2PresentedBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray10Color);
+}
+
++ (UIColor *)tableView2SeparatorColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray20Color);
+}
+
++ (UIColor *)tableView2PresentedSeparatorColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray60Color : UIColor.ows_gray20Color);
 }
 
 + (UIColor *)darkThemeBackgroundColor

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,27 +42,31 @@ public class OWSNavigationBar: UINavigationBar {
 
     // MARK: Theme
 
+    public var navbarBackgroundColorOverride: UIColor? {
+        didSet { applyTheme() }
+    }
+
+    var navbarBackgroundColor: UIColor {
+        if let navbarBackgroundColorOverride = navbarBackgroundColorOverride { return navbarBackgroundColorOverride }
+        switch currentStyle {
+        case .secondaryBar: return Theme.secondaryBackgroundColor
+        default: return Theme.navbarBackgroundColor
+        }
+    }
+
     private func applyTheme() {
         guard respectsTheme else {
             return
         }
 
         if currentStyle == .secondaryBar {
-            let color = Theme.secondaryBackgroundColor
-            let backgroundImage = UIImage(color: color)
+            let backgroundImage = UIImage(color: navbarBackgroundColor)
             self.setBackgroundImage(backgroundImage, for: .default)
         } else if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
-            let color = Theme.navbarBackgroundColor
-            let backgroundImage = UIImage(color: color)
+            let backgroundImage = UIImage(color: navbarBackgroundColor)
             self.setBackgroundImage(backgroundImage, for: .default)
         } else {
-            // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
-            // to achieve transparency, we have to assign a transparent image.
-            let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-            let backgroundImage = UIImage(color: color)
-            self.setBackgroundImage(backgroundImage, for: .default)
-
             let blurEffect = Theme.barBlurEffect
 
             let blurEffectView: UIVisualEffectView = {
@@ -92,6 +96,24 @@ public class OWSNavigationBar: UINavigationBar {
             // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
             // so we have to set a zindex to avoid obscuring navbar title/buttons.
             blurEffectView.layer.zPosition = -1
+
+            // Alter the visual effect view's tint to match our background color
+            // so the navbar, when over a solid color background matching navbarBackgroundColor,
+            // exactly matches the background color. This is brittle, but there is no way to get
+            // this behavior from UIVisualEffectView otherwise.
+            if let tintingView = blurEffectView.subviews.first(where: {
+                String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+            }) {
+                tintingView.backgroundColor = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+                self.setBackgroundImage(UIImage(), for: .default)
+            } else {
+                owsFailDebug("Unexpectedly missing visual effect subview")
+                // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
+                // We'll make the navbar more translucent by setting a background color.
+                let color = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+                let backgroundImage = UIImage(color: color)
+                self.setBackgroundImage(backgroundImage, for: .default)
+            }
         }
     }
 

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BlockListViewController () <ContactsViewHelperObserver, AddToBlockListDelegate>
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) OWSTableViewController2 *tableViewController;
 
 @end
 
@@ -37,15 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
 
-    _tableViewController = [OWSTableViewController new];
+    _tableViewController = [OWSTableViewController2 new];
     [self.view addSubview:self.tableViewController.view];
     [self addChildViewController:self.tableViewController];
     [_tableViewController.view autoPinEdgesToSuperviewEdges];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableViewController.useThemeBackgroundColors = YES;
 
     [self updateTableContents];
 }

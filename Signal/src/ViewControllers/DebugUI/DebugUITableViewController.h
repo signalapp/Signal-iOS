@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController;
 
++ (BOOL)useDebugUI;
+
 @end
 
 NS_ASSUME_NONNULL_END

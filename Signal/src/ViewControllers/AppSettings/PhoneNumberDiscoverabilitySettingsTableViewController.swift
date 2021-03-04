@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,7 @@ struct PhoneNumberDiscoverability {
 }
 
 @objc
-class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewController {
+class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewController2 {
 
     @objc
     class var nameForCurrentDiscoverability: String {
@@ -44,8 +44,6 @@ class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewControl
 
         title = NSLocalizedString("SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE",
                                   comment: "The title for the phone number discoverability settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

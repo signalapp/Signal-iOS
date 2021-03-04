@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,7 +60,7 @@ public class NewGroupMembersBar: UIView {
         collectionView.delegate = self
 
         collectionView.register(NewGroupMemberCell.self, forCellWithReuseIdentifier: NewGroupMemberCell.reuseIdentifier)
-        collectionView.backgroundColor = Theme.backgroundColor
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
 
         addSubview(collectionView)

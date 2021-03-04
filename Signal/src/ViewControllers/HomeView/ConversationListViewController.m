@@ -4,7 +4,6 @@
 
 #import "ConversationListViewController.h"
 #import "AppDelegate.h"
-#import "AppSettingsViewController.h"
 #import "ConversationListCell.h"
 #import "OWSNavigationController.h"
 #import "RegistrationUtils.h"

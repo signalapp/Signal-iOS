@@ -1,33 +1,19 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SafariServices
 
 @objc(OWSHelpViewController)
-final class HelpViewController: OWSTableViewController {
+final class HelpViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        contents = constructContents()
+        updateTableContents()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
-
-        // Rebuild contents to adopt new theme
-        contents = constructContents()
-    }
-
-    private func createDynamicallySizingCell() -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
-        cell.textLabel?.font = UIFont.ows_dynamicTypeBody
-        cell.textLabel?.adjustsFontForContentSizeCategory = true
-        cell.textLabel?.numberOfLines = 0
-        return cell
-    }
-
-    private func constructContents() -> OWSTableContents {
+    private func updateTableContents() {
         let helpTitle = NSLocalizedString("SETTINGS_HELP",
                                           comment: "Title for support page in app settings.")
         let supportCenterLabel = NSLocalizedString("HELP_SUPPORT_CENTER",
@@ -39,51 +25,91 @@ final class HelpViewController: OWSTableViewController {
         let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
                                                       comment: "Description for the fallback support sheet if user cannot send email")
 
-        return OWSTableContents(title: helpTitle, sections: [
-            OWSTableSection(header: {
-                // TODO: Replace this temporary view with design asset
-                guard let signalAsset = UIImage(named: "signal-logo-128") else { return nil }
+        let contents = OWSTableContents()
+        contents.title = helpTitle
 
-                let header = UIView()
-                header.backgroundColor = Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
-                let signalLogo = UIImageView(image: signalAsset)
-                signalLogo.contentMode = .scaleAspectFit
+        let helpSection = OWSTableSection()
+        helpSection.add(.disclosureItem(
+            withText: supportCenterLabel,
+            actionBlock: { [weak self] in
+                let vc = SFSafariViewController(url: SupportConstants.supportURL)
+                self?.present(vc, animated: true, completion: nil)
+            }
+        ))
+        helpSection.add(.disclosureItem(
+            withText: contactLabel,
+            actionBlock: {
+                guard ComposeSupportEmailOperation.canSendEmails else {
+                    let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
+                                                              message: localizedSheetMessage)
+                    let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                    fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                    self.presentActionSheet(fallbackSheet)
+                    return
+                }
+                let supportVC = ContactSupportViewController()
+                let navVC = OWSNavigationController(rootViewController: supportVC)
+                self.presentFormSheet(navVC, animated: true)
+            }
+        ))
+        contents.addSection(helpSection)
 
-                header.addSubview(signalLogo)
-                signalLogo.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 30, left: 30, bottom: 30, right: 30))
-                return header
+        let loggingSection = OWSTableSection()
+        loggingSection.headerTitle = NSLocalizedString("LOGGING_SECTION", comment: "Title for the 'logging' help section.")
+        loggingSection.footerTitle = NSLocalizedString("LOGGING_SECTION_FOOTER", comment: "Footer for the 'logging' help section.")
+        loggingSection.add(.switch(
+            withText: NSLocalizedString("SETTINGS_ADVANCED_DEBUGLOG", comment: ""),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "enable_debug_log"),
+            isOn: { OWSPreferences.isLoggingEnabled() },
+            isEnabledBlock: { true },
+            target: self,
+            selector: #selector(didToggleEnableLogSwitch)
+        ))
+        if OWSPreferences.isLoggingEnabled() {
+            loggingSection.add(.actionItem(
+                name: NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: ""),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
+                actionBlock: {
+                    Logger.info("Submitting debug logs")
+                    DDLog.flushLog()
+                    Pastelog.submitLogs()
+                }
+            ))
+        }
+        contents.addSection(loggingSection)
 
-            }, items: [
-                OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                    let cell = self.createDynamicallySizingCell()
-                    cell.accessoryType = .disclosureIndicator
-                    cell.textLabel?.text = supportCenterLabel
-                    return cell
-                },
-                             actionBlock: {
-                    UIApplication.shared.open(SupportConstants.supportURL, options: [:])
-                }),
+        let aboutSection = OWSTableSection()
+        aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
+        aboutSection.footerTitle = NSLocalizedString("SETTINGS_COPYRIGHT", comment: "Footer for the 'about' help section")
+        aboutSection.add(.label(
+            withText: NSLocalizedString("SETTINGS_VERSION", comment: ""),
+            accessoryText: AppVersion.shared().currentAppVersionLong
+        ))
+        aboutSection.add(.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
+            actionBlock: { [weak self] in
+                let vc = SFSafariViewController(url: URL(string: kLegalTermsUrlString)!)
+                self?.present(vc, animated: true, completion: nil)
+            }
+        ))
+        contents.addSection(aboutSection)
 
-                OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                    let cell = self.createDynamicallySizingCell()
-                    cell.accessoryType = .disclosureIndicator
-                    cell.textLabel?.text = contactLabel
-                    return cell
-                },
-                             actionBlock: {
-                    guard ComposeSupportEmailOperation.canSendEmails else {
-                        let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
-                                                                  message: localizedSheetMessage)
-                        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
-                        fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
-                        self.presentActionSheet(fallbackSheet)
-                        return
-                    }
-                    let supportVC = ContactSupportViewController()
-                    let navVC = OWSNavigationController(rootViewController: supportVC)
-                    self.presentFormSheet(navVC, animated: true)
-                })
-            ])
-        ])
+        self.contents = contents
+    }
+
+    @objc
+    func didToggleEnableLogSwitch(sender: UISwitch) {
+        if sender.isOn {
+            Logger.info("disabling logging.")
+            DebugLogger.shared().wipeLogs()
+            DebugLogger.shared().disableFileLogging()
+        } else {
+            DebugLogger.shared().enableFileLogging()
+            Logger.info("enabling logging.")
+        }
+
+        OWSPreferences.setIsLoggingEnabled(sender.isOn)
+
+        updateTableContents()
     }
 }

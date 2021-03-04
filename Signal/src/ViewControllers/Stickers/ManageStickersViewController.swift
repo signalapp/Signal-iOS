@@ -51,7 +51,7 @@ private class StickerPackActionButton: UIView {
 // MARK: -
 
 @objc
-public class ManageStickersViewController: OWSTableViewController {
+public class ManageStickersViewController: OWSTableViewController2 {
 
     // MARK: Initializers
 
@@ -460,14 +460,6 @@ public class ManageStickersViewController: OWSTableViewController {
     private func buildEmptySectionCell(labelText: String) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
-        let bubbleView = UIView()
-        bubbleView.backgroundColor = Theme.washColor
-        bubbleView.layer.cornerRadius = 8
-        bubbleView.setCompressionResistanceLow()
-        bubbleView.setContentHuggingLow()
-        cell.contentView.addSubview(bubbleView)
-        bubbleView.autoPinEdgesToSuperviewMargins()
-
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeCaption1
@@ -478,7 +470,7 @@ public class ManageStickersViewController: OWSTableViewController {
         label.setCompressionResistanceHigh()
         label.setContentHuggingHigh()
         cell.contentView.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
+        label.autoPinEdgesToSuperviewMargins()
 
         return cell
     }

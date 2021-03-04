@@ -79,8 +79,6 @@ public class BaseGroupMemberViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
-
         // First section.
 
         memberBar.delegate = self
@@ -109,6 +107,8 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         updateMemberCount()
         tryToFillInMissingUuids()
+
+        view.backgroundColor = recipientPicker.tableBackgroundColor
     }
 
     private func tryToFillInMissingUuids() {

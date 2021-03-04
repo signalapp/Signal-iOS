@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSearchBar.h"
@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation OWSSearchBar
+
+@synthesize searchFieldBackgroundColorOverride = _searchFieldBackgroundColorOverride;
 
 - (instancetype)init
 {
@@ -76,9 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     UIColor *foregroundColor = Theme.secondaryTextAndIconColor;
-    searchBar.barTintColor = Theme.backgroundColor;
     searchBar.tintColor = Theme.secondaryTextAndIconColor;
     searchBar.barStyle = Theme.barStyle;
+    searchBar.barTintColor = Theme.backgroundColor;
 
     // Hide searchBar border.
     // Alternatively we could hide the border by using `UISearchBarStyleMinimal`, but that causes an issue when toggling
@@ -105,6 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *searchFieldBackgroundColor = Theme.searchFieldBackgroundColor;
     if (style == OWSSearchBarStyle_SecondaryBar) {
         searchFieldBackgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray05Color;
+    } else if ([searchBar isKindOfClass:[OWSSearchBar class]]
+        && ((OWSSearchBar *)searchBar).searchFieldBackgroundColorOverride) {
+        searchFieldBackgroundColor = ((OWSSearchBar *)searchBar).searchFieldBackgroundColorOverride;
     }
 
     [searchBar traverseViewHierarchyDownwardWithVisitor:^(UIView *view) {
@@ -128,6 +133,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [self ows_applyTheme];
+}
+
+- (void)setSearchFieldBackgroundColorOverride:(nullable UIColor *)searchFieldBackgroundColorOverride
+{
+    OWSAssertIsOnMainThread();
+
+    _searchFieldBackgroundColorOverride = searchFieldBackgroundColorOverride;
+
+    [self ows_applyTheme];
+}
+
+- (nullable UIColor *)searchFieldBackgroundColorOverride
+{
+    OWSAssertIsOnMainThread();
+    return _searchFieldBackgroundColorOverride;
 }
 
 @end

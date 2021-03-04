@@ -5,13 +5,11 @@
 import Foundation
 
 @objc
-class AppearanceSettingsTableViewController: OWSTableViewController {
+class AppearanceSettingsTableViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
-
-        self.useThemeBackgroundColors = true
 
         updateTableContents()
 
@@ -28,23 +26,16 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         let contents = OWSTableContents()
 
         let firstSection = OWSTableSection()
-        firstSection.customHeaderHeight = 14
-
-        // Starting with iOS 13, show them in appearance section to allow setting the app
-        // theme to match the "system" dark/light mode settings..
-        if #available(iOS 13, *) {
-            firstSection.add(OWSTableItem.disclosureItem(
-                withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                            comment: "The title for the theme section in the appearance settings."),
-                detailText: ThemeSettingsTableViewController.currentThemeName,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
-            ) { [weak self] in
-                guard let self = self else { return }
-                let vc = ThemeSettingsTableViewController()
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
-        }
-
+        firstSection.add(OWSTableItem.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+                                        comment: "The title for the theme section in the appearance settings."),
+            detailText: ThemeSettingsTableViewController.currentThemeName,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
+        ) { [weak self] in
+            guard let self = self else { return }
+            let vc = ThemeSettingsTableViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
         firstSection.add(OWSTableItem.disclosureItem(
             withText: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
                                         comment: "Label for settings view that allows user to change the wallpaper."),
@@ -56,27 +47,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         })
 
         contents.addSection(firstSection)
-
-        let contactSection = OWSTableSection()
-        contactSection.customHeaderHeight = 14
-        contactSection.footerTitle = NSLocalizedString(
-            "SETTINGS_APPEARANCE_AVATAR_FOOTER",
-            comment: "Footer for avatar section in appearance settings")
-
-        contactSection.add(
-            OWSTableItem.switch(
-                withText: NSLocalizedString(
-                    "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
-                    comment: "Title for switch to toggle preference between contact and profile avatars"),
-                isOn: {
-                    SDSDatabaseStorage.shared.read { SSKPreferences.preferContactAvatars(transaction: $0) }
-                },
-                target: self,
-                selector: #selector(didToggleAvatarPreference(_:))
-            )
-        )
-
-        contents.addSection(contactSection)
 
         // TODO iOS 13 – maybe expose the preferred language settings here to match android
         // It not longer seems to exist in iOS 13.1 so not sure if Apple got rid of it
@@ -112,13 +82,6 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
             return NSLocalizedString("APPEARANCE_SETTINGS_LIGHT_THEME_NAME", comment: "Name indicating that the light theme is enabled.")
         case .system:
             return NSLocalizedString("APPEARANCE_SETTINGS_SYSTEM_THEME_NAME", comment: "Name indicating that the system theme is enabled.")
-        }
-    }
-
-    @objc func didToggleAvatarPreference(_ sender: UISwitch) {
-        Logger.info("Avatar preference toggled: \(sender.isOn)")
-        SDSDatabaseStorage.shared.asyncWrite { writeTx in
-            SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: writeTx)
         }
     }
 }

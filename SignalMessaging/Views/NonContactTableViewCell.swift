@@ -20,13 +20,11 @@ public class NonContactTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
 
         let stackView = UIStackView()
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
         stackView.spacing = kContactCellAvatarTextMargin
         stackView.addArrangedSubview(iconView)
 
         contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.autoPinEdgesToSuperviewMargins()
 
         let avatarSize = CGFloat(kStandardAvatarSize)
         iconView.autoSetDimensions(to: CGSize(square: avatarSize))

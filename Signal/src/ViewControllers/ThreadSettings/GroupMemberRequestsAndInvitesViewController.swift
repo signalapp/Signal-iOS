@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ protocol GroupMemberRequestsAndInvitesViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController {
+public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController2 {
 
     weak var groupMemberRequestsAndInvitesViewControllerDelegate: GroupMemberRequestsAndInvitesViewControllerDelegate?
 
@@ -61,8 +61,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             title = NSLocalizedString("GROUP_INVITES_VIEW_TITLE",
                                       comment: "The title for the 'group invites' view.")
         }
-
-        self.useThemeBackgroundColors = false
 
         configureSegmentedControl()
 
