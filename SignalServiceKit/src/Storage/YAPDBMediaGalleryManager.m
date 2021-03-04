@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "YAPDBMediaGalleryFinder.h"
+#import "YAPDBMediaGalleryManager.h"
 #import "OWSStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSMessage.h"
@@ -15,123 +15,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const YAPDBMediaGalleryFinderExtensionName = @"YAPDBMediaGalleryFinderExtensionName";
+// The value retains the class's old name.
+static NSString *const YAPDBMediaGalleryManagerExtensionName = @"YAPDBMediaGalleryFinderExtensionName";
 
-@interface YAPDBMediaGalleryFinder ()
-
-@property (nonatomic, readonly) TSThread *thread;
-
-@end
-
-@implementation YAPDBMediaGalleryFinder
-
-- (instancetype)initWithThread:(TSThread *)thread
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _thread = thread;
-
-    return self;
-}
-
-#pragma mark - Public Finder Methods
-
-- (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [[self galleryExtensionWithTransaction:transaction] numberOfItemsInGroup:self.mediaGroup];
-}
-
-- (nullable NSNumber *)mediaIndexForAttachment:(TSAttachment *)attachment
-                                   transaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSString *groupId;
-    NSUInteger index;
-
-    BOOL wasFound = [[self galleryExtensionWithTransaction:transaction] getGroup:&groupId
-                                                                           index:&index
-                                                                          forKey:attachment.uniqueId
-                                                                    inCollection:[TSAttachment collection]];
-
-    if (!wasFound) {
-        return nil;
-    }
-
-    OWSAssertDebug([self.mediaGroup isEqual:groupId]);
-
-    return @(index);
-}
-
-- (nullable TSAttachment *)oldestMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [[self galleryExtensionWithTransaction:transaction] firstObjectInGroup:self.mediaGroup];
-}
-
-- (nullable TSAttachment *)mostRecentMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [[self galleryExtensionWithTransaction:transaction] lastObjectInGroup:self.mediaGroup];
-}
-
-- (void)enumerateMediaAttachmentsWithRange:(NSRange)range
-                               transaction:(YapDatabaseReadTransaction *)transaction
-                                     block:(void (^)(TSAttachment *))attachmentBlock
-{
-
-    [[self galleryExtensionWithTransaction:transaction]
-        enumerateKeysAndObjectsInGroup:self.mediaGroup
-                           withOptions:0
-                                 range:range
-                            usingBlock:^(NSString *_Nonnull collection,
-                                NSString *_Nonnull key,
-                                id _Nonnull object,
-                                NSUInteger index,
-                                BOOL *_Nonnull stop) {
-                                OWSAssertDebug([object isKindOfClass:[TSAttachment class]]);
-                                attachmentBlock((TSAttachment *)object);
-                            }];
-}
-
-- (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
-                          dbConnection:(YapDatabaseConnection *)dbConnection
-{
-    YapDatabaseAutoViewConnection *extConnection = [dbConnection ext:YAPDBMediaGalleryFinderExtensionName];
-    OWSAssert(extConnection);
-
-    return [extConnection hasChangesForGroup:self.mediaGroup inNotifications:notifications];
-}
-
-#pragma mark - Util
-
-- (YapDatabaseAutoViewTransaction *)galleryExtensionWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    YapDatabaseAutoViewTransaction *extension = [transaction extension:YAPDBMediaGalleryFinderExtensionName];
-    OWSAssertDebug(extension);
-
-    return extension;
-}
+@implementation YAPDBMediaGalleryManager
 
 + (NSString *)mediaGroupWithThreadId:(NSString *)threadId
 {
     return [NSString stringWithFormat:@"%@-media", threadId];
 }
 
-- (NSString *)mediaGroup
-{
-    return [[self class] mediaGroupWithThreadId:self.thread.uniqueId];
-}
-
 #pragma mark - Extension registration
 
 + (NSString *)databaseExtensionName
 {
-    return YAPDBMediaGalleryFinderExtensionName;
+    return YAPDBMediaGalleryManagerExtensionName;
 }
 
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
-    [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension] withName:YAPDBMediaGalleryFinderExtensionName];
+    [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension]
+                           withName:YAPDBMediaGalleryManagerExtensionName];
 }
 
 + (YapDatabaseAutoView *)mediaGalleryDatabaseExtension

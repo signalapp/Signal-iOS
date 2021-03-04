@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -29,12 +29,12 @@ public class ImageEditorContents: NSObject {
     // Since the contents are immutable, we only modify copies
     // made with this method.
     public func clone() -> ImageEditorContents {
-        return ImageEditorContents(itemMap: itemMap.clone())
+        return ImageEditorContents(itemMap: itemMap)
     }
 
     @objc
     public func item(forId itemId: String) -> ImageEditorItem? {
-        return itemMap.value(forKey: itemId)
+        return itemMap[itemId]
     }
 
     @objc

@@ -1770,7 +1770,7 @@ public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throw
                 return
             }
 
-            try GRDBMediaGalleryFinder.insertGalleryRecord(attachmentStream: attachmentStream, transaction: transaction)
+            try MediaGalleryManager.insertGalleryRecord(attachmentStream: attachmentStream, transaction: transaction)
         }
     }
 }

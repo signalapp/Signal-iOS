@@ -554,9 +554,8 @@ extension MessageDetailViewController: MediaGalleryDelegate {
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
 
-        guard (items.map({ $0.message }) == [self.message]) else {
-            // Should only be one message we can delete when viewing message details
-            owsFailDebug("Unexpectedly informed of irrelevant message deletion")
+        guard items.contains(where: { $0.message == self.message }) else {
+            Logger.info("ignoring deletion of unrelated media")
             return
         }
 
@@ -564,9 +563,16 @@ extension MessageDetailViewController: MediaGalleryDelegate {
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        guard self.wasDeleted else {
+            return
+        }
         self.dismiss(animated: true) {
             self.navigationController?.popViewController(animated: true)
         }
+    }
+
+    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+        // No action needed
     }
 }
 

@@ -89,16 +89,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         delegate = self
         transitioningDelegate = self
 
-        let galleryItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
-            self.mediaGallery.buildGalleryItem(attachment: initialMediaAttachment, transaction: transaction)
-        }
+        let galleryItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment)
 
         guard let initialItem = galleryItem else {
             owsFailDebug("unexpectedly failed to build initialDetailItem.")
             return
         }
 
-        mediaGallery.ensureLoadedForDetailView(focusedItem: initialItem)
         mediaGallery.addDelegate(self)
 
         guard let initialPage = buildGalleryPage(galleryItem: initialItem,
@@ -477,6 +474,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
         // no-op
+    }
+
+    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+        let attachment = self.currentItem.attachmentStream
+        guard let reloadedItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: attachment) else {
+            owsFailDebug("failed to reload")
+            return
+        }
+        self.setCurrentItem(reloadedItem, direction: .forward, animated: false)
     }
 
     @objc

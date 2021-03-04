@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,14 +9,14 @@ import PromiseKit
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
 public class SDSTransactable: NSObject {
-    public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public func read(block: (SDSAnyReadTransaction) -> Void) {
         owsFail("Method should be implemented by subclasses.")
     }
 
     public func write(file: String = #file,
                       function: String = #function,
                       line: Int = #line,
-                      block: @escaping (SDSAnyWriteTransaction) -> Void) {
+                      block: (SDSAnyWriteTransaction) -> Void) {
         owsFail("Method should be implemented by subclasses.")
     }
 }
@@ -159,7 +159,7 @@ public extension SDSTransactable {
 
 public extension SDSTransactable {
     @discardableResult
-    func read<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+    func read<T>(block: (SDSAnyReadTransaction) -> T) -> T {
         var value: T!
         read { (transaction) in
             value = block(transaction)
@@ -168,7 +168,7 @@ public extension SDSTransactable {
     }
 
     @discardableResult
-    func read<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+    func read<T>(block: (SDSAnyReadTransaction) throws -> T) throws -> T {
         var value: T!
         var thrown: Error?
         read { (transaction) in
@@ -190,7 +190,7 @@ public extension SDSTransactable {
     func write<T>(file: String = #file,
                   function: String = #function,
                   line: Int = #line,
-                  block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+                  block: (SDSAnyWriteTransaction) -> T) -> T {
         var value: T!
         write(file: file,
               function: function,
@@ -204,7 +204,7 @@ public extension SDSTransactable {
     func write<T>(file: String = #file,
                   function: String = #function,
                   line: Int = #line,
-                  block: @escaping (SDSAnyWriteTransaction) throws -> T) throws -> T {
+                  block: (SDSAnyWriteTransaction) throws -> T) throws -> T {
         var value: T!
         var thrown: Error?
         write(file: file,
@@ -232,7 +232,7 @@ public extension SDSTransactable {
     func __private_objc_write(file: String = #file,
                                function: String = #function,
                                line: Int = #line,
-                               block: @escaping (SDSAnyWriteTransaction) -> Void) {
+                               block: (SDSAnyWriteTransaction) -> Void) {
         write(file: file, function: function, line: line, block: block)
     }
 

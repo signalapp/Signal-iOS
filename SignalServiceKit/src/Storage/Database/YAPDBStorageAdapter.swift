@@ -11,36 +11,44 @@ struct YAPDBStorageAdapter {
 // MARK: -
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
-    func readThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
-        var errorToRaise: Error?
-        storage.dbReadConnection.read { yapTransaction in
-            do {
-                try block(yapTransaction)
-            } catch {
-                errorToRaise = error
+    func readThrows(block: (YapDatabaseReadTransaction) throws -> Void) throws {
+        try withoutActuallyEscaping(block) { block in
+            var errorToRaise: Error?
+            storage.dbReadConnection.read { yapTransaction in
+                do {
+                    try block(yapTransaction)
+                } catch {
+                    errorToRaise = error
+                }
+            }
+            if let error = errorToRaise {
+                throw error
             }
         }
-        if let error = errorToRaise {
-            throw error
+    }
+
+    func uiRead(block: (YapDatabaseReadTransaction) -> Void) {
+        withoutActuallyEscaping(block) { block in
+            owsFailDebug("YDB UI read.")
+            storage.dbReadConnection.read { yapTransaction in
+                block(yapTransaction)
+            }
         }
     }
 
-    func uiRead(block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        owsFailDebug("YDB UI read.")
-        storage.dbReadConnection.read { yapTransaction in
-            block(yapTransaction)
+    func read(block: (YapDatabaseReadTransaction) -> Void) {
+        withoutActuallyEscaping(block) { block in
+            storage.dbReadConnection.read { yapTransaction in
+                block(yapTransaction)
+            }
         }
     }
 
-    func read(block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        storage.dbReadConnection.read { yapTransaction in
-            block(yapTransaction)
-        }
-    }
-
-    func write(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        storage.dbReadWriteConnection.readWrite { yapTransaction in
-            block(yapTransaction)
+    func write(block: (YapDatabaseReadWriteTransaction) -> Void) {
+        withoutActuallyEscaping(block) { block in
+            storage.dbReadWriteConnection.readWrite { yapTransaction in
+                block(yapTransaction)
+            }
         }
     }
 }

@@ -463,7 +463,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     // MARK: - SDSTransactable
 
     @objc
-    public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public func uiRead(block: (SDSAnyReadTransaction) -> Void) {
         switch dataStoreForReads {
         case .grdb:
             do {
@@ -483,7 +483,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
-    public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public override func read(block: (SDSAnyReadTransaction) -> Void) {
         switch dataStoreForReads {
         case .grdb:
             do {
@@ -504,7 +504,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     public override func write(file: String = #file,
                                function: String = #function,
                                line: Int = #line,
-                               block: @escaping (SDSAnyWriteTransaction) -> Void) {
+                               block: (SDSAnyWriteTransaction) -> Void) {
         #if TESTABLE_BUILD
         if Thread.isMainThread &&
             AppReadiness.isAppReady {
@@ -534,7 +534,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         crossProcess.notifyChangedAsync()
     }
 
-    public func uiReadThrows(block: @escaping (SDSAnyReadTransaction) throws -> Void) throws {
+    public func uiReadThrows(block: (SDSAnyReadTransaction) throws -> Void) throws {
         switch dataStoreForReads {
         case .grdb:
             try grdbStorage.uiReadThrows { transaction in
@@ -551,7 +551,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func uiRead<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+    public func uiRead<T>(block: (SDSAnyReadTransaction) -> T) -> T {
         var value: T!
         uiRead { (transaction) in
             value = block(transaction)
@@ -700,9 +700,9 @@ extension SDSDatabaseStorage {
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
-    func uiRead(block: @escaping (ReadTransaction) -> Void) throws
-    func read(block: @escaping (ReadTransaction) -> Void) throws
-    func write(block: @escaping (WriteTransaction) -> Void) throws
+    func uiRead(block: (ReadTransaction) -> Void) throws
+    func read(block: (ReadTransaction) -> Void) throws
+    func write(block: (WriteTransaction) -> Void) throws
 }
 
 // MARK: -
