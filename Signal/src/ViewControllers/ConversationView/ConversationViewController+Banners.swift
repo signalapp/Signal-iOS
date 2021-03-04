@@ -156,7 +156,7 @@ public extension ConversationViewController {
         banner.reviewAction = { [weak self] in
             guard let self = self else { return }
             let vc = NameCollisionResolutionViewController(collisionFinder: collisionFinder, collisionDelegate: self)
-            vc.present(from: self)
+            self.present(vc, animated: true)
         }
 
         return banner

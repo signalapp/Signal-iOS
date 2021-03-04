@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ protocol NameCollisionResolutionDelegate: class {
     func nameCollisionControllerDidComplete(_ controller: NameCollisionResolutionViewController, dismissConversationView: Bool)
 }
 
-class NameCollisionResolutionViewController: OWSTableViewController {
+class NameCollisionResolutionViewController: OWSTableViewController2 {
     private let collisionFinder: NameCollisionFinder
     private var thread: TSThread { collisionFinder.thread }
     private var groupViewHelper: GroupViewHelper?
@@ -42,7 +42,6 @@ class NameCollisionResolutionViewController: OWSTableViewController {
         self.collisionDelegate = collisionDelegate
         super.init()
 
-        useThemeBackgroundColors = true
         contactsViewHelper.addObserver(self)
     }
 
@@ -115,7 +114,7 @@ class NameCollisionResolutionViewController: OWSTableViewController {
         contents = OWSTableContents(
             title: titleString,
             sections: [
-                createHeaderSection(),
+                createHeaderSection()
             ] + flattenedCellModels.map {
                 createSection(for: $0)
             })
