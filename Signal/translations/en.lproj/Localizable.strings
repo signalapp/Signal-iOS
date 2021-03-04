@@ -4007,7 +4007,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register for push notifications";
+"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
@@ -4424,7 +4424,7 @@
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Theme";
@@ -4609,23 +4609,27 @@
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 
-/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+/* A setting controlling whether muted conversations are shown in the badge count
+   When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Events";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
@@ -4733,7 +4737,7 @@
 "SETTINGS_SECURITY_TITLE" = "Screen Security";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
@@ -4769,7 +4773,7 @@
 "SETTINGS_VERSION" = "Version";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "Who can…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Mail";

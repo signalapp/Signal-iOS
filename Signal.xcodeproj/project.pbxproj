@@ -58,11 +58,8 @@
 		340CCB712305962B005243B3 /* YDBToGRDBMigrationKeyValueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */; };
 		340CCB722305962B005243B3 /* YDBToGRDBMigrationModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
-		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
-		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
 		340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */; };
-		340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
@@ -751,6 +748,9 @@
 		887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889AF247F2E72001B5FCF /* Emoji+Category.swift */; };
 		887889B2247F2E72001B5FCF /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B0247F2E72001B5FCF /* Emoji.swift */; };
 		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
+		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
+		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
+		887B380F25F056FD00685845 /* NotificationSettingsSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */; };
 		887C6A7824DBB16E00141B64 /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
@@ -1043,27 +1043,21 @@
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
 		340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageNavigationController.swift; sourceTree = "<group>"; };
 		340E9AC3236095CC00FA362C /* AttachmentMultisend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
-		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
-		340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsViewController.m; sourceTree = "<group>"; };
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupSettingsViewController.h; sourceTree = "<group>"; };
 		340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
-		340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
 		340FC884204DAC8C007AEB0F /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
 		340FC887204DAC8C007AEB0F /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
 		340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
 		340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
-		340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsViewController.h; sourceTree = "<group>"; };
-		340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
 		340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupSettingsViewController.m; sourceTree = "<group>"; };
 		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
 		340FC893204DAC8C007AEB0F /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
-		340FC894204DAC8C007AEB0F /* OWSSoundSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSoundSettingsViewController.h; sourceTree = "<group>"; };
 		340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQRCodeScanningViewController.m; sourceTree = "<group>"; };
 		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
@@ -1832,6 +1826,9 @@
 		887889AF247F2E72001B5FCF /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
 		887889B0247F2E72001B5FCF /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
 		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
+		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
+		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
+		887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsSoundViewController.swift; sourceTree = "<group>"; };
 		887B6B2324895F1F0075EBC7 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
@@ -2302,18 +2299,13 @@
 				32ECD08624BFBF5C00EDDED0 /* Help */,
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
-				340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */,
-				340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */,
-				340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */,
-				340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */,
+				887B380B25F042A300685845 /* Notifications */,
 				340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */,
 				340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */,
 				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
 				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
 				340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */,
 				340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */,
-				340FC894204DAC8C007AEB0F /* OWSSoundSettingsViewController.h */,
-				340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */,
 				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
 				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 				340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */,
@@ -3562,6 +3554,16 @@
 				88238EB924F2130300F28079 /* EmojiWithSkinTones+String.swift */,
 			);
 			path = Emoji;
+			sourceTree = "<group>";
+		};
+		887B380B25F042A300685845 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */,
+				887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */,
+				887B380925F0427F00685845 /* NotificationSettingsViewController.swift */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		888B6D4325B2223200E2A662 /* Wallpapers */ = {
@@ -5163,6 +5165,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				887B380F25F056FD00685845 /* NotificationSettingsSoundViewController.swift in Sources */,
 				3470518C254B320700A19468 /* CVRenderState.swift in Sources */,
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				88D1BCB924F73C05009A1738 /* PhoneNumberSharingSettingsTableViewController.swift in Sources */,
@@ -5175,6 +5178,7 @@
 				3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */,
 				348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
+				887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */,
 				347C384D252D0FDC00F3D941 /* CVComponentTypingIndicator.swift in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
@@ -5264,7 +5268,6 @@
 				88EFF4F825AD1F0D000FAFBA /* ForwardMessageNavigationController.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
-				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */,
 				3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
@@ -5300,7 +5303,6 @@
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				348815BC2552E67900D4F4C4 /* CVComponentSystemMessage.swift in Sources */,
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
-				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
 				34A17D81253F7237009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
@@ -5462,6 +5464,7 @@
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */,
+				887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */,
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
@@ -5516,7 +5519,6 @@
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
-				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
 				347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,

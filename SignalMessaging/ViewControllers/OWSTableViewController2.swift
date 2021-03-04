@@ -484,7 +484,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
             let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
-            var textContainerInset = UIEdgeInsets(top: defaultSpacingBetweenSections ?? 0 + 12,
+            var textContainerInset = UIEdgeInsets(top: (defaultSpacingBetweenSections ?? 0) + 12,
                                                   leading: cellHMargin,
                                                   bottom: 10,
                                                   trailing: cellHMargin)

@@ -350,9 +350,10 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     func showSoundSettingsView() {
-        let vc = OWSSoundSettingsViewController()
-        vc.thread = thread
-        navigationController?.pushViewController(vc, animated: true)
+        let vc = NotificationSettingsSoundViewController(thread: thread) { [weak self] in
+            self?.updateTableContents()
+        }
+        present(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
     func showWallpaperSettingsView() {
