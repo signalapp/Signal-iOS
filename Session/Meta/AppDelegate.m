@@ -658,7 +658,7 @@ static NSTimeInterval launchStartedAt;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (![self.tsAccountManager isRegisteredAndReady]) { return; }
-        [SignalApp.sharedApp.homeViewController createNewPrivateChat];
+        [SignalApp.sharedApp.homeViewController createNewDM];
         completionHandler(YES);
     }];
 }

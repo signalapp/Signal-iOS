@@ -1,5 +1,5 @@
 
-@objc(LKEditClosedGroupVC)
+@objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let thread: TSGroupThread
     private var name = ""
@@ -271,9 +271,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         Storage.write(with: { [weak self] transaction in
             do {
                 if !members.contains(getUserHexEncodedPublicKey()) {
-                    try MessageSender.v2_leave(groupPublicKey, using: transaction)
+                    try MessageSender.leave(groupPublicKey, using: transaction)
                 } else {
-                    try MessageSender.v2_update(groupPublicKey, with: members, name: name, transaction: transaction)
+                    try MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction)
                 }
             } catch {
                 DispatchQueue.main.async {

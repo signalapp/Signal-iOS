@@ -1,5 +1,5 @@
 
-final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -21,13 +21,13 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     
     private lazy var enterPublicKeyVC: EnterPublicKeyVC = {
         let result = EnterPublicKeyVC()
-        result.newPrivateChatVC = self
+        result.NewDMVC = self
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
-        result.newPrivateChatVC = self
+        result.NewDMVC = self
         return result
     }()
     
@@ -121,18 +121,18 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let hexEncodedPublicKey = string
-        startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
+        startNewDMIfPossible(with: hexEncodedPublicKey)
     }
     
-    fileprivate func startNewPrivateChatIfPossible(with onsNameOrPublicKey: String) {
+    fileprivate func startNewDMIfPossible(with onsNameOrPublicKey: String) {
         if ECKeyPair.isValidHexEncodedPublicKey(candidate: onsNameOrPublicKey) {
-            startNewPrivateChat(with: onsNameOrPublicKey)
+            startNewDM(with: onsNameOrPublicKey)
         } else {
             // This could be an ONS name
             ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
                 SnodeAPI.getSessionID(for: onsNameOrPublicKey).done { sessionID in
                     modalActivityIndicator.dismiss {
-                        self?.startNewPrivateChat(with: sessionID)
+                        self?.startNewDM(with: sessionID)
                     }
                 }.catch { error in
                     modalActivityIndicator.dismiss {
@@ -153,7 +153,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         }
     }
 
-    private func startNewPrivateChat(with sessionID: String) {
+    private func startNewDM(with sessionID: String) {
         let thread = TSContactThread.getOrCreateThread(contactId: sessionID)
         presentingViewController?.dismiss(animated: true, completion: nil)
         SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
@@ -161,7 +161,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 }
 
 private final class EnterPublicKeyVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
+    weak var NewDMVC: NewDMVC!
     private var isKeyboardShowing = false
     private var bottomConstraint: NSLayoutConstraint!
     
@@ -226,7 +226,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(startNewPrivateChatIfPossible), for: UIControl.Event.touchUpInside)
+        nextButton.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
         nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
@@ -315,17 +315,17 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
-        newPrivateChatVC.navigationController!.present(shareVC, animated: true, completion: nil)
+        NewDMVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
-    @objc fileprivate func startNewPrivateChatIfPossible() {
+    @objc fileprivate func startNewDMIfPossible() {
         let text = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        newPrivateChatVC.startNewPrivateChatIfPossible(with: text)
+        NewDMVC.startNewDMIfPossible(with: text)
     }
 }
 
 private final class ScanQRCodePlaceholderVC : UIViewController {
-    weak var newPrivateChatVC: NewPrivateChatVC!
+    weak var NewDMVC: NewDMVC!
     
     override func viewDidLoad() {
         // Remove background color
@@ -365,7 +365,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
     @objc private func requestCameraAccess() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                self?.newPrivateChatVC.handleCameraAccessGranted()
+                self?.NewDMVC.handleCameraAccessGranted()
             } else {
                 // Do nothing
             }

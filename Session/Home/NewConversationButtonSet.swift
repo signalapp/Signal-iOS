@@ -17,8 +17,8 @@ final class NewConversationButtonSet : UIView {
     
     // MARK: Components
     private lazy var mainButton = NewConversationButton(isMainButton: true, icon: #imageLiteral(resourceName: "Plus").scaled(to: CGSize(width: iconSize, height: iconSize)))
-    private lazy var createNewPrivateChatButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Message").scaled(to: CGSize(width: iconSize, height: iconSize)))
-    private lazy var createNewClosedGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Group").scaled(to: CGSize(width: iconSize, height: iconSize)))
+    private lazy var newDMButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Message").scaled(to: CGSize(width: iconSize, height: iconSize)))
+    private lazy var createClosedGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Group").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var joinOpenGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Globe").scaled(to: CGSize(width: iconSize, height: iconSize)))
     
     // MARK: Initialization
@@ -35,22 +35,22 @@ final class NewConversationButtonSet : UIView {
     private func setUpViewHierarchy() {
         mainButton.accessibilityLabel = "Toggle conversation options button"
         mainButton.isAccessibilityElement = true
-        createNewPrivateChatButton.accessibilityLabel = "Start new one-on-one conversation button"
-        createNewPrivateChatButton.isAccessibilityElement = true
-        createNewClosedGroupButton.accessibilityLabel = "Start new closed group button"
-        createNewClosedGroupButton.isAccessibilityElement = true
+        newDMButton.accessibilityLabel = "Start new one-on-one conversation button"
+        newDMButton.isAccessibilityElement = true
+        createClosedGroupButton.accessibilityLabel = "Start new closed group button"
+        createClosedGroupButton.isAccessibilityElement = true
         joinOpenGroupButton.accessibilityLabel = "Join open group button"
         joinOpenGroupButton.isAccessibilityElement = true
         let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
         addSubview(joinOpenGroupButton)
         horizontalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.left, to: .left, of: self, withInset: inset)
         verticalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
-        addSubview(createNewPrivateChatButton)
-        createNewPrivateChatButton.center(.horizontal, in: self)
-        verticalButtonConstraints[createNewPrivateChatButton] = createNewPrivateChatButton.pin(.top, to: .top, of: self, withInset: inset)
-        addSubview(createNewClosedGroupButton)
-        horizontalButtonConstraints[createNewClosedGroupButton] = createNewClosedGroupButton.pin(.right, to: .right, of: self, withInset: -inset)
-        verticalButtonConstraints[createNewClosedGroupButton] = createNewClosedGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
+        addSubview(newDMButton)
+        newDMButton.center(.horizontal, in: self)
+        verticalButtonConstraints[newDMButton] = newDMButton.pin(.top, to: .top, of: self, withInset: inset)
+        addSubview(createClosedGroupButton)
+        horizontalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.right, to: .right, of: self, withInset: -inset)
+        verticalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
         addSubview(mainButton)
         mainButton.center(.horizontal, in: self)
         mainButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
@@ -63,25 +63,25 @@ final class NewConversationButtonSet : UIView {
         let joinOpenGroupButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleJoinOpenGroupButtonTapped))
         joinOpenGroupButton.addGestureRecognizer(joinOpenGroupButtonTapGestureRecognizer)
         let createNewPrivateChatButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCreateNewPrivateChatButtonTapped))
-        createNewPrivateChatButton.addGestureRecognizer(createNewPrivateChatButtonTapGestureRecognizer)
+        newDMButton.addGestureRecognizer(createNewPrivateChatButtonTapGestureRecognizer)
         let createNewClosedGroupButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCreateNewClosedGroupButtonTapped))
-        createNewClosedGroupButton.addGestureRecognizer(createNewClosedGroupButtonTapGestureRecognizer)
+        createClosedGroupButton.addGestureRecognizer(createNewClosedGroupButtonTapGestureRecognizer)
     }
     
     // MARK: Interaction
     @objc private func handleJoinOpenGroupButtonTapped() { delegate?.joinOpenGroup() }
-    @objc private func handleCreateNewPrivateChatButtonTapped() { delegate?.createNewPrivateChat() }
-    @objc private func handleCreateNewClosedGroupButtonTapped() { delegate?.createNewClosedGroup() }
+    @objc private func handleCreateNewPrivateChatButtonTapped() { delegate?.createNewDM() }
+    @objc private func handleCreateNewClosedGroupButtonTapped() { delegate?.createClosedGroup() }
     
     private func expand(isUserDragging: Bool) {
-        let buttons = [ joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
+        let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
         UIView.animate(withDuration: 0.25, animations: {
             buttons.forEach { $0.alpha = 1 }
             let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
             let size = NewConversationButtonSet.collapsedButtonSize
             self.joinOpenGroupButton.frame = CGRect(origin: CGPoint(x: inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
-            self.createNewPrivateChatButton.frame = CGRect(center: CGPoint(x: self.bounds.center.x, y: inset + size / 2), size: CGSize(width: size, height: size))
-            self.createNewClosedGroupButton.frame = CGRect(origin: CGPoint(x: self.width() - size - inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
+            self.newDMButton.frame = CGRect(center: CGPoint(x: self.bounds.center.x, y: inset + size / 2), size: CGSize(width: size, height: size))
+            self.createClosedGroupButton.frame = CGRect(origin: CGPoint(x: self.width() - size - inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
         }, completion: { _ in
             self.isUserDragging = isUserDragging
         })
@@ -89,7 +89,7 @@ final class NewConversationButtonSet : UIView {
     
     private func collapse(withAnimation isAnimated: Bool) {
         isUserDragging = false
-        let buttons = [ joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
+        let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
             buttons.forEach { button in
                 button.alpha = 0
@@ -126,12 +126,12 @@ final class NewConversationButtonSet : UIView {
         let touchLocationInSelfCoordinates = touch.location(in: self)
         mainButton.frame = CGRect(center: touchLocationInSelfCoordinates, size: mainButtonSize)
         mainButton.alpha = 1 - (touchLocationInSelfCoordinates.distance(to: mainButtonLocationInSelfCoordinates) / maxDragDistance)
-        let buttons = [ joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
+        let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
         let buttonToExpand = buttons.first { button in
             var hasUserDraggedBeyondButton = false
             if button == joinOpenGroupButton && touch.isLeft(of: joinOpenGroupButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
-            if button == createNewPrivateChatButton && touch.isAbove(createNewPrivateChatButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
-            if button == createNewClosedGroupButton && touch.isRight(of: createNewClosedGroupButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
+            if button == newDMButton && touch.isAbove(newDMButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
+            if button == createClosedGroupButton && touch.isRight(of: createClosedGroupButton, with: dragMargin) { hasUserDraggedBeyondButton = true }
             return button.contains(touch) || hasUserDraggedBeyondButton
         }
         if let buttonToExpand = buttonToExpand {
@@ -148,8 +148,8 @@ final class NewConversationButtonSet : UIView {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, isUserDragging else { return }
         if joinOpenGroupButton.contains(touch) || touch.isLeft(of: joinOpenGroupButton, with: dragMargin) { delegate?.joinOpenGroup() }
-        else if createNewPrivateChatButton.contains(touch) || touch.isAbove(createNewPrivateChatButton, with: dragMargin) { delegate?.createNewPrivateChat() }
-        else if createNewClosedGroupButton.contains(touch) || touch.isRight(of: createNewClosedGroupButton, with: dragMargin) { delegate?.createNewClosedGroup() }
+        else if newDMButton.contains(touch) || touch.isAbove(newDMButton, with: dragMargin) { delegate?.createNewDM() }
+        else if createClosedGroupButton.contains(touch) || touch.isRight(of: createClosedGroupButton, with: dragMargin) { delegate?.createClosedGroup() }
         reset()
     }
     
@@ -181,11 +181,11 @@ final class NewConversationButtonSet : UIView {
         if joinOpenGroupButton == expandedButton {
             horizontalButtonConstraints[joinOpenGroupButton]!.constant = inset
             verticalButtonConstraints[joinOpenGroupButton]!.constant = -inset
-        } else if createNewPrivateChatButton == expandedButton {
-            verticalButtonConstraints[createNewPrivateChatButton]!.constant = inset
-        } else if createNewClosedGroupButton == expandedButton {
-            horizontalButtonConstraints[createNewClosedGroupButton]!.constant = -inset
-            verticalButtonConstraints[createNewClosedGroupButton]!.constant = -inset
+        } else if newDMButton == expandedButton {
+            verticalButtonConstraints[newDMButton]!.constant = inset
+        } else if createClosedGroupButton == expandedButton {
+            horizontalButtonConstraints[createClosedGroupButton]!.constant = -inset
+            verticalButtonConstraints[createClosedGroupButton]!.constant = -inset
         }
         let size = NewConversationButtonSet.collapsedButtonSize
         let frame = CGRect(center: button.center, size: CGSize(width: size, height: size))
@@ -203,7 +203,7 @@ final class NewConversationButtonSet : UIView {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let allButtons = [ mainButton, joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
+        let allButtons = [ mainButton, joinOpenGroupButton, newDMButton, createClosedGroupButton ]
         if allButtons.contains(where: { $0.frame.contains(point) }) {
             return super.hitTest(point, with: event)
         } else {
@@ -217,8 +217,8 @@ final class NewConversationButtonSet : UIView {
 protocol NewConversationButtonSetDelegate {
     
     func joinOpenGroup()
-    func createNewPrivateChat()
-    func createNewClosedGroup()
+    func createNewDM()
+    func createClosedGroup()
 }
 
 // MARK: Button

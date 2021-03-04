@@ -66,7 +66,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
         createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
         createNewPrivateChatButton.set(.width, to: 196)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
@@ -138,7 +138,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         dbConnection.read { transaction in
             self.threads.update(with: transaction) // Perform the initial update
         }
-        // Pollers
+        // Start polling if needed (i.e. if the user just created or restored their Session ID)
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
@@ -188,6 +188,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
+        // This code is very finicky and crashes easily
         AssertIsOnMainThread()
         let notifications = dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
         guard !notifications.isEmpty else { return }
@@ -360,7 +361,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                 do {
-                    try MessageSender.v2_leave(groupPublicKey, using: transaction)
+                    try MessageSender.leave(groupPublicKey, using: transaction)
                 } catch {
                     // TODO: Handle
                 }
@@ -391,13 +392,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func createNewPrivateChat() {
-        let newPrivateChatVC = NewPrivateChatVC()
-        let navigationController = OWSNavigationController(rootViewController: newPrivateChatVC)
+    @objc func createNewDM() {
+        let newDMVC = NewDMVC()
+        let navigationController = OWSNavigationController(rootViewController: newDMVC)
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func createNewClosedGroup() {
+    @objc func createClosedGroup() {
         let newClosedGroupVC = NewClosedGroupVC()
         let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
         present(navigationController, animated: true, completion: nil)

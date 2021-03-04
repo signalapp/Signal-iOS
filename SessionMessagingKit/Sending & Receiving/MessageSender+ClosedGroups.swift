@@ -85,7 +85,7 @@ extension MessageSender {
         }
     }
     
-    public static func v2_update(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
+    public static func update(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
@@ -208,8 +208,8 @@ extension MessageSender {
         infoMessage.save(with: transaction)
     }
     
-    @objc(v2_leaveClosedGroupWithPublicKey:using:error:)
-    public static func v2_leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
+    @objc(leaveClosedGroupWithPublicKey:using:error:)
+    public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)

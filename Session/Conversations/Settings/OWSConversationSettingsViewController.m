@@ -809,7 +809,7 @@ CGFloat kIconViewLength = 24;
 
 - (void)editGroup
 {
-    LKEditClosedGroupVC *editClosedGroupVC = [[LKEditClosedGroupVC alloc] initWithThreadID:self.thread.uniqueId];
+    SNEditClosedGroupVC *editClosedGroupVC = [[SNEditClosedGroupVC alloc] initWithThreadID:self.thread.uniqueId];
     [self.navigationController pushViewController:editClosedGroupVC animated:YES completion:nil];
 }
 
@@ -858,7 +858,7 @@ CGFloat kIconViewLength = 24;
     if (gThread.isClosedGroup) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [SNMessageSender v2_leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];
+            [SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];
         }];
     }
 
