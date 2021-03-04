@@ -350,7 +350,7 @@ extension MessageReceiver {
             }
         }
         // Persist changes
-        if isCurrentUser {
+        if isCurrentUser { // In the case where it's someone else the profile will already be saved (updateProfileForContact and setProfileKeyData to that internally)
             owsProfile?.save(with: transaction)
         }
         Storage.shared.setContact(contact, using: transaction)
