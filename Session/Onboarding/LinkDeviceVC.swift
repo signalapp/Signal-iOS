@@ -117,7 +117,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        guard let seed = string.data(using: .utf8) else { return }
+        let seed = Data(hex: string)
         continueWithSeed(seed)
     }
     
