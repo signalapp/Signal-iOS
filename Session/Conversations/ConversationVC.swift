@@ -148,6 +148,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         Storage.read { transaction in
             unreadCount = self.thread.unreadMessageCount(transaction: transaction)
         }
+        // FIXME: This crashes when you have more unread messages than loaded view items (viewItems is initially capped to kConversationInitialMaxRangeSize)
         unreadViewItems = unreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(unreadCount) ..< viewItems.endIndex]) : []
     }
     
