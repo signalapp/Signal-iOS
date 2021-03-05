@@ -146,7 +146,7 @@ open class OWSTableViewController2: OWSViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        applyTheme(to: self)
+        applyTheme()
 
         tableView.tableFooterView = UIView()
     }
@@ -792,7 +792,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = nil
-            navigationBar.switchToStyle(.default)
+            navigationBar.switchToStyle(.default, animated: true)
         }
     }
 
@@ -800,9 +800,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else { return }
 
         if tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top {
-            navigationBar.switchToStyle(.clear)
+            navigationBar.switchToStyle(.solid, animated: true)
         } else {
-            navigationBar.switchToStyle(.default)
+            navigationBar.switchToStyle(.default, animated: true)
         }
     }
 
