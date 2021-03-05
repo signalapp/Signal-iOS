@@ -786,6 +786,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = nil
+            navigationBar.switchToStyle(.default)
         }
     }
 
