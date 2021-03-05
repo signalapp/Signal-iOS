@@ -10,26 +10,6 @@ public class OWSButton: UIButton {
     @objc
     public var block: () -> Void = { }
 
-    public var downStateView: UIView? {
-        didSet {
-            oldValue?.removeFromSuperview()
-
-            if let downStateView = downStateView {
-                addSubview(downStateView)
-
-                ensureDownGestureRecognizer()
-            }
-
-            applyDownState()
-        }
-    }
-
-    private var isDown: Bool = false {
-        didSet {
-            applyDownState()
-        }
-    }
-
     // MARK: -
 
     @objc
@@ -37,7 +17,7 @@ public class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        ensureTapGestureRecognizer()
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
     }
 
     @objc
@@ -45,7 +25,7 @@ public class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        ensureTapGestureRecognizer()
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
         setTitle(title, for: .normal)
     }
 
@@ -56,7 +36,7 @@ public class OWSButton: UIButton {
         super.init(frame: .zero)
 
         self.block = block
-        ensureTapGestureRecognizer()
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
 
         setImage(imageName: imageName)
         self.tintColor = tintColor
@@ -77,41 +57,6 @@ public class OWSButton: UIButton {
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private func applyDownState() {
-        guard let downStateView = downStateView else {
-            return
-        }
-        downStateView.isHidden = !isDown
-    }
-
-    private var downGestureRecognizer: DownStateGestureRecognizer?
-
-    private func ensureDownGestureRecognizer() {
-        if downGestureRecognizer != nil {
-            return
-        }
-        let downGestureRecognizer = DownStateGestureRecognizer { [weak self] in
-            guard let self = self,
-                  let downGestureRecognizer = self.downGestureRecognizer else {
-                return
-            }
-            self.isDown = downGestureRecognizer.hasValidTouch
-        }
-        addGestureRecognizer(downGestureRecognizer)
-        self.downGestureRecognizer = downGestureRecognizer
-    }
-
-    private var tapGestureRecognizer: UIGestureRecognizer?
-
-    private func ensureTapGestureRecognizer() {
-        if tapGestureRecognizer != nil {
-            return
-        }
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        addGestureRecognizer(tapGestureRecognizer)
-        self.tapGestureRecognizer = tapGestureRecognizer
     }
 
     // MARK: - Common Style Reuse
@@ -160,111 +105,5 @@ public class OWSButton: UIButton {
     @objc
     func didTap() {
         block()
-    }
-}
-
-// MARK: -
-
-// A GR used by OWSButton to detect "down state".
-//
-// This GR is unusual; it must not interfere with its views other GRs.
-// It can't "recognize" without blocking other GRs from recognizing.
-// Therefore it never changes its own state.  It uses a callback block
-// to notify its view of changes to down state.
-//
-// A button must be tapped.  This GR is a bit more permissive than that.
-// It will remain down for a long press even though that isn't a valid tap.
-// Although it is not "down" if a long press leaves the views bounds, it
-// will re-enter "down" if the long press re-enters the views bounds.
-// This gives a sense of physicality to the the button.
-public class DownStateGestureRecognizer: UIGestureRecognizer {
-
-    public typealias Callback = () -> Void
-    private final let callback: Callback
-
-    public required init(callback: @escaping Callback) {
-        self.callback = callback
-
-        super.init(target: nil, action: nil)
-    }
-
-    public var hasValidTouch = false {
-        didSet {
-            if hasValidTouch != oldValue {
-                callback()
-            }
-        }
-    }
-
-    @objc
-    public override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func shouldBeRequiredToFail(by otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-
-    @objc
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    @objc
-    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        handle(event: event)
-    }
-
-    private func handle(event: UIEvent) {
-        // Consider the button down if there is a a single active
-        // touch within the views bounds.
-        self.hasValidTouch = { () -> Bool in
-            guard let allTouches = event.allTouches,
-                  allTouches.count == 1,
-                  let touch = allTouches.first else {
-                return false
-            }
-            guard let view = self.view else {
-                return false
-            }
-            let location = touch.location(in: view)
-            guard view.bounds.contains(location) else {
-                return false
-            }
-
-            switch touch.phase {
-            case .began, .moved, .stationary:
-                break
-            case .ended, .cancelled:
-                return false
-            case .regionEntered, .regionMoved, .regionExited:
-                return false
-            @unknown default:
-                return false
-            }
-
-            return true
-        }()
     }
 }

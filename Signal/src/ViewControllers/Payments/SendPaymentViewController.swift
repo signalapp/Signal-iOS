@@ -277,7 +277,6 @@ public class SendPaymentViewController: OWSViewController {
         let keyboardHSpacing: CGFloat = 25
         let buttonFont = UIFont.ows_dynamicTypeTitle1Clamped
         func buildAmountKeyboardButton(title: String, block: @escaping () -> Void) -> OWSButton {
-            // PAYMENTS TODO: Highlight down state?
             let button = OWSButton(block: block)
 
             let label = UILabel()
@@ -290,7 +289,6 @@ public class SendPaymentViewController: OWSViewController {
             return button
         }
         func buildAmountKeyboardButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
-            // PAYMENTS TODO: Highlight down state?
             let button = OWSButton(imageName: imageName,
                                    tintColor: Theme.primaryTextColor,
                                    block: block)
@@ -304,21 +302,27 @@ public class SendPaymentViewController: OWSViewController {
                 let buttonSize = buttonFont.lineHeight * 2.0
                 button.autoSetDimension(.height, toSize: buttonSize)
 
-                let downStateView = OWSLayerView.circleView()
-                button.downStateView = downStateView
-                button.sendSubviewToBack(downStateView)
-                downStateView.autoPinEdgesToSuperviewEdges()
-                downStateView.backgroundColor = (Theme.isDarkThemeEnabled
-                                                    ? UIColor.ows_gray90
-                                                    : UIColor.ows_gray02)
+                let downStateColor = (Theme.isDarkThemeEnabled
+                                            ? UIColor.ows_gray90
+                                            : UIColor.ows_gray02)
+                let downStateImage = UIImage(color: downStateColor,
+                                             size: CGSize(width: 1, height: 1))
+                button.setBackgroundImage(downStateImage, for: .highlighted)
+
+                // We clip the button to a circle so that the
+                // down state is circular.
+                let buttonClipView = OWSLayerView.circleView()
+                buttonClipView.addSubview(button)
+                button.autoPinEdgesToSuperviewEdges()
+                buttonClipView.clipsToBounds = true
 
                 let buttonWrapper = UIView.container()
-                buttonWrapper.addSubview(button)
-                button.autoPinEdge(toSuperviewEdge: .top)
-                button.autoPinEdge(toSuperviewEdge: .bottom)
-                button.autoHCenterInSuperview()
-                button.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-                button.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+                buttonWrapper.addSubview(buttonClipView)
+                buttonClipView.autoPinEdge(toSuperviewEdge: .top)
+                buttonClipView.autoPinEdge(toSuperviewEdge: .bottom)
+                buttonClipView.autoHCenterInSuperview()
+                buttonClipView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+                buttonClipView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
                 return buttonWrapper
             }
