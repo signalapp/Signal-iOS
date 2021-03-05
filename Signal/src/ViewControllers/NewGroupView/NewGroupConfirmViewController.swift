@@ -43,14 +43,27 @@ public class NewGroupConfirmViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        recipientTableView.applyTheme(to: self)
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        recipientTableView.removeTheme(from: self)
+    }
+
     @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        recipientTableView.forcePresentedStyle = presentingViewController != nil
-
         title = NSLocalizedString("NEW_GROUP_NAME_GROUP_VIEW_TITLE",
                                   comment: "The title for the 'name new group' view.")
+
+        addChild(recipientTableView)
+        view.addSubview(recipientTableView.view)
 
         view.backgroundColor = recipientTableView.tableBackgroundColor
 
@@ -94,7 +107,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
         if membersDoNotSupportGroupsV2.count > 0 {
             let legacyGroupSection = UIView()
-            legacyGroupSection.backgroundColor = Theme.secondaryBackgroundColor
+            legacyGroupSection.backgroundColor = recipientTableView.tableBackgroundColor
             legacyGroupSection.preservesSuperviewLayoutMargins = true
             view.addSubview(legacyGroupSection)
             legacyGroupSection.autoPinWidthToSuperview()
@@ -127,7 +140,7 @@ public class NewGroupConfirmViewController: OWSViewController {
             }
             let attributedString = NSMutableAttributedString(string: legacyGroupText)
             attributedString.setAttributes([
-                .foregroundColor: Theme.accentBlueColor
+                .foregroundColor: Theme.primaryTextColor
                 ],
                                            forSubstring: learnMoreText)
 
@@ -145,13 +158,12 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                            action: #selector(didTapLegacyGroupView)))
         }
 
-        addChild(recipientTableView)
-        view.addSubview(recipientTableView.view)
-
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .trailing)
         recipientTableView.view.autoPinEdge(.top, to: .bottom, of: lastSection)
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientTableView.view, avoidNotch: false)
+
+        recipientTableView.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
 
         updateTableContents()
     }
@@ -452,8 +464,6 @@ class NewLegacyGroupView: UIView {
     }
 
     func present(fromViewController: UIViewController) {
-        tableViewController.forcePresentedStyle = true
-
         let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
             let stackView = UIStackView(arrangedSubviews: [viewToWrap])
             stackView.axis = .vertical

@@ -174,7 +174,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
         self.layoutMargins = .zero
         contentView.layoutMargins = .zero
-        contentView.backgroundColor = Theme.washColor
+        contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
 
         textLabel.font = NewGroupMemberCell.nameFont
         textLabel.textColor = Theme.primaryTextColor

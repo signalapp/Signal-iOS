@@ -141,6 +141,21 @@ public extension OWSTableItem {
                      actionBlock: actionBlock)
     }
 
+    @available(swift, obsoleted: 1.0)
+    static func buildCellWithAccessoryLabel(itemName: String,
+                                            textColor: UIColor?,
+                                            accessoryText: String?,
+                                            accessoryType: UITableViewCell.AccessoryType,
+                                            accessoryImage: UIImage?,
+                                            accessibilityIdentifier: String?) -> UITableViewCell {
+        buildIconNameCell(itemName: itemName,
+                          textColor: textColor,
+                          accessoryText: accessoryText,
+                          accessoryType: accessoryType,
+                          accessoryImage: accessoryImage,
+                          accessibilityIdentifier: accessibilityIdentifier)
+    }
+
     @nonobjc
     static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
                                             tintColor: UIColor? = nil,
@@ -202,6 +217,7 @@ public extension OWSTableItem {
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalHigh()
         nameLabel.setContentHuggingHorizontalHigh()
+        nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
         arrangedSubviews.append(nameLabel)
         if let customColor = customColor {
             nameLabel.textColor = customColor
@@ -210,7 +226,7 @@ public extension OWSTableItem {
         if let accessoryText = accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
-            accessoryLabel.textColor = Theme.secondaryTextAndIconColor
+            accessoryLabel.textColor = .ows_gray45
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true
             accessoryLabel.lineBreakMode = .byTruncatingTail
@@ -284,7 +300,7 @@ public extension OWSTableItem {
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)
         iconView.autoCenterInSuperview()
-        iconWrapper.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : Theme.washColor
+        iconWrapper.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02
         iconWrapper.layer.cornerRadius = iconSize * 0.5
         iconWrapper.autoSetDimensions(to: CGSize(square: iconSize))
         iconWrapper.setCompressionResistanceHigh()

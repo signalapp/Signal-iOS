@@ -9,6 +9,8 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        title = NSLocalizedString("SETTINGS_NOTIFICATION_CONTENT_TITLE", comment: "")
+
         updateTableContents()
     }
 

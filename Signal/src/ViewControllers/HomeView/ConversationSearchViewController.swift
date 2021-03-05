@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -226,6 +226,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
+
+            cell.setUseLargeAvatars()
 
             guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")

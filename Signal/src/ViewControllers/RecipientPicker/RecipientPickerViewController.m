@@ -137,7 +137,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _tableViewController.delegate = self;
 
     self.tableViewController.defaultSeparatorInsetLeading
-        = OWSTableViewController2.cellHInnerMargin + kStandardAvatarSize + kContactCellAvatarTextMargin;
+        = OWSTableViewController2.cellHInnerMargin + kSmallAvatarSize + kContactCellAvatarTextMargin;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
@@ -249,6 +249,7 @@ const NSUInteger kMinimumSearchLength = 2;
               [buttonStack addArrangedSubview:button];
 
               UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:innerIconSize];
+              iconView.backgroundColor = self.tableViewController.cellBackgroundColor;
 
               UILabel *label = [UILabel new];
               label.text = title;
@@ -273,7 +274,7 @@ const NSUInteger kMinimumSearchLength = 2;
                                     : @"Label for the 'create new group' button."),
             @selector(newGroupButtonPressed),
             @"newGroupButton",
-            ThemeIconComposeNewGroup,
+            ThemeIconComposeNewGroupLarge,
             35);
     }
 
@@ -282,7 +283,7 @@ const NSUInteger kMinimumSearchLength = 2;
                       @"Label for a button that lets users search for contacts by phone number"),
             @selector(hideBackgroundView),
             @"searchByPhoneNumberButton",
-            ThemeIconComposeFindByPhoneNumber,
+            ThemeIconComposeFindByPhoneNumberLarge,
             42);
     }
 
@@ -291,7 +292,7 @@ const NSUInteger kMinimumSearchLength = 2;
                       "Label for the cell that presents the 'invite contacts' workflow."),
             @selector(presentInviteFlow),
             @"inviteContactsButton",
-            ThemeIconComposeInvite,
+            ThemeIconComposeInviteLarge,
             38);
     }
 
@@ -306,7 +307,7 @@ const NSUInteger kMinimumSearchLength = 2;
     stackView.layoutMargins = UIEdgeInsetsMake(20, 20, 20, 20);
 
     UIView *view = [UIView new];
-    view.backgroundColor = Theme.backgroundColor;
+    view.backgroundColor = self.tableViewController.tableBackgroundColor;
     [view addSubview:stackView];
     [stackView autoPinWidthToSuperview];
     [stackView autoVCenterInSuperview];
@@ -392,85 +393,62 @@ const NSUInteger kMinimumSearchLength = 2;
     }
 
     OWSTableSection *staticSection = [OWSTableSection new];
+    staticSection.separatorInsetLeading = @(OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing);
 
     BOOL isSearching = self.searchResults != nil;
 
     if (self.shouldShowNewGroup && !isSearching) {
-        [staticSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            NSString *cellName = NSLocalizedString(@"NEW_GROUP_BUTTON", comment
-                                                                   : @"Label for the 'create new group' button.");
-                            UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeNewGroup
-                                                                             innerIconSize:35];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
-                                                                           iconView:iconView
-                                                                        iconSpacing:kContactCellAvatarTextMargin];
-
-                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"new_group");
-
-                            return cell;
-                        }
-                        actionBlock:^{
-                            [weakSelf newGroupButtonPressed];
-                        }]];
+        [staticSection addItem:[OWSTableItem disclosureItemWithIcon:ThemeIconComposeNewGroup
+                                                               name:NSLocalizedString(
+                                                                        @"NEW_GROUP_BUTTON", comment
+                                                                        : @"Label for the 'create new group' button.")
+                                                      accessoryText:nil
+                                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                        RecipientPickerViewController, @"new_group")
+                                                        actionBlock:^{ [weakSelf newGroupButtonPressed]; }]];
     }
 
     // Find Non-Contacts by Phone Number
     if (self.allowsAddByPhoneNumber && !isSearching) {
         [staticSection
             addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            NSString *cellName = NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
-                                @"A label the cell that lets you add a new member to a group.");
-                            UIView *iconView =
-                                [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeFindByPhoneNumber
-                                                              innerIconSize:42];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
-                                                                           iconView:iconView
-                                                                        iconSpacing:kContactCellAvatarTextMargin];
-                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"find_by_phone");
-
-                            return cell;
-                        }
-                        actionBlock:^{
-                            FindByPhoneNumberViewController *viewController = [[FindByPhoneNumberViewController alloc]
-                                        initWithDelegate:self
-                                              buttonText:self.findByPhoneNumberButtonTitle
-                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
-                            [weakSelf.navigationController pushViewController:viewController animated:YES];
-                        }]];
+                         disclosureItemWithIcon:ThemeIconComposeFindByPhoneNumber
+                                           name:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                                    @"A label the cell that lets you add a new member to a group.")
+                                  accessoryText:nil
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                    RecipientPickerViewController, @"find_by_phone")
+                                    actionBlock:^{
+                                        FindByPhoneNumberViewController *viewController =
+                                            [[FindByPhoneNumberViewController alloc]
+                                                        initWithDelegate:self
+                                                              buttonText:self.findByPhoneNumberButtonTitle
+                                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
+                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                    }]];
     }
 
     if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites && !isSearching) {
         // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            NSString *cellName = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                @"Label for the cell that presents the 'invite contacts' workflow.");
-                            UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeInvite
-                                                                             innerIconSize:38];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
-                                                                           iconView:iconView
-                                                                        iconSpacing:kContactCellAvatarTextMargin];
-                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"invite_contacts");
+                         disclosureItemWithIcon:ThemeIconComposeInvite
+                                           name:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
+                                  accessoryText:nil
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                    RecipientPickerViewController, @"invite_contacts")
+                                    actionBlock:^{ [weakSelf presentInviteFlow]; }]];
+    }
 
-                            return cell;
-                        }
-                        actionBlock:^{
-                            [weakSelf presentInviteFlow];
-                        }]];
+    if (staticSection.itemCount > 0) {
+        [contents addSection:staticSection];
     }
 
     // Render any non-contact picked recipients
     if (self.pickedRecipients.count > 0 && self.searchResults == nil) {
+        OWSTableSection *pickedSection = [OWSTableSection new];
+
         BOOL hadNonContactRecipient = NO;
         for (PickedRecipient *recipient in self.pickedRecipients) {
             if (self.shouldHideLocalRecipient &&
@@ -480,19 +458,16 @@ const NSUInteger kMinimumSearchLength = 2;
 
             if (![self.contactsViewHelper fetchSignalAccountForAddress:recipient.address]) {
                 hadNonContactRecipient = YES;
-                [staticSection addItem:[self itemForRecipient:recipient]];
+                [pickedSection addItem:[self itemForRecipient:recipient]];
             }
         }
 
-        // If we have non-contact selections, add a title to the static section
+        // If we have non-contact selections, add a title to the picked section
         if (hadNonContactRecipient) {
-            staticSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+            pickedSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
                 @"a title for the selected section of the 'recipient picker' view.");
+            [contents addSection:pickedSection];
         }
-    }
-
-    if (staticSection.itemCount > 0) {
-        [contents addSection:staticSection];
     }
 
     if (self.searchResults != nil) {
@@ -1315,14 +1290,20 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = self.tableBackgroundColor;
+    [self.tableViewController applyThemeToViewController:self];
     self.searchBar.searchFieldBackgroundColorOverride
         = Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xe0e0e0];
+    self.tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor;
 }
 
-- (UIColor *)tableBackgroundColor
+- (void)applyThemeToViewController:(UIViewController *)viewController
 {
-    return self.tableViewController.tableBackgroundColor;
+    [self.tableViewController applyThemeToViewController:viewController];
+}
+
+- (void)removeThemeFromViewController:(UIViewController *)viewController
+{
+    [self.tableViewController removeThemeFromViewController:viewController];
 }
 
 @end

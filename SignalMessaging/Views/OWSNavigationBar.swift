@@ -134,7 +134,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public enum NavigationBarStyle: Int {
-        case clear, alwaysDark, `default`, secondaryBar
+        case clear, alwaysDarkAndClear, alwaysDark, `default`, secondaryBar
     }
 
     private var currentStyle: NavigationBarStyle?
@@ -187,6 +187,11 @@ public class OWSNavigationBar: UINavigationBar {
 
         switch style {
         case .clear:
+            respectsTheme = false
+            removeSecondaryBarOverride()
+            removeDarkThemeOverride()
+            applyTransparentBarOverride()
+        case .alwaysDarkAndClear:
             respectsTheme = false
             removeSecondaryBarOverride()
             applyDarkThemeOverride()

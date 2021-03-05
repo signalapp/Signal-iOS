@@ -67,6 +67,9 @@ public enum ThemeIcon: UInt {
     case composeNewGroup
     case composeFindByPhoneNumber
     case composeInvite
+    case composeNewGroupLarge
+    case composeFindByPhoneNumberLarge
+    case composeInviteLarge
     case compose32
 
     case checkCircle
@@ -220,8 +223,7 @@ public extension Theme {
         case .settingsHelp:
             return isDarkThemeEnabled ? "help-solid-24" : "help-outline-24"
         case .settingsInvite:
-            // TODO: waiting on design
-            return "more-horiz-24"
+            return isDarkThemeEnabled ? "invite-solid-24" : "invite-outline-24"
         case .settingsDonate:
             return isDarkThemeEnabled ? "heart-solid-24" : "heart-outline-24"
         case .settingsAdvanced:
@@ -267,10 +269,16 @@ public extension Theme {
         case .compose24:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:
-            return "group-outline-256"
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .composeFindByPhoneNumber:
-            return "phone-number-256"
+            return "hashtag-24"
         case .composeInvite:
+            return isDarkThemeEnabled ? "invite-solid-24" : "invite-outline-24"
+        case .composeNewGroupLarge:
+            return "group-outline-256"
+        case .composeFindByPhoneNumberLarge:
+            return "phone-number-256"
+        case .composeInviteLarge:
             return "invite-outline-256"
         case .compose32:
             return isDarkThemeEnabled ? "compose-solid-32" : "compose-outline-32"

@@ -86,6 +86,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
                                                name: StickerManager.packsDidChange,
                                                object: nil)
 
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + iconSize + iconSpacing
+
         updateState()
 
         StickerManager.refreshContents()
@@ -351,6 +353,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
         return view
     }
 
+    private let iconSize: CGFloat = 56
+    private let iconSpacing: CGFloat = 12
     private func buildTableCell(dataSource: StickerPackDataSource,
                                 actionIconName: String?,
                                 block: @escaping () -> Void) -> UITableViewCell {
@@ -366,7 +370,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
         let authorNameValue = dataSource.author?.filterForDisplay
 
         let iconView = reusableCoverView(forDataSource: dataSource) ?? UIView()
-        let iconSize: CGFloat = 64
         iconView.autoSetDimensions(to: CGSize(square: iconSize))
 
         let title: String
@@ -435,7 +438,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         let stack = UIStackView(arrangedSubviews: subviews)
         stack.axis = .horizontal
         stack.alignment = .center
-        stack.spacing = 12
+        stack.spacing = iconSpacing
 
         cell.contentView.addSubview(stack)
         stack.autoPinEdgesToSuperviewMargins()

@@ -67,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];
-    [self.cellView autoPinEdgesToSuperviewMargins];
+    [self.cellView autoPinWidthToSuperviewMargins];
+    [self.cellView autoPinHeightToSuperviewWithMargin:7];
     self.cellView.userInteractionEnabled = self.allowUserInteraction;
 }
 
@@ -136,9 +137,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.cellView setCustomAvatar:customAvatar];
 }
 
-- (void)setUseSmallAvatars
+- (void)setUseLargeAvatars
 {
-    self.cellView.useSmallAvatars = YES;
+    self.cellView.useLargeAvatars = YES;
 }
 
 - (BOOL)forceDarkAppearance

@@ -47,6 +47,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    [self.tableViewController applyThemeToViewController:self];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    [self.tableViewController removeThemeFromViewController:self];
+}
+
 #pragma mark - Table view data source
 
 - (void)updateTableContents

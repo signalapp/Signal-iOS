@@ -16,7 +16,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
-        navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
@@ -140,7 +140,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         contents.addSection(section3)
 
         let section4 = OWSTableSection()
-        section4.add(.disclosureItem(
+        section4.add(.item(
             icon: .settingsInvite,
             name: NSLocalizedString("SETTINGS_INVITE_TITLE", comment: "Settings table view cell label"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "invite"),
@@ -223,7 +223,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         let nameLabel = UILabel()
         vStackView.addArrangedSubview(nameLabel)
-        nameLabel.font = .ows_dynamicTypeTitle2Clamped
+        nameLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_medium
         if let fullName = snapshot.fullName, !fullName.isEmpty {
             nameLabel.text = fullName
             nameLabel.textColor = Theme.primaryTextColor

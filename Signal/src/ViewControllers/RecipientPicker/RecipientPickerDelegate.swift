@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -173,6 +173,7 @@ extension RecipientPickerViewController {
             return OWSTableItem(
                 customCellBlock: { [weak self] in
                     let cell = ContactTableViewCell()
+
                     guard let self = self else { return cell }
 
                     if let delegate = self.delegate {

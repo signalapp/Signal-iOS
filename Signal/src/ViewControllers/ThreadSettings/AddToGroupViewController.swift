@@ -41,7 +41,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressCloseButton))
 
-        tableView.separatorStyle = .none
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
     }
 
     public override func viewWillAppear(_ animated: Bool) {

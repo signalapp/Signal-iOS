@@ -24,9 +24,10 @@ public class NonContactTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(iconView)
 
         contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.autoPinWidthToSuperviewMargins()
+        stackView.autoPinHeightToSuperview(withMargin: 7)
 
-        let avatarSize = CGFloat(kStandardAvatarSize)
+        let avatarSize = CGFloat(kSmallAvatarSize)
         iconView.autoSetDimensions(to: CGSize(square: avatarSize))
         iconView.layer.cornerRadius = avatarSize * 0.5
         iconView.clipsToBounds = true

@@ -12,6 +12,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSDeviceTableViewCell ()
+
+@property (nonatomic) UIButton *unlinkButton;
+@property (nonatomic, nullable) void (^unlinkAction)(void);
+
+@end
+
 @implementation OWSDeviceTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
@@ -30,26 +37,53 @@ NS_ASSUME_NONNULL_BEGIN
     self.nameLabel = [UILabel new];
     self.linkedLabel = [UILabel new];
     self.lastSeenLabel = [UILabel new];
+    self.unlinkButton = [UIButton new];
+    self.unlinkButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.unlinkButton addTarget:self action:@selector(didTapUnlink) forControlEvents:UIControlEventTouchUpInside];
+    [self.unlinkButton setImage:[[UIImage imageNamed:@"minus-circle-solid-24"]
+                                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                       forState:UIControlStateNormal];
+    self.unlinkButton.tintColor = UIColor.ows_accentRedColor;
+    self.unlinkButton.hidden = YES;
+    [self.unlinkButton autoSetDimension:ALDimensionWidth toSize:24];
 
-    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
         self.linkedLabel,
         self.lastSeenLabel,
     ]];
-    stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.alignment = UIStackViewAlignmentLeading;
-    stackView.spacing = 2;
-    [self.contentView addSubview:stackView];
-    [stackView autoPinEdgesToSuperviewMargins];
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.alignment = UIStackViewAlignmentLeading;
+    vStackView.spacing = 2;
+
+    UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.unlinkButton,
+        vStackView,
+    ]];
+    hStackView.axis = UILayoutConstraintAxisHorizontal;
+    hStackView.spacing = 16;
+
+    [self.contentView addSubview:hStackView];
+    [hStackView autoPinEdgesToSuperviewMargins];
 }
 
-- (void)configureWithDevice:(OWSDevice *)device
+- (void)configureWithDevice:(OWSDevice *)device unlinkAction:(void (^)(void))unlinkAction
 {
     OWSAssertDebug(device);
 
     self.nameLabel.font = OWSTableItem.primaryLabelFont;
+    self.nameLabel.textColor = Theme.primaryTextColor;
     self.linkedLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    self.linkedLabel.textColor = Theme.secondaryTextAndIconColor;
     self.lastSeenLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    self.lastSeenLabel.textColor = Theme.secondaryTextAndIconColor;
+
+    // TODO: This is not super, but the best we can do until
+    // OWSTableViewController2 supports delete actions for
+    // the inset cell style (which probably means building
+    // custom editing support)
+    self.unlinkAction = unlinkAction;
+    self.unlinkButton.hidden = !self.isEditing;
 
     self.nameLabel.text = device.displayName;
 
@@ -73,6 +107,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.lastSeenLabel.text =
         [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:displayedLastSeenAt]];
+}
+
+- (void)didTapUnlink
+{
+    self.unlinkAction();
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection

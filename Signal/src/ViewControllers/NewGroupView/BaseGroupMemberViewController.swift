@@ -85,7 +85,7 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         // Don't use dynamic type in this label.
         memberCountLabel.font = UIFont.ows_dynamicTypeBody2.withSize(12)
-        memberCountLabel.textColor = Theme.secondaryTextAndIconColor
+        memberCountLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray60
         memberCountLabel.textAlignment = CurrentAppContext().isRTL ? .left : .right
 
         memberCountWrapper.addSubview(memberCountLabel)
@@ -107,8 +107,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         updateMemberCount()
         tryToFillInMissingUuids()
-
-        view.backgroundColor = recipientPicker.tableBackgroundColor
     }
 
     private func tryToFillInMissingUuids() {
@@ -284,6 +282,8 @@ public class BaseGroupMemberViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        recipientPicker.applyTheme(to: self)
+
         guard let navigationController = navigationController else {
             owsFailDebug("Missing navigationController.")
             return
@@ -293,6 +293,12 @@ public class BaseGroupMemberViewController: OWSViewController {
                                                                target: self,
                                                                action: #selector(dismissPressed))
         }
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        recipientPicker.removeTheme(from: self)
     }
 
     @objc

@@ -20,7 +20,7 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 @property (nonatomic, nullable) UIImage *customAvatar;
 
-@property (nonatomic) BOOL useSmallAvatars;
+@property (nonatomic) BOOL useLargeAvatars;
 
 - (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
     NS_SWIFT_NAME(configureWithSneakyTransaction(recipientAddress:));

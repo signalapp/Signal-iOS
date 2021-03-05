@@ -102,12 +102,23 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
-        appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
+
+        switch OWSScreenLock.shared.biometryType {
+        case .unknown:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
+        case .passcode:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_PASSCODE", comment: "Section footer")
+        case .faceId:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_FACEID", comment: "Section footer")
+        case .touchId:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_TOUCHID", comment: "Section footer")
+        }
+
         appSecuritySection.add(.switch(
             withText: NSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: { Self.preferences.screenSecurityIsEnabled() },
             target: self,
-            selector: #selector(didToggleReadReceiptsSwitch)
+            selector: #selector(didToggleScreenSecuritySwitch)
         ))
         appSecuritySection.add(.switch(
             withText: NSLocalizedString(
@@ -116,7 +127,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             ),
             isOn: { OWSScreenLock.shared.isScreenLockEnabled() },
             target: self,
-            selector: #selector(didToggleScreenScreenLockSwitch)
+            selector: #selector(didToggleScreenLockSwitch)
         ))
         if OWSScreenLock.shared.isScreenLockEnabled() {
             appSecuritySection.add(.disclosureItem(
@@ -138,6 +149,10 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_SECTION_TITLE_CALLING",
                 comment: "settings topic header for table section"
             )
+            callsSection.footerTitle = NSLocalizedString(
+                "SETTINGS_SECTION_FOOTER_CALLING",
+                comment: "Footer for table section"
+            )
             callsSection.add(.switch(
                 withText: NSLocalizedString(
                     "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
@@ -151,6 +166,10 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
 
         let advancedSection = OWSTableSection()
+        advancedSection.footerTitle = NSLocalizedString(
+            "SETTINGS_PRIVACY_ADVANCED_FOOTER",
+            comment: "Footer for table section"
+        )
         advancedSection.add(.disclosureItem(
             withText: NSLocalizedString(
                 "SETTINGS_PRIVACY_ADVANCED_TITLE",
@@ -182,7 +201,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didToggleScreenScreenLockSwitch(_ sender: UISwitch) {
+    func didToggleScreenLockSwitch(_ sender: UISwitch) {
         OWSScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
     }

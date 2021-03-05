@@ -152,7 +152,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return navController
         }
-        navigationBar.switchToStyle(.clear)
+        navigationBar.switchToStyle(.alwaysDarkAndClear)
 
         return navController
     }
@@ -243,7 +243,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return
         }
-        navigationBar.switchToStyle(.clear)
+        navigationBar.switchToStyle(.alwaysDarkAndClear)
 
         updateContents(isApproved: false)
     }
