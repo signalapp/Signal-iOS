@@ -78,7 +78,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "Sessionの新バージョンがあります！";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "アップデートする";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "更新する";
 
 /* Name of application */
 "APPLICATION_NAME" = "Session";
@@ -1048,7 +1048,7 @@
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
 
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "グループをアップデートしました";
+"GROUP_UPDATED" = "グループを更新しました";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "グループを離れました";
@@ -1686,10 +1686,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "安全番号はSessionユーザーの組合せごとに異なります。%@が表示している安全番号があなたとの番号か確認してください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSessionを使っています。最新版にアップデートしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSessionを使っています。最新版に更新してください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSessionを使っています。最新版にアップデートするようお願いしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSessionを使っています。最新版に更新するようお願いしてください。";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "QRコードは安全番号ではありません。Sessionは最新バージョンですか？";
@@ -2496,7 +2496,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "安全なビデオ電話にようこそ！";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Sessionは、まもなくiOS 10以上だけの対応になります。アップデートしてください。";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Sessionは、まもなくiOS 10以上だけの対応になります。「設定」アプリ >> 「一般」 >> 「ソフトウェア・アップデート」の手段で更新してください。";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOSを更新する";
