@@ -715,6 +715,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
     }
 
+    @objc
     public var cellBackgroundColor: UIColor {
         if useNewStyle {
             if isUsingPresentedStyle {

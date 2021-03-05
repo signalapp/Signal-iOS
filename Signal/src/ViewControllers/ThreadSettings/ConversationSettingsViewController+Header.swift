@@ -68,7 +68,7 @@ extension ConversationSettingsViewController {
         }
 
         func buildAvatarView() -> UIView {
-            let avatarSize: UInt = kLargeAvatarSize
+            let avatarSize: UInt = 88
             let avatarImage = OWSAvatarBuilder.buildImage(thread: viewController.thread,
                                                           diameter: avatarSize,
                                                           transaction: transaction)
@@ -83,7 +83,7 @@ extension ConversationSettingsViewController {
             let label = UILabel()
             label.text = viewController.threadName(transaction: transaction)
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+            label.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
             label.lineBreakMode = .byTruncatingTail
             return label
         }
@@ -136,20 +136,20 @@ extension ConversationSettingsViewController {
         mutating func addLastSubviews() {
             // TODO Message Request: In order to debug the profile is getting shared in the right moments,
             // display the thread whitelist state in settings. Eventually we can probably delete this.
-            #if DEBUG
-            let viewController = self.viewController
-            let isThreadInProfileWhitelist = UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
-                                                                            transaction: transaction)
-            let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
-            addSubtitleLabel(text: hasSharedProfile)
-            #endif
+            if DebugFlags.showWhitelisted {
+                let viewController = self.viewController
+                let isThreadInProfileWhitelist = UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
+                                                                                transaction: transaction)
+                let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
+                addSubtitleLabel(text: hasSharedProfile)
+            }
         }
 
         func build() -> UIView {
             let header = UIStackView(arrangedSubviews: subviews)
             header.axis = .vertical
             header.alignment = .center
-            header.layoutMargins = UIEdgeInsets(top: 8, leading: 18, bottom: 16, trailing: 18)
+            header.layoutMargins = UIEdgeInsets(top: 8, leading: 18, bottom: 24, trailing: 18)
             header.isLayoutMarginsRelativeArrangement = true
 
             header.addGestureRecognizer(UITapGestureRecognizer(target: viewController, action: #selector(conversationNameTouched)))

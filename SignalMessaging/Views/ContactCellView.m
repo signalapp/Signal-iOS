@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kContactCellAvatarTextMargin = 8;
+const CGFloat kContactCellAvatarTextMargin = 12;
 
 @interface ContactCellView ()
 
@@ -115,12 +115,12 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 {
     self.nameLabel.font = OWSTableItem.primaryLabelFont;
     self.subtitleLabel.font = [UIFont ows_dynamicTypeCaption1ClampedFont];
-    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
+    self.accessoryLabel.font = [UIFont ows_dynamicTypeBodyClampedFont];
 
     self.nameLabel.textColor = self.forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor;
     self.subtitleLabel.textColor
         = self.forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor;
-    self.accessoryLabel.textColor = Theme.middleGrayColor;
+    self.accessoryLabel.textColor = UIColor.ows_gray45Color;
 
     if (self.nameLabel.attributedText.string.length > 0) {
         NSString *nameLabelText = self.nameLabel.attributedText.string;
@@ -241,7 +241,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
 - (NSUInteger)avatarSize
 {
-    return self.useSmallAvatars ? kSmallAvatarSize : kStandardAvatarSize;
+    return self.useLargeAvatars ? kStandardAvatarSize : kSmallAvatarSize;
 }
 
 - (void)setForceDarkAppearance:(BOOL)forceDarkAppearance
@@ -284,7 +284,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     }
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = nil;
-    self.useSmallAvatars = NO;
+    self.useLargeAvatars = NO;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification

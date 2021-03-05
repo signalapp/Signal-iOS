@@ -139,9 +139,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
         if isGroupThread {
             updateNavigationBar()
-        } else {
-            self.title = NSLocalizedString(
-                "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
         }
 
         // The header should "extend" offscreen so that we

@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kSmallAvatarSize = 40;
+const NSUInteger kSmallAvatarSize = 36;
 const NSUInteger kStandardAvatarSize = 48;
 const NSUInteger kMediumAvatarSize = 68;
 const NSUInteger kLargeAvatarSize = 96;

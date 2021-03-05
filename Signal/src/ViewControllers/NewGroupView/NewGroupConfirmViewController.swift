@@ -62,6 +62,9 @@ public class NewGroupConfirmViewController: OWSViewController {
         title = NSLocalizedString("NEW_GROUP_NAME_GROUP_VIEW_TITLE",
                                   comment: "The title for the 'name new group' view.")
 
+        addChild(recipientTableView)
+        view.addSubview(recipientTableView.view)
+
         view.backgroundColor = recipientTableView.tableBackgroundColor
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NEW_GROUP_CREATE_BUTTON",
@@ -104,7 +107,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
         if membersDoNotSupportGroupsV2.count > 0 {
             let legacyGroupSection = UIView()
-            legacyGroupSection.backgroundColor = Theme.secondaryBackgroundColor
+            legacyGroupSection.backgroundColor = recipientTableView.tableBackgroundColor
             legacyGroupSection.preservesSuperviewLayoutMargins = true
             view.addSubview(legacyGroupSection)
             legacyGroupSection.autoPinWidthToSuperview()
@@ -137,7 +140,7 @@ public class NewGroupConfirmViewController: OWSViewController {
             }
             let attributedString = NSMutableAttributedString(string: legacyGroupText)
             attributedString.setAttributes([
-                .foregroundColor: Theme.accentBlueColor
+                .foregroundColor: Theme.primaryTextColor
                 ],
                                            forSubstring: learnMoreText)
 
@@ -155,13 +158,12 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                            action: #selector(didTapLegacyGroupView)))
         }
 
-        addChild(recipientTableView)
-        view.addSubview(recipientTableView.view)
-
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .trailing)
         recipientTableView.view.autoPinEdge(.top, to: .bottom, of: lastSection)
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientTableView.view, avoidNotch: false)
+
+        recipientTableView.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
 
         updateTableContents()
     }

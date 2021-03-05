@@ -337,10 +337,13 @@ public class DebugFlags: BaseFlags {
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
 
     @objc
-    public static let showProfileKeyAndUuidsIndicator = build.includes(.qa)
+    public static let showProfileKeyAndUuidsIndicator = false
 
     @objc
-    public static let showCapabilityIndicators = build.includes(.qa)
+    public static let showCapabilityIndicators = false
+
+    @objc
+    public static let showWhitelisted = false
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)
