@@ -784,6 +784,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public func removeTheme(from viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        // We don't want to remove the theme if we're being dismissed,
+        // as it causes a jarring transition. We must test this on the
+        // navigation controller, otherwise it may be set when pushing
+        // or popping a view, where we *do* want to remove the theme.
+        guard viewController.navigationController?.isBeingDismissed != true else { return }
+
         if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = nil
             navigationBar.switchToStyle(.default)
