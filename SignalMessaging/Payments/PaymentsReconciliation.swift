@@ -62,11 +62,7 @@ public class PaymentsReconciliation {
             }.done(on: .global()) { _ in
                 self.reportSuccess()
             }.catch(on: .global()) { error in
-                if case PaymentsError.timeout = error {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebugUnlessNetworkFailure(error)
-                }
+                owsFailDebugUnlessMCNetworkFailure(error)
                 let error = error.asUnretryableError
                 self.reportError(error)
             }
@@ -193,6 +189,10 @@ public class PaymentsReconciliation {
         }
     }
 
+    enum ReconciliationError: Error {
+        case unsavedChanges
+    }
+
     private static func reconcileIfNecessary(transactionHistory: MCTransactionHistory) {
 
         // We should skip reconciliation if accountActivity hasn't changed
@@ -211,7 +211,7 @@ public class PaymentsReconciliation {
         // transaction so the risk is of a long-running write transaction.
         //
         // Therefore we perform the reconciliation in a read transaction.  If any db writes
-        // are necessary, we throw PaymentsError.unsavedChanges. We then re-perform
+        // are necessary, we throw ReconciliationError.unsavedChanges. We then re-perform
         // reconciliation with a write transaction.  Most reconciliations don't need to
         // perform any db writes, so in this way we can avoid write transactions unless
         // necessary.
@@ -233,7 +233,7 @@ public class PaymentsReconciliation {
                                          transactionHistory: transactionHistory)
             }
         } catch {
-            if case PaymentsError.unsavedChanges = error {
+            if case ReconciliationError.unsavedChanges = error {
                 Logger.info("Reconciliation has unsaved changes.")
 
                 do {
@@ -439,7 +439,7 @@ public class PaymentsReconciliation {
             if let transaction = transaction as? SDSAnyWriteTransaction {
                 try Self.payments.tryToInsertPaymentModel(paymentModel, transaction: transaction)
             } else {
-                throw PaymentsError.unsavedChanges
+                throw ReconciliationError.unsavedChanges
             }
 
             databaseState.add(paymentModel: paymentModel)

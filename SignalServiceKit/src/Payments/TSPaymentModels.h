@@ -40,6 +40,9 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value);
 //
 // Each state implies which properties of a payment model
 // should be present / can be trusted.  See TSPaymentModel.isValid.
+//
+// NOTE: If you add or remove cases, you need to update
+//       paymentStatesToIgnore() and paymentStatesToProcess().
 typedef NS_ENUM(NSUInteger, TSPaymentState) {
     // Not (yet) in ledger.
     TSPaymentStateOutgoingUnsubmitted = 0,

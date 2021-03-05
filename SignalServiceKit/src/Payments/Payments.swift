@@ -6,21 +6,30 @@ import Foundation
 import PromiseKit
 
 public enum PaymentsError: Error {
+    case notEnabled
+    case userNotRegisteredOrAppNotReady
     case userHasNoPublicAddress
-    case invalidSignature
     case invalidCurrency
     case invalidWalletKey
     case invalidAmount
     case invalidFee
     case insufficientFunds
     case timeout
-    case userNotRegisteredOrAppNotReady
     case invalidModel
-    case notEnabled
-    case unknownCurrency
     case tooOldToSubmit
     case indeterminateState
-    case unsavedChanges
+    case unknownSDKError
+    case invalidInput
+    case connectionFailure
+    case authorizationFailure
+    case invalidServerResponse
+    case attestationVerificationFailed
+    case outdatedClient
+    case serverRateLimited
+    case serializationError
+    case verificationStatusUnknown
+    case ledgerBlockTimestampUnknown
+    case missingModel
 }
 
 // MARK: -
@@ -90,6 +99,8 @@ public protocol Payments: AnyObject {
 
     func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
                                  transaction: SDSAnyWriteTransaction) throws
+
+    func didReceiveMCAuthError()
 
     func warmCaches()
 }
@@ -327,6 +338,10 @@ extension MockPayments: PaymentsSwift {
 
     public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
                                         transaction: SDSAnyWriteTransaction) throws {
+        owsFail("Not implemented.")
+    }
+
+    public func didReceiveMCAuthError() {
         owsFail("Not implemented.")
     }
 }

@@ -253,9 +253,7 @@ public extension Theme {
         case .attachmentLocation:
             return "location-outline-32"
         case .attachmentPayment:
-//            // PAYMENTS TODO:
-//            return "location-outline-32"
-            return "payment-outline-32"
+            return "payments-outline-24"
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
         case .messageActionForward:

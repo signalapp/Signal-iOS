@@ -382,12 +382,12 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.Balance> in
             let (promise, resolver) = Promise<MobileCoin.Balance>.pending()
-            client.updateBalance { (result: Swift.Result<Balance, Error>) in
+            client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success(let balance):
                     resolver.fulfill(balance)
                 case .failure(let error):
-                    owsFailDebugUnlessNetworkFailure(error)
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                 }
             }
@@ -400,7 +400,7 @@ class MobileCoinAPI {
             }
             return TSPaymentAmount(currency: .mobileCoin, picoMob: amountPicoMob)
         }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getLocalBalance") { () -> Error in
             PaymentsError.timeout
@@ -424,7 +424,7 @@ class MobileCoinAPI {
             // We don't need to support amountPicoMobHigh.
             //
             // TODO: Are we always going to use _minimum_ fee?
-            client.minimumFee(amount: paymentAmount.picoMob) { (result: Swift.Result<UInt64, Error>) in
+            client.minimumFee(amount: paymentAmount.picoMob) { (result: Swift.Result<UInt64, ConnectionError>) in
                 switch result {
                 case .success(let feePicoMob):
                     let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
@@ -441,7 +441,7 @@ class MobileCoinAPI {
                     Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
                     resolver.fulfill(fee)
                 case .failure(let error):
-                    owsFailDebug("Error: \(error)")
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                 }
             }
@@ -450,7 +450,7 @@ class MobileCoinAPI {
             Logger.verbose("Success: \(value)")
             return value
         }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "prepareTransaction") { () -> Error in
             PaymentsError.timeout
@@ -491,7 +491,9 @@ class MobileCoinAPI {
             // We don't need to support amountPicoMobHigh.
             client.prepareTransaction(to: recipientPublicAddress,
                                       amount: paymentAmount.picoMob,
-                                      fee: feeAmount.picoMob) { (result: Swift.Result<(MobileCoin.Transaction, MobileCoin.Receipt), Error>) in
+                                      fee: feeAmount.picoMob) { (result: Swift.Result<(transaction: MobileCoin.Transaction,
+                                                                                       receipt: MobileCoin.Receipt),
+                                                                                      TransactionPreparationError>) in
                                         switch result {
                                         case .success(let transactionAndReceipt):
                                             let (transaction, receipt) = transactionAndReceipt
@@ -500,13 +502,13 @@ class MobileCoinAPI {
                                                                                           feeAmount: feeAmount)
                                             resolver.fulfill(preparedTransaction)
                                         case .failure(let error):
-                                            owsFailDebug("Error: \(error)")
+                                            let error = Self.convertMCError(error: error)
                                             resolver.reject(error)
                                         }
             }
             return promise
         }.recover(on: .global()) { (error: Error) -> Promise<PreparedTransaction> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "prepareTransaction") { () -> Error in
             PaymentsError.timeout
@@ -522,15 +524,14 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<Void> in
             let (promise, resolver) = Promise<Void>.pending()
-            // PAYMENTS TODO: Error handling.
             let client = self.client
-            client.submitTransaction(transaction) { (result: Swift.Result<Void, Error>) in
+            client.submitTransaction(transaction) { (result: Swift.Result<Void, ConnectionError>) in
                 switch result {
                 case .success:
                     resolver.fulfill(())
                     break
                 case .failure(let error):
-                    owsFailDebug("Error: \(error)")
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                     break
                 }
@@ -538,9 +539,8 @@ class MobileCoinAPI {
             return promise
         }.map(on: .global()) { () -> Void in
             Logger.verbose("Success.")
-            return
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "submitTransaction") { () -> Error in
             PaymentsError.timeout
@@ -557,14 +557,13 @@ class MobileCoinAPI {
         let client = self.client
         return firstly(on: .global()) { () throws -> Promise<MCOutgoingTransactionStatus> in
             let (promise, resolver) = Promise<MCOutgoingTransactionStatus>.pending()
-            // PAYMENTS TODO: Error handling.
-            client.status(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, Error>) in
+            client.status(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
                 switch result {
                 case .success(let transactionStatus):
                     resolver.fulfill(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
                     break
                 case .failure(let error):
-                    owsFailDebug("Error: \(error)")
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                     break
                 }
@@ -574,7 +573,7 @@ class MobileCoinAPI {
             Logger.verbose("Success: \(value)")
             return value
         }.recover(on: .global()) { (error: Error) -> Promise<MCOutgoingTransactionStatus> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getOutgoingTransactionStatus") { () -> Error in
             PaymentsError.timeout
@@ -623,8 +622,7 @@ class MobileCoinAPI {
             let txOutPublicKey: Data = receipt.txOutPublicKey
 
             let (promise, resolver) = Promise<MCIncomingReceiptStatus>.pending()
-            // PAYMENTS TODO: Error handling.
-            client.status(of: receipt) { (result: Swift.Result<MobileCoin.ReceiptStatus, Error>) in
+            client.status(of: receipt) { (result: Swift.Result<MobileCoin.ReceiptStatus, ReceiptStatusCheckError>) in
                 switch result {
                 case .success(let receiptStatus):
                     resolver.fulfill(MCIncomingReceiptStatus(receiptStatus: receiptStatus,
@@ -632,7 +630,7 @@ class MobileCoinAPI {
                                                              txOutPublicKey: txOutPublicKey))
                     break
                 case .failure(let error):
-                    owsFailDebug("Error: \(error)")
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                     break
                 }
@@ -642,7 +640,7 @@ class MobileCoinAPI {
             Logger.verbose("Success: \(value)")
             return value
         }.recover(on: .global()) { (error: Error) -> Promise<MCIncomingReceiptStatus> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getIncomingReceiptStatus") { () -> Error in
             PaymentsError.timeout
@@ -656,16 +654,12 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.AccountActivity> in
             let (promise, resolver) = Promise<MobileCoin.AccountActivity>.pending()
-            client.updateBalance { (result: Swift.Result<Balance, Error>) in
+            client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success:
                     resolver.fulfill(client.accountActivity)
                 case .failure(let error):
-                    if case PaymentsError.timeout = error {
-                        Logger.warn("Error: \(error)")
-                    } else {
-                        owsFailDebugUnlessNetworkFailure(error)
-                    }
+                    let error = Self.convertMCError(error: error)
                     resolver.reject(error)
                 }
             }
@@ -674,49 +668,11 @@ class MobileCoinAPI {
             Logger.verbose("Success: \(accountActivity.blockCount)")
             return accountActivity
         }.recover(on: .global()) { (error: Error) -> Promise<MobileCoin.AccountActivity> in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
+        }.timeout(seconds: Self.timeoutDuration, description: "getAccountActivity") { () -> Error in
+            PaymentsError.timeout
         }
-    }
-}
-
-// MARK: -
-
-// TODO: Remove; this is now obsolete.
-extension MobileCoinAPI {
-
-    class func serializePublicAddress(_ publicAddress: MobileCoin.PublicAddress) throws -> Data {
-        let paymentAddress = publicAddress.asPaymentAddress
-        let proto = try paymentAddress.buildProto()
-        return try proto.serializedData()
-    }
-
-    class func deserializePublicAddress(_ publicAddressData: Data) throws -> MobileCoin.PublicAddress {
-        let proto = try SSKProtoPaymentAddress(serializedData: publicAddressData)
-        let paymentAddress = try TSPaymentAddress.fromProto(proto)
-        return try paymentAddress.asPublicAddress()
-    }
-
-    class func serializeTransaction(_ transaction: MobileCoin.Transaction) -> Data {
-        transaction.serializedData
-    }
-
-    class func deserializeTransaction(_ data: Data) throws -> MobileCoin.Transaction {
-        guard let transaction = MobileCoin.Transaction(serializedData: data) else {
-            throw OWSAssertionError("Invalid transaction data.")
-        }
-        return transaction
-    }
-
-    class func serializeReceipt(_ receipt: MobileCoin.Receipt) -> Data? {
-        receipt.serializedData
-    }
-
-    class func deserializeReceipt(_ data: Data) throws -> MobileCoin.Receipt {
-        guard let receipt = MobileCoin.Receipt(serializedData: data) else {
-            throw OWSAssertionError("Invalid receipt data.")
-        }
-        return receipt
     }
 }
 
@@ -755,4 +711,119 @@ struct MCIncomingReceiptStatus {
 
 struct MCOutgoingTransactionStatus {
     let transactionStatus: MobileCoin.TransactionStatus
+}
+
+// MARK: - Error Handling
+
+extension MobileCoinAPI {
+    public static func convertMCError(error: Error) -> PaymentsError {
+        switch error {
+        case let error as MobileCoin.InvalidInputError:
+            owsFailDebug("Error: \(error)")
+            return PaymentsError.invalidInput
+        case let error as MobileCoin.ConnectionError:
+            switch error {
+            case .connectionFailure(let reason):
+                Logger.warn("Error: \(error), \(reason)")
+                return PaymentsError.connectionFailure
+            case .authorizationFailure(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.authorizationFailure
+            case .invalidServerResponse(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.invalidServerResponse
+            case .attestationVerificationFailed(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.attestationVerificationFailed
+            case .outdatedClient(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.outdatedClient
+            case .serverRateLimited(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.serverRateLimited
+            }
+        case let error as MobileCoin.TransactionPreparationError:
+            switch error {
+            case .invalidInput(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.invalidInput
+            case .insufficientBalance:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.insufficientFunds
+            case .connectionError(let connectionError):
+                // Recurse.
+                return convertMCError(error: connectionError)
+            }
+        case let error as MobileCoin.ReceiptStatusCheckError:
+            switch error {
+            case .invalidReceipt(let invalidInputError):
+                // Recurse.
+                return convertMCError(error: invalidInputError)
+            case .connectionError(let connectionError):
+                // Recurse.
+                return convertMCError(error: connectionError)
+            }
+        default:
+            owsFailDebug("Unexpected error: \(error)")
+            return PaymentsError.unknownSDKError
+        }
+    }
+}
+
+// MARK: -
+
+public extension PaymentsError {
+    var isPaymentsNetworkFailure: Bool {
+        switch self {
+        case .notEnabled,
+             .userNotRegisteredOrAppNotReady,
+             .userHasNoPublicAddress,
+             .invalidCurrency,
+             .invalidWalletKey,
+             .invalidAmount,
+             .invalidFee,
+             .insufficientFunds,
+             .invalidModel,
+             .tooOldToSubmit,
+             .indeterminateState,
+             .unknownSDKError,
+             .invalidInput,
+             .authorizationFailure,
+             .invalidServerResponse,
+             .attestationVerificationFailed,
+             .outdatedClient,
+             .serverRateLimited,
+             .serializationError,
+             .verificationStatusUnknown,
+             .ledgerBlockTimestampUnknown,
+             .missingModel:
+            return false
+        case .connectionFailure,
+             .timeout:
+            return true
+        }
+    }
+}
+
+// MARK: -
+
+// A variant of owsFailDebugUnlessNetworkFailure() that can handle
+// network failures from the MobileCoin SDK.
+@inlinable
+public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
+                                                file: String = #file,
+                                                function: String = #function,
+                                                line: Int = #line) {
+    if let paymentsError = error as? PaymentsError {
+        if paymentsError.isPaymentsNetworkFailure {
+            // Log but otherwise ignore network failures.
+            Logger.warn("Error: \(error)", file: file, function: function, line: line)
+        } else {
+            owsFailDebug("Error: \(error)", file: file, function: function, line: line)
+        }
+    } else if nil != error as? OWSAssertionError {
+        owsFailDebug("Unexpected error: \(error)")
+    } else {
+        owsFailDebugUnlessNetworkFailure(error)
+    }
 }

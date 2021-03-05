@@ -95,6 +95,12 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     private static let unfairLock = UnfairLock()
     private var currentApiHandle: ApiHandle?
 
+    public func didReceiveMCAuthError() {
+        Self.unfairLock.withLock {
+            currentApiHandle = nil
+        }
+    }
+
     private func getOrBuildCurrentApi(mcRootEntropy: Data) -> Promise<MobileCoinAPI> {
         func getCurrentApi() -> MobileCoinAPI? {
             return Self.unfairLock.withLock { () -> MobileCoinAPI? in
@@ -276,7 +282,20 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     private func setCurrentPaymentBalance(amount: TSPaymentAmount) {
         let balance = PaymentBalance(amount: amount, date: Date())
+
+        let oldBalance = paymentBalanceCache.get()
+
         paymentBalanceCache.set(balance)
+
+        if let oldAmount = oldBalance?.amount,
+           oldAmount != amount {
+            // When the balance changes, there might be new transactions
+            // that aren't accounted for in the database yet. Perform
+            // reconciliation to ensure we're up-to-date.
+            Self.databaseStorage.asyncWrite { transaction in
+                self.scheduleReconciliationNow(transaction: transaction)
+            }
+        }
 
         NotificationCenter.default.postNotificationNameAsync(Self.currentPaymentBalanceDidChange, object: nil)
     }
@@ -301,7 +320,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         firstly {
             self.updateCurrentPaymentBalancePromise()
         }.catch { error in
-            owsFailDebugUnlessNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
         }
     }
 
@@ -411,7 +430,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
                                                                   transaction: SDSAnyWriteTransaction) {
         do {
             let mcReceiptData = paymentNotification.mcReceiptData
-            let receipt = try MobileCoinAPI.deserializeReceipt(mcReceiptData)
+            guard let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
+                throw OWSAssertionError("Invalid receipt.")
+            }
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                                transactionData: nil,
@@ -534,8 +555,8 @@ public extension PaymentsImpl {
                 throw OWSAssertionError("Invalid fee.")
             }
 
-            let mcTransactionData = MobileCoinAPI.serializeTransaction(transaction)
-            let mcReceiptData = MobileCoinAPI.serializeReceipt(receipt)
+            let mcTransactionData = transaction.serializedData
+            let mcReceiptData = receipt.serializedData
             let paymentType: TSPaymentType = isOutgoingTransfer ? .outgoingTransfer : .outgoingPayment
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
@@ -1088,7 +1109,9 @@ public extension PaymentsImpl {
             let memoMessage = paymentProto.note
             let receiptData = mobileCoinProto.receipt
             // Verify that the reciept can be parsed.
-            _ = try MobileCoinAPI.deserializeReceipt(receiptData)
+            guard nil != MobileCoin.Receipt(serializedData: receiptData) else {
+                throw OWSAssertionError("Invalid receipt.")
+            }
             let transactionData = mobileCoinProto.transaction
             guard let mcTransaction = MobileCoin.Transaction(serializedData: transactionData) else {
                 throw OWSAssertionError("Invalid transaction.")

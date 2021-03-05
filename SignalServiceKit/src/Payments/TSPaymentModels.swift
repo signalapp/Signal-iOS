@@ -658,6 +658,17 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
         return "[" + components.joined(separator: ", ") + "]"
     }
+
+    #if TESTABLE_BUILD
+    public var diffableRepresentation: String {
+        var result = [String]()
+        let pairs = dictionaryValue.sorted { $0.0 < $1.0 }
+        for (key, value) in pairs {
+            result.append("\(key): \(value)")
+        }
+        return result.joined(separator: "\n")
+    }
+    #endif
 }
 
 // MARK: -

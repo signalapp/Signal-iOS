@@ -50,14 +50,33 @@ public class PaymentsProcessor: NSObject {
         }
     }
 
-    private let isProcessing = AtomicBool(false)
-    private let hasPendingWork = AtomicBool(false)
-    private let batchCounter = AtomicUInt()
+    private static let unfairLock = UnfairLock()
+
+    // Each instance of PaymentProcessingOperation represents
+    // an attempt to usher a payment "one step forward" in the
+    // processing state machine.
+    //
+    // On success, a PaymentProcessingOperation will enqueue
+    // a new PaymentProcessingOperation to continue the process
+    // until the payment is complete or failed.
+    //
+    // If a PaymentProcessingOperation fails but can be retried,
+    // we'll enqueue a new PaymentProcessingOperation (possibly
+    // after a retry delay).
+    //
+    // We use this collection to ensure that we don't process
+    // a payment that is already being processed via a sequence
+    // of PaymentProcessingOperations.
+    //
+    // This should only be accessed via unfairLock.
+    private var processingPaymentIds = Set<String>()
 
     let processingQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "PaymentsProcessor"
-        operationQueue.maxConcurrentOperationCount = 1
+        // We want a concurrency level high enough to ensure that
+        // high-priority operations are processed in a timely manner.
+        operationQueue.maxConcurrentOperationCount = 5
         return operationQueue
     }()
 
@@ -90,42 +109,41 @@ public class PaymentsProcessor: NSObject {
             guard !DebugFlags.paymentsHaltProcessing.get() else {
                 return
             }
-            guard self.isProcessing.tryToSetFlag() else {
-                // We're already processing a batch, wait for completion.
-                self.hasPendingWork.set(true)
-                return
-            }
-            self.hasPendingWork.set(false)
-            let batchIndex = self.batchCounter.increment()
 
-            let operations = self.buildOperationsForBatch()
-            guard !operations.isEmpty else {
-                // No work to do, exit early.
-                guard self.isProcessing.tryToClearFlag() else {
-                    owsFailDebug("Could not clear flag.")
-                    return
-                }
-                return
-            }
+            // Kick of processing for any payments that need
+            // processing but are not yet being processed.
+            self.buildProcessingOperations()
+        }
+    }
 
-            let batchCompleteOperation = BlockOperation { [weak self] in
-                guard let self = self else {
-                    return
+    private func buildProcessingOperations() {
+
+        // Find all unresolved payment records.
+        let paymentModels: [TSPaymentModel] = Self.databaseStorage.read { transaction in
+            PaymentFinder.paymentModels(paymentStates: Array(Self.paymentStatesToProcess),
+                                        transaction: transaction)
+        }
+
+        // Create a new operation for any payment that needs to be
+        // processed that we're not already processing.
+        var operations = [Operation]()
+        let delegate: PaymentProcessingOperationDelegate = self
+        Self.unfairLock.withLock {
+            for paymentModel in paymentModels {
+                let paymentId = paymentModel.uniqueId
+                // Don't add an operation if we're already processing this payment model.
+                guard !self.processingPaymentIds.contains(paymentId) else {
+                    continue
                 }
-                Logger.verbose("Batch complete: \(batchIndex)")
-                guard self.isProcessing.tryToClearFlag() else {
-                    owsFailDebug("Could not clear flag.")
-                    return
-                }
-                if self.hasPendingWork.get() {
-                    self.process()
-                }
+                self.processingPaymentIds.insert(paymentId)
+                Logger.verbose("Start processing: \(paymentId) \(paymentModel.descriptionForLogs)")
+                operations.append(PaymentProcessingOperation(delegate: delegate,
+                                                             paymentModel: paymentModel))
             }
-            for operation in operations {
-                batchCompleteOperation.addDependency(operation)
-                self.processingQueue.addOperation(operation)
-            }
-            self.processingQueue.addOperation(batchCompleteOperation)
+        }
+
+        for operation in operations {
+            self.processingQueue.addOperation(operation)
         }
     }
 
@@ -146,7 +164,6 @@ public class PaymentsProcessor: NSObject {
             .outgoingUnverified,
             .outgoingVerified,
             .outgoingSending,
-            //            .outgoingSendFailed,
             .outgoingSent,
             .outgoingMissingLedgerTimestamp,
             .incomingUnverified,
@@ -155,22 +172,85 @@ public class PaymentsProcessor: NSObject {
         ])
     }
 
-    // PAYMENTS TODO: Add concept rate limiting of retry.
-    private func buildOperationsForBatch() -> [Operation] {
-        var operations = [Operation]()
+    // MARK: - RetryScheduler
 
-        Self.databaseStorage.read { transaction in
-            // Find all unresolved payment records.
-            let paymentStatesToProcess = Array(Self.paymentStatesToProcess)
-            let paymentModels = PaymentFinder.paymentModels(paymentStates: paymentStatesToProcess,
-                                                            transaction: transaction)
-            for paymentModel in paymentModels {
-                let operation = PaymentProcessingOperation(paymentModel: paymentModel)
-                operations.append(operation)
-            }
+    // Retries occur after a fixed delay (e.g. per exponential backoff)
+    // but this should short-circuit if reachability becomes available.
+    @objc
+    fileprivate class RetryScheduler: NSObject {
+
+        // MARK: - Dependencies
+
+        private var reachabilityManager: SSKReachabilityManager {
+            SSKEnvironment.shared.reachabilityManager
         }
 
-        return operations
+        // MARK: -
+
+        private let paymentModel: TSPaymentModel
+        private let nextRetryDelayInteral: TimeInterval
+        private weak var delegate: PaymentProcessingOperationDelegate?
+        private let hasScheduled = AtomicBool(false)
+        private var timer: Timer?
+
+        var paymentId: String { paymentModel.uniqueId }
+
+        init(paymentModel: TSPaymentModel,
+             retryDelayInteral: TimeInterval,
+             nextRetryDelayInteral: TimeInterval,
+             delegate: PaymentProcessingOperationDelegate) {
+
+            self.paymentModel = paymentModel
+            self.nextRetryDelayInteral = nextRetryDelayInteral
+            self.delegate = delegate
+
+            super.init()
+
+            DispatchQueue.global().asyncAfter(deadline: .now() + retryDelayInteral) { [weak self] in
+                self?.tryToSchedule()
+            }
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(reachabilityChanged),
+                                                   name: SSKReachability.owsReachabilityDidChange,
+                                                   object: nil)
+        }
+
+        @objc
+        private func reachabilityChanged() {
+            AssertIsOnMainThread()
+
+            guard reachabilityManager.isReachable else {
+                return
+            }
+
+            tryToSchedule()
+        }
+
+        private func tryToSchedule() {
+            guard hasScheduled.tryToSetFlag() else {
+                return
+            }
+
+            timer?.invalidate()
+            timer = nil
+
+            delegate?.retryProcessing(paymentModel: paymentModel,
+                                      nextRetryDelayInteral: nextRetryDelayInteral)
+        }
+    }
+
+    private var retrySchedulerMap = [String: RetryScheduler]()
+
+    private func add(retryScheduler: RetryScheduler) {
+        Self.unfairLock.withLock {
+            retrySchedulerMap[retryScheduler.paymentId] = retryScheduler
+        }
+    }
+
+    private func remove(retryScheduler: RetryScheduler) {
+        Self.unfairLock.withLock {
+            _ = retrySchedulerMap.removeValue(forKey: retryScheduler.paymentId)
+        }
     }
 }
 
@@ -209,10 +289,95 @@ extension PaymentsProcessor: UIDatabaseSnapshotDelegate {
     }
 }
 
+// MARK: - PaymentProcessingOperationDelegate
+
+extension PaymentsProcessor: PaymentProcessingOperationDelegate {
+
+    static func canBeProcessed(paymentModel: TSPaymentModel) -> Bool {
+        guard paymentModel.isIdentifiedPayment else {
+            return false
+        }
+        guard !paymentModel.isComplete && !paymentModel.isFailed else {
+            return false
+        }
+        return true
+    }
+
+    func continueProcessing(paymentModel: TSPaymentModel) {
+        tryToScheduleProcessingOperation(paymentModel: paymentModel,
+                                         label: "Continue processing",
+                                         retryDelayInteral: nil)
+    }
+
+    func retryProcessing(paymentModel: TSPaymentModel, nextRetryDelayInteral: TimeInterval) {
+        tryToScheduleProcessingOperation(paymentModel: paymentModel,
+                                         label: "Retry processing",
+                                         retryDelayInteral: nextRetryDelayInteral)
+    }
+
+    private func tryToScheduleProcessingOperation(paymentModel: TSPaymentModel,
+                                                  label: String,
+                                                  retryDelayInteral: TimeInterval?) {
+        let paymentId = paymentModel.uniqueId
+
+        Self.unfairLock.withLock {
+            owsAssertDebug(processingPaymentIds.contains(paymentId))
+        }
+
+        guard Self.canBeProcessed(paymentModel: paymentModel) else {
+            self.endProcessing(paymentModel: paymentModel)
+            return
+        }
+
+        Logger.verbose("\(label): \(paymentId)")
+
+        let operation = PaymentProcessingOperation(delegate: self,
+                                                   paymentModel: paymentModel,
+                                                   retryDelayInteral: retryDelayInteral)
+        processingQueue.addOperation(operation)
+    }
+
+    func scheduleRetryProcessing(paymentModel: TSPaymentModel,
+                                 retryDelayInteral: TimeInterval,
+                                 nextRetryDelayInteral: TimeInterval) {
+        let paymentId = paymentModel.uniqueId
+        Logger.verbose("schedule retry: \(paymentId), retryDelayInteral: \(retryDelayInteral), nextRetryDelayInteral: \(nextRetryDelayInteral)")
+        add(retryScheduler: RetryScheduler(paymentModel: paymentModel,
+                                           retryDelayInteral: retryDelayInteral,
+                                           nextRetryDelayInteral: nextRetryDelayInteral,
+                                           delegate: self))
+    }
+
+    func endProcessing(paymentModel: TSPaymentModel) {
+        endProcessing(paymentId: paymentModel.uniqueId)
+    }
+
+    func endProcessing(paymentId: String) {
+        Logger.verbose("End processing: \(paymentId)")
+        Self.unfairLock.withLock {
+            owsAssertDebug(processingPaymentIds.contains(paymentId))
+            processingPaymentIds.remove(paymentId)
+        }
+    }
+}
+
+// MARK: -
+
+private protocol PaymentProcessingOperationDelegate: class {
+    func continueProcessing(paymentModel: TSPaymentModel)
+    func retryProcessing(paymentModel: TSPaymentModel,
+                         nextRetryDelayInteral: TimeInterval)
+    func scheduleRetryProcessing(paymentModel: TSPaymentModel,
+                                 retryDelayInteral: TimeInterval,
+                                 nextRetryDelayInteral: TimeInterval)
+    func endProcessing(paymentModel: TSPaymentModel)
+    func endProcessing(paymentId: String)
+}
+
 // MARK: -
 
 // See comments on PaymentsProcessor.process().
-class PaymentProcessingOperation: OWSOperation {
+private class PaymentProcessingOperation: OWSOperation {
 
     // MARK: - Dependencies
 
@@ -226,31 +391,66 @@ class PaymentProcessingOperation: OWSOperation {
 
     // MARK: -
 
-    private let paymentModelUniqueId: String
+    private weak var delegate: PaymentProcessingOperationDelegate?
+    private let paymentId: String
+    private let retryDelayInteral: TimeInterval
 
-    @objc
-    public init(paymentModel: TSPaymentModel) {
-        self.paymentModelUniqueId = paymentModel.uniqueId
+    private static let defaultRetryDelayInteral: TimeInterval = 1 * kSecondInterval
+
+    init(delegate: PaymentProcessingOperationDelegate,
+         paymentModel: TSPaymentModel,
+         retryDelayInteral: TimeInterval? = nil) {
+        self.delegate = delegate
+        self.paymentId = paymentModel.uniqueId
+        self.retryDelayInteral = retryDelayInteral ?? Self.defaultRetryDelayInteral
 
         super.init()
+
+        self.queuePriority = queuePriority(forPaymentModel: paymentModel)
+    }
+
+    private func queuePriority(forPaymentModel paymentModel: TSPaymentModel) -> Operation.QueuePriority {
+        switch paymentModel.paymentState {
+        case .outgoingUnsubmitted,
+             .outgoingUnverified,
+             .outgoingVerified,
+             .outgoingSending,
+             .outgoingSent:
+            return .high
+        case .outgoingMissingLedgerTimestamp:
+            return .normal
+        case .incomingUnverified,
+             .incomingVerified:
+            return .high
+        case .incomingMissingLedgerTimestamp:
+            return .normal
+        case .outgoingComplete,
+             .incomingComplete,
+             .outgoingFailed,
+             .incomingFailed:
+            owsFailDebug("Unexpected paymentState: \(paymentModel.paymentState.formatted)")
+            return .normal
+        @unknown default:
+            owsFailDebug("Invalid paymentState: \(paymentModel.paymentState.formatted)")
+            return .normal
+        }
     }
 
     override public func run() {
         firstly {
-            process()
+            processStep()
         }.done {
             self.reportSuccess()
         }.catch { error in
+            // processStep() should never fail.
+            owsFailDebug("Unexpected error: \(error)")
             self.reportError(error.asUnretryableError)
         }
     }
 
     // It's important that every operation completes in a reasonable
-    // period of time, since we process in batches and can only have
-    // one batch in flight at a time. If there is a new incoming or
-    // outgoing transaction, we want to start processing it in a
-    // reasonable amount of time. Therefore all operations in a given
-    // batch should
+    // period of time, to ensure that the operation queue doesn't
+    // stall and payments are processed in a timely manner.
     fileprivate static let maxInterval: TimeInterval = kSecondInterval * 30
 
     fileprivate static func buildBadDataError(_ message: String,
@@ -264,107 +464,209 @@ class PaymentProcessingOperation: OWSOperation {
         }
     }
 
-    // Returns a process that will process payments, one step at a time.
-    // The process will resolve when processing succeeds or fails.
+    // Try to usher a payment "one step forward" in the processing
+    // state machine.
     //
-    // The key thing is that we need to user transactions/payments
-    // through the various steps of the state machine as quickly as
-    // possible, retry when necessary, and never get stuck in a retry
-    // loop.  Additionally it's important that retries are throttled
-    // and/or do backoff - but that depends on the type of operation.    
-    private func process() -> Promise<Void> {
+    // We need to user transactions/payments through the various
+    // steps of the state machine as quickly as possible, retry when
+    // necessary, and avoid getting stuck in a tight retry loop.
+    // Therefore retries are throttled and/or do backoff - but retry
+    // behavior depends on the type of operation.
+    private func processStep() -> Guarantee<Void> {
+        // When this promise chain completes, we must call continueProcessing()
+        // or endProcessing().
+        firstly(on: .global()) { () -> Promise<TSPaymentModel> in
+            self.processStep(paymentModel: self.loadPaymentModelWithSneakyTransaction())
+        }.timeout(seconds: Self.timeoutDuration, description: "process") { () -> Error in
+            PaymentsError.timeout
+        }.done(on: .global()) { paymentModel in
+            self.delegate?.continueProcessing(paymentModel: paymentModel)
+        }.recover(on: .global()) { (error: Error) -> Guarantee<Void> in
+            switch error {
+            case let paymentsError as PaymentsError:
+                switch paymentsError {
+                case .notEnabled,
+                     .userNotRegisteredOrAppNotReady,
+                     .userHasNoPublicAddress,
+                     .invalidCurrency,
+                     .invalidWalletKey,
+                     .invalidAmount,
+                     .invalidFee,
+                     .insufficientFunds,
+                     .invalidModel,
+                     .tooOldToSubmit,
+                     .indeterminateState,
+                     .unknownSDKError,
+                     .invalidInput,
+                     .invalidServerResponse,
+                     .attestationVerificationFailed,
+                     .outdatedClient,
+                     .serverRateLimited,
+                     .serializationError,
+                     .missingModel,
+                     .connectionFailure,
+                     .timeout:
+                    owsFailDebugUnlessMCNetworkFailure(error)
+                case .authorizationFailure:
+                    owsFailDebugUnlessMCNetworkFailure(error)
 
-        let latestPaymentModel = { () -> TSPaymentModel? in
-            Self.databaseStorage.read { transaction in
-                TSPaymentModel.anyFetch(uniqueId: self.paymentModelUniqueId, transaction: transaction)
+                    // Discard the SDK instance; the auth token may be stale.
+                    Self.payments.didReceiveMCAuthError()
+                case .verificationStatusUnknown,
+                     .ledgerBlockTimestampUnknown:
+                    // These errors are expected.
+                    Logger.info("Error: \(error)")
+                }
+            default:
+                owsFailDebugUnlessMCNetworkFailure(error)
             }
+
+            guard let paymentModel = self.loadPaymentModelWithSneakyTransaction() else {
+                owsFailDebug("Could not reload payment model.")
+                self.delegate?.endProcessing(paymentId: self.paymentId)
+                return Guarantee.value(())
+            }
+            self.handleProcessingError(paymentModel: paymentModel, error: error)
+            return Guarantee.value(())
         }
-        guard let paymentModel = latestPaymentModel() else {
-            Logger.verbose("Could not to process: \(paymentModelUniqueId)")
+    }
+
+    private func handleProcessingError(paymentModel: TSPaymentModel, error: Error) {
+        switch error {
+        case let paymentsError as PaymentsError:
+            switch paymentsError {
+            case .notEnabled,
+                 .userNotRegisteredOrAppNotReady,
+                 .userHasNoPublicAddress,
+                 .invalidCurrency,
+                 .invalidWalletKey,
+                 .invalidAmount,
+                 .invalidFee,
+                 .insufficientFunds,
+                 .invalidModel,
+                 .tooOldToSubmit,
+                 .indeterminateState,
+                 .unknownSDKError,
+                 .invalidInput,
+                 .authorizationFailure,
+                 .invalidServerResponse,
+                 .attestationVerificationFailed,
+                 .outdatedClient,
+                 .serializationError,
+                 .missingModel:
+                // Do not retry these errors.
+                delegate?.endProcessing(paymentId: self.paymentId)
+            case .serverRateLimited:
+                // Exponential backoff of at least 30 seconds.
+                //
+                // TODO: Revisit when FOG rate limiting behavior is well-defined.
+                let retryDelayInteral = 30 + self.retryDelayInteral
+                let nextRetryDelayInteral = self.retryDelayInteral * 2
+                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
+                                                  retryDelayInteral: retryDelayInteral,
+                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+            case .connectionFailure,
+                 .timeout:
+                // Vanilla exponential backoff.
+                let retryDelayInteral = self.retryDelayInteral
+                let nextRetryDelayInteral = self.retryDelayInteral * 2
+                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
+                                                  retryDelayInteral: retryDelayInteral,
+                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+            case .verificationStatusUnknown,
+                 .ledgerBlockTimestampUnknown:
+                // Exponential backoff.
+                //
+                // If the payment _has_ already been verified, we're just trying to fill
+                // in a missing ledger timestamp.  That is low priority and we can
+                // backoff aggressively.
+                //
+                // If the payment _hasn't_  been verified yet, we want to retry fairly
+                // aggressively.
+                let backoffFactor: TimeInterval = paymentModel.isVerified ? 4 : 1.5
+                let retryDelayInteral = self.retryDelayInteral
+                let nextRetryDelayInteral = self.retryDelayInteral * backoffFactor
+                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
+                                                  retryDelayInteral: retryDelayInteral,
+                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+            }
+        default:
+            // Do not retry assertion errors.
+            delegate?.endProcessing(paymentId: self.paymentId)
+        }
+    }
+
+    private func loadPaymentModelWithSneakyTransaction() -> TSPaymentModel? {
+        Self.databaseStorage.read { transaction in
+            TSPaymentModel.anyFetch(uniqueId: self.paymentId, transaction: transaction)
+        }
+    }
+
+    private static let timeoutDuration: TimeInterval = 60
+
+    private func processStep(paymentModel: TSPaymentModel?) -> Promise<TSPaymentModel> {
+        guard let paymentModel = paymentModel else {
             return Promise(error: OWSAssertionError("Could not reload the payment record."))
         }
-        guard !paymentModel.isUnidentified,
-              !paymentModel.isOutgoingTransfer else {
-            owsFailDebug("Invalid paymentModel: \(paymentModel.descriptionForLogs)")
-            return Promise.value(())
-        }
 
-        owsAssertDebug(paymentModel.isValid)
+        let paymentStateBeforeProcessing = paymentModel.paymentState
 
-        let formattedState = paymentModel.descriptionForLogs
-        Logger.verbose("Trying to process: \(paymentModelUniqueId), \(formattedState)")
+        return firstly(on: .global()) { () -> Promise<Void> in
+            let formattedState = paymentModel.descriptionForLogs
 
-        switch paymentModel.paymentState {
-        case .outgoingUnsubmitted:
-            return firstly {
-                self.submitOutgoingPayment(paymentModel: paymentModel)
-            }.then(on: .global()) {
-                // Proceed to the next steps of processing.
-                self.process()
+            guard PaymentsProcessor.canBeProcessed(paymentModel: paymentModel) else {
+                throw OWSAssertionError("Cannot process: \(formattedState)")
             }
-        case .outgoingUnverified:
-            return firstly {
-                self.verifyOutgoingPayment(paymentModel: paymentModel)
-            }.then(on: .global()) {
-                // Proceed to the next steps of processing.
-                self.process()
+
+            owsAssertDebug(paymentModel.isValid)
+
+            let paymentId = paymentModel.uniqueId
+            Logger.verbose("Trying to process: \(paymentId), \(formattedState)")
+
+            switch paymentModel.paymentState {
+            case .outgoingUnsubmitted:
+                return self.submitOutgoingPayment(paymentModel: paymentModel)
+            case .outgoingUnverified:
+                return self.verifyOutgoingPayment(paymentModel: paymentModel)
+            case .outgoingVerified:
+                return self.sendPaymentNotificationMessage(paymentModel: paymentModel)
+            case .outgoingSending,
+                 .outgoingSent:
+                // After sending, make sure that the ledger timestamp is filled in.
+                return Self.updatePaymentStatePromise(paymentModel: paymentModel,
+                                                      fromState: paymentModel.paymentState,
+                                                      toState: .outgoingMissingLedgerTimestamp)
+            case .outgoingMissingLedgerTimestamp:
+                return Self.fillInMissingLedgerTimestampOutgoing(paymentModel: paymentModel)
+            case .incomingUnverified:
+                return self.verifyIncomingPayment(paymentModel: paymentModel)
+            case .incomingVerified:
+                // After verifying, make sure that the ledger timestamp is filled in.
+                return Self.updatePaymentStatePromise(paymentModel: paymentModel,
+                                                      fromState: .incomingVerified,
+                                                      toState: .incomingMissingLedgerTimestamp)
+            case .incomingMissingLedgerTimestamp:
+                return Self.fillInMissingLedgerTimestampIncoming(paymentModel: paymentModel)
+            case .outgoingComplete,
+                 .incomingComplete,
+                 .outgoingFailed,
+                 .incomingFailed:
+                throw OWSAssertionError("Cannot process: \(formattedState)")
+            @unknown default:
+                throw OWSAssertionError("Unknown paymentState: \(formattedState)")
             }
-        case .outgoingVerified:
-            return firstly {
-                self.sendPaymentNotificationMessage(paymentModel: paymentModel)
-            }.then(on: .global()) {
-                // Proceed to the next steps of processing.
-                self.process()
+        }.map {
+            guard let latestModel = self.loadPaymentModelWithSneakyTransaction() else {
+                owsFailDebug("Could not reload payment model.")
+                throw PaymentsError.missingModel
             }
-        case .outgoingSending,
-             .outgoingSent:
-            // After sending, make sure that the ledger timestamp is filled in.
-            return Self.updatePaymentStatePromise(paymentModel: paymentModel,
-                                                  fromState: paymentModel.paymentState,
-                                                  toState: .outgoingMissingLedgerTimestamp)
-        case .outgoingMissingLedgerTimestamp:
-            if Self.canFillInMissingLedgerTimestamp(paymentModel: paymentModel) {
-                return firstly {
-                    Self.fillInMissingLedgerTimestampOutgoing(paymentModel: paymentModel)
-                }.then(on: .global()) {
-                    // Proceed to the next steps of processing.
-                    self.process()
-                }
-            } else {
-                return Promise.value(())
+
+            let paymentStateAfterProcessing = latestModel.paymentState
+            if paymentStateBeforeProcessing == paymentStateAfterProcessing {
+                owsFailDebug("Payment state did not change after successful processing step: \(latestModel.descriptionForLogs)")
             }
-        case .incomingUnverified:
-            return firstly {
-                self.verifyIncomingPayment(paymentModel: paymentModel)
-            }.then(on: .global()) {
-                // Proceed to the next steps of processing.
-                self.process()
-            }
-        case .incomingVerified:
-            // After verifying, make sure that the ledger timestamp is filled in.
-            return Self.updatePaymentStatePromise(paymentModel: paymentModel,
-                                                  fromState: .incomingVerified,
-                                                  toState: .incomingMissingLedgerTimestamp)
-        case .incomingMissingLedgerTimestamp:
-            if Self.canFillInMissingLedgerTimestamp(paymentModel: paymentModel) {
-                return firstly {
-                    Self.fillInMissingLedgerTimestampIncoming(paymentModel: paymentModel)
-                }.then(on: .global()) {
-                    // Proceed to the next steps of processing.
-                    self.process()
-                }
-            } else {
-                return Promise.value(())
-            }
-        case .outgoingComplete,
-             .incomingComplete:
-            return Promise.value(())
-        case .outgoingFailed,
-             .incomingFailed:
-            Logger.warn("Payment failed: \(formattedState)")
-            return Promise.value(())
-        @unknown default:
-            return Promise(error: OWSAssertionError("Unknown paymentState: \(formattedState)"))
+
+            return latestModel
         }
     }
 
@@ -436,16 +738,23 @@ class PaymentProcessingOperation: OWSOperation {
             Self.payments.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             firstly { () -> Promise<MCOutgoingTransactionStatus> in
-                Self.blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                          paymentModel: paymentModel)
+                guard let mcTransactionData = paymentModel.mcTransactionData,
+                      mcTransactionData.count > 0,
+                      let transaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
+
+                    Self.handleIndeterminatePayment(paymentModel: paymentModel)
+
+                    throw PaymentsError.indeterminateState
+                }
+
+                return mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
             }.map { (transactionStatus: MCOutgoingTransactionStatus) in
                 Logger.verbose("transactionStatus: \(transactionStatus)")
 
                 try Self.databaseStorage.write { transaction in
                     switch transactionStatus.transactionStatus {
                     case .unknown, .pending:
-                        // TODO: Throw an error that we can catch and handle.
-                        throw OWSAssertionError("Could not verify outgoing transaction.")
+                        throw PaymentsError.verificationStatusUnknown
                     case .accepted(let block):
                         if !paymentModel.hasMCLedgerBlockIndex {
                             paymentModel.update(mcLedgerBlockIndex: block.index, transaction: transaction)
@@ -465,8 +774,6 @@ class PaymentProcessingOperation: OWSOperation {
                         try paymentModel.updatePaymentModelState(fromState: .outgoingUnverified,
                                                                  toState: .outgoingFailed,
                                                                  transaction: transaction)
-                        // TODO: Throw an error that we can catch and handle.
-                        throw Self.buildBadDataError("Could not verify outgoing transaction.")
                     }
                 }
             }
@@ -562,16 +869,23 @@ class PaymentProcessingOperation: OWSOperation {
         return firstly { () -> Promise<MobileCoinAPI> in
             Self.payments.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCIncomingReceiptStatus> in
-            Self.blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                      paymentModel: paymentModel)
+
+            guard let mcReceiptData = paymentModel.mcReceiptData,
+                  let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
+
+                Self.handleIndeterminatePayment(paymentModel: paymentModel)
+
+                return Promise(error: PaymentsError.indeterminateState)
+            }
+
+            return mobileCoinAPI.getIncomingReceiptStatus(receipt: receipt)
         }.map { (receiptStatus: MCIncomingReceiptStatus) in
             Logger.verbose("receiptStatus: \(receiptStatus)")
 
             try Self.databaseStorage.write { transaction in
                 switch receiptStatus.receiptStatus {
                 case .unknown:
-                    // TODO: Throw an error that we can catch and handle.
-                    throw OWSAssertionError("Could not verify incoming receipt.")
+                    throw PaymentsError.verificationStatusUnknown
                 case .received(let block):
                     paymentModel.update(mcLedgerBlockIndex: block.index,
                                         transaction: transaction)
@@ -590,25 +904,14 @@ class PaymentProcessingOperation: OWSOperation {
                     // If we've verified a payment, our balance may have changed.
                     Self.payments.updateCurrentPaymentBalance()
                 case .failed:
-                    // PAYMENTS TODO: Distinguish retryable and unretryable failures.
-                    let paymentFailure: TSPaymentFailure = .validationFailed
                     Self.markAsFailed(paymentModel: paymentModel,
-                                      paymentFailure: paymentFailure,
+                                      paymentFailure: .validationFailed,
                                       paymentState: .incomingFailed,
                                       transaction: transaction)
-                    // TODO: Throw an error that we can catch and handle.
-                    throw OWSGenericError("Invalid incoming receipt.")
                 }
             }
         }
-        // TODO: Here and in other steps of the processor we need to catch/recover from errors
-        //       and update the model state/failure state appropriately.
     }
-}
-
-// MARK: -
-
-fileprivate extension PaymentProcessingOperation {
 
     class func handleIndeterminatePayment(paymentModel: TSPaymentModel) {
         owsFailDebug("Indeterminate payment: \(paymentModel.descriptionForLogs)")
@@ -625,166 +928,6 @@ fileprivate extension PaymentProcessingOperation {
             paymentModel.anyRemove(transaction: transaction)
 
             Self.payments.scheduleReconciliationNow(transaction: transaction)
-        }
-    }
-
-    // TODO: Remove the blockUntil...() methods.
-    class func blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: MobileCoinAPI,
-                                                    paymentModel: TSPaymentModel) -> Promise<MCOutgoingTransactionStatus> {
-        let maxWaitInterval: TimeInterval = PaymentProcessingOperation.maxInterval
-
-        guard let mcTransactionData = paymentModel.mcTransactionData,
-              mcTransactionData.count > 0,
-              let transaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
-
-            Self.handleIndeterminatePayment(paymentModel: paymentModel)
-
-            return Promise(error: PaymentsError.indeterminateState)
-        }
-
-        return firstly(on: .global()) { () -> Promise<MCOutgoingTransactionStatus> in
-            let lastTryDate = Date().addingTimeInterval(maxWaitInterval)
-            return self.blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                             transaction: transaction,
-                                                             lastTryDate: lastTryDate)
-        }.timeout(seconds: maxWaitInterval, description: "blockUntilOutgoingPaymentIsConfirmed") { () -> Error in
-            PaymentsError.timeout
-        }
-    }
-
-    class func blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: MobileCoinAPI,
-                                                    transaction: MobileCoin.Transaction,
-                                                    lastTryDate: Date) -> Promise<MCOutgoingTransactionStatus> {
-        firstly {
-            mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
-        }.then(on: .global()) { (transactionStatus: MCOutgoingTransactionStatus) -> Promise<MCOutgoingTransactionStatus> in
-            switch transactionStatus.transactionStatus {
-            case .unknown, .pending:
-                Logger.verbose("timeIntervalSinceNow: \(lastTryDate.timeIntervalSinceNow)")
-                guard lastTryDate.timeIntervalSinceNow > 0 else {
-                    Logger.warn("Could not confirm transaction status.")
-                    throw PaymentsError.timeout
-                }
-                Logger.warn("Retrying.")
-                return firstly {
-                    // Wait before retrying.
-                    after(seconds: 1)
-                }.then(on: .global()) { () -> Promise<MCOutgoingTransactionStatus> in
-                    return self.blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                                     transaction: transaction,
-                                                                     lastTryDate: lastTryDate)
-                }
-            case .accepted, .failed:
-                return Promise.value(transactionStatus)
-            }
-        }.recover(on: .global()) { (error: Error) -> Promise<MCOutgoingTransactionStatus> in
-            // TODO: We need to handle more errors here.
-            // TODO: Maybe we should stop retrying if Reachability thinks we have
-            //       no connection.
-            if error as? MobileCoin.ConnectionFailure != nil {
-                Logger.verbose("timeIntervalSinceNow: \(lastTryDate.timeIntervalSinceNow)")
-                guard lastTryDate.timeIntervalSinceNow > 0 else {
-                    throw error
-                }
-                // Retry
-                Logger.warn("Error: \(error)")
-                return self.blockUntilOutgoingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                                 transaction: transaction,
-                                                                 lastTryDate: lastTryDate)
-            } else {
-                throw error
-            }
-        }
-    }
-
-    class func blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: MobileCoinAPI,
-                                                    paymentModel: TSPaymentModel) -> Promise<MCIncomingReceiptStatus> {
-        let maxWaitInterval: TimeInterval = PaymentProcessingOperation.maxInterval
-
-        guard let mcReceiptData = paymentModel.mcReceiptData,
-              let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
-
-            Self.handleIndeterminatePayment(paymentModel: paymentModel)
-
-            return Promise(error: PaymentsError.indeterminateState)
-        }
-
-        return firstly(on: .global()) { () -> Promise<MCIncomingReceiptStatus> in
-            let lastTryDate = Date().addingTimeInterval(maxWaitInterval)
-            return self.blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                             receipt: receipt,
-                                                             lastTryDate: lastTryDate)
-        }.timeout(seconds: maxWaitInterval, description: "blockUntilIncomingPaymentIsConfirmed") { () -> Error in
-            PaymentsError.timeout
-        }
-    }
-
-    class func blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: MobileCoinAPI,
-                                                    receipt: MobileCoin.Receipt,
-                                                    lastTryDate: Date) -> Promise<MCIncomingReceiptStatus> {
-        firstly {
-            mobileCoinAPI.getIncomingReceiptStatus(receipt: receipt)
-        }.then(on: .global()) { (receiptStatus: MCIncomingReceiptStatus) -> Promise<MCIncomingReceiptStatus> in
-            switch receiptStatus.receiptStatus {
-            case .unknown:
-                Logger.verbose("timeIntervalSinceNow: \(lastTryDate.timeIntervalSinceNow)")
-                guard lastTryDate.timeIntervalSinceNow > 0 else {
-                    Logger.warn("Could not confirm transaction status.")
-                    throw PaymentsError.timeout
-                }
-                Logger.warn("Retrying.")
-                return firstly {
-                    // Wait before retrying.
-                    after(seconds: 1)
-                }.then(on: .global()) { () -> Promise<MCIncomingReceiptStatus> in
-                    return self.blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                                     receipt: receipt,
-                                                                     lastTryDate: lastTryDate)
-                }
-            case .received, .failed:
-                return Promise.value(receiptStatus)
-            }
-        }.recover(on: .global()) { (error: Error) -> Promise<MCIncomingReceiptStatus> in
-            // TODO: We need to handle more errors here.
-            // TODO: Maybe we should stop retrying if Reachability thinks we have
-            //       no connection.
-            if error as? MobileCoin.ConnectionFailure != nil {
-                Logger.verbose("timeIntervalSinceNow: \(lastTryDate.timeIntervalSinceNow)")
-                guard lastTryDate.timeIntervalSinceNow > 0 else {
-                    throw error
-                }
-                // Retry
-                Logger.warn("Error: \(error)")
-                return self.blockUntilIncomingPaymentIsConfirmed(mobileCoinAPI: mobileCoinAPI,
-                                                                 receipt: receipt,
-                                                                 lastTryDate: lastTryDate)
-            } else {
-                throw error
-            }
-        }
-    }
-
-    // MARK: -
-
-    private static let unfairLock = UnfairLock()
-    private static var fillInMissingLedgerTimestampDateMap = [String: Date]()
-
-    static func canFillInMissingLedgerTimestamp(paymentModel: TSPaymentModel) -> Bool {
-        unfairLock.withLock {
-            guard !paymentModel.hasMCLedgerBlockTimestamp else {
-                // The ledger timestamp isn't missing, we just need to update
-                // the payment state to reflect that.
-                Logger.verbose("ledgerBlockDate already present; just need to mark it as such.")
-                return true
-            }
-            guard let lastAttemptDate = fillInMissingLedgerTimestampDateMap[paymentModel.uniqueId] else {
-                Logger.verbose("No previous attempt.")
-                return true
-            }
-            // Only try to fill in missing ledger timestamps once per hour.
-            let maxAttemptFrequency: TimeInterval = kHourInterval
-            Logger.verbose("Last attempt: \(abs(lastAttemptDate.timeIntervalSinceNow)).")
-            return abs(lastAttemptDate.timeIntervalSinceNow) > maxAttemptFrequency
         }
     }
 
@@ -818,10 +961,6 @@ fileprivate extension PaymentProcessingOperation {
                                              toState: .incomingComplete)
         }
 
-        unfairLock.withLock {
-            fillInMissingLedgerTimestampDateMap[paymentModel.uniqueId] = Date()
-        }
-
         Logger.verbose("")
 
         return firstly { () -> Promise<MobileCoinAPI> in
@@ -844,11 +983,13 @@ fileprivate extension PaymentProcessingOperation {
 
             switch receiptStatus.receiptStatus {
             case .unknown:
-                throw OWSGenericError("Receipt status: unknown.")
+                // This should never happen, since we've already verified the receipt.
+                owsFailDebug("Unexpected receiptStatus for verified receipt: .unknown")
+                throw PaymentsError.verificationStatusUnknown
             case .received(let block):
                 guard let ledgerBlockDate = block.timestamp else {
                     Logger.warn("Could not fill in ledger timestamp for transaction.")
-                    return
+                    throw PaymentsError.ledgerBlockTimestampUnknown
                 }
                 try Self.databaseStorage.write { transaction in
                     paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockDate.ows_millisecondsSince1970,
@@ -860,6 +1001,7 @@ fileprivate extension PaymentProcessingOperation {
                 }
             case .failed:
                 // This should never happen, since we've already verified the receipt.
+                owsFailDebug("Unexpected receiptStatus for verified receipt: .failed")
                 Self.markAsFailed(paymentModel: paymentModel,
                                   paymentFailure: .validationFailed,
                                   paymentState: .incomingFailed)
@@ -878,10 +1020,6 @@ fileprivate extension PaymentProcessingOperation {
             return updatePaymentStatePromise(paymentModel: paymentModel,
                                              fromState: .outgoingMissingLedgerTimestamp,
                                              toState: .outgoingComplete)
-        }
-
-        unfairLock.withLock {
-            fillInMissingLedgerTimestampDateMap[paymentModel.uniqueId] = Date()
         }
 
         Logger.verbose("")
@@ -906,13 +1044,17 @@ fileprivate extension PaymentProcessingOperation {
 
             switch transactionStatus.transactionStatus {
             case .unknown:
-                throw OWSGenericError("Receipt status: unknown.")
+                // This should never happen, since we've already verified the transaction.
+                owsFailDebug("Unexpected receiptStatus for verified transaction: .unknown")
+                throw PaymentsError.verificationStatusUnknown
             case .pending:
-                throw OWSGenericError("Receipt status: pending.")
+                // This should never happen, since we've already verified the transaction.
+                owsFailDebug("Unexpected receiptStatus for verified transaction: .pending")
+                throw PaymentsError.verificationStatusUnknown
             case .accepted(let block):
                 guard let ledgerBlockDate = block.timestamp else {
                     Logger.warn("Could not fill in ledger timestamp for transaction.")
-                    return
+                    throw PaymentsError.ledgerBlockTimestampUnknown
                 }
                 try Self.databaseStorage.write { transaction in
                     paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockDate.ows_millisecondsSince1970,
@@ -923,7 +1065,8 @@ fileprivate extension PaymentProcessingOperation {
                                                              transaction: transaction)
                 }
             case .failed:
-                // This should never happen since we've already verified the transaction.
+                // This should never happen, since we've already verified the transaction.
+                owsFailDebug("Unexpected receiptStatus for verified transaction: .failed")
                 Self.markAsFailed(paymentModel: paymentModel,
                                   paymentFailure: .invalid,
                                   paymentState: .outgoingFailed)
