@@ -107,6 +107,8 @@ public class OWSNavigationBar: UINavigationBar {
                 tintingView.backgroundColor = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
                 self.setBackgroundImage(UIImage(), for: .default)
             } else {
+                if #available(iOS 15, *) { owsFailDebug("Check if this still works on new iOS version.") }
+
                 owsFailDebug("Unexpectedly missing visual effect subview")
                 // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
                 // We'll make the navbar more translucent by setting a background color.
