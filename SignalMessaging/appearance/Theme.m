@@ -467,7 +467,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)darkThemePrimaryColor
 {
-    return UIColor.ows_gray05Color;
+    return UIColor.ows_gray02Color;
 }
 
 + (UIColor *)lightThemePrimaryColor

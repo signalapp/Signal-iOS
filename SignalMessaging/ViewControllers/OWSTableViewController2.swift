@@ -146,7 +146,7 @@ open class OWSTableViewController2: OWSViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        applyTheme(to: self)
+        applyTheme()
 
         tableView.tableFooterView = UIView()
     }
@@ -784,9 +784,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public func removeTheme(from viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        // We don't want to remove the theme if we're being dismissed,
+        // as it causes a jarring transition. We must test this on the
+        // navigation controller, otherwise it may be set when pushing
+        // or popping a view, where we *do* want to remove the theme.
+        guard viewController.navigationController?.isBeingDismissed != true else { return }
+
         if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = nil
-            navigationBar.switchToStyle(.default)
+            navigationBar.switchToStyle(.default, animated: true)
         }
     }
 
@@ -794,9 +800,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else { return }
 
         if tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top {
-            navigationBar.switchToStyle(.clear)
+            navigationBar.switchToStyle(.solid, animated: true)
         } else {
-            navigationBar.switchToStyle(.default)
+            navigationBar.switchToStyle(.default, animated: true)
         }
     }
 
