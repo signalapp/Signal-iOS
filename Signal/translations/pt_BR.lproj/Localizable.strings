@@ -847,9 +847,6 @@
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquear esta pessoa";
 
-/* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informações do contato";
-
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Cor da conversa";
 
@@ -974,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Mudanças não salvas";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Ver todos os membros";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Esta pessoa está nos seus contatos";
@@ -2684,7 +2681,7 @@
 "LOGGING_SECTION" = "Registros";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
+"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mensagem";
@@ -3743,16 +3740,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ alterou o nome de perfil para %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "Seu nome";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Sobre";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nome de usuário";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Configurar foto de perfil";
@@ -3770,10 +3767,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "O seu primeiro nome é muito longo.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Sobrenome (opcional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Nome (obrigatório)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "O perfil só pode ser atualizado quando conectado à Internet.";
@@ -4364,7 +4361,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Driblagem de Censura";
 
 /* Label for the 'manual censorship circumvention' country. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Local";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Se ativado, Signal tentará contornar a censura. Não habilite esta função ao menos que você esteja em um lugar onde Signal é censurado. ";
@@ -4484,7 +4481,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirecione todas as ligações através de um servidor do Signal para evitar que seu endereço IP seja revelado ao contato. Habilitar esta opção reduzirá a qualidade das chamadas.";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Chats";
+"SETTINGS_CHATS" = "Conversas";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Limpar histórico de conversas";
@@ -4640,10 +4637,13 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Crie um PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "Signal PIN";
+"SETTINGS_PINS_TITLE" = "PIN do Signal";
+
+/* Footer for table section */
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Advanced";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avançadas";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Mostrar chamadas em Recentes";
@@ -4684,6 +4684,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
+/* Footer for table section */
+"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
 
@@ -4692,6 +4695,15 @@
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App Security";
@@ -4715,7 +4727,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remetente Oculto";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Exibir indicadores";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir a qualquer pessoa";
@@ -4727,7 +4739,7 @@
 "SETTINGS_VERSION" = "Versão";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can…";
+"SETTINGS_WHO_CAN" = "Quem pode…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-mail";

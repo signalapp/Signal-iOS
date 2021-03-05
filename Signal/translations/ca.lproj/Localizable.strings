@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS" = "Configuració de la conversa";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Afegeix membres";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Addició de membres";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Afegeix a un contacte existent";
@@ -846,9 +846,6 @@
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Bloca l'usuari";
-
-/* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informació del contacte";
 
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color de la conversa";
@@ -974,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Canvis no desats";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Mostra'n tots els membres";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "L'usuari és als contactes.";
@@ -2684,7 +2681,7 @@
 "LOGGING_SECTION" = "Registres";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs help us find out what’s wrong [copy tbd].";
+"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Missatge";
@@ -3743,16 +3740,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ha canviat el nom del perfil a %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "El nom";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Quant a";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d'usuari";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Establiu la fotografia del perfil";
@@ -3770,10 +3767,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "El nom és massa llarg.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Cognoms (opcional)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Nom (necessari)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Només es pot actualitzar el perfil quan s'estigui connectat a Internet.";
@@ -4364,7 +4361,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Elusió de la censura";
 
 /* Label for the 'manual censorship circumvention' country. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Ubicació";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "En activar-ho, el Signal provarà d'eludir la censura. No activeu aquesta característica si no sou a una ubicació on el Signal és censurat.";
@@ -4484,7 +4481,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirigeix totes les trucades a través d'un servidor de Signal per evitar revelar l'adreça IP al contacte. Activar-ho reduirà la qualitat de la trucada.";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Chats";
+"SETTINGS_CHATS" = "Converses";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Neteja l'historial de la conversa";
@@ -4640,10 +4637,13 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Crea un PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "Signal PIN";
+"SETTINGS_PINS_TITLE" = "PIN del Signal";
+
+/* Footer for table section */
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Advanced";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avançada";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Mostra les trucades a Recents";
@@ -4684,6 +4684,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
+/* Footer for table section */
+"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
 
@@ -4692,6 +4695,15 @@
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+
+/* Section footer */
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App Security";
@@ -4715,7 +4727,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remitent segellat";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Indicadors de pantalla";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permet-ho per a tothom";
@@ -4727,7 +4739,7 @@
 "SETTINGS_VERSION" = "Versió";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can…";
+"SETTINGS_WHO_CAN" = "Qui pot...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Correu";
