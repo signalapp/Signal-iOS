@@ -2590,7 +2590,7 @@
 "vc_display_name_explanation" = "これは、Session を使用するときの名前になります。あなたの本当の名前、エイリアス、またはあなたが好きな他のものに設定することができます。";
 "vc_display_name_text_field_hint" = "表示名を入力してください";
 "vc_display_name_display_name_missing_error" = "表示名を選択してください";
-"vc_display_name_display_name_invalid_error" = "AZ、AZ、0-9、_ の文字のみで構成される表示名を選択してください";
+"vc_display_name_display_name_invalid_error" = "a-z、A-Z、0-9、_ の文字のみで構成される表示名を選択してください";
 "vc_display_name_display_name_too_long_error" = "短い表示名を選択してください";
 
 "vc_pn_mode_recommended_option_tag" = "オススメ";
@@ -2653,7 +2653,7 @@
 "vc_settings_title" = "設定";
 "vc_settings_display_name_text_field_hint" = "表示名を入力してください";
 "vc_settings_display_name_missing_error" = "表示名を選択してください";
-"vc_settings_invalid_display_name_error" = "AZ、AZ、0-9、_ の文字のみで構成される表示名を選択してください";
+"vc_settings_invalid_display_name_error" = "a-z、A-Z、0-9、_ の文字のみで構成される表示名を選択してください";
 "vc_settings_display_name_too_long_error" = "短い表示名を選択してください";
 "vc_settings_privacy_button_title" = "プライバシー";
 "vc_settings_notifications_button_title" = "お知らせ";
