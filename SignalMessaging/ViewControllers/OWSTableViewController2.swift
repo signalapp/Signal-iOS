@@ -68,11 +68,11 @@ open class OWSTableViewController2: OWSViewController {
     public var defaultSeparatorInsetTrailing: CGFloat = 0
 
     @objc
-    public var forcePresentedStyle = false
+    public var defaultCellHeight: CGFloat = 50
 
     @objc
     public var isUsingPresentedStyle: Bool {
-        return forcePresentedStyle || presentingViewController != nil
+        return presentingViewController != nil
     }
 
     private static let cellIdentifier = "cellIdentifier"
@@ -88,6 +88,7 @@ open class OWSTableViewController2: OWSViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
+        tableView.estimatedRowHeight = defaultCellHeight
 
         view.addSubview(tableView)
 
@@ -145,9 +146,7 @@ open class OWSTableViewController2: OWSViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
-        }
+        applyTheme(to: self)
 
         tableView.tableFooterView = UIView()
     }
@@ -155,13 +154,7 @@ open class OWSTableViewController2: OWSViewController {
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            // TODO: We might want to preserve and restore the previous
-            // background color override, but for now I'm assuming any
-            // view that uses this setting should be responsible to set
-            // it up in viewWillAppear and tear it down in viewWillDisappear
-            navigationBar.navbarBackgroundColorOverride = nil
-        }
+        removeTheme(from: self)
     }
 
     private func section(for index: Int) -> OWSTableSection? {
@@ -194,10 +187,6 @@ open class OWSTableViewController2: OWSViewController {
         if let title = contents.title, !title.isEmpty {
             self.title = title
         }
-
-        // We never want to show titles on back buttons, so we replace it with
-        // blank spaces. We pad it out slightly so that it's more tappable.
-        navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
 
         tableView.reloadData()
     }
@@ -289,7 +278,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             cell.selectedBackgroundView = nil
             cell.backgroundColor = .clear
             cell.contentView.backgroundColor = .clear
-            cell.tintColor = Theme.primaryIconColor
 
             guard section.hasBackground else {
                 return
@@ -442,12 +430,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let item = self.item(for: indexPath) else {
             owsFailDebug("Missing item: \(indexPath)")
-            return kOWSTable_DefaultCellHeight
+            return defaultCellHeight
         }
         if let customRowHeight = item.customRowHeight {
             return CGFloat(customRowHeight.floatValue)
         }
-        return kOWSTable_DefaultCellHeight
+        return defaultCellHeight
     }
 
     public static let cellRounding: CGFloat = 10
@@ -759,12 +747,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     open func applyTheme() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = self.tableBackgroundColor
-        tableView.backgroundColor = self.tableBackgroundColor
+        applyTheme(to: self)
 
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
-        }
+        tableView.backgroundColor = self.tableBackgroundColor
 
         if useNewStyle {
             tableView.separatorColor = .clear
@@ -772,6 +757,32 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             tableView.separatorStyle = .none
         } else {
             tableView.separatorColor = Theme.cellSeparatorColor
+        }
+    }
+
+    @objc(applyThemeToViewController:)
+    public func applyTheme(to viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        viewController.view.backgroundColor = self.tableBackgroundColor
+
+        if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
+        }
+
+        // We never want to show titles on back buttons, so we replace it with
+        // blank spaces. We pad it out slightly so that it's more tappable.
+        viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
+
+        if viewController != self { applyTheme() }
+    }
+
+    @objc(removeThemeFromViewController:)
+    public func removeTheme(from viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = nil
         }
     }
 
@@ -813,6 +824,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             return
         }
         item.deleteAction?.block()
+    }
+
+    open override var isEditing: Bool {
+        get { tableView.isEditing }
+        set { tableView.isEditing = newValue }
     }
 
     public override func setEditing(_ editing: Bool, animated: Bool) {

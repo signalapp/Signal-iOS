@@ -1315,14 +1315,19 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = self.tableBackgroundColor;
+    [self.tableViewController applyThemeToViewController:self];
     self.searchBar.searchFieldBackgroundColorOverride
         = Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xe0e0e0];
 }
 
-- (UIColor *)tableBackgroundColor
+- (void)applyThemeToViewController:(UIViewController *)viewController
 {
-    return self.tableViewController.tableBackgroundColor;
+    [self.tableViewController applyThemeToViewController:viewController];
+}
+
+- (void)removeThemeFromViewController:(UIViewController *)viewController
+{
+    [self.tableViewController removeThemeFromViewController:viewController];
 }
 
 @end

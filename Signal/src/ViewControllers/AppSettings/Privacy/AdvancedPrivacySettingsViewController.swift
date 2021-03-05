@@ -15,6 +15,19 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         )
 
         updateTableContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .webSocketStateDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -23,6 +36,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 

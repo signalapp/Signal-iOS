@@ -31,8 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Defaults to `NO`
 @property (nonatomic) BOOL showUseAsyncSelection;
 
-@property (nonatomic, readonly) UIColor *tableBackgroundColor;
-
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
@@ -40,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reloadContent;
 
 - (void)clearSearchText;
+
+- (void)applyThemeToViewController:(UIViewController *)viewController;
+- (void)removeThemeFromViewController:(UIViewController *)viewController;
 
 @end
 

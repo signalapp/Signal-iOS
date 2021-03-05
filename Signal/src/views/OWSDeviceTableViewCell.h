@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSDevice.h>
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *linkedLabel;
 @property (nonatomic) UILabel *lastSeenLabel;
 
-- (void)configureWithDevice:(OWSDevice *)device;
+- (void)configureWithDevice:(OWSDevice *)device unlinkAction:(void (^)(void))unlinkAction;
 
 @end
 

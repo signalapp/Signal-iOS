@@ -397,6 +397,9 @@ public class DebugFlags: BaseFlags {
     public static let extraDebugLogs = build.includes(.qa)
 
     @objc
+    public static let fakeLinkedDevices = false
+
+    @objc
     public static let shouldShowColorPicker = false
 
     public static func buildFlagMap() -> [String: Any] {

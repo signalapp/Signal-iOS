@@ -121,6 +121,18 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @implementation OWSTableItem
 
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.customRowHeight = @(UITableViewAutomaticDimension);
+
+    return self;
+}
+
 + (UITableViewCell *)newCell
 {
     UITableViewCell *cell = [UITableViewCell new];
@@ -225,11 +237,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
-        cell.accessoryType = accessoryType;
-        cell.accessibilityIdentifier = accessibilityIdentifier;
-        return cell;
+        return [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                           textColor:nil
+                                                       accessoryText:nil
+                                                       accessoryType:accessoryType
+                                                      accessoryImage:nil
+                                             accessibilityIdentifier:accessibilityIdentifier];
     };
     return item;
 }
@@ -275,14 +288,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
-                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
-        [OWSTableItem configureCell:cell];
-        cell.textLabel.text = text;
-        cell.detailTextLabel.text = detailText;
-        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-        cell.accessibilityIdentifier = accessibilityIdentifier;
-        return cell;
+        return [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                           textColor:nil
+                                                       accessoryText:detailText
+                                                       accessoryType:UITableViewCellAccessoryDisclosureIndicator
+                                                      accessoryImage:nil
+                                             accessibilityIdentifier:accessibilityIdentifier];
     };
     item.customRowHeight = @(UITableViewAutomaticDimension);
     return item;
@@ -305,10 +316,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         }
     };
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        return cell;
+        return [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                           textColor:nil
+                                                       accessoryText:nil
+                                                       accessoryType:UITableViewCellAccessoryDisclosureIndicator
+                                                      accessoryImage:nil
+                                             accessibilityIdentifier:nil];
     };
     return item;
 }
@@ -350,13 +363,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
-        if (textColor) {
-            cell.textLabel.textColor = textColor;
-        }
-        cell.accessibilityIdentifier = accessibilityIdentifier;
-        return cell;
+        return [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                           textColor:textColor
+                                                       accessoryText:nil
+                                                       accessoryType:UITableViewCellAccessoryNone
+                                                      accessoryImage:nil
+                                             accessibilityIdentifier:accessibilityIdentifier];
     };
     return item;
 }
@@ -372,19 +384,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
-        cell.accessibilityIdentifier = accessibilityIdentifier;
-
-        UIImageView *accessoryImageView = [UIImageView new];
-        accessoryImageView.image = [accessoryImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        // Match the OS accessory view colors
-        accessoryImageView.tintColor
-            = Theme.isDarkThemeEnabled ? [UIColor colorWithRGBHex:0x46464a] : [UIColor colorWithRGBHex:0xc4c4c7];
-        [accessoryImageView sizeToFit];
-        cell.accessoryView = accessoryImageView;
-
-        return cell;
+        return [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                           textColor:nil
+                                                       accessoryText:nil
+                                                       accessoryType:UITableViewCellAccessoryNone
+                                                      accessoryImage:accessoryImage
+                                             accessibilityIdentifier:accessibilityIdentifier];
     };
     return item;
 }
@@ -396,16 +401,19 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
         UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
+        UILabel *textLabel = [UILabel new];
+        textLabel.text = text;
         // These cells look quite different.
         //
         // Smaller font.
-        cell.textLabel.font = OWSTableItem.primaryLabelFont;
+        textLabel.font = OWSTableItem.primaryLabelFont;
         // Soft color.
         // TODO: Theme, review with design.
-        cell.textLabel.textColor = Theme.middleGrayColor;
+        textLabel.textColor = Theme.middleGrayColor;
         // Centered.
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        textLabel.textAlignment = NSTextAlignmentCenter;
+        [cell.contentView addSubview:textLabel];
+        [textLabel autoPinEdgesToSuperviewMargins];
         cell.userInteractionEnabled = NO;
         return cell;
     };
@@ -427,8 +435,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
+        UITableViewCell *cell = [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                                            textColor:nil
+                                                                        accessoryText:nil
+                                                                        accessoryType:UITableViewCellAccessoryNone
+                                                                       accessoryImage:nil
+                                                              accessibilityIdentifier:nil];
         cell.userInteractionEnabled = NO;
         return cell;
     };
@@ -442,17 +454,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
-
-        UILabel *accessoryLabel = [UILabel new];
-        accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = Theme.secondaryTextAndIconColor;
-        accessoryLabel.font = OWSTableItem.accessoryLabelFont;
-        accessoryLabel.textAlignment = NSTextAlignmentRight;
-        [accessoryLabel sizeToFit];
-        cell.accessoryView = accessoryLabel;
-
+        UITableViewCell *cell = [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                                            textColor:nil
+                                                                        accessoryText:accessoryText
+                                                                        accessoryType:UITableViewCellAccessoryNone
+                                                                       accessoryImage:nil
+                                                              accessibilityIdentifier:nil];
         cell.userInteractionEnabled = NO;
         return cell;
     };
@@ -467,9 +474,13 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [OWSTableItem newCell];
 
-        cell.textLabel.text = text;
-        cell.textLabel.numberOfLines = 0;
-        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        UILabel *textLabel = [UILabel new];
+        textLabel.text = text;
+        textLabel.numberOfLines = 0;
+        textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        [cell.contentView addSubview:textLabel];
+        [textLabel autoPinEdgesToSuperviewMargins];
+
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
         return cell;
@@ -521,8 +532,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     __weak id weakTarget = target;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.textLabel.text = text;
+        UITableViewCell *cell = [OWSTableItem buildCellWithAccessoryLabelWithItemName:text
+                                                                            textColor:nil
+                                                                        accessoryText:nil
+                                                                        accessoryType:UITableViewCellAccessoryNone
+                                                                       accessoryImage:nil
+                                                              accessibilityIdentifier:accessibilityIdentifier];
 
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;

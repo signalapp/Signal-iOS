@@ -220,8 +220,7 @@ public extension Theme {
         case .settingsHelp:
             return isDarkThemeEnabled ? "help-solid-24" : "help-outline-24"
         case .settingsInvite:
-            // TODO: waiting on design
-            return "more-horiz-24"
+            return isDarkThemeEnabled ? "invite-solid-24" : "invite-outline-24"
         case .settingsDonate:
             return isDarkThemeEnabled ? "heart-solid-24" : "heart-outline-24"
         case .settingsAdvanced:

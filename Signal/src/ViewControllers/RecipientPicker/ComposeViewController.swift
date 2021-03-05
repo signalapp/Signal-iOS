@@ -31,6 +31,16 @@ class ComposeViewController: OWSViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        recipientPicker.applyTheme(to: self)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        recipientPicker.removeTheme(from: self)
+    }
+
     @objc func dismissPressed() {
         dismiss(animated: true)
     }

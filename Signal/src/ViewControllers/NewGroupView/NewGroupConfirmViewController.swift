@@ -43,11 +43,21 @@ public class NewGroupConfirmViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        recipientTableView.applyTheme(to: self)
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        recipientTableView.removeTheme(from: self)
+    }
+
     @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
-
-        recipientTableView.forcePresentedStyle = presentingViewController != nil
 
         title = NSLocalizedString("NEW_GROUP_NAME_GROUP_VIEW_TITLE",
                                   comment: "The title for the 'name new group' view.")
@@ -452,8 +462,6 @@ class NewLegacyGroupView: UIView {
     }
 
     func present(fromViewController: UIViewController) {
-        tableViewController.forcePresentedStyle = true
-
         let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
             let stackView = UIStackView(arrangedSubviews: [viewToWrap])
             stackView.axis = .vertical

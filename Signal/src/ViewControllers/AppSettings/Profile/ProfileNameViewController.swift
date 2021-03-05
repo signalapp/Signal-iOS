@@ -52,11 +52,15 @@ class ProfileNameViewController: OWSTableViewController2 {
     }
 
     private var normalizedGivenName: String? {
-        givenNameTextField.text?.ows_stripped()
+        let normalizedGivenName = givenNameTextField.text?.ows_stripped()
+        if normalizedGivenName?.isEmpty == true { return nil }
+        return normalizedGivenName
     }
 
     private var normalizedFamilyName: String? {
-        familyNameTextField.text?.ows_stripped()
+        let normalizedFamilyName = familyNameTextField.text?.ows_stripped()
+        if normalizedFamilyName?.isEmpty == true { return nil }
+        return normalizedFamilyName
     }
 
     private var hasUnsavedChanges: Bool {
