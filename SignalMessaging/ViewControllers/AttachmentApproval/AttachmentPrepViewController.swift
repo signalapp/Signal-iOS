@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -385,7 +385,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
         navigationController.ows_prefersStatusBarHidden = true
 
         if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-            navigationBar.switchToStyle(.clear)
+            navigationBar.switchToStyle(.alwaysDarkAndClear)
         } else {
             owsFailDebug("navigationBar was nil or unexpected class")
         }

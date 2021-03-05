@@ -752,6 +752,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         tableView.backgroundColor = self.tableBackgroundColor
 
+        updateNavbarStyling()
+
         if useNewStyle {
             tableView.separatorColor = .clear
             tableView.separatorInset = .zero
@@ -785,6 +787,20 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = nil
         }
+    }
+
+    func updateNavbarStyling() {
+        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else { return }
+
+        if tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top {
+            navigationBar.switchToStyle(.clear)
+        } else {
+            navigationBar.switchToStyle(.default)
+        }
+    }
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateNavbarStyling()
     }
 
     // MARK: - Editing
