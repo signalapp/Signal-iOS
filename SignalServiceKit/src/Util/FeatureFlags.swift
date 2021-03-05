@@ -161,6 +161,12 @@ public class FeatureFlags: BaseFlags {
         }
     }
 
+    public static var allTestableFlags: [TestableFlag] {
+        BaseFlags.findTestableFlags(for: FeatureFlags.self) { (key: String) -> Any? in
+            FeatureFlags.value(forKey: key)
+        }
+    }
+
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
@@ -213,7 +219,7 @@ public class DebugFlags: BaseFlags {
 
     // TODO:
     @objc
-//    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
+    //    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
     public static let logSQLQueries = false
 
     @objc
@@ -221,7 +227,10 @@ public class DebugFlags: BaseFlags {
 
     // We can use this to test recovery from "missed updates".
     @objc
-    public static let groupsV2dontSendUpdates = TestableFlag(false)
+    public static let groupsV2dontSendUpdates = TestableFlag(false,
+                                                             title: LocalizationNotNeeded("Groups v2: Don't Send Updates"),
+                                                             details: LocalizationNotNeeded("The app will not send 'group update' messages for v2 groups. " +
+                                                                                                "Other group members will only learn of group changes from normal group messages."))
 
     @objc
     public static let groupsV2showV2Indicator = FeatureFlags.groupsV2Supported && build.includes(.qa)
@@ -229,48 +238,75 @@ public class DebugFlags: BaseFlags {
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
     @objc
-    public static let groupsV2corruptAvatarUrlPaths = TestableFlag(false)
+    public static let groupsV2corruptAvatarUrlPaths = TestableFlag(false,
+                                                                   title: LocalizationNotNeeded("Groups v2: Corrupt avatar URL paths"),
+                                                                   details: LocalizationNotNeeded("Client will update group state with corrupt avatar URL paths."))
 
     // If set, v2 groups will be created and updated with
     // corrupt avatars, group names, and/or dm state
     // so that we can test clients' robustness to this case.
     @objc
-    public static let groupsV2corruptBlobEncryption = TestableFlag(false)
+    public static let groupsV2corruptBlobEncryption = TestableFlag(false,
+                                                                   title: LocalizationNotNeeded("Groups v2: Corrupt blobs"),
+                                                                   details: LocalizationNotNeeded("Client will update group state with corrupt blobs."))
 
     // If set, client will invite instead of adding other users.
     @objc
-    public static let groupsV2forceInvites = TestableFlag(false)
+    public static let groupsV2forceInvites = TestableFlag(false,
+                                                          title: LocalizationNotNeeded("Groups v2: Always Invite"),
+                                                          details: LocalizationNotNeeded("Members added to a v2 group will always be invited instead of added."))
 
     // If set, client will always send corrupt invites.
     @objc
-    public static let groupsV2corruptInvites = TestableFlag(false)
+    public static let groupsV2corruptInvites = TestableFlag(false,
+                                                            title: LocalizationNotNeeded("Groups v2: Corrupt Invites"),
+                                                            details: LocalizationNotNeeded("Client will only emit corrupt invites to v2 groups."))
 
     @objc
-    public static let groupsV2onlyCreateV1Groups = TestableFlag(false)
+    public static let groupsV2onlyCreateV1Groups = TestableFlag(false,
+                                                                title: LocalizationNotNeeded("Groups v2: Only create v1 groups"),
+                                                                details: LocalizationNotNeeded("Client will not try to create v2 groups."))
 
     @objc
-    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta))
+    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta),
+                                                                                 title: LocalizationNotNeeded("Groups v2: Force enable auto-migrations"),
+                                                                                 details: LocalizationNotNeeded("Client will try to auto-migrate legacy groups." +
+                                                                                                                    "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations."))
 
     @objc
-    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(build.includes(.qa))
+    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(build.includes(.qa),
+                                                                                   title: LocalizationNotNeeded("Groups v2: Force enable manual migrations"),
+                                                                                   details: LocalizationNotNeeded("Client will allow users to do manual migrations." +
+                                                                                                                    "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations."))
 
     @objc
-    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false)
+    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false,
+                                                                              title: LocalizationNotNeeded("Groups v2: Force Blocking Migrations"),
+                                                                              details: LocalizationNotNeeded("Users will not be able to use v1 groups until they are migrated."))
 
     @objc
-    public static let groupsV2migrationsDropOtherMembers = TestableFlag(false)
+    public static let groupsV2migrationsDropOtherMembers = TestableFlag(false,
+                                                                        title: LocalizationNotNeeded("Groups v2: Migrations drop others"),
+                                                                        details: LocalizationNotNeeded("Group migrations will drop other members."))
 
     @objc
-    public static let groupsV2migrationsInviteOtherMembers = TestableFlag(false)
+    public static let groupsV2migrationsInviteOtherMembers = TestableFlag(false,
+                                                                          title: LocalizationNotNeeded("Groups v2: Migrations invite others"),
+                                                                          details: LocalizationNotNeeded("Group migrations will invite other members."))
 
     @objc
-    public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false, affectsCapabilities: true)
+    public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false,
+                                                                                  title: LocalizationNotNeeded("Groups v2: Disable Migration Capability"),
+                                                                                  details: LocalizationNotNeeded("The app will pretend not to support group migrations."),
+                                                                                  affectsCapabilities: true)
 
     @objc
     public static let groupsV2migrationsIgnoreMigrationCapability = false
 
     @objc
-    public static let aggressiveProfileFetching = TestableFlag(false)
+    public static let aggressiveProfileFetching = TestableFlag(false,
+                                                               title: LocalizationNotNeeded("Aggressive profile fetching"),
+                                                               details: LocalizationNotNeeded("Client will update profiles aggressively."))
 
     @objc
     public static let groupsV2ignoreCorruptInvites = false
@@ -335,19 +371,29 @@ public class DebugFlags: BaseFlags {
     public static let forceGroupCalling = build.includes(.beta)
 
     @objc
-    public static let disableMessageProcessing = TestableFlag(false)
+    public static let disableMessageProcessing = TestableFlag(false,
+                                                              title: LocalizationNotNeeded("Disable message processing"),
+                                                              details: LocalizationNotNeeded("Client will store but not process incoming messages."))
 
     @objc
-    public static let dontSendContactOrGroupSyncMessages = TestableFlag(false)
+    public static let dontSendContactOrGroupSyncMessages = TestableFlag(false,
+                                                                        title: LocalizationNotNeeded("Don't send contact or group sync messages"),
+                                                                        details: LocalizationNotNeeded("Client will not send contact or group info to linked devices."))
 
     @objc
-    public static let forceAttachmentDownloadFailures = TestableFlag(false)
+    public static let forceAttachmentDownloadFailures = TestableFlag(false,
+                                                                     title: LocalizationNotNeeded("Force attachment download failures."),
+                                                                     details: LocalizationNotNeeded("All attachment downloads will fail."))
 
     @objc
-    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(false)
+    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(false,
+                                                                                  title: LocalizationNotNeeded("Attachment download vs. message request."),
+                                                                                  details: LocalizationNotNeeded("Attachment downloads will be blocked by pending message request."))
 
     @objc
-    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(false)
+    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(false,
+                                                                                  title: LocalizationNotNeeded("Attachment download vs. manual download."),
+                                                                                  details: LocalizationNotNeeded("Attachment downloads will be blocked by manual download."))
 
     @objc
     public static let fastPerfTests = false
@@ -371,31 +417,56 @@ public class DebugFlags: BaseFlags {
     public static let paymentsInternalBeta = build.includes(.openPreview)
 
     @objc
-    public static let paymentsIgnoreBlockTimestamps = TestableFlag(false)
+    public static let paymentsIgnoreBlockTimestamps = TestableFlag(false,
+                                                                   title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
+                                                                   details: LocalizationNotNeeded("Payments will not fill in missing ledger block timestamps"))
 
     @objc
-    public static let paymentsIgnoreCurrencyConversions = TestableFlag(false)
+    public static let paymentsIgnoreCurrencyConversions = TestableFlag(false,
+                                                                       title: LocalizationNotNeeded("Payments: Ignore currency conversions"),
+                                                                       details: LocalizationNotNeeded("App will behave as though currency conversions are unavailable"))
 
     @objc
-    public static let paymentsHaltProcessing = TestableFlag(false)
+    public static let paymentsHaltProcessing = TestableFlag(false,
+                                                            title: LocalizationNotNeeded("Payments: Halt Processing"),
+                                                            details: LocalizationNotNeeded("Processing of payments will pause"))
 
     @objc
-    public static let paymentsIgnoreBadData = TestableFlag(false)
+    public static let paymentsIgnoreBadData = TestableFlag(false,
+                                                           title: LocalizationNotNeeded("Payments: Ignore bad data"),
+                                                           details: LocalizationNotNeeded("App will skip asserts for invalid data"))
 
     @objc
-    public static let paymentsFailOutgoingSubmission = TestableFlag(false)
+    public static let paymentsFailOutgoingSubmission = TestableFlag(false,
+                                                                    title: LocalizationNotNeeded("Payments: Fail outgoing submission"),
+                                                                    details: LocalizationNotNeeded("Submission of outgoing transactions will always fail"))
 
     @objc
-    public static let paymentsFailOutgoingVerification = TestableFlag(false)
+    public static let paymentsFailOutgoingVerification = TestableFlag(false,
+                                                                      title: LocalizationNotNeeded("Payments: Fail outgoing verification"),
+                                                                      details: LocalizationNotNeeded("Verification of outgoing transactions will always fail"))
 
     @objc
-    public static let paymentsFailIncomingVerification = TestableFlag(false)
+    public static let paymentsFailIncomingVerification = TestableFlag(false,
+                                                                      title: LocalizationNotNeeded("Payments: Fail incoming verification"),
+                                                                      details: LocalizationNotNeeded("Verification of incoming receipts will always fail"))
 
     @objc
-    public static let paymentsDoubleNotify = TestableFlag(false)
+    public static let paymentsDoubleNotify = TestableFlag(false,
+                                                          title: LocalizationNotNeeded("Payments: Double notify"),
+                                                          details: LocalizationNotNeeded("App will send two payment notifications and sync messages for each outgoing payment"))
+
+    @objc
+    public static let paymentsAllowAllCountries = paymentsInternalBeta
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
+            DebugFlags.value(forKey: key)
+        }
+    }
+
+    public static var allTestableFlags: [TestableFlag] {
+        BaseFlags.findTestableFlags(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)
         }
     }
@@ -441,6 +512,24 @@ public class BaseFlags: NSObject {
         }
         return result
     }
+
+    static func findTestableFlags(for flagsClass: Any, flagFunc: (String) -> Any?) -> [TestableFlag] {
+        var result = [TestableFlag]()
+        var count: CUnsignedInt = 0
+        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
+        for i in 0 ..< count {
+            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
+            if let key = String(cString: selector, encoding: .utf8) {
+                guard !key.hasPrefix("_") else {
+                    continue
+                }
+                if let value = flagFunc(key) as? TestableFlag {
+                    result.append(value)
+                }
+            }
+        }
+        return result
+    }
 }
 
 // MARK: -
@@ -450,9 +539,16 @@ public class TestableFlag: NSObject {
     private let defaultValue: Bool
     private let affectsCapabilities: Bool
     private let flag: AtomicBool
+    public let title: String
+    public let details: String
 
-    fileprivate init(_ defaultValue: Bool, affectsCapabilities: Bool = false) {
+    fileprivate init(_ defaultValue: Bool,
+                     title: String,
+                     details: String,
+                     affectsCapabilities: Bool = false) {
         self.defaultValue = defaultValue
+        self.title = title
+        self.details = details
         self.affectsCapabilities = affectsCapabilities
         self.flag = AtomicBool(defaultValue)
 

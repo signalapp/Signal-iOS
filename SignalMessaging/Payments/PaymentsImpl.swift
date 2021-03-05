@@ -56,10 +56,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     public required override init() {
         super.init()
 
-        // PAYMENTS TODO:
-        //        MobileCoin.Logging.shared.removeAllProviders()
-        //        MobileCoin.Logging.shared.addProvider(SignalLoggingProvider())
-
         // Note: this isn't how often we refresh the balance, it's how often we
         // check whether we should refresh the balance.
         //
@@ -142,6 +138,37 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
+    public var canEnablePayments: Bool {
+        guard FeatureFlags.payments else {
+            return false
+        }
+        guard Self.tsAccountManager.isRegisteredAndReady else {
+            return false
+        }
+        if DebugFlags.paymentsAllowAllCountries {
+            return true
+        }
+        // TODO: Test.
+        guard let localNumber = Self.tsAccountManager.localNumber else {
+            return false
+        }
+        guard let phoneNumber = PhoneNumber(fromE164: localNumber) else {
+            owsFailDebug("Could not parse phone number: \(localNumber).")
+            return false
+        }
+        guard let nsCountryCode = phoneNumber.getCountryCode() else {
+            owsFailDebug("Missing countryCode: \(localNumber).")
+            return false
+        }
+        let callingCodePartsOfUK: Int = 44
+        let validCallingCodes = [ callingCodePartsOfUK ]
+        return validCallingCodes.contains(nsCountryCode.intValue)
+    }
+
+    public var shouldShowPaymentsUI: Bool {
+        arePaymentsEnabled || canEnablePayments
+    }
+
     // MARK: - PaymentsState
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
@@ -171,8 +198,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public func setPaymentsState(_ paymentsState: PaymentsState, transaction: SDSAnyWriteTransaction) {
-        guard !paymentsState.isEnabled || FeatureFlags.payments else {
-            owsFailDebug("Payments not enabled.")
+        guard paymentsState.isEnabled || canEnablePayments else {
+            owsFailDebug("Payments cannot be enabled.")
             return
         }
         guard paymentsState != self.paymentsState else {
@@ -1311,40 +1338,6 @@ public extension PaymentsImpl {
         }
     }
 }
-
-// MARK: -
-//
-// public class SignalLoggingProvider: LoggingProvider {
-//    public func verbose(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.verbose(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-//
-//    public func debug(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.debug(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-//
-//    public func info(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.info(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-//
-//    public func warning(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.warn(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-//
-//    public func error(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.error(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-//
-//    public func assertionFailure(_ message: Any, file: StaticString, function: StaticString, line: Int) {
-//        Logger.error(String(describing: message), file: file.string, function: function.string, line: line)
-//    }
-// }
-//
-// extension StaticString {
-//    fileprivate var string: String {
-//        String(describing: self)
-//    }
-// }
 
 // MARK: -
 

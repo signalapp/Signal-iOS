@@ -739,8 +739,7 @@ public extension DecryptedProfile {
     // MARK: -
 
     var paymentAddress: TSPaymentAddress? {
-        guard FeatureFlags.payments,
-              payments.arePaymentsEnabled else {
+        guard payments.arePaymentsEnabled else {
             return nil
         }
         guard let paymentAddressDataWithLength = paymentAddressData else {

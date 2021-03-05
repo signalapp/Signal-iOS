@@ -288,8 +288,7 @@ public class TSPaymentModels: NSObject {
     @objc(parsePaymentProtosInDataMessage:thread:)
     public class func parsePaymentProtos(dataMessage: SSKProtoDataMessage,
                                          thread: TSThread) -> TSPaymentModels? {
-        guard FeatureFlags.payments,
-              payments.arePaymentsEnabled else {
+        guard payments.arePaymentsEnabled else {
             return nil
         }
         guard let paymentProto = dataMessage.payment else {
@@ -499,7 +498,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCLedgerBlockTimestamp = isComplete
+        let shouldHaveMCLedgerBlockTimestamp = isComplete && isIdentifiedPayment
         if shouldHaveMCLedgerBlockTimestamp,
            !hasMCLedgerBlockTimestamp {
             // For some payments, we'll never be able to fill in the block timestamp.

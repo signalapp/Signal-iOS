@@ -188,8 +188,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
               Self.tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard FeatureFlags.payments,
-              Self.payments.arePaymentsEnabled else {
+        guard Self.payments.arePaymentsEnabled else {
             return
         }
         if let conversionRates = self.conversionRates,

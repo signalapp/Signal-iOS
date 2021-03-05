@@ -45,6 +45,8 @@ public protocol Payments: AnyObject {
 
     var arePaymentsEnabled: Bool { get }
 
+    var shouldShowPaymentsUI: Bool { get }
+
     var mcRootEntropy: Data? { get }
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
@@ -210,6 +212,10 @@ extension MockPayments: PaymentsSwift {
     }
 
     public var arePaymentsEnabled: Bool {
+        owsFail("Not implemented.")
+    }
+
+    public var shouldShowPaymentsUI: Bool {
         owsFail("Not implemented.")
     }
 

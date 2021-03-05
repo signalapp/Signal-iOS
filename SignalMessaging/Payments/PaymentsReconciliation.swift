@@ -73,8 +73,7 @@ public class PaymentsReconciliation {
         guard !CurrentAppContext().isRunningTests else {
             return false
         }
-        guard FeatureFlags.payments,
-              Self.payments.arePaymentsEnabled else {
+        guard Self.payments.arePaymentsEnabled else {
             return false
         }
         guard AppReadiness.isAppReady,
@@ -218,9 +217,6 @@ public class PaymentsReconciliation {
         do {
             try databaseStorage.read { transaction in
                 let databaseState = Self.buildPaymentsDatabaseState(transaction: transaction)
-                #if DEBUG
-                databaseState.logVerbose()
-                #endif
 
                 try reconcile(transactionHistory: transactionHistory,
                               databaseState: databaseState,
@@ -239,9 +235,6 @@ public class PaymentsReconciliation {
                 do {
                     try databaseStorage.write { transaction in
                         let databaseState = Self.buildPaymentsDatabaseState(transaction: transaction)
-                        #if DEBUG
-                        databaseState.logVerbose()
-                        #endif
 
                         try reconcile(transactionHistory: transactionHistory,
                                       databaseState: databaseState,

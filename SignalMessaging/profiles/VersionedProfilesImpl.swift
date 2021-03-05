@@ -63,8 +63,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let hasAvatar = profileAvatarData != nil
 
             var profilePaymentAddressData: Data?
-            if FeatureFlags.payments,
-               Self.payments.arePaymentsEnabled,
+            if Self.payments.arePaymentsEnabled,
                let addressProtoData = Self.payments.localPaymentAddressProtoData() {
 
                 var paymentAddressDataWithLength = Data()

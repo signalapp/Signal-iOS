@@ -34,6 +34,10 @@ public class PaymentsProcessor: NSObject {
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
+
+            DispatchQueue.global().asyncAfter(deadline: .now() + Self.missingLedgerTimestampProcessingDelay) { [weak self] in
+                self?.process()
+            }
         }
 
         NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
@@ -71,14 +75,35 @@ public class PaymentsProcessor: NSObject {
     // This should only be accessed via unfairLock.
     private var processingPaymentIds = Set<String>()
 
-    let processingQueue: OperationQueue = {
+    // We use a dedicated queue for processing
+    // "outgoing, not verified, identified" payments.
+    //
+    // This ensures that they are processed serially.
+    let processingQueue_outgoing: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "PaymentsProcessor"
+        operationQueue.name = "PaymentsProcessor.outgoing"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+    // We use another queue for all other processing.
+    let processingQueue_default: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "PaymentsProcessor.default"
         // We want a concurrency level high enough to ensure that
         // high-priority operations are processed in a timely manner.
         operationQueue.maxConcurrentOperationCount = 5
         return operationQueue
     }()
+
+    private func processingQueue(forPaymentModel paymentModel: TSPaymentModel) -> OperationQueue {
+        if paymentModel.isOutgoing,
+           paymentModel.isIdentifiedPayment,
+           !paymentModel.isVerified {
+            return processingQueue_outgoing
+        } else {
+            return processingQueue_default
+        }
+    }
 
     // This method tries to process every "unresolved" transaction.
     //
@@ -97,8 +122,7 @@ public class PaymentsProcessor: NSObject {
             guard !CurrentAppContext().isRunningTests else {
                 return
             }
-            guard FeatureFlags.payments,
-                  Self.payments.arePaymentsEnabled else {
+            guard Self.payments.arePaymentsEnabled else {
                 return
             }
             guard AppReadiness.isAppReady,
@@ -116,17 +140,33 @@ public class PaymentsProcessor: NSObject {
         }
     }
 
+    // Don't bother trying to process "missing ledger timestamp" payments until
+    // the app has been launched for a N minutes.
+    private static let missingLedgerTimestampProcessingDelay: TimeInterval = kMinuteInterval * 2
+
     private func buildProcessingOperations() {
 
         // Find all unresolved payment records.
-        let paymentModels: [TSPaymentModel] = Self.databaseStorage.read { transaction in
+        var paymentModels: [TSPaymentModel] = Self.databaseStorage.read { transaction in
             PaymentFinder.paymentModels(paymentStates: Array(Self.paymentStatesToProcess),
                                         transaction: transaction)
         }
 
+        let intervalSinceLaunch = abs(CurrentAppContext().appLaunchTime.timeIntervalSinceNow)
+        paymentModels = paymentModels.filter { paymentModel in
+            guard paymentModel.paymentState == .incomingMissingLedgerTimestamp ||
+                    paymentModel.paymentState == .outgoingMissingLedgerTimestamp else {
+                return true
+            }
+            return intervalSinceLaunch > Self.missingLedgerTimestampProcessingDelay
+        }
+
+        paymentModels.sort { (left, right) -> Bool in
+            left.sortDate.compare(right.sortDate) == .orderedAscending
+        }
+
         // Create a new operation for any payment that needs to be
         // processed that we're not already processing.
-        var operations = [Operation]()
         let delegate: PaymentProcessingOperationDelegate = self
         Self.unfairLock.withLock {
             for paymentModel in paymentModels {
@@ -137,13 +177,10 @@ public class PaymentsProcessor: NSObject {
                 }
                 self.processingPaymentIds.insert(paymentId)
                 Logger.verbose("Start processing: \(paymentId) \(paymentModel.descriptionForLogs)")
-                operations.append(PaymentProcessingOperation(delegate: delegate,
-                                                             paymentModel: paymentModel))
+                let operation = PaymentProcessingOperation(delegate: delegate,
+                                                           paymentModel: paymentModel)
+                processingQueue(forPaymentModel: paymentModel).addOperation(operation)
             }
-        }
-
-        for operation in operations {
-            self.processingQueue.addOperation(operation)
         }
     }
 
@@ -334,7 +371,7 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
         let operation = PaymentProcessingOperation(delegate: self,
                                                    paymentModel: paymentModel,
                                                    retryDelayInteral: retryDelayInteral)
-        processingQueue.addOperation(operation)
+        processingQueue(forPaymentModel: paymentModel).addOperation(operation)
     }
 
     func scheduleRetryProcessing(paymentModel: TSPaymentModel,
@@ -584,7 +621,14 @@ private class PaymentProcessingOperation: OWSOperation {
                 // If the payment _hasn't_  been verified yet, we want to retry fairly
                 // aggressively.
                 let backoffFactor: TimeInterval = paymentModel.isVerified ? 4 : 1.5
-                let retryDelayInteral = self.retryDelayInteral
+                var retryDelayInteral = self.retryDelayInteral
+                if paymentModel.isVerified {
+                    // Don't try to fill in a missing ledger timestamp more than once per hour.
+                    // Things work reasonably well without this extra info, it's not clear
+                    // how long a missing ledger timestamp might take to appear, and we might
+                    // have a large number of payments without this info.
+                    retryDelayInteral += kHourInterval * 1
+                }
                 let nextRetryDelayInteral = self.retryDelayInteral * backoffFactor
                 delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
                                                   retryDelayInteral: retryDelayInteral,
