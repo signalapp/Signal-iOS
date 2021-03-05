@@ -95,9 +95,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     override public func viewWillAppear(_ animated: Bool) {
+        defer { super.viewWillAppear(animated) }
+
         if mediaGallery.sections.isEmpty {
             databaseStorage.uiRead { transaction in
                 _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, transaction: transaction)
+            }
+            if mediaGallery.sections.isEmpty {
+                // There must be no media.
+                return
             }
         }
 
@@ -109,7 +115,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                                                        section: self.galleryDates.count),
                                          at: .bottom,
                                          animated: false)
-        super.viewWillAppear(animated)
     }
 
     override public func viewWillTransition(to size: CGSize,
