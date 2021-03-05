@@ -110,7 +110,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         self.view.layoutIfNeeded()
         let lastSectionItemCount = self.collectionView(self.collectionView!,
                                                        numberOfItemsInSection: self.galleryDates.count)
-        // FIXME: This actually stops in the middle of the last row, but so did the old logic.
         self.collectionView.scrollToItem(at: IndexPath(item: lastSectionItemCount - 1,
                                                        section: self.galleryDates.count),
                                          at: .bottom,
@@ -120,6 +119,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func viewWillTransition(to size: CGSize,
                                             with coordinator: UIViewControllerTransitionCoordinator) {
         self.mediaTileViewLayout.invalidateLayout()
+        super.viewWillTransition(to: size, with: coordinator)
     }
 
     public override func viewWillLayoutSubviews() {
@@ -148,6 +148,24 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     override public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.autoLoadMoreIfNecessary()
+    }
+
+    var previousAdjustedContentInset: UIEdgeInsets = UIEdgeInsets()
+
+    override public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+        defer { previousAdjustedContentInset = scrollView.adjustedContentInset }
+        guard !galleryDates.isEmpty else {
+            return
+        }
+
+        if scrollView.contentSize.height > scrollView.bounds.height - scrollView.adjustedContentInset.totalHeight {
+            // Were we pinned to the bottom before? If so, scroll back down.
+            let dy = scrollView.adjustedContentInset.totalHeight - previousAdjustedContentInset.totalHeight
+            if scrollView.contentOffset.y + dy + scrollView.bounds.height >= scrollView.contentSize.height {
+                scrollView.contentOffset.y =
+                    scrollView.contentSize.height - scrollView.bounds.height + scrollView.adjustedContentInset.bottom
+            }
+        }
     }
 
     override public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
