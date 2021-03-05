@@ -662,21 +662,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let oldContentHeight = collectionView.contentSize.height
         let direction: GalleryDirection
 
-        if contentOffsetY < kEdgeThreshold {
+        if contentOffsetY < kEdgeThreshold && !mediaGallery.hasFetchedOldest {
             // Near the top, load older content
-            guard !mediaGallery.hasFetchedOldest else {
-                return
-            }
-
             mediaTileViewLayout.recordContentSizeBeforeInsertingToTop()
             direction = .before
 
-        } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
+        } else if oldContentHeight - contentOffsetY < kEdgeThreshold && !mediaGallery.hasFetchedMostRecent {
             // Near the bottom, load newer content
-            guard !mediaGallery.hasFetchedMostRecent else {
-                return
-            }
-
             direction = .after
 
         } else {
