@@ -923,6 +923,11 @@ typedef enum : NSUInteger {
     return [self.blockingManager isThreadBlocked:self.thread];
 }
 
+- (BOOL)isGroup
+{
+    return self.thread.isGroupThread;
+}
+
 - (int)blockedGroupMemberCount
 {
     OWSAssertDebug(self.isGroupConversation);
@@ -2690,6 +2695,36 @@ typedef enum : NSUInteger {
         [[OWSNavigationController alloc] initWithRootViewController:locationPicker];
     [self dismissKeyBoard];
     [self presentFormSheetViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)paymentButtonPressed
+{
+    OWSAssertIsOnMainThread();
+
+    [self showSendPaymentUIWithPaymentRequest:nil];
+}
+
+- (void)showSendPaymentUIWithPaymentRequest:(nullable TSPaymentRequestModel *)paymentRequestModel
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.payments.arePaymentsEnabled) {
+        OWSFailDebug(@"Payments not enabled.");
+        return;
+    }
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFailDebug(@"Not a contact thread.");
+        return;
+    }
+
+    [self dismissKeyBoard];
+
+    TSContactThread *thread = (TSContactThread *)self.thread;
+    [SendPaymentViewController presentAsFormSheetFromViewController:self
+                                                           delegate:self
+                                                   recipientAddress:thread.contactAddress
+                                                paymentRequestModel:paymentRequestModel
+                                                 isOutgoingTransfer:NO];
 }
 
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,7 +37,8 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
         stackView.apply(config: stackConfig)
 
         for action in actions {
-            let buttonView = ButtonView(action: action)
+            let buttonView = CVMessageActionButton(action: action)
+            buttonView.backgroundColor = Theme.conversationButtonBackgroundColor
             stackView.addArrangedSubview(buttonView)
             componentView.buttonViews.append(buttonView)
         }
@@ -47,13 +48,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
         CVStackViewConfig(axis: .vertical, alignment: .fill, spacing: Self.buttonSpacing, layoutMargins: .zero)
     }
 
-    fileprivate static var buttonHeight: CGFloat {
-        max(44, buttonFont.lineHeight + buttonVMargin * 2)
-    }
-    fileprivate static var buttonFont: UIFont {
-        UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-    }
-    fileprivate static let buttonVMargin: CGFloat = 5
+    fileprivate static var buttonHeight: CGFloat { CVMessageActionButton.buttonHeight }
     fileprivate static let buttonSpacing: CGFloat = 1
 
     private var totalHeight: CGFloat {
@@ -62,35 +57,6 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
             height += CGFloat(actions.count - 1) * Self.buttonSpacing
         }
         return height
-    }
-
-    fileprivate class ButtonView: UILabel {
-        fileprivate let action: CVMessageAction
-
-        required init(action: CVMessageAction) {
-            self.action = action
-
-            super.init(frame: .zero)
-
-            configure()
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        private func configure() {
-            layoutMargins = .zero
-            backgroundColor = Theme.conversationButtonBackgroundColor
-
-            text = action.title
-            font = CVComponentBottomButtons.buttonFont
-            textColor = Theme.conversationButtonTextColor
-            textAlignment = .center
-            autoSetDimension(.height, toSize: CVComponentBottomButtons.buttonHeight)
-            setContentHuggingVerticalHigh()
-            setCompressionResistanceVerticalHigh()
-        }
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -130,7 +96,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
     public class CVComponentViewBottomButtons: NSObject, CVComponentView {
 
         fileprivate let stackView = OWSStackView(name: "bottomButtons")
-        fileprivate var buttonViews = [ButtonView]()
+        fileprivate var buttonViews = [CVMessageActionButton]()
 
         public var isDedicatedCellView = false
 

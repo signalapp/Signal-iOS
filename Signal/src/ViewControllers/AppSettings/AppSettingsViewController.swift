@@ -77,6 +77,18 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
+        if payments.shouldShowPaymentsUI {
+            section1.add(.disclosureItem(
+                icon: .settingsPayments,
+                name: NSLocalizedString("SETTINGS_PAYMENTS_TITLE",
+                                         comment: "Label for the 'payments' section of the app settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "payments"),
+                actionBlock: { [weak self] in
+                    let vc = PaymentsSettingsViewController(mode: .inAppSettings)
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
         contents.addSection(section1)
 
         let section2 = OWSTableSection()
@@ -130,7 +142,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let section3 = OWSTableSection()
         section3.add(.disclosureItem(
             icon: .settingsHelp,
-            name: NSLocalizedString("SETTINGS_HELP", comment: "Title for support page in app settings."),
+            name: CommonStrings.help,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "help"),
             actionBlock: { [weak self] in
                 let vc = HelpViewController()

@@ -136,6 +136,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Audio Category: \(AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: ""))"))
         infoSection.add(.label(withText: "Local Profile Key: \(profileManager.localProfileKey().keyData.hexadecimalString)"))
 
+        infoSection.add(.label(withText: "Payments EnabledKey: \(payments.arePaymentsEnabled ? "Yes" : "No")"))
+        infoSection.add(.label(withText: "MobileCoin Root Entropy: \(payments.mcRootEntropy?.hexadecimalString ?? "None")"))
+
         contents.addSection(infoSection)
 
         if DebugFlags.groupsV2memberStatusIndicators, let localAddress = tsAccountManager.localAddress {

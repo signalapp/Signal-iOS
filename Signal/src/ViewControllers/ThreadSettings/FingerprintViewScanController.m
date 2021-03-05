@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FingerprintViewScanController () <OWSQRScannerDelegate>
 
-@property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) SignalServiceAddress *recipientAddress;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) OWSFingerprint *fingerprint;
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
 
     self.recipientAddress = address;
-    self.accountManager = [TSAccountManager shared];
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
     self.contactName = [contactsManager displayNameForAddress:address];
@@ -50,8 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
     // where the user verifies a key that we learned about while this view was open.
     self.identityKey = recipientIdentity.identityKey;
 
-    OWSFingerprintBuilder *builder =
-        [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
+    OWSFingerprintBuilder *builder = [[OWSFingerprintBuilder alloc] initWithAccountManager:self.tsAccountManager
+                                                                           contactsManager:contactsManager];
     self.fingerprint = [builder fingerprintWithTheirSignalAddress:address
                                                  theirIdentityKey:recipientIdentity.identityKey];
 }

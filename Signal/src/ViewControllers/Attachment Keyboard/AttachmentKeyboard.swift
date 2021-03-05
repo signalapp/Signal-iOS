@@ -15,6 +15,8 @@ protocol AttachmentKeyboardDelegate {
     func didTapFile()
     func didTapContact()
     func didTapLocation()
+    func didTapPayment()
+    var isGroup: Bool { get }
 }
 
 class AttachmentKeyboard: CustomKeyboard {
@@ -237,6 +239,18 @@ extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
 
     func didTapLocation() {
         delegate?.didTapLocation()
+    }
+
+    func didTapPayment() {
+        delegate?.didTapPayment()
+    }
+
+    var isGroup: Bool {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return false
+        }
+        return delegate.isGroup
     }
 }
 

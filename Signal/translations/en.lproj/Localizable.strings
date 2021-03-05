@@ -265,6 +265,9 @@
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
 
+/* A button to select a payment from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Attachment";
 
@@ -391,6 +394,9 @@
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continue";
 
+/* Label for the 'copy' button. */
+"BUTTON_COPY" = "Copy";
+
 /* Label for generic done button. */
 "BUTTON_DONE" = "Done";
 
@@ -411,6 +417,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Submit";
+
+/* Label for the 'view' button. */
+"BUTTON_VIEW" = "View";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "Yes";
@@ -3325,6 +3334,189 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "You called %@";
 
+/* Button used to decline a payment request. */
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+
+/* Abbreviation for MobileCoin currency. */
+"PAYMENTS_CURRENCY_ABBREVIATION_MOB" = "MOB";
+
+/* Indicator for unknown currency. */
+"PAYMENTS_CURRENCY_UNKNOWN" = "?";
+
+/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+
+/* Title for the 'decline a payment request' alert. */
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+
+/* Error message indicating that the estimated fee for a payment could not be determined. */
+"PAYMENTS_ERROR_COULD_NOT_ESTIMATE_FEE" = "Could not determine fee for payment";
+
+/* Error indicating that a payment request could not be cancelled. */
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+
+/* Error indicating that a payment request could not be declined. */
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+
+/* Status indicator for incoming payments which failed. */
+"PAYMENTS_FAILURE_INCOMING_FAILED" = "Failed";
+
+/* Status indicator for incoming payments which failed to verify. */
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+
+/* Status indicator for invalid payments which could not be processed. */
+"PAYMENTS_FAILURE_INVALID" = "Invalid";
+
+/* Status indicator for outgoing payments which failed. */
+"PAYMENTS_FAILURE_OUTGOING_FAILED" = "Failed";
+
+/* Status indicator for outgoing payments which failed due to insufficient funds. */
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+
+/* Status indicator for outgoing payments for which the notification could not be sent. */
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+
+/* Status indicator for outgoing payments which failed to verify. */
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+
+/* Label for the 'add memo' ui in the 'send payment' UI. */
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+
+/* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Balance: %@";
+
+/* Label for the 'confirm payment' button. */
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+
+/* Title for the 'confirm payment' ui in the 'send payment' UI. */
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+
+/* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
+"PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
+
+/* Format for message indicating that error occurred while sending a payment or payment request. Embeds: {{ a description of the error that occurred }}. */
+"PAYMENTS_NEW_PAYMENT_ERROR_FORMAT" = "Error: %@";
+
+/* Indicates that a payment failed due to insufficient funds. */
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Insufficient funds";
+
+/* Indicates that an unknown error occurred while sending a payment or payment request. */
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Payment could not be completed";
+
+/* Label for the 'payment estimated fee' indicator. */
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+
+/* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+
+/* Label for the 'invalid amount' button. */
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+
+/* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
+"PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
+
+/* Placeholder for the new payment or payment request message. */
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+
+/* Label for the 'new payment' button. */
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+
+/* Label for the 'total payment amount' indicator. */
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+
+/* Indicator that a new payment is being processed in the 'send payment' UI. */
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+
+/* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+
+/* Label for the 'new payment request' button. */
+"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Request";
+
+/* Label for the payments notification banner for a single payment notification. */
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+
+/* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+
+/* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+
+/* Status indicator for incoming payments which are complete. */
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Complete";
+
+/* Status indicator for incoming payments which have not yet been verified. */
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+
+/* Status indicator for incoming payments which have been verified. */
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Verified";
+
+/* Status indicator for outgoing payments which are complete. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Complete";
+
+/* Status indicator for outgoing payments which are being sent. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sending…";
+
+/* Status indicator for outgoing payments which have been sent. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Sent";
+
+/* Status indicator for outgoing payments which have not yet been submitted. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+
+/* Status indicator for outgoing payments which have been submitted but not yet verified. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+
+/* Status indicator for outgoing payments which have been verified but not yet sent. */
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Verified";
+
+/* Status indicator for payments which had an unknown failure. */
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+
+/* Status indicator for incoming payments which are complete. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+
+/* Status indicator for incoming payments which are duplicates. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_DUPLICATE" = "Duplicate Payment";
+
+/* Status indicator for incoming payments which have not yet been verified. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+
+/* Status indicator for incoming payments which have been verified. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Verified";
+
+/* Status indicator for outgoing payments which are complete. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+
+/* Status indicator for outgoing payments failed to be sent. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SEND_FAILED" = "Sending…";
+
+/* Status indicator for outgoing payments which are being sent. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sending…";
+
+/* Status indicator for outgoing payments which have been sent. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Sent";
+
+/* Status indicator for outgoing payments which have not yet been submitted. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+
+/* Status indicator for outgoing payments which have been submitted but not yet verified. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+
+/* Status indicator for outgoing payments which have been verified but not yet sent. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Verified";
+
+/* Status indicator for payments which had an unknown failure. */
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+
+/* Indicator that a given user cannot receive payments because the have not enabled payments. */
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED" = "User has not enabled payments.";
+
+/* Label for 'transfer out' payments. */
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+
+/* Label for unknown payments. */
+"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Add to Group";
 
@@ -4474,7 +4666,7 @@
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donate to Signal";
 
-/* Title for support page in app settings. */
+/* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Help";
 
 /* Settings table view cell label */
@@ -4548,6 +4740,150 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
+
+/* Label for 'add money' view in the payment settings. */
+"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Money";
+
+/* Explanation of the process for adding money in the 'add money' settings view. */
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add money to Signal, send MobileCoin to your wallet address. To get started, start a transaction with a supported exchange, then scan or copy your wallet address here.";
+
+/* Indicator that the payments wallet address has been copied to the pasteboard. */
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+
+/* Label for the 'all payment records' section of the app settings. */
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+
+/* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+
+/* Label for 'all currencies' section in the payment currency settings. */
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+
+/* Label for 'deactivate payments' button in the app settings. */
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Wallet";
+
+/* Label for the 'payments details' view of the app settings. */
+"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Details";
+
+/* Description for the 'About MobileCoin' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new digital currency protected by advanced encryption.";
+
+/* Title for the 'About MobileCoin' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+
+/* Description for the 'Adding to your wallet' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds to Signal by sending MobileCoin to your wallet address.";
+
+/* Title for the 'Adding to your wallet' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding to your wallet";
+
+/* Description for the 'Cashing Out' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out at anytime. Just make a transfer to a supported exchange.";
+
+/* Title for the 'Cashing Out' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+
+/* Indicator that the payments wallet address is invalid. */
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+
+/* Format string for payment memo messages. Embeds: {{ the memo message }}. */
+"SETTINGS_PAYMENTS_MEMO_MESSAGE_FORMAT" = "For: %@";
+
+/* Message indicating that there is no payment activity to display in the payment settings. */
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+
+/* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+
+/* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+
+/* Message for the 'payments opt-in' view in the app settings. */
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signal now supports payments in a new digital currency called MobileCoin. Activating payments will let you send and receive MobileCoin via chats in Signal.";
+
+/* Title for the 'payments opt-in' view in the app settings. */
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+
+/* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+
+/* Label for the sender in the payment details view in the app settings. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+
+/* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+
+/* Indicates that you send the payment in the payment details view in the app settings. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "You";
+
+/* Label for the transaction status in the payment details view in the app settings. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
+
+/* Footer string for the status section of the payment details view in the app settings. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+
+/* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+
+/* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+
+/* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "All";
+
+/* Label for the 'incoming payments' mode of the 'all payment records' section of the app settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "Received";
+
+/* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Sent";
+
+/* Label for the 'recent payments' section in the payment settings. */
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+
+/* Label for the 'remove payments details' button in the app settings. */
+"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Remove";
+
+/* Instructions in the 'scan payment address QR code' view in the payment settings. */
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+
+/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+
+/* Label for 'scan payment address QR code' view in the payment settings. */
+"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Scan QR Code";
+
+/* Label for 'send payment' button in the payment settings. */
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+
+/* Label for the 'send payment to recipient' view in the payment settings. */
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+
+/* Title for the 'set currency' view in the app settings. */
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "Set Currency";
+
+/* Label for the 'show all payments' button in the payment settings. */
+"SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "See All";
+
+/* Label for the 'payments' section of the app settings. */
+"SETTINGS_PAYMENTS_TITLE" = "Payments";
+
+/* Footer of the 'transfer currency out' view in the payment settings. */
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can withdraw MobileCoin by completing a transfer to another wallet address. From another wallet, look for the 26-35 string of numbers and letters most commonly below the QR code.";
+
+/* Error indicating that MobileCoin public address is not valid. */
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Invalid payments recipient";
+
+/* Placeholder text for the address text field in the 'transfer currency out' settings view. */
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+
+/* Label for 'transfer currency out' view in the payment settings. */
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer";
+
+/* Label for the 'transfer to exchange' button in the payment settings. */
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+
+/* Label for the payments wallet address. */
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";

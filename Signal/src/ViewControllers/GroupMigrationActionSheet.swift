@@ -465,10 +465,7 @@ public class GroupMigrationActionSheet: UIView {
             owsFailDebug("Missing frontmostViewController.")
             return
         }
-
-        let toastController = ToastController(text: text)
-        let toastInset = viewController.bottomLayoutGuide.length + 8
-        toastController.presentToastView(fromBottomOfView: viewController.view, inset: toastInset)
+        viewController.presentToast(text: text)
     }
 
     // MARK: - Events

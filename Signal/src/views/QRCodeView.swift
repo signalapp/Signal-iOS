@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,20 +101,34 @@ class QRCodeView: UIView {
         guard let urlData: Data = url.absoluteString.data(using: .utf8) else {
             throw OWSAssertionError("urlData was unexpectedly nil")
         }
+        return try buildQRImage(data: urlData, forExport: forExport)
+    }
+
+    public static func buildQRImage(data: Data, forExport: Bool = false) throws -> UIImage {
+        let foregroundColor: UIColor = (forExport ? .black : Theme.lightThemePrimaryColor)
+        let backgroundColor: UIColor = (forExport ? .white : .clear)
+        return try buildQRImage(data: data,
+                                foregroundColor: foregroundColor,
+                                backgroundColor: backgroundColor,
+                                largeSize: forExport)
+    }
+
+    public static func buildQRImage(data: Data,
+                                    foregroundColor: UIColor,
+                                    backgroundColor: UIColor,
+                                    largeSize: Bool) throws -> UIImage {
 
         guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
             throw OWSAssertionError("filter was unexpectedly nil")
         }
         filter.setDefaults()
-        filter.setValue(urlData, forKey: "inputMessage")
+        filter.setValue(data, forKey: "inputMessage")
 
         guard let ciImage = filter.outputImage else {
             throw OWSAssertionError("ciImage was unexpectedly nil")
         }
 
         // Change the color using CIFilter
-        let foregroundColor: UIColor = (forExport ? .black : Theme.lightThemePrimaryColor)
-        let backgroundColor: UIColor = (forExport ? .white : .clear)
         let colorParameters = [
             "inputColor0": CIColor(color: foregroundColor),
             "inputColor1": CIColor(color: backgroundColor)
@@ -124,7 +138,7 @@ class QRCodeView: UIView {
 
         // When exporting, scale up the output so that each pixel of the
         // QR code is represented by a 10x10 pixel block.
-        let scaledCIIimage = (forExport
+        let scaledCIIimage = (largeSize
             ? recoloredCIImage.transformed(by: CGAffineTransform.scale(10.0))
             : recoloredCIImage)
 
@@ -136,7 +150,6 @@ class QRCodeView: UIView {
         }
 
         let image = UIImage(cgImage: cgImage)
-
         return image
     }
 }

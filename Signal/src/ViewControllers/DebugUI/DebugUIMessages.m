@@ -3160,6 +3160,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                        ActionFailureBlock failure) {
                                        OWSContact *contact = contactBlock(transaction);
                                        OWSLogVerbose(@"sending contact: %@", contact.debugDescription);
+        
                                        [ThreadUtil enqueueMessageWithContactShare:contact thread:thread];
 
                                        success();

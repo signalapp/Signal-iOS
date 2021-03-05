@@ -1624,6 +1624,16 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     _conversationStyle = conversationStyle;
 }
 
+- (void)didTapPayment
+{
+    [self.inputToolbarDelegate paymentButtonPressed];
+}
+
+- (BOOL)isGroup
+{
+    return self.inputToolbarDelegate.isGroup;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -137,11 +137,22 @@ extension ConversationSettingsViewController {
             // TODO Message Request: In order to debug the profile is getting shared in the right moments,
             // display the thread whitelist state in settings. Eventually we can probably delete this.
             if DebugFlags.showWhitelisted {
-                let viewController = self.viewController
+                let thread = viewController.thread
+                let databaseStorage = viewController.databaseStorage
+                let payments = viewController.paymentsSwift
                 let isThreadInProfileWhitelist = UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
                                                                                 transaction: transaction)
                 let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
                 addSubtitleLabel(text: hasSharedProfile)
+
+                if let contactThread = thread as? TSContactThread {
+                    let arePaymentsEnabled = databaseStorage.uiRead { transaction in
+                        payments.arePaymentsEnabled(for: contactThread.contactAddress,
+                                                    transaction: transaction)
+                    }
+                    addSubtitleLabel(text: String(format: "Payments Enabled: %@",
+                                                  arePaymentsEnabled ? "Yes" : "No"))
+                }
             }
         }
 

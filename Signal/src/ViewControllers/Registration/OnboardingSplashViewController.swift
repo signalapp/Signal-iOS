@@ -52,6 +52,10 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
+        if !FeatureFlags.isUsingProductionService {
+            titleLabel.text = "Internal Staging Build" + "\n" + "\(AppVersion.shared().currentAppVersionLong)"
+        }
+
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")

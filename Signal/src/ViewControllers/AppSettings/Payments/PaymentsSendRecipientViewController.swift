@@ -1,0 +1,169 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+import PromiseKit
+
+@objc
+class PaymentsSendRecipientViewController: OWSViewController {
+
+    let recipientPicker = RecipientPickerViewController()
+
+    @objc
+    public static func presentAsFormSheet(fromViewController: UIViewController,
+                                          paymentRequestModel: TSPaymentRequestModel?) {
+        let view = PaymentsSendRecipientViewController()
+        let navigationController = OWSNavigationController(rootViewController: view)
+        fromViewController.presentFormSheet(navigationController, animated: true)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = NSLocalizedString("SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE",
+                                  comment: "Label for the 'send payment to recipient' view in the payment settings.")
+
+        view.backgroundColor = Theme.backgroundColor
+
+        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
+        recipientPicker.allowsAddByPhoneNumber = false
+        recipientPicker.shouldHideLocalRecipient = true
+        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
+        recipientPicker.shouldShowGroups = false
+        recipientPicker.delegate = self
+        addChild(recipientPicker)
+        view.addSubview(recipientPicker.view)
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didTapDismiss))
+    }
+
+    @objc
+    func didTapDismiss() {
+        dismiss(animated: true)
+    }
+
+    private func showSendPayment(address: SignalServiceAddress) {
+        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
+            Self.payments.arePaymentsEnabled(for: address, transaction: transaction)
+        }
+        guard recipientHasPaymentsEnabled else {
+            // TODO: Should we try to fill in this state before showing the error alert?
+            ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
+
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED",
+                                                                      comment: "Indicator that a given user cannot receive payments because the have not enabled payments."))
+            return
+        }
+
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        SendPaymentViewController.presentInNavigationController(navigationController,
+                                                                delegate: self,
+                                                                recipientAddress: address,
+                                                                paymentRequestModel: nil,
+                                                                isOutgoingTransfer: false)
+    }
+}
+
+// MARK: -
+
+extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        canSelectRecipient recipient: PickedRecipient
+    ) -> RecipientPickerRecipientState {
+        // TODO:
+        return .canBeSelected
+    }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        didSelectRecipient recipient: PickedRecipient
+    ) {
+        switch recipient.identifier {
+        case .address(let address):
+            showSendPayment(address: address)
+        case .group:
+            owsFailDebug("Invalid recipient.")
+            dismiss(animated: true)
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         willRenderRecipient recipient: PickedRecipient) {
+        // Do nothing.
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+        owsFailDebug("This method should not called.")
+        return AnyPromise(Promise.value(()))
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         showInvalidRecipientAlert recipient: PickedRecipient) {
+        owsFailDebug("Unexpected error.")
+    }
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        didDeselectRecipient recipient: PickedRecipient
+    ) {}
+
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryMessageForRecipient recipient: PickedRecipient
+    ) -> String? {
+        // TODO: design
+        switch recipient.identifier {
+        case .address(let address):
+            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            return MessageStrings.conversationIsBlocked
+        case .group(let thread):
+            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            return MessageStrings.conversationIsBlocked
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
+        // TODO: design
+        switch recipient.identifier {
+        case .address(let address):
+            guard !address.isLocalAddress else {
+                return nil
+            }
+            if let bioForDisplay = (Self.databaseStorage.read { transaction in
+                Self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
+               }) {
+                return NSAttributedString(string: bioForDisplay)
+            }
+            return nil
+        case .group:
+            return nil
+        }
+    }
+
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+
+    func recipientPickerNewGroupButtonWasPressed() {}
+
+    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
+}
+
+// MARK: -
+
+extension PaymentsSendRecipientViewController: SendPaymentViewDelegate {
+
+    func didSendPayment() {
+        dismiss(animated: true, completion: nil)
+    }
+}

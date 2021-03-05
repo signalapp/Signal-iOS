@@ -14,8 +14,7 @@ final class HelpViewController: OWSTableViewController2 {
     }
 
     private func updateTableContents() {
-        let helpTitle = NSLocalizedString("SETTINGS_HELP",
-                                          comment: "Title for support page in app settings.")
+        let helpTitle = CommonStrings.help
         let supportCenterLabel = NSLocalizedString("HELP_SUPPORT_CENTER",
                                                    comment: "Help item that takes the user to the Signal support website")
         let contactLabel = NSLocalizedString("HELP_CONTACT_US",

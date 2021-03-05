@@ -44,6 +44,7 @@ public enum ThemeIcon: UInt {
     case settingsDonate
     case settingsAdvanced
     case settingsAbout
+    case settingsPayments
 
     case stickerButton
     case cameraButton
@@ -234,6 +235,8 @@ public extension Theme {
             return "advanced-24"
         case .settingsAbout:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
+        case .settingsPayments:
+            return "payments-32"
 
         // Input Toolbar
         case .stickerButton:
