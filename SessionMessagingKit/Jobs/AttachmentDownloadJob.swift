@@ -8,6 +8,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
+    public var isDeferred = false
 
     public enum Error : LocalizedError {
         case noAttachment
@@ -33,11 +34,13 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
             let tsMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
-            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
+            let id = coder.decodeObject(forKey: "id") as! String?,
+            let isDeferred = coder.decodeObject(forKey: "isDeferred") as! Bool? else { return nil }
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
+        self.isDeferred = isDeferred
     }
 
     public func encode(with coder: NSCoder) {
@@ -45,10 +48,12 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
+        coder.encode(isDeferred, forKey: "isDeferred")
     }
 
     // MARK: Running
     public func execute() {
+        guard !isDeferred else { return }
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
             // from time to time with an already downloaded attachment.

@@ -10,6 +10,8 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     @objc public var profilePictureEncryptionKey: OWSAES256Key?
     /// The ID of the thread associated with this contact.
     @objc public var threadID: String?
+    /// This flag is used to determine whether we should auto-download files sent by this contact.
+    @objc public var isTrusted = false
     
     // MARK: Name
     /// The name of the contact. Use this whenever you need the "real", underlying name of a user (e.g. when sending a message).
@@ -54,8 +56,10 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     
     // MARK: Coding
     public required init?(coder: NSCoder) {
-        guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
+        guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String?,
+            let isTrusted = coder.decodeObject(forKey: "isTrusted") as! Bool? else { return nil }
         self.sessionID = sessionID
+        self.isTrusted = isTrusted
         if let name = coder.decodeObject(forKey: "displayName") as! String? { self.name = name }
         if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
         if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
@@ -72,6 +76,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(profilePictureFileName, forKey: "profilePictureFileName")
         coder.encode(profilePictureEncryptionKey, forKey: "profilePictureEncryptionKey")
         coder.encode(threadID, forKey: "threadID")
+        coder.encode(isTrusted, forKey: "isTrusted")
     }
     
     // MARK: Equality

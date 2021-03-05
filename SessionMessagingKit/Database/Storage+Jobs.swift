@@ -72,6 +72,25 @@ extension Storage {
         #endif
         return result.first
     }
+    
+    public func getAttachmentDownloadJobs(for tsMessageID: String) -> [AttachmentDownloadJob] {
+        var result: [AttachmentDownloadJob] = []
+        Storage.read { transaction in
+            transaction.enumerateRows(inCollection: AttachmentDownloadJob.collection) { _, object, _, _ in
+                guard let job = object as? AttachmentDownloadJob, job.tsMessageID == tsMessageID else { return }
+                result.append(job)
+            }
+        }
+        return result
+    }
+    
+    public func resumeAttachmentDownloadJobsIfNeeded(for tsMessageID: String) {
+        let jobs = getAttachmentDownloadJobs(for: tsMessageID)
+        jobs.forEach { job in
+            job.delegate = JobQueue.shared
+            job.execute()
+        }
+    }
 
     public func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob? {
         var result: MessageSendJob?

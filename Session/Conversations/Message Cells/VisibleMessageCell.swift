@@ -331,25 +331,32 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 stackView.pin(to: snContentView, withInset: inset)
             }
         case .mediaMessage:
-            guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
-            let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
-            let albumView = MediaAlbumView(mediaCache: cache, items: viewItem.mediaAlbumItems!, isOutgoing: isOutgoing, maxMessageWidth: maxMessageWidth)
-            self.albumView = albumView
-            snContentView.addSubview(albumView)
-            let size = getSize(for: viewItem)
-            albumView.set(.width, to: size.width)
-            albumView.set(.height, to: size.height)
-            albumView.pin(to: snContentView)
-            albumView.loadMedia()
-            albumView.layer.mask = bubbleViewMaskLayer
-            if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
-                let delegate = delegate { // delegate should always be set at this point
-                let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, delegate: delegate)
-                self.mediaTextOverlayView = overlayView
-                snContentView.addSubview(overlayView)
-                overlayView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: snContentView)
+            if let thread = viewItem.interaction.thread as? TSContactThread,
+                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                let mediaPlaceholderView = MediaPlaceholderView(viewItem: viewItem, textColor: bodyLabelTextColor)
+                snContentView.addSubview(mediaPlaceholderView)
+                mediaPlaceholderView.pin(to: snContentView)
+            } else {
+                guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
+                let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
+                let albumView = MediaAlbumView(mediaCache: cache, items: viewItem.mediaAlbumItems!, isOutgoing: isOutgoing, maxMessageWidth: maxMessageWidth)
+                self.albumView = albumView
+                snContentView.addSubview(albumView)
+                let size = getSize(for: viewItem)
+                albumView.set(.width, to: size.width)
+                albumView.set(.height, to: size.height)
+                albumView.pin(to: snContentView)
+                albumView.loadMedia()
+                albumView.layer.mask = bubbleViewMaskLayer
+                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
+                    let delegate = delegate { // delegate should always be set at this point
+                    let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, delegate: delegate)
+                    self.mediaTextOverlayView = overlayView
+                    snContentView.addSubview(overlayView)
+                    overlayView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: snContentView)
+                }
+                unloadContent = { albumView.unloadMedia() }
             }
-            unloadContent = { albumView.unloadMedia() }
         case .audio:
             let voiceMessageView = VoiceMessageView(viewItem: viewItem)
             snContentView.addSubview(voiceMessageView)
