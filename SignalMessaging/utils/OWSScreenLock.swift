@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,6 +117,29 @@ public class OWSScreenLock: NSObject {
         }
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+    }
+
+    public enum BiometryType {
+        case unknown, passcode, faceId, touchId
+    }
+    public var biometryType: BiometryType {
+        let context = screenLockContext()
+
+        var authError: NSError?
+        let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)
+
+        guard canEvaluatePolicy, authError == nil else { return .unknown }
+
+        switch context.biometryType {
+        case .none:
+            return .passcode
+        case .faceID:
+            return .faceId
+        case .touchID:
+            return .touchId
+        @unknown default:
+            return .unknown
+        }
     }
 
     // MARK: - Methods

@@ -102,7 +102,18 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
-        appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
+
+        switch OWSScreenLock.shared.biometryType {
+        case .unknown:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
+        case .passcode:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_PASSCODE", comment: "Section footer")
+        case .faceId:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_FACEID", comment: "Section footer")
+        case .touchId:
+            appSecuritySection.footerTitle = NSLocalizedString("SETTINGS_SECURITY_DETAIL_TOUCHID", comment: "Section footer")
+        }
+
         appSecuritySection.add(.switch(
             withText: NSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: { Self.preferences.screenSecurityIsEnabled() },
