@@ -138,10 +138,10 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "添付ファイルが大きすぎます";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "添付ファイルが無効です。";
+"ATTACHMENT_ERROR_INVALID_DATA" = "添付ファイルが不正です。";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "添付ファイルのフォーマットが無効です。";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "添付ファイルのフォーマットが不正です。";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
@@ -177,7 +177,7 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "バックアップデータのエクスポートができませんでした。";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "無効なサービスレスポンス";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "不正なサービス応答";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "バックアップをクリーンアップ中";
@@ -898,7 +898,7 @@
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "ネットワークへの要求が時間切れになりました";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "無効な応答がサービスから返ってきました";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "不正な応答がサービスから返ってきました";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "この端末はあなたの電話番号で登録されていません。Sessionを再インストールしてください。";
@@ -919,7 +919,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複したメッセージを受信しました。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "受取人のIDキーが無効です";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "受取人のIDキーが不正です";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "不正なメッセージを受信しました";
@@ -1159,7 +1159,7 @@
 "LEAVE_GROUP_ACTION" = "グループを離脱";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは無効です。リンクしたい端末のQRコードをスキャンしましたか？";
+"LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは不正です。リンクしたい端末のQRコードをスキャンしていることを確認してください。";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "端末のリンクに失敗";
@@ -2034,7 +2034,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "検閲回避が登録番号のもとで有効になりました";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "検閲制限をマニュアルで無効にしました";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "検閲回避は手動で無効にされています";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "検閲回避はネットに接続されているときのみ有効となります";
@@ -2548,12 +2548,12 @@
 // MARK: - Session
 "continue_2" = "続行する";
 "copy" = "コピーする";
-"invalid_url" = "URL が無効です";
+"invalid_url" = "URL が不正です";
 "copied_to_clipboard" = "クリップボードにコピーされました";
 "device_linking_failed" = "端末をリンクできませんでした。";
 "next" = "次";
 "share" = "共有する";
-"invalid_session_id" = "Session ID が無効です";
+"invalid_session_id" = "Session ID が不正です";
 "cancel" = "取り消す";
 "your_session_id" = "あなたの Session ID";
 
@@ -2640,7 +2640,7 @@
 "vc_create_closed_group_group_name_too_long_error" = "短いグループ名を入力してください";
 "vc_create_closed_group_not_enough_group_members_error" = "グループメンバーを少なくとも 2 人選択してください";
 "vc_create_closed_group_too_many_group_members_error" = "非公開グループは 100 人を超えるメンバーを抱えることはできません";
-"vc_create_closed_group_invalid_session_id_error" = "グループのメンバーの 1 人の Session ID が無効です";
+"vc_create_closed_group_invalid_session_id_error" = "グループのメンバーの 1 人の Session ID が不正です";
 
 "vc_join_public_chat_title" = "公開グループに参加する";
 "vc_join_public_chat_error" = "グループに参加できませんでした";
