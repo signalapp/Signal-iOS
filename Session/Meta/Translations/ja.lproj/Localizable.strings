@@ -1539,7 +1539,7 @@
 "ONBOARDING_PROFILE_TITLE" = "プロフィールの設定";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約と個人情報保護";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約とプライバシーポリシー";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
