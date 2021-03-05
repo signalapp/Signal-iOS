@@ -464,7 +464,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
                 setNavigationBarHidden(true, animated: animated)
             }
         case is AttachmentApprovalViewController:
-            showNavbar(.clear)
+            showNavbar(.alwaysDarkAndClear)
         case is ImagePickerGridController:
             showNavbar(.alwaysDark)
         case is ConversationPickerViewController:
