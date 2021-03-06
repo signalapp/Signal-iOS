@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Niezapisane zmiany";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Zobacz wszystkich";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ten użytkownik jest w Twoich kontaktach";
@@ -2681,7 +2681,7 @@
 "LOGGING_SECTION" = "Logowanie";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Logi debugowania mogą pomóc Signal w naprawie błędów i problemów.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Wiadomość";
@@ -4640,7 +4640,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Ustawienia omijania cenzury, przekazywania połączeń i ukrytego nadawcy.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Zaawansowane";
@@ -4685,7 +4685,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Ukryj ekran w przełączniku aplikacji";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Pokaż połączenia na liście \"Ostatnich\" połączeń w aplikacji iOS Phone.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Dźwięki";
@@ -4697,13 +4697,13 @@
 "SETTINGS_SECURITY_DETAIL" = "Użyj Touch ID, Face ID, lub hasła do swojego urządzenia z systemem iOS, aby odblokować Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Użyj Face ID, aby odblokować Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Użyj hasła do swojego urządzenia, aby odblokować Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Użyj Touch ID, aby odblokować Signal.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Bezpieczeństwo aplikacji";
@@ -4727,7 +4727,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Ukryty nadawca";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Pokaż ikonę statusu";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Zezwól wszystkim";

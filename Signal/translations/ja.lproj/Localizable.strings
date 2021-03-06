@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS" = "チャットの設定";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "メンバーを追加する";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "メンバーを追加";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "既存の連絡先に追加";
@@ -2681,7 +2681,7 @@
 "LOGGING_SECTION" = "デバッグログ";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "デバッグログはSignalのバグとクラッシュの修正に役立ちます。";
+"LOGGING_SECTION_FOOTER" = "デバッグログは、Signalのバグとクラッシュの修正に役立ちます。";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "メッセージ";
@@ -3005,7 +3005,7 @@
 "MUTED_BADGE" = "ミュート中";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近、プロフィール名を %1$@ から %2$@ に変更しました。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "スキップ";
@@ -4589,7 +4589,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "バッジ数";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "電話のロック中に、着信とメッセージ通知を表示することができます。";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "電話のロック中に、着信とメッセージの通知を表示することができます。";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知内容";
@@ -4640,7 +4640,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "検閲回避、通話のリレー、送信者の秘匿化について設定します。";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "検閲回避、通話のリレーおよび送信者の秘匿化について設定します。";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "詳細設定";
@@ -4694,7 +4694,7 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "通話";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Touch ID、Face IDまたはiOS端末のパスコードを使用して、Signalのロックを解除します。";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Face IDでSignalのロックを解除します。";

@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Ungespeicherte Änderungen";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Alle anzeigen";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Dieser Nutzer ist in deinen Kontakten";
@@ -2681,7 +2681,7 @@
 "LOGGING_SECTION" = "Protokollierung";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Diagnoseprotokolle helfen Signal beim Beheben von Problemen und Abstürzen.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Nachricht";
@@ -4484,7 +4484,7 @@
 "SETTINGS_CHATS" = "Unterhaltungen";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Unterhaltungsverlauf löschen";
+"SETTINGS_CLEAR_HISTORY" = "Unterhaltungsverlauf leeren";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Urheberrecht Signal Messenger\nLizensiert unter GPLv3";
@@ -4640,7 +4640,7 @@
 "SETTINGS_PINS_TITLE" = "Signal-PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Einstellungen für Zensurumgehung, indirekte Anrufe und vertraulicher Absender.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Weitere Einstellungen";
@@ -4685,7 +4685,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Bildschirm im App-Umschalter verstecken";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Anruf in der Anrufliste der iOS-Telefon-App anzeigen.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Töne";
@@ -4697,13 +4697,13 @@
 "SETTINGS_SECURITY_DETAIL" = "Verwende Touch-ID, Face-ID oder den Passcode deines iOS-Geräts, um Signal zu entsperren.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Face-ID zum Entsperren von Signal verwenden.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Gerätepasscode zum Entsperren von Signal verwenden.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Touch-ID zum Entsperren von Signal verwenden.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App-Sicherheit";
@@ -4727,7 +4727,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Vertraulicher Absender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Statussymbol anzeigen";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Von jedem erlauben";

@@ -4733,7 +4733,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activa «remitente confidencial» para mensajes de personas en Signal que no estén entre tus contactos y con las que no has compartido tu perfil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "La función por defecto de «Remitente confidencial» impide al servidor de Signal saber quién envía los mensajes. Sólo la persona que los reciba sabrá quién los envía. Activa la opción «Permitir de cualquiera» para recibir mensajes con «remitente confidencial» de personas que no estén entre tus contactos y con las que no has compartido tu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versión";

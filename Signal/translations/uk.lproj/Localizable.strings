@@ -4577,19 +4577,19 @@
 "SETTINGS_MESSAGING" = "Листування";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "Бачити та відправляти сповіщення про набір повідомлень. Вимкнене налаштування не дозволить бачити звіти про прочитані повідомлення та про повідомлення, що набирають інші користувачі.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Налаштування";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Враховувати чати з вимкненими сповіщеннями";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Кількість непрочитаних повідомлень";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Сповіщення про виклики та повідомлення відображаються коли ваш телефон замкнено.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Вміст сповіщень";
@@ -4640,7 +4640,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налаштування обходу цензури, ретрансляції дзвінків та прихованого відправника.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Додаткові функції";
