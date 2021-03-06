@@ -693,6 +693,10 @@ class MediaGallery {
                                                                         transaction: transaction)
         }
 
+        if sections.isEmpty {
+            hasFetchedMostRecent = true
+        }
+
         let sortedDates = newSectionCounts.keys.sorted()
         owsAssertDebug(sections.isEmpty || sortedDates.isEmpty || sortedDates.last! < sections.orderedKeys.first!)
         for date in sortedDates.reversed() {
@@ -732,6 +736,10 @@ class MediaGallery {
             // Make sure we have the full count for the latest loaded section.
             newSectionCounts[newLatestDate!] = numberOfItemsInSection(for: newLatestDate!,
                                                                       transaction: transaction)
+        }
+
+        if sections.isEmpty {
+            hasFetchedOldest = true
         }
 
         let sortedDates = newSectionCounts.keys.sorted()
