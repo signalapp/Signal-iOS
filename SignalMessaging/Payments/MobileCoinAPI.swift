@@ -458,6 +458,7 @@ class MobileCoinAPI {
     }
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
+        // TODO: Use proper SDK method when ready.
         getMinimumFee(forPaymentAmount: paymentAmount)
     }
 

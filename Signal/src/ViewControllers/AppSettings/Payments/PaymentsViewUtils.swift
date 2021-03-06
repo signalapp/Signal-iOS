@@ -123,12 +123,6 @@ public extension TSPaymentModel {
     func statusDescription(isLongForm: Bool) -> String {
         // PAYMENTS TODO: What's the correct copy here? What are all of the possible states?
 
-        //        let defaultState = (isLongForm
-        //                                ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN",
-        //                                                    comment: "Status indicator for payments which had an unknown failure.")
-        //                                : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN",
-        //                                                    comment: "Status indicator for payments which had an unknown failure."))
-
         var result: String
 
         if isOutgoingTransfer || isUnidentified {
@@ -165,16 +159,12 @@ public extension TSPaymentModel {
                                                 comment: "Status indicator for outgoing payments which have been verified but not yet sent.")
                             : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED",
                                                 comment: "Status indicator for outgoing payments which have been verified but not yet sent."))
-            //        case .outgoingSent:
             case .outgoingSending:
                 result = (isLongForm
                             ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING",
                                                 comment: "Status indicator for outgoing payments which are being sent.")
                             : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
                                                 comment: "Status indicator for outgoing payments which are being sent."))
-            //        case .outgoingSendFailed:
-            //            result = NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SEND_FAILED",
-            //                                       comment: "Status indicator for outgoing payments failed to be sent.")
             case .outgoingSent,
                  .outgoingMissingLedgerTimestamp,
                  .outgoingComplete:
@@ -191,7 +181,6 @@ public extension TSPaymentModel {
                                                 comment: "Status indicator for incoming payments which have not yet been verified.")
                             : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED",
                                                 comment: "Status indicator for incoming payments which have not yet been verified."))
-            //        case .incomingVerified:
             case .incomingVerified,
                  .incomingMissingLedgerTimestamp,
                  .incomingComplete:
@@ -202,18 +191,6 @@ public extension TSPaymentModel {
                                                 comment: "Status indicator for incoming payments which have been verified."))
             case .incomingFailed:
                 result = Self.description(forFailure: paymentFailure, isIncoming: true, isLongForm: isLongForm)
-            //        case .incomingDuplicate:
-            //            // PAYMENTS TODO: We need copy from design.
-            //            result = NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_DUPLICATE",
-            //                                       comment: "Status indicator for incoming payments which are duplicates.")
-            //        case .incomingUnidentified:
-            //            if let mcReceiptData = self.mcReceiptData else {
-            //            } else {
-            //                result = defaultState
-            //            }
-            //            guard let
-            //             .outgoingUnidentified:
-            //            // TODO: This should use an identifier
             @unknown default:
                 result = (isLongForm
                             ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN",
@@ -249,15 +226,13 @@ public extension TSPaymentModel {
 
         switch failure {
         case .none:
-            // TODO: We should eventually convert this to an owsFailDebug().
-            Logger.warn("Unexpected failure type: \(failure.rawValue)")
             if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Unexpected failure type: \(failure.rawValue)")
             } else {
                 owsFailDebug("Unexpected failure type: \(failure.rawValue)")
             }
             return defaultDescription
         case .unknown:
-            // TODO: We should eventually convert this to an owsFailDebug().
             owsFailDebug("Unexpected failure type: \(failure.rawValue)")
             return defaultDescription
         case .insufficientFunds:

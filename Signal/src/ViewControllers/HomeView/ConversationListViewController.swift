@@ -59,7 +59,6 @@ public extension ConversationListViewController {
             title = String(format: format, OWSFormat.formatUInt(unreadCount))
         }
 
-        // TODO: Colors pending.
         let iconView = UIImageView.withTemplateImageName(Theme.iconName(.paymentNotification),
                                                          tintColor: (Theme.isDarkThemeEnabled
                                                                         ? .ows_gray15

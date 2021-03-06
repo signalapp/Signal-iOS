@@ -13,7 +13,6 @@ public protocol SendPaymentViewDelegate {
 
 // MARK: -
 
-// TODO: We either need a dismiss button or ensure that this isn't always visible.
 @objc
 public class SendPaymentViewController: OWSViewController {
 
@@ -154,8 +153,6 @@ public class SendPaymentViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        //
-        // PAYMENTS TODO:
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }

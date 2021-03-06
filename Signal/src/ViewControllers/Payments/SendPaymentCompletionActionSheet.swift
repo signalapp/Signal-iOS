@@ -104,8 +104,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        //
-        // PAYMENTS TODO:
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
@@ -430,17 +428,47 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private static func formatPaymentFailure(_ error: Error) -> String {
 
-        let errorDescription: String
-        switch error {
-        case PaymentsError.insufficientFunds:
-            // PAYMENTS TODO: We need copy from design.
-            errorDescription = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
-                                                 comment: "Indicates that a payment failed due to insufficient funds.")
-        default:
-            // PAYMENTS TODO: Revisit which errors we surface and how.
-            errorDescription = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
-                                                 comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
-        }
+        // PAYMENTS TODO: Revisit which errors we surface and how.
+        let errorDescription: String = {
+            switch error {
+            case let paymentsError as PaymentsError:
+                switch paymentsError {
+                case .insufficientFunds:
+                    // PAYMENTS TODO: We need copy from design.
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
+                                             comment: "Indicates that a payment failed due to insufficient funds.")
+                case .timeout,
+                     .connectionFailure,
+                     .serverRateLimited,
+                     .authorizationFailure,
+                     .invalidServerResponse,
+                     .attestationVerificationFailed:
+                    // PAYMENTS TODO: We need copy from design.
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
+                                             comment: "Indicates that a payment failed due to a connectivity failure.")
+                case .outdatedClient:
+                    // PAYMENTS TODO: We need copy from design.
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
+                                             comment: "Indicates that a payment failed due to an outdated client.")
+                case .userHasNoPublicAddress,
+                     .invalidCurrency,
+                     .invalidAmount,
+                     .invalidFee,
+                     .invalidModel,
+                     .invalidInput:
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
+                                             comment: "Indicates that a payment failed due to being invalid.")
+                default:
+                    // PAYMENTS TODO: We need copy from design.
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                                             comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
+                }
+            default:
+                // PAYMENTS TODO: We need copy from design.
+                return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                                                     comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
+            }
+        }()
 
         // PAYMENTS TODO: We need copy from design.
         let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_FORMAT",
@@ -552,32 +580,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     func didTapCancel() {
         dismiss(animated: true, completion: nil)
     }
-
-    //    private var actionSheet: SendPaymentCompletionActionSheet?
-    //
-    //    @objc
-    //    func didTapPayButton(_ sender: UIButton) {
-    //        guard let parsedAmount = parsedAmount,
-    //              parsedAmount > 0 else {
-    //            showInvalidAmountAlert()
-    //            return
-    //        }
-    //        let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: parsedAmount)
-    //        // TODO: Fill in actual estimates.
-    //        let estimatedFeeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 1)
-    //        // Snapshot the conversion rate.
-    //        let currencyConversion = self.currentCurrencyConversion
-    //
-    //        let paymentInfo = PaymentInfo(recipientAddress: recipientAddress,
-    //                                      paymentAmount: paymentAmount,
-    //                                      estimatedFeeAmount: estimatedFeeAmount,
-    //                                      currencyConversion: currencyConversion,
-    //                                      paymentRequestModel: paymentRequestModel)
-    //        let actionSheet = SendPaymentCompletionActionSheet(mode: .payment(paymentInfo: paymentInfo))
-    //        self.actionSheet = actionSheet
-    //        actionSheet.present(fromViewController: self)
-    //        //        currentStep = .confirmPay(paymentInfo: paymentInfo)
-    //    }
 
     @objc
     func didTapConfirmButton(_ sender: UIButton) {
