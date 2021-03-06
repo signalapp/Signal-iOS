@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SafariServices
 
 @objc(OWSSupportConstants)
 @objcMembers class SupportConstants: NSObject {
@@ -259,8 +260,9 @@ extension ContactSupportViewController {
                     cell.textLabel?.textColor = Theme.accentBlueColor
                     return cell
                 },
-                   actionBlock: {
-                    UIApplication.shared.open(SupportConstants.supportURL, options: [:])
+                   actionBlock: { [weak self] in
+                    let vc = SFSafariViewController(url: SupportConstants.supportURL)
+                    self?.present(vc, animated: true)
                 })
             ]),
 
@@ -286,8 +288,9 @@ extension ContactSupportViewController {
         label.numberOfLines = 0
         label.textColor = Theme.primaryTextColor
 
-        let infoButton = OWSButton(imageName: "help-outline-24", tintColor: Theme.secondaryTextAndIconColor) {
-            UIApplication.shared.open(SupportConstants.debugLogsInfoURL, options: [:])
+        let infoButton = OWSButton(imageName: "help-outline-24", tintColor: Theme.secondaryTextAndIconColor) { [weak self] in
+            let vc = SFSafariViewController(url: SupportConstants.debugLogsInfoURL)
+            self?.present(vc, animated: true)
         }
         infoButton.accessibilityLabel = NSLocalizedString("DEBUG_LOG_INFO_BUTTON",
                                                           comment: "Accessibility label for the ? vector asset used to get info about debug logs")
