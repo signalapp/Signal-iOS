@@ -80,7 +80,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient
     ) -> RecipientPickerRecipientState {
-        // TODO:
+        // TODO: Nice-to-have: filter out recipients that do not support payments.
         return .canBeSelected
     }
 
@@ -122,7 +122,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient
     ) -> String? {
-        // TODO: design
+        // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):
             guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
@@ -135,7 +135,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
-        // TODO: design
+        // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):
             guard !address.isLocalAddress else {

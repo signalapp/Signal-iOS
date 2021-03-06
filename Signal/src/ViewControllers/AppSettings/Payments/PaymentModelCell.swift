@@ -74,9 +74,6 @@ public class PaymentModelCell: UITableViewCell {
                                     ? UIColor.ows_accentGreen
                                     : Theme.primaryTextColor)
 
-        // PAYMENTS TODO: We probably don't want to render the "sender" and
-        // "amount" for incoming transactions until they are verified.
-
         var avatarView: UIView
         if let address = paymentItem.address {
             let avatarBuilder = OWSContactAvatarBuilder(
@@ -103,6 +100,8 @@ public class PaymentModelCell: UITableViewCell {
 
         nameLabel.text = paymentItem.displayName
 
+        // We don't want to render the amount for incoming
+        // transactions until they are verified.
         if let paymentAmount = paymentModel.paymentAmount {
             var totalAmount = paymentAmount
             if let feeAmount = paymentModel.mobileCoin?.feeAmount {

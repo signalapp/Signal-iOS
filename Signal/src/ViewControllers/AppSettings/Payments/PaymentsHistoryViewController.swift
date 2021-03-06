@@ -43,8 +43,6 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
     }
 
     private func createSubviews() {
-
-        // PAYMENTS TODO: Are we going to restyle UISegmentedControl?
         assert(PaymentsHistoryDataSource.RecordType.all.rawValue == 0)
         modeControl.insertSegment(withTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL",
                                                                comment: "Label for the 'all payments' mode of the 'all payment records' section of the app settings."),

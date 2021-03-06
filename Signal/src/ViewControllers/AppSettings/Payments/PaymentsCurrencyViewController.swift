@@ -72,7 +72,6 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
         }
         contents.addSection(preferredSection)
 
-        // PAYMENTS TODO: Re-test this when currency conversion endpoint is working.
         let supportedSection = OWSTableSection()
         supportedSection.separatorInsetLeading = NSNumber(value: Double(OWSTableViewController2.cellHInnerMargin))
         supportedSection.headerTitle = NSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
@@ -81,7 +80,6 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
             supportedSection.add(OWSTableItem(customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
-                // TODO: Design.
                 let activityIndicator = UIActivityIndicatorView(style: .gray)
                 activityIndicator.startAnimating()
                 activityIndicator.autoSetDimensions(to: .square(48))

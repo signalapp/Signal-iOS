@@ -20,7 +20,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private let paymentsHistoryDataSource = PaymentsHistoryDataSource()
 
-    // PAYMENTS TODO: What's the correct max?
     fileprivate static let maxHistoryCount: Int = 4
 
     @objc
@@ -203,7 +202,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 hideConversions()
             }
         } else {
-            // PAYMENTS TODO: How to format this?
+            // Use an empty string to avoid jitter in layout between the
+            // "pending balance" and "has balance" states.
             balanceLabel.text = " "
 
             let activityIndicator = UIActivityIndicatorView(style: .gray)
@@ -274,7 +274,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         stack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: selector))
 
         let backgroundView = UIView()
-        // TODO: We need design.
         backgroundView.backgroundColor = Theme.tableCell2BackgroundColor
         backgroundView.layer.cornerRadius = 10
         stack.addSubview(backgroundView)
@@ -299,7 +298,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         // We format the conversion freshness date using the local locale.
         // We format the currency using the EN/US locale.
         //
-        // TODO: Is it sufficient to format as a time?
+        // It is sufficient to format as a time, currency conversions go stale in less than a day.
         let conversionFreshnessString = DateUtil.formatDate(asTime: currencyConversionInfo.conversionDate)
         let formatString = NSLocalizedString("SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT",
                                              comment: "Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}..")
@@ -632,11 +631,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapDeactivatePaymentsButton() {
-        // TODO:
+        // TODO: Deactivate flow not yet implemented.
     }
 
     private func didTapHelpButton() {
-        // TODO:
+        // TODO: Pending design/support URL.
     }
 
     private func didTapTransferToExchangeButton() {
@@ -669,17 +668,17 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didTapAboutMobileCoinCard() {
-        // TODO:
+        // TODO: Pending design/support URL.
     }
 
     @objc
     private func didTapAddingToYourWalletCard() {
-        // TODO:
+        // TODO: Pending design/support URL.
     }
 
     @objc
     private func didTapCashingOutCoinCard() {
-        // TODO:
+        // TODO: Pending design/support URL.
     }
 }
 

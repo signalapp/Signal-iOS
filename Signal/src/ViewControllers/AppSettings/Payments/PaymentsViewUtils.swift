@@ -65,7 +65,7 @@ public class PaymentsViewUtils: NSObject {
     }
 
     static func buildUnidentifiedTransactionString(paymentModel: TSPaymentModel) -> String {
-        // TODO: What is the correct value here?
+        // TODO: Pending design.
         owsAssertDebug(paymentModel.isUnidentified)
         return paymentModel.uniqueId
     }

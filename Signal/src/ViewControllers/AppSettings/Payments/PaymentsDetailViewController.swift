@@ -340,7 +340,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
     @objc
     private func didTapStatusFooter() {
-        // TODO:
+        // TODO: Need support link.
     }
 }
 

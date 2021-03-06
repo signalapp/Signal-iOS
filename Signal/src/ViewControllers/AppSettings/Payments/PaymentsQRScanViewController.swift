@@ -105,7 +105,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
 extension PaymentsQRScanViewController: OWSQRScannerDelegate {
     public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith data: Data) {
-        // TODO: Validate and parse the recipient address.
+        // Ignore.
     }
 
     public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {

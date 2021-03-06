@@ -204,6 +204,6 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
     @objc
     func didTapLearnMore() {
-        // TODO:
+        // TODO: Pending design/support URL.
     }
 }

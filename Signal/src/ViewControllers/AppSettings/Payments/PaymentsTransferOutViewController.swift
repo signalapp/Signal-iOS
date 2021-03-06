@@ -20,7 +20,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         guard let addressValue = addressValue else {
             return false
         }
-        // TODO:
         return !addressValue.isEmpty
     }
 
