@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS" = "Gosodiadau Sgwrsio";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Add Members";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Ychwanegu Aelodau";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Ychwanegu at Cysylltiad Presennol";

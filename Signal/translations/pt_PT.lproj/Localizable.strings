@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS" = "Definições da conversa";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Add Members";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adicionar membros";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar a um contacto existente";

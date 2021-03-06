@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Neįrašyti pakeitimai";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Rodyti visus";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Šis naudotojas yra jūsų adresatų sąraše";
@@ -2681,7 +2681,7 @@
 "LOGGING_SECTION" = "Registravimas";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Derinimo žurnalai gali padėti Signal pataisyti klaidas ir strigtis.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Žinutė";
@@ -4640,7 +4640,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN kodas";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Cenzūravimo apėjimo, skambučių retransliavimo ir užantspauduotų siuntėjų nustatymai.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Išplėstiniai";
@@ -4685,7 +4685,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Slėpti ekraną programėlių perjungiklyje";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Rodyti skambučius iOS telefono programėlės „Paskiausiųjų“ sąraše.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Garsai";
@@ -4697,13 +4697,13 @@
 "SETTINGS_SECURITY_DETAIL" = "Signal atrakinimui naudoti „Touch ID“, „Face ID“ ar jūsų iOS įrenginio slaptą kodą.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal atrakinimui naudoti „Face ID“.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal atrakinimui naudoti jūsų įrenginio slaptą kodą.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal atrakinimui naudoti „Touch ID“.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Programėlės saugumas";
