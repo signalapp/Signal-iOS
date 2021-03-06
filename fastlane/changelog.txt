@@ -1,5 +1,5 @@
-• Between the improvements in this update and the improvements in the last update, Signal can now process 16,500% more messages per second. Now you can immediately see the mountain of unread messages that arrived while your cellular reception was taking a hike.
-• Incoming video calls weren't always ringing for some users on iOS 14, but we aren't hung up on this bug anymore.
-• People with tons and tons of contacts may still struggle to handle the weight of their own popularity, but Signal no longer makes them wait as long or struggles to handle their super-large address books.
+• We redesigned lots of screens within the app, and even more will be updated soon. If you're reading these release notes on a plane that is flying back from Paris Fashion Week, go ahead and download this update before you take off to help our hot new 2021 looks make a last-minute runway debut.
+• If you've been searching for an option that you can't seem to find, just retrace your steps with the new and improved Signal Settings menu. It's probably wherever you set it last.
+• Bandwidth shouldn't be the limiting factor that determines whether or not you can talk to someone (unless it's emotional bandwidth) so this release includes a few tweaks to help low-bandwidth calls perform even better.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
