@@ -113,6 +113,7 @@ public protocol PaymentsSwift: Payments {
 
     var paymentsState: PaymentsState { get }
     func setPaymentsState(_ value: PaymentsState, transaction: SDSAnyWriteTransaction)
+    func disablePayments(transaction: SDSAnyWriteTransaction)
     func generateRandomMobileCoinRootEntropy() -> Data
 
     var currentPaymentBalance: PaymentBalance? { get }
@@ -126,6 +127,8 @@ public protocol PaymentsSwift: Payments {
                                   memoMessage: String?,
                                   paymentRequestModel: TSPaymentRequestModel?,
                                   isOutgoingTransfer: Bool) -> Promise<TSPaymentModel>
+
+    func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount>
 }
 
 // MARK: -
@@ -204,6 +207,10 @@ extension MockPayments: PaymentsSwift {
     public var paymentsState: PaymentsState { .disabled }
 
     public func setPaymentsState(_ value: PaymentsState, transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func disablePayments(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -348,6 +355,10 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func didReceiveMCAuthError() {
+        owsFail("Not implemented.")
+    }
+
+    public func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount> {
         owsFail("Not implemented.")
     }
 }

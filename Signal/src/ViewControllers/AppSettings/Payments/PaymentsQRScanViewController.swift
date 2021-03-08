@@ -118,5 +118,6 @@ extension PaymentsQRScanViewController: OWSQRScannerDelegate {
         }
         let publicAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
         delegate?.didScanPaymentAddressQRCode(publicAddressBase58: publicAddressBase58)
+        navigationController?.popViewController(animated: true)
     }
 }

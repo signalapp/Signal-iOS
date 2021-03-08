@@ -9,6 +9,8 @@ import MobileCoin
 @objc
 public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
+    private let transferAmount: TSPaymentAmount?
+
     // TODO: Should this be a text area?
     private let addressTextfield = UITextField()
 
@@ -21,6 +23,10 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
             return false
         }
         return !addressValue.isEmpty
+    }
+
+    public required init(transferAmount: TSPaymentAmount?) {
+        self.transferAmount = transferAmount
     }
 
     public override func viewDidLoad() {
@@ -132,6 +138,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         let recipient: SendPaymentRecipientImpl = .publicAddress(publicAddress: publicAddress)
         let view = SendPaymentViewController(recipient: recipient,
                                              paymentRequestModel: nil,
+                                             initialPaymentAmount: transferAmount,
                                              isOutgoingTransfer: true,
                                              isStandaloneView: true)
         view.delegate = self

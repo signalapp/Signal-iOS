@@ -2724,6 +2724,7 @@ typedef enum : NSUInteger {
                                                            delegate:self
                                                    recipientAddress:thread.contactAddress
                                                 paymentRequestModel:paymentRequestModel
+                                               initialPaymentAmount:nil
                                                  isOutgoingTransfer:NO];
 }
 

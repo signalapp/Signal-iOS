@@ -70,8 +70,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
            CurrentAppContext().isMainApp,
            !CurrentAppContext().isRunningTests {
             AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
-                Self.profileManager.reuploadLocalProfile()
+                if Self.tsAccountManager.isRegisteredAndReady {
+                    Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                    Self.profileManager.reuploadLocalProfile()
+                }
             }
         }
     }
@@ -197,6 +199,17 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         paymentsState.mcRootEntropy
     }
 
+    public func disablePayments(transaction: SDSAnyWriteTransaction) {
+        switch paymentsState {
+        case .enabled(let mcRootEntropy):
+            setPaymentsState(.disabledWithMCRootEntropy(mcRootEntropy: mcRootEntropy),
+                             transaction: transaction)
+        case .disabled, .disabledWithMCRootEntropy:
+            owsFailDebug("Payments already disabled.")
+        }
+        owsAssertDebug(!arePaymentsEnabled)
+    }
+
     public func setPaymentsState(_ paymentsState: PaymentsState, transaction: SDSAnyWriteTransaction) {
         guard paymentsState.isEnabled || canEnablePayments else {
             owsFailDebug("Payments cannot be enabled.")
@@ -304,7 +317,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     private let paymentBalanceCache = AtomicOptional<PaymentBalance>(nil)
 
     public var currentPaymentBalance: PaymentBalance? {
-        return paymentBalanceCache.get()
+        paymentBalanceCache.get()
     }
 
     private func setCurrentPaymentBalance(amount: TSPaymentAmount) {
@@ -324,6 +337,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             }
         }
 
+        // TODO: We could only fire if the value actually changed.
         NotificationCenter.default.postNotificationNameAsync(Self.currentPaymentBalanceDidChange, object: nil)
     }
 
@@ -704,6 +718,38 @@ public extension PaymentsImpl {
 // MARK: - PaymentTransaction
 
 public extension PaymentsImpl {
+
+    func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount> {
+        let fullBalanceAmount = balance.amount
+        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
+            guard fullBalanceAmount.isValidAmount(canBeEmpty: false) else {
+                owsFailDebug("Invalid balance.")
+                throw PaymentsError.invalidAmount
+            }
+            // TODO: Test this once "fee pre-estimation" is working.
+            return self.getEstimatedFee(forPaymentAmount: fullBalanceAmount)
+        }.map(on: .global()) { (estimatedFee: TSPaymentAmount) -> TSPaymentAmount in
+            guard estimatedFee.isValidAmount(canBeEmpty: false) else {
+                owsFailDebug("Invalid estimated fee.")
+                throw PaymentsError.invalidAmount
+            }
+            guard estimatedFee.picoMob < fullBalanceAmount.picoMob else {
+                owsFailDebug("Fee higher than balance.")
+                throw PaymentsError.invalidAmount
+            }
+            let maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin,
+                                                       picoMob: fullBalanceAmount.picoMob - estimatedFee.picoMob)
+            guard maximumPaymentAmount.isValidAmount(canBeEmpty: false) else {
+                owsFailDebug("Invalid maximumPaymentAmount.")
+                throw PaymentsError.invalidAmount
+            }
+            owsAssertDebug(maximumPaymentAmount.isValidAmount(canBeEmpty: false))
+            Logger.verbose("fullBalanceAmount: \(fullBalanceAmount)")
+            Logger.verbose("estimatedFee: \(estimatedFee)")
+            Logger.verbose("maximumPaymentAmount: \(maximumPaymentAmount)")
+            return maximumPaymentAmount
+        }
+    }
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
 
@@ -1292,7 +1338,7 @@ public extension PaymentsImpl {
         //
         // TODO: Replace with SDK method when available.
         let base58 = formatAsBase58(publicAddress: publicAddress)
-        return "http://mobilecoin.com/mob58/" + base58
+        return "https://mobilecoin.com/mob58/\(base58)"
     }
 
     static func parse(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
@@ -1311,13 +1357,21 @@ public extension PaymentsImpl {
             Logger.warn("Invalid url host.")
             return nil
         }
-        let pathPrefix = "/mob58/"
-        guard url.path.starts(with: pathPrefix) else {
+        let pathComponents = url.path.split(separator: "/")
+        guard pathComponents.count >= 2,
+              let firstComponent = pathComponents[safe: 0],
+              String(firstComponent) == "mob58",
+              let secondComponent = pathComponents[safe: 1] else {
             Logger.verbose("Invalid url path: \(url)")
             Logger.warn("Invalid url path.")
             return nil
         }
-        let base58 = String(url.path.suffix(pathPrefix.count))
+        let base58 = String(secondComponent)
+        guard !base58.isEmpty else {
+            Logger.verbose("Invalid url path: \(url)")
+            Logger.warn("Invalid url path.")
+            return nil
+        }
         return parse(publicAddressBase58: base58)
     }
 

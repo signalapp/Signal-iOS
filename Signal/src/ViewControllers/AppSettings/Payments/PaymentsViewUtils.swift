@@ -13,6 +13,10 @@ public class PaymentsViewUtils: NSObject {
         return .shared
     }
 
+    private static var paymentsSwift: PaymentsSwift {
+        SSKEnvironment.shared.payments as! PaymentsSwift
+    }
+
     // MARK: -
 
     @available(*, unavailable, message:"Do not instantiate this class.")
@@ -25,15 +29,12 @@ public class PaymentsViewUtils: NSObject {
         }
 
         let label = UILabel()
+        label.text = memoMessage
         label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_dynamicTypeBody2Clamped
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-
-        let format = NSLocalizedString("SETTINGS_PAYMENTS_MEMO_MESSAGE_FORMAT",
-                                       comment: "Format string for payment memo messages. Embeds: {{ the memo message }}.")
-        label.text = String(format: format, memoMessage)
 
         let stack = UIStackView(arrangedSubviews: [label])
         stack.axis = .vertical

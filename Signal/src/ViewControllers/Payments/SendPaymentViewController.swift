@@ -44,12 +44,17 @@ public class SendPaymentViewController: OWSViewController {
 
     private var memoMessage: String?
 
+    private var hasMemoMessage: Bool {
+        memoMessage?.strippedOrNil != nil
+    }
+
     private var helper: SendPaymentHelper?
 
     private var currentCurrencyConversion: CurrencyConversionInfo? { helper?.currentCurrencyConversion }
 
     public required init(recipient: SendPaymentRecipient,
                          paymentRequestModel: TSPaymentRequestModel?,
+                         initialPaymentAmount: TSPaymentAmount?,
                          isOutgoingTransfer: Bool,
                          isStandaloneView: Bool) {
         self.recipient = recipient
@@ -67,10 +72,25 @@ public class SendPaymentViewController: OWSViewController {
 
                 if let requestAmountString = PaymentsImpl.formatAsDoubleString(picoMob: paymentRequestModel.paymentAmount.picoMob) {
                     let inputString = InputString.forString(requestAmountString, isFiat: false)
-                    amounts.set(currentAmount: .mobileCoin(inputString: inputString), otherCurrencyAmount: nil)
+                    amounts.set(currentAmount: .mobileCoin(inputString: inputString,
+                                                           exactAmount: nil),
+                                otherCurrencyAmount: nil)
                 } else {
                     owsFailDebug("Could not apply request amount.")
                 }
+            }
+        }
+
+        if let initialPaymentAmount = initialPaymentAmount {
+            owsAssertDebug(initialPaymentAmount.currency == .mobileCoin)
+
+            if let amountString = PaymentsImpl.formatAsDoubleString(picoMob: initialPaymentAmount.picoMob) {
+                let inputString = InputString.forString(amountString, isFiat: false)
+                amounts.set(currentAmount: .mobileCoin(inputString: inputString,
+                                                       exactAmount: initialPaymentAmount),
+                            otherCurrencyAmount: nil)
+            } else {
+                owsFailDebug("Could not apply initial amount.")
             }
         }
 
@@ -85,6 +105,7 @@ public class SendPaymentViewController: OWSViewController {
                                           delegate: SendPaymentViewDelegate,
                                           recipientAddress: SignalServiceAddress,
                                           paymentRequestModel: TSPaymentRequestModel?,
+                                          initialPaymentAmount: TSPaymentAmount? = nil,
                                           isOutgoingTransfer: Bool) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
@@ -102,6 +123,7 @@ public class SendPaymentViewController: OWSViewController {
         let recipient: SendPaymentRecipientImpl = .address(address: recipientAddress)
         let view = SendPaymentViewController(recipient: recipient,
                                              paymentRequestModel: paymentRequestModel,
+                                             initialPaymentAmount: initialPaymentAmount,
                                              isOutgoingTransfer: isOutgoingTransfer,
                                              isStandaloneView: true)
         view.delegate = delegate
@@ -114,6 +136,7 @@ public class SendPaymentViewController: OWSViewController {
                                                      delegate: SendPaymentViewDelegate,
                                                      recipientAddress: SignalServiceAddress,
                                                      paymentRequestModel: TSPaymentRequestModel?,
+                                                     initialPaymentAmount: TSPaymentAmount? = nil,
                                                      isOutgoingTransfer: Bool) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
@@ -131,6 +154,7 @@ public class SendPaymentViewController: OWSViewController {
         let recipient: SendPaymentRecipientImpl = .address(address: recipientAddress)
         let view = SendPaymentViewController(recipient: recipient,
                                              paymentRequestModel: paymentRequestModel,
+                                             initialPaymentAmount: initialPaymentAmount,
                                              isOutgoingTransfer: isOutgoingTransfer,
                                              isStandaloneView: false)
         view.delegate = delegate
@@ -167,7 +191,7 @@ public class SendPaymentViewController: OWSViewController {
     private func resetContents() {
         amounts.reset()
 
-        memoMessage = ""
+        memoMessage = nil
     }
 
     private func updateContents() {
@@ -209,19 +233,24 @@ public class SendPaymentViewController: OWSViewController {
         bigAmountRow.alignment = .center
         bigAmountRow.spacing = 8
 
-        let addMemoLabel = UILabel()
-        addMemoLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
-                                              comment: "Label for the 'add memo' ui in the 'send payment' UI.")
-        addMemoLabel.font = .ows_dynamicTypeBodyClamped
-        addMemoLabel.textColor = Theme.accentBlueColor
-
-        let addMemoStack = UIStackView(arrangedSubviews: [addMemoLabel])
-        addMemoStack.axis = .vertical
-        addMemoStack.alignment = .center
-        addMemoStack.isLayoutMarginsRelativeArrangement = true
-        addMemoStack.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 12)
-        addMemoStack.isUserInteractionEnabled = true
-        addMemoStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAddMemo)))
+        let memoView: UIView
+        if let hasMemoView = PaymentsViewUtils.buildMemoLabel(memoMessage: memoMessage) {
+            memoView = hasMemoView
+        } else {
+            let addMemoLabel = UILabel()
+            addMemoLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+                                                  comment: "Label for the 'add memo' ui in the 'send payment' UI.")
+            addMemoLabel.font = .ows_dynamicTypeBodyClamped
+            addMemoLabel.textColor = Theme.accentBlueColor
+            memoView = addMemoLabel
+        }
+        let memoStack = UIStackView(arrangedSubviews: [memoView])
+        memoStack.axis = .vertical
+        memoStack.alignment = .center
+        memoStack.isLayoutMarginsRelativeArrangement = true
+        memoStack.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 12)
+        memoStack.isUserInteractionEnabled = true
+        memoStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAddMemo)))
 
         let vSpacerFactory = VSpacerFactory()
 
@@ -232,7 +261,7 @@ public class SendPaymentViewController: OWSViewController {
         let requiredViews = [
             bigAmountRow,
             smallAmountLabel,
-            addMemoStack,
+            memoStack,
             amountButtons,
             balanceLabel
         ] + keyboardViews.keyboardRows
@@ -248,7 +277,7 @@ public class SendPaymentViewController: OWSViewController {
             vSpacerFactory.buildVSpacer(),
             smallAmountLabel,
             vSpacerFactory.buildVSpacer(),
-            addMemoStack,
+            memoStack,
             vSpacerFactory.buildVSpacer()
         ] +
         keyboardViews.allRows
@@ -533,7 +562,9 @@ public class SendPaymentViewController: OWSViewController {
             let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
             if let mobString = PaymentsImpl.formatAsDoubleString(picoMob: paymentAmount.picoMob) {
                 // Store the otherCurrencyAmount.
-                amounts.set(currentAmount: .mobileCoin(inputString: InputString.forString(mobString, isFiat: false)),
+                amounts.set(currentAmount: .mobileCoin(inputString: InputString.forString(mobString,
+                                                                                          isFiat: false),
+                                                       exactAmount: nil),
                             otherCurrencyAmount: self.amount)
             } else {
                 owsFailDebug("Could not switch from fiat currency.")
@@ -599,6 +630,9 @@ public class SendPaymentViewController: OWSViewController {
         // Snapshot the conversion rate.
         let currencyConversion = self.currentCurrencyConversion
 
+        Logger.verbose("paymentAmount: \(paymentAmount)")
+        Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount)")
+
         let paymentInfo = PaymentInfo(recipient: recipient,
                                       paymentAmount: paymentAmount,
                                       estimatedFeeAmount: estimatedFeeAmount,
@@ -618,6 +652,8 @@ public class SendPaymentViewController: OWSViewController {
 extension SendPaymentViewController: SendPaymentMemoViewDelegate {
     public func didChangeMemo(memoMessage: String?) {
         self.memoMessage = memoMessage
+
+        updateContents()
     }
 }
 
@@ -643,7 +679,8 @@ fileprivate extension SendPaymentViewController {
     private func updateAmountString(_ inputString: InputString) {
         switch amount {
         case .mobileCoin:
-            amounts.set(currentAmount: .mobileCoin(inputString: inputString),
+            amounts.set(currentAmount: .mobileCoin(inputString: inputString,
+                                                   exactAmount: nil),
                         otherCurrencyAmount: nil)
         case .fiatCurrency(_, let oldCurrencyConversion):
             let newCurrencyConversion = self.currentCurrencyConversion ?? oldCurrencyConversion
@@ -655,7 +692,10 @@ fileprivate extension SendPaymentViewController {
 
     private var parsedPaymentAmount: TSPaymentAmount {
         switch amount {
-        case .mobileCoin:
+        case .mobileCoin(_, let exactAmount):
+            if let exactAmount = exactAmount {
+                return exactAmount
+            }
             let picoMob = PaymentsConstants.convertMobToPicoMob(amount.asDouble)
             return TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         case .fiatCurrency(_, let currencyConversion):
@@ -712,7 +752,7 @@ extension SendPaymentViewController: SendPaymentCompletionDelegate {
 private enum Amount {
     // inputString should be a raw double strings: e.g. 123456.789.
     // It should not be formatted: e.g. 123,456.789
-    case mobileCoin(inputString: InputString)
+    case mobileCoin(inputString: InputString, exactAmount: TSPaymentAmount?)
     case fiatCurrency(inputString: InputString, currencyConversion: CurrencyConversionInfo)
 
     var isFiat: Bool {
@@ -726,7 +766,7 @@ private enum Amount {
 
     var inputString: InputString {
         switch self {
-        case .mobileCoin(let inputString):
+        case .mobileCoin(let inputString, _):
             return inputString
         case .fiatCurrency(let inputString, _):
             return inputString
@@ -780,7 +820,8 @@ private class Amounts {
     weak var delegate: AmountsDelegate?
 
     private static var defaultMCAmount: Amount {
-        .mobileCoin(inputString: InputString.defaultString(isFiat: false))
+        .mobileCoin(inputString: InputString.defaultString(isFiat: false),
+                    exactAmount: nil)
     }
 
     fileprivate private(set) var currentAmount: Amount = Amounts.defaultMCAmount

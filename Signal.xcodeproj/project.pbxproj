@@ -196,6 +196,7 @@
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
+		347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */; };
 		3470518C254B320700A19468 /* CVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518B254B320700A19468 /* CVRenderState.swift */; };
 		3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */; };
 		3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8732554926200F5847C /* QuotedMessageView.swift */; };
@@ -1202,6 +1203,7 @@
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
+		347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDeactivateViewController.swift; sourceTree = "<group>"; };
 		3470518B254B320700A19468 /* CVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVRenderState.swift; sourceTree = "<group>"; };
 		3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+CVC.swift"; sourceTree = "<group>"; };
 		3470C8732554926200F5847C /* QuotedMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuotedMessageView.swift; sourceTree = "<group>"; };
@@ -2696,6 +2698,7 @@
 			children = (
 				34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */,
 				3414896825C9B6490098E3ED /* PaymentsCurrencyViewController.swift */,
+				347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */,
 				34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */,
 				3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */,
 				3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */,
@@ -5631,6 +5634,7 @@
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
 				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
+				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,

@@ -116,6 +116,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func arePaymentsEnabledDidChange() {
         updateTableContents()
         updateNavbar()
+
+        if !Self.payments.arePaymentsEnabled {
+            presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST",
+                                                 comment: "Message indicating that payments have been disabled in the app settings."))
+        }
     }
 
     @objc
@@ -585,6 +590,23 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         presentActionSheet(actionSheet)
     }
 
+    private func showConfirmDeactivatePaymentsUI() {
+        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE",
+                                                                         comment: "Title for the 'deactivate payments confirmation' UI in the payment settings."),
+                                                message: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION",
+                                                                           comment: "Description for the 'deactivate payments confirmation' UI in the payment settings."))
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.continueButton,
+                                                accessibilityIdentifier: "payments.settings.deactivate.continue",
+                                                style: .default) { [weak self] _ in
+            self?.didTapConfirmDeactivatePaymentsButton()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
     // MARK: - Events
 
     @objc
@@ -631,7 +653,25 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapDeactivatePaymentsButton() {
-        // TODO: Deactivate flow not yet implemented.
+        showConfirmDeactivatePaymentsUI()
+    }
+
+    private func didTapConfirmDeactivatePaymentsButton() {
+        guard let paymentBalance = self.paymentsSwift.currentPaymentBalance else {
+            // TODO: Need copy.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE",
+                                                                      comment: "Error message indicating that payments could not be deactivated because the current balance is unavailable."))
+            return
+        }
+        guard paymentBalance.amount.picoMob > 0 else {
+            databaseStorage.write { transaction in
+                Self.paymentsSwift.disablePayments(transaction: transaction)
+            }
+            return
+        }
+        let vc = PaymentsDeactivateViewController(paymentBalance: paymentBalance)
+        let navigationVC = OWSNavigationController(rootViewController: vc)
+        present(navigationVC, animated: true)
     }
 
     private func didTapHelpButton() {
@@ -639,7 +679,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapTransferToExchangeButton() {
-        let view = PaymentsTransferOutViewController()
+        let view = PaymentsTransferOutViewController(transferAmount: nil)
         let navigationController = OWSNavigationController(rootViewController: view)
         present(navigationController, animated: true, completion: nil)
     }

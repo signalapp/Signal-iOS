@@ -506,6 +506,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             }.done { _ in
                 AssertIsOnMainThread()
 
+                // TODO: Ideally we would wait a little long (with a timeout) for the submission and verification to succeed.
                 self.didSucceedPayment(paymentInfo: paymentInfo)
 
                 modalActivityIndicator.dismiss {}
