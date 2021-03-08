@@ -28,6 +28,12 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             name: SSKReachability.owsReachabilityDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .OWSSyncManagerConfigurationSyncDidComplete,
+            object: nil
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {

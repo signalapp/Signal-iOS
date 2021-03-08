@@ -13,8 +13,16 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         title = NSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings.")
 
         updateTableContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .OWSSyncManagerConfigurationSyncDidComplete,
+            object: nil
+        )
     }
 
+    @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 

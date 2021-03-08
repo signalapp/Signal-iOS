@@ -14,6 +14,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateTableContents()
+    }
+
     func updateTableContents() {
         let contents = OWSTableContents()
 

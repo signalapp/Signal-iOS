@@ -180,7 +180,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     private func showInviteFlow() {
         let inviteFlow = InviteFlow(presentingViewController: self)
         self.inviteFlow = inviteFlow
-        inviteFlow.present(isAnimated: true, completion: nil)
+        inviteFlow.present(isAnimated: true, isModal: true, completion: nil)
     }
 
     private func profileCell() -> UITableViewCell {

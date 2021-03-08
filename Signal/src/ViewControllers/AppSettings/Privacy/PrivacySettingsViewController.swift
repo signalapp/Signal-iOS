@@ -12,6 +12,13 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         title = NSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "")
 
         updateTableContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .OWSSyncManagerConfigurationSyncDidComplete,
+            object: nil
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -20,6 +27,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 
