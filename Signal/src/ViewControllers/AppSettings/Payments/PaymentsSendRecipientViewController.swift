@@ -64,11 +64,12 @@ class PaymentsSendRecipientViewController: OWSViewController {
             owsFailDebug("Missing navigationController.")
             return
         }
-        SendPaymentViewController.presentInNavigationController(navigationController,
-                                                                delegate: self,
-                                                                recipientAddress: address,
-                                                                paymentRequestModel: nil,
-                                                                isOutgoingTransfer: false)
+        SendPaymentViewController.present(inNavigationController: navigationController,
+                                          delegate: self,
+                                          recipientAddress: address,
+                                          paymentRequestModel: nil,
+                                          isOutgoingTransfer: true,
+                                          mode: .fromTransferOutFlow)
     }
 }
 

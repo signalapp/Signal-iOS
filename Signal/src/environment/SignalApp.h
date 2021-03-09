@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ConversationSplitViewController;
 @class OnboardingController;
 @class SignalServiceAddress;
 @class TSThread;
@@ -56,6 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationWillTerminate;
 
 - (nullable UIView *)snapshotSplitViewControllerAfterScreenUpdates:(BOOL)afterScreenUpdates;
+
+// This property should be accessed by the Swift extension on this class.
+@property (nonatomic, nullable) ConversationSplitViewController *conversationSplitViewControllerForSwift;
 
 @end
 

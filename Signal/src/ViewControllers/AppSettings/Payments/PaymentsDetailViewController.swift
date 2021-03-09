@@ -74,7 +74,132 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         contents.addSection(buildStatusSection())
 
+        if DebugFlags.internalSettings {
+            contents.addSection(buildInternalSection())
+        }
+
         self.contents = contents
+    }
+
+    private func buildInternalSection() -> OWSTableSection {
+        let section = OWSTableSection()
+        section.headerTitle = "Internal"
+
+        let paymentModel = paymentItem.paymentModel
+
+        section.add(OWSTableItem.actionItem(name: "paymentType",
+                                            accessoryText: paymentModel.paymentType.formatted,
+                                            accessibilityIdentifier: "paymentType",
+                                            actionBlock: nil))
+        section.add(OWSTableItem.actionItem(name: "paymentState",
+                                            accessoryText: paymentModel.paymentState.formatted,
+                                            accessibilityIdentifier: "paymentState",
+                                            actionBlock: nil))
+        section.add(OWSTableItem.actionItem(name: "paymentFailure",
+                                            accessoryText: paymentModel.paymentFailure.formatted,
+                                            accessibilityIdentifier: "paymentFailure",
+                                            actionBlock: nil))
+
+        if let paymentAmount = paymentModel.paymentAmount {
+            section.add(OWSTableItem.actionItem(name: "paymentAmount",
+                                                accessoryText: paymentAmount.formatted,
+                                                accessibilityIdentifier: "paymentAmount",
+                                                actionBlock: nil))
+        }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .medium
+
+        section.add(OWSTableItem.actionItem(name: "createdDate",
+                                            accessoryText: dateFormatter.string(from: paymentModel.createdDate),
+                                            accessibilityIdentifier: "createdDate",
+                                            actionBlock: nil))
+
+        guard let mobileCoin = paymentModel.mobileCoin else {
+            return section
+        }
+
+        func hexFormatData(_ data: Data) -> String {
+            "0x" + data.hexadecimalString.substring(to: 8) + "…"
+        }
+
+        if let recipientPublicAddressData = mobileCoin.recipientPublicAddressData {
+            section.add(OWSTableItem.actionItem(name: "recipientPublicAddressData",
+                                                accessoryText: hexFormatData(recipientPublicAddressData),
+                                                accessibilityIdentifier: "recipientPublicAddressData",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = recipientPublicAddressData.base64EncodedString()
+                                                }))
+        }
+
+        if let transactionData = mobileCoin.transactionData {
+            section.add(OWSTableItem.actionItem(name: "transactionData",
+                                                accessoryText: hexFormatData(transactionData),
+                                                accessibilityIdentifier: "transactionData",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = transactionData.base64EncodedString()
+                                                }))
+        }
+
+        if let receiptData = mobileCoin.receiptData {
+            section.add(OWSTableItem.actionItem(name: "receiptData",
+                                                accessoryText: hexFormatData(receiptData),
+                                                accessibilityIdentifier: "receiptData",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = receiptData.base64EncodedString()
+                                                }))
+        }
+
+        for (index, publicKey) in (mobileCoin.incomingTransactionPublicKeys ?? []).enumerated() {
+            section.add(OWSTableItem.actionItem(name: "incomingTxoPublicKey.\(index)",
+                                                accessoryText: hexFormatData(publicKey),
+                                                accessibilityIdentifier: "incomingTxoPublicKey.\(index)",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = publicKey.base64EncodedString()
+                                                }))
+        }
+
+        for (index, keyImage) in (mobileCoin.spentKeyImages ?? []).enumerated() {
+            section.add(OWSTableItem.actionItem(name: "spentKeyImage.\(index)",
+                                                accessoryText: hexFormatData(keyImage),
+                                                accessibilityIdentifier: "spentKeyImages.\(index)",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = keyImage.base64EncodedString()
+                                                }))
+        }
+
+        for (index, publicKey) in (mobileCoin.outputPublicKeys ?? []).enumerated() {
+            section.add(OWSTableItem.actionItem(name: "outputPublicKey.\(index)",
+                                                accessoryText: hexFormatData(publicKey),
+                                                accessibilityIdentifier: "outputPublicKey.\(index)",
+                                                actionBlock: {
+                                                    UIPasteboard.general.string = publicKey.base64EncodedString()
+                                                }))
+        }
+
+        if let ledgerBlockDate = mobileCoin.ledgerBlockDate {
+            section.add(OWSTableItem.actionItem(name: "ledgerBlockDate",
+                                                accessoryText: dateFormatter.string(from: ledgerBlockDate),
+                                                accessibilityIdentifier: "ledgerBlockDate",
+                                                actionBlock: nil))
+        }
+
+        if mobileCoin.ledgerBlockIndex > 0 {
+            section.add(OWSTableItem.actionItem(name: "ledgerBlockIndex",
+                                                accessoryText: "\(mobileCoin.ledgerBlockIndex)",
+                                                accessibilityIdentifier: "ledgerBlockIndex",
+                                                actionBlock: nil))
+        }
+
+        if let feeAmount = mobileCoin.feeAmount {
+            section.add(OWSTableItem.actionItem(name: "feeAmount",
+                                                accessoryText: feeAmount.formatted,
+                                                accessibilityIdentifier: "feeAmount",
+                                                actionBlock: nil))
+        }
+
+        return section
     }
 
     private func buildStatusSection() -> OWSTableSection {
@@ -98,8 +223,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         // TODO: We might not want to include dates if an incoming
         //       transaction has not yet been verified.
 
-        section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
-                                                               comment: "Label for the sender in the payment details view in the app settings."),
+        section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
+                                                               comment: "Label for the transaction status in the payment details view in the app settings."),
                                     bottomText: paymentModel.statusDescription(isLongForm: true)))
 
         if let address = paymentModel.address {
@@ -117,8 +242,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                     TSPaymentModel.formateDate(paymentItem.sortDate,
                                                                isLongForm: true))
 
-            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
-                                                                   comment: "Label for the transaction status in the payment details view in the app settings."),
+            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
+                                                                   comment: "Label for the sender in the payment details view in the app settings."),
                                         bottomText: bottomText))
         }
 

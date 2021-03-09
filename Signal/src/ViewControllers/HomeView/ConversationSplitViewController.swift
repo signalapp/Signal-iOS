@@ -414,6 +414,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         conversationListVC.showAppSettings()
     }
 
+    func showAppSettingsWithMode(_ mode: ShowAppSettingsMode) {
+        conversationListVC.showAppSettings(mode: mode)
+    }
+
     @objc func focusSearch() {
         conversationListVC.focusSearch()
     }

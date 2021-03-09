@@ -140,7 +140,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
                                              paymentRequestModel: nil,
                                              initialPaymentAmount: transferAmount,
                                              isOutgoingTransfer: true,
-                                             isStandaloneView: true)
+                                             mode: .fromTransferOutFlow)
         view.delegate = self
         navigationController?.pushViewController(view, animated: true)
     }

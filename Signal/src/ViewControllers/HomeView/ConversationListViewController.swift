@@ -171,12 +171,16 @@ public extension ConversationListViewController {
 
 // MARK: -
 
+public enum ShowAppSettingsMode {
+    case none
+    case payments
+    case payment(paymentsHistoryItem: PaymentsHistoryItem)
+    case paymentsTransferIn
+}
+
+// MARK: -
+
 public extension ConversationListViewController {
-    enum ShowAppSettingsMode {
-        case none
-        case payments
-        case payment(paymentsHistoryItem: PaymentsHistoryItem)
-    }
 
     @objc
     func showAppSettings() {
@@ -204,6 +208,11 @@ public extension ConversationListViewController {
             navigationController.pushViewController(paymentSettings, animated: false)
             let view = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
             navigationController.pushViewController(view, animated: false)
+        case .paymentsTransferIn:
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            let paymentsTransferIn = PaymentsTransferInViewController()
+            navigationController.pushViewController(paymentsSettings, animated: false)
+            navigationController.pushViewController(paymentsTransferIn, animated: false)
         }
 
         presentFormSheet(navigationController, animated: true)

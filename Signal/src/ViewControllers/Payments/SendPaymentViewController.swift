@@ -14,7 +14,28 @@ public protocol SendPaymentViewDelegate {
 // MARK: -
 
 @objc
+public enum SendPaymentMode: UInt {
+    case fromConversationView
+    case fromPaymentSettings
+    case fromTransferOutFlow
+
+    var isModalRootView: Bool {
+        switch self {
+        case .fromConversationView:
+            return true
+        case .fromPaymentSettings,
+             .fromTransferOutFlow:
+            return false
+        }
+    }
+}
+
+// MARK: -
+
+@objc
 public class SendPaymentViewController: OWSViewController {
+
+    private let mode: SendPaymentMode
 
     fileprivate typealias PaymentInfo = SendPaymentInfo
 
@@ -24,8 +45,6 @@ public class SendPaymentViewController: OWSViewController {
     private let recipient: SendPaymentRecipient
     private let paymentRequestModel: TSPaymentRequestModel?
     private let isOutgoingTransfer: Bool
-
-    private let isStandaloneView: Bool
 
     private let rootStack = UIStackView()
 
@@ -56,9 +75,9 @@ public class SendPaymentViewController: OWSViewController {
                          paymentRequestModel: TSPaymentRequestModel?,
                          initialPaymentAmount: TSPaymentAmount?,
                          isOutgoingTransfer: Bool,
-                         isStandaloneView: Bool) {
+                         mode: SendPaymentMode) {
         self.recipient = recipient
-        self.isStandaloneView = isStandaloneView
+        self.mode = mode
         self.isOutgoingTransfer = isOutgoingTransfer
 
         if !FeatureFlags.paymentsRequests {
@@ -101,12 +120,12 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     @objc
-    public static func presentAsFormSheet(fromViewController: UIViewController,
-                                          delegate: SendPaymentViewDelegate,
-                                          recipientAddress: SignalServiceAddress,
-                                          paymentRequestModel: TSPaymentRequestModel?,
-                                          initialPaymentAmount: TSPaymentAmount? = nil,
-                                          isOutgoingTransfer: Bool) {
+    public static func presentFromConversationView(_ fromViewController: UIViewController,
+                                                   delegate: SendPaymentViewDelegate,
+                                                   recipientAddress: SignalServiceAddress,
+                                                   paymentRequestModel: TSPaymentRequestModel?,
+                                                   initialPaymentAmount: TSPaymentAmount? = nil,
+                                                   isOutgoingTransfer: Bool) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
             Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
@@ -125,19 +144,20 @@ public class SendPaymentViewController: OWSViewController {
                                              paymentRequestModel: paymentRequestModel,
                                              initialPaymentAmount: initialPaymentAmount,
                                              isOutgoingTransfer: isOutgoingTransfer,
-                                             isStandaloneView: true)
+                                             mode: .fromConversationView)
         view.delegate = delegate
         let navigationController = OWSNavigationController(rootViewController: view)
         fromViewController.presentFormSheet(navigationController, animated: true)
     }
 
     @objc
-    public static func presentInNavigationController(_ navigationController: UINavigationController,
-                                                     delegate: SendPaymentViewDelegate,
-                                                     recipientAddress: SignalServiceAddress,
-                                                     paymentRequestModel: TSPaymentRequestModel?,
-                                                     initialPaymentAmount: TSPaymentAmount? = nil,
-                                                     isOutgoingTransfer: Bool) {
+    public static func present(inNavigationController navigationController: UINavigationController,
+                               delegate: SendPaymentViewDelegate,
+                               recipientAddress: SignalServiceAddress,
+                               paymentRequestModel: TSPaymentRequestModel?,
+                               initialPaymentAmount: TSPaymentAmount? = nil,
+                               isOutgoingTransfer: Bool,
+                               mode: SendPaymentMode) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
             Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
@@ -156,7 +176,7 @@ public class SendPaymentViewController: OWSViewController {
                                              paymentRequestModel: paymentRequestModel,
                                              initialPaymentAmount: initialPaymentAmount,
                                              isOutgoingTransfer: isOutgoingTransfer,
-                                             isStandaloneView: false)
+                                             mode: mode)
         view.delegate = delegate
         navigationController.pushViewController(view, animated: true)
     }
@@ -199,7 +219,7 @@ public class SendPaymentViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
         navigationItem.title = nil
-        if isStandaloneView {
+        if mode.isModalRootView {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
                                                                target: self,
                                                                action: #selector(didTapDismiss),
@@ -607,8 +627,8 @@ public class SendPaymentViewController: OWSViewController {
                 AssertIsOnMainThread()
 
                 modalActivityIndicator.dismiss {
-                    self.showPaymentCompletionUI(paymentAmount: paymentAmount,
-                                                 estimatedFeeAmount: estimatedFeeAmount)
+                    self.tryToShowPaymentCompletionUI(paymentAmount: paymentAmount,
+                                                      estimatedFeeAmount: estimatedFeeAmount)
                 }
             }.catch { error in
                 AssertIsOnMainThread()
@@ -621,6 +641,88 @@ public class SendPaymentViewController: OWSViewController {
                     OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_ERROR_COULD_NOT_ESTIMATE_FEE",
                                                                               comment: "Error message indicating that the estimated fee for a payment could not be determined."))
                 }
+            }
+        }
+    }
+
+    private func tryToShowPaymentCompletionUI(paymentAmount: TSPaymentAmount,
+                                              estimatedFeeAmount: TSPaymentAmount) {
+        guard paymentAmount.isValidAmount(canBeEmpty: false),
+              estimatedFeeAmount.isValidAmount(canBeEmpty: false) else {
+            showInvalidAmountAlert()
+            return
+        }
+        let totalAmount = paymentAmount.plus(estimatedFeeAmount)
+        guard let paymentBalance = paymentsSwift.currentPaymentBalance else {
+            // TODO: Need copy.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE",
+                                                                      comment: "Error message indicating that a payment could not be sent because the current balance is unavailable."))
+            return
+        }
+        guard paymentBalance.amount.picoMob >= totalAmount.picoMob else {
+            showInsufficientBalanceUI(paymentBalance: paymentBalance)
+            return
+        }
+
+        showPaymentCompletionUI(paymentAmount: paymentAmount,
+                                estimatedFeeAmount: estimatedFeeAmount)
+    }
+
+    private func showInsufficientBalanceUI(paymentBalance: PaymentBalance) {
+        let messageFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT",
+                                              comment: "Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}.")
+        let message = String(format: messageFormat, PaymentsImpl.format(paymentAmount: paymentBalance.amount,
+                                                                        withCurrencyCode: true,
+                                                                        withSpace: true))
+
+        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE",
+                                                                         comment: "Title for the 'insufficient balance for payment' alert."),
+                                                message: message)
+
+        // There's no point doing a "transfer in" transaction in order to
+        // enable a "transfer out".
+        if mode != .fromTransferOutFlow {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY",
+                                                                             comment: "Label for the 'add money' button in the 'send payment' UI."),
+                                                    accessibilityIdentifier: "payments.settings.add_money",
+                                                    style: .default) { [weak self] _ in
+                self?.didTapAddMoneyButton()
+            })
+        }
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    private func didTapAddMoneyButton() {
+        switch mode {
+        case .fromConversationView:
+            dismiss(animated: true) {
+                guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+                    owsFailDebug("could not identify frontmostViewController")
+                    return
+                }
+                frontmostViewController.navigationController?.popToRootViewController(animated: true)
+                SignalApp.shared().showAppSettings(mode: .paymentsTransferIn)
+            }
+        case .fromPaymentSettings:
+            let paymentsTransferIn = PaymentsTransferInViewController()
+            navigationController?.pushViewController(paymentsTransferIn, animated: true)
+        case .fromTransferOutFlow:
+            owsFailDebug("Unexpected interaction.")
+
+            dismiss(animated: true) {
+                guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+                    owsFailDebug("could not identify frontmostViewController")
+                    return
+                }
+                guard let navigationController = frontmostViewController.navigationController else {
+                    owsFailDebug("Missing navigationController.")
+                    return
+                }
+                let paymentsTransferIn = PaymentsTransferInViewController()
+                navigationController.pushViewController(paymentsTransferIn, animated: true)
             }
         }
     }

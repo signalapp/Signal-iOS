@@ -2720,12 +2720,12 @@ typedef enum : NSUInteger {
     [self dismissKeyBoard];
 
     TSContactThread *thread = (TSContactThread *)self.thread;
-    [SendPaymentViewController presentAsFormSheetFromViewController:self
-                                                           delegate:self
-                                                   recipientAddress:thread.contactAddress
-                                                paymentRequestModel:paymentRequestModel
-                                               initialPaymentAmount:nil
-                                                 isOutgoingTransfer:NO];
+    [SendPaymentViewController presentFromConversationView:self
+                                                  delegate:self
+                                          recipientAddress:thread.contactAddress
+                                       paymentRequestModel:paymentRequestModel
+                                      initialPaymentAmount:nil
+                                        isOutgoingTransfer:NO];
 }
 
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
