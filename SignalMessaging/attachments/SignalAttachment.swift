@@ -219,6 +219,19 @@ public class SignalAttachment: NSObject {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
         super.init()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didReceiveMemoryWarningNotification),
+            name: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    func didReceiveMemoryWarningNotification() {
+        cachedImage = nil
+        cachedVideoPreview = nil
     }
 
     // MARK: Methods
