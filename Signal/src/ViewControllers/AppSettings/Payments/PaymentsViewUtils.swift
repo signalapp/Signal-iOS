@@ -100,6 +100,78 @@ public class PaymentsViewUtils: NSObject {
             }
         }
     }
+
+    static func buildPassphraseGrid(passphrase: PaymentsPassphrase) -> UIView {
+
+        struct WordAndIndex {
+            let word: String
+            let index: Int
+        }
+
+        let wordsAndIndices = passphrase.words.enumerated().map { (index, word) in
+            WordAndIndex(word: word, index: index)
+        }
+
+        func buildVStack(words: [WordAndIndex]) -> UIStackView {
+            let stack = UIStackView()
+            stack.axis = .vertical
+            stack.alignment = .fill
+            stack.spacing = 10
+
+            for wordAndIndex in words {
+                let attributedText = NSMutableAttributedString()
+                attributedText.append(OWSFormat.formatInt(wordAndIndex.index + 1),
+                                      attributes: [
+                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .foregroundColor: Theme.secondaryTextAndIconColor
+                                      ])
+                attributedText.append(":",
+                                      attributes: [
+                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .foregroundColor: Theme.secondaryTextAndIconColor
+                                      ])
+                attributedText.append(" ",
+                                      attributes: [
+                                        .font: UIFont.ows_dynamicTypeBodyClamped,
+                                        .foregroundColor: Theme.secondaryTextAndIconColor
+                                      ])
+                attributedText.append(wordAndIndex.word,
+                                      attributes: [
+                                        .font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+                                        .foregroundColor: Theme.primaryTextColor
+                                      ])
+                let wordLabel = UILabel()
+                wordLabel.attributedText = attributedText
+                stack.addArrangedSubview(wordLabel)
+            }
+
+            return stack
+        }
+
+        // Half the words on the each side. If there's an odd number,
+        // we want more on the left.
+        let pivotIndex = wordsAndIndices.count - (wordsAndIndices.count / 2)
+        let leftWords = Array(wordsAndIndices.prefix(pivotIndex))
+        let rightWords = Array(wordsAndIndices.suffix(from: pivotIndex))
+        let leftWordsStack = buildVStack(words: leftWords)
+        let rightWordsStack = buildVStack(words: rightWords)
+        let allWordStack = UIStackView(arrangedSubviews: [ leftWordsStack, rightWordsStack ])
+        allWordStack.axis = .horizontal
+        allWordStack.alignment = .center
+        allWordStack.distribution = .fillEqually
+        allWordStack.spacing = 20
+
+        let stack = UIStackView(arrangedSubviews: [ allWordStack ])
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.spacing = 24
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
+        stack.addBackgroundView(withBackgroundColor: Theme.backgroundColor,
+                                cornerRadius: 10)
+
+        return stack
+    }
 }
 
 // MARK: -

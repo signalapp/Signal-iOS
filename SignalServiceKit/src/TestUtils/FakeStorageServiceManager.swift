@@ -23,4 +23,6 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol 
     public func restoreOrCreateManifestIfNecessary() -> AnyPromise { AnyPromise(Promise.value(())) }
 
     public func resetLocalData(transaction: SDSAnyWriteTransaction) {}
+
+    public func hasEverBackedUpOrRestored(transaction: SDSAnyReadTransaction) -> Bool { false }
 }

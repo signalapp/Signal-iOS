@@ -2309,129 +2309,6 @@ extension StorageServiceProtoAccountRecordPinnedConversation.StorageServiceProto
 
 #endif
 
-// MARK: - StorageServiceProtoAccountRecordPaymentsMobileCoin
-
-public struct StorageServiceProtoAccountRecordPaymentsMobileCoin: Codable, CustomDebugStringConvertible {
-
-    // MARK: - StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder
-
-    public static func builder() -> StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder {
-        return StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder {
-        var builder = StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder()
-        if let _value = rootEntropy {
-            builder.setRootEntropy(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder {
-
-        private var proto = StorageServiceProtos_AccountRecord.Payments.MobileCoin()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setRootEntropy(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.rootEntropy = valueParam
-        }
-
-        public mutating func setRootEntropy(_ valueParam: Data) {
-            proto.rootEntropy = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> StorageServiceProtoAccountRecordPaymentsMobileCoin {
-            return try StorageServiceProtoAccountRecordPaymentsMobileCoin(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoAccountRecordPaymentsMobileCoin(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: StorageServiceProtos_AccountRecord.Payments.MobileCoin
-
-    public var rootEntropy: Data? {
-        guard hasRootEntropy else {
-            return nil
-        }
-        return proto.rootEntropy
-    }
-    public var hasRootEntropy: Bool {
-        return !proto.rootEntropy.isEmpty
-    }
-
-    public var hasUnknownFields: Bool {
-        return !proto.unknownFields.data.isEmpty
-    }
-    public var unknownFields: SwiftProtobuf.UnknownStorage? {
-        guard hasUnknownFields else { return nil }
-        return proto.unknownFields
-    }
-
-    private init(proto: StorageServiceProtos_AccountRecord.Payments.MobileCoin) {
-        self.proto = proto
-    }
-
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    public init(serializedData: Data) throws {
-        let proto = try StorageServiceProtos_AccountRecord.Payments.MobileCoin(serializedData: serializedData)
-        try self.init(proto)
-    }
-
-    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.Payments.MobileCoin) throws {
-        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordPaymentsMobileCoin -
-
-        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordPaymentsMobileCoin -
-
-        self.init(proto: proto)
-    }
-
-    public init(from decoder: Swift.Decoder) throws {
-        let singleValueContainer = try decoder.singleValueContainer()
-        let serializedData = try singleValueContainer.decode(Data.self)
-        try self.init(serializedData: serializedData)
-    }
-    public func encode(to encoder: Swift.Encoder) throws {
-        var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(try serializedData())
-    }
-
-    public var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension StorageServiceProtoAccountRecordPaymentsMobileCoin {
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension StorageServiceProtoAccountRecordPaymentsMobileCoin.StorageServiceProtoAccountRecordPaymentsMobileCoinBuilder {
-    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPaymentsMobileCoin? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - StorageServiceProtoAccountRecordPayments
 
 public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStringConvertible {
@@ -2448,8 +2325,8 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
         if hasEnabled {
             builder.setEnabled(enabled)
         }
-        if let _value = mobileCoin {
-            builder.setMobileCoin(_value)
+        if let _value = paymentsEntropy {
+            builder.setPaymentsEntropy(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2468,13 +2345,13 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
         }
 
         @available(swift, obsoleted: 1.0)
-        public mutating func setMobileCoin(_ valueParam: StorageServiceProtoAccountRecordPaymentsMobileCoin?) {
+        public mutating func setPaymentsEntropy(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
-            proto.mobileCoin = valueParam.proto
+            proto.paymentsEntropy = valueParam
         }
 
-        public mutating func setMobileCoin(_ valueParam: StorageServiceProtoAccountRecordPaymentsMobileCoin) {
-            proto.mobileCoin = valueParam.proto
+        public mutating func setPaymentsEntropy(_ valueParam: Data) {
+            proto.paymentsEntropy = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2492,13 +2369,21 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
 
     fileprivate let proto: StorageServiceProtos_AccountRecord.Payments
 
-    public let mobileCoin: StorageServiceProtoAccountRecordPaymentsMobileCoin?
-
     public var enabled: Bool {
         return proto.enabled
     }
     public var hasEnabled: Bool {
         return true
+    }
+
+    public var paymentsEntropy: Data? {
+        guard hasPaymentsEntropy else {
+            return nil
+        }
+        return proto.paymentsEntropy
+    }
+    public var hasPaymentsEntropy: Bool {
+        return !proto.paymentsEntropy.isEmpty
     }
 
     public var hasUnknownFields: Bool {
@@ -2509,10 +2394,8 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
         return proto.unknownFields
     }
 
-    private init(proto: StorageServiceProtos_AccountRecord.Payments,
-                 mobileCoin: StorageServiceProtoAccountRecordPaymentsMobileCoin?) {
+    private init(proto: StorageServiceProtos_AccountRecord.Payments) {
         self.proto = proto
-        self.mobileCoin = mobileCoin
     }
 
     public func serializedData() throws -> Data {
@@ -2525,17 +2408,11 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
     }
 
     fileprivate init(_ proto: StorageServiceProtos_AccountRecord.Payments) throws {
-        var mobileCoin: StorageServiceProtoAccountRecordPaymentsMobileCoin?
-        if proto.hasMobileCoin {
-            mobileCoin = try StorageServiceProtoAccountRecordPaymentsMobileCoin(proto.mobileCoin)
-        }
-
         // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordPayments -
 
         // MARK: - End Validation Logic for StorageServiceProtoAccountRecordPayments -
 
-        self.init(proto: proto,
-                  mobileCoin: mobileCoin)
+        self.init(proto: proto)
     }
 
     public init(from decoder: Swift.Decoder) throws {

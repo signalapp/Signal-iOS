@@ -47,7 +47,15 @@ public protocol Payments: AnyObject {
 
     var shouldShowPaymentsUI: Bool { get }
 
+    var paymentsEntropy: Data? { get }
+
     var mcRootEntropy: Data? { get }
+
+    var paymentsEntropyLength: UInt { get }
+
+    var mcRootEntropyLength: UInt { get }
+
+    func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data?
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
 
@@ -113,8 +121,9 @@ public protocol PaymentsSwift: Payments {
 
     var paymentsState: PaymentsState { get }
     func setPaymentsState(_ value: PaymentsState, transaction: SDSAnyWriteTransaction)
+    func enablePayments(transaction: SDSAnyWriteTransaction)
+    func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
     func disablePayments(transaction: SDSAnyWriteTransaction)
-    func generateRandomMobileCoinRootEntropy() -> Data
 
     var currentPaymentBalance: PaymentBalance? { get }
     func updateCurrentPaymentBalance()
@@ -129,6 +138,14 @@ public protocol PaymentsSwift: Payments {
                                   isOutgoingTransfer: Bool) -> Promise<TSPaymentModel>
 
     func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount>
+
+    var passphrase: PaymentsPassphrase? { get }
+
+    func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase?
+
+    func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data?
+
+    var allPossiblePassphraseWords: [String] { get }
 }
 
 // MARK: -
@@ -152,18 +169,53 @@ public struct PaymentBalance {
 // MARK: -
 
 public enum PaymentsState: Equatable {
-    case disabled
-    case enabled(mcRootEntropy: Data)
-    case disabledWithMCRootEntropy(mcRootEntropy: Data)
 
-    public static func build(arePaymentsEnabled: Bool, mcRootEntropy: Data?) -> PaymentsState {
-        guard let mcRootEntropy = mcRootEntropy else {
+    // MARK: - Dependencies
+
+    private static var payments: Payments {
+        SSKEnvironment.shared.payments
+    }
+
+    // MARK: -
+
+    case disabled
+    case disabledWithPaymentsEntropy(paymentsEntropy: Data)
+    case enabled(paymentsEntropy: Data, mcRootEntropy: Data)
+
+    // We should almost always construct instances of PaymentsState
+    // using this method.  It enforces important invariants.
+    //
+    // * paymentsEntropy is not discarded.
+    // * Payments are only enabled if mcRootEntropy can be derived from
+    //   paymentsEntropy.
+    // * Payments are only enabled if paymentsEntropy and mcRootEntropy
+    //   have valid length.
+    public static func build(arePaymentsEnabled: Bool,
+                             paymentsEntropy: Data?) -> PaymentsState {
+        guard let paymentsEntropy = paymentsEntropy else {
             return .disabled
         }
+        guard paymentsEntropy.count == payments.paymentsEntropyLength else {
+            owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(payments.paymentsEntropyLength).")
+            return .disabled
+        }
+        guard let mcRootEntropy = payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
+            owsFailDebug("Could not derive mcRootEntropy from paymentsEntropy.")
+            // It's essential that we _not_ discard paymentsEntropy even if we
+            // can't derive a valid mcRootEntropy from it.
+            return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
+        }
+        guard mcRootEntropy.count == payments.mcRootEntropyLength else {
+            owsFailDebug("mcRootEntropy has invalid length: \(mcRootEntropy.count) != \(payments.mcRootEntropyLength).")
+            // It's essential that we _not_ discard paymentsEntropy even if we
+            // can't derive a valid mcRootEntropy from it.
+            return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
+        }
         if arePaymentsEnabled {
-            return .enabled(mcRootEntropy: mcRootEntropy)
+            return .enabled(paymentsEntropy: paymentsEntropy,
+                            mcRootEntropy: mcRootEntropy)
         } else {
-            return .disabledWithMCRootEntropy(mcRootEntropy: mcRootEntropy)
+            return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
         }
     }
 
@@ -171,19 +223,30 @@ public enum PaymentsState: Equatable {
         switch self {
         case .enabled:
             return true
-        case .disabled, .disabledWithMCRootEntropy:
+        case .disabled, .disabledWithPaymentsEntropy:
             return false
+        }
+    }
+
+    public var paymentsEntropy: Data? {
+        switch self {
+        case .enabled(let paymentsEntropy, _):
+            return paymentsEntropy
+        case .disabled:
+            return nil
+        case .disabledWithPaymentsEntropy(let paymentsEntropy):
+            return paymentsEntropy
         }
     }
 
     public var mcRootEntropy: Data? {
         switch self {
-        case .enabled(let mcRootEntropy):
+        case .enabled(_, let mcRootEntropy):
             return mcRootEntropy
         case .disabled:
             return nil
-        case .disabledWithMCRootEntropy(let mcRootEntropy):
-            return mcRootEntropy
+        case .disabledWithPaymentsEntropy:
+            return nil
         }
     }
 
@@ -191,8 +254,26 @@ public enum PaymentsState: Equatable {
 
     public static func == (lhs: PaymentsState, rhs: PaymentsState) -> Bool {
         return (lhs.isEnabled == rhs.isEnabled &&
+                    lhs.paymentsEntropy == rhs.paymentsEntropy &&
                     lhs.mcRootEntropy == rhs.mcRootEntropy)
     }
+}
+
+// MARK: -
+
+public struct PaymentsPassphrase: Equatable {
+
+    public let words: [String]
+
+    public init(words: [String]) {
+        owsAssertDebug(words.count == PaymentsConstants.passphraseWordCount)
+
+        self.words = words
+    }
+
+    public var wordCount: Int { words.count }
+
+    public var debugDescription: String { words.joined(separator: " ") }
 }
 
 // MARK: -
@@ -210,11 +291,15 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func disablePayments(transaction: SDSAnyWriteTransaction) {
+    public func enablePayments(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
-    public func generateRandomMobileCoinRootEntropy() -> Data {
+    public func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
+        owsFail("Not implemented.")
+    }
+
+    public func disablePayments(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -226,7 +311,17 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
+    public var paymentsEntropy: Data? { nil }
+
     public var mcRootEntropy: Data? { nil }
+
+    public var paymentsEntropyLength: UInt { 13 }
+
+    public var mcRootEntropyLength: UInt { 11 }
+
+    public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
+        owsFail("Not implemented.")
+    }
 
     public func walletAddressBase58() -> String? {
         owsFail("Not implemented.")
@@ -361,6 +456,20 @@ extension MockPayments: PaymentsSwift {
     public func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount> {
         owsFail("Not implemented.")
     }
+
+    public var passphrase: PaymentsPassphrase? { nil }
+
+    public func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase? {
+        owsFail("Not implemented.")
+    }
+
+    public func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data? {
+        owsFail("Not implemented.")
+    }
+
+    public var allPossiblePassphraseWords: [String] {
+        owsFail("Not implemented.")
+    }
 }
 
 // MARK: -
@@ -428,6 +537,9 @@ public class PaymentsConstants {
     // Safe:    9,999,999.999,999,999,999.
     // Unsafe: 99,999,999.999,999,999,999.
     public static let maxMobNonDecimalDigits: UInt = 7
+
+    // TODO: Is this value final?
+    public static let passphraseWordCount: Int = 24
 }
 
 // MARK: -

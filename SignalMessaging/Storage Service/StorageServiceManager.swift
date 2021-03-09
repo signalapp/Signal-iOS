@@ -43,12 +43,23 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         }
     }
 
-    @objc private func willResignActive() {
+    @objc
+    private func willResignActive() {
         // If we have any pending changes, start a back up immediately
         // to try and make sure the service doesn't get stale. If for
         // some reason we aren't able to successfully complete this backup
         // while in the background we'll try again on the next app launch.
         backupPendingChanges()
+    }
+
+    public func hasEverBackedUpOrRestored(transaction: SDSAnyReadTransaction) -> Bool {
+        // If we don't have backup keys, we know we've never backed up or restored.
+        guard KeyBackupService.DerivedKey.storageService.isAvailable else {
+            return false
+        }
+        let state = StorageServiceOperation.State.current(transaction: transaction)
+        // TODO: Verify with Nora that this test is correct.
+        return state.manifestVersion > 0
     }
 
     // MARK: -
@@ -1515,7 +1526,7 @@ class StorageServiceOperation: OWSOperation {
 
     private static var maxConsecutiveConflicts = 3
 
-    private struct State: Codable {
+    fileprivate struct State: Codable {
         var manifestVersion: UInt64 = 0
         private var _refetchLatestManifest: Bool?
         var refetchLatestManifest: Bool {

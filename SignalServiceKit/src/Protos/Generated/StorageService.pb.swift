@@ -599,32 +599,11 @@ struct StorageServiceProtos_AccountRecord {
 
     var enabled: Bool = false
 
-    var mobileCoin: StorageServiceProtos_AccountRecord.Payments.MobileCoin {
-      get {return _mobileCoin ?? StorageServiceProtos_AccountRecord.Payments.MobileCoin()}
-      set {_mobileCoin = newValue}
-    }
-    /// Returns true if `mobileCoin` has been explicitly set.
-    var hasMobileCoin: Bool {return self._mobileCoin != nil}
-    /// Clears the value of `mobileCoin`. Subsequent reads from it will return its default value.
-    mutating func clearMobileCoin() {self._mobileCoin = nil}
+    var paymentsEntropy: Data = Data()
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct MobileCoin {
-      // SwiftProtobuf.Message conformance is added in an extension below. See the
-      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-      // methods supported on all messages.
-
-      var rootEntropy: Data = Data()
-
-      var unknownFields = SwiftProtobuf.UnknownStorage()
-
-      init() {}
-    }
-
     init() {}
-
-    fileprivate var _mobileCoin: StorageServiceProtos_AccountRecord.Payments.MobileCoin?
   }
 
   init() {}
@@ -1553,7 +1532,7 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Payments"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "enabled"),
-    2: .same(proto: "mobileCoin")
+    2: .same(proto: "paymentsEntropy")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1563,7 +1542,7 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._mobileCoin) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.paymentsEntropy) }()
       default: break
       }
     }
@@ -1573,47 +1552,15 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
     if self.enabled != false {
       try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 1)
     }
-    if let v = self._mobileCoin {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    if !self.paymentsEntropy.isEmpty {
+      try visitor.visitSingularBytesField(value: self.paymentsEntropy, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_AccountRecord.Payments, rhs: StorageServiceProtos_AccountRecord.Payments) -> Bool {
     if lhs.enabled != rhs.enabled {return false}
-    if lhs._mobileCoin != rhs._mobileCoin {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension StorageServiceProtos_AccountRecord.Payments.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = StorageServiceProtos_AccountRecord.Payments.protoMessageName + ".MobileCoin"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "rootEntropy")
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self.rootEntropy) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.rootEntropy.isEmpty {
-      try visitor.visitSingularBytesField(value: self.rootEntropy, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: StorageServiceProtos_AccountRecord.Payments.MobileCoin, rhs: StorageServiceProtos_AccountRecord.Payments.MobileCoin) -> Bool {
-    if lhs.rootEntropy != rhs.rootEntropy {return false}
+    if lhs.paymentsEntropy != rhs.paymentsEntropy {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

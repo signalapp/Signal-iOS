@@ -33,6 +33,9 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     open var topHeader: UIView?
 
+    @objc
+    open var bottomFooter: UIView? { nil }
+
     // TODO: Remove.
     @objc
     public var tableViewStyle: UITableView.Style {
@@ -92,6 +95,7 @@ open class OWSTableViewController2: OWSViewController {
 
         view.addSubview(tableView)
 
+        // Pin top edge of tableView.
         if let topHeader = topHeader {
             view.addSubview(topHeader)
             topHeader.autoPin(toTopLayoutGuideOf: self, withInset: 0)
@@ -99,37 +103,50 @@ open class OWSTableViewController2: OWSViewController {
             topHeader.autoPinEdge(toSuperviewSafeArea: .trailing)
 
             tableView.autoPinEdge(.top, to: .bottom, of: topHeader)
-            tableView.autoPinEdge(toSuperviewEdge: .leading)
-            tableView.autoPinEdge(toSuperviewEdge: .trailing)
-
-            if shouldAvoidKeyboard {
-                autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
-            } else {
-                tableView.autoPinEdge(toSuperviewEdge: .bottom)
-            }
 
             topHeader.setContentHuggingVerticalHigh()
             topHeader.setCompressionResistanceVerticalHigh()
-            tableView.setContentHuggingVerticalLow()
-            tableView.setCompressionResistanceVerticalLow()
         } else if tableView.applyInsetsFix() {
             // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
             // we need to pin to the top and bottom layout guides since UIKit
             // won't adjust our content insets.
             tableView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-            tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-            tableView.autoPinEdge(toSuperviewSafeArea: .leading)
-            tableView.autoPinEdge(toSuperviewSafeArea: .trailing)
 
             // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
             automaticallyAdjustsScrollViewInsets = false
         } else {
+            tableView.autoPinEdge(toSuperviewEdge: .top)
+        }
+
+        // Pin leading & trailing edges of tableView.
+        tableView.autoPinEdge(toSuperviewEdge: .leading)
+        tableView.autoPinEdge(toSuperviewEdge: .trailing)
+        tableView.setContentHuggingVerticalLow()
+        tableView.setCompressionResistanceVerticalLow()
+
+        // Pin bottom edge of tableView.
+        if let bottomFooter = bottomFooter {
+            view.addSubview(bottomFooter)
+            bottomFooter.autoPinEdge(.top, to: .bottom, of: tableView)
+            bottomFooter.autoPinEdge(toSuperviewSafeArea: .leading)
+            bottomFooter.autoPinEdge(toSuperviewSafeArea: .trailing)
             if shouldAvoidKeyboard {
-                tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-                autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+                autoPinView(toBottomOfViewControllerOrKeyboard: bottomFooter, avoidNotch: true)
             } else {
-                tableView.autoPinEdgesToSuperviewEdges()
+                bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
             }
+
+            bottomFooter.setContentHuggingVerticalHigh()
+            bottomFooter.setCompressionResistanceVerticalHigh()
+        } else if tableView.applyInsetsFix() {
+            // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
+            // we need to pin to the top and bottom layout guides since UIKit
+            // won't adjust our content insets.
+            tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        } else if shouldAvoidKeyboard {
+            autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+        } else {
+            tableView.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.cellIdentifier)

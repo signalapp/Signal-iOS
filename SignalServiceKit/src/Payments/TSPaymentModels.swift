@@ -459,11 +459,12 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
 
         let shouldHaveMCIncomingTransaction = isIncoming && !isFailed
+        let canHaveMCIncomingTransaction = shouldHaveMCIncomingTransaction || isUnidentified
         let hasMCIncomingTransaction = !(self.mobileCoin?.incomingTransactionPublicKeys ?? []).isEmpty
         if shouldHaveMCIncomingTransaction, !hasMCIncomingTransaction {
             owsFailDebug("Missing mcIncomingTransaction: \(formattedState).")
             isValid = false
-        } else if !shouldHaveMCIncomingTransaction, hasMCIncomingTransaction {
+        } else if !canHaveMCIncomingTransaction, hasMCIncomingTransaction {
             owsFailDebug("Unexpected mcIncomingTransaction: \(formattedState).")
             isValid = false
         }

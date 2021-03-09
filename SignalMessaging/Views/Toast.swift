@@ -184,11 +184,11 @@ public extension UIView {
 
 @objc
 public extension UIViewController {
-    func presentToast(text: String) {
+    func presentToast(text: String, extraVInset: CGFloat = 0) {
         let toastController = ToastController(text: text)
         // TODO: There should be a better way to do this.
         // TODO: Take into account the keyboard height.
-        let bottomInset = bottomLayoutGuide.length + 8
+        let bottomInset = bottomLayoutGuide.length + 8 + extraVInset
         toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
     }
 }

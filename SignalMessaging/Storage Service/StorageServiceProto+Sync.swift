@@ -553,10 +553,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let paymentsState = paymentsSwift.paymentsState
         var paymentsBuilder = StorageServiceProtoAccountRecordPayments.builder()
         paymentsBuilder.setEnabled(paymentsState.isEnabled)
-        if let mcRootEntropy = paymentsState.mcRootEntropy {
-            var mobileCoinBuilder = StorageServiceProtoAccountRecordPaymentsMobileCoin.builder()
-            mobileCoinBuilder.setRootEntropy(mcRootEntropy)
-            paymentsBuilder.setMobileCoin(try mobileCoinBuilder.build())
+        if let paymentsEntropy = paymentsState.paymentsEntropy {
+            paymentsBuilder.setPaymentsEntropy(paymentsEntropy)
         }
         builder.setPayments(try paymentsBuilder.build())
 
@@ -714,17 +712,17 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         let localPaymentsState = Self.paymentsSwift.paymentsState
         let servicePaymentsState = PaymentsState.build(arePaymentsEnabled: self.payments?.enabled ?? false,
-                                                       mcRootEntropy: self.payments?.mobileCoin?.rootEntropy)
+                                                       paymentsEntropy: self.payments?.paymentsEntropy)
         if localPaymentsState != servicePaymentsState {
             // Merge with payments states.
             //
             // 1. Honor "arePaymentsEnabled" from the service.
             let arePaymentsEnabled = servicePaymentsState.isEnabled
-            // 2. Prefer mcRootEntropy from service, but try to retain local
-            //    mcRootEntropy otherwise.
-            let mcRootEntropy = servicePaymentsState.mcRootEntropy ?? localPaymentsState.mcRootEntropy
+            // 2. Prefer paymentsEntropy from service, but try to retain local
+            //    paymentsEntropy otherwise.
+            let paymentsEntropy = servicePaymentsState.paymentsEntropy ?? localPaymentsState.paymentsEntropy
             let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
-                                                          mcRootEntropy: mcRootEntropy)
+                                                          paymentsEntropy: paymentsEntropy)
 
             Self.paymentsSwift.setPaymentsState(mergedPaymentsState, transaction: transaction)
         }

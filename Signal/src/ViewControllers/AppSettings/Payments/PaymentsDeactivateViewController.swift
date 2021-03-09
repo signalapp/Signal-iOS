@@ -112,7 +112,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                                      ])
         explanationAttributed.append(CommonStrings.learnMore,
                                      attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped,
+                                        .font: UIFont.ows_dynamicTypeBody2Clamped.ows_semibold,
                                         .foregroundColor: Theme.primaryTextColor
                                      ])
 
@@ -190,7 +190,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                         owsFailDebug("Missing navigationController.")
                         return
                     }
-                    let view = PaymentsTransferOutViewController(transferAmount: paymentBalance.amount)
+                    let view = PaymentsTransferOutViewController(transferAmount: transferAmount)
                     navigationController.pushViewController(view, animated: true)
                 }
             }.catch { error in

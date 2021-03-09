@@ -32,6 +32,9 @@ import Foundation
     static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
 
     @objc
+    static public let previousButton = NSLocalizedString("BUTTON_PREVIOUS", comment: "Label for the 'previous' button.")
+
+    @objc
     static public let skipButton = NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view.")
 
     @objc
@@ -54,6 +57,9 @@ import Foundation
 
     @objc
     static public let copyButton = NSLocalizedString("BUTTON_COPY", comment: "Label for the 'copy' button.")
+
+    @objc
+    static public let editButton = NSLocalizedString("BUTTON_EDIT", comment: "Label for the 'edit' button.")
 
     @objc
     static public let help = NSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
@@ -114,6 +120,9 @@ import Foundation
 
     @objc
     static public let viewButton = NSLocalizedString("BUTTON_VIEW", comment: "Label for the 'view' button.")
+
+    @objc
+    static public let startButton = NSLocalizedString("BUTTON_START", comment: "Label for the 'start' button.")
 
     @objc
     static public let genericError = NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")

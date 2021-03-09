@@ -320,7 +320,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
                 let label = UILabel()
                 label.text = NSLocalizedString("SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR",
-                                                         comment: "Message indicating that there is no payment activity to display in the payment settings.")
+                                               comment: "Message indicating that there is no payment activity to display in the payment settings.")
                 label.textColor = Theme.secondaryTextAndIconColor
                 label.font = UIFont.ows_dynamicTypeBodyClamped
                 label.numberOfLines = 0
@@ -361,7 +361,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 self?.didTapPaymentItem(paymentItem: paymentItem)
-                    }))
+            }))
         }
 
         if hasMoreItems {
@@ -430,7 +430,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         let bodyLabel = UILabel()
         bodyLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
-                                            comment: "Message for the 'payments opt-in' view in the app settings.")
+                                           comment: "Message for the 'payments opt-in' view in the app settings.")
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
         bodyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         bodyLabel.textAlignment = .center
@@ -438,13 +438,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         bodyLabel.lineBreakMode = .byWordWrapping
 
         let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
-                                              comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
+                                            comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
         let activateButton = OWSFlatButton.button(title: buttonTitle,
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                                 titleColor: .white,
-                                                 backgroundColor: .ows_accentBlue,
-                                                 target: self,
-                                                 selector: #selector(didTapEnablePaymentsButton))
+                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                  titleColor: .white,
+                                                  backgroundColor: .ows_accentBlue,
+                                                  target: self,
+                                                  selector: #selector(didTapEnablePaymentsButton))
         activateButton.autoSetHeightUsingFont()
 
         let stack = UIStackView(arrangedSubviews: [
@@ -456,6 +456,23 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             UIView.spacer(withHeight: 20),
             activateButton
         ])
+
+        if Self.payments.paymentsEntropy == nil {
+            let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON",
+                                                comment: "Label for 'restore payments' button in the payments settings.")
+            let restorePaymentsButton = OWSFlatButton.button(title: buttonTitle,
+                                                             font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                             titleColor: .ows_accentBlue,
+                                                             backgroundColor: .clear,
+                                                             target: self,
+                                                             selector: #selector(didTapRestorePaymentsButton))
+            restorePaymentsButton.autoSetHeightUsingFont()
+            stack.addArrangedSubviews([
+                UIView.spacer(withHeight: 8),
+                restorePaymentsButton
+            ])
+        }
+
         stack.axis = .vertical
         stack.alignment = .fill
         stack.layoutMargins = UIEdgeInsets(top: 20, leading: 0, bottom: 32, trailing: 0)
@@ -579,6 +596,14 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             self?.didTapDeactivatePaymentsButton()
         })
 
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE",
+                                                                         comment: "Label for 'view payments recovery passphrase' button in the app settings."),
+                                                accessibilityIdentifier: "payments.settings.view_recovery_passphrase",
+                                                style: .default) { [weak self] _ in
+            self?.didTapViewPaymentsPassphraseButton()
+        })
+
+        // TODO: Design: do we still need this?
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.help,
                                                 accessibilityIdentifier: "payments.settings.help",
                                                 style: .default) { [weak self] _ in
@@ -619,27 +644,33 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         databaseStorage.asyncWrite { transaction in
-            // We must preserve any existing mcRootEntropy.
-            let mcRootEntropy: Data
-            switch Self.paymentsSwift.paymentsState {
-            case .enabled(let oldMcRootEntropy):
-                mcRootEntropy = oldMcRootEntropy
-            case .disabled:
-                mcRootEntropy = Self.paymentsSwift.generateRandomMobileCoinRootEntropy()
-            case .disabledWithMCRootEntropy(let oldMcRootEntropy):
-                mcRootEntropy = oldMcRootEntropy
-            }
-            Self.paymentsSwift.setPaymentsState(.enabled(mcRootEntropy: mcRootEntropy),
-                                                transaction: transaction)
+            Self.paymentsSwift.enablePayments(transaction: transaction)
 
             transaction.addAsyncCompletion {
-                AssertIsOnMainThread()
-
-                let toastText = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST",
-                                                    comment: "Message shown when payments rae activated in the 'payments opt-in' view in the app settings.")
-                self.presentToast(text: toastText)
+                self.showPaymentsActivatedToast()
             }
         }
+    }
+
+    private func showPaymentsActivatedToast() {
+        AssertIsOnMainThread()
+        let toastText = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST",
+                                          comment: "Message shown when payments rae activated in the 'payments opt-in' view in the app settings.")
+        self.presentToast(text: toastText)
+    }
+
+    @objc
+    func didTapRestorePaymentsButton() {
+        AssertIsOnMainThread()
+
+        guard Self.payments.paymentsEntropy == nil else {
+            owsFailDebug("paymentsEntropy already set.")
+            return
+        }
+
+        let view = PaymentsRestoreWalletSplashViewController(restoreWalletDelegate: self)
+        let navigationVC = OWSNavigationController(rootViewController: view)
+        present(navigationVC, animated: true)
     }
 
     @objc
@@ -650,6 +681,19 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func didTapSetCurrencyButton() {
         let view = PaymentsCurrencyViewController()
         navigationController?.pushViewController(view, animated: true)
+    }
+
+    private func didTapViewPaymentsPassphraseButton() {
+        guard let passphrase = paymentsSwift.passphrase else {
+            owsFailDebug("Missing passphrase.")
+            return
+        }
+        let shouldShowConfirm = !hasReviewedPassphraseWithSneakyTransaction()
+        let view = PaymentsViewPassphraseSplashViewController(passphrase: passphrase,
+                                                              shouldShowConfirm: shouldShowConfirm,
+                                                              viewPassphraseDelegate: self)
+        let navigationVC = OWSNavigationController(rootViewController: view)
+        present(navigationVC, animated: true)
     }
 
     private func didTapDeactivatePaymentsButton() {
@@ -739,5 +783,48 @@ extension PaymentsSettingsViewController: PaymentsHistoryDataSourceDelegate {
         AssertIsOnMainThread()
 
         updateTableContents()
+    }
+}
+
+// MARK: -
+
+extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "PaymentSettings")
+    private static let hasReviewedPassphraseKey = "hasReviewedPassphrase"
+
+    private func hasReviewedPassphraseWithSneakyTransaction() -> Bool {
+        databaseStorage.read { transaction in
+            Self.keyValueStore.getBool(Self.hasReviewedPassphraseKey,
+                                       defaultValue: false,
+                                       transaction: transaction)
+        }
+    }
+
+    private func setHasReviewedPassphraseWithSneakyTransaction() {
+        databaseStorage.write { transaction in
+            Self.keyValueStore.setBool(true,
+                                       key: Self.hasReviewedPassphraseKey,
+                                       transaction: transaction)
+        }
+    }
+
+    public func viewPassphraseDidComplete() {
+        if !hasReviewedPassphraseWithSneakyTransaction() {
+            setHasReviewedPassphraseWithSneakyTransaction()
+
+            presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST",
+                                                 comment: "Message indicating that 'payments passphrase review' is complete."))
+        }
+    }
+}
+
+// MARK: -
+
+extension PaymentsSettingsViewController: PaymentsRestoreWalletDelegate {
+
+    public func restoreWalletDidComplete() {
+        presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST",
+                                             comment: "Message indicating that 'restore payments wallet' is complete."))
     }
 }

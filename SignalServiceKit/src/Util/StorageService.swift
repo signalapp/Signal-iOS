@@ -28,6 +28,8 @@ public protocol StorageServiceManagerProtocol {
     func restoreOrCreateManifestIfNecessary() -> AnyPromise
 
     func resetLocalData(transaction: SDSAnyWriteTransaction)
+
+    func hasEverBackedUpOrRestored(transaction: SDSAnyReadTransaction) -> Bool
 }
 
 // MARK: -

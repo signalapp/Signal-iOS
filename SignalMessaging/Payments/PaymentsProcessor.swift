@@ -331,7 +331,7 @@ extension PaymentsProcessor: UIDatabaseSnapshotDelegate {
 extension PaymentsProcessor: PaymentProcessingOperationDelegate {
 
     static func canBeProcessed(paymentModel: TSPaymentModel) -> Bool {
-        guard paymentModel.isIdentifiedPayment else {
+        guard paymentModel.isIdentifiedPayment || paymentModel.isOutgoingTransfer else {
             return false
         }
         guard !paymentModel.isComplete && !paymentModel.isFailed else {

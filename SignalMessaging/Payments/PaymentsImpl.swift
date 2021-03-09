@@ -133,9 +133,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // the service, so we cache and reuse instances.
     func getMobileCoinAPI() -> Promise<MobileCoinAPI> {
         switch paymentsState {
-        case .enabled(let mcRootEntropy):
+        case .enabled(_, let mcRootEntropy):
             return getOrBuildCurrentApi(mcRootEntropy: mcRootEntropy)
-        case .disabled, .disabledWithMCRootEntropy:
+        case .disabled, .disabledWithPaymentsEntropy:
             return Promise(error: PaymentsError.notEnabled)
         }
     }
@@ -174,7 +174,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // MARK: - PaymentsState
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
-    private static let mcRootEntropyKey = "rootEntropyBytes"
+    private static let paymentsEntropyKey = "paymentsEntropy"
 
     private let paymentStateCache = AtomicOptional<PaymentsState>(nil)
 
@@ -195,41 +195,104 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         paymentsState.isEnabled
     }
 
+    public var paymentsEntropy: Data? {
+        paymentsState.paymentsEntropy
+    }
+
     public var mcRootEntropy: Data? {
         paymentsState.mcRootEntropy
     }
 
+    public static var paymentsEntropyLength: UInt {
+        // TODO: This is wrong; pending SDK changes.
+        MobileCoinAPI.rootEntropyLength
+    }
+
+    public static var mcRootEntropyLength: UInt {
+        // PAYMENTS TODO: Confirm this is correct.
+        MobileCoinAPI.rootEntropyLength
+    }
+
+    public var paymentsEntropyLength: UInt {
+        Self.paymentsEntropyLength
+    }
+
+    public var mcRootEntropyLength: UInt {
+        Self.mcRootEntropyLength
+    }
+
+    public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
+        guard paymentsEntropy.count == paymentsEntropyLength else {
+            owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(paymentsEntropyLength).")
+            return nil
+        }
+        // TODO: This is wrong; pending SDK changes.
+        return paymentsEntropy
+    }
+
+    public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
+        Self.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
+    }
+
+    public func enablePayments(transaction: SDSAnyWriteTransaction) {
+        // We must preserve any existing paymentsEntropy.
+        let paymentsEntropy = self.paymentsEntropy ?? Self.generateRandomPaymentsEntropy()
+        _ = enablePayments(withPaymentsEntropy: paymentsEntropy, transaction: transaction)
+    }
+
+    public func enablePayments(withPaymentsEntropy newPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
+        let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
+        guard oldPaymentsEntropy == nil || oldPaymentsEntropy == newPaymentsEntropy else {
+            owsFailDebug("paymentsEntropy is already set.")
+            return false
+        }
+        let paymentsState = PaymentsState.build(arePaymentsEnabled: true,
+                                                paymentsEntropy: newPaymentsEntropy)
+        owsAssertDebug(paymentsState.isEnabled)
+        setPaymentsState(paymentsState, transaction: transaction)
+        owsAssertDebug(arePaymentsEnabled)
+        return true
+    }
+
     public func disablePayments(transaction: SDSAnyWriteTransaction) {
         switch paymentsState {
-        case .enabled(let mcRootEntropy):
-            setPaymentsState(.disabledWithMCRootEntropy(mcRootEntropy: mcRootEntropy),
+        case .enabled(let paymentsEntropy, _):
+            setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
                              transaction: transaction)
-        case .disabled, .disabledWithMCRootEntropy:
+        case .disabled, .disabledWithPaymentsEntropy:
             owsFailDebug("Payments already disabled.")
         }
         owsAssertDebug(!arePaymentsEnabled)
     }
 
-    public func setPaymentsState(_ paymentsState: PaymentsState, transaction: SDSAnyWriteTransaction) {
-        guard paymentsState.isEnabled || canEnablePayments else {
+    public func setPaymentsState(_ newPaymentsState: PaymentsState, transaction: SDSAnyWriteTransaction) {
+        let oldPaymentsState = self.paymentsState
+
+        guard oldPaymentsState.isEnabled || canEnablePayments else {
             owsFailDebug("Payments cannot be enabled.")
             return
         }
-        guard paymentsState != self.paymentsState else {
+        guard newPaymentsState != oldPaymentsState else {
             Logger.verbose("Ignoring redundant change.")
             return
         }
+        if let oldPaymentsEntropy = oldPaymentsState.paymentsEntropy,
+           let newPaymentsEntropy = newPaymentsState.paymentsEntropy,
+           oldPaymentsEntropy != newPaymentsEntropy {
+            Logger.verbose("oldPaymentsEntropy: \(oldPaymentsEntropy.hexadecimalString) != newPaymentsEntropy: \(newPaymentsEntropy.hexadecimalString).")
+            owsFailDebug("paymentsEntropy does not match.")
+        }
 
-        Self.keyValueStore.setBool(paymentsState.isEnabled,
+        Self.keyValueStore.setBool(newPaymentsState.isEnabled,
                                    key: Self.arePaymentsEnabledKey,
                                    transaction: transaction)
-        if let mcRootEntropy = paymentsState.mcRootEntropy {
-            Self.keyValueStore.setData(mcRootEntropy,
-                                       key: Self.mcRootEntropyKey,
+        if let paymentsEntropy = newPaymentsState.paymentsEntropy {
+            Self.keyValueStore.setData(paymentsEntropy,
+                                       key: Self.paymentsEntropyKey,
                                        transaction: transaction)
         }
 
-        self.paymentStateCache.set(paymentsState)
+        self.paymentStateCache.set(newPaymentsState)
 
         transaction.addAsyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(Self.arePaymentsEnabledDidChange, object: nil)
@@ -246,7 +309,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard FeatureFlags.payments else {
             return .disabled
         }
-        func loadMCRootEntropy() -> Data? {
+        func loadPaymentsEntropy() -> Data? {
             guard storageCoordinator.isStorageReady else {
                 owsFailDebug("Storage is not ready.")
                 return nil
@@ -254,31 +317,28 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             guard tsAccountManager.isRegisteredAndReady else {
                 return nil
             }
+            // TODO: We'll need to revisit this once SDK supports entropy derivation.
             if DevFlags.useFakeRootEntropy_self,
                let localAddress = tsAccountManager.localAddress,
                hasFakeRootEntropy(forAddress: localAddress) {
                 return fakeRootEntropy(forAddress: localAddress)
             } else {
-                return keyValueStore.getData(mcRootEntropyKey, transaction: transaction)
+                return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
             }
         }
-
-        guard let mcRootEntropy = loadMCRootEntropy() else {
+        guard let paymentsEntropy = loadPaymentsEntropy() else {
             return .disabled
         }
-        let isEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
-                                              defaultValue: false,
-                                              transaction: transaction)
-        if isEnabled {
-            return .enabled(mcRootEntropy: mcRootEntropy)
-        } else {
-            return .disabledWithMCRootEntropy(mcRootEntropy: mcRootEntropy)
-        }
+        let arePaymentsEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
+                                                       defaultValue: false,
+                                                       transaction: transaction)
+        return PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
+                                   paymentsEntropy: paymentsEntropy)
     }
 
-    public func generateRandomMobileCoinRootEntropy() -> Data {
+    public static func generateRandomPaymentsEntropy() -> Data {
         // PAYMENTS TODO: Confirm this is correct.
-        Cryptography.generateRandomBytes(MobileCoinAPI.rootEntropyLength)
+        Cryptography.generateRandomBytes(paymentsEntropyLength)
     }
 
     // MARK: - Public Keys
@@ -573,9 +633,6 @@ public extension PaymentsImpl {
                                                paymentRequestModel: TSPaymentRequestModel?,
                                                isOutgoingTransfer: Bool) -> Promise<TSPaymentModel> {
         firstly(on: .global()) {
-            guard recipientAddress != nil else {
-                throw OWSAssertionError("Missing recipient.")
-            }
             var addressUuidString: String?
             if let recipientAddress = recipientAddress {
                 guard recipientAddress.isValid else {
@@ -1299,6 +1356,88 @@ public extension PaymentsImpl {
                                                                   transaction: transaction) {
             paymentRequestModel.anyRemove(transaction: transaction)
         }
+    }
+}
+
+// MARK: - Passphrases
+
+public extension PaymentsImpl {
+
+    var passphrase: PaymentsPassphrase? {
+        guard let paymentsEntropy = paymentsEntropy else {
+            owsFailDebug("Missing paymentsEntropy.")
+            return nil
+        }
+        return passphrase(forPaymentsEntropy: paymentsEntropy)
+    }
+
+    // See: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+    func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase? {
+        // TODO: This is temporary until the SDK supports passphrases.
+        return PaymentsPassphrase(words: Array(allPossiblePassphraseWords.prefix(PaymentsConstants.passphraseWordCount)))
+    }
+
+    func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data? {
+        // TODO: This is temporary until the SDK supports passphrases.
+        if passphrase == self.passphrase {
+            return self.paymentsEntropy
+        } else {
+            return Self.generateRandomPaymentsEntropy()
+        }
+    }
+
+    var allPossiblePassphraseWords: [String] {
+        // TODO: This is temporary until the SDK supports passphrases.
+        [
+            "abandon",
+            "ability",
+            "able",
+            "about",
+            "above",
+            "absent",
+            "absorb",
+            "abstract",
+            "absurd",
+            "abuse",
+            "access",
+            "accident",
+            "account",
+            "accuse",
+            "achieve",
+            "acid",
+            "acoustic",
+            "acquire",
+            "across",
+            "act",
+            "action",
+            "actor",
+            "actress",
+            "actual",
+            "adapt",
+            "add",
+            "addict",
+            "address",
+            "adjust",
+            "admit",
+            "adult",
+            "advance",
+            "advice",
+            "aerobic",
+            "affair",
+            "afford",
+            "afraid",
+            "again",
+            "age",
+            "agent",
+            "agree",
+            "ahead",
+            "aim",
+            "air",
+            "airport",
+            "aisle",
+            "alarm",
+            "album"
+        ]
     }
 }
 

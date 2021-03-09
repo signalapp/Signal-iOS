@@ -280,6 +280,12 @@
 		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
 		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
 		34955A73260A366600F3789A /* OnboardingDroppedYdbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955A72260A366600F3789A /* OnboardingDroppedYdbViewController.swift */; };
+		3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */; };
+		3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */; };
+		3495FF0A25F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */; };
+		3495FF0B25F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */; };
+		3495FF0D25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */; };
+		3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
 		3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */; };
@@ -1292,6 +1298,12 @@
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3495FF1325F9A0C900959D6E /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3495FF1425F9A0C900959D6E /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseConfirmViewController.swift; sourceTree = "<group>"; };
+		3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseGridViewController.swift; sourceTree = "<group>"; };
+		3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletSplashViewController.swift; sourceTree = "<group>"; };
+		3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletWordViewController.swift; sourceTree = "<group>"; };
+		3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletCompleteViewController.swift; sourceTree = "<group>"; };
+		3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseSplashViewController.swift; sourceTree = "<group>"; };
 		3496744E2076ACCE00080B5F /* LongTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongTextViewController.swift; sourceTree = "<group>"; };
 		34969559219B605E00DCFE74 /* ImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerController.swift; sourceTree = "<group>"; };
 		3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionPickerController.swift; sourceTree = "<group>"; };
@@ -2703,10 +2715,16 @@
 				3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */,
 				3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */,
 				3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */,
+				3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */,
+				3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */,
+				3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */,
 				3497971425D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift */,
 				3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */,
 				34848D6225D44EBD00E5034B /* PaymentsTransferInViewController.swift */,
 				3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */,
+				3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */,
+				3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */,
+				3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */,
 				34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */,
 			);
 			path = Payments;
@@ -5341,6 +5359,7 @@
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */,
+				3495FF0B25F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
 				348815C02553291300D4F4C4 /* CVComponentViewOnce.swift in Sources */,
@@ -5366,6 +5385,7 @@
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */,
+				3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
 				887889B2247F2E72001B5FCF /* Emoji.swift in Sources */,
 				3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */,
@@ -5434,6 +5454,7 @@
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
 				3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
+				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
 				3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */,
 				34A17D81253F7237009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
@@ -5515,6 +5536,7 @@
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
 				3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */,
 				88588D18252D312800405414 /* GroupCallViewController.swift in Sources */,
+				3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
@@ -5588,6 +5610,7 @@
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
+				3495FF0A25F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
 				347C382E252CE69400F3D941 /* CVComponentState.swift in Sources */,
 				8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */,
@@ -5626,6 +5649,7 @@
 				88238EBA24F2130300F28079 /* EmojiWithSkinTones+String.swift in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
 				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
+				3495FF0D25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
