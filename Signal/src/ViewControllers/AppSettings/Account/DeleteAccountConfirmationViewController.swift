@@ -21,11 +21,6 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         phoneNumberTextField.returnKeyType = .done
         phoneNumberTextField.autocorrectionType = .no
         phoneNumberTextField.spellCheckingType = .no
-        phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(
-            forCountryCode: countryCode,
-            callingCode: callingCode,
-            includeExampleLabel: false
-        )
 
         phoneNumberTextField.delegate = self
         phoneNumberTextField.accessibilityIdentifier = "phone_number_textfield"
@@ -156,6 +151,12 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         phoneNumberTextField.textColor = Theme.primaryTextColor
         phoneNumberTextField.font = OWSTableItem.accessoryLabelFont
+        phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(
+            forCountryCode: countryCode,
+            callingCode: callingCode,
+            includeExampleLabel: false
+        )
+
         phoneNumberTextField.setCompressionResistanceHorizontalHigh()
         phoneNumberTextField.setContentHuggingHorizontalHigh()
 
@@ -324,3 +325,4 @@ extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
         return false
     }
 }
+
