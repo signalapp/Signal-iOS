@@ -765,6 +765,13 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             throw GroupsV2Error.redundantChange
         }
 
-        return try actionsBuilder.build()
+        let actionsProto = try actionsBuilder.build()
+        // TODO: Remove this logging once we're resolved the "empty update" issue.
+        if DebugFlags.internalLogging {
+            Logger.info("Updating group: \(actionsProto.debugDescription).")
+        } else {
+            Logger.info("Updating group.")
+        }
+        return actionsProto
     }
 }
