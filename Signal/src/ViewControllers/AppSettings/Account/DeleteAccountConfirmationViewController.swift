@@ -1,0 +1,326 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+
+class DeleteAccountConfirmationViewController: OWSTableViewController2 {
+    private var callingCode = "+1"
+    private var countryCode = "US"
+    private let phoneNumberTextField = UITextField()
+
+    // Don't allow swipe to dismiss
+    override var isModalInPresentation: Bool {
+        get { true }
+        set {}
+    }
+
+    override func loadView() {
+        view = UIView()
+
+        phoneNumberTextField.returnKeyType = .done
+        phoneNumberTextField.autocorrectionType = .no
+        phoneNumberTextField.spellCheckingType = .no
+        phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(
+            forCountryCode: countryCode,
+            callingCode: callingCode,
+            includeExampleLabel: false
+        )
+
+        phoneNumberTextField.delegate = self
+        phoneNumberTextField.accessibilityIdentifier = "phone_number_textfield"
+    }
+
+    override func viewDidLoad() {
+        shouldAvoidKeyboard = true
+
+        super.viewDidLoad()
+
+        navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
+        navigationItem.rightBarButtonItem = .init(title: CommonStrings.deleteButton, style: .done, target: self, action: #selector(didTapDelete))
+        navigationItem.rightBarButtonItem?.setTitleTextAttributes([.foregroundColor: UIColor.ows_accentRed], for: .normal)
+
+        populateDefaultCountryCode()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        phoneNumberTextField.becomeFirstResponder()
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+
+        updateTableContents()
+    }
+
+    func updateTableContents() {
+        let contents = OWSTableContents()
+
+        let headerSection = OWSTableSection()
+        headerSection.hasBackground = false
+        headerSection.add(.init(customCell: buildHeaderCell()))
+        contents.addSection(headerSection)
+
+        let confirmSection = OWSTableSection()
+        confirmSection.headerTitle = NSLocalizedString(
+            "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE",
+            comment: "Section header"
+        )
+
+        confirmSection.add(.disclosureItem(
+            withText: NSLocalizedString(
+                "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE",
+                comment: "Title for the 'country code' row of the 'delete account confirmation' view controller."
+            ),
+            detailText: "\(callingCode) (\(countryCode))",
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                let countryCodeController = CountryCodeViewController()
+                countryCodeController.countryCodeDelegate = self
+                self.present(OWSNavigationController(rootViewController: countryCodeController), animated: true)
+            }
+        ))
+        confirmSection.add(.init(
+            customCellBlock: {
+                self.buildPhoneNumberCell()
+            }, actionBlock: { [weak self] in
+                self?.phoneNumberTextField.becomeFirstResponder()
+            }
+        ))
+        contents.addSection(confirmSection)
+
+        self.contents = contents
+    }
+
+    func buildHeaderCell() -> UITableViewCell {
+        let imageView = UIImageView(image: Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "delete-account-dark") : #imageLiteral(resourceName: "delete-account-light"))
+        imageView.autoSetDimensions(to: CGSize(square: 112))
+        let imageContainer = UIView()
+        imageContainer.addSubview(imageView)
+        imageView.autoPinEdge(toSuperviewEdge: .top)
+        imageView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12)
+        imageView.autoHCenterInSuperview()
+
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.textAlignment = .center
+        titleLabel.text = NSLocalizedString(
+            "DELETE_ACCOUNT_CONFIRMATION_TITLE",
+            comment: "Title for the 'delete account' confirmation view."
+        )
+
+        let descriptionLabel = UILabel()
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.lineBreakMode = .byWordWrapping
+        descriptionLabel.font = .ows_dynamicTypeSubheadline
+        descriptionLabel.textColor = Theme.secondaryTextAndIconColor
+        descriptionLabel.textAlignment = .center
+        descriptionLabel.text = NSLocalizedString(
+            "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION",
+            comment: "Description for the 'delete account' confirmation view."
+        )
+
+        let headerView = UIStackView(arrangedSubviews: [
+            imageContainer,
+            titleLabel,
+            descriptionLabel
+        ])
+        headerView.axis = .vertical
+        headerView.spacing = 12
+
+        let cell = OWSTableItem.newCell()
+        cell.contentView.addSubview(headerView)
+        headerView.autoPinEdgesToSuperviewMargins()
+        return cell
+    }
+
+    func buildPhoneNumberCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+        cell.preservesSuperviewLayoutMargins = true
+        cell.contentView.preservesSuperviewLayoutMargins = true
+
+        let nameLabel = UILabel()
+        nameLabel.text = NSLocalizedString(
+            "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE",
+            comment: "Title for the 'phone number' row of the 'delete account confirmation' view controller."
+        )
+        nameLabel.textColor = Theme.primaryTextColor
+        nameLabel.font = OWSTableItem.primaryLabelFont
+        nameLabel.adjustsFontForContentSizeCategory = true
+        nameLabel.lineBreakMode = .byTruncatingTail
+        nameLabel.setCompressionResistanceHorizontalHigh()
+        nameLabel.setContentHuggingHorizontalHigh()
+        nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
+
+        phoneNumberTextField.textColor = Theme.primaryTextColor
+        phoneNumberTextField.font = OWSTableItem.accessoryLabelFont
+        phoneNumberTextField.setCompressionResistanceHorizontalHigh()
+        phoneNumberTextField.setContentHuggingHorizontalHigh()
+
+        let contentRow = UIStackView(arrangedSubviews: [
+            nameLabel, .hStretchingSpacer(), phoneNumberTextField
+        ])
+        contentRow.spacing = OWSTableItem.iconSpacing
+        contentRow.alignment = .center
+        cell.contentView.addSubview(contentRow)
+        contentRow.autoPinEdgesToSuperviewMargins()
+
+        return cell
+    }
+
+    @objc
+    func didTapDelete() {
+        guard hasEnteredLocalNumber else {
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString(
+                    "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER",
+                    comment: "Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller."
+                )
+            )
+            return
+        }
+
+        guard reachabilityManager.isReachable else {
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString(
+                    "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET",
+                    comment: "Title for the action sheet when you have no internet on the 'delete account confirmation' view controller."
+                )
+            )
+            return
+        }
+
+        phoneNumberTextField.resignFirstResponder()
+
+        OWSActionSheets.showConfirmationAlert(
+            title: NSLocalizedString(
+                "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE",
+                comment: "Title for the action sheet confirmation title of the 'delete account confirmation' view controller."
+            ),
+            message: NSLocalizedString(
+                "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE",
+                comment: "Title for the action sheet message of the 'delete account confirmation' view controller."
+            ),
+            proceedTitle: NSLocalizedString(
+                "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION",
+                comment: "Title for the action sheet 'delete' action of the 'delete account confirmation' view controller."
+            ),
+            proceedStyle: .destructive
+        ) { _ in
+            let overlayView = UIView()
+            overlayView.backgroundColor = self.tableBackgroundColor.withAlphaComponent(0.9)
+            overlayView.alpha = 0
+            self.navigationController?.view.addSubview(overlayView)
+            overlayView.autoPinEdgesToSuperviewEdges()
+
+            let progressView = AnimatedProgressView(
+                loadingText: NSLocalizedString(
+                    "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS",
+                    comment: "Indicates the work we are doing while deleting the account"
+                )
+            )
+            self.navigationController?.view.addSubview(progressView)
+            progressView.autoCenterInSuperview()
+
+            progressView.startAnimating { overlayView.alpha = 1 }
+
+            TSAccountManager.unregisterTextSecure {
+                // We don't need to stop animating here because "resetAppData" exits the app.
+                SignalApp.resetAppData()
+            } failure: { error in
+                owsFailDebug("Failed to unregister \(error)")
+
+                progressView.stopAnimating(success: false) {
+                    overlayView.alpha = 0
+                } completion: {
+                    overlayView.removeFromSuperview()
+                    progressView.removeFromSuperview()
+
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString(
+                            "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED",
+                            comment: "Title for the action sheet when delete failed on the 'delete account confirmation' view controller."
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    var hasEnteredLocalNumber: Bool {
+        guard let localNumber = TSAccountManager.localNumber else {
+            owsFailDebug("local number unexpectedly nil")
+            return false
+        }
+
+        guard let phoneNumberText = phoneNumberTextField.text else { return false }
+
+        let possiblePhoneNumber = callingCode + phoneNumberText
+        let possibleNumbers = PhoneNumber.tryParsePhoneNumbers(
+            fromUserSpecifiedText: possiblePhoneNumber,
+            clientPhoneNumber: localNumber
+        ).map { $0.toE164() }
+
+        return possibleNumbers.contains(localNumber)
+    }
+
+    @objc
+    func didTapCancel() {
+        dismiss(animated: true)
+    }
+}
+
+extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDelegate {
+    func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
+        updateCountry(callingCode: callingCode, countryCode: countryCode)
+    }
+
+    func populateDefaultCountryCode() {
+        guard let localNumber = TSAccountManager.localNumber else {
+            return owsFailDebug("Local number unexpectedly nil")
+        }
+
+        var callingCodeInt: Int?
+        var countryCode: String?
+
+        if let localE164 = PhoneNumber(fromE164: localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
+            callingCodeInt = localCountryCode
+        } else {
+            callingCodeInt = PhoneNumberUtil.sharedThreadLocal().nbPhoneNumberUtil.getCountryCode(
+                forRegion: PhoneNumber.defaultCountryCode()
+            )?.intValue
+        }
+
+        var callingCode: String?
+        if let callingCodeInt = callingCodeInt {
+            callingCode = COUNTRY_CODE_PREFIX + "\(callingCodeInt)"
+            countryCode = PhoneNumberUtil.sharedThreadLocal().probableCountryCode(forCallingCode: callingCode!)
+        }
+
+        updateCountry(callingCode: callingCode, countryCode: countryCode)
+    }
+
+    func updateCountry(callingCode: String?, countryCode: String?) {
+        guard let callingCode = callingCode, !callingCode.isEmpty, let countryCode = countryCode, !countryCode.isEmpty else {
+            return owsFailDebug("missing calling code for selected country")
+        }
+
+        self.callingCode = callingCode
+        self.countryCode = countryCode
+        updateTableContents()
+    }
+}
+
+extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        didTapDelete()
+        return false
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        ViewControllerUtils.phoneNumber(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
+        return false
+    }
+}

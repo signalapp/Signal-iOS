@@ -106,22 +106,21 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
         for (SignalServiceAddress *address in blockedAddresses) {
-            [blockedContactsSection
-                addItem:[OWSTableItem
-                            itemWithCustomCellBlock:^{
-                                ContactTableViewCell *cell = [ContactTableViewCell new];
-                                [cell configureWithRecipientAddressWithSneakyTransaction:address];
-                                cell.accessibilityIdentifier
-                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
-                                return cell;
-                            }
-                            actionBlock:^{
-                                [BlockListUIUtils showUnblockAddressActionSheet:address
-                                                             fromViewController:weakSelf
-                                                                completionBlock:^(BOOL isBlocked) {
-                                                                    [weakSelf updateTableContents];
-                                                                }];
-                            }]];
+            [blockedContactsSection addItem:[OWSTableItem
+                                                itemWithCustomCellBlock:^{
+                                                    ContactTableViewCell *cell = [ContactTableViewCell new];
+                                                    [cell configureWithRecipientAddressWithSneakyTransaction:address];
+                                                    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                        BlockListViewController, @"user");
+                                                    return cell;
+                                                }
+                                                actionBlock:^{
+                                                    [BlockListUIUtils showUnblockAddressActionSheet:address
+                                                                                 fromViewController:weakSelf
+                                                                                    completionBlock:^(BOOL isBlocked) {
+                                                                                        [weakSelf updateTableContents];
+                                                                                    }];
+                                                }]];
         }
         [contents addSection:blockedContactsSection];
     }
@@ -141,21 +140,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                  conversationColorName:conversationColorName
                                                               diameter:kStandardAvatarSize];
             }
-            [blockedGroupsSection addItem:[OWSTableItem
-                                              itemWithCustomCellBlock:^{
-                                                  OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
-                                                  [cell configureWithImage:image
-                                                                      text:blockedGroup.groupNameOrDefault
-                                                                detailText:nil];
-                                                  return cell;
-                                              }
-                                              actionBlock:^{
-                                                  [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
-                                                                             fromViewController:weakSelf
-                                                                                completionBlock:^(BOOL isBlocked) {
-                                                                                    [weakSelf updateTableContents];
-                                                                                }];
-                                              }]];
+            [blockedGroupsSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
+                                [cell configureWithImage:image text:blockedGroup.groupNameOrDefault detailText:nil];
+                                return cell;
+                            }
+                            actionBlock:^{
+                                [BlockListUIUtils
+                                    showUnblockGroupActionSheet:blockedGroup
+                                             fromViewController:weakSelf
+                                                completionBlock:^(BOOL isBlocked) { [weakSelf updateTableContents]; }];
+                            }]];
         }
         [contents addSection:blockedGroupsSection];
     }

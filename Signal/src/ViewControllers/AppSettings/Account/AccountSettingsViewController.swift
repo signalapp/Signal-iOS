@@ -14,6 +14,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateTableContents()
+    }
+
     func updateTableContents() {
         let contents = OWSTableContents()
 
@@ -173,37 +179,18 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func unregisterUser() {
-        showDeleteAccountUI(isRegistered: true)
+        let vc = DeleteAccountConfirmationViewController()
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
     private func deleteUnregisterUserData() {
-        showDeleteAccountUI(isRegistered: false)
-    }
-
-    private func showDeleteAccountUI(isRegistered: Bool) {
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString("CONFIRM_ACCOUNT_DESTRUCTION_TITLE", comment: ""),
-            message: NSLocalizedString("CONFIRM_ACCOUNT_DESTRUCTION_TEXT", comment: ""),
+            title: NSLocalizedString("CONFIRM_DELETE_DATA_TITLE", comment: ""),
+            message: NSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
             proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { [weak self] _ in
-            self?.deleteAccount(isRegistered: isRegistered)
-        }
-    }
-
-    private func deleteAccount(isRegistered: Bool) {
-        guard isRegistered else { return SignalApp.resetAppData() }
-
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            TSAccountManager.unregisterTextSecure {
-                SignalApp.resetAppData()
-            } failure: { error in
-                owsFailDebug("Faild to unregister \(error)")
-                modal.dismiss {
-                    OWSActionSheets.showActionSheet(title: NSLocalizedString("UNREGISTER_SIGNAL_FAIL", comment: ""))
-                }
-            }
-
+            SignalApp.resetAppData()
         }
     }
 

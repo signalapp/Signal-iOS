@@ -76,9 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                  return cell;
                              }
-                             actionBlock:^{
-                                 [weakSelf selectCountry:countryMetadata];
-                             }]];
+                             actionBlock:^{ [weakSelf selectCountry:countryMetadata]; }]];
     }
     [contents addSection:section];
 

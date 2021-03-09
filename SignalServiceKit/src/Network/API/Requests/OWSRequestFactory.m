@@ -294,7 +294,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)unregisterAccountRequest
 {
-    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"me"];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 

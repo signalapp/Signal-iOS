@@ -41,7 +41,9 @@ extern NSString *const TappedStatusBarNotification;
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText;
 
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode;
++ (nullable NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
+                                            callingCode:(NSString *)callingCode
+                                    includeExampleLabel:(BOOL)includeExampleLabel;
 
 @end
 

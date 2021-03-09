@@ -240,6 +240,11 @@ public class PinSetupViewController: OWSViewController {
         super.viewWillAppear(animated)
         shouldIgnoreKeyboardChanges = false
 
+        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = backgroundColor
+            navigationBar.switchToStyle(.solid, animated: true)
+        }
+
         // Hide the nav bar when not changing.
         navigationController?.setNavigationBarHidden(!initialMode.isChanging, animated: false)
         title = titleText
@@ -269,9 +274,17 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.becomeFirstResponder()
     }
 
+    private var backgroundColor: UIColor {
+        presentingViewController == nil ? Theme.backgroundColor : Theme.tableView2PresentedBackgroundColor
+    }
+
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         shouldIgnoreKeyboardChanges = true
+
+        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.switchToStyle(.default, animated: true)
+        }
 
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
@@ -283,7 +296,7 @@ public class PinSetupViewController: OWSViewController {
     override public func loadView() {
         owsAssertDebug(navigationController != nil, "This view should always be presented in a nav controller")
         view = UIView()
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = backgroundColor
 
         view.addSubview(backButton)
         backButton.autoPinEdge(toSuperviewSafeArea: .top)
