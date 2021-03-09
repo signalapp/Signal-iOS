@@ -33,6 +33,28 @@ public class FindByPhoneNumberViewController: OWSViewController {
         super.init()
     }
 
+    var backgroundColor: UIColor {
+        presentingViewController == nil ? Theme.backgroundColor : Theme.tableView2PresentedBackgroundColor
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = backgroundColor
+            navigationBar.switchToStyle(.solid, animated: true)
+        }
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = nil
+            navigationBar.switchToStyle(.default, animated: true)
+        }
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -144,10 +166,14 @@ public class FindByPhoneNumberViewController: OWSViewController {
     }
 
     private func applyTheme() {
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = backgroundColor
         countryRowTitleLabel.textColor = Theme.primaryTextColor
         phoneNumberRowTitleLabel.textColor = Theme.primaryTextColor
         exampleLabel.textColor = Theme.secondaryTextAndIconColor
+
+        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
+            navigationBar.navbarBackgroundColorOverride = backgroundColor
+        }
     }
 
     func updateButtonState() {

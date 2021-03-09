@@ -21,7 +21,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     private var modalPresentationViewController: UIViewController?
 
     private var channel: Channel?
-    private var isModal: Bool = false
 
     @objc
     public required init(presentingViewController: UIViewController) {
@@ -36,15 +35,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: -
 
-    @objc @available(swift, obsoleted: 1.0)
-    public func present(isAnimated: Bool, completion: (() -> Void)?) {
-        present(isAnimated: isAnimated, completion: completion)
-    }
-
     @objc
-    public func present(isAnimated: Bool, isModal: Bool = false, completion: (() -> Void)?) {
-        self.isModal = isModal
-
+    public func present(isAnimated: Bool, completion: (() -> Void)?) {
         let actions = [messageAction(), mailAction(), tweetAction()].compactMap { $0 }
         if actions.count > 1 {
             let actionSheetController = ActionSheetController(title: nil, message: nil)
@@ -63,44 +55,18 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     }
 
     func presentViewController(_ vc: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        if isModal {
-            let navController = UINavigationController(rootViewController: vc)
-            presentingViewController?.presentFormSheet(navController, animated: true)
-            modalPresentationViewController = navController
-        } else {
-            guard let presentingViewController = presentingViewController,
-                  let presentingNavController = presentingViewController.navigationController else {
-                return owsFailDebug("presenting view controller missing")
-            }
-
-            presentingNavController.pushViewController(vc, animated: animated, completion: completion)
-        }
+        let navController = OWSNavigationController(rootViewController: vc)
+        presentingViewController?.presentFormSheet(navController, animated: true)
+        modalPresentationViewController = navController
     }
 
     func popToPresentingViewController(animated: Bool, completion: (() -> Void)? = nil) {
-        if isModal {
-            guard let modalVC = modalPresentationViewController else {
-                owsFailDebug("Missing modal view controller")
-                return
-            }
-            modalVC.dismiss(animated: true, completion: completion)
-            self.modalPresentationViewController = nil
-
-        } else {
-            guard var presentingViewController = presentingViewController,
-                  let presentingNavController = presentingViewController.navigationController else {
-                return owsFailDebug("presenting view controller missing")
-            }
-
-            // The presenting view contrtoller may not directly be in the nav stack
-            // (like with the compose flow). So make sure we referenve the top view
-            // controller.
-            if let parentViewController = presentingViewController.parent, parentViewController != presentingNavController {
-                presentingViewController = parentViewController
-            }
-
-            presentingNavController.popToViewController(presentingViewController, animated: animated, completion: completion)
+        guard let modalVC = modalPresentationViewController else {
+            owsFailDebug("Missing modal view controller")
+            return
         }
+        modalVC.dismiss(animated: true, completion: completion)
+        self.modalPresentationViewController = nil
     }
 
     // MARK: Twitter
