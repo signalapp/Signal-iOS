@@ -87,7 +87,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = ProfileNameViewController(givenName: self.givenName, familyName: self.familyName, profileDelegate: self)
-                self.present(OWSNavigationController(rootViewController: vc), animated: true)
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
         if RemoteConfig.usernames {
@@ -100,7 +100,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username"),
                 actionBlock: { [weak self] in
                     let vc = UsernameViewController(username: self?.username)
-                    self?.present(OWSNavigationController(rootViewController: vc), animated: true)
+                    self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
             ))
         }
@@ -114,7 +114,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = ProfileBioViewController(bio: self.bio, bioEmoji: self.bioEmoji, profileDelegate: self)
-                self.present(OWSNavigationController(rootViewController: vc), animated: true)
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
         contents.addSection(mainSection)

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "delete-account-dark.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

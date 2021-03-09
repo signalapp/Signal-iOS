@@ -270,7 +270,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
         self.callingCode = callingCode
         let labelFormat = CurrentAppContext().isRTL ? "(%2$@) %1$@" : "%1$@ (%2$@)"
         countryCodeLabel.text = String(format: labelFormat, callingCode, countryCode.localizedUppercase)
-        exampleLabel.text = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode)
+        exampleLabel.text = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode, includeExampleLabel: true)
     }
 }
 

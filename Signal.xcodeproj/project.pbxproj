@@ -751,6 +751,7 @@
 		887B380F25F056FD00685845 /* NotificationSettingsSoundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380E25F056FD00685845 /* NotificationSettingsSoundViewController.swift */; };
 		887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B381025F05F3100685845 /* PrivacySettingsViewController.swift */; };
 		887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */; };
+		887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B6DC825F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift */; };
 		887C6A7824DBB16E00141B64 /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
@@ -1827,6 +1828,7 @@
 		887B381025F05F3100685845 /* PrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		887B6B2324895F1F0075EBC7 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887B6DC825F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountConfirmationViewController.swift; sourceTree = "<group>"; };
 		887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
@@ -2277,34 +2279,18 @@
 			isa = PBXGroup;
 			children = (
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
-				88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */,
-				88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */,
-				8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */,
-				8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */,
-				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
-				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
+				887B6DCA25F6C3F500E677D4 /* Account */,
+				887B6DCB25F6C40500E677D4 /* Appearance */,
 				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
-				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
-				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
-				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
-				340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */,
-				344A761024B366F4009D69A5 /* FlagsViewController.swift */,
+				887B6DCC25F6C41500E677D4 /* Data Usage */,
 				32ECD08624BFBF5C00EDDED0 /* Help */,
-				8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */,
-				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
-				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
+				887B6DCE25F6C45B00E677D4 /* Internal */,
+				887B6DCD25F6C44800E677D4 /* Linked Devices */,
 				887B380B25F042A300685845 /* Notifications */,
 				340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */,
 				340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */,
-				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
-				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
-				340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */,
-				340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */,
-				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
-				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 				887B381425F0681B00685845 /* Privacy */,
 				8871B16D25F007CE00D4E070 /* Profile */,
-				344A761224B36C8C009D69A5 /* TestingViewController.swift */,
 			);
 			path = AppSettings;
 			sourceTree = "<group>";
@@ -3564,8 +3550,65 @@
 			children = (
 				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
 				887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */,
+				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
+				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
+				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
+				340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */,
+				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
+				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 			);
 			path = Privacy;
+			sourceTree = "<group>";
+		};
+		887B6DCA25F6C3F500E677D4 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */,
+				88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */,
+				887B6DC825F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		887B6DCB25F6C40500E677D4 /* Appearance */ = {
+			isa = PBXGroup;
+			children = (
+				8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */,
+				8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */,
+			);
+			path = Appearance;
+			sourceTree = "<group>";
+		};
+		887B6DCC25F6C41500E677D4 /* Data Usage */ = {
+			isa = PBXGroup;
+			children = (
+				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
+				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
+				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
+			);
+			path = "Data Usage";
+			sourceTree = "<group>";
+		};
+		887B6DCD25F6C44800E677D4 /* Linked Devices */ = {
+			isa = PBXGroup;
+			children = (
+				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
+				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
+				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
+				340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */,
+				340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */,
+			);
+			path = "Linked Devices";
+			sourceTree = "<group>";
+		};
+		887B6DCE25F6C45B00E677D4 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				344A761024B366F4009D69A5 /* FlagsViewController.swift */,
+				8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */,
+				344A761224B36C8C009D69A5 /* TestingViewController.swift */,
+			);
+			path = Internal;
 			sourceTree = "<group>";
 		};
 		888B6D4325B2223200E2A662 /* Wallpapers */ = {
@@ -5325,6 +5368,7 @@
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
+				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,

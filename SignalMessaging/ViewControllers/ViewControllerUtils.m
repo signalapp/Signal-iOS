@@ -176,7 +176,9 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
 }
 
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode
++ (nullable NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
+                                            callingCode:(NSString *)callingCode
+                                    includeExampleLabel:(BOOL)includeExampleLabel
 {
     OWSAssertDebug(countryCode.length > 0);
     OWSAssertDebug(callingCode.length > 0);
@@ -191,13 +193,17 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
             examplePhoneNumber = formattedPhoneNumber;
         }
 
-        return [NSString
-            stringWithFormat:
-                NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
-                    @"A format for a label showing an example phone number. Embeds {{the example phone number}}."),
-            [examplePhoneNumber substringFromIndex:callingCode.length]];
+        if (includeExampleLabel) {
+            return [NSString
+                stringWithFormat:
+                    NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
+                        @"A format for a label showing an example phone number. Embeds {{the example phone number}}."),
+                [examplePhoneNumber substringFromIndex:callingCode.length]];
+        } else {
+            return [examplePhoneNumber substringFromIndex:callingCode.length];
+        }
     } else {
-        return @"";
+        return nil;
     }
 }
 
