@@ -60,7 +60,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     var avatarView: UIImageView?
-    let disappearingMessagesDurationLabel = UILabel()
 
     // This is currently disabled behind a feature flag.
     private var colorPicker: ColorPicker?
@@ -125,10 +124,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         return thread.isGroupThread
     }
 
-    var disappearingMessagesDurations: [NSNumber] {
-        return OWSDisappearingMessagesConfiguration.validDurationsSeconds()
-    }
-
     // MARK: - View Lifecycle
 
     @objc
@@ -151,8 +146,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         let backgroundTopSize: CGFloat = 300
         backgroundTopView.autoSetDimension(.height, toSize: backgroundTopSize)
         backgroundTopView.autoPinEdge(.bottom, to: .top, of: tableView, withOffset: 0)
-
-        disappearingMessagesDurationLabel.setAccessibilityIdentifier(in: self, name: "disappearingMessagesDurationLabel")
 
         if DebugFlags.shouldShowColorPicker {
             let colorPicker = ColorPicker(thread: self.thread)
@@ -751,15 +744,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    func disappearingMessagesSwitchValueDidChange(_ sender: UISwitch) {
-        assert(canEditConversationAttributes)
-
-        toggleDisappearingMessages(sender.isOn)
-
-        updateTableContents()
-    }
-
     func didTapUnblockGroup() {
         let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
         if !isCurrentlyBlocked {
@@ -780,50 +764,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
             self?.updateTableContents()
         }
-    }
-
-    private func toggleDisappearingMessages(_ flag: Bool) {
-        assert(canEditConversationAttributes)
-
-        self.disappearingMessagesConfiguration = self.disappearingMessagesConfiguration.copy(withIsEnabled: flag)
-
-        updateTableContents()
-    }
-
-    @objc
-    func durationSliderDidChange(_ slider: UISlider) {
-        assert(canEditConversationAttributes)
-
-        let values = self.disappearingMessagesDurations.map { $0.uint32Value }
-        let maxValue = values.count - 1
-        let index = Int(slider.value + 0.5).clamp(0, maxValue)
-        if !slider.isTracking {
-            // Snap the slider to a valid value unless the user
-            // is still interacting with the control.
-            slider.setValue(Float(index), animated: true)
-        }
-        guard let durationSeconds = values[safe: index] else {
-            owsFailDebug("Invalid index: \(index)")
-            return
-        }
-        self.disappearingMessagesConfiguration =
-            self.disappearingMessagesConfiguration.copyAsEnabled(withDurationSeconds: durationSeconds)
-
-        updateDisappearingMessagesDurationLabel()
-    }
-
-    func updateDisappearingMessagesDurationLabel() {
-        if disappearingMessagesConfiguration.isEnabled {
-            let keepForFormat = NSLocalizedString("KEEP_MESSAGES_DURATION",
-                                                  comment: "Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples.")
-            disappearingMessagesDurationLabel.text = String(format: keepForFormat, disappearingMessagesConfiguration.durationString)
-        } else {
-            disappearingMessagesDurationLabel.text
-                = NSLocalizedString("KEEP_MESSAGES_FOREVER", comment: "Slider label when disappearing messages is off")
-        }
-
-        disappearingMessagesDurationLabel.setNeedsLayout()
-        disappearingMessagesDurationLabel.superview?.setNeedsLayout()
     }
 
     func showMuteUnmuteActionSheet() {

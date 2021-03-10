@@ -253,99 +253,36 @@ extension ConversationSettingsViewController {
     private func buildDisappearingMessagesSection(to section: OWSTableSection) {
 
         let canEditConversationAttributes = self.canEditConversationAttributes
+        let disappearingMessagesConfiguration = self.disappearingMessagesConfiguration
 
-        let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration = self.disappearingMessagesConfiguration
-        let switchAction = #selector(disappearingMessagesSwitchValueDidChange)
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            let cell = OWSTableItem.newCell()
-            cell.preservesSuperviewLayoutMargins = true
-            cell.contentView.preservesSuperviewLayoutMargins = true
-            cell.selectionStyle = .none
-
-            let icon: ThemeIcon = (disappearingMessagesConfiguration.isEnabled
-                ? .settingsTimer
-                : .settingsTimerDisabled)
-            let iconView = OWSTableItem.imageView(forIcon: icon)
-
-            let rowLabel = UILabel()
-            rowLabel.text = NSLocalizedString(
-                "DISAPPEARING_MESSAGES", comment: "table cell label in conversation settings")
-            rowLabel.textColor = Theme.primaryTextColor
-            rowLabel.font = OWSTableItem.primaryLabelFont
-            rowLabel.lineBreakMode = .byTruncatingTail
-
-            let switchView = UISwitch()
-            switchView.isOn = disappearingMessagesConfiguration.isEnabled
-            switchView.addTarget(self, action: switchAction, for: .valueChanged)
-            switchView.isEnabled = canEditConversationAttributes
-
-            let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel, switchView ])
-            topRow.spacing = self.iconSpacingLarge
-            topRow.alignment = .center
-            cell.contentView.addSubview(topRow)
-            topRow.autoPinEdgesToSuperviewMargins()
-
-            switchView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages_switch")
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
-
-            return cell
-            },
-                                 actionBlock: nil))
-
-        if disappearingMessagesConfiguration.isEnabled {
-            let sliderAction = #selector(durationSliderDidChange)
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-                let cell = OWSTableItem.newCell()
-                cell.preservesSuperviewLayoutMargins = true
-                cell.contentView.preservesSuperviewLayoutMargins = true
-                cell.selectionStyle = .none
-
-                let iconView = OWSTableItem.imageView(forIcon: .settingsTimer)
-                let rowLabel = self.disappearingMessagesDurationLabel
-                self.updateDisappearingMessagesDurationLabel()
-                rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = OWSTableItem.primaryLabelFont
-                // don't truncate useful duration info which is in the tail
-                rowLabel.lineBreakMode = .byTruncatingTail
-
-                let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-                topRow.spacing = self.iconSpacingLarge
-                topRow.alignment = .center
-                cell.contentView.addSubview(topRow)
-                topRow.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-
-                let slider = UISlider()
-                slider.maximumValue
-                    = Float(self.disappearingMessagesDurations.count - 1)
-                slider.minimumValue = 0
-                slider.isContinuous = true // NO fires change event only once you let go
-                slider.value = Float(self.disappearingMessagesConfiguration.durationIndex)
-                slider.addTarget(self, action: sliderAction, for: .valueChanged)
-                cell.contentView.addSubview(slider)
-                slider.autoPinEdge(.top, to: .bottom, of: topRow, withOffset: 6)
-                slider.autoPinEdge(.leading, to: .leading, of: rowLabel)
-                slider.autoPinTrailingToSuperviewMargin()
-                slider.autoPinBottomToSuperviewMargin()
-                slider.isEnabled = canEditConversationAttributes
-
-                slider.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages_slider")
-                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages_duration")
-
+        section.add(.init(
+            customCellBlock: {
+                let cell = OWSTableItem.buildIconNameCell(
+                    icon: disappearingMessagesConfiguration.isEnabled
+                        ? .settingsTimer
+                        : .settingsTimerDisabled,
+                    itemName: NSLocalizedString(
+                        "DISAPPEARING_MESSAGES",
+                        comment: "table cell label in conversation settings"
+                    ),
+                    accessoryText: disappearingMessagesConfiguration.isEnabled
+                        ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                        : CommonStrings.switchOff,
+                    accessoryType: .disclosureIndicator,
+                    accessoryImage: nil,
+                    customColor: canEditConversationAttributes ? nil : Theme.secondaryTextAndIconColor,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
+                )
+                cell.isUserInteractionEnabled = canEditConversationAttributes
                 return cell
-                },
-                                     actionBlock: nil))
-        }
-
-        section.footerTitle = NSLocalizedString(
-            "DISAPPEARING_MESSAGES_DESCRIPTION", comment: "subheading in conversation settings")
+            }, actionBlock: { [weak self] in
+                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration) { configuration in
+                    self?.disappearingMessagesConfiguration = configuration
+                    self?.updateTableContents()
+                }
+                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            }
+        ))
     }
 
     private func addColorPickerItems(to section: OWSTableSection) {

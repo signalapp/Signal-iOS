@@ -117,11 +117,6 @@ public class OWSNavigationBar: UINavigationBar {
                 self.setBackgroundImage(backgroundImage, for: .default)
             }
         }
-
-        // We always want to treat the bar as translucent, regardless of
-        // whether the background image is actually translucent. Otherwise,
-        // it messes weirdly with safe area insets.
-        self.isTranslucent = true
     }
 
     @objc
