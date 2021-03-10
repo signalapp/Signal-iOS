@@ -801,6 +801,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         if tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top {
             navigationBar.switchToStyle(.solid, animated: true)
+
+            // We always want to treat the bar as translucent, regardless of
+            // whether the background image is actually translucent. Otherwise,
+            // it messes weirdly with safe area insets.
+            navigationBar.isTranslucent = true
         } else {
             navigationBar.switchToStyle(.default, animated: true)
         }

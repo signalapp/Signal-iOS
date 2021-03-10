@@ -15,9 +15,8 @@ public extension OWSTableItem {
         return UIFont.ows_dynamicTypeBodyClamped
     }
 
-    static var iconSpacing: CGFloat {
-        return 16
-    }
+    static var iconSpacing: CGFloat { 16 }
+    static var iconSize: CGFloat { 24 }
 
     static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
         return buildCell(name: name, iconView: iconView, iconSpacing: self.iconSpacing)
@@ -47,7 +46,7 @@ public extension OWSTableItem {
 
     static func imageView(forIcon icon: ThemeIcon,
                           tintColor: UIColor? = nil,
-                          iconSize: CGFloat = 24) -> UIImageView {
+                          iconSize: CGFloat = iconSize) -> UIImageView {
         let iconImage = Theme.iconImage(icon)
         let iconView = UIImageView(image: iconImage)
         iconView.tintColor = tintColor ?? Theme.primaryIconColor
@@ -194,15 +193,12 @@ public extension OWSTableItem {
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
 
-        var arrangedSubviews = [UIView]()
+        var subviews = [UIView]()
 
         if let icon = icon {
-            let iconView = self.imageView(forIcon: icon, tintColor: tintColor)
+            let iconView = self.imageView(forIcon: icon, tintColor: customColor ?? tintColor, iconSize: iconSize)
             iconView.setCompressionResistanceHorizontalHigh()
-            arrangedSubviews.append(iconView)
-            if let customColor = customColor {
-                iconView.tintColor = customColor
-            }
+            subviews.append(iconView)
         }
 
         let nameLabel = UILabel()
@@ -214,11 +210,25 @@ public extension OWSTableItem {
         }
         nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.adjustsFontForContentSizeCategory = true
-        nameLabel.lineBreakMode = .byTruncatingTail
-        nameLabel.setCompressionResistanceHorizontalHigh()
-        nameLabel.setContentHuggingHorizontalHigh()
-        nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
-        arrangedSubviews.append(nameLabel)
+
+        // Having two side-by-side multi-line labels makes
+        // autolayout *really* confused because it doesn't
+        // seem to know which height to respect (if they are
+        // of different intrinsic height). It leads to lots of
+        // very strange indeterminant behavior. To work around,
+        // we only allow the longer of the two labels to be
+        // multi-line.
+        if itemName.count >= (accessoryText ?? "").count {
+            nameLabel.numberOfLines = 0
+            nameLabel.lineBreakMode = .byWordWrapping
+        } else {
+            nameLabel.numberOfLines = 1
+            nameLabel.lineBreakMode = .byTruncatingTail
+        }
+
+        nameLabel.setContentHuggingLow()
+        nameLabel.setCompressionResistanceHigh()
+        subviews.append(nameLabel)
         if let customColor = customColor {
             nameLabel.textColor = customColor
         }
@@ -229,17 +239,29 @@ public extension OWSTableItem {
             accessoryLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true
-            accessoryLabel.lineBreakMode = .byTruncatingTail
-            accessoryLabel.setCompressionResistanceHorizontalHigh()
+
+            if itemName.count >= accessoryText.count {
+                accessoryLabel.numberOfLines = 1
+                accessoryLabel.lineBreakMode = .byTruncatingTail
+            } else {
+                accessoryLabel.numberOfLines = 0
+                accessoryLabel.lineBreakMode = .byWordWrapping
+            }
+
+            accessoryLabel.setCompressionResistanceHigh()
             accessoryLabel.setContentHuggingHorizontalHigh()
-            arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]
+            accessoryLabel.setContentHuggingVerticalLow()
+            subviews.append(accessoryLabel)
         }
 
-        let contentRow = UIStackView(arrangedSubviews: arrangedSubviews)
-        contentRow.spacing = self.iconSpacing
+        let contentRow = UIStackView(arrangedSubviews: subviews)
         contentRow.alignment = .center
+        contentRow.spacing = self.iconSpacing
         cell.contentView.addSubview(contentRow)
+
+        contentRow.setContentHuggingHigh()
         contentRow.autoPinEdgesToSuperviewMargins()
+        contentRow.autoSetDimension(.height, toSize: iconSize, relation: .greaterThanOrEqual)
 
         cell.accessibilityIdentifier = accessibilityIdentifier
 
@@ -291,12 +313,7 @@ public extension OWSTableItem {
         } else {
             innerIconSize = CGFloat(iconSize) * 0.6
         }
-        let iconView = OWSTableItem.imageView(forIcon: icon, iconSize: innerIconSize)
-        if let iconTintColor = iconTintColor {
-            iconView.tintColor = iconTintColor
-        } else {
-            iconView.tintColor = Theme.accentBlueColor
-        }
+        let iconView = OWSTableItem.imageView(forIcon: icon, tintColor: iconTintColor ?? Theme.accentBlueColor, iconSize: innerIconSize)
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)
         iconView.autoCenterInSuperview()
