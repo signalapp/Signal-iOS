@@ -361,12 +361,21 @@ class MobileCoinAPI {
     class func buildAccountKey(forRootEntropy rootEntropy: Data,
                                networkConfig: MobileCoinNetworkConfig) throws -> MobileCoin.AccountKey {
         // Payments TODO:
-        let fogAuthorityFingerprint = Data()
+        //
+        // TODO: This is the value for alpha net.
+        let fogAuthoritySpki = Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
         let fogReportId = ""
-        return try MobileCoin.AccountKey(rootEntropy: rootEntropy,
-                                         fogReportUrl: networkConfig.fogReportUrl,
-                                         fogAuthorityFingerprint: fogAuthorityFingerprint,
-                                         fogReportId: fogReportId)
+        let result = MobileCoin.AccountKey.make(rootEntropy: rootEntropy,
+                                                fogReportUrl: networkConfig.fogReportUrl,
+                                                fogAuthoritySpki: fogAuthoritySpki,
+                                                fogReportId: fogReportId)
+        switch result {
+        case .success(let accountKey):
+            return accountKey
+        case .failure(let error):
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
     }
 
     class func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool {
