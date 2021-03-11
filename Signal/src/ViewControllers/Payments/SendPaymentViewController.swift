@@ -90,7 +90,7 @@ public class SendPaymentViewController: OWSViewController {
                 owsAssertDebug(paymentRequestModel.paymentAmount.currency == .mobileCoin)
 
                 if let requestAmountString = PaymentsImpl.formatAsDoubleString(picoMob: paymentRequestModel.paymentAmount.picoMob) {
-                    let inputString = InputString.forString(requestAmountString, isFiat: false)
+                    let inputString = InputString.parseString(requestAmountString, isFiat: false)
                     amounts.set(currentAmount: .mobileCoin(inputString: inputString,
                                                            exactAmount: nil),
                                 otherCurrencyAmount: nil)
@@ -104,7 +104,7 @@ public class SendPaymentViewController: OWSViewController {
             owsAssertDebug(initialPaymentAmount.currency == .mobileCoin)
 
             if let amountString = PaymentsImpl.formatAsDoubleString(picoMob: initialPaymentAmount.picoMob) {
-                let inputString = InputString.forString(amountString, isFiat: false)
+                let inputString = InputString.parseString(amountString, isFiat: false)
                 amounts.set(currentAmount: .mobileCoin(inputString: inputString,
                                                        exactAmount: initialPaymentAmount),
                             otherCurrencyAmount: nil)
@@ -349,8 +349,8 @@ public class SendPaymentViewController: OWSViewController {
                 button.autoSetDimension(.height, toSize: buttonSize)
 
                 let downStateColor = (Theme.isDarkThemeEnabled
-                                            ? UIColor.ows_gray90
-                                            : UIColor.ows_gray02)
+                                        ? UIColor.ows_gray90
+                                        : UIColor.ows_gray02)
                 let downStateImage = UIImage(color: downStateColor,
                                              size: CGSize(width: 1, height: 1))
                 button.setBackgroundImage(downStateImage, for: .highlighted)
@@ -488,7 +488,7 @@ public class SendPaymentViewController: OWSViewController {
             smallAmountLabel.textColor = UIColor.ows_accentRed
         }
 
-        bigAmountLabel.attributedText = amount.formatForDisplayAttributed(withSpace: false)
+        bigAmountLabel.attributedText = amount.formatAsKeyboardInputAttributed(withSpace: false)
 
         switch amount {
         case .mobileCoin:
@@ -571,7 +571,7 @@ public class SendPaymentViewController: OWSViewController {
                 Logger.verbose("fiatCurrencyAmount: \(fiatCurrencyAmount)")
                 Logger.verbose("fiatString: \(fiatString)")
                 Logger.flush()
-                amounts.set(currentAmount: .fiatCurrency(inputString: InputString.forString(fiatString, isFiat: true),
+                amounts.set(currentAmount: .fiatCurrency(inputString: InputString.parseString(fiatString, isFiat: true),
                                                          currencyConversion: currencyConversion),
                             otherCurrencyAmount: self.amount)
             } else {
@@ -582,8 +582,8 @@ public class SendPaymentViewController: OWSViewController {
             let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
             if let mobString = PaymentsImpl.formatAsDoubleString(picoMob: paymentAmount.picoMob) {
                 // Store the otherCurrencyAmount.
-                amounts.set(currentAmount: .mobileCoin(inputString: InputString.forString(mobString,
-                                                                                          isFiat: false),
+                amounts.set(currentAmount: .mobileCoin(inputString: InputString.parseString(mobString,
+                                                                                            isFiat: false),
                                                        exactAmount: nil),
                             otherCurrencyAmount: self.amount)
             } else {
@@ -883,18 +883,22 @@ private enum Amount {
         switch self {
         case .mobileCoin:
             guard let mobString = PaymentsImpl.format(mob: asDouble) else {
-                owsFailDebug("Couldn't format MOB string: \(inputString.asString)")
-                return inputString.asString
+                owsFailDebug("Couldn't format MOB string: \(inputString.asString(formatMode: .parsing))")
+                return inputString.asString(formatMode: .display)
             }
             return mobString
         case .fiatCurrency:
             guard let fiatString = PaymentsImpl.format(fiatCurrencyAmount: asDouble,
                                                        minimumFractionDigits: 0) else {
-                owsFailDebug("Couldn't format fiat string: \(inputString.asString)")
-                return inputString.asString
+                owsFailDebug("Couldn't format fiat string: \(inputString.asString(formatMode: .parsing))")
+                return inputString.asString(formatMode: .display)
             }
             return fiatString
         }
+    }
+
+    var formatAsKeyboardInput: String {
+        inputString.formatAsKeyboardInput
     }
 
     func formatForDisplayAttributed(withSpace: Bool) -> NSAttributedString {
@@ -904,6 +908,18 @@ private enum Amount {
                                                  withSpace: withSpace)
         case .fiatCurrency(_, let currencyConversion):
             return PaymentsImpl.attributedFormat(currencyString: formatForDisplay,
+                                                 currencyCode: currencyConversion.currencyCode,
+                                                 withSpace: withSpace)
+        }
+    }
+
+    func formatAsKeyboardInputAttributed(withSpace: Bool) -> NSAttributedString {
+        switch self {
+        case .mobileCoin:
+            return PaymentsImpl.attributedFormat(mobileCoinString: formatAsKeyboardInput,
+                                                 withSpace: withSpace)
+        case .fiatCurrency(_, let currencyConversion):
+            return PaymentsImpl.attributedFormat(currencyString: formatAsKeyboardInput,
                                                  currencyCode: currencyConversion.currencyCode,
                                                  withSpace: withSpace)
         }
@@ -960,16 +976,28 @@ extension SendPaymentViewController: AmountsDelegate {
 
 // MARK: -
 
+private enum FormatMode {
+    case display
+    case parsing
+}
+
+// MARK: -
+
 private enum InputChar: Equatable {
     case digit(digit: String)
     case decimal
 
-    var asString: String {
+    func asString(formatMode: FormatMode) -> String {
         switch self {
         case .digit(let digit):
             return digit
         case .decimal:
-            return "."
+            switch formatMode {
+            case .display:
+                return PaymentsConstants.decimalSeparator
+            case .parsing:
+                return "."
+            }
         }
     }
 
@@ -994,14 +1022,14 @@ private struct InputString: Equatable {
             owsFailDebug("Couldn't format double: \(value)")
             return Self.defaultString(isFiat: isFiat)
         }
-        return forString(stringValue, isFiat: isFiat)
+        return parseString(stringValue, isFiat: isFiat)
     }
 
-    static func forString(_ stringValue: String, isFiat: Bool) -> InputString {
+    static func parseString(_ stringValue: String, isFiat: Bool) -> InputString {
         var result = InputString.defaultString(isFiat: isFiat)
         for char in stringValue {
             let charString = String(char)
-            if charString == InputChar.decimal.asString {
+            if charString == InputChar.decimal.asString(formatMode: .parsing) {
                 result = result.append(InputChar.decimal)
             } else if InputChar.isDigit(charString) {
                 result = result.append(InputChar.digit(digit: charString))
@@ -1039,10 +1067,10 @@ private struct InputString: Equatable {
                 }
             }
         }()
-        Logger.info("Before: \(self.asString), \(self.digitCountBeforeDecimal), \(self.digitCountAfterDecimal), \(result.asDouble)")
-        Logger.info("Considering: \(result.asString), \(result.digitCountBeforeDecimal), \(result.digitCountAfterDecimal), \(result.asDouble)")
+        Logger.info("Before: \(self.asCharString) -> \(self.asString(formatMode: .parsing)), \(self.digitCountBeforeDecimal), \(self.digitCountAfterDecimal), \(result.asDouble)")
+        Logger.info("Considering: \(result.asCharString) -> \(result.asString(formatMode: .parsing)), \(result.digitCountBeforeDecimal), \(result.digitCountAfterDecimal), \(result.asDouble)")
         guard result.isValid else {
-            Logger.warn("Invalid result: \(self.asString) -> \(result.asString)")
+            Logger.warn("Invalid result: \(self.asString(formatMode: .parsing)) -> \(result.asString(formatMode: .parsing))")
             return self
         }
         return result
@@ -1081,12 +1109,12 @@ private struct InputString: Equatable {
         Self.maxDigitsAfterDecimal(isFiat: isFiat)
     }
 
-    var digitCountBeforeDecimal: UInt {
-        var result: UInt = 0
+    var digitsBeforeDecimal: [String] {
+        var result = [String]()
         for char in chars {
             switch char {
-            case .digit:
-                result += 1
+            case .digit(let digit):
+                result.append(digit)
             case .decimal:
                 return result
             }
@@ -1094,14 +1122,18 @@ private struct InputString: Equatable {
         return result
     }
 
-    var digitCountAfterDecimal: UInt {
-        var result: UInt = 0
+    var digitCountBeforeDecimal: Int {
+        digitsBeforeDecimal.count
+    }
+
+    var digitsAfterDecimal: [String] {
+        var result = [String]()
         var hasPassedDecimal = false
         for char in chars {
             switch char {
-            case .digit:
+            case .digit(let digit):
                 if hasPassedDecimal {
-                    result += 1
+                    result.append(digit)
                 }
             case .decimal:
                 hasPassedDecimal = true
@@ -1110,25 +1142,74 @@ private struct InputString: Equatable {
         return result
     }
 
+    var digitCountAfterDecimal: Int {
+        digitsAfterDecimal.count
+    }
+
     var hasDecimal: Bool {
         !Array(chars.filter { $0 == .decimal }).isEmpty
     }
 
-    var asString: String {
-        chars.map { $0.asString }.joined()
+    func asString(formatMode: FormatMode) -> String {
+        chars.map { $0.asString(formatMode: formatMode) }.joined()
+    }
+
+    var asCharString: String {
+        "[" + chars.map { $0.asString(formatMode: .parsing) }.joined(separator: ", ") + "]"
     }
 
     var asDouble: Double {
-        Self.parseAsDouble(asString)
+        Self.parseAsDouble(asString(formatMode: .parsing))
     }
 
     private static func parseAsDouble(_ stringValue: String) -> Double {
         guard let value = Double(stringValue.ows_stripped()) else {
-            // inputString should be parsable at all times.
+            // inputString should be parseable at all times.
+            Logger.verbose("stringValue: \(stringValue)")
             owsFailDebug("Invalid inputString.")
             return 0
         }
         return value
+    }
+
+    // We need to manually format (more or less) the exact input string
+    // when redering the "keyboard input" so that every keystroke of
+    // the custom keyboard updates the "keyboard input" in a WYSIWYG
+    // fashion, e.g. if the user enters "0.0000000", we need to render
+    // the exact number of zeros the user has entered.
+    var formatAsKeyboardInput: String {
+        let groupingSeparator = PaymentsConstants.groupingSeparator
+        let decimalSeparator = PaymentsConstants.decimalSeparator
+        let groupingSize = PaymentsConstants.groupingSize
+
+        func addGroupingSeparators(digits: [String], afterGroupsOfSize groupSize: Int) -> [String] {
+            var result = [String]()
+            for (index, digit) in digits.enumerated() {
+                if index != 0,
+                   index % groupSize == 0 {
+                    result.append(groupingSeparator)
+                }
+                result.append(digit)
+            }
+            return result
+        }
+
+        var formattedChars = [String]()
+
+        // e.g.:
+        //
+        // 1,234,567.890,123,456.
+        // 0.000,000,001
+        formattedChars.append(contentsOf: addGroupingSeparators(digits: digitsBeforeDecimal.reversed(),
+                                                                afterGroupsOfSize: groupingSize).reversed())
+        if hasDecimal {
+            formattedChars.append(decimalSeparator)
+        }
+        formattedChars.append(contentsOf: addGroupingSeparators(digits: digitsAfterDecimal,
+                                                                afterGroupsOfSize: groupingSize))
+
+        let formatted = formattedChars.joined()
+        return formatted
     }
 }
 

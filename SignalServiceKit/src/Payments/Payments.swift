@@ -540,6 +540,56 @@ public class PaymentsConstants {
 
     // TODO: Is this value final?
     public static let passphraseWordCount: Int = 24
+
+    private struct DecimalFormattingInfo {
+        let decimalSeparator: String
+        let groupingSeparator: String
+        let groupingSize: Int
+    }
+
+    private static let decimalFormattingInfo: DecimalFormattingInfo = {
+        let numberFormatter = NumberFormatter()
+        let decimalSeparator = numberFormatter.decimalSeparator ?? ""
+        let groupingSeparator = numberFormatter.groupingSeparator ?? ""
+        let groupingSize = numberFormatter.groupingSize
+
+        // https://en.wikipedia.org/wiki/Decimal_separator
+        let validDecimalSeparators = [",", ".", "'", "·"]
+        let validGroupingSeparators = [",", ".", " ", "'"]
+        let validGroupingSizes = [2, 3, 4]
+        guard validDecimalSeparators.contains(decimalSeparator),
+              validGroupingSeparators.contains(groupingSeparator),
+              validGroupingSizes.contains(groupingSize),
+              decimalSeparator != groupingSeparator else {
+
+            if DebugFlags.paymentsInternalBeta {
+                // Fall back to US/UK style formatting.
+                return DecimalFormattingInfo(decimalSeparator: ".",
+                                             groupingSeparator: ",",
+                                             groupingSize: 3)
+            } else {
+                // Fall back to the most common international style formatting.
+                return DecimalFormattingInfo(decimalSeparator: ",",
+                                             groupingSeparator: ".",
+                                             groupingSize: 3)
+            }
+        }
+        return DecimalFormattingInfo(decimalSeparator: decimalSeparator,
+                                     groupingSeparator: groupingSeparator,
+                                     groupingSize: groupingSize)
+    }()
+
+    public static var decimalSeparator: String {
+        decimalFormattingInfo.decimalSeparator
+    }
+
+    public static var groupingSeparator: String {
+        decimalFormattingInfo.groupingSeparator
+    }
+
+    public static var groupingSize: Int {
+        decimalFormattingInfo.groupingSize
+    }
 }
 
 // MARK: -
