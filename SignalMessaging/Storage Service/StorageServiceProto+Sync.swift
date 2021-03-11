@@ -35,6 +35,10 @@ extension StorageServiceProtoContactRecord {
         return .shared()
     }
 
+    var tsAccountManager: TSAccountManager {
+        return .shared()
+    }
+
     // MARK: -
 
     static func build(
@@ -141,13 +145,20 @@ extension StorageServiceProtoContactRecord {
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
-            profileManager.setProfileKeyData(
-                profileKey,
-                for: address,
-                wasLocallyInitiated: false,
-                transaction: transaction
-            )
-
+            if address.isLocalAddress,
+               tsAccountManager.isPrimaryDevice {
+                Logger.info("Not updating local profile key from storage service from contact.")
+            } else {
+                if address.isLocalAddress {
+                    Logger.info("Updating local profile key from storage service from contact.")
+                }
+                profileManager.setProfileKeyData(
+                    profileKey,
+                    for: address,
+                    wasLocallyInitiated: false,
+                    transaction: transaction
+                )
+            }
         // If we have a local profile key for this user but the service doesn't mark it as needing update.
         } else if localProfileKey != nil && !hasProfileKey {
             mergeState = .needsUpdate(recipient.accountId)
@@ -679,6 +690,7 @@ extension StorageServiceProtoAccountRecord {
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
+            Logger.info("Updating local profile key from storage service from AccountRecord.")
             profileManager.setProfileKeyData(
                 profileKey,
                 for: localAddress,

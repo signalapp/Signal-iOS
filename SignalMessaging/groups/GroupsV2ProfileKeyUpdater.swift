@@ -20,27 +20,31 @@ class GroupsV2ProfileKeyUpdater {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return .shared()
+        .shared()
     }
 
     private var databaseStorage: SDSDatabaseStorage {
-        return .shared
+        .shared
     }
 
     private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+        OWSProfileManager.shared()
     }
 
     private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     private var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
+        SSKEnvironment.shared.messageProcessor
     }
 
     private var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
+        SSKEnvironment.shared.reachabilityManager
+    }
+
+    private static var syncManager: SyncManagerProtocol {
+        SSKEnvironment.shared.syncManager
     }
 
     // MARK: -
@@ -110,6 +114,11 @@ class GroupsV2ProfileKeyUpdater {
 
     private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread,
                                                        transaction: SDSAnyWriteTransaction) {
+        guard !CurrentAppContext().isRunningTests,
+              tsAccountManager.isRegisteredAndReady,
+              tsAccountManager.isPrimaryDevice else {
+            return
+        }
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
             return
@@ -137,7 +146,10 @@ class GroupsV2ProfileKeyUpdater {
     private var isUpdating = false
 
     private func tryToUpdateNext(retryDelay: TimeInterval = 1) {
-        guard CurrentAppContext().isMainAppAndActive else {
+        guard CurrentAppContext().isMainAppAndActive,
+              !CurrentAppContext().isRunningTests,
+              tsAccountManager.isRegisteredAndReady,
+              tsAccountManager.isPrimaryDevice else {
             return
         }
         guard reachabilityManager.isReachable else {
@@ -157,7 +169,7 @@ class GroupsV2ProfileKeyUpdater {
 
             self.isUpdating = true
 
-            firstly {
+            firstly(on: .global()) { () -> Promise<Void> in
                 self.tryToUpdate(groupId: groupId)
             }.done(on: .global() ) { _ in
                 Logger.verbose("Updated profile key in group.")
@@ -264,7 +276,7 @@ class GroupsV2ProfileKeyUpdater {
                 }
                 if DebugFlags.internalLogging {
                     for (uuid, profileKey) in groupV2Snapshot.profileKeys {
-                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid)")
+                        Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localUuid)")
                     }
                 }
                 let checkedRevision = groupV2Snapshot.revision
@@ -272,7 +284,7 @@ class GroupsV2ProfileKeyUpdater {
             }
         }.then(on: .global()) { (groupThread: TSGroupThread, checkedRevision: UInt32) throws -> Promise<Void> in
             if DebugFlags.internalLogging {
-                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid)")
+                Logger.info("Updating profile key for group: \(groupThread.groupId.hexadecimalString), profileKey: \(profileKeyData.hexadecimalString), localUuid: \(localUuid), checkedRevision: \(checkedRevision)")
             } else {
                 Logger.info("Updating profile key for group.")
             }

@@ -271,6 +271,14 @@ public extension DebugUIStress {
         }
     }
 
+    class func logMembership(_ groupThread: TSGroupThread) {
+        let groupMembership = groupThread.groupModel.groupMembership
+        let uuids = groupMembership.allMembersOfAnyKind.compactMap { $0.uuid }
+        let phoneNumbers = groupMembership.allMembersOfAnyKind.compactMap { $0.phoneNumber }
+        Logger.info("uuids: \(uuids.map { $0.uuidString }.joined(separator: "\n")).")
+        Logger.info("phoneNumbers: \(phoneNumbers.joined(separator: "\n")).")
+    }
+
     class func deleteOtherProfiles() {
         databaseStorage.write { transaction in
             let profiles = OWSUserProfile.anyFetchAll(transaction: transaction)
