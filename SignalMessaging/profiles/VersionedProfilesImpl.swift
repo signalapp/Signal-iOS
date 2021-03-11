@@ -57,49 +57,23 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
     // MARK: - Update
 
-    @objc
-    public func updateProfileOnService(profileGivenName: String?,
-                                       profileFamilyName: String?,
-                                       profileBio: String?,
-                                       profileBioEmoji: String?,
-                                       profileAvatarData: Data?) {
-        firstly {
-            updateProfilePromise(profileGivenName: profileGivenName,
-                                 profileFamilyName: profileFamilyName,
-                                 profileBio: profileBio,
-                                 profileBioEmoji: profileBioEmoji,
-                                 profileAvatarData: profileAvatarData)
-        }.done { _ in
-            Logger.verbose("success")
-
-            // TODO: This is temporary for testing.
-            let localAddress = TSAccountManager.shared().localAddress!
-            firstly {
-                ProfileFetcherJob.fetchProfilePromise(address: localAddress,
-                                                      mainAppOnly: false,
-                                                      ignoreThrottling: true,
-                                                      fetchType: .versioned)
-            }.done { _ in
-                    Logger.verbose("success")
-            }.catch { error in
-                owsFailDebug("error: \(error)")
-            }
-        }.catch { error in
-            owsFailDebug("error: \(error)")
-        }
-    }
-
     public func updateProfilePromise(profileGivenName: String?,
                                      profileFamilyName: String?,
                                      profileBio: String?,
                                      profileBioEmoji: String?,
-                                     profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
+                                     profileAvatarData: Data?,
+                                     unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
 
         return DispatchQueue.global().async(.promise) {
             guard let localUuid = self.tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
-            let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
+
+            if unsavedRotatedProfileKey != nil {
+                Logger.info("Updating local profile with unsaved rotated profile key")
+            }
+
+            let profileKey: OWSAES256Key = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
             return (localUuid, profileKey)
         }.then(on: DispatchQueue.global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<TSNetworkManager.Response> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)

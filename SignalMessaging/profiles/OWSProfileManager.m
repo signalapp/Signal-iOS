@@ -145,7 +145,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
-            [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
+            [OWSProfileManager updateProfileOnServiceIfNecessary];
         }
     });
 
@@ -506,16 +506,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 - (void)reuploadLocalProfile
 {
-    [self reuploadLocalProfilePromiseObjc].then(^{ OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
+    [self reuploadLocalProfilePromise].then(^{ OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
         OWSFailDebug(@"Error: %@", error);
     });
 }
 
 #pragma mark - Profile Key Rotation
 
-- (nullable NSString *)groupKeyForGroupId:(NSData *)groupId {
-    NSString *groupIdKey = [groupId hexadecimalString];
-    return groupIdKey;
+- (NSString *)groupKeyForGroupId:(NSData *)groupId
+{
+    return [groupId hexadecimalString];
 }
 
 - (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
@@ -647,111 +647,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             // No need to rotate the profile key.
             return success();
         }
+
         [self rotateProfileKeyWithIntersectingPhoneNumbers:intersectingPhoneNumbers
                                          intersectingUUIDs:intersectingUUIDS
-                                      intersectingGroupIds:intersectingGroupIds
-                                                   success:success
-                                                   failure:failure];
-    });
-}
-
-- (void)rotateProfileKeyWithIntersectingPhoneNumbers:(NSSet<NSString *> *)intersectingPhoneNumbers
-                                   intersectingUUIDs:(NSSet<NSString *> *)intersectingUUIDs
-                                intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds
-                                             success:(dispatch_block_t)success
-                                             failure:(ProfileManagerFailureBlock)failure
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // Rotate the profile key
-        OWSLogInfo(@"Rotating the profile key.");
-
-        // Rotate the stored profile key.
-        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                SignalServiceAddress *_Nullable localAddress =
-                    [self.tsAccountManager localAddressWithTransaction:transaction];
-
-                [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                        wasLocallyInitiated:YES
-                                                transaction:transaction
-                                                 completion:^{
-                                                     // The value doesn't matter, we just need any non-NSError value.
-                                                     resolve(@(1));
-                                                 }];
-
-                // Whenever a user's profile key changes, we need to fetch a new
-                // profile key credential for them.
-                [self.versionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
-
-                // We schedule the updates here but process them below using processProfileKeyUpdates.
-                // It's more efficient to process them after the intermediary steps are done.
-                [self.groupsV2 scheduleAllGroupsV2ForProfileKeyUpdateWithTransaction:transaction];
-            });
-        }];
-
-        // Try to re-upload our profile name and avatar, if any.
-        //
-        // This may fail.
-        promise = promise.thenInBackground(^(id value) {
-            return [self reuploadLocalProfilePromiseObjc];
-        });
-
-        promise = promise.thenInBackground(^(id value) {
-            // Remove blocked users and groups from profile whitelist.
-            //
-            // This will always succeed.
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [self.whitelistedPhoneNumbersStore removeValuesForKeys:intersectingPhoneNumbers.allObjects
-                                                           transaction:transaction];
-                [self.whitelistedUUIDsStore removeValuesForKeys:intersectingUUIDs.allObjects transaction:transaction];
-                for (NSData *groupId in intersectingGroupIds) {
-                    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-                    [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:transaction];
-                }
-            });
-            return @(1);
-        });
-
-        // Update account attributes.
-        //
-        // This may fail.
-        promise = promise.thenInBackground(^(id value) {
-            return [self.tsAccountManager updateAccountAttributes];
-        });
-
-        // Fetch local profile.
-        promise = promise.then(^(id value) {
-            [self fetchLocalUsersProfile];
-
-            return @(1);
-        });
-
-        promise = promise.thenInBackground(^(id value) {
-            [self.groupsV2 processProfileKeyUpdates];
-            return @(1);
-        });
-
-        // Sync local profile key.
-        if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-            promise = promise.thenInBackground(^(id value) {
-                return [self.syncManager syncLocalContact];
-            });
-        }
-
-        promise = promise.thenInBackground(^(id value) {
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameProfileKeyDidChange
-                                                                     object:nil
-                                                                   userInfo:nil];
-
-            success();
-        });
-        promise = promise.catch(^(NSError *error) {
-            if ([error isKindOfClass:[NSError class]]) {
-                failure(error);
-            } else {
-                failure(OWSErrorMakeAssertionError(@"Profile key rotation failure missing error."));
-            }
-        });
+                                      intersectingGroupIds:intersectingGroupIds]
+            .then(^{ success(); })
+            .catch(^(NSError *error) { failure(error); });
     });
 }
 
@@ -2063,14 +1964,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     // TODO: Sync if necessary.
 
-    [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
+    [OWSProfileManager updateProfileOnServiceIfNecessary];
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
+    [OWSProfileManager updateProfileOnServiceIfNecessary];
 }
 
 - (void)blockListDidChange:(NSNotification *)notification {

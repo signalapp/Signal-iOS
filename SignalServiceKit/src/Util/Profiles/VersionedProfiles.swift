@@ -49,7 +49,8 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
                               profileFamilyName: String?,
                               profileBio: String?,
                               profileBioEmoji: String?,
-                              profileAvatarData: Data?) -> Promise<VersionedProfileUpdate>
+                              profileAvatarData: Data?,
+                              unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate>
 }
 
 // MARK: -
@@ -73,7 +74,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift {
                                      profileFamilyName: String?,
                                      profileBio: String?,
                                      profileBioEmoji: String?,
-                                     profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
+                                     profileAvatarData: Data?,
+                                     unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
         owsFail("Not implemented.")
     }
 }
