@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada pengaturan iOS untuk melihat siapa saja kontak Anda yang merupakan pengguna Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ini akan mengulang aplikasi dengan cara menghapus pesan-pesan Anda dan membatalkan registrasi Anda ke peladen. Aplikasi akan tertutup setelah proses ini selesai.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Apakah kamu yakin ingin menghapus akun Anda?";
+"CONFIRM_DELETE_DATA_TITLE" = "Anda yakin ingin menghapus semua data?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ini akan mengatur ulang aplikasi dengan cara menghapus seluruh pesan di perangkat Anda. Anda bisa menghubungkan perangkat kembali, tanpa memulihkan pesan yang terhapus. Aplikasi akan ditutup setelah proses ini selesai.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informasi tentang catatan awakutu";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Hapus Akun";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Apakah kamu yakin ingin menghapus akun Anda?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kode Negeri";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Nomor Telefon";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Hapus Akun";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Hapus semua pesan dalam obrolan ini?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Bergabung";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Pesan hilang setelah%@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Pesan tidak hilang.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Lihat Semua Media";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Belum dibaca";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Gagal unregister dari Signal";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Penerima tidak mendukung tipe lampiran.";

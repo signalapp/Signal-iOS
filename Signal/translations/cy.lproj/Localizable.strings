@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Gallwch chi alluogi mynediad i'ch cysylltiadau yn yr app Gosodiadau iOS i weld pa rai ohonynt sy'n ddefnyddwyr Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Bydd hyn yn ail-osod y rhaglen trwy ddileu eich negeseuon a'ch dadgofrestru gyda'r gweinydd. Bydd yr ap yn cau ar ôl i'r broses hon gael ei chwblhau.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Ydych chi'n siŵr eich bod chi am ddileu'ch cyfrif?";
+"CONFIRM_DELETE_DATA_TITLE" = "Ydych chi'n siŵr eich bod chi am ddileu'r holl ddata?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Bydd hyn yn ail-osod y rhaglen trwy ddileu pob un o'ch negeseuon o'r ddyfais hon. Gallwch chi gysylltu â'ch ffôn eto unrhyw amser, ond ni fydd hynny'n adfer negeseuon wedi'u dileu. Bydd yr ap yn cau ar ôl i'r broses hon gael ei chwblhau.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Gwyboadaeth am y cofnod dadfygio";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Dileu Cyfrif";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Ydych chi'n siŵr eich bod chi am ddileu'ch cyfrif?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Côd Gwlad";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Rhif Ffôn";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Dileu Cyfrif";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Dileu pob neges yn y sgwrs hon?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Ymuno";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Bydd y negeseuon yn diflannu ar ôl %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Na fydd negeseuon yn diflannu.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Mynd i Holl Gyfryngau";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Dad-ddarllen";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Methwyd dadgofrestri o Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Derbyniwyd atodaid o fath na chefnogir.";

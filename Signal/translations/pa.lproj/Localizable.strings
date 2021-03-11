@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "ਤੁਹਾਡੇ ਕਿਹੜੇ ਸੰਪਰਕ Signal ਦੇ ਉਪਭੋਗਤਾ ਹਨ, ਇਹ ਦੇਖਣ ਲਈ ਤੁਸੀਂ iOS ਸੈਟਿੰਗ ਐਪ ਵਿੱਚ ਸੰਪਰਕਾਂ ਤਾਈਂ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਮਿਟਾ ਕੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸਰਵਲ ਨਾਲੋਂ ਅਨਰਜਿਸਟਰਡ ਕਰਕੇ ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ. ਇਹ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਐਪ ਬੰਦ ਹੋ ਜਾਵੇਗੀ.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਖਾਤਾ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
+"CONFIRM_DELETE_DATA_TITLE" = "ਕੀ ਤੁਸੀਂ ਵਾਕਈ ਸਾਰਾ ਡੇਟਾ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ਇੰਝ ਕਰਨ ਨਾਲ ਇਸ ਡਿਵਾਈਸ ਵਿੱਚੋਂ ਤੁਹਾਡੇ ਸਾਰੇ ਸੁਨੇਹੇ ਮਿਟਾ ਕੇ ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ. ਤੁਸੀਂ ਕਦੇ ਵੀ ਆਪਣੇ ਫੋਨ ਨੂੰ ਦੁਬਾਰਾ ਲਿੰਕ ਕਰ ਸਕਦੇ ਹੋ, ਪਰ ਉਸ ਨਾਲ ਮਿਟਾਏ ਗਏ ਸੁਨੇਹੇ ਵਾਪਸ ਨਹੀਂ ਆਉਣਗੇ. ਇਹ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਐਪ ਬੰਦ ਹੋ ਜਾਵੇਗੀ.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ਡੀਬੱਗ ਲਾਗ ਬਾਰੇ ਜਾਣਕਾਰੀ";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ਖਾਤਾ ਮਿਟਾਓ";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਖਾਤਾ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "ਦੇਸ਼ ਦਾ ਕੋਡ";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ਫੋਨ ਨੰਬਰ";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "ਖਾਤਾ ਮਿਟਾਓ";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ਗੱਲਬਾਤ ਵਿੱਚੋਂ ਸਾਰੇ ਸੁਨੇਹੇ ਹਟਾਉਣੇ ਹਨ?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "ਜੁੜੋ";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "ਸੁਨੇਹੇ %@ ਤੋਂ ਬਾਅਦ ਅਲੋਪ ਹੋ ਜਾਂਦੇ ਹਨ।";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "ਸੁਨੇਹੇ ਅਲੋਪ ਨਹੀਂ ਹੁੰਦੇ ਹਨ।";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "ਸਾਰੇ ਮੀਡੀਆ 'ਤੇ ਜਾਓ";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "ਨਾ-ਪੜ੍ਹੇ";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal ਤੋਂ ਅਨਰਜਿਸਟਰ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "ਅਸਮਰਥਿਤ ਅਟੈਚਮੈਂਟ ਕਿਸਮ ਪ੍ਰਾਪਤ ਹੋਈ.";

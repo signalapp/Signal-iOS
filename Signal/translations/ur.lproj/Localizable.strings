@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "آپ لے کونسے رابطے Signal صارفین ہیں ان کو دیکھنے کیلئے ایپ کی iOS ترتیبات میں رسائی کیلئے رابطوں کو فعال کریں۔";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "یہ سرور کیساتھ ان رجسٹر اور پیغامات حذف کرکے ایپلیکیشن کو دوبارہ ترتیب دے گا۔ اس پروسس کے مکمل ہونے کے بعد ایپ بند ہو جائے گا۔";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "کیا آپ کو یقین ہے کہ آپ اپنا اکاؤنٹ ختم کرنا چاہتے ہیں؟";
+"CONFIRM_DELETE_DATA_TITLE" = "کیا آپ واقعی سارا ڈیٹا حذف کرنا چاہتے ہیں؟";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "یہ اس آلے سے آپ کے تمام پیغامات کو حذف کرکے ایپلی کیشن کو دوبارہ ترتیب دے گا۔ آپ ہمیشہ اپنے فون کے ساتھ دوبارہ لنک کرسکتے ہیں ، لیکن اس سے حذف شدہ پیغامات بحال نہیں ہوں گے۔ یہ عمل مکمل ہونے کے بعد ایپ بند ہوجائے گی۔";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ڈیبگ لاگ کے بارے میں معلومات";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "اکاؤنٹ حذف کریں";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "کیا آپ کو یقین ہے کہ آپ اپنا اکاؤنٹ ختم کرنا چاہتے ہیں؟";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "ملک کا کوڈ";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "فون نمبر";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "اکاؤنٹ حذف کریں";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "چیٹ میں تمام پیغامات کو حذف کریں؟";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "شامل ہوں";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "%@کے بعد پیغامات غائب ہوں";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "پیغامات غائب نہ ہوں۔";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "All میڈیا پر جائیں";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "غیر پڑھے ہوئے";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal سے ان رجسٹر ہونے میں ناکامی۔";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "غیر معاون قسم کی اٹیچمنٹ وصول کریں۔";

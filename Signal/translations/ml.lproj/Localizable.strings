@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ആരൊക്കെ Signal  ഉപയോഗിക്കുന്നു എന്നറിയാൻ നിങ്ങൾക്ക് iOS സെറ്റിംഗ്സ് ആപ്പിൽ കോൺടാക്സ് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "ഇത് നിങ്ങളുടെ മെസേജുകൾ ഡിലീറ്റ് ചെയ്യുകയും സെർവറുമായി അൺ‌രജിസ്റ്റർ ചെയ്യുകയും ചെയ്യുകവഴി നിങ്ങളുടെ അപ്ലിക്കേഷൻ റീസെറ്റ് ചെയ്യും. ഈ പ്രക്രിയ പൂർത്തിയായൽ ആപ്പ് ക്ലോസ് ആകും.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൌണ്ട് ഇല്ലാതക്കണം എന്നത് ഉറപ്പാണോ?";
+"CONFIRM_DELETE_DATA_TITLE" = "നിങ്ങൾക്ക് എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കാൻ ആഗ്രഹമുണ്ടോ?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ഇത് ഈ ഡിവൈസിൽ നിന്ന് നിങ്ങളുടെ മെസേജുകളെല്ലാം ഡിലീറ്റ് ചെയ്തുകൊണ്ട് ആപ്ലിക്കേഷൻ റീസെ‌റ്റ് ചെയ്യും. നിങ്ങൾക്ക് നിങ്ങളുടെ ഫോണുമായൊ എല്ലായ്‌പ്പോഴും ലിങ്ക് ചെയ്യാം, പക്ഷെ അത് ഡിലീറ്റ് ചെയ്ത മെസേജുകൾ റീസ്റ്റോർ ചെയ്യില്ല. ഈ പ്രക്രിയ പൂർത്തിയായാൽ അപ്പ് ക്ലോസ് ആകും.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ഡീബഗ് ലോഗുകളെക്കുറിച്ചുള്ള വിവരങ്ങൾ";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൌണ്ട് ഇല്ലാതക്കണം എന്നത് ഉറപ്പാണോ?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "രാജ്യ കോഡ്";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ഫോൺ നമ്പർ";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ചാറ്റിലെ  എല്ലാ സന്ദേശങ്ങളും ഇല്ലാതാക്കണോ?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "ചേരുക";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "സന്ദേശങ്ങൾ %@ശേഷം അപ്രത്യക്ഷമാകും";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "സന്ദേശങ്ങൾ  അപ്രത്യക്ഷമാകില്ല.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "എല്ലാ മീഡിയകളിലേക്കും പോകുക";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "വായിക്കാത്തവ";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal ലിൽ നിന്ന് അൺരജിസ്റ്റർ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "സപ്പോർട്ട് ചെയ്യാത്ത തരത്തിലുള്ള അറ്റാച്ച്‌മെൻ്റ് സ്വീകരിച്ചിരിക്കുന്നു.";

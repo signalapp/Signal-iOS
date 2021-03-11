@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "మీ పరిచయాలలో Signal వినియోగదారులు ఎవరో చూడటానికి మీరు iOS సెట్టింగుల అనువర్తనంలో పరిచయాల ప్రాప్యతను ప్రారంభించవచ్చు.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "ఇది మీ సందేశాలను తొలగించడం ద్వారా మరియు సర్వర్‌తో మిమ్మల్ని నమోదు చేయకుండా అనువర్తనాన్ని రీసెట్ చేస్తుంది. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?";
+"CONFIRM_DELETE_DATA_TITLE" = "మీరు ఖచ్చితంగా అన్ని డేటాను తొలగించాలనుకుంటున్నారా?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ఈ పరికరం నుండి మీ అన్ని సందేశాలను తొలగించడం ద్వారా ఇది అనువర్తనాన్ని రీసెట్ చేస్తుంది. మీరు ఎప్పుడైనా మీ ఫోన్‌తో మళ్లీ లింక్ చేయవచ్చు, కానీ అది తొలగించిన సందేశాలను పునరుద్ధరించదు. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "డీబగ్ లాగ్‌ల గురించి సమాచారం";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ఖాతాను తొలగించండి";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "దేశం కోడ్";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ఫోను నంబరు";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "ఖాతాను తొలగించండి";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "మాటామంతీలోని అన్ని సందేశాలను తొలగించాలా?";
@@ -1643,7 +1679,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ సమూహ కాల్ ప్రారంభించారు";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ మరియు 1 ఇతర ఈ కాల్‌లో ఉన్నాయి";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ మరియు 1 ఇతర ఈ కాల్‌లో ఉన్నారు";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ మరియు %2$@ ఈ కాల్‌లో ఉన్నాయి";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "చేరండి";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "%@ తర్వాత సందేశాలు అదృశ్యమవుతాయి.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "సందేశాలు కనిపిస్తాయి ";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "ఆల్ మీడియాకు వెళ్లండి";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "చదవనిది";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal నుండి అంరెజిస్టర్ చేయడంలో విఫలమైంది.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "మద్దతు లేని అటాచ్మెంట్ రకాన్ని స్వీకరించారు.";

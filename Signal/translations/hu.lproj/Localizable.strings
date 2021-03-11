@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Engedélyezd a kontaktokhoz való hozzáférést az iOS Beállításokban, hogy lásd kik Signal felhasználók közülük.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ezzel minden üzeneted törlődik és megszűnik a regisztrált Signal fiókod is. Az alkalmazás ezt követően bezáródik.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Biztosan törölni akarod a fiókod?";
+"CONFIRM_DELETE_DATA_TITLE" = "Biztosan törölni akarsz minden adatot?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ezzel az alkalmazás alaphelyzetbe áll és minden üzeneted törlődik. A későbbiekben bármikor újratársíthatod a készüléked, de a törölt üzenetek nem kerülnek vissza. Az alkalmazás ezt követően bezáródik.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Bővebben a hibanaplóról";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Fiók törlése";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Biztosan törölni akarod a fiókod?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Országkód";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonszám";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Fiók törlése";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Minden üzenetet törölsz a beszélgetésben?";
@@ -2551,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Belépés";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Üzenetek eltűnési ideje: %@";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Eltűnő üzenetek funkció kikapcsolva.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Váltás \"Minden média\" nézetre";
 
@@ -3725,7 +3755,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Lazulok pár percet";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Valami izgalmas újdonságon dolgozom";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Új dolgokba vetem magam";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "Névjegy";
@@ -4403,7 +4433,7 @@
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefon kontaktokban tárolt profilkép használata.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profilképek a telefon kontaktlistából";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profilképek telefon kontaktokból";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Téma";
@@ -4682,7 +4712,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Kijelző zárolás";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Képernyővédelem engedélyezése";
+"SETTINGS_SCREEN_SECURITY" = "Képernyővédelem";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "A Signal hívások meg fognak jelenni az iOS hívás Előzményekben.";
@@ -4709,7 +4739,7 @@
 "SETTINGS_SECURITY_TITLE" = "Biztonság";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Beszélgetések megjelenítése javasoltak között";
+"SETTINGS_SHARING_SUGGESTIONS" = "Beszélgetések javasoltak közt";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal beszélgetések megjelennek a más alkalmazásokból történő megosztási javaslatok közt.";
@@ -4727,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Rejtett feladó";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Státusz ikon mutatása";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Státusz ikon";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Engedélyezés mindenkitől";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Olvasatlan";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Nem sikerült a Signal fiókod törlése.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Nem támogatott melléklet típust kaptál.";

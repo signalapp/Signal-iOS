@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपल्या संपर्कांमधील कोण Signal वापरकर्ते आहेत हे पहाण्यासाठी आपण iOS सेटिंग अॅप मध्ये संपर्क अॅक्सेस सक्षम करू शकता.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "आपले संदेश हटवून हे अॅप्लिकेशन रीसेट करेल आणि आपली सर्व्हरवरची नोंदणी काढेल. प्रक्रिया पूर्ण झाल्यावर अॅप बंद होईल.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "आपले खाते हटवायची आपणास खात्री आहे का?";
+"CONFIRM_DELETE_DATA_TITLE" = "सर्व डेटा हटवायची आपणास खात्री आहे का?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ह्या डिव्हाईस वरून आपले सर्व संदेश हटवून हे अॅपलिकेशन रीसेट करेल. आपण कधीही आपला फोन पुन्हा लिंक करू शकता, पण त्याने आपल्या संदेशांची पुनर्स्थापना होणार नाही. प्रक्रिया संपल्यावर अॅप बंद होईल.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "डीबग लॉगबद्दल माहिती";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "खाते हटवा";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "आपले खाते हटवायची आपणास खात्री आहे का?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "देश कोड";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "फोन नंबर";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "खाते हटवा";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "चॅटमधले सर्व संदेश हटवायचे?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "सामील व्हा";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "%@ नंतर संदेश नाहीसे होतात.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "संदेश नाहीसे होत नाहीत.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "सर्व मिडिया वर जा";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "वाचले नाही";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal वरील नोंदणी काढण्यात अयशस्वी.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "असमर्थित संलग्न प्रकार प्राप्त झाला.";

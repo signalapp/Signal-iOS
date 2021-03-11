@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "អ្នកអាចបើកការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង ក្នុងការកំណត់ iOS ដើម្បីមើលថា អ្នកទំនាក់ទំនងមួយណាជាអ្នកប្រើប្រាស់ Signal។";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយការលុបសាររបស់អ្នក និងលុបឈ្មោះអ្នកចេញពីបណ្តាញ។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីដំណើរការនេះ បានបញ្ចប់។";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "តើអ្នកប្រាកដទេថា ចង់លុបគណនីរបស់អ្នក?";
+"CONFIRM_DELETE_DATA_TITLE" = "តើអ្នកច្បាស់ថាចង់លុបទិន្នន័យទាំងអស់?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយលុបរាល់សាររបស់អ្នកចេញពីឧបករណ៍នេះ។ អ្នកតែងតែភ្ជាប់ជាមួយទូរស័ព្ទរបស់អ្នកម្តងទៀត ប៉ុន្តែនោះនឹងមិនស្តារសារដែលបានលុបចោលទេ។ កម្មវិធីនឹងបិទបន្ទាប់ពីដំណើរការនេះចប់។";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "លុបគណនី";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "តើអ្នកប្រាកដទេថា ចង់លុបគណនីរបស់អ្នក?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "កូដប្រទេស";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "លេខទូរសព្ទ";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "លុបគណនី";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "ចូលរួម";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "សាររលុបវិញបន្ទាប់ពី %@។";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "សារ នឹងមិនរលុប។";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "ទៅកាន់ឯកសារមេឌាទាំងអស់";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "មិនទាន់អាន";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "បរាជ័យក្នុងការលុបឈ្មោះពី Signal។";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "បានទទួលប្រភេទឯកសារភ្ជាប់ដែលមិនគាំទ្រ។";

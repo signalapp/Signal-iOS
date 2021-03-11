@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يُمكِنُك مَنح حقّ الوُصُول إلى جِهات الاِتصال مِن خِلال تَطبيق إعدادات iOS لِرُؤيَة جِهات الاِتِّصال التي تَستخدِم Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "هذا سوف يُعيد تعيين التطبيق عبر حذف جميع الرسائل وإلغاء تسجيلك مع الخادم. سيُغلَق التطبيق بعد انتهاء هذه العملية.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "هَل أنتَ مُتأكِد مِن أنَّكَ تُرِيدُ حَذف حِسابك؟";
+"CONFIRM_DELETE_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "هَذَا سوف يُعيد تعيِّين التَطبيق عبر حَذف جَميع الرَّسائل مِن هَذَا الجِهاز. يُمكِنُكَ دائمًا إعادة رَبط هاتفك مَرة أُخرى، لكن ذلك لن يستعيد رَسائلك المَحذوفة. سيُغلَق التَطبيق بعد اِنتهاء هَذه العَملية.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "مَعلُومات عَن سِجل التَصحيح";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "حذف الحساب";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "هَل أنتَ مُتأكِد مِن أنَّكَ تُرِيدُ حَذف حِسابك؟";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "رمز البلد";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "رقم الهاتف";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "حذف الحساب";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف جميع الرسائل في المُحادثة؟";
@@ -2551,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "انضم";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "الرسائل ستختفي بعد %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "الرَّسائل لا تَختَفي.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
 
@@ -2627,7 +2657,7 @@
 "LINK_DEVICE_RESTART" = "إعادة المُحاولة";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "اِمسَح رَمز الاِستِجابَة السَّريعَة الظَّاهِر عَلَى الجِهاز الَّذي تُريدُ رَبطَه.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "اِمسَح رَمز الاِستِجابَة السّريعَة الظَّاهِر عَلَى الجِهاز الَّذي تُريدُ رَبطَه.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "اِمسَح رَمزَ الاِستِجابَةِ السَّريعَة لِرَبطِ جِهَازٍ جَديد.";
@@ -3524,10 +3554,10 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "أدخل الـPIN الذي أنشأته للتو.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "إنشاء PIN أبجدي رقمي";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "إنشاء PIN أبجدي رَقمي";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "أنشيء PIN رقمي";
+"PIN_CREATION_CREATE_NUMERIC" = "إنشاء PIN رَقمي";
 
 /* Action of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل الـPIN";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "غير مقروءة";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "فشل إلغاء التسجيل من Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "تمَّ استلام مُرفق مِن نوع غير مدعوم.";

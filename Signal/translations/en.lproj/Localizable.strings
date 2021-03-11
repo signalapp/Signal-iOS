@@ -2587,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Join";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
 

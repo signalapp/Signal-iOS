@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i iOS indstillinger-appen for at se, hvilke af dine kontakter der er Signal-brugere";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil nulstille app'en ved at slette dine meddelelser og afregistrere dig med serveren. App'en lukkes, efter at denne proces er afsluttet.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på, du vil slette din konto?";
+"CONFIRM_DELETE_DATA_TITLE" = "Vil du slette alle data?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dette nulstiller applikationen og sletter alle dine beskeder fra enheden. Du kan altid linke til din enhed igen, men de slettede beskeder vil ikke blive gendannet. App'en vil lukke efter processen er fuldført.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Info om fejlfindingslogfiler";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Slet konto";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Er du sikker på, du vil slette din konto?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landekode";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonnummer";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Slet konto";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Slet alle beskeder i chatten?";
@@ -2510,7 +2546,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse chats arkiveres og vises kun i indbakken, hvis der modtages nye beskeder";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Ingen chats endnu.\nKom i gang ved at sende en besked til en ven.";
+"INBOX_VIEW_EMPTY_INBOX" = "Ingen chats endnu.\nKom i gang - send en besked til en ven.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ ringede til mig";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Deltag";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Beskeder udløber efter %@";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Beskeder udløber ikke";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Gå til alle medier";
@@ -4400,7 +4430,7 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Fejllogs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis kontaktbilleder i systemet, hvis de er tilgængelige";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis kontaktbilleder i systemet, hvis tilgængelige.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Brug kontaktbilleder i systemet";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Ulæst";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Afregistrering fra Signal mislykkedes.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Modtog en vedhæftning, hvis type ikke er understøttet.";

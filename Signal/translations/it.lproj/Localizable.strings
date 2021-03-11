@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Puoi abilitare l'accesso ai contatti nelle impostazioni di iOS per vedere quali dei tuoi contatti sono anche utenti Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Questo ripristinerà l'applicazione eliminando i messaggi e rimuovendo la tua registrazione dal server. L'applicazione si chiuderà una volta completato il processo.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Sei sicuro di voler eliminare il tuo account?";
+"CONFIRM_DELETE_DATA_TITLE" = "Sei sicuro di voler eliminare tutti i dati?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ciò resetterà l'applicazione eliminando tutti i tuoi messaggi da questo dispositivo. Puoi sempre associarlo di nuovo al tuo telefono, ma ciò non ripristinerà i messaggi eliminati. L'app si chiuderà al termine di questo processo.";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informazioni riguardo i log di debug";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Elimina account";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Sei sicuro di voler eliminare il tuo account?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Codice del Paese";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Numero di telefono";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Elimina account";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Eliminare tutti i messaggi nella chat?";
@@ -2000,10 +2036,10 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Controlla membri";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membri del gruppo hanno nomi simili, controlla i membri di seguito e scegli di agire.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membri del gruppo hanno lo stesso nome, controlla i membri di seguito e scegli di agire.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membri del gruppo hanno lo stesso nome.";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Unisciti";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "I messaggi scompariranno dopo %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "I messaggi non scompariranno.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Vai a tutti i media";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Non letta";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Cancellazione da Signal non riuscita.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Ricevuto un tipo di allegato non supportato.";

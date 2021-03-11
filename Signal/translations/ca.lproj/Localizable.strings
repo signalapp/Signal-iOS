@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ara no";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Quant al Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accepta el número de seguretat nou";
@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per veure quins contactes són usuaris del Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Això restablirà l'aplicació: se suprimiran els missatges i deixareu d'estar registrat al servidor. L'aplicació es tancarà una vegada acabat el procés.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Segur que voleu suprimir el compte?";
+"CONFIRM_DELETE_DATA_TITLE" = "Segur que voleu suprimir totes les dades?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Això restablirà l’aplicació: se suprimiran tots els missatges d’aquest dispositiu. Sempre podeu tornar a enllaçar el telèfon, però això no restablirà els missatges suprimits. L’aplicació es tancarà una vegada acabat el procés.";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Canvis no desats";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Mostra-ho tot";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "L'usuari és als contactes.";
@@ -1075,6 +1075,42 @@
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informació sobre els registres de depuració";
 
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Suprimeix el compte";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Segur que voleu suprimir el compte?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Codi internacional";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Número de telèfon";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Suprimeix el compte";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Voleu suprimir tots els missatges de la conversa?";
 
@@ -1094,10 +1130,10 @@
 "DEREGISTRATION_WARNING" = "El dispositiu ja no està registrat. El número es pot registrar al Signal des d'un altre dispositiu. Toqueu per tornar a registrar-lo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Darrera activitat: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Enllaçat: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No s'ha pogut actualitzar la llista.";
@@ -1988,7 +2024,7 @@
 "GROUP_MEMBERS_VIDEO_CALL" = "Trucada de video";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ membres del grup tenen noms semblants.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Feu un toc per revisar-ho";
@@ -2000,13 +2036,13 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Reviseu els mebres";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membres del grup tenen noms semblants. Reviseu els membres que es mostren a continuació.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membres del grup tenen el mateix nom. Reviseu els membres que es mostren a continuació.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membres del grup tenen el mateix nom.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nom de grup (necessari)";
@@ -2551,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Afegeix-m'hi";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Els missatges s'esborren en %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Els missatges no s'esborren.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Ves a tot el contingut";
 
@@ -2630,7 +2660,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Escanegeu el codi QR per enllaçar un dispositiu nou.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Enllaceu un dispositiu nou";
@@ -2681,7 +2711,7 @@
 "LOGGING_SECTION" = "Registres";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Els registres de depuració poden ajudar el Signal a corregir problemes i fallades.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Missatge";
@@ -3005,7 +3035,7 @@
 "MUTED_BADGE" = "Silenciat";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recentment han canviat el nom del perfil de %1$@ a %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Omet";
@@ -3746,7 +3776,7 @@
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Quant a";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nom";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d'usuari";
@@ -3794,7 +3824,7 @@
 "PUSH_MANAGER_REPLY" = "Respondre";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "S'ha registrat de nou correctament.";
+"PUSH_REGISTER_SUCCESS" = "S'ha registrat de nou correctament per a les notificacions.";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -3926,7 +3956,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Ho heu provat massa vegades. Espereu un minut abans de tornar a provar-ho.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "No s'ha pogut registrar de nou per rebre notificacions.";
+"REGISTRATION_BODY" = "Ha fallat registrar-se de nou per a les notificacions.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Codi internacional";
@@ -3998,7 +4028,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Trieu un administrador nou";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "Registra de nou per a les notificacions.";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Per fer del Signal la millor aplicació de missatgeria del planeta, ens agradaria rebre'n els vostres comentaris.";
@@ -4352,7 +4382,7 @@
 "SET_WALLPAPER_TITLE" = "Estableix el fons";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Compte";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blocatge";
@@ -4400,10 +4430,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Registres d'errors";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Mostra les fotografies del contacte del sistema si n'hi ha.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Usa les fotografies del contacte del sistema.";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -4487,7 +4517,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Neteja l'historial de la conversa";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nAmb llicència de GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Ús de dades";
@@ -4496,7 +4526,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Usa menys dades";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "L'ús de menys dades pot millorar les trucades en xarxes dèbils.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Trucades";
@@ -4505,7 +4535,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Els missatges de veu, el contingut de visualització única i els adhesius (de menys de 100 KB) sempre es baixen automàticament.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Baixada automàtica";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Restableix la configuració de la baixada automàtica";
@@ -4577,28 +4607,28 @@
 "SETTINGS_MESSAGING" = "Missatges";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "Vegeu i compartiu quan s'escriuen i es llegeixen els missatges. Si es desactiva, no veureu confirmacions de lectura ni indicacions d'escriptura d'altres.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Configuració";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclou les converses silenciades";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Recompte d'insígnies";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notificacions de trucades i missatges poden aparèixer mentre el telèfon estigui blocat.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contingut de la notificació";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contacte s'ha afegit al Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notifica quan...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notificacions";
@@ -4628,7 +4658,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Recordatoris del PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Els PIN mantenen encriptada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El PIN no es pot recuperar. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Canvieu el PIN";
@@ -4640,7 +4670,7 @@
 "SETTINGS_PINS_TITLE" = "PIN del Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Elusió de la censura, trucades de retransmissió i configuracions de remitents segellades.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avançada";
@@ -4682,10 +4712,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Pantalla de bloqueig";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "Amaga la pantalla al canviador d'apliacions";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Mostra les trucades a la llista de recents de l'aplicació de telèfon de l'iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
@@ -4694,22 +4724,22 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Telefonades";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Useu l'ID de tacte, l'ID de cara o la contrasenya del dispositiu d'iOS per desblocar el Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Usa l'ID de cara per desblocar el Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Usa la contrasenya del dispositiu per desblocar el Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Usa l'ID de tacte per desblocar el Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "Seguretat de les aplicacions";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Mostra les converses als suggeriments.";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Les converses del Signal es mostren com a suggeriments quan hi ha compartició des d'altres aplicacions.";
@@ -4718,7 +4748,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocatge de registre";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Demana el PIN del Signal per tornar-hi a registrar el número de telèfon.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicadors de tecleig";
@@ -4727,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remitent segellat";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostra la icona d'estat.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permet-ho per a tothom";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Per llegir";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "No s'ha pogut cancel·lar el registre.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "El tipus del fitxer adjunt rebut no és compatible.";

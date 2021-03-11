@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ei nyt";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Tietoja Signalista";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Hyväksy uusi turvanumero";
@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hae yhteystiedoistasi Signalin käyttäjiä sallimalla yhteystietojen käyttö iOS:n asetuksissa.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Signal-tili poistetaan ja sovellusasetukset nollataan. Sovellus sulkeutuu prosessin päätteeksi.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Haluatko varmasti poistaa tilisi?";
+"CONFIRM_DELETE_DATA_TITLE" = "Oletko varma, että haluat poistaa kaikki tiedot?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tämä palauttaa sovelluksen poistamalla kaikki viestisi tältä laitteelta. Voit aina yhdistää puhelimeesi uudelleen, mutta se ei palauta poistettuja viestejä. Sovellus sulkeutuu, kun tämä prosessi on valmis.";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Tallentamattomia muutoksia";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Näytä kaikki";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Tämä käyttäjä on yhteystiedoissasi";
@@ -1075,6 +1075,42 @@
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Tietoja virheenkorjauslokeista";
 
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Poista tili";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Haluatko varmasti poistaa tilisi?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Maatunnus";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Puhelinnumero";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Poista tili";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Poistetaanko kaikki viestit tästä keskustelusta?";
 
@@ -1094,10 +1130,10 @@
 "DEREGISTRATION_WARNING" = "Tämä laite ei ole enää rekisteröity. Puhelinnumerosi saataa olla rekisteröity Signaliin jollain toisella laitteella. Napauta rekisteröityäksesi uudelleen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi yhdistettynä %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Yhdistetty %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Yhdistettyjen laitteiden listaa ei saatu päivitettyä";
@@ -2551,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Liity";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Viestit katoavat %@ näkemisestä";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Viestit eivät katoa.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Siirry medianäkymään";
 
@@ -3746,7 +3776,7 @@
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Tietoja";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nimi";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Käyttäjätunnus";
@@ -3998,7 +4028,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Valitse uusi ylläpitäjä";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "Push-ilmoitusten uudelleenrekisteröinti";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Jotta Signalista tulisi planeetan paras viestintäsovellus, haluaisimme kuulla mielipiteesi.";
@@ -4352,7 +4382,7 @@
 "SET_WALLPAPER_TITLE" = "Aseta taustakuva";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Tili";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Estä";
@@ -4400,10 +4430,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Virhelokit";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut henkilökuvat.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Järjestelmän yhteystietokuvat";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Teema";
@@ -4487,7 +4517,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Tyhjennä keskusteluhistoria";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Tekijänoikeussuojattu Signal Messenger\nLisensoitu GPLv3-lisenssillä";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Datankäyttö";
@@ -4496,7 +4526,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Vähennä puheluiden datankäyttöä";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Saattaa parantaa puhelun laatua heikolla verkkoyhteydellä.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Puhelut";
@@ -4505,7 +4535,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Ääniviestit, itsestään katoavat mediat ja alle 100 kilotavun kokoiset tarrat ladataan aina automaattisesti.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automaattinen lataus";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Nollaa automaattisen latauksen asetukset";
@@ -4583,22 +4613,22 @@
 "SETTINGS_NAV_BAR_TITLE" = "Asetukset";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Sisällytä mykistetyt keskustelut";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Viestiluvun laskenta";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Valitse mitä tietoja puhelu- ja viesti-ilmoituksissa näytetään, jotka näytetään myös puhelimen ollessa lukittu.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Ilmoitusten sisältö";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Yhteystieto liittyy Signaliin";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Ilmoita minulle";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Ilmoitukset";
@@ -4628,7 +4658,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Tunnuslukumuistutukset";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Tunnusluvulla salataan Signaliin tallennetut tiedot, jotta vain sinä pääset niihin käsiksi. Profiili, asetukset ja yhteystiedot palautetaan, jos Signal asennetaan uudelleen.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Vaihda tunnusluku";
@@ -4640,7 +4670,7 @@
 "SETTINGS_PINS_TITLE" = "Signal-tunnusluku";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Sensuurin kierron, puheluiden välityksen ja lähettäjäsinetin asetukset.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Lisäasetukset";
@@ -4682,10 +4712,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Ruudun lukitus";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "Piilota näytön sisältö apinvaihtajassa";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Näytä puhelut Äskeiset-listalla iOS:n Puhelin-apissa.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Äänet";
@@ -4694,22 +4724,22 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Puhelut";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Käytä Touch ID:tä, Face ID:tä tai iOS-pääsykoodia Signalin lukituksen avaamiseen.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Käytä Face ID:tä Signalin lukituksen avaamiseen.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Käytä laitteen pääsykoodia Signalin lukituksen avaamiseen.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Käytä Touch ID:tä Signalin lukituksen avaamiseen.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "Turvallisuus";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Näytä ehdotuksissa";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-keskustelut näkyvät ehdotuksissa jaettaessa sisältöä muista apeista.";
@@ -4718,7 +4748,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Rekisteröintiesto";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Vaadi Signal-tunnuslukua aina kun tällä puhelinnumerolla rekisteröidytään Signaliin.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Kirjoittamisen ilmaisin";
@@ -4727,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Lähettäjäsinetti";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Näytä tilailmaisin";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Hyväksy kaikilta";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Lukematon";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Rekisteröimisen purku Signalista epäonnistui.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Vastaanotettiin liite, jota ei tueta.";

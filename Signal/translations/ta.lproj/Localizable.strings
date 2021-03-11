@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "உங்கள் அமைப்புகளில் Signal பயனர்கள் யார் என்பதைக் காண, iOS அமைப்புகள் செயலியில்  தொடர்புகள் அணுகலை இயக்கலாம்.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "இது உங்கள் செய்திகளை நீக்கி, சேவையகத்துடன் பதிவு செய்யாமல் பயன்பாட்டை மீட்டமைக்கும். இந்த செயல்முறை முடிந்ததும் பயன்பாடு மூடப்படும்.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "உங்கள் கணக்கு நீக்க விரும்புகிறீர்களா?";
+"CONFIRM_DELETE_DATA_TITLE" = "எல்லா தரவையும் நீக்க விரும்புகிறீர்களா?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "இந்தச் சாதனத்திலிருந்து உங்கள் எல்லா செய்திகளையும் நீக்குவதன் மூலம் இது செயலியை மீட்டமைக்கும். நீங்கள் எப்போதும் உங்கள் தொலைபேசியுடன் மீண்டும் இணைக்க முடியும், ஆனால் அது நீக்கப்பட்ட செய்திகளை மீட்டெடுக்காது. இந்த செயல்முறை முடிந்ததும் செயலி  மூடப்படும்";
@@ -1074,6 +1074,42 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "பிழைத்திருத்த பதிவுகள் பற்றிய தகவல்";
+
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "கணக்கு நீக்குக";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "உங்கள் கணக்கு நீக்க விரும்புகிறீர்களா?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "நாட்டின் குறியீடு";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "தொலைபேசி எண்";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "கணக்கு நீக்குக";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "இந்த உரையாடலில்  உள்ள அனைத்து செய்திகளையும் நீக்கவா?";
@@ -2550,12 +2586,6 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "சேரவும்";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "%@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "செய்திகள் மறைந்துவிடாது.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "எல்லா மெடியாவிற்கு செல் ";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "படிக்காதது";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal லில் இருந்து பதிவுசெய்வதில் தோல்வி.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "ஆதரிக்கப்படாத இணைப்பு வகை பெறப்பட்டது.";

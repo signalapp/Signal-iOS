@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ikke nå";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Om Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Godkjenn nytt sikkerhetsnummer";
@@ -623,10 +623,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan slå på kontakttilgang i iOS-innstillingene for å se hvilke av kontaktene dine som er Signal-brukere.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil tilbakestille applikasjonen ved å slette meldingene dine og avregistrere deg med serveren. Appen lukkes etter at denne prosessen er fullført.";
+"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på at du vil slette kontoen din?";
+"CONFIRM_DELETE_DATA_TITLE" = "Er du sikker på at du vil slette alle data?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dette vil tilbakestille applikasjonen ved å slette alle meldingene dine fra denne enheten. Du kan alltid koble til telefonen din igjen, men det vil ikke gjenopprette slettede meldinger. Appen lukkes etter at denne prosessen er fullført.";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Ulagrede endringer";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Se alle";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Denne brukeren er i kontaktene dine";
@@ -1075,6 +1075,42 @@
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informasjon om debuglogger";
 
+/* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Slett konto";
+
+/* Title for the action sheet message of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+
+/* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Er du sikker på at du vil slette kontoen din?";
+
+/* Title for the 'country code' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landskode";
+
+/* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Description for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+
+/* Indicates the work we are doing while deleting the account */
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+
+/* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+
+/* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonnummer";
+
+/* Section header */
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+
+/* Title for the 'delete account' confirmation view. */
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Slett konto";
+
+/* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Slett alle meldingene i samtalen?";
 
@@ -1094,10 +1130,10 @@
 "DEREGISTRATION_WARNING" = "Enheten er avregistrert. Telefonnummeret kan nå registreres på en annen enhet. Trykk for å registrere på nytt. ";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Sist aktiv %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Koblet %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Mislyktes med oppdatering av enhetsliste";
@@ -1223,7 +1259,7 @@
 "DISMISS_BUTTON_TEXT" = "Avbryt";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Sensur-unngåelse – plassering ";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Sensur-omgåelse – plassering ";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan tillate tilgang i iOS-innstillingene.";
@@ -1988,7 +2024,7 @@
 "GROUP_MEMBERS_VIDEO_CALL" = "Videoanrop";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ gruppemedlemmer har like navn.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Trykk for å gå gjennom";
@@ -2000,13 +2036,13 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Gå gjennom medlemmer";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ gruppemedlemmer har like navn. Se gjennom medlemmene nedenfor, eller velg en handling.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ gruppemedlemmer har samme navn, se gjennom gruppemedlemmene nedenfor, eller velg en handling.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ gruppemedlemmer har samme navn.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Gruppenavn (påkrevd)";
@@ -2551,12 +2587,6 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Bli med";
 
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Meldinger forsvinner etter %@.";
-
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Meldinger forsvinner ikke.";
-
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Gå til alle medier";
 
@@ -2630,7 +2660,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skann QR-koden som vises på enheten du vil godkjenne.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Skann QR-kode for å koble en ny enhet.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Koble ny enhet";
@@ -2681,7 +2711,7 @@
 "LOGGING_SECTION" = "Logger";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Feilsøkingslogger kan hjelpe Signal å fikse problemer og krasj.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Melding";
@@ -3005,7 +3035,7 @@
 "MUTED_BADGE" = "Mutet";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Endret nylig profilnavn fra %1$@ til %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hopp over";
@@ -3746,7 +3776,7 @@
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Om";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Navn";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Brukernavn";
@@ -3998,7 +4028,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Velg ny administrator";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "Registrer for push-varsler på nytt";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "For å gjøre Signal til planetens beste meldingsapp, vil vi gjerne høre tilbakemeldingene dine.";
@@ -4352,13 +4382,13 @@
 "SET_WALLPAPER_TITLE" = "Sett Bakgrunnsbilde";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Konto";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokker";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Sensur-unngåelse";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Sensur-omgåelse";
 
 /* Label for the 'manual censorship circumvention' country. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Lokasjon";
@@ -4367,13 +4397,13 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Når slått på, vil Signal forsøke å unngå sensurforsøk. Ikke skru på denne funksjonen om du ikke er i et område hvor Signal blir forsøkt sensurert.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Sensur-unngåelse har blitt aktivert basert på telefonnummeret som kontoen er registrert med.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Sensur-omgåelse har blitt aktivert basert på telefonnummeret som kontoen er registrert med.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du har manuelt deaktivert censur kringgående.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sensur-unngåelse kan bare bli skrudd på når telefonen er koblet til internett.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sensur-omgåelse kan bare bli skrudd på når telefonen er koblet til internett.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Omgåelse av sensur er ikke nødvendig; du er allerede koblet til Signal tjenesten.";
@@ -4400,10 +4430,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Feillogger";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemkontaktbilder hvis tilgjengelig.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Benytt systemkontaktbilder";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -4487,16 +4517,16 @@
 "SETTINGS_CLEAR_HISTORY" = "Slett samtalehistorikk";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLisensiert under GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Dataforbruk";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Bruk Mindre Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Bruk mindre data";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Lavere databruk kan forbedre samtaler på dårlig nett.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Samtaler";
@@ -4505,7 +4535,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Lydmeldinger, vis-én-gang-media og klistremerker (under 100kb) lastes alltid ned automatisk.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-nedlasting";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Tilbakestill instillinger for automatisk nedlasting";
@@ -4577,28 +4607,28 @@
 "SETTINGS_MESSAGING" = "Meldinger";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "Se og del at meldinger holder på å bli skrevet. Om deaktivert vil du ikke se lesebekreftelser eller skriveindikatorer fra andre.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Innstillinger";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder dempede samtaler";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Antall skilt";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Varsler om meldinger og innkommende samtaler kan vises mens telefonen er låst.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Innhold i varsel";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt blir med på Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Varsle når...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Varslinger";
@@ -4628,7 +4658,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN-påminnelser";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-koder holder informasjon lagret med Signal kryptert slik at bare du kan få tilgang til den. PIN-koden din kan ikke gjenopprettes. Profilen, innstillingene og kontaktene dine vil gjenopprettes når du installerer Signal på nytt.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Endre PIN-koden";
@@ -4640,7 +4670,7 @@
 "SETTINGS_PINS_TITLE" = "Signal-PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Innstilinger for sensur-omgåelse, omdirigering og forseglet avsender.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avansert";
@@ -4682,10 +4712,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Skjermlås";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "Skjul skjermen i appveksleren";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Vis samtaler i \"Sist brukte\"-listen til den innebygde telefonappen i iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Lyder";
@@ -4694,22 +4724,22 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Oppringing";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Bruk Touch ID, Face ID eller koden for iOS-enheten for å låse opp Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Bruk Face ID for å låse opp Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Bruk koden for iOS-enheten for å låse opp Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Bruk Touch ID for å låse opp Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "App-sikkerhet";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Vis samtaler i Forslag";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-samtaler blir vist som forslag under deling fra andre apper.";
@@ -4718,7 +4748,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Krev Signal-PIN for å registrere telefonnummeret på nytt hos Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Skriveindikatorer";
@@ -4727,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Forseglet avsender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis status-ikon";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Tillat fra alle";
@@ -5082,9 +5112,6 @@
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Ulest";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Mislykkes i å avregistrere fra Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Mottok ustøttet vedleggstype.";
