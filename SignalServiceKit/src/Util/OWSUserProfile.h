@@ -15,6 +15,7 @@ typedef void (^OWSUserProfileCompletion)(void);
 
 extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
+extern NSNotificationName const kNSNotificationNameLocalProfileKeyDidChange;
 extern NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange;
 extern NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange;
 

@@ -102,7 +102,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileKeyDidChange:)
-                                                 name:kNSNotificationNameProfileKeyDidChange
+                                                 name:kNSNotificationNameLocalProfileKeyDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)

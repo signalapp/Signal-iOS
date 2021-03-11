@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 NSNotificationName const kNSNotificationNameLocalProfileDidChange = @"kNSNotificationNameLocalProfileDidChange";
+NSNotificationName const kNSNotificationNameLocalProfileKeyDidChange = @"kNSNotificationNameLocalProfileKeyDidChange";
+
 NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange
     = @"kNSNotificationNameOtherUsersProfileWillChange";
 NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange
@@ -545,7 +547,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
                                       if (profileKeyDidChange) {
                                           [[NSNotificationCenter defaultCenter]
-                                              postNotificationNameAsync:kNSNotificationNameProfileKeyDidChange
+                                              postNotificationNameAsync:kNSNotificationNameLocalProfileKeyDidChange
                                                                  object:nil
                                                                userInfo:nil];
                                       }
