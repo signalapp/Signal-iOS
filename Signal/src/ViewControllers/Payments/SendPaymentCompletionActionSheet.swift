@@ -497,16 +497,30 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            firstly {
+            firstly(on: .global()) {
                 self.paymentsSwift.submitPaymentTransaction(recipient: paymentInfo.recipient,
                                                             paymentAmount: paymentInfo.paymentAmount,
                                                             memoMessage: paymentInfo.memoMessage,
                                                             paymentRequestModel: paymentInfo.paymentRequestModel,
                                                             isOutgoingTransfer: paymentInfo.isOutgoingTransfer)
+            }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
+                // Try to wait (with a timeout) for submission and verification to complete.
+                //
+                // TODO: Finalize this timeout duration with design.
+                let blockInterval: TimeInterval = kSecondInterval * 30
+                return firstly(on: .global()) { () -> Promise<Void> in
+                    let untilDate = Date().addingTimeInterval(blockInterval - 1)
+                    return Self.blockOnVerification(paymentModel: paymentModel,
+                                                    untilDate: untilDate)
+                }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
+                    PaymentsError.timeout
+                }.recover(on: .global()) { (_: Error) -> Guarantee<()> in
+                    Logger.warn("Could not verify outgoing payment.")
+                    return Guarantee.value(())
+                }
             }.done { _ in
                 AssertIsOnMainThread()
 
-                // TODO: Ideally we would wait a little long (with a timeout) for the submission and verification to succeed.
                 self.didSucceedPayment(paymentInfo: paymentInfo)
 
                 modalActivityIndicator.dismiss {}
@@ -517,6 +531,51 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
 
                 modalActivityIndicator.dismiss {}
+            }
+        }
+    }
+
+    private static func blockOnVerification(paymentModel: TSPaymentModel, untilDate: Date) -> Promise<Void> {
+        firstly(on: .global()) { () -> Promise<Void> in
+            guard untilDate > Date() else {
+                throw PaymentsError.timeout
+            }
+            let paymentModelLatest = databaseStorage.read { transaction in
+                TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
+                                        transaction: transaction)
+            }
+            guard let paymentModel = paymentModelLatest else {
+                throw PaymentsError.missingModel
+            }
+            switch paymentModel.paymentState {
+            case .outgoingUnsubmitted,
+                 .outgoingUnverified:
+                // Not yet verified, wait then try again.
+                return firstly(on: .global()) {
+                    after(seconds: 0.05)
+                }.then(on: .global()) {
+                    // Recurse.
+                    Self.blockOnVerification(paymentModel: paymentModel,
+                                             untilDate: untilDate)
+                }
+            case .outgoingVerified,
+                 .outgoingSending,
+                 .outgoingSent,
+                 .outgoingMissingLedgerTimestamp,
+                 .outgoingComplete,
+                 .outgoingFailed:
+                // Success: Verified or failed.
+                return Promise.value(())
+            case .incomingUnverified,
+                 .incomingVerified,
+                 .incomingMissingLedgerTimestamp,
+                 .incomingComplete,
+                 .incomingFailed:
+                owsFailDebug("Unexpected paymentState: \(paymentModel.descriptionForLogs)")
+                throw PaymentsError.invalidModel
+            @unknown default:
+                owsFailDebug("Invalid paymentState: \(paymentModel.descriptionForLogs)")
+                throw PaymentsError.invalidModel
             }
         }
     }
