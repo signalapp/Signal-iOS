@@ -382,6 +382,10 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.Balance> in
             let (promise, resolver) = Promise<MobileCoin.Balance>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success(let balance):
@@ -421,6 +425,10 @@ class MobileCoinAPI {
             }
 
             let (promise, resolver) = Promise<TSPaymentAmount>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             // We don't need to support amountPicoMobHigh.
             //
             // TODO: Are we always going to use _minimum_ fee?
@@ -489,6 +497,10 @@ class MobileCoinAPI {
             }
 
             let (promise, resolver) = Promise<PreparedTransaction>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             // We don't need to support amountPicoMobHigh.
             client.prepareTransaction(to: recipientPublicAddress,
                                       amount: paymentAmount.picoMob,
@@ -525,6 +537,10 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<Void> in
             let (promise, resolver) = Promise<Void>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             let client = self.client
             client.submitTransaction(transaction) { (result: Swift.Result<Void, ConnectionError>) in
                 switch result {
@@ -558,6 +574,10 @@ class MobileCoinAPI {
         let client = self.client
         return firstly(on: .global()) { () throws -> Promise<MCOutgoingTransactionStatus> in
             let (promise, resolver) = Promise<MCOutgoingTransactionStatus>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             client.status(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
                 switch result {
                 case .success(let transactionStatus):
@@ -623,6 +643,10 @@ class MobileCoinAPI {
             let txOutPublicKey: Data = receipt.txOutPublicKey
 
             let (promise, resolver) = Promise<MCIncomingReceiptStatus>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             client.status(of: receipt) { (result: Swift.Result<MobileCoin.ReceiptStatus, ReceiptStatusCheckError>) in
                 switch result {
                 case .success(let receiptStatus):
@@ -655,6 +679,10 @@ class MobileCoinAPI {
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.AccountActivity> in
             let (promise, resolver) = Promise<MobileCoin.AccountActivity>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
+            }
             client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success:

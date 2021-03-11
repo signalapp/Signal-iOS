@@ -455,6 +455,11 @@ public class DebugFlags: BaseFlags {
                                                           details: LocalizationNotNeeded("App will send two payment notifications and sync messages for each outgoing payment"))
 
     @objc
+    public static let paymentsNoRequestsComplete = TestableFlag(false,
+                                                                title: LocalizationNotNeeded("Payments: No requests complete"),
+                                                                details: LocalizationNotNeeded("MC SDK network activity never completes"))
+
+    @objc
     public static let paymentsAllowAllCountries = paymentsInternalBeta
 
     public static func buildFlagMap() -> [String: Any] {
