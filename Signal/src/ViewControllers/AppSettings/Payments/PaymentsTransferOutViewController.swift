@@ -64,6 +64,8 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
         updateTableContents()
         updateNavbar()
+
+        addressTextfield.becomeFirstResponder()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -71,6 +73,8 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
         paymentsSwift.updateCurrentPaymentBalance()
         paymentsCurrencies.updateConversationRatesIfStale()
+
+        addressTextfield.becomeFirstResponder()
     }
 
     private func createViews() {

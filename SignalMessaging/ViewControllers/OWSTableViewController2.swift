@@ -919,3 +919,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         tableView.reloadData()
     }
 }
+
+// MARK: -
+
+public extension UITableViewCell {
+    func addBackgroundView(backgroundColor: UIColor) {
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = Theme.tableView2BackgroundColor
+        contentView.addSubview(backgroundView)
+        contentView.sendSubviewToBack(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+    }
+}
