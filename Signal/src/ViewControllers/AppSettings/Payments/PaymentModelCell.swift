@@ -85,7 +85,9 @@ public class PaymentModelCell: UITableViewCell {
             contactAvatarView.removeAllSubviews()
             avatarView = contactAvatarView
         } else {
-            owsAssertDebug(paymentItem.isUnidentified || paymentItem.isOutgoingTransfer)
+            owsAssertDebug(paymentItem.isUnidentified ||
+                            paymentItem.isOutgoingTransfer ||
+                            paymentItem.isDefragmentation)
 
             avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: Self.avatarDiameter)
         }

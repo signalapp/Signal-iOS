@@ -31,6 +31,8 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
             return @"OutgoingUnidentified";
         case TSPaymentTypeOutgoingTransfer:
             return @"OutgoingTransfer";
+        case TSPaymentTypeOutgoingDefragmentation:
+            return @"OutgoingDefragmentation";
         default:
             OWSCFailDebug(@"Unknown value: %d", (int)value);
             return @"Unknown";

@@ -303,7 +303,7 @@ class DebugUIPayments: DebugUIPage {
     }
 
     private static func sendTinyPayments(contactThread: TSContactThread, count: UInt) {
-        let picoMob = UInt64(1 + arc4random_uniform(1000))
+        let picoMob = PaymentsConstants.picoMobPerMob + UInt64(arc4random_uniform(1000))
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         firstly(on: .global()) { () -> Promise<TSPaymentModel> in
             let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)

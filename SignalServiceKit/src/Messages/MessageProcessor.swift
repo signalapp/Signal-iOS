@@ -152,6 +152,7 @@ public class MessageProcessor: NSObject {
         // Take note of any messages larger than we expect, but still process them.
         // This likely indicates a misbehaving sending client.
         if encryptedEnvelopeData.count > Self.largeEnvelopeWarningByteCount {
+            Logger.verbose("encryptedEnvelopeData: \(encryptedEnvelopeData.count) > : \(Self.largeEnvelopeWarningByteCount)")
             owsFailDebug("Unexpectedly large envelope.")
         }
 
@@ -202,7 +203,7 @@ public class MessageProcessor: NSObject {
     }
 
     private static let maxEnvelopeByteCount = 250 * 1024
-    private static let largeEnvelopeWarningByteCount = 25 * 1024
+    public static let largeEnvelopeWarningByteCount = 25 * 1024
     private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
 
     private let pendingEnvelopesLock = UnfairLock()

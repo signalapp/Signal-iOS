@@ -3355,6 +3355,9 @@
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
 
+/* Label for 'defragmentation' payments. */
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Wallet Defragmentation";
+
 /* Error message indicating that the estimated fee for a payment could not be determined. */
 "PAYMENTS_ERROR_COULD_NOT_ESTIMATE_FEE" = "Could not determine fee for payment";
 

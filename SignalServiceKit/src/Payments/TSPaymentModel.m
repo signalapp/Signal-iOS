@@ -96,6 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(self.isValid);
 
+    OWSLogInfo(@"Creating payment model: %@", self.descriptionForLogs);
+
     return self;
 }
 

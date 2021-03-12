@@ -48,16 +48,16 @@ extension TSPaymentAmount: TSPaymentBaseModel {
         }
         let instance = TSPaymentAmount(currency: .mobileCoin,
                                        picoMob: mobileCoin.picoMob)
-        guard instance.isValid else {
+        guard instance.isValidAmount(canBeEmpty: true) else {
             throw PaymentsError.invalidModel
         }
         return instance
     }
 
     public func plus(_ other: TSPaymentAmount) -> TSPaymentAmount {
-        owsAssertDebug(isValid)
-        owsAssertDebug(other.isValid)
-        owsAssertDebug(currency == .mobileCoin)
+        owsAssertDebug(self.isValidAmount(canBeEmpty: true))
+        owsAssertDebug(other.isValidAmount(canBeEmpty: true))
+        owsAssertDebug(self.currency == .mobileCoin)
         owsAssertDebug(other.currency == .mobileCoin)
 
         return TSPaymentAmount(currency: currency, picoMob: self.picoMob + other.picoMob)
@@ -400,7 +400,8 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
 
         if let paymentAmount = paymentAmount {
-            if !paymentAmount.isValidAmount(canBeEmpty: false) {
+            let canBeEmpty = self.isDefragmentation
+            if !paymentAmount.isValidAmount(canBeEmpty: canBeEmpty) {
                 owsFailDebug("Invalid paymentAmount: \(formattedState).")
                 isValid = false
             }

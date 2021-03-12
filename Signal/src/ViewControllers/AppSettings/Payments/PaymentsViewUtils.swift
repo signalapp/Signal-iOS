@@ -198,7 +198,7 @@ public extension TSPaymentModel {
 
         var result: String
 
-        if isOutgoingTransfer || isUnidentified {
+        if !isIdentifiedPayment {
             if isOutgoing {
                 result = (isLongForm
                             ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE",

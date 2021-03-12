@@ -38,7 +38,7 @@ class MobileCoinAPI {
     static let rootEntropy6 = Data([74, 32, 171, 68, 50, 215, 36, 155, 1, 29, 129, 87, 119, 234, 106, 90, 245, 37, 222, 244, 12, 60, 191, 247, 76, 215, 247, 31, 137, 135, 215, 99])
 
     // PAYMENTS TODO: Finalize this value with the designers.
-    private static let timeoutDuration: TimeInterval = 30
+    private static let timeoutDuration: TimeInterval = 60
 
     public let localAccount: MobileCoinAccount
 
@@ -171,9 +171,6 @@ class MobileCoinAPI {
         static let FOG_VIEW_SECURITY_VERSION: UInt16 = 1
         static let FOG_LEDGER_PRODUCT_ID: UInt16 = 2
         static let FOG_LEDGER_SECURITY_VERSION: UInt16 = 1
-        static let FOG_INGEST_PRODUCT_ID: UInt16 = 4
-        static let FOG_INGEST_SECURITY_VERSION: UInt16 = 1
-        // PAYMENTS TODO: What are the correct values?
         static let FOG_REPORT_PRODUCT_ID: UInt16 = 4
         static let FOG_REPORT_SECURITY_VERSION: UInt16 = 1
 
@@ -227,7 +224,7 @@ class MobileCoinAPI {
                     fogMerkleProof: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: FOG_INGEST_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
                     // TODO:
                     fogReport: try buildAttestation(
@@ -268,7 +265,7 @@ class MobileCoinAPI {
                     fogMerkleProof: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: FOG_INGEST_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
                     // TODO:
                     fogReport: try buildAttestation(
@@ -873,6 +870,15 @@ extension MobileCoinAPI {
             case .inputsAlreadySpent:
                 Logger.warn("Error: \(error)")
                 return PaymentsError.inputsAlreadySpent
+            }
+        case let error as MobileCoin.TransactionEstimationError:
+            switch error {
+            case .invalidInput(let reason):
+                owsFailDebug("Error: \(error), \(reason)")
+                return PaymentsError.invalidInput
+            case .insufficientBalance:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.insufficientFunds
             }
         default:
             owsFailDebug("Unexpected error: \(error)")

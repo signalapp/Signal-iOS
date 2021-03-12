@@ -893,10 +893,15 @@ private class PaymentProcessingOperation: OWSOperation {
                 }
                 do {
                     let notify = {
-                        _ = try PaymentsImpl.sendPaymentNotificationMessage(paymentModel: paymentModel,
-                                                                            transaction: transaction)
-                        PaymentsImpl.sendOutgoingPaymentSyncMessage(paymentModel: paymentModel,
-                                                                    transaction: transaction)
+                        if paymentModel.isDefragmentation {
+                            PaymentsImpl.sendDefragmentationSyncMessage(paymentModel: paymentModel,
+                                                                        transaction: transaction)
+                        } else {
+                            _ = try PaymentsImpl.sendPaymentNotificationMessage(paymentModel: paymentModel,
+                                                                                transaction: transaction)
+                            PaymentsImpl.sendOutgoingPaymentSyncMessage(paymentModel: paymentModel,
+                                                                        transaction: transaction)
+                        }
                     }
 
                     try notify()

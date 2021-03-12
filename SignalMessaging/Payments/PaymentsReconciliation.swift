@@ -369,10 +369,11 @@ public class PaymentsReconciliation {
 
             var unaccountedForReceivedItems = [MCTransactionHistoryItem]()
             for receivedItem in blockActivity.receivedItems {
-                let existingPaymentModels = databaseState.incomingAnyMap.values(forKey: receivedItem.txoPublicKey)
-                owsAssertDebug(existingPaymentModels.filter { $0.isFailed }.isEmpty)
-                let isAccountedFor = !existingPaymentModels.isEmpty
-                if !isAccountedFor {
+                let existingReceivingPaymentModels = databaseState.incomingAnyMap.values(forKey: receivedItem.txoPublicKey)
+                owsAssertDebug(existingReceivingPaymentModels.filter { $0.isFailed }.isEmpty)
+                let isAccountedFor = !existingReceivingPaymentModels.isEmpty
+                let isPossibleChange = databaseState.outputPublicKeyMap[receivedItem.txoPublicKey] != nil
+                if !isAccountedFor, !isPossibleChange {
                     unaccountedForReceivedItems.append(receivedItem)
                 }
             }
@@ -497,13 +498,15 @@ public class PaymentsReconciliation {
             return cullCount
         }
 
-        func cullUnidentifiedDuplicates(_ map: MultiMap<Data, TSPaymentModel>) {
+        func cullUnidentifiedDuplicates(_ map: MultiMap<Data, TSPaymentModel>,
+                                        label: String) {
             for (_, paymentModels) in map {
-                guard paymentModels.count < 1 else {
+                guard paymentModels.count > 1 else {
                     continue
                 }
                 let culled = cullPaymentModelsIfUnidentified(paymentModels)
                 owsAssertDebug(culled > 0)
+                Logger.warn("Culling \(label): \(culled)")
             }
         }
 
@@ -515,46 +518,71 @@ public class PaymentsReconciliation {
 
         let allPaymentModels = TSPaymentModel.anyFetchAll(transaction: transaction)
         for paymentModel in allPaymentModels {
-            guard !paymentModel.isFailed else {
+            owsAssertDebug(paymentModel.isFailed == (paymentModel.mobileCoin == nil))
+            guard let mobileCoin = paymentModel.mobileCoin else {
                 // Ignore failed models.
                 continue
             }
-            if let key = paymentModel.mobileCoin?.transactionData {
+            if let key = mobileCoin.transactionData {
                 transactionMap.add(key: key, value: paymentModel)
             }
-            if let key = paymentModel.mobileCoin?.receiptData {
+            if let key = mobileCoin.receiptData {
                 receiptMap.add(key: key, value: paymentModel)
             }
-            for key in paymentModel.mobileCoin?.incomingTransactionPublicKeys ?? [] {
+            for key in mobileCoin.incomingTransactionPublicKeys ?? [] {
                 incomingTransactionPublicKeyMap.add(key: key, value: paymentModel)
             }
-            for key in paymentModel.mobileCoin?.spentKeyImages ?? [] {
+            for key in mobileCoin.spentKeyImages ?? [] {
                 spentKeyImagesMap.add(key: key, value: paymentModel)
             }
-            for key in paymentModel.mobileCoin?.outputPublicKeys ?? [] {
+            for key in mobileCoin.outputPublicKeys ?? [] {
                 outputPublicKeys.add(key: key, value: paymentModel)
             }
         }
 
+        // Cull incoming unidentified payment models which are actually
+        // change for an outgoing payment model.
+        for (incomingTransactionPublicKey, paymentModels) in incomingTransactionPublicKeyMap {
+            let isChange = !outputPublicKeys.values(forKey: incomingTransactionPublicKey).isEmpty
+            if isChange {
+                let culled = cullPaymentModelsIfUnidentified(paymentModels)
+                owsAssertDebug(culled > 0)
+                let label = "change"
+                Logger.warn("Culling \(label): \(culled)")
+            }
+        }
+
         // Only one payment model should correspond to a given MC transaction.
-        cullUnidentifiedDuplicates(transactionMap)
+        cullUnidentifiedDuplicates(transactionMap, label: "transactionMap")
 
         // Only one payment model should correspond to a given MC receipt.
-        cullUnidentifiedDuplicates(receiptMap)
+        cullUnidentifiedDuplicates(receiptMap, label: "receiptMap")
 
         // Only one payment model should correspond to a given MC incoming TXO public key.
-        cullUnidentifiedDuplicates(incomingTransactionPublicKeyMap)
+        cullUnidentifiedDuplicates(incomingTransactionPublicKeyMap, label: "incomingTransactionPublicKeyMap")
 
         // Only one payment model should correspond to a given MC spent key image.
-        cullUnidentifiedDuplicates(spentKeyImagesMap)
+        cullUnidentifiedDuplicates(spentKeyImagesMap, label: "spentKeyImagesMap")
 
         // Only one payment model should correspond to a given MC output public key.
-        cullUnidentifiedDuplicates(outputPublicKeys)
+        cullUnidentifiedDuplicates(outputPublicKeys, label: "outputPublicKeys")
+
+        if !unidentifiedPaymentModelsToCull.isEmpty {
+            owsFailDebug("Culling payment models: \(unidentifiedPaymentModelsToCull.count)")
+            if let transaction = transaction as? SDSAnyWriteTransaction {
+                for paymentModel in unidentifiedPaymentModelsToCull.values {
+                    Logger.info("Culling payment model: \(paymentModel.descriptionForLogs)")
+                    paymentModel.anyRemove(transaction: transaction)
+                }
+            } else {
+                throw ReconciliationError.unsavedChanges
+            }
+        }
     }
 
     public func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
                                       transaction: SDSAnyWriteTransaction) {
-        guard oldPaymentModel.isIdentifiedPayment else {
+        guard !oldPaymentModel.isUnidentified else {
             owsFailDebug("Unexpected payment: \(oldPaymentModel.descriptionForLogs)")
             return
         }
@@ -616,7 +644,7 @@ public class PaymentsReconciliation {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         // Cull unidentified payment models which might be replaced by this identified model,
         // then schedule reconciliation pass to create new unidentified payment models if necessary.
-        if paymentModel.isIdentifiedPayment,
+        if !paymentModel.isUnidentified,
            paymentModel.mcLedgerBlockIndex > 0 {
             cullUnidentifiedPaymentsInSameBlock(paymentModel, transaction: transaction)
         }
@@ -625,14 +653,14 @@ public class PaymentsReconciliation {
     public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         // Cull unidentified payment models which might be replaced by this identified model,
         // then schedule reconciliation pass to create new unidentified payment models if necessary.
-        if paymentModel.isIdentifiedPayment,
+        if !paymentModel.isUnidentified,
            paymentModel.mcLedgerBlockIndex > 0 {
             cullUnidentifiedPaymentsInSameBlock(paymentModel, transaction: transaction)
         }
     }
 
     private func cullUnidentifiedPaymentsInSameBlock(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        guard paymentModel.isIdentifiedPayment,
+        guard !paymentModel.isUnidentified,
               paymentModel.mcLedgerBlockIndex > 0 else {
             owsFailDebug("Invalid paymentModel.")
             return
@@ -750,15 +778,15 @@ internal class PaymentsDatabaseState {
 
     var allPaymentModels = [TSPaymentModel]()
 
-    // A map of "TXO public key" to TSPaymentModel for
+    // A map of "received TXO public key" to TSPaymentModel for
     // (incoming) transactions.
     var incomingAnyMap = MultiMap<Data, TSPaymentModel>()
 
-    // A map of "TXO image key" to TSPaymentModel for
+    // A map of "spent TXO image key" to TSPaymentModel for
     // (known, outgoing) transactions.
     var spentImageKeyMap = [Data: TSPaymentModel]()
 
-    // A map of "spent TXO public key" to TSPaymentModel for
+    // A map of "output TXO public key" to TSPaymentModel for
     // (known, outgoing) transactions.
     var outputPublicKeyMap = [Data: TSPaymentModel]()
 

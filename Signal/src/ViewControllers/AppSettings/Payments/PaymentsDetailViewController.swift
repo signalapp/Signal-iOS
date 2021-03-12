@@ -210,7 +210,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let paymentModel = paymentItem.paymentModel
 
         if paymentModel.isOutgoing,
-           paymentModel.isIdentifiedPayment,
            let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount {
             let bottomText = PaymentsImpl.format(paymentAmount: feeAmount,
                                                  withCurrencyCode: true,

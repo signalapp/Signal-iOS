@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-// TODO: Support mobilecoin defrags.
 // TODO: Support requests.
 @interface OutgoingPaymentSyncMessage : OWSOutgoingSyncMessage
 

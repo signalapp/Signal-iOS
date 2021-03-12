@@ -480,25 +480,25 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             try! DevDevice(phoneNumber: "+441752395464",
                            fakeRootEntropy: MobileCoinAPI.rootEntropy1)
 
-//            // iPhone Xs Simulator
-//            try! DevDevice(phoneNumber: "+14503002620",
-//                           fakeRootEntropy: MobileCoinAPI.rootEntropy2),
-//
-//            // iPhone Xr Simulator
-//            try! DevDevice(phoneNumber: "+13602090656",
-//                           fakeRootEntropy: MobileCoinAPI.rootEntropy3),
-//
-//            // iPhone XS Max Device
-//            try! DevDevice(phoneNumber: "+12262864592",
-//                           fakeRootEntropy: MobileCoinAPI.rootEntropy4),
-//
-//            // iPhone 12 mini Device
-//            try! DevDevice(phoneNumber: "+12534877762",
-//                           fakeRootEntropy: MobileCoinAPI.rootEntropy5),
-//
-//            // iPhone 11 Pro Simulator
-//            try! DevDevice(phoneNumber: "+15092608677",
-//                           fakeRootEntropy: MobileCoinAPI.rootEntropy6)
+            //            // iPhone Xs Simulator
+            //            try! DevDevice(phoneNumber: "+14503002620",
+            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy2),
+            //
+            //            // iPhone Xr Simulator
+            //            try! DevDevice(phoneNumber: "+13602090656",
+            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy3),
+            //
+            //            // iPhone XS Max Device
+            //            try! DevDevice(phoneNumber: "+12262864592",
+            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy4),
+            //
+            //            // iPhone 12 mini Device
+            //            try! DevDevice(phoneNumber: "+12534877762",
+            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy5),
+            //
+            //            // iPhone 11 Pro Simulator
+            //            try! DevDevice(phoneNumber: "+15092608677",
+            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy6)
         ]
     }
 
@@ -925,22 +925,23 @@ public extension PaymentsImpl {
 
     private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount,
                             mobileCoinAPI: MobileCoinAPI) -> Promise<Void> {
-        Logger.verbose("")
+        Logger.info("")
 
         // 1. Prepare defragmentation transactions.
         // 2. Record defragmentation transactions in database.
         //   3. Submit defragmentation transactions (payment processor will do this).
         //   4. Verify defragmentation transactions (payment processor will do this).
-        // 5. Notify linked devices of possible defragmentation transactions.
-        // 6. Block defragmentation transactions.
+        // 5. Block on verification of defragmentation transactions.
         return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
             mobileCoinAPI.prepareDefragmentationStepTransactions(forPaymentAmount: paymentAmount)
         }.map(on: .global()) { (mcTransactions: [MobileCoin.Transaction]) -> [TSPaymentModel] in
+            Logger.info("mcTransactions: \(mcTransactions.count)")
+
             // To initiate the defragmentation transactions, all we need to do
             // is save TSPaymentModels to the database. The PaymentsProcessor
             // will observe this and take responsibility for their submission,
             // verification.
-            try Self.databaseStorage.write { dbTransaction in
+            return try Self.databaseStorage.write { dbTransaction in
                 try mcTransactions.map { mcTransaction in
                     let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
                     let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
@@ -971,9 +972,6 @@ public extension PaymentsImpl {
                     }
 
                     try self.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
-
-                    Self.sendDefragmentationSyncMessage(paymentModel: paymentModel,
-                                                        transaction: dbTransaction)
 
                     return paymentModel
                 }
@@ -1011,6 +1009,7 @@ public extension PaymentsImpl {
             guard let paymentModel = paymentModelLatest else {
                 throw PaymentsError.missingModel
             }
+
             switch paymentModel.paymentState {
             case .outgoingUnsubmitted,
                  .outgoingUnverified:
@@ -1045,15 +1044,17 @@ public extension PaymentsImpl {
         }
     }
 
-    private class func sendDefragmentationSyncMessage(paymentModel: TSPaymentModel,
-                                                      transaction: SDSAnyWriteTransaction) {
+    class func sendDefragmentationSyncMessage(paymentModel: TSPaymentModel,
+                                              transaction: SDSAnyWriteTransaction) {
+        Logger.verbose("")
         guard paymentModel.isDefragmentation else {
             owsFailDebug("Invalid paymentType.")
             return
         }
         guard let paymentAmount = paymentModel.paymentAmount,
               paymentAmount.currency == .mobileCoin,
-              paymentAmount.isValidAmount(canBeEmpty: false) else {
+              paymentAmount.isValidAmount(canBeEmpty: true),
+              paymentAmount.picoMob == 0 else {
             owsFailDebug("Missing or invalid paymentAmount.")
             return
         }
@@ -1088,6 +1089,7 @@ public extension PaymentsImpl {
     class func sendPaymentNotificationMessage(paymentModel: TSPaymentModel,
                                               transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingPaymentMessage {
 
+        Logger.verbose("")
         guard paymentModel.paymentType == .outgoingPayment else {
             owsFailDebug("Invalid paymentType.")
             throw PaymentsError.invalidModel
@@ -1143,6 +1145,7 @@ public extension PaymentsImpl {
     class func sendOutgoingPaymentSyncMessage(paymentModel: TSPaymentModel,
                                               transaction: SDSAnyWriteTransaction) {
 
+        Logger.verbose("")
         guard let recipientUuidString = paymentModel.addressUuidString,
               let recipientUuid = UUID(uuidString: recipientUuidString) else {
             owsFailDebug("Missing recipientUuid.")
@@ -1405,6 +1408,7 @@ public extension PaymentsImpl {
     func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction) {
+        Logger.verbose("")
         do {
             guard let mobileCoinProto = paymentProto.mobileCoin else {
                 Logger.warn("Missing mobileCoinProto.")
@@ -1484,8 +1488,8 @@ public extension PaymentsImpl {
             } else {
                 // Possible outgoing payment.
                 guard recipientUuid != nil,
-                    receiptData != nil,
-                    paymentAmount.isValidAmount(canBeEmpty: false) else {
+                      receiptData != nil,
+                      paymentAmount.isValidAmount(canBeEmpty: false) else {
                     throw OWSAssertionError("Invalid proto.")
                 }
                 paymentType = .outgoingPayment
@@ -1518,35 +1522,36 @@ public extension PaymentsImpl {
             throw OWSAssertionError("Invalid paymentModel.")
         }
 
-        if paymentModel.isOutgoing,
-           paymentModel.isIdentifiedPayment {
-            if let transactionData = paymentModel.mobileCoin?.transactionData {
-                let existingPaymentModels = PaymentFinder.paymentModels(forMcTransactionData: transactionData,
-                                                                        transaction: transaction)
-                if existingPaymentModels.count > 1 {
-                    owsFailDebug("More than one conflict.")
+        if !paymentModel.isUnidentified {
+            // Avoid creating duplicate payment models.
+            if paymentModel.isOutgoing {
+                if let transactionData = paymentModel.mobileCoin?.transactionData {
+                    let existingPaymentModels = PaymentFinder.paymentModels(forMcTransactionData: transactionData,
+                                                                            transaction: transaction)
+                    if existingPaymentModels.count > 1 {
+                        owsFailDebug("More than one conflict.")
+                    }
+                    if !existingPaymentModels.isEmpty {
+                        throw OWSAssertionError("Duplicate paymentModel.")
+                    }
+                } else {
+                    throw OWSAssertionError("Missing transactionData.")
                 }
-                if !existingPaymentModels.isEmpty {
-                    throw OWSAssertionError("Duplicate paymentModel.")
-                }
-            } else {
-                throw OWSAssertionError("Missing transactionData.")
             }
-        }
 
-        if paymentModel.isIncoming,
-           paymentModel.isIdentifiedPayment {
-            if let receiptData = paymentModel.mobileCoin?.receiptData {
-                let existingPaymentModels = PaymentFinder.paymentModels(forMcReceiptData: receiptData,
-                                                                        transaction: transaction)
-                if existingPaymentModels.count > 1 {
-                    owsFailDebug("More than one conflict.")
+            if paymentModel.isIncoming {
+                if let receiptData = paymentModel.mobileCoin?.receiptData {
+                    let existingPaymentModels = PaymentFinder.paymentModels(forMcReceiptData: receiptData,
+                                                                            transaction: transaction)
+                    if existingPaymentModels.count > 1 {
+                        owsFailDebug("More than one conflict.")
+                    }
+                    if !existingPaymentModels.isEmpty {
+                        throw OWSAssertionError("Duplicate paymentModel.")
+                    }
+                } else {
+                    throw OWSAssertionError("Missing receiptData.")
                 }
-                if !existingPaymentModels.isEmpty {
-                    throw OWSAssertionError("Duplicate paymentModel.")
-                }
-            } else {
-                throw OWSAssertionError("Missing receiptData.")
             }
         }
 
