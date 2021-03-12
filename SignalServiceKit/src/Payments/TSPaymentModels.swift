@@ -405,22 +405,20 @@ extension TSPaymentModel: TSPaymentBaseModel {
                 isValid = false
             }
         } else {
-            // TODO: Defrag transactions should eventually have an amount.
-            let shouldHavePaymentAmount = paymentState != .incomingUnverified && !isFailed && !isDefragmentation
+            let shouldHavePaymentAmount = paymentState != .incomingUnverified && !isFailed
             if shouldHavePaymentAmount {
                 owsFailDebug("Missing paymentAmount: \(formattedState).")
                 isValid = false
             }
         }
 
-        // TODO: Defrag transactions should eventually have a feeAmount.
         if let feeAmount = mobileCoin?.feeAmount {
             if !feeAmount.isValidAmount(canBeEmpty: false) {
                 owsFailDebug("Invalid feeAmount: \(formattedState).")
                 isValid = false
             }
         } else {
-            let shouldHaveFeeAmount = isIdentifiedPayment && isOutgoing && !isFailed
+            let shouldHaveFeeAmount = !isUnidentified && isOutgoing && !isFailed
             if shouldHaveFeeAmount {
                 owsFailDebug("Missing feeAmount: \(formattedState).")
                 isValid = false

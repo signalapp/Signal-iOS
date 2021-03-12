@@ -76,7 +76,7 @@ public class PaymentsProcessor: NSObject {
     private var processingPaymentIds = Set<String>()
 
     // We use a dedicated queue for processing
-    // "outgoing, not verified, identified" payments.
+    // "outgoing, not yet verified" payments.
     //
     // This ensures that they are processed serially.
     let processingQueue_outgoing: OperationQueue = {
@@ -97,7 +97,6 @@ public class PaymentsProcessor: NSObject {
 
     private func processingQueue(forPaymentModel paymentModel: TSPaymentModel) -> OperationQueue {
         if paymentModel.isOutgoing,
-           paymentModel.isIdentifiedPayment,
            !paymentModel.isVerified {
             return processingQueue_outgoing
         } else {
@@ -331,10 +330,9 @@ extension PaymentsProcessor: UIDatabaseSnapshotDelegate {
 extension PaymentsProcessor: PaymentProcessingOperationDelegate {
 
     static func canBeProcessed(paymentModel: TSPaymentModel) -> Bool {
-        guard paymentModel.isIdentifiedPayment || paymentModel.isOutgoingTransfer else {
-            return false
-        }
-        guard !paymentModel.isComplete && !paymentModel.isFailed else {
+        guard !paymentModel.isUnidentified,
+              !paymentModel.isComplete,
+              !paymentModel.isFailed else {
             return false
         }
         return true

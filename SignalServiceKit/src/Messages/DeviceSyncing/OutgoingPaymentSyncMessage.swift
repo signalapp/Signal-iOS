@@ -10,15 +10,16 @@ public extension OutgoingPaymentSyncMessage {
     @objc(syncMessageBuilderWithMobileCoin:transaction:)
     func syncMessageBuilder(mobileCoin: OutgoingPaymentMobileCoin,
                             transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessage.SSKProtoSyncMessageBuilder? {
-        // TODO: Support defrags.
         // TODO: Support requests.
 
         do {
             let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: mobileCoin.amountPicoMob,
                                                                                          feePicoMob: mobileCoin.feePicoMob,
-                                                                                         receipt: mobileCoin.receiptData,
                                                                                          transaction: mobileCoin.transactionData,
                                                                                          ledgerBlockIndex: mobileCoin.blockIndex)
+            if let receiptData = mobileCoin.receiptData {
+                mobileCoinBuilder.setReceipt(receiptData)
+            }
             if let recipientAddress = mobileCoin.recipientAddress {
                 mobileCoinBuilder.setRecipientAddress(recipientAddress)
             }
@@ -26,7 +27,10 @@ public extension OutgoingPaymentSyncMessage {
                 mobileCoinBuilder.setLedgerBlockTimestamp(mobileCoin.blockTimestamp)
             }
 
-            let outgoingPaymentBuilder = SSKProtoSyncMessageOutgoingPayment.builder(recipientUuid: mobileCoin.recipientUuidString)
+            let outgoingPaymentBuilder = SSKProtoSyncMessageOutgoingPayment.builder()
+            if let recipientUuidString = mobileCoin.recipientUuidString {
+                outgoingPaymentBuilder.setRecipientUuid(recipientUuidString)
+            }
             outgoingPaymentBuilder.setMobileCoin(try mobileCoinBuilder.build())
             if let memoMessage = mobileCoin.memoMessage {
                 outgoingPaymentBuilder.setNote(memoMessage)

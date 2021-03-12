@@ -61,6 +61,18 @@ class DebugUIPayments: DebugUIPage {
             sectionItems.append(OWSTableItem(title: "Send tiny payments: 10") {
                 Self.sendTinyPayments(contactThread: contactThread, count: 10)
             })
+            // For testing defragmentation.
+            sectionItems.append(OWSTableItem(title: "Send tiny payments: 17") {
+                Self.sendTinyPayments(contactThread: contactThread, count: 17)
+            })
+            // For testing defragmentation.
+            sectionItems.append(OWSTableItem(title: "Send tiny payments: 40") {
+                Self.sendTinyPayments(contactThread: contactThread, count: 40)
+            })
+            // For testing defragmentation.
+            sectionItems.append(OWSTableItem(title: "Send tiny payments: 100") {
+                Self.sendTinyPayments(contactThread: contactThread, count: 100)
+            })
             sectionItems.append(OWSTableItem(title: "Send tiny payments: 1000") {
                 Self.sendTinyPayments(contactThread: contactThread, count: 1000)
             })

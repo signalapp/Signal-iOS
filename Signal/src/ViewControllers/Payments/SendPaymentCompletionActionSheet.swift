@@ -509,9 +509,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 // TODO: Finalize this timeout duration with design.
                 let blockInterval: TimeInterval = kSecondInterval * 30
                 return firstly(on: .global()) { () -> Promise<Void> in
-                    let untilDate = Date().addingTimeInterval(blockInterval - 1)
-                    return Self.blockOnVerification(paymentModel: paymentModel,
-                                                    untilDate: untilDate)
+                    Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel)
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
                     PaymentsError.timeout
                 }.recover(on: .global()) { (error: Error) -> Guarantee<()> in
@@ -536,51 +534,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
 
                 modalActivityIndicator.dismiss {}
-            }
-        }
-    }
-
-    private static func blockOnVerification(paymentModel: TSPaymentModel, untilDate: Date) -> Promise<Void> {
-        firstly(on: .global()) { () -> Promise<Void> in
-            guard untilDate > Date() else {
-                throw PaymentsError.timeout
-            }
-            let paymentModelLatest = databaseStorage.read { transaction in
-                TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
-                                        transaction: transaction)
-            }
-            guard let paymentModel = paymentModelLatest else {
-                throw PaymentsError.missingModel
-            }
-            switch paymentModel.paymentState {
-            case .outgoingUnsubmitted,
-                 .outgoingUnverified:
-                // Not yet verified, wait then try again.
-                return firstly(on: .global()) {
-                    after(seconds: 0.05)
-                }.then(on: .global()) {
-                    // Recurse.
-                    Self.blockOnVerification(paymentModel: paymentModel,
-                                             untilDate: untilDate)
-                }
-            case .outgoingVerified,
-                 .outgoingSending,
-                 .outgoingSent,
-                 .outgoingMissingLedgerTimestamp,
-                 .outgoingComplete,
-                 .outgoingFailed:
-                // Success: Verified or failed.
-                return Promise.value(())
-            case .incomingUnverified,
-                 .incomingVerified,
-                 .incomingMissingLedgerTimestamp,
-                 .incomingComplete,
-                 .incomingFailed:
-                owsFailDebug("Unexpected paymentState: \(paymentModel.descriptionForLogs)")
-                throw PaymentsError.invalidModel
-            @unknown default:
-                owsFailDebug("Invalid paymentState: \(paymentModel.descriptionForLogs)")
-                throw PaymentsError.invalidModel
             }
         }
     }

@@ -181,10 +181,10 @@ class MobileCoinAPI {
 
         // PAYMENTS TODO: What are the correct values?
         private static func buildAttestation(mrSigner: Data,
-                              productId: UInt16,
-                              minimumSecurityVersion: UInt16,
-                              allowedConfigAdvisories: [String] = [],
-                              allowedHardeningAdvisories: [String] = []) throws -> MobileCoin.Attestation {
+                                             productId: UInt16,
+                                             minimumSecurityVersion: UInt16,
+                                             allowedConfigAdvisories: [String] = [],
+                                             allowedHardeningAdvisories: [String] = []) throws -> MobileCoin.Attestation {
             let result = MobileCoin.Attestation.make(mrSigner: mrSigner,
                                                      productId: productId,
                                                      minimumSecurityVersion: minimumSecurityVersion,
@@ -501,11 +501,11 @@ class MobileCoinAPI {
         }.map(on: .global()) { (balance: TSPaymentAmount) -> TSPaymentAmount in
             Logger.verbose("balance: \(balance.picoMob)")
             return try self.getEstimatedFee(forPaymentAmount: paymentAmount)
-        }.then(on: .global()) { (feeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
+        }.then(on: .global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")
             }
-            guard feeAmount.isValidAmount(canBeEmpty: false) else {
+            guard estimatedFeeAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid fee.")
             }
 
@@ -517,20 +517,23 @@ class MobileCoinAPI {
             // We don't need to support amountPicoMobHigh.
             client.prepareTransaction(to: recipientPublicAddress,
                                       amount: paymentAmount.picoMob,
-                                      fee: feeAmount.picoMob) { (result: Swift.Result<(transaction: MobileCoin.Transaction,
-                                                                                       receipt: MobileCoin.Receipt),
-                                                                                      TransactionPreparationError>) in
-                                        switch result {
-                                        case .success(let transactionAndReceipt):
-                                            let (transaction, receipt) = transactionAndReceipt
-                                            let preparedTransaction = PreparedTransaction(transaction: transaction,
-                                                                                          receipt: receipt,
-                                                                                          feeAmount: feeAmount)
-                                            resolver.fulfill(preparedTransaction)
-                                        case .failure(let error):
-                                            let error = Self.convertMCError(error: error)
-                                            resolver.reject(error)
-                                        }
+                                      fee: estimatedFeeAmount.picoMob) { (result: Swift.Result<(transaction: MobileCoin.Transaction,
+                                                                                                receipt: MobileCoin.Receipt),
+                                                                                               TransactionPreparationError>) in
+                switch result {
+                case .success(let transactionAndReceipt):
+                    let (transaction, receipt) = transactionAndReceipt
+                    let finalFeeAmount = TSPaymentAmount(currency: .mobileCoin,
+                                                         picoMob: transaction.fee)
+                    owsAssertDebug(estimatedFeeAmount == finalFeeAmount)
+                    let preparedTransaction = PreparedTransaction(transaction: transaction,
+                                                                  receipt: receipt,
+                                                                  feeAmount: finalFeeAmount)
+                    resolver.fulfill(preparedTransaction)
+                case .failure(let error):
+                    let error = Self.convertMCError(error: error)
+                    resolver.reject(error)
+                }
             }
             return promise
         }.recover(on: .global()) { (error: Error) -> Promise<PreparedTransaction> in
@@ -593,77 +596,77 @@ class MobileCoinAPI {
         }
     }
 
-//    private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
-//        Logger.verbose("")
-//
-//        let client = self.client
-//
-//        return firstly(on: .global()) { () throws -> Promise<Void> in
-//            let result = client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob, feeLevel: Self.feeLevel)
-//            switch result {
-//            case .success(let shouldDefragment):
-//                guard shouldDefragment else {
-//                    return Promise.value(())
-//                }
-//                return self.defragment(forPaymentAmount: paymentAmount)
-//            case .failure(let error):
-//                let error = Self.convertMCError(error: error)
-//                throw error
-//            }
-//        }
-//    }
-//
-//    private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
-//        Logger.verbose("")
-//
-//        let client = self.client
-//
-//        return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
-//            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
-//            if DebugFlags.paymentsNoRequestsComplete.get() {
-//                // Never resolve.
-//                return promise
-//            }
-//            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
-//                                                          feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
-//                                                                                                           MobileCoin.TransactionPreparationError>) in
-//                switch result {
-//                case .success(let transactions):
-//                    resolver.fulfill(transactions)
-//                    break
-//                case .failure(let error):
-//                    let error = Self.convertMCError(error: error)
-//                    resolver.reject(error)
-//                    break
-//                }
-//            }
-//            return promise
-//        }.then(on: .global()) { (transactions: [MobileCoin.Transaction]) -> Promise<Void> in
-//            // 1. Prepare defragmentation transactions.
-//            // 2. Record defragmentation transactions in database.
-//            // 3. Notify linked devices of possible defragmentation transactions.
-//            // 4. Submit defragmentation transactions.
-//            // 5. Verify defragmentation transactions.
-//            return firstly(on: .global()) { () throws -> Promise<Void> in
-//                let submissionPromises = transactions.map { transaction in
-//                    self.submitTransaction(transaction: transaction)
-//                }
-//                return when(fulfilled: submissionPromises)
-//            }.then(on: .global()) { () -> Promise<Void> in
-//                let submissionPromises = transactions.map { transaction in
-//                    self.getOutgoingTransactionStatus(transaction: transaction)
-//                }
-//                return when(fulfilled: submissionPromises)
-//            }.then(on: .global()) { (transactionStatuses: [MCOutgoingTransactionStatus]) -> Promise<Void> in
-//            }
-////            func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) -> Promise<MCOutgoingTransactionStatus> {
-//        }
-//    }
-//    public func prepareDefragmentationStepTransactions(
-//        toSendAmount amount: UInt64,
-//        feeLevel: FeeLevel = .minimum,
-//        completion: @escaping (Result<[Transaction], TransactionPreparationError>) -> Void
-//    ) {
+    //    private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
+    //        Logger.verbose("")
+    //
+    //        let client = self.client
+    //
+    //        return firstly(on: .global()) { () throws -> Promise<Void> in
+    //            let result = client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob, feeLevel: Self.feeLevel)
+    //            switch result {
+    //            case .success(let shouldDefragment):
+    //                guard shouldDefragment else {
+    //                    return Promise.value(())
+    //                }
+    //                return self.defragment(forPaymentAmount: paymentAmount)
+    //            case .failure(let error):
+    //                let error = Self.convertMCError(error: error)
+    //                throw error
+    //            }
+    //        }
+    //    }
+    //
+    //    private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
+    //        Logger.verbose("")
+    //
+    //        let client = self.client
+    //
+    //        return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
+    //            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
+    //            if DebugFlags.paymentsNoRequestsComplete.get() {
+    //                // Never resolve.
+    //                return promise
+    //            }
+    //            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
+    //                                                          feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
+    //                                                                                                           MobileCoin.TransactionPreparationError>) in
+    //                switch result {
+    //                case .success(let transactions):
+    //                    resolver.fulfill(transactions)
+    //                    break
+    //                case .failure(let error):
+    //                    let error = Self.convertMCError(error: error)
+    //                    resolver.reject(error)
+    //                    break
+    //                }
+    //            }
+    //            return promise
+    //        }.then(on: .global()) { (transactions: [MobileCoin.Transaction]) -> Promise<Void> in
+    //            // 1. Prepare defragmentation transactions.
+    //            // 2. Record defragmentation transactions in database.
+    //            // 3. Notify linked devices of possible defragmentation transactions.
+    //            // 4. Submit defragmentation transactions.
+    //            // 5. Verify defragmentation transactions.
+    //            return firstly(on: .global()) { () throws -> Promise<Void> in
+    //                let submissionPromises = transactions.map { transaction in
+    //                    self.submitTransaction(transaction: transaction)
+    //                }
+    //                return when(fulfilled: submissionPromises)
+    //            }.then(on: .global()) { () -> Promise<Void> in
+    //                let submissionPromises = transactions.map { transaction in
+    //                    self.getOutgoingTransactionStatus(transaction: transaction)
+    //                }
+    //                return when(fulfilled: submissionPromises)
+    //            }.then(on: .global()) { (transactionStatuses: [MCOutgoingTransactionStatus]) -> Promise<Void> in
+    //            }
+    ////            func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) -> Promise<MCOutgoingTransactionStatus> {
+    //        }
+    //    }
+    //    public func prepareDefragmentationStepTransactions(
+    //        toSendAmount amount: UInt64,
+    //        feeLevel: FeeLevel = .minimum,
+    //        completion: @escaping (Result<[Transaction], TransactionPreparationError>) -> Void
+    //    ) {
 
     func submitTransaction(transaction: MobileCoin.Transaction) -> Promise<Void> {
         Logger.verbose("")
@@ -994,9 +997,9 @@ public extension PaymentsError {
 // network failures from the MobileCoin SDK.
 @inlinable
 public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
-                                                file: String = #file,
-                                                function: String = #function,
-                                                line: Int = #line) {
+                                               file: String = #file,
+                                               function: String = #function,
+                                               line: Int = #line) {
     if let paymentsError = error as? PaymentsError {
         if paymentsError.isPaymentsNetworkFailure {
             // Log but otherwise ignore network failures.

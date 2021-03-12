@@ -149,6 +149,8 @@ public protocol PaymentsSwift: Payments {
     func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data?
 
     var allPossiblePassphraseWords: [String] { get }
+
+    func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Void>
 }
 
 // MARK: -
@@ -471,6 +473,10 @@ extension MockPayments: PaymentsSwift {
     }
 
     public var allPossiblePassphraseWords: [String] {
+        owsFail("Not implemented.")
+    }
+
+    public func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 }
