@@ -399,7 +399,7 @@ public class OWSAttachmentDownloads: NSObject {
         case .stickerSmall:
             return false
         case .stickerLarge:
-            return autoDownloadableMediaTypes.contains(.photo)
+            return !autoDownloadableMediaTypes.contains(.photo)
         case .quotedReplyThumbnail, .linkedPreviewThumbnail, .contactShareAvatar:
             return false
         case .other:
