@@ -3025,7 +3025,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
     var recipientUuid: String {
       get {return _recipientUuid ?? String()}
       set {_recipientUuid = newValue}
@@ -3090,7 +3089,6 @@ struct SignalServiceProtos_SyncMessage {
       /// Clears the value of `feePicoMob`. Subsequent reads from it will return its default value.
       mutating func clearFeePicoMob() {self._feePicoMob = nil}
 
-      /// @required
       var receipt: Data {
         get {return _receipt ?? Data()}
         set {_receipt = newValue}

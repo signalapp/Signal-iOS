@@ -295,7 +295,7 @@ class DebugUIPayments: DebugUIPage {
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         firstly(on: .global()) { () -> Promise<TSPaymentModel> in
             let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
-            return Self.payments.submitPaymentTransaction(recipient: recipient,
+            return Self.payments.createNewOutgoingPayment(recipient: recipient,
                                                           paymentAmount: paymentAmount,
                                                           memoMessage: "Tiny: \(count)",
                                                           paymentRequestModel: nil,

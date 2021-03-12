@@ -825,7 +825,7 @@ public extension PaymentsImpl {
         }
     }
 
-    func submitPaymentTransaction(recipient: SendPaymentRecipient,
+    func createNewOutgoingPayment(recipient: SendPaymentRecipient,
                                   paymentAmount: TSPaymentAmount,
                                   memoMessage: String?,
                                   paymentRequestModel: TSPaymentRequestModel?,
@@ -840,7 +840,7 @@ public extension PaymentsImpl {
             return firstly(on: .global()) { () -> Promise<MobileCoin.PublicAddress> in
                 self.fetchPublicAddress(forAddress: recipientAddress)
             }.then(on: .global()) { (recipientPublicAddress: MobileCoin.PublicAddress) -> Promise<TSPaymentModel> in
-                self.submitPaymentTransaction(recipientAddress: recipientAddress,
+                self.createNewOutgoingPayment(recipientAddress: recipientAddress,
                                               recipientPublicAddress: recipientPublicAddress,
                                               paymentAmount: paymentAmount,
                                               memoMessage: memoMessage,
@@ -848,7 +848,7 @@ public extension PaymentsImpl {
                                               isOutgoingTransfer: isOutgoingTransfer)
             }
         case .publicAddress(let recipientPublicAddress):
-            return submitPaymentTransaction(recipientAddress: nil,
+            return createNewOutgoingPayment(recipientAddress: nil,
                                             recipientPublicAddress: recipientPublicAddress,
                                             paymentAmount: paymentAmount,
                                             memoMessage: memoMessage,
@@ -857,7 +857,7 @@ public extension PaymentsImpl {
         }
     }
 
-    private func submitPaymentTransaction(recipientAddress: SignalServiceAddress?,
+    private func createNewOutgoingPayment(recipientAddress: SignalServiceAddress?,
                                           recipientPublicAddress: MobileCoin.PublicAddress,
                                           paymentAmount: TSPaymentAmount,
                                           memoMessage: String?,
@@ -877,26 +877,185 @@ public extension PaymentsImpl {
 
         return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
-        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoinAPI.PreparedTransaction> in
-            mobileCoinAPI.prepareTransaction(paymentAmount: paymentAmount,
-                                             recipientPublicAddress: recipientPublicAddress)
-        }.then(on: .global()) { (preparedTransaction: MobileCoinAPI.PreparedTransaction) -> Promise<TSPaymentModel> in
-            // To initiate the outgoing payment, all we need to do is save
-            // the TSPaymentModel to the database. The PaymentsProcessor
-            // will observe this and take responsibility for the submission,
-            // verification and notification of the payment.
-            //
-            // TODO: Handle requests.
-            self.upsertNewOutgoingPaymentModel(recipientAddress: recipientAddress,
-                                               recipientPublicAddress: recipientPublicAddress,
-                                               paymentAmount: paymentAmount,
-                                               feeAmount: preparedTransaction.feeAmount,
-                                               memoMessage: memoMessage,
-                                               transaction: preparedTransaction.transaction,
-                                               receipt: preparedTransaction.receipt,
-                                               paymentRequestModel: paymentRequestModel,
-                                               isOutgoingTransfer: isOutgoingTransfer)
+        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentModel> in
+            return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+                // prepareTransaction() will fail if local balance is not yet known.
+                mobileCoinAPI.getLocalBalance()
+            }.then(on: .global()) { (balance: TSPaymentAmount) -> Promise<Void> in
+                Logger.verbose("balance: \(balance.picoMob)")
+                return Self.defragmentIfNecessary(forPaymentAmount: paymentAmount,
+                                                  mobileCoinAPI: mobileCoinAPI)
+            }.then(on: .global()) { () -> Promise<MobileCoinAPI.PreparedTransaction> in
+                mobileCoinAPI.prepareTransaction(paymentAmount: paymentAmount,
+                                                 recipientPublicAddress: recipientPublicAddress)
+            }.then(on: .global()) { (preparedTransaction: MobileCoinAPI.PreparedTransaction) -> Promise<TSPaymentModel> in
+                // To initiate the outgoing payment, all we need to do is save
+                // the TSPaymentModel to the database. The PaymentsProcessor
+                // will observe this and take responsibility for the submission,
+                // verification and notification of the payment.
+                //
+                // TODO: Handle requests.
+                self.upsertNewOutgoingPaymentModel(recipientAddress: recipientAddress,
+                                                   recipientPublicAddress: recipientPublicAddress,
+                                                   paymentAmount: paymentAmount,
+                                                   feeAmount: preparedTransaction.feeAmount,
+                                                   memoMessage: memoMessage,
+                                                   transaction: preparedTransaction.transaction,
+                                                   receipt: preparedTransaction.receipt,
+                                                   paymentRequestModel: paymentRequestModel,
+                                                   isOutgoingTransfer: isOutgoingTransfer)
+            }
         }
+    }
+
+    private class func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount,
+                                             mobileCoinAPI: MobileCoinAPI) -> Promise<Void> {
+        Logger.verbose("")
+
+        return firstly(on: .global()) { () throws -> Promise<Bool> in
+            mobileCoinAPI.requiresDefragmentation(forPaymentAmount: paymentAmount)
+        }.then(on: .global()) { (shouldDefragment: Bool) -> Promise<Void> in
+            guard shouldDefragment else {
+                return Promise.value(())
+            }
+            return self.defragment(forPaymentAmount: paymentAmount,
+                                   mobileCoinAPI: mobileCoinAPI)
+        }
+    }
+
+    private class func defragment(forPaymentAmount paymentAmount: TSPaymentAmount,
+                                  mobileCoinAPI: MobileCoinAPI) -> Promise<Void> {
+        Logger.verbose("")
+
+        return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
+            mobileCoinAPI.prepareDefragmentationStepTransactions(forPaymentAmount: paymentAmount)
+//            {
+//
+//            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
+//            if DebugFlags.paymentsNoRequestsComplete.get() {
+//                // Never resolve.
+//                return promise
+//            }
+//            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
+//                                                          feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
+//                                                                                                           MobileCoin.TransactionPreparationError>) in
+//                switch result {
+//                case .success(let transactions):
+//                    resolver.fulfill(transactions)
+//                    break
+//                case .failure(let error):
+//                    let error = Self.convertMCError(error: error)
+//                    resolver.reject(error)
+//                    break
+//                }
+//            }
+//            return promise
+        }.map(on: .global()) { (transactions: [MobileCoin.Transaction]) -> [TSPaymentModel] in
+            // To initiate the defragmentation transactions, all we need to do
+            // is save TSPaymentModels to the database. The PaymentsProcessor
+            // will observe this and take responsibility for their submission,
+            // verification.
+            Self.databaseStorage.write { transaction in
+                transactions.map { transaction in
+                    let mcTransactionData = transaction.serializedData
+                    // TODO: We should probably record paymentAmount.
+                    let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
+                                                       transactionData: mcTransactionData,
+                                                       receiptData: nil,
+                                                       incomingTransactionPublicKeys: nil,
+                                                       spentKeyImages: Array(transaction.inputKeyImages),
+                                                       outputPublicKeys: Array(transaction.outputPublicKeys),
+                                                       ledgerBlockTimestamp: 0,
+                                                       ledgerBlockIndex: 0,
+                                                       feeAmount: 0)
+
+                    let paymentModel = TSPaymentModel(paymentType: .outgoingDefragmentation,
+                                                      paymentState: .outgoingUnsubmitted,
+                                                      paymentAmount: nil,
+                                                      createdDate: Date(),
+                                                      addressUuidString: nil,
+                                                      memoMessage: nil,
+                                                      requestUuidString: nil,
+                                                      isUnread: false,
+                                                      mobileCoin: mobileCoin)
+
+                    guard paymentModel.isValid else {
+                        throw OWSAssertionError("Invalid paymentModel.")
+                    }
+
+                    try self.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+
+                    Self.sendDefragmentationSyncMessage(paymentModel: paymentModel,
+                                                        transaction: transaction)
+
+                    return paymentModel
+                }
+            }
+        }.then(on: .global()) { (_: [TSPaymentModel]) -> Promise<Void> in
+
+            // 1. Prepare defragmentation transactions.
+            // 2. Record defragmentation transactions in database.
+            // 3. Notify linked devices of possible defragmentation transactions.
+            // 4. Submit defragmentation transactions.
+            // 5. Verify defragmentation transactions.
+            return firstly(on: .global()) { () throws -> Promise<Void> in
+                let submissionPromises = transactions.map { transaction in
+                    self.submitTransaction(transaction: transaction)
+                }
+                return when(fulfilled: submissionPromises)
+            }.then(on: .global()) { () -> Promise<Void> in
+                let submissionPromises = transactions.map { transaction in
+                    self.getOutgoingTransactionStatus(transaction: transaction)
+                }
+                return when(fulfilled: submissionPromises)
+            }.then(on: .global()) { (_: [MCOutgoingTransactionStatus]) -> Promise<Void> in
+            }
+            //            func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) -> Promise<MCOutgoingTransactionStatus> {
+        }
+    }
+
+    class func sendDefragmentationSyncMessage(paymentModel: TSPaymentModel,
+                                              transaction: SDSAnyWriteTransaction) {
+        guard paymentModel.isDefragmentation else {
+            owsFailDebug("Invalid paymentType.")
+            return
+        }
+        // TODO: Defrag transactions should eventually have an amount.
+        let paymentAmount: TSPaymentAmount? = nil
+//        guard let paymentAmount = paymentModel.paymentAmount,
+//              paymentAmount.currency == .mobileCoin,
+//              paymentAmount.isValidAmount(canBeEmpty: false) else {
+//            owsFailDebug("Missing or invalid paymentAmount.")
+//            return
+//        }
+        // TODO: Defrag transactions should eventually have a feeAmount.
+        let feeAmount: TSPaymentAmount? = nil
+//        guard let feeAmount = paymentModel.mobileCoin?.feeAmount,
+//              feeAmount.currency == .mobileCoin,
+//              feeAmount.isValidAmount(canBeEmpty: false) else {
+//            owsFailDebug("Missing or invalid feeAmount.")
+//            return
+//        }
+        guard let mcTransactionData = paymentModel.mcTransactionData,
+              !mcTransactionData.isEmpty else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing mcTransactionData.")
+            } else {
+                owsFailDebug("Missing mcTransactionData.")
+            }
+            return
+        }
+        _ = sendOutgoingPaymentSyncMessage(recipientUuid: nil,
+                                           recipientAddress: nil,
+                                           paymentAmount: paymentAmount,
+                                           feeAmount: feeAmount,
+                                           mcReceiptData: nil,
+                                           mcTransactionData: mcTransactionData,
+                                           mcLedgerBlockTimestamp: paymentModel.mcLedgerBlockTimestamp,
+                                           mcLedgerBlockIndex: paymentModel.mcLedgerBlockIndex,
+                                           memoMessage: nil,
+                                           isDefragmentation: true,
+                                           transaction: transaction)
     }
 
     class func sendPaymentNotificationMessage(paymentModel: TSPaymentModel,
@@ -1009,6 +1168,7 @@ public extension PaymentsImpl {
                                            mcLedgerBlockTimestamp: paymentModel.mcLedgerBlockTimestamp,
                                            mcLedgerBlockIndex: paymentModel.mcLedgerBlockIndex,
                                            memoMessage: paymentModel.memoMessage,
+                                           isDefragmentation: false,
                                            transaction: transaction)
 
     }
@@ -1103,30 +1263,32 @@ public extension PaymentsImpl {
 
     }
 
-    class func sendOutgoingPaymentSyncMessage(recipientUuid: UUID,
-                                              recipientAddress: Data,
-                                              paymentAmount: TSPaymentAmount,
-                                              feeAmount: TSPaymentAmount,
-                                              mcReceiptData: Data,
+    class func sendOutgoingPaymentSyncMessage(recipientUuid: UUID?,
+                                              recipientAddress: Data?,
+                                              paymentAmount: TSPaymentAmount?,
+                                              feeAmount: TSPaymentAmount?,
+                                              mcReceiptData: Data?,
                                               mcTransactionData: Data,
                                               mcLedgerBlockTimestamp: UInt64?,
                                               mcLedgerBlockIndex: UInt64?,
                                               memoMessage: String?,
+                                              isDefragmentation: Bool,
                                               transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage? {
 
         guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing local thread.")
             return nil
         }
-        let mobileCoin = OutgoingPaymentMobileCoin(recipientUuidString: recipientUuid.uuidString,
+        let mobileCoin = OutgoingPaymentMobileCoin(recipientUuidString: recipientUuid?.uuidString,
                                                    recipientAddress: recipientAddress,
-                                                   amountPicoMob: paymentAmount.picoMob,
-                                                   feePicoMob: feeAmount.picoMob,
+                                                   amountPicoMob: paymentAmount?.picoMob ?? 0,
+                                                   feePicoMob: feeAmount?.picoMob ?? 0,
                                                    receiptData: mcReceiptData,
                                                    transactionData: mcTransactionData,
                                                    blockIndex: mcLedgerBlockIndex ?? 0,
                                                    blockTimestamp: mcLedgerBlockTimestamp ?? 0,
-                                                   memoMessage: memoMessage)
+                                                   memoMessage: memoMessage,
+                                                   isDefragmentation: isDefragmentation)
 
         let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
@@ -1213,6 +1375,7 @@ public extension PaymentsImpl {
         Logger.info("Ignoring payment notification from sync transcript.")
     }
 
+    // TODO: handle defrag
     func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction) {

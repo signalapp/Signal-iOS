@@ -519,7 +519,6 @@ message SyncMessage {
       optional uint64 amountPicoMob        = 2;
       // @required
       optional uint64 feePicoMob           = 3;
-      // @required
       optional bytes  receipt              = 4;
       // @required
       optional bytes  transaction          = 5;
@@ -527,7 +526,6 @@ message SyncMessage {
       // @required
       optional uint64 ledgerBlockIndex     = 7;
     }
-    // @required
     optional string     recipientUuid = 1;
     optional string     note          = 2;		
     // oneof attachment_identifier {

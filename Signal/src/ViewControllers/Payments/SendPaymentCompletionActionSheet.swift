@@ -498,7 +498,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             guard let self = self else { return }
 
             firstly(on: .global()) {
-                self.paymentsSwift.submitPaymentTransaction(recipient: paymentInfo.recipient,
+                self.paymentsSwift.createNewOutgoingPayment(recipient: paymentInfo.recipient,
                                                             paymentAmount: paymentInfo.paymentAmount,
                                                             memoMessage: paymentInfo.memoMessage,
                                                             paymentRequestModel: paymentInfo.paymentRequestModel,

@@ -405,54 +405,51 @@ extension TSPaymentModel: TSPaymentBaseModel {
                 isValid = false
             }
         } else {
-            let shouldHavePaymentAmount = paymentState != .incomingUnverified && !isFailed
+            // TODO: Defrag transactions should eventually have an amount.
+            let shouldHavePaymentAmount = paymentState != .incomingUnverified && !isFailed && !isDefragmentation
             if shouldHavePaymentAmount {
                 owsFailDebug("Missing paymentAmount: \(formattedState).")
                 isValid = false
             }
         }
 
+        // TODO: Defrag transactions should eventually have a feeAmount.
         if let feeAmount = mobileCoin?.feeAmount {
             if !feeAmount.isValidAmount(canBeEmpty: false) {
                 owsFailDebug("Invalid feeAmount: \(formattedState).")
                 isValid = false
             }
         } else {
-            let shouldHaveFeeAmount = !isUnidentified && isOutgoing && !isFailed
+            let shouldHaveFeeAmount = isIdentifiedPayment && isOutgoing && !isFailed
             if shouldHaveFeeAmount {
                 owsFailDebug("Missing feeAmount: \(formattedState).")
                 isValid = false
             }
         }
 
-        if !isUnidentified, !isOutgoingTransfer, addressUuidString == nil {
+        let shouldHaveAddressUuidString = isIdentifiedPayment
+        if shouldHaveAddressUuidString, addressUuidString == nil {
             owsFailDebug("Missing addressUuidString: \(formattedState).")
             isValid = false
         }
 
-        let shouldHaveMCReceiptData = isIncoming && !isUnidentified && !isFailed
+        let shouldHaveMCReceiptData = isIncoming && isIdentifiedPayment && !isFailed
         if shouldHaveMCReceiptData, mcReceiptData == nil {
             owsFailDebug("Missing mcReceiptData: \(formattedState).")
             isValid = false
         }
 
-        let shouldHaveMCRecipientPublicAddressData = isOutgoing && !isUnidentified
+        let shouldHaveMCRecipientPublicAddressData = isOutgoing && (isIdentifiedPayment || isOutgoingTransfer)
         if shouldHaveMCRecipientPublicAddressData, mcRecipientPublicAddressData == nil {
-            // This is valid for payments sent from a linked device.
-            //
-            // TODO: ?
-            Logger.warn("Missing mcRecipientPublicAddressData: \(formattedState).")
+            owsFailDebug("Missing mcRecipientPublicAddressData: \(formattedState).")
         }
 
         let shouldHaveMCTransaction = isOutgoing && !isUnidentified
         if shouldHaveMCTransaction, mcTransactionData == nil {
-            // This is valid for payments sent from a linked device.
-            //
-            // TODO: ?
-            Logger.warn("Missing mcTransactionData: \(formattedState).")
+            owsFailDebug("Missing mcTransactionData: \(formattedState).")
         }
 
-        let shouldHaveMCReceipt = isIncoming && !isUnidentified && !isFailed
+        let shouldHaveMCReceipt = isIncoming && isIdentifiedPayment && !isFailed
         if shouldHaveMCReceipt, mcReceiptData == nil {
             owsFailDebug("Missing mcReceiptData: \(formattedState).")
             isValid = false
@@ -469,7 +466,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveRecipient = !isUnidentified && isOutgoing
+        let shouldHaveRecipient = !isUnidentified && isOutgoing && !isDefragmentation
         let hasRecipient = addressUuidString != nil || mcRecipientPublicAddressData != nil
         if shouldHaveRecipient, !hasRecipient {
             owsFailDebug("Missing recipient: \(formattedState).")
@@ -499,7 +496,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCLedgerBlockTimestamp = isComplete && isIdentifiedPayment
+        let shouldHaveMCLedgerBlockTimestamp = isComplete && !isUnidentified
         if shouldHaveMCLedgerBlockTimestamp,
            !hasMCLedgerBlockTimestamp {
             // For some payments, we'll never be able to fill in the block timestamp.
@@ -581,6 +578,10 @@ extension TSPaymentModel: TSPaymentBaseModel {
 
     public var isUnidentified: Bool {
         paymentType.isUnidentified
+    }
+
+    public var isDefragmentation: Bool {
+        paymentType.isDefragmentation
     }
 
     public var hasMCLedgerBlockIndex: Bool {
@@ -751,7 +752,8 @@ extension TSPaymentType {
             return true
         case .outgoingPayment,
              .outgoingUnidentified,
-             .outgoingTransfer:
+             .outgoingTransfer,
+             .outgoingDefragmentation:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -766,7 +768,8 @@ extension TSPaymentType {
             return true
         case .incomingUnidentified,
              .outgoingUnidentified,
-             .outgoingTransfer:
+             .outgoingTransfer,
+             .outgoingDefragmentation:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -781,7 +784,24 @@ extension TSPaymentType {
             return true
         case .incomingPayment,
              .outgoingPayment,
-             .outgoingTransfer:
+             .outgoingTransfer,
+             .outgoingDefragmentation:
+            return false
+        @unknown default:
+            owsFailDebug("Invalid value: \(rawValue)")
+            return false
+        }
+    }
+
+    public var isDefragmentation: Bool {
+        switch self {
+        case .outgoingDefragmentation:
+            return true
+        case .incomingPayment,
+             .outgoingPayment,
+             .outgoingTransfer,
+             .incomingUnidentified,
+             .outgoingUnidentified:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")

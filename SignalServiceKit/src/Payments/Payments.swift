@@ -134,7 +134,7 @@ public protocol PaymentsSwift: Payments {
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount>
 
-    func submitPaymentTransaction(recipient: SendPaymentRecipient,
+    func createNewOutgoingPayment(recipient: SendPaymentRecipient,
                                   paymentAmount: TSPaymentAmount,
                                   memoMessage: String?,
                                   paymentRequestModel: TSPaymentRequestModel?,
@@ -358,7 +358,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func submitPaymentTransaction(recipient: SendPaymentRecipient,
+    public func createNewOutgoingPayment(recipient: SendPaymentRecipient,
                                          paymentAmount: TSPaymentAmount,
                                          memoMessage: String?,
                                          paymentRequestModel: TSPaymentRequestModel?,

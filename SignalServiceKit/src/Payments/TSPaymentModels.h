@@ -23,8 +23,7 @@ typedef NS_ENUM(NSUInteger, TSPaymentType) {
     TSPaymentTypeIncomingUnidentified,
     TSPaymentTypeOutgoingUnidentified,
     TSPaymentTypeOutgoingTransfer,
-    // PAYMENTS TODO: We might need case(s) for defragmentation.
-    // PAYMENTS TODO: We might need a case for outgoingPaymentFromLinkedDevice.
+    TSPaymentTypeOutgoingDefragmentation,
 };
 
 NSString *NSStringFromTSPaymentType(TSPaymentType value);

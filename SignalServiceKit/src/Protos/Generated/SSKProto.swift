@@ -10772,16 +10772,19 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     // MARK: - SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder
 
     @objc
-    public static func builder(amountPicoMob: UInt64, feePicoMob: UInt64, receipt: Data, transaction: Data, ledgerBlockIndex: UInt64) -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
-        return SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, receipt: receipt, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
+    public static func builder(amountPicoMob: UInt64, feePicoMob: UInt64, transaction: Data, ledgerBlockIndex: UInt64) -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
+        return SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
-        let builder = SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, receipt: receipt, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
+        let builder = SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
         if let _value = recipientAddress {
             builder.setRecipientAddress(_value)
+        }
+        if let _value = receipt {
+            builder.setReceipt(_value)
         }
         if hasLedgerBlockTimestamp {
             builder.setLedgerBlockTimestamp(ledgerBlockTimestamp)
@@ -10801,12 +10804,11 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(amountPicoMob: UInt64, feePicoMob: UInt64, receipt: Data, transaction: Data, ledgerBlockIndex: UInt64) {
+        fileprivate init(amountPicoMob: UInt64, feePicoMob: UInt64, transaction: Data, ledgerBlockIndex: UInt64) {
             super.init()
 
             setAmountPicoMob(amountPicoMob)
             setFeePicoMob(feePicoMob)
-            setReceipt(receipt)
             setTransaction(transaction)
             setLedgerBlockIndex(ledgerBlockIndex)
         }
@@ -10888,9 +10890,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     public let feePicoMob: UInt64
 
     @objc
-    public let receipt: Data
-
-    @objc
     public let transaction: Data
 
     @objc
@@ -10906,6 +10905,18 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     @objc
     public var hasRecipientAddress: Bool {
         return proto.hasRecipientAddress
+    }
+
+    @objc
+    public var receipt: Data? {
+        guard hasReceipt else {
+            return nil
+        }
+        return proto.receipt
+    }
+    @objc
+    public var hasReceipt: Bool {
+        return proto.hasReceipt
     }
 
     @objc
@@ -10928,13 +10939,11 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     private init(proto: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin,
                  amountPicoMob: UInt64,
                  feePicoMob: UInt64,
-                 receipt: Data,
                  transaction: Data,
                  ledgerBlockIndex: UInt64) {
         self.proto = proto
         self.amountPicoMob = amountPicoMob
         self.feePicoMob = feePicoMob
-        self.receipt = receipt
         self.transaction = transaction
         self.ledgerBlockIndex = ledgerBlockIndex
     }
@@ -10961,11 +10970,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         }
         let feePicoMob = proto.feePicoMob
 
-        guard proto.hasReceipt else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: receipt")
-        }
-        let receipt = proto.receipt
-
         guard proto.hasTransaction else {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: transaction")
         }
@@ -10983,7 +10987,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         self.init(proto: proto,
                   amountPicoMob: amountPicoMob,
                   feePicoMob: feePicoMob,
-                  receipt: receipt,
                   transaction: transaction,
                   ledgerBlockIndex: ledgerBlockIndex)
     }
@@ -11030,14 +11033,17 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
     // MARK: - SSKProtoSyncMessageOutgoingPaymentBuilder
 
     @objc
-    public static func builder(recipientUuid: String) -> SSKProtoSyncMessageOutgoingPaymentBuilder {
-        return SSKProtoSyncMessageOutgoingPaymentBuilder(recipientUuid: recipientUuid)
+    public static func builder() -> SSKProtoSyncMessageOutgoingPaymentBuilder {
+        return SSKProtoSyncMessageOutgoingPaymentBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoSyncMessageOutgoingPaymentBuilder {
-        let builder = SSKProtoSyncMessageOutgoingPaymentBuilder(recipientUuid: recipientUuid)
+        let builder = SSKProtoSyncMessageOutgoingPaymentBuilder()
+        if let _value = recipientUuid {
+            builder.setRecipientUuid(_value)
+        }
         if let _value = note {
             builder.setNote(_value)
         }
@@ -11057,13 +11063,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
 
         @objc
         fileprivate override init() {}
-
-        @objc
-        fileprivate init(recipientUuid: String) {
-            super.init()
-
-            setRecipientUuid(recipientUuid)
-        }
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -11116,10 +11115,19 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
     fileprivate let proto: SignalServiceProtos_SyncMessage.OutgoingPayment
 
     @objc
-    public let recipientUuid: String
+    public let mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?
 
     @objc
-    public let mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?
+    public var recipientUuid: String? {
+        guard hasRecipientUuid else {
+            return nil
+        }
+        return proto.recipientUuid
+    }
+    @objc
+    public var hasRecipientUuid: Bool {
+        return proto.hasRecipientUuid && !proto.recipientUuid.isEmpty
+    }
 
     @objc
     public var note: String? {
@@ -11142,10 +11150,8 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.OutgoingPayment,
-                 recipientUuid: String,
                  mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?) {
         self.proto = proto
-        self.recipientUuid = recipientUuid
         self.mobileCoin = mobileCoin
     }
 
@@ -11161,11 +11167,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.OutgoingPayment) throws {
-        guard proto.hasRecipientUuid else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: recipientUuid")
-        }
-        let recipientUuid = proto.recipientUuid
-
         var mobileCoin: SSKProtoSyncMessageOutgoingPaymentMobileCoin?
         if proto.hasMobileCoin {
             mobileCoin = try SSKProtoSyncMessageOutgoingPaymentMobileCoin(proto.mobileCoin)
@@ -11176,7 +11177,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
         // MARK: - End Validation Logic for SSKProtoSyncMessageOutgoingPayment -
 
         self.init(proto: proto,
-                  recipientUuid: recipientUuid,
                   mobileCoin: mobileCoin)
     }
 

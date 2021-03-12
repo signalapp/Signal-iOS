@@ -9,15 +9,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OutgoingPaymentMobileCoin
 
-- (instancetype)initWithRecipientUuidString:(NSString *)recipientUuidString
-                           recipientAddress:(NSData *)recipientAddress
+- (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
+                           recipientAddress:(nullable NSData *)recipientAddress
                               amountPicoMob:(uint64_t)amountPicoMob
                                  feePicoMob:(uint64_t)feePicoMob
-                                receiptData:(NSData *)receiptData
+                                receiptData:(nullable NSData *)receiptData
                             transactionData:(NSData *)transactionData
                                  blockIndex:(uint64_t)blockIndex
                              blockTimestamp:(uint64_t)blockTimestamp
                                 memoMessage:(nullable NSString *)memoMessage
+                          isDefragmentation:(BOOL)isDefragmentation
 {
     self = [super init];
     if (!self) {
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockIndex = blockIndex;
     _blockTimestamp = blockTimestamp;
     _memoMessage = memoMessage;
+    _isDefragmentation = isDefragmentation;
 
     return self;
 }

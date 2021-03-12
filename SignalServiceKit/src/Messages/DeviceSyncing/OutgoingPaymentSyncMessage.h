@@ -8,26 +8,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OutgoingPaymentMobileCoin : MTLModel
 
-@property (nonatomic, readonly) NSString *recipientUuidString;
+@property (nonatomic, readonly, nullable) NSString *recipientUuidString;
 @property (nonatomic, readonly, nullable) NSData *recipientAddress;
 @property (nonatomic, readonly) uint64_t amountPicoMob;
 @property (nonatomic, readonly) uint64_t feePicoMob;
-@property (nonatomic, readonly) NSData *receiptData;
+@property (nonatomic, readonly, nullable) NSData *receiptData;
 @property (nonatomic, readonly) NSData *transactionData;
 @property (nonatomic, readonly) uint64_t blockIndex;
 // This property will be zero if the timestamp is unknown.
 @property (nonatomic, readonly) uint64_t blockTimestamp;
 @property (nonatomic, readonly, nullable) NSString *memoMessage;
+@property (nonatomic, readonly) BOOL isDefragmentation;
 
-- (instancetype)initWithRecipientUuidString:(NSString *)recipientUuidString
-                           recipientAddress:(NSData *)recipientAddress
+- (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
+                           recipientAddress:(nullable NSData *)recipientAddress
                               amountPicoMob:(uint64_t)amountPicoMob
                                  feePicoMob:(uint64_t)feePicoMob
-                                receiptData:(NSData *)receiptData
+                                receiptData:(nullable NSData *)receiptData
                             transactionData:(NSData *)transactionData
                                  blockIndex:(uint64_t)blockIndex
                              blockTimestamp:(uint64_t)blockTimestamp
-                                memoMessage:(nullable NSString *)memoMessage;
+                                memoMessage:(nullable NSString *)memoMessage
+                          isDefragmentation:(BOOL)isDefragmentation;
 
 @end
 
