@@ -48,6 +48,11 @@ public extension OWSProfileManager {
         }.then { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
+            guard unsavedRotatedProfileKey == nil else {
+                Logger.info("Skipping local profile fetch during key rotation.")
+                return Promise.value(())
+            }
+
             guard let localAddress = TSAccountManager.shared().localAddress else {
                 throw OWSAssertionError("missing local address")
             }
@@ -184,25 +189,12 @@ public extension OWSProfileManager {
                     transaction: transaction
                 )
             }
+        }.then(on: .global()) { () -> Promise<Void> in
+            Logger.info("Updating account attributes after profile key rotation.")
+            return self.tsAccountManager.updateAccountAttributes()
         }.done(on: .global()) {
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
-        }.recover { error in
-            // If we encountered an error, we want to re-upload our
-            // local profile with our pre-rotation key, since we
-            // were unable to complete rotation but *might* have
-            // succeeded in uploading our profile. This is not
-            // essential, but is a best effort to ensure that the
-            // latest version for us on the service is using our
-            // current profile key. If we aren't able to do this,
-            // clients can still decrypt our profile with the old
-            // key thanks to versioned profiles.
-
-            // TODO: We could try to more optimistically retry rotation.
-
-            self.reuploadLocalProfile()
-
-            throw error
         }
     }
 }
