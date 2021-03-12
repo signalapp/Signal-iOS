@@ -820,8 +820,8 @@ public extension PaymentsImpl {
 
         return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
-        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentAmount> in
-            mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
+        }.map(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> TSPaymentAmount in
+            try mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
         }
     }
 

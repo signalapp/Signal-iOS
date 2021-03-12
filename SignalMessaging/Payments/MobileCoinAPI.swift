@@ -162,8 +162,9 @@ class MobileCoinAPI {
         let fogView: Attestation
         let fogKeyImage: Attestation
         let fogMerkleProof: Attestation
-        let fogIngest: Attestation
+        let fogReport: Attestation
 
+        // PAYMENTS TODO: What are the correct values?
         static let CONSENSUS_PRODUCT_ID: UInt16 = 1
         static let CONSENSUS_SECURITY_VERSION: UInt16 = 1
         static let FOG_VIEW_PRODUCT_ID: UInt16 = 3
@@ -172,8 +173,31 @@ class MobileCoinAPI {
         static let FOG_LEDGER_SECURITY_VERSION: UInt16 = 1
         static let FOG_INGEST_PRODUCT_ID: UInt16 = 4
         static let FOG_INGEST_SECURITY_VERSION: UInt16 = 1
+        // PAYMENTS TODO: What are the correct values?
+        static let FOG_REPORT_PRODUCT_ID: UInt16 = 4
+        static let FOG_REPORT_SECURITY_VERSION: UInt16 = 1
 
         static var allowedHardeningAdvisories: [String] { ["INTEL-SA-00334"] }
+
+        // PAYMENTS TODO: What are the correct values?
+        private static func buildAttestation(mrSigner: Data,
+                              productId: UInt16,
+                              minimumSecurityVersion: UInt16,
+                              allowedConfigAdvisories: [String] = [],
+                              allowedHardeningAdvisories: [String] = []) throws -> MobileCoin.Attestation {
+            let result = MobileCoin.Attestation.make(mrSigner: mrSigner,
+                                                     productId: productId,
+                                                     minimumSecurityVersion: minimumSecurityVersion,
+                                                     allowedConfigAdvisories: allowedConfigAdvisories,
+                                                     allowedHardeningAdvisories: allowedHardeningAdvisories)
+            switch result {
+            case .success(let attestation):
+                return attestation
+            case .failure(let error):
+                owsFailDebug("Error: \(error)")
+                throw error
+            }
+        }
 
         static var signalStaging: OWSAttestationConfig {
             // PAYMENTS TODO:
@@ -182,32 +206,34 @@ class MobileCoinAPI {
                 121, 244, 252, 42, 166, 188, 185, 147, 1, 44, 60, 56, 108
             ])
 
+            // PAYMENTS TODO: What are the correct values?
             do {
                 return OWSAttestationConfig(
-                    consensus: try Attestation(
+                    consensus: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: CONSENSUS_PRODUCT_ID,
                         minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogView: try Attestation(
+                    fogView: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_VIEW_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogKeyImage: try Attestation(
+                    fogKeyImage: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogMerkleProof: try Attestation(
+                    fogMerkleProof: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_INGEST_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogIngest: try Attestation(
+                    // TODO:
+                    fogReport: try buildAttestation(
                         mrSigner: phonyMrSigner,
-                        productId: FOG_INGEST_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        productId: FOG_REPORT_PRODUCT_ID,
+                        minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories))
             } catch {
                 owsFail("Invalid attestationConfig: \(error)")
@@ -221,32 +247,34 @@ class MobileCoinAPI {
                 121, 244, 252, 42, 166, 188, 185, 147, 1, 44, 60, 56, 108
             ])
 
+            // PAYMENTS TODO: What are the correct values?
             do {
                 return OWSAttestationConfig(
-                    consensus: try Attestation(
+                    consensus: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: CONSENSUS_PRODUCT_ID,
                         minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogView: try Attestation(
+                    fogView: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_VIEW_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogKeyImage: try Attestation(
+                    fogKeyImage: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogMerkleProof: try Attestation(
+                    fogMerkleProof: try buildAttestation(
                         mrSigner: phonyMrSigner,
                         productId: FOG_LEDGER_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        minimumSecurityVersion: FOG_INGEST_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories),
-                    fogIngest: try Attestation(
+                    // TODO:
+                    fogReport: try buildAttestation(
                         mrSigner: phonyMrSigner,
-                        productId: FOG_INGEST_PRODUCT_ID,
-                        minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                        productId: FOG_REPORT_PRODUCT_ID,
+                        minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
                         allowedHardeningAdvisories: allowedHardeningAdvisories))
             } catch {
                 owsFail("Invalid attestationConfig: \(error)")
@@ -289,37 +317,47 @@ class MobileCoinAPI {
 
         fileprivate func buildClient(signalAuthorization: OWSAuthorization) throws -> MobileCoinClient {
             let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
-            let client: MobileCoinClient
             let authorization: OWSAuthorization
+            let configResult: Swift.Result<MobileCoinClient.Config, InvalidInputError>
             switch environment {
             case .signalProduction, .signalStaging:
                 authorization = signalAuthorization
                 let attestationConfig = OWSAttestationConfig.attestationConfig(environment: environment)
-                let config = try MobileCoinClient.Config(consensusUrl: networkConfig.consensusUrl,
-                                                         consensusAttestation: attestationConfig.consensus,
-                                                         fogViewUrl: networkConfig.fogViewUrl,
-                                                         fogViewAttestation: attestationConfig.fogView,
-                                                         fogLedgerUrl: networkConfig.fogLedgerUrl,
-                                                         fogKeyImageAttestation: attestationConfig.fogKeyImage,
-                                                         fogMerkleProofAttestation: attestationConfig.fogMerkleProof,
-                                                         fogIngestAttestation: attestationConfig.fogIngest)
-                client = try MobileCoinClient(accountKey: accountKey, config: config)
+                configResult = MobileCoinClient.Config.make(consensusUrl: networkConfig.consensusUrl,
+                                                            consensusAttestation: attestationConfig.consensus,
+                                                            fogViewUrl: networkConfig.fogViewUrl,
+                                                            fogViewAttestation: attestationConfig.fogView,
+                                                            fogLedgerUrl: networkConfig.fogLedgerUrl,
+                                                            fogKeyImageAttestation: attestationConfig.fogKeyImage,
+                                                            fogMerkleProofAttestation: attestationConfig.fogMerkleProof,
+                                                            fogReportAttestation: attestationConfig.fogReport)
             case .mobileCoinAlphaNet:
                 authorization = OWSAuthorization.mobileCoinAlpha
-                let config = try MobileCoinClient.Config(consensusUrl: networkConfig.consensusUrl,
-                                                         fogViewUrl: networkConfig.fogViewUrl,
-                                                         fogLedgerUrl: networkConfig.fogLedgerUrl)
-                client = try MobileCoinClient(accountKey: accountKey, config: config)
+                configResult = MobileCoinClient.Config.make(consensusUrl: networkConfig.consensusUrl,
+                                                            fogViewUrl: networkConfig.fogViewUrl,
+                                                            fogLedgerUrl: networkConfig.fogLedgerUrl)
             case .mobileCoinMobileDev:
                 authorization = OWSAuthorization.mobileCoinMobileDev
-                let config = try MobileCoinClient.Config(consensusUrl: networkConfig.consensusUrl,
-                                                         fogViewUrl: networkConfig.fogViewUrl,
-                                                         fogLedgerUrl: networkConfig.fogLedgerUrl)
-                client = try MobileCoinClient(accountKey: accountKey, config: config)
+                configResult = MobileCoinClient.Config.make(consensusUrl: networkConfig.consensusUrl,
+                                                            fogViewUrl: networkConfig.fogViewUrl,
+                                                            fogLedgerUrl: networkConfig.fogLedgerUrl)
             }
-            client.setBasicAuthorization(username: authorization.username,
-                                         password: authorization.password)
-            return client
+            switch configResult {
+            case .success(let config):
+                let clientResult = MobileCoinClient.make(accountKey: accountKey, config: config)
+                switch clientResult {
+                case .success(let client):
+                    client.setBasicAuthorization(username: authorization.username,
+                                                 password: authorization.password)
+                    return client
+                case .failure(let error):
+                    owsFailDebug("Error: \(error)")
+                    throw error
+                }
+            case .failure(let error):
+                owsFailDebug("Error: \(error)")
+                throw error
+            }
         }
     }
 
@@ -367,8 +405,8 @@ class MobileCoinAPI {
         let fogReportId = ""
         let result = MobileCoin.AccountKey.make(rootEntropy: rootEntropy,
                                                 fogReportUrl: networkConfig.fogReportUrl,
-                                                fogAuthoritySpki: fogAuthoritySpki,
-                                                fogReportId: fogReportId)
+                                                fogReportId: fogReportId,
+                                                fogAuthoritySpki: fogAuthoritySpki)
         switch result {
         case .success(let accountKey):
             return accountKey
@@ -420,63 +458,31 @@ class MobileCoinAPI {
         }
     }
 
-    func getMinimumFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
+    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) throws -> TSPaymentAmount {
         Logger.verbose("")
 
-        let client = self.client
+        guard paymentAmount.isValidAmount(canBeEmpty: false) else {
+            throw OWSAssertionError("Invalid amount.")
+        }
 
-        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
-            guard paymentAmount.currency == .mobileCoin else {
-                throw OWSAssertionError("Invalid currency.")
-            }
-            guard paymentAmount.picoMob > 0 else {
+        // We don't need to support amountPicoMobHigh.
+        //
+        // TODO: Are we always going to use _minimum_ fee?
+        let result = client.estimateTotalFee(toSendAmount: paymentAmount.picoMob,
+                                             feeLevel: .minimum)
+        switch result {
+        case .success(let feePicoMob):
+            let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
+            guard fee.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")
             }
-
-            let (promise, resolver) = Promise<TSPaymentAmount>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
-            }
-            // We don't need to support amountPicoMobHigh.
-            //
-            // TODO: Are we always going to use _minimum_ fee?
-            client.minimumFee(amount: paymentAmount.picoMob) { (result: Swift.Result<UInt64, ConnectionError>) in
-                switch result {
-                case .success(let feePicoMob):
-                    let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-                    guard paymentAmount.currency == .mobileCoin,
-                          fee.currency == .mobileCoin else {
-                        resolver.reject(OWSAssertionError("Invalid currency."))
-                        return
-                    }
-                    guard paymentAmount.picoMob > 0,
-                          fee.picoMob > 0 else {
-                        resolver.reject(OWSAssertionError("Invalid amount."))
-                        return
-                    }
-                    Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
-                    resolver.fulfill(fee)
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
-                }
-            }
-            return promise
-        }.map(on: .global()) { (value: TSPaymentAmount) -> TSPaymentAmount in
-            Logger.verbose("Success: \(value)")
-            return value
-        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
+            Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
+            return fee
+        case .failure(let error):
+            let error = Self.convertMCError(error: error)
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
-        }.timeout(seconds: Self.timeoutDuration, description: "prepareTransaction") { () -> Error in
-            PaymentsError.timeout
         }
-    }
-
-    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
-        // TODO: Use proper SDK method when ready.
-        getMinimumFee(forPaymentAmount: paymentAmount)
     }
 
     struct PreparedTransaction {
@@ -494,9 +500,9 @@ class MobileCoinAPI {
         return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
             // prepareTransaction() will fail if local balance is not yet known.
             self.getLocalBalance()
-        }.then(on: .global()) { (balance: TSPaymentAmount) -> Promise<TSPaymentAmount> in
+        }.map(on: .global()) { (balance: TSPaymentAmount) -> TSPaymentAmount in
             Logger.verbose("balance: \(balance.picoMob)")
-            return self.getMinimumFee(forPaymentAmount: paymentAmount)
+            return try self.getEstimatedFee(forPaymentAmount: paymentAmount)
         }.then(on: .global()) { (feeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")
@@ -551,7 +557,7 @@ class MobileCoinAPI {
                 return promise
             }
             let client = self.client
-            client.submitTransaction(transaction) { (result: Swift.Result<Void, ConnectionError>) in
+            client.submitTransaction(transaction) { (result: Swift.Result<Void, TransactionSubmissionError>) in
                 switch result {
                 case .success:
                     resolver.fulfill(())
@@ -581,7 +587,12 @@ class MobileCoinAPI {
         }
 
         let client = self.client
-        return firstly(on: .global()) { () throws -> Promise<MCOutgoingTransactionStatus> in
+        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+            // .status(of: transaction) requires an updated balance.
+            //
+            // TODO: We could improve perf when verifying multiple transactions by getting balance just once.
+            self.getLocalBalance()
+        }.then(on: .global()) { (_: TSPaymentAmount) -> Promise<MCOutgoingTransactionStatus> in
             let (promise, resolver) = Promise<MCOutgoingTransactionStatus>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -638,38 +649,34 @@ class MobileCoinAPI {
         let client = self.client
         let localAccount = self.localAccount
 
-        return firstly(on: .global()) { () throws -> Promise<MCIncomingReceiptStatus> in
+        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+            // .status(of: receipt) requires an updated balance.
+            //
+            // TODO: We could improve perf when verifying multiple receipts by getting balance just once.
+            self.getLocalBalance()
+        }.map(on: .global()) { (_: TSPaymentAmount) -> MCIncomingReceiptStatus in
             let paymentAmount: TSPaymentAmount
             do {
                 paymentAmount = try Self.paymentAmount(forReceipt: receipt,
                                                        localAccount: localAccount)
             } catch {
                 owsFailDebug("Error: \(error)")
-                return Promise.value(MCIncomingReceiptStatus(receiptStatus: .failed,
-                                                             paymentAmount: .zeroMob,
-                                                             txOutPublicKey: Data()))
+                return MCIncomingReceiptStatus(receiptStatus: .failed,
+                                               paymentAmount: .zeroMob,
+                                               txOutPublicKey: Data())
             }
             let txOutPublicKey: Data = receipt.txOutPublicKey
 
-            let (promise, resolver) = Promise<MCIncomingReceiptStatus>.pending()
-            if DebugFlags.paymentsNoRequestsComplete.get() {
-                // Never resolve.
-                return promise
+            let result = client.status(of: receipt)
+            switch result {
+            case .success(let receiptStatus):
+                return MCIncomingReceiptStatus(receiptStatus: receiptStatus,
+                                               paymentAmount: paymentAmount,
+                                               txOutPublicKey: txOutPublicKey)
+            case .failure(let error):
+                let error = Self.convertMCError(error: error)
+                throw error
             }
-            client.status(of: receipt) { (result: Swift.Result<MobileCoin.ReceiptStatus, ReceiptStatusCheckError>) in
-                switch result {
-                case .success(let receiptStatus):
-                    resolver.fulfill(MCIncomingReceiptStatus(receiptStatus: receiptStatus,
-                                                             paymentAmount: paymentAmount,
-                                                             txOutPublicKey: txOutPublicKey))
-                    break
-                case .failure(let error):
-                    let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
-                    break
-                }
-            }
-            return promise
         }.map(on: .global()) { (value: MCIncomingReceiptStatus) -> MCIncomingReceiptStatus in
             Logger.verbose("Success: \(value)")
             return value
@@ -788,18 +795,31 @@ extension MobileCoinAPI {
             case .insufficientBalance:
                 Logger.warn("Error: \(error)")
                 return PaymentsError.insufficientFunds
+            case .defragmentationRequired:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.defragmentationRequired
             case .connectionError(let connectionError):
                 // Recurse.
                 return convertMCError(error: connectionError)
             }
-        case let error as MobileCoin.ReceiptStatusCheckError:
+        case let error as MobileCoin.TransactionSubmissionError:
             switch error {
-            case .invalidReceipt(let invalidInputError):
-                // Recurse.
-                return convertMCError(error: invalidInputError)
             case .connectionError(let connectionError):
                 // Recurse.
                 return convertMCError(error: connectionError)
+            case .invalidTransaction:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.invalidTransaction
+            case .feeError:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.invalidFee
+            case .tombstoneBlockTooFar:
+                Logger.warn("Error: \(error)")
+                // Map to .invalidTransaction
+                return PaymentsError.invalidTransaction
+            case .inputsAlreadySpent:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.inputsAlreadySpent
             }
         default:
             owsFailDebug("Unexpected error: \(error)")
@@ -834,7 +854,10 @@ public extension PaymentsError {
              .serializationError,
              .verificationStatusUnknown,
              .ledgerBlockTimestampUnknown,
-             .missingModel:
+             .missingModel,
+             .defragmentationRequired,
+             .invalidTransaction,
+             .inputsAlreadySpent:
             return false
         case .connectionFailure,
              .timeout:

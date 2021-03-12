@@ -542,7 +542,9 @@ private class PaymentProcessingOperation: OWSOperation {
                      .serializationError,
                      .missingModel,
                      .connectionFailure,
-                     .timeout:
+                     .timeout,
+                     .invalidTransaction,
+                     .inputsAlreadySpent:
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -553,6 +555,9 @@ private class PaymentProcessingOperation: OWSOperation {
                      .ledgerBlockTimestampUnknown:
                     // These errors are expected.
                     Logger.info("Error: \(error)")
+                case .defragmentationRequired:
+                    // These errors are expected but should be very rare.
+                    owsFailDebugUnlessMCNetworkFailure(error)
                 }
             default:
                 owsFailDebugUnlessMCNetworkFailure(error)
@@ -590,7 +595,9 @@ private class PaymentProcessingOperation: OWSOperation {
                  .attestationVerificationFailed,
                  .outdatedClient,
                  .serializationError,
-                 .missingModel:
+                 .missingModel,
+                 .invalidTransaction,
+                 .inputsAlreadySpent:
                 // Do not retry these errors.
                 delegate?.endProcessing(paymentId: self.paymentId)
             case .serverRateLimited:
@@ -630,6 +637,13 @@ private class PaymentProcessingOperation: OWSOperation {
                     retryDelayInteral += kHourInterval * 1
                 }
                 let nextRetryDelayInteral = self.retryDelayInteral * backoffFactor
+                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
+                                                  retryDelayInteral: retryDelayInteral,
+                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+            case .defragmentationRequired:
+                // Vanilla exponential backoff.
+                let retryDelayInteral = self.retryDelayInteral
+                let nextRetryDelayInteral = self.retryDelayInteral * 2
                 delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
                                                   retryDelayInteral: retryDelayInteral,
                                                   nextRetryDelayInteral: nextRetryDelayInteral)
@@ -757,19 +771,20 @@ private class PaymentProcessingOperation: OWSOperation {
             Self.payments.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             return mobileCoinAPI.submitTransaction(transaction: transaction)
-        }.map(on: .global()) { _ in
-            try Self.databaseStorage.write { transaction in
-                try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted,
-                                                         toState: .outgoingUnverified,
-                                                         transaction: transaction)
-            }
+        }.then(on: .global()) { _ in
+            Self.updatePaymentStatePromise(paymentModel: paymentModel,
+                                           fromState: .outgoingUnsubmitted,
+                                           toState: .outgoingUnverified)
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-            // Payments TODO: We need to handle certain errors here.
-            // e.g. if we double-submit a transaction, it should become unverified,
-            // not stuck in unsubmitted.
-            //
-            // Other errors might make this failed?
-            throw error
+            if case PaymentsError.inputsAlreadySpent = error {
+                // e.g. if we double-submit a transaction, it should become unverified,
+                // not stuck in unsubmitted.
+                return Self.updatePaymentStatePromise(paymentModel: paymentModel,
+                                                      fromState: .outgoingUnsubmitted,
+                                                      toState: .outgoingUnverified)
+            } else {
+                throw error
+            }
         }
     }
 
@@ -797,7 +812,7 @@ private class PaymentProcessingOperation: OWSOperation {
 
                 try Self.databaseStorage.write { transaction in
                     switch transactionStatus.transactionStatus {
-                    case .unknown, .pending:
+                    case .unknown:
                         throw PaymentsError.verificationStatusUnknown
                     case .accepted(let block):
                         if !paymentModel.hasMCLedgerBlockIndex {
@@ -1090,10 +1105,6 @@ private class PaymentProcessingOperation: OWSOperation {
             case .unknown:
                 // This should never happen, since we've already verified the transaction.
                 owsFailDebug("Unexpected receiptStatus for verified transaction: .unknown")
-                throw PaymentsError.verificationStatusUnknown
-            case .pending:
-                // This should never happen, since we've already verified the transaction.
-                owsFailDebug("Unexpected receiptStatus for verified transaction: .pending")
                 throw PaymentsError.verificationStatusUnknown
             case .accepted(let block):
                 guard let ledgerBlockDate = block.timestamp else {

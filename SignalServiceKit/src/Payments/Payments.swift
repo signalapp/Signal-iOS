@@ -30,6 +30,9 @@ public enum PaymentsError: Error {
     case verificationStatusUnknown
     case ledgerBlockTimestampUnknown
     case missingModel
+    case defragmentationRequired
+    case invalidTransaction
+    case inputsAlreadySpent
 }
 
 // MARK: -
