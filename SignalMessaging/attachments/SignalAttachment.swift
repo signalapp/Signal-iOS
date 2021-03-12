@@ -764,13 +764,6 @@ public class SignalAttachment: NSObject {
             Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
         } else {
-            let imageClass = (dataSource.data as NSData).isMaybeWebpData ? YYImage.self : UIImage.self
-            guard let image = imageClass.init(data: dataSource.data) else {
-                attachment.error = .couldNotParseImage
-                return attachment
-            }
-            attachment.cachedImage = image
-
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
                 ["heic", "heif"].contains(sourceFileExtension.lowercased()),
@@ -802,10 +795,11 @@ public class SignalAttachment: NSObject {
             let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
             Logger.verbose("Rebuilding image attachment of type: \(attachment.mimeType), size: \(size)")
 
-            return convertAndCompressImage(image: image,
-                                           attachment: attachment,
-                                           filename: dataSource.sourceFilename,
-                                           imageQuality: imageQuality)
+            return convertAndCompressImage(
+                dataSource: dataSource,
+                attachment: attachment,
+                imageQuality: imageQuality
+            )
         }
     }
 
@@ -826,15 +820,14 @@ public class SignalAttachment: NSObject {
         return false
     }
 
-    private class func convertAndCompressImage(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
+    private class func convertAndCompressImage(dataSource: DataSource, attachment: SignalAttachment, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
 
         var imageUploadQuality = imageQuality.imageQualityTier()
 
         while true {
-            let outcome = convertAndCompressImageAttempt(image: image,
+            let outcome = convertAndCompressImageAttempt(dataSource: dataSource,
                                                          attachment: attachment,
-                                                         filename: filename,
                                                          imageQuality: imageQuality,
                                                          imageUploadQuality: imageUploadQuality)
             switch outcome {
@@ -855,69 +848,84 @@ public class SignalAttachment: NSObject {
         case error(error: SignalAttachmentError)
     }
 
-    private class func convertAndCompressImageAttempt(image: UIImage,
+    private class func convertAndCompressImageAttempt(dataSource: DataSource,
                                                       attachment: SignalAttachment,
-                                                      filename: String?,
                                                       imageQuality: TSImageQuality,
                                                       imageUploadQuality: TSImageQualityTier) -> ConvertAndCompressOutcome {
         autoreleasepool {  () -> ConvertAndCompressOutcome in
             owsAssertDebug(attachment.error == nil)
 
-            let maxSize = maxSizeForImage(image: image, imageUploadQuality: imageUploadQuality)
-            var dstImage: UIImage! = image
-            if image.size.width > maxSize ||
-                image.size.height > maxSize {
-                guard let resizedImage = imageScaled(image, toMaxSize: maxSize) else {
+            let maxSize = maxSizeForImage(dataSource: dataSource, imageUploadQuality: imageUploadQuality)
+            let pixelSize = dataSource.imageMetadata.pixelSize
+
+            let cgImage: CGImage
+            if pixelSize.width > maxSize || pixelSize.height > maxSize {
+                guard let downsampledCGImage = downsampleImage(dataSource: dataSource, toMaxSize: maxSize) else {
                     return .error(error: .couldNotResizeImage)
                 }
-                dstImage = resizedImage
-            }
 
-            let dataUTI: String
-            let dataMIMEType: String
-            let dataFileExtension: String
-            let imageData: Data
-
-            if image.cgImage?.hasAlpha == true {
-                guard let pngImageData = dstImage.pngData() else {
-                    return .error(error: .couldNotConvertImage)
-                }
-
-                dataUTI = kUTTypePNG as String
-                dataMIMEType = OWSMimeTypeImagePng
-                dataFileExtension = "png"
-                imageData = pngImageData
+                cgImage = downsampledCGImage
             } else {
-                guard let jpgImageData = dstImage.jpegData(
-                    compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
-                ) else {
-                    return .error(error: .couldNotConvertImage)
+                guard let imageSource = cgImageSource(for: dataSource) else {
+                    return .error(error: .couldNotParseImage)
                 }
 
-                dataUTI = kUTTypeJPEG as String
-                dataMIMEType = OWSMimeTypeImageJpeg
-                dataFileExtension = "jpg"
-                imageData = jpgImageData
+                guard let image = CGImageSourceCreateImageAtIndex(imageSource, 0, [
+                    kCGImageSourceShouldCacheImmediately: true
+                ] as CFDictionary) else {
+                    return .error(error: .couldNotParseImage)
+                }
+
+                cgImage = image
             }
 
-            let dataSource: DataSource
-            do {
-                let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
-                try imageData.write(to: tempFileUrl)
-                dataSource = try DataSourcePath.dataSource(with: tempFileUrl, shouldDeleteOnDeallocation: false)
-            } catch {
+            // Write to disk and convert to file based data source,
+            // so we can keep the image out of memory.
+
+            let dataFileExtension: String
+            let dataUTI: CFString
+            let dataMIMEType: String
+            let imageProperties: CFDictionary?
+            if cgImage.hasAlpha {
+                dataFileExtension = "png"
+                dataUTI = kUTTypePNG
+                dataMIMEType = OWSMimeTypeImagePng
+                imageProperties = nil
+            } else {
+                dataFileExtension = "jpg"
+                dataUTI = kUTTypeJPEG
+                dataMIMEType = OWSMimeTypeImageJpeg
+                imageProperties = [kCGImageDestinationLossyCompressionQuality: jpegCompressionQuality(imageUploadQuality: imageQuality.imageQualityTier())] as CFDictionary
+            }
+
+            let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
+            guard let destination = CGImageDestinationCreateWithURL(tempFileUrl as CFURL, dataUTI, 1, nil) else {
+                owsFailDebug("Failed to create CGImageDestination for attachment")
+                return .error(error: .couldNotConvertImage)
+            }
+            CGImageDestinationAddImage(destination, cgImage, imageProperties)
+            guard CGImageDestinationFinalize(destination) else {
+                owsFailDebug("Failed to write downsampled attachment to disk")
                 return .error(error: .couldNotConvertImage)
             }
 
-            let baseFilename = filename?.filenameWithoutExtension
-            let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
-            dataSource.sourceFilename = newFilenameWithExtension
+            let outputDataSource: DataSource
+            do {
+                outputDataSource = try DataSourcePath.dataSource(with: tempFileUrl, shouldDeleteOnDeallocation: false)
+            } catch {
+                owsFailDebug("Failed to create data source for downsampled image \(error)")
+                return .error(error: .couldNotConvertImage)
+            }
 
-            if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
-                dataSource.dataLength <= kMaxFileSizeImage {
-                let recompressedAttachment = attachment.replacingDataSource(with: dataSource, dataUTI: dataUTI)
-                recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("Converted \(attachment.mimeType), size: \(dataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
+            // Preserve the original filename
+            let baseFilename = dataSource.sourceFilename?.filenameWithoutExtension
+            let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
+            outputDataSource.sourceFilename = newFilenameWithExtension
+
+            if doesImageHaveAcceptableFileSize(dataSource: outputDataSource, imageQuality: imageQuality) &&
+                outputDataSource.dataLength <= kMaxFileSizeImage {
+                let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataUTI as String)
+                Logger.verbose("Converted \(attachment.mimeType), size: \(outputDataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(outputDataSource.dataLength), countStyle: .file)) \(dataMIMEType)")
                 return .signalAttachment(signalAttachment: recompressedAttachment)
             }
 
@@ -941,54 +949,55 @@ public class SignalAttachment: NSObject {
         }
     }
 
+    private class func cgImageSource(for dataSource: DataSource) -> CGImageSource? {
+        if dataSource.imageMetadata.imageFormat == ImageFormat.webp {
+            // CGImageSource doesn't know how to handle webp, so we have
+            // to pass it through YYImage. This is constly and we could
+            // perhaps do better, but webp images are usually small.
+            guard let yyImage = YYImage(data: dataSource.data) else {
+                owsFailDebug("Failed to initialized YYImage")
+                return nil
+            }
+            guard let imageData = yyImage.pngData() else {
+                owsFailDebug("Failed to get png data for YYImage")
+                return nil
+            }
+            return CGImageSourceCreateWithData(imageData as CFData, nil)
+        } else if let dataUrl = dataSource.dataUrl {
+            // If we can init with a URL, we prefer to. This way, we can avoid loading
+            // the full image into memory. We need to set kCGImageSourceShouldCache to
+            // false to ensure that CGImageSource doesn't try and read the file immediately.
+            return CGImageSourceCreateWithURL(dataUrl as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
+        } else {
+            return CGImageSourceCreateWithData(dataSource.data as CFData, nil)
+        }
+    }
+
     // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
     // crashes reliably in the share extension after screen lock's auth UI has been presented.
     // Resizing using a CGContext seems to work fine.
-    private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
+    private class func downsampleImage(dataSource: DataSource, toMaxSize maxSize: CGFloat) -> CGImage? {
         autoreleasepool {
             Logger.verbose("maxSize: \(maxSize)")
-            guard let cgImage = uiImage.cgImage else {
-                owsFailDebug("UIImage missing cgImage.")
+
+            guard let imageSource: CGImageSource = cgImageSource(for: dataSource) else {
+                owsFailDebug("Failed to create CGImageSource for attachment")
                 return nil
             }
 
-            // It's essential that we work consistently in "CG" coordinates (which are
-            // pixels and don't reflect orientation), not "UI" coordinates (which
-            // are points and do reflect orientation).
-            let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
-            var maxSizeRect = CGRect.zero
-            maxSizeRect.size = CGSize(square: maxSize)
-            let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size.floor
-            assert(newSize.width <= maxSize)
-            assert(newSize.height <= maxSize)
-
-            let colorSpace = CGColorSpaceCreateDeviceRGB()
-            let bitmapInfo: CGBitmapInfo = [
-                CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
-                CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
-            guard let context = CGContext(data: nil,
-                                          width: Int(newSize.width),
-                                          height: Int(newSize.height),
-                                          bitsPerComponent: 8,
-                                          bytesPerRow: 0,
-                                          space: colorSpace,
-                                          bitmapInfo: bitmapInfo.rawValue) else {
-                owsFailDebug("could not create CGContext.")
+            // Perform downsampling
+            let downsampleOptions = [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceShouldCacheImmediately: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: maxSize
+            ] as CFDictionary
+            guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
+                owsFailDebug("Failed to downsample attachment")
                 return nil
             }
-            context.interpolationQuality = .high
 
-            var drawRect = CGRect.zero
-            drawRect.size = newSize
-            context.draw(cgImage, in: drawRect)
-
-            guard let newCGImage = context.makeImage() else {
-                owsFailDebug("could not create new CGImage.")
-                return nil
-            }
-            return UIImage(cgImage: newCGImage,
-                           scale: uiImage.scale,
-                           orientation: uiImage.imageOrientation)
+            return downsampledImage
         }
     }
 
@@ -1004,10 +1013,10 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    private class func maxSizeForImage(image: UIImage, imageUploadQuality: TSImageQualityTier) -> CGFloat {
+    private class func maxSizeForImage(dataSource: DataSource, imageUploadQuality: TSImageQualityTier) -> CGFloat {
         switch imageUploadQuality {
         case .original:
-            return max(image.size.width, image.size.height)
+            return dataSource.imageMetadata.pixelSize.largerAxis
         case .high:
             return 2048
         case .mediumHigh:
