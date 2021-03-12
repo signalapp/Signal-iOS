@@ -542,7 +542,8 @@ private class PaymentProcessingOperation: OWSOperation {
                      .connectionFailure,
                      .timeout,
                      .invalidTransaction,
-                     .inputsAlreadySpent:
+                     .inputsAlreadySpent,
+                     .defragmentationFailed:
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -595,7 +596,8 @@ private class PaymentProcessingOperation: OWSOperation {
                  .serializationError,
                  .missingModel,
                  .invalidTransaction,
-                 .inputsAlreadySpent:
+                 .inputsAlreadySpent,
+                 .defragmentationFailed:
                 // Do not retry these errors.
                 delegate?.endProcessing(paymentId: self.paymentId)
             case .serverRateLimited:
@@ -828,9 +830,10 @@ private class PaymentProcessingOperation: OWSOperation {
                         // If we've verified a payment, our balance may have changed.
                         Self.payments.updateCurrentPaymentBalance()
                     case .failed:
-                        try paymentModel.updatePaymentModelState(fromState: .outgoingUnverified,
-                                                                 toState: .outgoingFailed,
-                                                                 transaction: transaction)
+                        Self.markAsFailed(paymentModel: paymentModel,
+                                          paymentFailure: .validationFailed,
+                                          paymentState: .outgoingFailed,
+                                          transaction: transaction)
                     }
                 }
             }

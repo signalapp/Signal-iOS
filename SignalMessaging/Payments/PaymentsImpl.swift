@@ -478,27 +478,27 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         return [
             // iPhone 11 Pro Max Simulator
             try! DevDevice(phoneNumber: "+441752395464",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy1),
+                           fakeRootEntropy: MobileCoinAPI.rootEntropy1)
 
-            // iPhone Xs Simulator
-            try! DevDevice(phoneNumber: "+14503002620",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy2),
-
-            // iPhone Xr Simulator
-            try! DevDevice(phoneNumber: "+13602090656",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy3),
-
-            // iPhone XS Max Device
-            try! DevDevice(phoneNumber: "+12262864592",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy4),
-
-            // iPhone 12 mini Device
-            try! DevDevice(phoneNumber: "+12534877762",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy5),
-
-            // iPhone 11 Pro Simulator
-            try! DevDevice(phoneNumber: "+15092608677",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy6)
+//            // iPhone Xs Simulator
+//            try! DevDevice(phoneNumber: "+14503002620",
+//                           fakeRootEntropy: MobileCoinAPI.rootEntropy2),
+//
+//            // iPhone Xr Simulator
+//            try! DevDevice(phoneNumber: "+13602090656",
+//                           fakeRootEntropy: MobileCoinAPI.rootEntropy3),
+//
+//            // iPhone XS Max Device
+//            try! DevDevice(phoneNumber: "+12262864592",
+//                           fakeRootEntropy: MobileCoinAPI.rootEntropy4),
+//
+//            // iPhone 12 mini Device
+//            try! DevDevice(phoneNumber: "+12534877762",
+//                           fakeRootEntropy: MobileCoinAPI.rootEntropy5),
+//
+//            // iPhone 11 Pro Simulator
+//            try! DevDevice(phoneNumber: "+15092608677",
+//                           fakeRootEntropy: MobileCoinAPI.rootEntropy6)
         ]
     }
 
@@ -935,27 +935,6 @@ public extension PaymentsImpl {
         // 6. Block defragmentation transactions.
         return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
             mobileCoinAPI.prepareDefragmentationStepTransactions(forPaymentAmount: paymentAmount)
-            //            {
-            //
-            //            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
-            //            if DebugFlags.paymentsNoRequestsComplete.get() {
-            //                // Never resolve.
-            //                return promise
-            //            }
-            //            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
-            //                                                          feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
-            //                                                                                                           MobileCoin.TransactionPreparationError>) in
-            //                switch result {
-            //                case .success(let transactions):
-            //                    resolver.fulfill(transactions)
-            //                    break
-            //                case .failure(let error):
-            //                    let error = Self.convertMCError(error: error)
-            //                    resolver.reject(error)
-            //                    break
-            //                }
-            //            }
-            //            return promise
         }.map(on: .global()) { (mcTransactions: [MobileCoin.Transaction]) -> [TSPaymentModel] in
             // To initiate the defragmentation transactions, all we need to do
             // is save TSPaymentModels to the database. The PaymentsProcessor
@@ -1009,7 +988,13 @@ public extension PaymentsImpl {
 
         return firstly(on: .global()) { () -> Promise<Void> in
             let promises = paymentModels.map { paymentModel in
-                self.blockOnOutgoingVerification(paymentModel: paymentModel)
+                firstly(on: .global()) { () -> Promise<Bool> in
+                    self.blockOnOutgoingVerification(paymentModel: paymentModel)
+                }.map(on: .global()) { (didSucceed: Bool) -> Void in
+                    guard didSucceed else {
+                        throw PaymentsError.defragmentationFailed
+                    }
+                }
             }
             return when(fulfilled: promises)
         }.timeout(seconds: maxBlockInterval, description: "blockOnVerificationOfDefragmentation") { () -> Error in
@@ -1017,8 +1002,8 @@ public extension PaymentsImpl {
         }
     }
 
-    func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Void> {
-        firstly(on: .global()) { () -> Promise<Void> in
+    func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool> {
+        firstly(on: .global()) { () -> Promise<Bool> in
             let paymentModelLatest = Self.databaseStorage.read { transaction in
                 TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
                                         transaction: transaction)
@@ -1032,7 +1017,7 @@ public extension PaymentsImpl {
                 // Not yet verified, wait then try again.
                 return firstly(on: .global()) {
                     after(seconds: 0.05)
-                }.then(on: .global()) { () -> Promise<Void> in
+                }.then(on: .global()) { () -> Promise<Bool> in
                     // Recurse.
                     self.blockOnOutgoingVerification(paymentModel: paymentModel)
                 }
@@ -1040,10 +1025,12 @@ public extension PaymentsImpl {
                  .outgoingSending,
                  .outgoingSent,
                  .outgoingMissingLedgerTimestamp,
-                 .outgoingComplete,
-                 .outgoingFailed:
-                // Success: Verified or failed.
-                return Promise.value(())
+                 .outgoingComplete:
+                // Success: Verified.
+                return Promise.value(true)
+            case .outgoingFailed:
+                // Success: Failed.
+                return Promise.value(false)
             case .incomingUnverified,
                  .incomingVerified,
                  .incomingMissingLedgerTimestamp,

@@ -509,7 +509,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 // TODO: Finalize this timeout duration with design.
                 let blockInterval: TimeInterval = kSecondInterval * 30
                 return firstly(on: .global()) { () -> Promise<Void> in
-                    Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel)
+                    Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel).asVoid()
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
                     PaymentsError.timeout
                 }.recover(on: .global()) { (error: Error) -> Guarantee<()> in

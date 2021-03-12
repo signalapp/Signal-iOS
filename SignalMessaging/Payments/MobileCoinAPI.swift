@@ -596,78 +596,6 @@ class MobileCoinAPI {
         }
     }
 
-    //    private func defragmentIfNecessary(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
-    //        Logger.verbose("")
-    //
-    //        let client = self.client
-    //
-    //        return firstly(on: .global()) { () throws -> Promise<Void> in
-    //            let result = client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob, feeLevel: Self.feeLevel)
-    //            switch result {
-    //            case .success(let shouldDefragment):
-    //                guard shouldDefragment else {
-    //                    return Promise.value(())
-    //                }
-    //                return self.defragment(forPaymentAmount: paymentAmount)
-    //            case .failure(let error):
-    //                let error = Self.convertMCError(error: error)
-    //                throw error
-    //            }
-    //        }
-    //    }
-    //
-    //    private func defragment(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<Void> {
-    //        Logger.verbose("")
-    //
-    //        let client = self.client
-    //
-    //        return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
-    //            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
-    //            if DebugFlags.paymentsNoRequestsComplete.get() {
-    //                // Never resolve.
-    //                return promise
-    //            }
-    //            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
-    //                                                          feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
-    //                                                                                                           MobileCoin.TransactionPreparationError>) in
-    //                switch result {
-    //                case .success(let transactions):
-    //                    resolver.fulfill(transactions)
-    //                    break
-    //                case .failure(let error):
-    //                    let error = Self.convertMCError(error: error)
-    //                    resolver.reject(error)
-    //                    break
-    //                }
-    //            }
-    //            return promise
-    //        }.then(on: .global()) { (transactions: [MobileCoin.Transaction]) -> Promise<Void> in
-    //            // 1. Prepare defragmentation transactions.
-    //            // 2. Record defragmentation transactions in database.
-    //            // 3. Notify linked devices of possible defragmentation transactions.
-    //            // 4. Submit defragmentation transactions.
-    //            // 5. Verify defragmentation transactions.
-    //            return firstly(on: .global()) { () throws -> Promise<Void> in
-    //                let submissionPromises = transactions.map { transaction in
-    //                    self.submitTransaction(transaction: transaction)
-    //                }
-    //                return when(fulfilled: submissionPromises)
-    //            }.then(on: .global()) { () -> Promise<Void> in
-    //                let submissionPromises = transactions.map { transaction in
-    //                    self.getOutgoingTransactionStatus(transaction: transaction)
-    //                }
-    //                return when(fulfilled: submissionPromises)
-    //            }.then(on: .global()) { (transactionStatuses: [MCOutgoingTransactionStatus]) -> Promise<Void> in
-    //            }
-    ////            func getOutgoingTransactionStatus(transaction: MobileCoin.Transaction) -> Promise<MCOutgoingTransactionStatus> {
-    //        }
-    //    }
-    //    public func prepareDefragmentationStepTransactions(
-    //        toSendAmount amount: UInt64,
-    //        feeLevel: FeeLevel = .minimum,
-    //        completion: @escaping (Result<[Transaction], TransactionPreparationError>) -> Void
-    //    ) {
-
     func submitTransaction(transaction: MobileCoin.Transaction) -> Promise<Void> {
         Logger.verbose("")
 
@@ -982,7 +910,8 @@ public extension PaymentsError {
              .missingModel,
              .defragmentationRequired,
              .invalidTransaction,
-             .inputsAlreadySpent:
+             .inputsAlreadySpent,
+             .defragmentationFailed:
             return false
         case .connectionFailure,
              .timeout:

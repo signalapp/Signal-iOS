@@ -33,6 +33,7 @@ public enum PaymentsError: Error {
     case defragmentationRequired
     case invalidTransaction
     case inputsAlreadySpent
+    case defragmentationFailed
 }
 
 // MARK: -
@@ -150,7 +151,7 @@ public protocol PaymentsSwift: Payments {
 
     var allPossiblePassphraseWords: [String] { get }
 
-    func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Void>
+    func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool>
 }
 
 // MARK: -
@@ -476,7 +477,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Void> {
+    public func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool> {
         owsFail("Not implemented.")
     }
 }

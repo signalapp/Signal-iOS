@@ -312,6 +312,8 @@ class DebugUIPayments: DebugUIPage {
                                                           memoMessage: "Tiny: \(count)",
                                                           paymentRequestModel: nil,
                                                           isOutgoingTransfer: false)
+        }.then(on: .global()) { (paymentModel: TSPaymentModel) in
+            Self.payments.blockOnOutgoingVerification(paymentModel: paymentModel)
         }.done(on: .global()) { _ in
             if count > 1 {
                 Self.sendTinyPayments(contactThread: contactThread, count: count - 1)

@@ -437,12 +437,12 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCRecipientPublicAddressData = isOutgoing && (isIdentifiedPayment || isOutgoingTransfer)
+        let shouldHaveMCRecipientPublicAddressData = isOutgoing && (isIdentifiedPayment || isOutgoingTransfer) && !isFailed
         if shouldHaveMCRecipientPublicAddressData, mcRecipientPublicAddressData == nil {
             owsFailDebug("Missing mcRecipientPublicAddressData: \(formattedState).")
         }
 
-        let shouldHaveMCTransaction = isOutgoing && !isUnidentified
+        let shouldHaveMCTransaction = isOutgoing && !isUnidentified && !isFailed
         if shouldHaveMCTransaction, mcTransactionData == nil {
             owsFailDebug("Missing mcTransactionData: \(formattedState).")
         }
@@ -471,7 +471,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCSpentKeyImages = isOutgoing
+        let shouldHaveMCSpentKeyImages = isOutgoing && !isFailed
         if shouldHaveMCSpentKeyImages,
            mcSpentKeyImages == nil {
             owsFailDebug("Missing mcSpentKeyImages: \(formattedState).")
@@ -482,8 +482,8 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let canHaveMCOutputPublicKeys = isOutgoing
-        let shouldHaveMCOutputPublicKeys = isOutgoing && !isUnidentified
+        let canHaveMCOutputPublicKeys = isOutgoing && !isFailed
+        let shouldHaveMCOutputPublicKeys = isOutgoing && !isUnidentified && !isFailed
         if shouldHaveMCOutputPublicKeys,
            mcOutputPublicKeys == nil {
             owsFailDebug("Missing mcOutputPublicKeys: \(formattedState).")
@@ -494,17 +494,28 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCLedgerBlockTimestamp = isComplete && !isUnidentified
+        let shouldHaveMCLedgerBlockTimestamp = isComplete && !isUnidentified && !isFailed
         if shouldHaveMCLedgerBlockTimestamp,
            !hasMCLedgerBlockTimestamp {
             // For some payments, we'll never be able to fill in the block timestamp.
             Logger.warn("Missing mcLedgerBlockTimestamp: \(formattedState).")
         }
 
-        let shouldHaveMCLedgerBlockIndex = isVerified || isUnidentified
+        let shouldHaveMCLedgerBlockIndex = isVerified || isUnidentified && !isFailed
         if shouldHaveMCLedgerBlockIndex,
            !hasMCLedgerBlockIndex {
             owsFailDebug("Missing mcLedgerBlockIndex: \(formattedState).")
+            isValid = false
+        }
+
+        let shouldHaveMobileCoin = !isFailed
+        if shouldHaveMobileCoin,
+           mobileCoin == nil {
+            owsFailDebug("Missing mobileCoin: \(formattedState).")
+            isValid = false
+        } else if !shouldHaveMobileCoin,
+                  mobileCoin != nil {
+            owsFailDebug("Unexpected mobileCoin: \(formattedState).")
             isValid = false
         }
 
