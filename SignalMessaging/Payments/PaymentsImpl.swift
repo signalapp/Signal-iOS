@@ -946,7 +946,6 @@ public extension PaymentsImpl {
                     let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
                     let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
                     let mcTransactionData = mcTransaction.serializedData
-                    // TODO: We should probably record paymentAmount.
                     let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                                        transactionData: mcTransactionData,
                                                        receiptData: nil,
