@@ -109,10 +109,11 @@ public class PaymentModelCell: UITableViewCell {
             if let feeAmount = paymentModel.mobileCoin?.feeAmount {
                 totalAmount = totalAmount.plus(feeAmount)
             }
-            amountLabel.text = PaymentsImpl.format(paymentAmount: totalAmount,
-                                                   withCurrencyCode: true,
-                                                   withSpace: false,
-                                                   withPaymentType: paymentModel.paymentType)
+            amountLabel.text = PaymentsFormat.format(paymentAmount: totalAmount,
+                                                     isShortForm: true,
+                                                     withCurrencyCode: true,
+                                                     withSpace: false,
+                                                     withPaymentType: paymentModel.paymentType)
         } else {
             amountLabel.text = ""
         }

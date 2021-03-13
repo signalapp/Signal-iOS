@@ -211,9 +211,10 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         if paymentModel.isOutgoing,
            let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount {
-            let bottomText = PaymentsImpl.format(paymentAmount: feeAmount,
-                                                 withCurrencyCode: true,
-                                                 withSpace: true)
+            let bottomText = PaymentsFormat.format(paymentAmount: feeAmount,
+                                                   isShortForm: false,
+                                                   withCurrencyCode: true,
+                                                   withSpace: true)
             section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE",
                                                                    comment: "Label for the 'MobileCoin network fee' in the payment details view in the app settings."),
                                         bottomText: bottomText))
@@ -352,9 +353,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             let username = Self.contactsManager.displayName(for: address, transaction: transaction)
             let usernameFormat = (self.paymentItem.isIncoming
                                     ? NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT",
-                                    comment: "Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}.")
+                                                        comment: "Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}.")
                                     : NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT",
-                                    comment: "Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}."))
+                                                        comment: "Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}."))
             usernameLabel.text = String(format: usernameFormat, username)
         }
 
@@ -417,8 +418,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         amountLabel.autoPinEdgesToSuperviewEdges()
 
         if let paymentAmount = paymentItem.paymentAmount {
-            amountLabel.attributedText = PaymentsImpl.attributedFormat(paymentAmount: paymentAmount,
-                                                                       paymentType: paymentItem.paymentType)
+            amountLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
+                                                                         isShortForm: false,
+                                                                         paymentType: paymentItem.paymentType)
         } else {
             amountLabel.text = " "
 

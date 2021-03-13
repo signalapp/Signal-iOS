@@ -220,7 +220,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
         contentView.layer.cornerRadius = contentView.height / 2
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     @objc
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -288,7 +288,7 @@ private class NewGroupMembersBarLayout: UICollectionViewLayout {
         super.init()
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }

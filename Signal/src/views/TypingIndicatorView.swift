@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 @objc class TypingIndicatorView: UIStackView {
@@ -16,12 +16,12 @@
     private let dot2 = DotView(dotType: .dotType2)
     private let dot3 = DotView(dotType: .dotType3)
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     override init(frame: CGRect) {
         notImplemented()
     }
@@ -108,12 +108,12 @@
 
         private let shapeLayer = CAShapeLayer()
 
-        @available(*, unavailable, message:"use other constructor instead.")
+        @available(*, unavailable, message: "use other constructor instead.")
         required init?(coder aDecoder: NSCoder) {
             notImplemented()
         }
 
-        @available(*, unavailable, message:"use other constructor instead.")
+        @available(*, unavailable, message: "use other constructor instead.")
         override init(frame: CGRect) {
             notImplemented()
         }

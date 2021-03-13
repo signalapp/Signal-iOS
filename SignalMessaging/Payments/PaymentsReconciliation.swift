@@ -880,14 +880,7 @@ internal class PaymentsDatabaseState {
         func logMap(_ map: [Data: TSPaymentModel], name: String) {
             Logger.verbose("\(name): \(map.count)")
             for paymentModel in Array(map.values).sortedBySortDate(descending: false) {
-                let formattedAmount: String
-                if let paymentAmount = paymentModel.paymentAmount {
-                    formattedAmount = PaymentsImpl.format(paymentAmount: paymentAmount)
-                } else {
-                    formattedAmount = "Unknown"
-                }
-                let formattedDate = dateFormatter.string(from: paymentModel.sortDate)
-                Logger.verbose("\t paymentModel: \(formattedAmount), \(formattedDate)")
+                Logger.verbose("\t paymentModel: \(paymentModel.descriptionForLogs)")
             }
         }
         logMap(spentImageKeyMap, name: "spentImageKeyMap")

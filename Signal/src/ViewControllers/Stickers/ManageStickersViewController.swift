@@ -9,7 +9,7 @@ private class StickerPackActionButton: UIView {
 
     private let block: () -> Void
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
     }

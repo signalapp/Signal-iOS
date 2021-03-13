@@ -36,9 +36,9 @@ class PaymentsTest: SignalBaseTest {
             XCTFail("Could not parse publicAddressBase58.")
             return
         }
-        XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddress))
+        XCTAssertEqual(publicAddressBase58, PaymentsFormat.formatAsBase58(publicAddress: publicAddress))
 
-        let urlString = PaymentsImpl.formatAsUrl(publicAddress: publicAddress)
+        let urlString = PaymentsFormat.formatAsUrl(publicAddress: publicAddress)
         guard let url = URL(string: urlString) else {
             XCTFail("Invalid urlString.")
             return
@@ -47,6 +47,6 @@ class PaymentsTest: SignalBaseTest {
             XCTFail("Could not parse url.")
             return
         }
-        XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddressFromUrl))
+        XCTAssertEqual(publicAddressBase58, PaymentsFormat.formatAsBase58(publicAddress: publicAddressFromUrl))
     }
 }

@@ -186,12 +186,13 @@ class SendPaymentHelper {
         owsAssertDebug(paymentAmount.currency == .mobileCoin)
         owsAssertDebug(paymentAmount.picoMob >= 0)
 
-        let formattedAmount = PaymentsImpl.format(paymentAmount: paymentAmount)
+        let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
+                                                    isShortForm: false)
         let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT",
                                        comment: "Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}.")
         return String(format: format,
                       formattedAmount,
-                      PaymentsImpl.currencyAbbreviationMobileCoin)
+                      PaymentsConstants.mobileCoinCurrencyIdentifier)
     }
 }
 

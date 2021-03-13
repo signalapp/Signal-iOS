@@ -199,7 +199,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
 
         if let paymentBalance = Self.paymentsSwift.currentPaymentBalance {
-            balanceLabel.attributedText = PaymentsImpl.attributedFormat(paymentAmount: paymentBalance.amount)
+            balanceLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentBalance.amount,
+                                                                          isShortForm: false)
 
             if let balanceConversionText = Self.buildBalanceConversionText(paymentBalance: paymentBalance) {
                 conversionLabel.text = balanceConversionText
@@ -293,7 +294,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         guard let currencyConversionInfo = paymentsCurrencies.conversionInfo(forCurrencyCode: localCurrencyCode)  else {
             return nil
         }
-        guard let fiatAmountString = PaymentsImpl.formatAsFiatCurrency(paymentAmount: paymentBalance.amount,
+        guard let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentBalance.amount,
                                                                        currencyConversionInfo: currencyConversionInfo) else {
             return nil
         }

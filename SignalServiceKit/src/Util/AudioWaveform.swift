@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,7 +24,7 @@ public class AudioWaveformManager: NSObject {
 
     private static var observerMap = [AttachmentId: SamplingObserver]()
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
 
     @objc

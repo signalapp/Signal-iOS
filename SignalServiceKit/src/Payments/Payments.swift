@@ -520,7 +520,7 @@ public protocol PaymentsCurrenciesSwift: PaymentsCurrencies {
 
 public class PaymentsConstants {
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}
 
     // PAYMENTS TODO: Use SDK constant?

@@ -89,7 +89,7 @@ public class SendPaymentViewController: OWSViewController {
             if let paymentRequestModel = paymentRequestModel {
                 owsAssertDebug(paymentRequestModel.paymentAmount.currency == .mobileCoin)
 
-                if let requestAmountString = PaymentsImpl.formatAsDoubleString(picoMob: paymentRequestModel.paymentAmount.picoMob) {
+                if let requestAmountString = PaymentsFormat.formatAsDoubleString(picoMob: paymentRequestModel.paymentAmount.picoMob) {
                     let inputString = InputString.parseString(requestAmountString, isFiat: false)
                     amounts.set(currentAmount: .mobileCoin(inputString: inputString,
                                                            exactAmount: nil),
@@ -103,7 +103,7 @@ public class SendPaymentViewController: OWSViewController {
         if let initialPaymentAmount = initialPaymentAmount {
             owsAssertDebug(initialPaymentAmount.currency == .mobileCoin)
 
-            if let amountString = PaymentsImpl.formatAsDoubleString(picoMob: initialPaymentAmount.picoMob) {
+            if let amountString = PaymentsFormat.formatAsDoubleString(picoMob: initialPaymentAmount.picoMob) {
                 let inputString = InputString.parseString(amountString, isFiat: false)
                 amounts.set(currentAmount: .mobileCoin(inputString: inputString,
                                                        exactAmount: initialPaymentAmount),
@@ -496,9 +496,9 @@ public class SendPaymentViewController: OWSViewController {
                 smallAmountLabel.attributedText = otherCurrencyAmount.formatForDisplayAttributed(withSpace: true)
             } else if let currencyConversion = currentCurrencyConversion,
                       let fiatCurrencyAmount = currencyConversion.convertToFiatCurrency(paymentAmount: parsedPaymentAmount),
-                      let fiatString = PaymentsImpl.attributedFormat(fiatCurrencyAmount: fiatCurrencyAmount,
-                                                                     currencyCode: currencyConversion.currencyCode,
-                                                                     withSpace: true) {
+                      let fiatString = PaymentsFormat.attributedFormat(fiatCurrencyAmount: fiatCurrencyAmount,
+                                                                       currencyCode: currencyConversion.currencyCode,
+                                                                       withSpace: true) {
                 smallAmountLabel.attributedText = fiatString
             } else {
                 disableSmallLabel()
@@ -508,8 +508,9 @@ public class SendPaymentViewController: OWSViewController {
                 smallAmountLabel.attributedText = otherCurrencyAmount.formatForDisplayAttributed(withSpace: true)
             } else {
                 let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
-                smallAmountLabel.attributedText = PaymentsImpl.attributedFormat(paymentAmount: paymentAmount,
-                                                                                withSpace: true)
+                smallAmountLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
+                                                                                  isShortForm: false,
+                                                                                  withSpace: true)
             }
         }
     }
@@ -566,7 +567,7 @@ public class SendPaymentViewController: OWSViewController {
         case .mobileCoin:
             if let currencyConversion = currentCurrencyConversion,
                let fiatCurrencyAmount = currencyConversion.convertToFiatCurrency(paymentAmount: parsedPaymentAmount),
-               let fiatString = PaymentsImpl.formatAsDoubleString(fiatCurrencyAmount) {
+               let fiatString = PaymentsFormat.formatAsDoubleString(fiatCurrencyAmount) {
                 // Store the otherCurrencyAmount.
                 Logger.verbose("fiatCurrencyAmount: \(fiatCurrencyAmount)")
                 Logger.verbose("fiatString: \(fiatString)")
@@ -580,7 +581,7 @@ public class SendPaymentViewController: OWSViewController {
             }
         case .fiatCurrency(_, let currencyConversion):
             let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
-            if let mobString = PaymentsImpl.formatAsDoubleString(picoMob: paymentAmount.picoMob) {
+            if let mobString = PaymentsFormat.formatAsDoubleString(picoMob: paymentAmount.picoMob) {
                 // Store the otherCurrencyAmount.
                 amounts.set(currentAmount: .mobileCoin(inputString: InputString.parseString(mobString,
                                                                                             isFiat: false),
@@ -671,9 +672,10 @@ public class SendPaymentViewController: OWSViewController {
     private func showInsufficientBalanceUI(paymentBalance: PaymentBalance) {
         let messageFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT",
                                               comment: "Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}.")
-        let message = String(format: messageFormat, PaymentsImpl.format(paymentAmount: paymentBalance.amount,
-                                                                        withCurrencyCode: true,
-                                                                        withSpace: true))
+        let message = String(format: messageFormat, PaymentsFormat.format(paymentAmount: paymentBalance.amount,
+                                                                          isShortForm: false,
+                                                                          withCurrencyCode: true,
+                                                                          withSpace: true))
 
         let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE",
                                                                          comment: "Title for the 'insufficient balance for payment' alert."),
@@ -882,14 +884,15 @@ private enum Amount {
     var formatForDisplay: String {
         switch self {
         case .mobileCoin:
-            guard let mobString = PaymentsImpl.format(mob: asDouble) else {
+            guard let mobString = PaymentsFormat.format(mob: asDouble,
+                                                        isShortForm: false) else {
                 owsFailDebug("Couldn't format MOB string: \(inputString.asString(formatMode: .parsing))")
                 return inputString.asString(formatMode: .display)
             }
             return mobString
         case .fiatCurrency:
-            guard let fiatString = PaymentsImpl.format(fiatCurrencyAmount: asDouble,
-                                                       minimumFractionDigits: 0) else {
+            guard let fiatString = PaymentsFormat.format(fiatCurrencyAmount: asDouble,
+                                                         minimumFractionDigits: 0) else {
                 owsFailDebug("Couldn't format fiat string: \(inputString.asString(formatMode: .parsing))")
                 return inputString.asString(formatMode: .display)
             }
@@ -904,24 +907,24 @@ private enum Amount {
     func formatForDisplayAttributed(withSpace: Bool) -> NSAttributedString {
         switch self {
         case .mobileCoin:
-            return PaymentsImpl.attributedFormat(mobileCoinString: formatForDisplay,
-                                                 withSpace: withSpace)
+            return PaymentsFormat.attributedFormat(mobileCoinString: formatForDisplay,
+                                                   withSpace: withSpace)
         case .fiatCurrency(_, let currencyConversion):
-            return PaymentsImpl.attributedFormat(currencyString: formatForDisplay,
-                                                 currencyCode: currencyConversion.currencyCode,
-                                                 withSpace: withSpace)
+            return PaymentsFormat.attributedFormat(currencyString: formatForDisplay,
+                                                   currencyCode: currencyConversion.currencyCode,
+                                                   withSpace: withSpace)
         }
     }
 
     func formatAsKeyboardInputAttributed(withSpace: Bool) -> NSAttributedString {
         switch self {
         case .mobileCoin:
-            return PaymentsImpl.attributedFormat(mobileCoinString: formatAsKeyboardInput,
-                                                 withSpace: withSpace)
+            return PaymentsFormat.attributedFormat(mobileCoinString: formatAsKeyboardInput,
+                                                   withSpace: withSpace)
         case .fiatCurrency(_, let currencyConversion):
-            return PaymentsImpl.attributedFormat(currencyString: formatAsKeyboardInput,
-                                                 currencyCode: currencyConversion.currencyCode,
-                                                 withSpace: withSpace)
+            return PaymentsFormat.attributedFormat(currencyString: formatAsKeyboardInput,
+                                                   currencyCode: currencyConversion.currencyCode,
+                                                   withSpace: withSpace)
         }
     }
 }
@@ -1018,7 +1021,7 @@ private struct InputString: Equatable {
     }
 
     static func forDouble(_ value: Double, isFiat: Bool) -> InputString {
-        guard let stringValue = PaymentsImpl.formatAsDoubleString(value) else {
+        guard let stringValue = PaymentsFormat.formatAsDoubleString(value) else {
             owsFailDebug("Couldn't format double: \(value)")
             return Self.defaultString(isFiat: isFiat)
         }

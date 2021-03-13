@@ -12,7 +12,7 @@ public enum OWSMediaError: Error {
 @objc
 public class OWSMediaUtils: NSObject {
 
-    @available(*, unavailable, message:"do not instantiate this class.")
+    @available(*, unavailable, message: "do not instantiate this class.")
     private override init() {
     }
 

@@ -877,7 +877,7 @@ extension TSPaymentFailure {
 @available(swift, obsoleted: 1.0)
 public class PaymentUtils: NSObject {
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
 
     @objc

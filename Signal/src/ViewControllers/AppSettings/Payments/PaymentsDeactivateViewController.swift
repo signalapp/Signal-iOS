@@ -88,7 +88,8 @@ public class PaymentsDeactivateViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(54)
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.attributedText = PaymentsImpl.attributedFormat(paymentAmount: paymentBalance.amount)
+        titleLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentBalance.amount,
+                                                                    isShortForm: false)
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textAlignment = .center
 
@@ -135,12 +136,12 @@ public class PaymentsDeactivateViewController: OWSViewController {
         transferBalanceButton.autoSetHeightUsingFont()
 
         let deactivateImmediatelyButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE",
-                                                                                  comment: "Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings."),
-                                                         font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                                         titleColor: .ows_accentRed,
-                                                         backgroundColor: .white,
-                                                         target: self,
-                                                         selector: #selector(didTapDeactivateImmediatelyButton))
+                                                                                        comment: "Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings."),
+                                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                                               titleColor: .ows_accentRed,
+                                                               backgroundColor: .white,
+                                                               target: self,
+                                                               selector: #selector(didTapDeactivateImmediatelyButton))
         deactivateImmediatelyButton.autoSetHeightUsingFont()
 
         let topStack = UIStackView(arrangedSubviews: [

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -133,7 +133,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         super.init()
     }
 
-    @available(*, unavailable, message:"Use other constructor instead.")
+    @available(*, unavailable, message: "Use other constructor instead.")
     @objc
     public required init(coder aDecoder: NSCoder) {
         notImplemented()

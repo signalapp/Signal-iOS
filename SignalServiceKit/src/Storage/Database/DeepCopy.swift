@@ -12,7 +12,7 @@ public protocol DeepCopyable {
 
 public class DeepCopies {
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {
     }
 

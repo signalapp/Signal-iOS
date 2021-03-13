@@ -20,7 +20,7 @@ import SignalMessaging
 public class MessageRecipientStatusUtils: NSObject {
     // MARK: Initializers
 
-    @available(*, unavailable, message:"do not instantiate this class.")
+    @available(*, unavailable, message: "do not instantiate this class.")
     private override init() {
     }
 

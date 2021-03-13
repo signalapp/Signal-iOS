@@ -19,7 +19,7 @@ public class PaymentsViewUtils: NSObject {
 
     // MARK: -
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
 
     public static func buildMemoLabel(memoMessage: String?) -> UIView? {

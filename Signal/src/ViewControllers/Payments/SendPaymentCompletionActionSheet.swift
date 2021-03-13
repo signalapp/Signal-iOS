@@ -367,7 +367,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                value: formatMobileCoinAmount(paymentInfo.paymentAmount))
 
         if let currencyConversion = paymentInfo.currencyConversion {
-            if let fiatAmountString = PaymentsImpl.formatAsFiatCurrency(paymentAmount: paymentInfo.paymentAmount,
+            if let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentInfo.paymentAmount,
                                                                         currencyConversionInfo: currencyConversion) {
                 let fiatFormat = NSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
                                                    comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.")
