@@ -622,7 +622,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
         if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
-            OWSLogInfo(@"Ignoring profile key for local device on primary.");
+            OWSLogVerbose(@"Ignoring profile key for local device on primary.");
         } else if (profileKey.length != kAES256_KeyByteLength) {
             OWSFailDebug(
                 @"Unexpected profile key length: %lu on message from: %@", (unsigned long)profileKey.length, address);
@@ -1056,7 +1056,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
         if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
-            OWSLogInfo(@"Ignoring profile key for local device on primary.");
+            OWSLogVerbose(@"Ignoring profile key for local device on primary.");
         } else if (profileKey.length != kAES256_KeyByteLength) {
             OWSFailDebug(
                 @"Unexpected profile key length: %lu on message from: %@", (unsigned long)profileKey.length, address);
