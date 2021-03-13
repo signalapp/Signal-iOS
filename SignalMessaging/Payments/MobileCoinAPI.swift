@@ -495,6 +495,24 @@ class MobileCoinAPI {
         }
     }
 
+    func maxTranscationAmount() throws -> TSPaymentAmount {
+        // We don't need to support amountPicoMobHigh.
+        let result = client.amountTransferable(feeLevel: Self.feeLevel)
+        switch result {
+        case .success(let feePicoMob):
+            let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
+            guard paymentAmount.isValidAmount(canBeEmpty: true) else {
+                throw OWSAssertionError("Invalid amount.")
+            }
+            Logger.verbose("Success paymentAmount: \(paymentAmount), ")
+            return paymentAmount
+        case .failure(let error):
+            let error = Self.convertMCError(error: error)
+            owsFailDebugUnlessMCNetworkFailure(error)
+            throw error
+        }
+    }
+
     struct PreparedTransaction {
         let transaction: MobileCoin.Transaction
         let receipt: MobileCoin.Receipt

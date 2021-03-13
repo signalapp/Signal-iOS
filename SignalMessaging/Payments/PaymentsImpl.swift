@@ -132,6 +132,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // build since we need to obtain authentication from
     // the service, so we cache and reuse instances.
     func getMobileCoinAPI() -> Promise<MobileCoinAPI> {
+        guard FeatureFlags.payments else {
+            return Promise(error: PaymentsError.notEnabled)
+        }
         switch paymentsState {
         case .enabled(_, let mcRootEntropy):
             return getOrBuildCurrentApi(mcRootEntropy: mcRootEntropy)
@@ -759,12 +762,7 @@ public extension PaymentsImpl {
 
 public extension PaymentsImpl {
     func getCurrentBalance() -> Promise<TSPaymentAmount> {
-        guard FeatureFlags.payments,
-              arePaymentsEnabled else {
-            return Promise(error: PaymentsError.notEnabled)
-        }
-
-        return firstly { () -> Promise<MobileCoinAPI> in
+        firstly { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) in
             return mobileCoinAPI.getLocalBalance()
@@ -776,44 +774,15 @@ public extension PaymentsImpl {
 
 public extension PaymentsImpl {
 
-    func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount> {
-        let fullBalanceAmount = balance.amount
-        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
-            guard fullBalanceAmount.isValidAmount(canBeEmpty: false) else {
-                owsFailDebug("Invalid balance.")
-                throw PaymentsError.invalidAmount
-            }
-            // TODO: Test this once "fee pre-estimation" is working.
-            return self.getEstimatedFee(forPaymentAmount: fullBalanceAmount)
-        }.map(on: .global()) { (estimatedFee: TSPaymentAmount) -> TSPaymentAmount in
-            guard estimatedFee.isValidAmount(canBeEmpty: false) else {
-                owsFailDebug("Invalid estimated fee.")
-                throw PaymentsError.invalidAmount
-            }
-            guard estimatedFee.picoMob < fullBalanceAmount.picoMob else {
-                owsFailDebug("Fee higher than balance.")
-                throw PaymentsError.invalidAmount
-            }
-            let maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin,
-                                                       picoMob: fullBalanceAmount.picoMob - estimatedFee.picoMob)
-            guard maximumPaymentAmount.isValidAmount(canBeEmpty: false) else {
-                owsFailDebug("Invalid maximumPaymentAmount.")
-                throw PaymentsError.invalidAmount
-            }
-            owsAssertDebug(maximumPaymentAmount.isValidAmount(canBeEmpty: false))
-            Logger.verbose("fullBalanceAmount: \(fullBalanceAmount)")
-            Logger.verbose("estimatedFee: \(estimatedFee)")
-            Logger.verbose("maximumPaymentAmount: \(maximumPaymentAmount)")
-            return maximumPaymentAmount
+    func maximumPaymentAmount() -> Promise<TSPaymentAmount> {
+        return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
+            self.getMobileCoinAPI()
+        }.map(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> TSPaymentAmount in
+            try mobileCoinAPI.maxTranscationAmount()
         }
     }
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount> {
-
-        guard FeatureFlags.payments,
-              arePaymentsEnabled else {
-            return Promise(error: PaymentsError.notEnabled)
-        }
         guard paymentAmount.currency == .mobileCoin else {
             return Promise(error: OWSAssertionError("Invalid currency."))
         }
@@ -864,10 +833,6 @@ public extension PaymentsImpl {
                                           paymentRequestModel: TSPaymentRequestModel?,
                                           isOutgoingTransfer: Bool) -> Promise<TSPaymentModel> {
 
-        guard FeatureFlags.payments,
-              arePaymentsEnabled else {
-            return Promise(error: PaymentsError.notEnabled)
-        }
         guard paymentAmount.currency == .mobileCoin else {
             return Promise(error: OWSAssertionError("Invalid currency."))
         }

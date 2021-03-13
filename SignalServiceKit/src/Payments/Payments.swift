@@ -141,7 +141,7 @@ public protocol PaymentsSwift: Payments {
                                   paymentRequestModel: TSPaymentRequestModel?,
                                   isOutgoingTransfer: Bool) -> Promise<TSPaymentModel>
 
-    func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount>
+    func maximumPaymentAmount() -> Promise<TSPaymentAmount>
 
     var passphrase: PaymentsPassphrase? { get }
 
@@ -459,7 +459,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func maximumPaymentAmount(forBalance balance: PaymentBalance) -> Promise<TSPaymentAmount> {
+    public func maximumPaymentAmount() -> Promise<TSPaymentAmount> {
         owsFail("Not implemented.")
     }
 

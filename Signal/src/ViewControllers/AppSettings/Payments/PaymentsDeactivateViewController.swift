@@ -176,12 +176,11 @@ public class PaymentsDeactivateViewController: OWSViewController {
     @objc
     private func didTapTransferBalanceButton() {
         // TODO: Test this flow.
-        let paymentBalance = self.paymentBalance
 
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { [weak self] modalActivityIndicator in
             firstly(on: .global()) {
-                Self.paymentsSwift.maximumPaymentAmount(forBalance: paymentBalance)
+                Self.paymentsSwift.maximumPaymentAmount()
             }.done { (transferAmount: TSPaymentAmount) in
                 AssertIsOnMainThread()
 
