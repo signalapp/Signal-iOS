@@ -839,34 +839,31 @@ internal class PaymentsDatabaseState {
             return
         }
 
-        if paymentModel.canHaveMCIncomingTransaction {
-            if let incomingTransactionPublicKeys = paymentModel.mobileCoin?.incomingTransactionPublicKeys {
-                for key in incomingTransactionPublicKeys {
-                    incomingAnyMap.add(key: key, value: paymentModel)
-                }
-            } else if paymentModel.shouldHaveMCIncomingTransaction {
-                owsFailDebug("Empty or missing mcIncomingTransaction: \(formattedState).")
+        if let incomingTransactionPublicKeys = paymentModel.mobileCoin?.incomingTransactionPublicKeys {
+            owsAssertDebug(paymentModel.canHaveMCIncomingTransaction)
+            for key in incomingTransactionPublicKeys {
+                incomingAnyMap.add(key: key, value: paymentModel)
             }
+        } else if paymentModel.shouldHaveMCIncomingTransaction {
+            owsFailDebug("Empty or missing mcIncomingTransaction: \(formattedState).")
         }
 
-        if paymentModel.canHaveMCSpentKeyImages {
-            if let mcSpentKeyImages = paymentModel.mcSpentKeyImages {
-                for spentImageKey in mcSpentKeyImages {
-                    spentImageKeyMap[spentImageKey] = paymentModel
-                }
-            } else if paymentModel.shouldHaveMCSpentKeyImages {
-                owsFailDebug("Empty or missing mcSpentKeyImages: \(formattedState).")
+        if let mcSpentKeyImages = paymentModel.mcSpentKeyImages {
+            owsAssertDebug(paymentModel.canHaveMCSpentKeyImages)
+            for spentImageKey in mcSpentKeyImages {
+                spentImageKeyMap[spentImageKey] = paymentModel
             }
+        } else if paymentModel.shouldHaveMCSpentKeyImages {
+            owsFailDebug("Empty or missing mcSpentKeyImages: \(formattedState).")
         }
 
-        if paymentModel.canHaveMCOutputPublicKeys {
-            if let mcOutputPublicKeys = paymentModel.mcOutputPublicKeys {
-                for outputPublicKeys in mcOutputPublicKeys {
-                    outputPublicKeyMap[outputPublicKeys] = paymentModel
-                }
-            } else if paymentModel.shouldHaveMCOutputPublicKeys {
-                owsFailDebug("Empty or missing mcOutputPublicKeys: \(formattedState).")
+        if let mcOutputPublicKeys = paymentModel.mcOutputPublicKeys {
+            owsAssertDebug(paymentModel.canHaveMCOutputPublicKeys)
+            for outputPublicKeys in mcOutputPublicKeys {
+                outputPublicKeyMap[outputPublicKeys] = paymentModel
             }
+        } else if paymentModel.shouldHaveMCOutputPublicKeys {
+            owsFailDebug("Empty or missing mcOutputPublicKeys: \(formattedState).")
         }
 
         let ledgerBlockIndex = paymentModel.mobileCoin?.ledgerBlockIndex ?? 0
