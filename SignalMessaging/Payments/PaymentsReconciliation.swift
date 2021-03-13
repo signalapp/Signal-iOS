@@ -928,7 +928,7 @@ extension MobileCoin.OwnedTxOut: MCTransactionHistoryItem {
 fileprivate extension MCTransactionHistory {
     // Well-behaved clients should never make TXOs of zero value,
     // but we can't count on that.  Therefore we filter records in
-    // the SDK transcation history, discarding any zero value TXOs.
+    // the SDK transaction history, discarding any zero value TXOs.
     // They have no consequence to the user and this simplifies our
     // logic.
     var safeItems: [MCTransactionHistoryItem] {

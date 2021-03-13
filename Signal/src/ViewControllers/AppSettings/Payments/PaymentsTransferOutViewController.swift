@@ -154,7 +154,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
             return nil
         }
         if let publicAddressUrl = URL(string: text),
-           let publicAddress = PaymentsImpl.parse(publicAddressUrl: publicAddressUrl) {
+           let publicAddress = PaymentsImpl.parseAsPublicAddress(publicAddressUrl: publicAddressUrl) {
             return publicAddress
         }
         if let publicAddress = PaymentsImpl.parse(publicAddressBase58: text) {

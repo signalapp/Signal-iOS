@@ -778,7 +778,7 @@ public extension PaymentsImpl {
         return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
         }.map(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> TSPaymentAmount in
-            try mobileCoinAPI.maxTranscationAmount()
+            try mobileCoinAPI.maxTransactionAmount()
         }
     }
 
@@ -1653,67 +1653,19 @@ public extension PaymentsImpl {
     // MARK: - URLs
 
     static func formatAsBase58(publicAddress: MobileCoin.PublicAddress) -> String {
-        // TODO: Replace with SDK method when available.
-        return Base58Coder.encode(publicAddress)
+        MobileCoinAPI.formatAsBase58(publicAddress: publicAddress)
     }
 
     static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
-        // http://mobilecoin.com/mob58/b58PayloadString
-        //
-        // TODO: Replace with SDK method when available.
-        let base58 = formatAsBase58(publicAddress: publicAddress)
-        return "https://mobilecoin.com/mob58/\(base58)"
+        MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
     }
 
-    static func parse(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
-        // http://mobilecoin.com/mob58/b58PayloadString
-        //
-        // TODO: Replace with SDK method when available.
-        guard let scheme = url.scheme?.lowercased(),
-              ["http", "https"].contains(scheme) else {
-            Logger.verbose("Invalid url scheme: \(url)")
-            Logger.warn("Invalid url scheme.")
-            return nil
-        }
-        guard let host = url.host?.lowercased(),
-              host == "mobilecoin.com" else {
-            Logger.verbose("Invalid url host: \(url)")
-            Logger.warn("Invalid url host.")
-            return nil
-        }
-        let pathComponents = url.path.split(separator: "/")
-        guard pathComponents.count >= 2,
-              let firstComponent = pathComponents[safe: 0],
-              String(firstComponent) == "mob58",
-              let secondComponent = pathComponents[safe: 1] else {
-            Logger.verbose("Invalid url path: \(url)")
-            Logger.warn("Invalid url path.")
-            return nil
-        }
-        let base58 = String(secondComponent)
-        guard !base58.isEmpty else {
-            Logger.verbose("Invalid url path: \(url)")
-            Logger.warn("Invalid url path.")
-            return nil
-        }
-        return parse(publicAddressBase58: base58)
+    static func parseAsPublicAddress(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
+        MobileCoinAPI.parseAsPublicAddress(publicAddressUrl: url)
     }
 
     static func parse(publicAddressBase58 base58: String) -> MobileCoin.PublicAddress? {
-        // TODO: Replace with SDK method when available.
-        guard let result = Base58Coder.decode(base58) else {
-            Logger.verbose("Invalid base58: \(base58)")
-            Logger.warn("Invalid base58.")
-            return nil
-        }
-        switch result {
-        case .publicAddress(let publicAddress):
-            return publicAddress
-        default:
-            Logger.verbose("Invalid base58: \(base58)")
-            Logger.warn("Invalid base58.")
-            return nil
-        }
+        MobileCoinAPI.parse(publicAddressBase58: base58)
     }
 }
 

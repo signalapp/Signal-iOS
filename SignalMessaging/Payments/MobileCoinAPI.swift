@@ -495,7 +495,7 @@ class MobileCoinAPI {
         }
     }
 
-    func maxTranscationAmount() throws -> TSPaymentAmount {
+    func maxTransactionAmount() throws -> TSPaymentAmount {
         // We don't need to support amountPicoMobHigh.
         let result = client.amountTransferable(feeLevel: Self.feeLevel)
         switch result {
@@ -655,7 +655,7 @@ class MobileCoinAPI {
         }.map(on: .global()) { () -> Void in
             Logger.verbose("Success.")
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-            owsFailDebugUnlessMCNetworkFailure(error)
+            //            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "submitTransaction") { () -> Error in
             PaymentsError.timeout
@@ -1006,5 +1006,56 @@ public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
         owsFailDebug("Unexpected error: \(error)")
     } else {
         owsFailDebugUnlessNetworkFailure(error)
+    }
+}
+
+// MARK: - URLs
+
+extension MobileCoinAPI {
+    static func formatAsBase58(publicAddress: MobileCoin.PublicAddress) -> String {
+        return Base58Coder.encode(publicAddress)
+    }
+
+    static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
+        MobUri.encode(publicAddress)
+    }
+
+    static func parseAsPublicAddress(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
+        let result = MobUri.decode(uri: url.absoluteString)
+        switch result {
+        case .success(let payload):
+            switch payload {
+            case .publicAddress(let publicAddress):
+                return publicAddress
+            case .paymentRequest(let paymentRequest):
+                // TODO: We could honor the amount and memo.
+                return paymentRequest.publicAddress
+            case .transferPayload:
+                // TODO: We could handle transferPayload.
+                owsFailDebug("Unexpected payload.")
+                return nil
+            }
+        case .failure(let error):
+            let error = Self.convertMCError(error: error)
+            owsFailDebugUnlessMCNetworkFailure(error)
+            return nil
+        }
+    }
+
+    static func parse(publicAddressBase58 base58: String) -> MobileCoin.PublicAddress? {
+        // TODO: Replace with SDK method when available.
+        guard let result = Base58Coder.decode(base58) else {
+            Logger.verbose("Invalid base58: \(base58)")
+            Logger.warn("Invalid base58.")
+            return nil
+        }
+        switch result {
+        case .publicAddress(let publicAddress):
+            return publicAddress
+        default:
+            Logger.verbose("Invalid base58: \(base58)")
+            Logger.warn("Invalid base58.")
+            return nil
+        }
     }
 }
