@@ -737,7 +737,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     func didTapAddMoneyButton(sender: UIGestureRecognizer) {
         let view = PaymentsTransferInViewController()
-        navigationController?.pushViewController(view, animated: true)
+        let navigationController = OWSNavigationController(rootViewController: view)
+        present(navigationController, animated: true, completion: nil)
     }
 
     @objc
