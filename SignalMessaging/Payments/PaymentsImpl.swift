@@ -1456,7 +1456,6 @@ public extension PaymentsImpl {
                                                ledgerBlockTimestamp: ledgerBlockTimestamp,
                                                ledgerBlockIndex: ledgerBlockIndex,
                                                feeAmount: feeAmount)
-            let hasLedgerBlockTimestamp = ledgerBlockTimestamp > 0
             let paymentState: TSPaymentState = .outgoingComplete
 
             let paymentType: TSPaymentType

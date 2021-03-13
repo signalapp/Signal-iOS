@@ -674,6 +674,9 @@ extension TSPaymentModel: TSPaymentBaseModel {
             if let paymentAmount = paymentAmount {
                 components.append("paymentAmount: \(paymentAmount.formatted)")
             }
+            if let feeAmount = mobileCoin?.feeAmount {
+                components.append("feeAmount: \(feeAmount.formatted)")
+            }
 
             if let address = address {
                 components.append("address: \(address)")
