@@ -55,7 +55,8 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let hMargin = 20 + OWSTableViewController2.cellHOuterMargin
         bottomStack.layoutMargins = UIEdgeInsets(top: 8, leading: hMargin, bottom: 0, trailing: hMargin)
         bottomStack.addArrangedSubviews([
-            nextButton
+            nextButton,
+            UIView.spacer(withHeight: 8)
         ])
     }
 

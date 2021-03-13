@@ -182,7 +182,7 @@ class SendPaymentHelper {
     }
 
     public static func formatMobileCoinAmount(_ paymentAmount: TSPaymentAmount) -> String {
-        owsAssertDebug(paymentAmount.isValid)
+        owsAssertDebug(paymentAmount.isValidAmount(canBeEmpty: true))
         owsAssertDebug(paymentAmount.currency == .mobileCoin)
         owsAssertDebug(paymentAmount.picoMob >= 0)
 

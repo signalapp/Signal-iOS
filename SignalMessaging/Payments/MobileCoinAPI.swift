@@ -655,7 +655,7 @@ class MobileCoinAPI {
         }.map(on: .global()) { () -> Void in
             Logger.verbose("Success.")
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-            //            owsFailDebugUnlessMCNetworkFailure(error)
+            owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "submitTransaction") { () -> Error in
             PaymentsError.timeout

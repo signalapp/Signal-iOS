@@ -384,6 +384,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private func setCurrentPaymentBalance(amount: TSPaymentAmount) {
+        owsAssertDebug(amount.isValidAmount(canBeEmpty: true))
+
         let balance = PaymentBalance(amount: amount, date: Date())
 
         let oldBalance = paymentBalanceCache.get()

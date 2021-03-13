@@ -189,7 +189,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
     @objc
     func didTapDone() {
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
 
     @objc

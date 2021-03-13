@@ -65,7 +65,8 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         bottomStack.addArrangedSubviews([
             doneButton,
             UIView.spacer(withHeight: 8),
-            editButton
+            editButton,
+            UIView.spacer(withHeight: 8)
         ])
     }
 

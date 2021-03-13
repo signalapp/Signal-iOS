@@ -34,7 +34,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             removeButton.autoSetHeightUsingFont()
             view.addSubview(removeButton)
             removeButton.autoPinWidthToSuperview(withMargin: Self.cellHOuterMargin)
-            removeButton.autoPin(toBottomLayoutGuideOf: self, withInset: 20)
+            removeButton.autoPin(toBottomLayoutGuideOf: self, withInset: 8)
         }
 
         updateTableContents()

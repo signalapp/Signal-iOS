@@ -99,7 +99,8 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             vSpacerFactory.buildVSpacer(),
             topStack,
             vSpacerFactory.buildVSpacer(),
-            startButton
+            startButton,
+            UIView.spacer(withHeight: 8)
         ])
         rootView.axis = .vertical
         rootView.alignment = .fill

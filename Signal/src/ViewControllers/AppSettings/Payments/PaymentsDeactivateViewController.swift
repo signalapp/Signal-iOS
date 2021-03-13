@@ -162,7 +162,8 @@ public class PaymentsDeactivateViewController: OWSViewController {
             UIView.vStretchingSpacer(),
             transferBalanceButton,
             UIView.spacer(withHeight: 8),
-            deactivateImmediatelyButton
+            deactivateImmediatelyButton,
+            UIView.spacer(withHeight: 8)
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill

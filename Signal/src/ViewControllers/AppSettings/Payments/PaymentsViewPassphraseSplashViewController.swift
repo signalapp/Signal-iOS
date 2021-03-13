@@ -130,7 +130,8 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             vSpacerFactory.buildVSpacer(),
             topStack,
             vSpacerFactory.buildVSpacer(),
-            startButton
+            startButton,
+            UIView.spacer(withHeight: 8)
         ])
 
         vSpacerFactory.finalizeSpacers()
