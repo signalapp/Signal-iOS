@@ -455,8 +455,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCIncomingTransaction = isIncoming && !isFailed
-        let canHaveMCIncomingTransaction = shouldHaveMCIncomingTransaction || isUnidentified
         let hasMCIncomingTransaction = !(self.mobileCoin?.incomingTransactionPublicKeys ?? []).isEmpty
         if shouldHaveMCIncomingTransaction, !hasMCIncomingTransaction {
             owsFailDebug("Missing mcIncomingTransaction: \(formattedState).")
@@ -473,19 +471,16 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCSpentKeyImages = isOutgoing && !isFailed
         if shouldHaveMCSpentKeyImages,
            mcSpentKeyImages == nil {
             owsFailDebug("Missing mcSpentKeyImages: \(formattedState).")
             isValid = false
-        } else if !shouldHaveMCSpentKeyImages,
+        } else if !canHaveMCSpentKeyImages,
                   mcSpentKeyImages != nil {
             owsFailDebug("Unexpected mcSpentKeyImages: \(formattedState).")
             isValid = false
         }
 
-        let canHaveMCOutputPublicKeys = isOutgoing && !isFailed
-        let shouldHaveMCOutputPublicKeys = isOutgoing && !isUnidentified && !isFailed
         if shouldHaveMCOutputPublicKeys,
            mcOutputPublicKeys == nil {
             owsFailDebug("Missing mcOutputPublicKeys: \(formattedState).")
@@ -534,6 +529,30 @@ extension TSPaymentModel: TSPaymentBaseModel {
 
     public var shouldHaveMCReceipt: Bool {
         isIncoming && isIdentifiedPayment && !isFailed
+    }
+
+    public var shouldHaveMCIncomingTransaction: Bool {
+        isIncoming && !isFailed
+    }
+
+    public var canHaveMCIncomingTransaction: Bool {
+        shouldHaveMCIncomingTransaction || isUnidentified
+    }
+
+    public var shouldHaveMCSpentKeyImages: Bool {
+        isOutgoing && !isUnidentified && !isFailed
+    }
+
+    public var canHaveMCSpentKeyImages: Bool {
+        shouldHaveMCSpentKeyImages || isUnidentified
+    }
+
+    public var shouldHaveMCOutputPublicKeys: Bool {
+        isOutgoing && !isUnidentified && !isFailed
+    }
+
+    public var canHaveMCOutputPublicKeys: Bool {
+        shouldHaveMCSpentKeyImages || isUnidentified
     }
 
     public var isComplete: Bool {

@@ -527,6 +527,9 @@ public class PaymentsReconciliation {
                 guard paymentModels.count > 1 else {
                     continue
                 }
+                for paymentModel in paymentModels {
+                    Logger.verbose("Try to cull \(label): \(paymentModel.descriptionForLogs)")
+                }
                 let culled = cullPaymentModelsIfUnidentified(paymentModels)
                 owsAssertDebug(culled > 0)
                 Logger.warn("Culling \(label): \(culled)")
@@ -542,7 +545,8 @@ public class PaymentsReconciliation {
         let allPaymentModels = TSPaymentModel.anyFetchAll(transaction: transaction)
         for paymentModel in allPaymentModels {
             owsAssertDebug(paymentModel.isFailed == (paymentModel.mobileCoin == nil))
-            guard let mobileCoin = paymentModel.mobileCoin else {
+            guard !paymentModel.isFailed,
+                  let mobileCoin = paymentModel.mobileCoin else {
                 // Ignore failed models.
                 continue
             }
@@ -835,29 +839,32 @@ internal class PaymentsDatabaseState {
             return
         }
 
-        if paymentModel.isIncoming {
+        if paymentModel.canHaveMCIncomingTransaction {
             if let incomingTransactionPublicKeys = paymentModel.mobileCoin?.incomingTransactionPublicKeys {
                 for key in incomingTransactionPublicKeys {
                     incomingAnyMap.add(key: key, value: paymentModel)
                 }
-            } else {
+            } else if paymentModel.shouldHaveMCIncomingTransaction {
                 owsFailDebug("Empty or missing mcIncomingTransaction: \(formattedState).")
             }
         }
 
-        if paymentModel.isOutgoing {
+        if paymentModel.canHaveMCSpentKeyImages {
             if let mcSpentKeyImages = paymentModel.mcSpentKeyImages {
                 for spentImageKey in mcSpentKeyImages {
                     spentImageKeyMap[spentImageKey] = paymentModel
                 }
-            } else {
+            } else if paymentModel.shouldHaveMCSpentKeyImages {
                 owsFailDebug("Empty or missing mcSpentKeyImages: \(formattedState).")
             }
+        }
+
+        if paymentModel.canHaveMCOutputPublicKeys {
             if let mcOutputPublicKeys = paymentModel.mcOutputPublicKeys {
                 for outputPublicKeys in mcOutputPublicKeys {
                     outputPublicKeyMap[outputPublicKeys] = paymentModel
                 }
-            } else if !paymentModel.isUnidentified {
+            } else if paymentModel.shouldHaveMCOutputPublicKeys {
                 owsFailDebug("Empty or missing mcOutputPublicKeys: \(formattedState).")
             }
         }
