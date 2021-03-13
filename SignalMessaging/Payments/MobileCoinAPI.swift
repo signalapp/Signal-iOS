@@ -1020,7 +1020,7 @@ extension MobileCoinAPI {
         MobUri.encode(publicAddress)
     }
 
-    static func parseAsPublicAddress(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
+    static func parseAsPublicAddress(url: URL) -> MobileCoin.PublicAddress? {
         let result = MobUri.decode(uri: url.absoluteString)
         switch result {
         case .success(let payload):

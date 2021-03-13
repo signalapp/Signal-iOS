@@ -153,10 +153,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         guard let text = addressTextfield.text?.ows_stripped() else {
             return nil
         }
-        if let publicAddressUrl = URL(string: text),
-           let publicAddress = PaymentsImpl.parseAsPublicAddress(publicAddressUrl: publicAddressUrl) {
-            return publicAddress
-        }
         if let publicAddress = PaymentsImpl.parse(publicAddressBase58: text) {
             return publicAddress
         }

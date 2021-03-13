@@ -884,6 +884,12 @@ public class MultiMap<KeyType: Hashable, ValueType>: Sequence {
     public func makeIterator() -> Iterator {
         map.makeIterator()
     }
+
+    public var count: Int { map.count }
+
+    public subscript(_ key: KeyType) -> [ValueType] {
+        values(forKey: key)
+    }
 }
 
 // MARK: -

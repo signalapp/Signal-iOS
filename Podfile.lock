@@ -234,7 +234,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin (from `../MobileCoin-Swift`)
+  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`)
   - PromiseKit
   - PureLayout
   - Reachability
@@ -313,7 +313,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :path: "../MobileCoin-Swift"
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
@@ -354,16 +354,9 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
-<<<<<<< HEAD
   MobileCoin:
     :commit: deedb518af67817bfbf3c67e2cf3ab87c8463e85
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-||||||| parent of cfce6c84da... Update MC SDK.
-  MobileCoin:
-    :commit: 57b9da09203916b8bc67fc40a2b0dd06fb705df8
-    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-=======
->>>>>>> cfce6c84da... Update MC SDK.
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
     :git: https://github.com/signalapp/Argon2.git
@@ -442,12 +435,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-<<<<<<< HEAD
 PODFILE CHECKSUM: b9765e2bc1ac90c71ecfb8a54c0afd8a1b7281ca
-||||||| parent of cfce6c84da... Update MC SDK.
-PODFILE CHECKSUM: 021a74040108d7fd42587934c29307c660065276
-=======
-PODFILE CHECKSUM: 932b6d2360c8f11321e233bd8238bcd05a3160f0
->>>>>>> cfce6c84da... Update MC SDK.
 
 COCOAPODS: 1.9.2

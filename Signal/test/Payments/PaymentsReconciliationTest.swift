@@ -26,6 +26,28 @@ private struct MockTransactionHistory: MCTransactionHistory {
 
 // MARK: -
 
+private extension PaymentsDatabaseState {
+    var incomingIdentifiedUnverifiedCount: Int {
+        allPaymentModels.filter { paymentModel in
+            paymentModel.isIncoming && paymentModel.isIdentifiedPayment && !paymentModel.isVerified && !paymentModel.isFailed
+        }.count
+    }
+
+    var incomingIdentifiedVerifiedCount: Int {
+        allPaymentModels.filter { paymentModel in
+            paymentModel.isIncoming && paymentModel.isIdentifiedPayment && paymentModel.isVerified && !paymentModel.isFailed
+        }.count
+    }
+
+    var incomingUnidentifiedCount: Int {
+        allPaymentModels.filter { paymentModel in
+            paymentModel.isIncoming && paymentModel.isUnidentified
+        }.count
+    }
+}
+
+// MARK: -
+
 class PaymentsReconciliationTest: SignalBaseTest {
 
     // MARK: -
@@ -82,7 +104,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
             }
             XCTFail("Missing error.")
         } catch {
-            if case PaymentsError.unsavedChanges = error {
+            if case PaymentsReconciliation.ReconciliationError.unsavedChanges = error {
                 // Do nothing.
             } else {
                 owsFailDebug("Error: \(error)")
@@ -104,14 +126,13 @@ class PaymentsReconciliationTest: SignalBaseTest {
                 // Reconciliation 1
 
                 do {
-
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 0)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 0)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 0)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
@@ -123,34 +144,37 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 1)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 1)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 0)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
-                    if let paymentModel = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey] {
-                        let item = buildItem2a_incomingUnspent
-                        XCTAssertEqual(TSPaymentType.incomingUnidentified, paymentModel.paymentType)
-                        XCTAssertEqual(TSPaymentState.incomingComplete, paymentModel.paymentState)
-                        XCTAssertEqual(TSPaymentFailure.none, paymentModel.paymentFailure)
-                        XCTAssertEqual(TSPaymentCurrency.mobileCoin, paymentModel.paymentAmount?.currency)
-                        XCTAssertEqual(item.amountPicoMob, paymentModel.paymentAmount?.picoMob)
-                        XCTAssertEqual(item.txoPublicKey, paymentModel.mobileCoin?.incomingTransactionPublicKey)
-                        XCTAssertTrue(item.receivedBlock.index == paymentModel.mobileCoin?.ledgerBlockIndex)
-                        XCTAssertTrue(item.receivedBlock.timestamp?.ows_millisecondsSince1970 == paymentModel.mobileCoin?.ledgerBlockTimestamp)
-                        XCTAssertNil(paymentModel.addressUuidString)
-                        XCTAssertNil(paymentModel.memoMessage)
-                        XCTAssertEqual(true, paymentModel.isUnread)
-                        XCTAssertNil(paymentModel.mobileCoin?.recipientPublicAddressData)
-                        XCTAssertNil(paymentModel.mobileCoin?.transactionData)
-                        XCTAssertNil(paymentModel.mobileCoin?.receiptData)
-                        XCTAssertNil(paymentModel.mobileCoin?.spentKeyImages)
-                        XCTAssertNil(paymentModel.mobileCoin?.outputPublicKeys)
-                        XCTAssertNil(paymentModel.mobileCoin?.feeAmount)
-                    } else {
-                        XCTFail("Missing paymentModel for item2a.txoPublicKey")
+                    let paymentModels = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey]
+                    guard paymentModels.count == 1,
+                          let paymentModel = paymentModels.first else {
+                        XCTFail("Unexpected paymentModel count: \(paymentModels.count)")
+                        return
                     }
+
+                    let item = buildItem2a_incomingUnspent
+                    XCTAssertEqual(TSPaymentType.incomingUnidentified, paymentModel.paymentType)
+                    XCTAssertEqual(TSPaymentState.incomingComplete, paymentModel.paymentState)
+                    XCTAssertEqual(TSPaymentFailure.none, paymentModel.paymentFailure)
+                    XCTAssertEqual(TSPaymentCurrency.mobileCoin, paymentModel.paymentAmount?.currency)
+                    XCTAssertEqual(item.amountPicoMob, paymentModel.paymentAmount?.picoMob)
+                    XCTAssertEqual([item.txoPublicKey], paymentModel.mobileCoin?.incomingTransactionPublicKeys)
+                    XCTAssertTrue(item.receivedBlock.index == paymentModel.mobileCoin?.ledgerBlockIndex)
+                    XCTAssertTrue(item.receivedBlock.timestamp?.ows_millisecondsSince1970 == paymentModel.mobileCoin?.ledgerBlockTimestamp)
+                    XCTAssertNil(paymentModel.addressUuidString)
+                    XCTAssertNil(paymentModel.memoMessage)
+                    XCTAssertEqual(true, paymentModel.isUnread)
+                    XCTAssertNil(paymentModel.mobileCoin?.recipientPublicAddressData)
+                    XCTAssertNil(paymentModel.mobileCoin?.transactionData)
+                    XCTAssertNil(paymentModel.mobileCoin?.receiptData)
+                    XCTAssertNil(paymentModel.mobileCoin?.spentKeyImages)
+                    XCTAssertNil(paymentModel.mobileCoin?.outputPublicKeys)
+                    XCTAssertNil(paymentModel.mobileCoin?.feeAmount)
                 }
 
                 // Reconciliation 2
@@ -165,9 +189,9 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 1)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 1)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 0)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
                 }
@@ -195,9 +219,9 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 0)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 0)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 0)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
@@ -209,34 +233,37 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 1)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 1)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 0)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
-                    if let paymentModel = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey] {
-                        let item = buildItem2a_incomingUnspent
-                        XCTAssertEqual(TSPaymentType.incomingUnidentified, paymentModel.paymentType)
-                        XCTAssertEqual(TSPaymentState.incomingComplete, paymentModel.paymentState)
-                        XCTAssertEqual(TSPaymentFailure.none, paymentModel.paymentFailure)
-                        XCTAssertEqual(TSPaymentCurrency.mobileCoin, paymentModel.paymentAmount?.currency)
-                        XCTAssertEqual(item.amountPicoMob, paymentModel.paymentAmount?.picoMob)
-                        XCTAssertEqual(item.txoPublicKey, paymentModel.mobileCoin?.incomingTransactionPublicKey)
-                        XCTAssertTrue(item.receivedBlock.index == paymentModel.mobileCoin?.ledgerBlockIndex)
-                        XCTAssertTrue(item.receivedBlock.timestamp?.ows_millisecondsSince1970 == paymentModel.mobileCoin?.ledgerBlockTimestamp)
-                        XCTAssertNil(paymentModel.addressUuidString)
-                        XCTAssertNil(paymentModel.memoMessage)
-                        XCTAssertEqual(true, paymentModel.isUnread)
-                        XCTAssertNil(paymentModel.mobileCoin?.recipientPublicAddressData)
-                        XCTAssertNil(paymentModel.mobileCoin?.transactionData)
-                        XCTAssertNil(paymentModel.mobileCoin?.receiptData)
-                        XCTAssertNil(paymentModel.mobileCoin?.spentKeyImages)
-                        XCTAssertNil(paymentModel.mobileCoin?.outputPublicKeys)
-                        XCTAssertNil(paymentModel.mobileCoin?.feeAmount)
-                    } else {
-                        XCTFail("Missing paymentModel for item2a.txoPublicKey")
+                    let paymentModels = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey]
+                    guard paymentModels.count == 1,
+                          let paymentModel = paymentModels.first else {
+                        XCTFail("Unexpected paymentModel count: \(paymentModels.count)")
+                        return
                     }
+
+                    let item = buildItem2a_incomingUnspent
+                    XCTAssertEqual(TSPaymentType.incomingUnidentified, paymentModel.paymentType)
+                    XCTAssertEqual(TSPaymentState.incomingComplete, paymentModel.paymentState)
+                    XCTAssertEqual(TSPaymentFailure.none, paymentModel.paymentFailure)
+                    XCTAssertEqual(TSPaymentCurrency.mobileCoin, paymentModel.paymentAmount?.currency)
+                    XCTAssertEqual(item.amountPicoMob, paymentModel.paymentAmount?.picoMob)
+                    XCTAssertEqual([item.txoPublicKey], paymentModel.mobileCoin?.incomingTransactionPublicKeys)
+                    XCTAssertTrue(item.receivedBlock.index == paymentModel.mobileCoin?.ledgerBlockIndex)
+                    XCTAssertTrue(item.receivedBlock.timestamp?.ows_millisecondsSince1970 == paymentModel.mobileCoin?.ledgerBlockTimestamp)
+                    XCTAssertNil(paymentModel.addressUuidString)
+                    XCTAssertNil(paymentModel.memoMessage)
+                    XCTAssertEqual(true, paymentModel.isUnread)
+                    XCTAssertNil(paymentModel.mobileCoin?.recipientPublicAddressData)
+                    XCTAssertNil(paymentModel.mobileCoin?.transactionData)
+                    XCTAssertNil(paymentModel.mobileCoin?.receiptData)
+                    XCTAssertNil(paymentModel.mobileCoin?.spentKeyImages)
+                    XCTAssertNil(paymentModel.mobileCoin?.outputPublicKeys)
+                    XCTAssertNil(paymentModel.mobileCoin?.feeAmount)
                 }
 
                 // Reconciliation 2
@@ -257,9 +284,9 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 2)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 1)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 1)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 1)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
@@ -270,7 +297,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                         XCTAssertEqual(TSPaymentFailure.none, paymentModel.paymentFailure)
                         XCTAssertEqual(TSPaymentCurrency.mobileCoin, paymentModel.paymentAmount?.currency)
                         XCTAssertEqual(item.amountPicoMob, paymentModel.paymentAmount?.picoMob)
-                        XCTAssertNil(paymentModel.mobileCoin?.incomingTransactionPublicKey)
+                        XCTAssertNil(paymentModel.mobileCoin?.incomingTransactionPublicKeys?.nilIfEmpty)
                         XCTAssertTrue(item.spentBlock?.index == paymentModel.mobileCoin?.ledgerBlockIndex)
                         XCTAssertTrue(item.spentBlock?.timestamp?.ows_millisecondsSince1970 == paymentModel.mobileCoin?.ledgerBlockTimestamp)
                         XCTAssertNil(paymentModel.addressUuidString)
@@ -280,7 +307,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                         XCTAssertNil(paymentModel.mobileCoin?.transactionData)
                         XCTAssertNil(paymentModel.mobileCoin?.receiptData)
                         XCTAssertEqual([item.keyImage], paymentModel.mobileCoin?.spentKeyImages)
-                        XCTAssertEqual([], paymentModel.mobileCoin?.outputPublicKeys)
+                        XCTAssertNil(paymentModel.mobileCoin?.outputPublicKeys?.nilIfEmpty)
                         XCTAssertNil(paymentModel.mobileCoin?.feeAmount)
                     } else {
                         XCTFail("Missing paymentModel for item2a.txoPublicKey")
@@ -305,9 +332,9 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     XCTAssertEqual(databaseState.allPaymentModels.count, 2)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
-                    XCTAssertEqual(databaseState.incomingUnverifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingVerifiedMap.count, 0)
-                    XCTAssertEqual(databaseState.incomingUnidentifiedMap.count, 1)
+                    XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
+                    XCTAssertEqual(databaseState.incomingUnidentifiedCount, 1)
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 1)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
                 }

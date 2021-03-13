@@ -1657,11 +1657,14 @@ public extension PaymentsImpl {
     }
 
     static func formatAsUrl(publicAddress: MobileCoin.PublicAddress) -> String {
-        MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
+        let url = MobileCoinAPI.formatAsUrl(publicAddress: publicAddress)
+        Logger.verbose("publicAddressUrl: \(url)")
+        return url
     }
 
-    static func parseAsPublicAddress(publicAddressUrl url: URL) -> MobileCoin.PublicAddress? {
-        MobileCoinAPI.parseAsPublicAddress(publicAddressUrl: url)
+    static func parseAsPublicAddress(url: URL) -> MobileCoin.PublicAddress? {
+        Logger.verbose("publicAddressUrl: \(url)")
+        return MobileCoinAPI.parseAsPublicAddress(url: url)
     }
 
     static func parse(publicAddressBase58 base58: String) -> MobileCoin.PublicAddress? {
