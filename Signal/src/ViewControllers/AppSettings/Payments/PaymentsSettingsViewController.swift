@@ -464,7 +464,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let restorePaymentsButton = OWSFlatButton.button(title: buttonTitle,
                                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                              titleColor: .ows_accentBlue,
-                                                             backgroundColor: .clear,
+                                                             backgroundColor: self.tableBackgroundColor,
                                                              target: self,
                                                              selector: #selector(didTapRestorePaymentsButton))
             restorePaymentsButton.autoSetHeightUsingFont()

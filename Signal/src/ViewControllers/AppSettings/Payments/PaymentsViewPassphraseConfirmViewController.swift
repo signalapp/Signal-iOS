@@ -155,7 +155,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
                                                                        comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                               titleColor: .ows_accentBlue,
-                                              backgroundColor: .clear,
+                                              backgroundColor: self.tableBackgroundColor,
                                               target: self,
                                               selector: #selector(didTapSeePassphraseAgainButton))
         backButton.autoSetHeightUsingFont()

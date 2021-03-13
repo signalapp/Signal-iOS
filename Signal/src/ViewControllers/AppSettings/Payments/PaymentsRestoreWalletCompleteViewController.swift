@@ -52,7 +52,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         let editButton = OWSFlatButton.button(title: CommonStrings.editButton,
                                               font: .ows_dynamicTypeBody,
                                               titleColor: .ows_accentBlue,
-                                              backgroundColor: .clear,
+                                              backgroundColor: self.tableBackgroundColor,
                                               target: self,
                                               selector: #selector(didTapEditButton))
         editButton.autoSetHeightUsingFont()
