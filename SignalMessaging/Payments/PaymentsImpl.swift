@@ -1473,7 +1473,7 @@ public extension PaymentsImpl {
                                                     : .outgoingComplete)
 
             let paymentType: TSPaymentType
-            if recipientUuid == nil {
+            if recipientPublicAddressData == nil {
                 // Possible defragmentation.
                 guard recipientUuid == nil,
                       recipientPublicAddressData == nil,
@@ -1481,7 +1481,7 @@ public extension PaymentsImpl {
                       paymentAmount.isValidAmount(canBeEmpty: true),
                       paymentAmount.picoMob == 0,
                       memoMessage == nil else {
-                    throw OWSAssertionError("Invalid proto.")
+                    throw OWSAssertionError("Invalid payment sync message.")
                 }
                 paymentType = .outgoingDefragmentation
             } else {
@@ -1489,7 +1489,7 @@ public extension PaymentsImpl {
                 guard recipientUuid != nil,
                       receiptData != nil,
                       paymentAmount.isValidAmount(canBeEmpty: false) else {
-                    throw OWSAssertionError("Invalid proto.")
+                    throw OWSAssertionError("Invalid payment sync message.")
                 }
                 paymentType = .outgoingPayment
             }

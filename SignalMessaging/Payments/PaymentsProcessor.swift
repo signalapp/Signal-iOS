@@ -547,9 +547,6 @@ private class PaymentProcessingOperation: OWSOperation {
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
-
-                    // Discard the SDK instance; the auth token may be stale.
-                    Self.payments.didReceiveMCAuthError()
                 case .verificationStatusUnknown,
                      .ledgerBlockTimestampUnknown:
                     // These errors are expected.
