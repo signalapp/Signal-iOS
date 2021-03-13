@@ -63,12 +63,12 @@ public extension TSAccountManager {
 
     @objc
     var isRegisteredPrimaryDevice: Bool {
-        return isRegistered && self.storedDeviceId() == OWSDevicePrimaryDeviceId
+        isRegistered && isPrimaryDevice
     }
 
     @objc
     var isPrimaryDevice: Bool {
-        return storedDeviceId() == OWSDevicePrimaryDeviceId
+        storedDeviceId() == OWSDevicePrimaryDeviceId
     }
 
     @objc

@@ -153,14 +153,24 @@ extension StorageServiceProtoContactRecord {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
-        if hasGivenName && localGivenName != givenName || hasFamilyName && localFamilyName != familyName {
-            profileManager.setProfileGivenName(
-                givenName,
-                familyName: familyName,
-                for: address,
-                wasLocallyInitiated: false,
-                transaction: transaction
-            )
+        // Given name can never be cleared, so ignore all info
+        // about the profile if there's no given name.
+        if hasGivenName && (localGivenName != givenName || localFamilyName != familyName) {
+            // If we already have a profile for this user, ignore
+            // any content received via storage service. Instead,
+            // we'll just kick off a fetch of that user's profile
+            // to make sure everything is up-to-date.
+            if localGivenName != nil {
+                SSKEnvironment.shared.bulkProfileFetch.fetchProfile(address: address)
+            } else {
+                profileManager.setProfileGivenName(
+                    givenName,
+                    familyName: familyName,
+                    for: address,
+                    wasLocallyInitiated: false,
+                    transaction: transaction
+                )
+            }
         } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName {
             mergeState = .needsUpdate(recipient.accountId)
         }
@@ -677,29 +687,47 @@ extension StorageServiceProtoAccountRecord {
         let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
 
-        // If our local profile key record differs from what's on the service, use the service's value.
-        if let profileKey = profileKey, localProfileKey?.keyData != profileKey {
+        // On the primary device, we only ever want to
+        // take the profile key from storage service if
+        // we have no record of a local profile. This
+        // allows us to restore your profile during onboarding,
+        // but ensures no other device can ever change the profile
+        // key other than the primary device.
+        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !tsAccountManager.isPrimaryDevice
+
+        if allowsRemoteProfileKeyChanges,
+           let profileKey = profileKey,
+           localProfileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: localAddress,
                 wasLocallyInitiated: false,
                 transaction: transaction
             )
-
-            // If we have a local profile key for this user but the service doesn't mark it as needing update.
         } else if localProfileKey != nil && !hasProfileKey {
+            // If we have a local profile key for this user but the service doesn't mark it as needing update.
             mergeState = .needsUpdate
         }
 
-        if localGivenName != givenName || localFamilyName != familyName || localAvatarUrl != avatarURL {
-            profileManager.setProfileGivenName(
-                givenName,
-                familyName: familyName,
-                avatarUrlPath: avatarURL,
-                for: localAddress,
-                wasLocallyInitiated: false,
-                transaction: transaction
-            )
+        // Given name can never be cleared, so ignore all info
+        // about the profile if there's no given name.
+        if hasGivenName && (localGivenName != givenName || localFamilyName != familyName || localAvatarUrl != avatarURL) {
+            if profileManager.hasLocalProfile() {
+                // If we have a local profile, never take any new
+                // profile data besides the key from storage service.
+                // Instead, just trigger a fetch of our profile to make
+                // sure we have the latest authoritative information.
+                profileManager.fetchLocalUsersProfile()
+            } else {
+                profileManager.setProfileGivenName(
+                    givenName,
+                    familyName: familyName,
+                    avatarUrlPath: avatarURL,
+                    for: localAddress,
+                    wasLocallyInitiated: false,
+                    transaction: transaction
+                )
+            }
         } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName || localAvatarUrl != nil && !hasAvatarURL {
             mergeState = .needsUpdate
         }

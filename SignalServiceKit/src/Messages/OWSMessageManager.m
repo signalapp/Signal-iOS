@@ -621,14 +621,16 @@ NS_ASSUME_NONNULL_BEGIN
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
-        if (profileKey.length == kAES256_KeyByteLength) {
+        if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
+            OWSLogVerbose(@"Ignoring profile key for local device on primary.");
+        } else if (profileKey.length != kAES256_KeyByteLength) {
+            OWSFailDebug(
+                @"Unexpected profile key length: %lu on message from: %@", (unsigned long)profileKey.length, address);
+        } else {
             [self.profileManager setProfileKeyData:profileKey
                                         forAddress:address
                                wasLocallyInitiated:YES
                                        transaction:transaction];
-        } else {
-            OWSFailDebug(
-                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, address);
         }
     }
 
@@ -652,7 +654,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       thread:thread
                                                  transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
-        [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        // Do nothing, we handle profile keys on all incoming messages above.
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
@@ -1053,10 +1055,17 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
-        [self.profileManager setProfileKeyData:profileKey
-                                    forAddress:address
-                           wasLocallyInitiated:YES
-                                   transaction:transaction];
+        if (address.isLocalAddress && self.tsAccountManager.isPrimaryDevice) {
+            OWSLogVerbose(@"Ignoring profile key for local device on primary.");
+        } else if (profileKey.length != kAES256_KeyByteLength) {
+            OWSFailDebug(
+                @"Unexpected profile key length: %lu on message from: %@", (unsigned long)profileKey.length, address);
+        } else {
+            [self.profileManager setProfileKeyData:profileKey
+                                        forAddress:address
+                               wasLocallyInitiated:YES
+                                       transaction:transaction];
+        }
     }
 
     BOOL supportsMultiRing = false;
@@ -1862,36 +1871,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  dataMessage:dataMessage
                                                       thread:thread
                                                  transaction:transaction];
-}
-
-- (void)handleProfileKeyMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                                dataMessage:(SSKProtoDataMessage *)dataMessage
-                                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-
-    SignalServiceAddress *address = envelope.sourceAddress;
-    if (!dataMessage.hasProfileKey) {
-        OWSFailDebug(@"received profile key message without profile key from: %@", envelopeAddress(envelope));
-        return;
-    }
-    NSData *profileKey = dataMessage.profileKey;
-    if (profileKey.length != kAES256_KeyByteLength) {
-        OWSFailDebug(@"received profile key of unexpected length: %lu, from: %@",
-            (unsigned long)profileKey.length,
-            envelopeAddress(envelope));
-        return;
-    }
-
-    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    [profileManager setProfileKeyData:profileKey forAddress:address wasLocallyInitiated:YES transaction:transaction];
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope

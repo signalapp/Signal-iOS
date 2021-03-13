@@ -2338,7 +2338,7 @@ public class GroupManager: NSObject {
         guard wasLocalUserJustAddedToTheGroup(oldGroupModel: oldGroupModel,
                                               newGroupModel: newGroupModel) else {
             if DebugFlags.internalLogging {
-                Logger.info("Local user was not just added to the group.")
+                Logger.verbose("Local user was not just added to the group.")
             }
             return
         }
