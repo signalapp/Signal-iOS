@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 NSNotificationName const kNSNotificationNameLocalProfileDidChange = @"kNSNotificationNameLocalProfileDidChange";
+NSNotificationName const kNSNotificationNameLocalProfileKeyDidChange = @"kNSNotificationNameLocalProfileKeyDidChange";
+
 NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange
     = @"kNSNotificationNameOtherUsersProfileWillChange";
 NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange
@@ -395,6 +397,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     // * Updating the profile updated the "latest" instance.
     __block BOOL didChange = NO;
     __block BOOL onlyAvatarChanged = NO;
+    __block BOOL profileKeyDidChange = NO;
 
     OWSUserProfile *_Nullable latestInstance =
         [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
@@ -419,8 +422,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
                                    changeBlock(profile);
 
-                                   BOOL profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
-                                                                                  equalTo:profile.profileKey.keyData];
+                                   profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
+                                                                             equalTo:profile.profileKey.keyData];
                                    BOOL givenNameDidChange = ![NSObject isNullableObject:givenNameBefore
                                                                                  equalTo:profile.givenName];
                                    BOOL familyNameDidChange = ![NSObject isNullableObject:familyNameBefore
@@ -540,6 +543,13 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                           [self.syncManager syncLocalContact].catchInBackground(^(NSError *error) {
                                               OWSLogError(@"Error: %@", error);
                                           });
+                                      }
+
+                                      if (profileKeyDidChange) {
+                                          [[NSNotificationCenter defaultCenter]
+                                              postNotificationNameAsync:kNSNotificationNameLocalProfileKeyDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
                                       }
 
                                       [[NSNotificationCenter defaultCenter]

@@ -14,6 +14,11 @@ public extension OWSProfileManager {
         return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesSwift
     }
 
+    private var databaseStorage: SDSDatabaseStorage { .shared }
+    private var tsAccountManager: TSAccountManager { .shared() }
+    private var versionedProfiles: VersionedProfiles { SSKEnvironment.shared.versionedProfiles }
+    private var groupsV2: GroupsV2Swift { SSKEnvironment.shared.groupsV2 as! GroupsV2Swift }
+
     // MARK: -
 
     // The main entry point for updating the local profile. It will:
@@ -29,7 +34,8 @@ public extension OWSProfileManager {
                                          profileFamilyName: String?,
                                          profileBio: String?,
                                          profileBioEmoji: String?,
-                                         profileAvatarData: Data?) -> Promise<Void> {
+                                         profileAvatarData: Data?,
+                                         unsavedRotatedProfileKey: OWSAES256Key? = nil) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
 
         return DispatchQueue.global().async(.promise) {
@@ -37,10 +43,16 @@ public extension OWSProfileManager {
                                         profileFamilyName: profileFamilyName,
                                         profileBio: profileBio,
                                         profileBioEmoji: profileBioEmoji,
-                                        profileAvatarData: profileAvatarData)
+                                        profileAvatarData: profileAvatarData,
+                                        unsavedRotatedProfileKey: unsavedRotatedProfileKey)
         }.then { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
+            guard unsavedRotatedProfileKey == nil else {
+                Logger.info("Skipping local profile fetch during key rotation.")
+                return Promise.value(())
+            }
+
             guard let localAddress = TSAccountManager.shared().localAddress else {
                 throw OWSAssertionError("missing local address")
             }
@@ -51,7 +63,7 @@ public extension OWSProfileManager {
     }
 
     // This will re-upload the existing local profile state.
-    func reuploadLocalProfilePromise() -> Promise<Void> {
+    func reuploadLocalProfilePromise(unsavedRotatedProfileKey: OWSAES256Key? = nil) -> Promise<Void> {
         Logger.info("")
 
         let profileGivenName: String?
@@ -80,7 +92,8 @@ public extension OWSProfileManager {
                                                            profileFamilyName: profileFamilyName,
                                                            profileBio: profileBio,
                                                            profileBioEmoji: profileBioEmoji,
-                                                           profileAvatarData: profileAvatarData)
+                                                           profileAvatarData: profileAvatarData,
+                                                           unsavedRotatedProfileKey: unsavedRotatedProfileKey)
     }
 
     @objc
@@ -97,32 +110,123 @@ public extension OWSProfileManager {
             .filter { $0.devices.count > 0 }
             .map { $0.address }
     }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func rotateProfileKey(
+        intersectingPhoneNumbers: Set<String>,
+        intersectingUUIDs: Set<String>,
+        intersectingGroupIds: Set<Data>
+    ) -> AnyPromise {
+        return AnyPromise(rotateProfileKey(
+            intersectingPhoneNumbers: intersectingPhoneNumbers,
+            intersectingUUIDs: intersectingUUIDs,
+            intersectingGroupIds: intersectingGroupIds
+        ))
+    }
+
+    func rotateProfileKey(
+        intersectingPhoneNumbers: Set<String>,
+        intersectingUUIDs: Set<String>,
+        intersectingGroupIds: Set<Data>
+    ) -> Promise<Void> {
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectely false"))
+        }
+
+        Logger.info("Beginning profile key rotation.")
+
+        // The order of operations here is very important to prevent races
+        // between when we rotate our profile key and reupload our profile.
+        // It's essential we avoid a case where other devices are operating
+        // with a *new* profile key that we have yet to upload a profile for.
+
+        return firstly(on: .global()) { () -> Promise<OWSAES256Key> in
+            Logger.info("Reuploading profile with new profile key")
+
+            // We re-upload our local profile with the new profile key
+            // *before* we persist it. This is safe, because versioned
+            // profiles allow other clients to continue using our old
+            // profile key with the old version of our profile. It is
+            // possible this operation will fail, in which case we will
+            // try to rotate your profile key again on the next app
+            // launch or blocklist change and continue to use the old
+            // profile key.
+
+            let newProfileKey = OWSAES256Key.generateRandom()
+            return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey).map { newProfileKey }
+        }.then(on: .global()) { newProfileKey -> Promise<Void> in
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing local address")
+            }
+
+            Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
+
+            return self.databaseStorage.write(.promise) { transaction in
+                self.setLocalProfileKey(newProfileKey, wasLocallyInitiated: true, transaction: transaction)
+
+                // Whenever a user's profile key changes, we need to fetch a new
+                // profile key credential for them.
+                self.versionedProfiles.clearProfileKeyCredential(for: localAddress, transaction: transaction)
+
+                // We schedule the updates here but process them below using processProfileKeyUpdates.
+                // It's more efficient to process them after the intermediary steps are done.
+                self.groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
+
+                // It's absolutely essential that these values are persisted in the same transaction
+                // in which we persist our new profile key, since storing them is what marks the
+                // profile key rotation as "complete" (removing newly blocked users from the whitelist).
+                self.whitelistedPhoneNumbersStore.removeValues(
+                    forKeys: Array(intersectingPhoneNumbers),
+                    transaction: transaction
+                )
+                self.whitelistedUUIDsStore.removeValues(
+                    forKeys: Array(intersectingUUIDs),
+                    transaction: transaction
+                )
+                self.whitelistedGroupsStore.removeValues(
+                    forKeys: intersectingGroupIds.map { self.groupKey(forGroupId: $0) },
+                    transaction: transaction
+                )
+            }
+        }.then(on: .global()) { () -> Promise<Void> in
+            Logger.info("Updating account attributes after profile key rotation.")
+            return self.tsAccountManager.updateAccountAttributes()
+        }.done(on: .global()) {
+            Logger.info("Completed profile key rotation.")
+            self.groupsV2.processProfileKeyUpdates()
+        }
+    }
 }
 
 // MARK: -
 
 @objc
 public extension OWSProfileManager {
-    // See OWSProfileManager.updateProfilePromise().
-    class func updateLocalProfilePromiseObj(profileGivenName: String?,
-                                            profileFamilyName: String?,
-                                            profileBio: String?,
-                                            profileBioEmoji: String?,
-                                            profileAvatarData: Data?) -> AnyPromise {
-        AnyPromise(updateLocalProfilePromise(profileGivenName: profileGivenName,
-                                             profileFamilyName: profileFamilyName,
-                                             profileBio: profileBio,
-                                             profileBioEmoji: profileBioEmoji,
-                                             profileAvatarData: profileAvatarData))
-    }
-
-    class func updateProfileOnServiceIfNecessaryObjc() {
+    @available(swift, obsoleted: 1.0)
+    class func updateProfileOnServiceIfNecessary() {
         updateProfileOnServiceIfNecessary()
     }
 
     // This will re-upload the existing local profile state.
-    func reuploadLocalProfilePromiseObjc() -> AnyPromise {
+    @available(swift, obsoleted: 1.0)
+    func reuploadLocalProfilePromise() -> AnyPromise {
         return AnyPromise(reuploadLocalProfilePromise())
+    }
+
+    @available(swift, obsoleted: 1.0)
+    class func updateLocalProfilePromise(profileGivenName: String?,
+                                         profileFamilyName: String?,
+                                         profileBio: String?,
+                                         profileBioEmoji: String?,
+                                         profileAvatarData: Data?) -> AnyPromise {
+        return AnyPromise(updateLocalProfilePromise(
+            profileGivenName: profileGivenName,
+            profileFamilyName: profileFamilyName,
+            profileBio: profileBio,
+            profileBioEmoji: profileBioEmoji,
+            profileAvatarData: profileAvatarData
+        ))
     }
 }
 
@@ -331,7 +435,8 @@ extension OWSProfileManager {
                                                    profileFamilyName: attempt.update.profileFamilyName,
                                                    profileBio: attempt.update.profileBio,
                                                    profileBioEmoji: attempt.update.profileBioEmoji,
-                                                   profileAvatarData: attempt.update.profileAvatarData)
+                                                   profileAvatarData: attempt.update.profileAvatarData,
+                                                   unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
         }.map(on: .global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
@@ -357,7 +462,8 @@ extension OWSProfileManager {
                                             profileFamilyName: String?,
                                             profileBio: String?,
                                             profileBioEmoji: String?,
-                                            profileAvatarData: Data?) -> PendingProfileUpdate {
+                                            profileAvatarData: Data?,
+                                            unsavedRotatedProfileKey: OWSAES256Key?) -> PendingProfileUpdate {
         Logger.verbose("")
 
         // Note that this might overwrite a pending profile update.
@@ -367,7 +473,8 @@ extension OWSProfileManager {
                                           profileFamilyName: profileFamilyName,
                                           profileBio: profileBio,
                                           profileBioEmoji: profileBioEmoji,
-                                          profileAvatarData: profileAvatarData)
+                                          profileAvatarData: profileAvatarData,
+                                          unsavedRotatedProfileKey: unsavedRotatedProfileKey)
         databaseStorage.write { transaction in
             self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
         }
@@ -422,6 +529,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
     // If nil, we are clearing the profile avatar.
     let profileAvatarData: Data?
 
+    let unsavedRotatedProfileKey: OWSAES256Key?
+
     var hasGivenName: Bool {
         guard let givenName = profileGivenName else {
             return false
@@ -440,7 +549,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
          profileFamilyName: String?,
          profileBio: String?,
          profileBioEmoji: String?,
-         profileAvatarData: Data?) {
+         profileAvatarData: Data?,
+         unsavedRotatedProfileKey: OWSAES256Key?) {
 
         self.id = UUID()
         self.profileGivenName = profileGivenName
@@ -448,6 +558,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBio = profileBio
         self.profileBioEmoji = profileBioEmoji
         self.profileAvatarData = profileAvatarData
+        self.unsavedRotatedProfileKey = unsavedRotatedProfileKey
     }
 
     func hasSameIdAs(_ other: PendingProfileUpdate) -> Bool {
@@ -464,6 +575,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encode(profileBio, forKey: "profileBio")
         aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
+        aCoder.encode(unsavedRotatedProfileKey, forKey: "unsavedRotatedProfileKey")
     }
 
     @objc
@@ -479,6 +591,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBio = aDecoder.decodeObject(forKey: "profileBio") as? String
         self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
+        self.unsavedRotatedProfileKey = aDecoder.decodeObject(forKey: "unsavedRotatedProfileKey") as? OWSAES256Key
     }
 }
 

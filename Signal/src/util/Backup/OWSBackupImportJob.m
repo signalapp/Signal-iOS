@@ -327,11 +327,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:@(1)];
     }
 
-    return [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:localProfileGivenName
-                                                             profileFamilyName:localProfileFamilyName
-                                                                    profileBio:nil
-                                                               profileBioEmoji:nil
-                                                             profileAvatarData:localProfileAvatarData]
+    return [OWSProfileManager updateLocalProfilePromiseWithProfileGivenName:localProfileGivenName
+                                                          profileFamilyName:localProfileFamilyName
+                                                                 profileBio:nil
+                                                            profileBioEmoji:nil
+                                                          profileAvatarData:localProfileAvatarData]
         .catch(^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);
             // Ignore errors related to local profile.
