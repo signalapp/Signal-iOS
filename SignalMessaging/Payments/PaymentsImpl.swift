@@ -987,7 +987,6 @@ public extension PaymentsImpl {
             case .outgoingVerified,
                  .outgoingSending,
                  .outgoingSent,
-                 .outgoingMissingLedgerTimestamp,
                  .outgoingComplete:
                 // Success: Verified.
                 return Promise.value(true)
@@ -996,7 +995,6 @@ public extension PaymentsImpl {
                 return Promise.value(false)
             case .incomingUnverified,
                  .incomingVerified,
-                 .incomingMissingLedgerTimestamp,
                  .incomingComplete,
                  .incomingFailed:
                 owsFailDebug("Unexpected paymentState: \(paymentModel.descriptionForLogs)")
@@ -1029,23 +1027,43 @@ public extension PaymentsImpl {
             return
         }
         guard let mcTransactionData = paymentModel.mcTransactionData,
-              !mcTransactionData.isEmpty else {
+              !mcTransactionData.isEmpty,
+              let mcTransaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
             if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing mcTransactionData.")
+                Logger.warn("Missing or invalid mcTransactionData.")
             } else {
-                owsFailDebug("Missing mcTransactionData.")
+                owsFailDebug("Missing or invalid mcTransactionData.")
             }
             return
         }
+        let mcSpentKeyImages = Array(mcTransaction.inputKeyImages)
+        guard !mcSpentKeyImages.isEmpty else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing or invalid mcSpentKeyImages.")
+            } else {
+                owsFailDebug("Missing or invalid mcSpentKeyImages.")
+            }
+            return
+        }
+        let mcOutputPublicKeys = Array(mcTransaction.outputPublicKeys)
+        guard !mcOutputPublicKeys.isEmpty else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing or invalid mcOutputPublicKeys.")
+            } else {
+                owsFailDebug("Missing or invalid mcOutputPublicKeys.")
+            }
+            return
+        }
+
         _ = sendOutgoingPaymentSyncMessage(recipientUuid: nil,
                                            recipientAddress: nil,
                                            paymentAmount: paymentAmount,
                                            feeAmount: feeAmount,
-                                           mcReceiptData: nil,
-                                           mcTransactionData: mcTransactionData,
                                            mcLedgerBlockTimestamp: paymentModel.mcLedgerBlockTimestamp,
                                            mcLedgerBlockIndex: paymentModel.mcLedgerBlockIndex,
                                            memoMessage: nil,
+                                           mcSpentKeyImages: mcSpentKeyImages,
+                                           mcOutputPublicKeys: mcOutputPublicKeys,
                                            isDefragmentation: true,
                                            transaction: transaction)
     }
@@ -1145,11 +1163,30 @@ public extension PaymentsImpl {
             return
         }
         guard let mcTransactionData = paymentModel.mcTransactionData,
-              !mcTransactionData.isEmpty else {
+              !mcTransactionData.isEmpty,
+              let mcTransaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
             if DebugFlags.paymentsIgnoreBadData.get() {
-                Logger.warn("Missing mcTransactionData.")
+                Logger.warn("Missing or invalid mcTransactionData.")
             } else {
-                owsFailDebug("Missing mcTransactionData.")
+                owsFailDebug("Missing or invalid mcTransactionData.")
+            }
+            return
+        }
+        let mcSpentKeyImages = Array(mcTransaction.inputKeyImages)
+        guard !mcSpentKeyImages.isEmpty else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing or invalid mcSpentKeyImages.")
+            } else {
+                owsFailDebug("Missing or invalid mcSpentKeyImages.")
+            }
+            return
+        }
+        let mcOutputPublicKeys = Array(mcTransaction.outputPublicKeys)
+        guard !mcOutputPublicKeys.isEmpty else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing or invalid mcOutputPublicKeys.")
+            } else {
+                owsFailDebug("Missing or invalid mcOutputPublicKeys.")
             }
             return
         }
@@ -1157,11 +1194,11 @@ public extension PaymentsImpl {
                                            recipientAddress: recipientAddress,
                                            paymentAmount: paymentAmount,
                                            feeAmount: feeAmount,
-                                           mcReceiptData: mcReceiptData,
-                                           mcTransactionData: mcTransactionData,
                                            mcLedgerBlockTimestamp: paymentModel.mcLedgerBlockTimestamp,
                                            mcLedgerBlockIndex: paymentModel.mcLedgerBlockIndex,
                                            memoMessage: paymentModel.memoMessage,
+                                           mcSpentKeyImages: mcSpentKeyImages,
+                                           mcOutputPublicKeys: mcOutputPublicKeys,
                                            isDefragmentation: false,
                                            transaction: transaction)
 
@@ -1261,11 +1298,11 @@ public extension PaymentsImpl {
                                               recipientAddress: Data?,
                                               paymentAmount: TSPaymentAmount,
                                               feeAmount: TSPaymentAmount,
-                                              mcReceiptData: Data?,
-                                              mcTransactionData: Data,
                                               mcLedgerBlockTimestamp: UInt64?,
                                               mcLedgerBlockIndex: UInt64?,
                                               memoMessage: String?,
+                                              mcSpentKeyImages: [Data],
+                                              mcOutputPublicKeys: [Data],
                                               isDefragmentation: Bool,
                                               transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage? {
 
@@ -1277,13 +1314,12 @@ public extension PaymentsImpl {
                                                    recipientAddress: recipientAddress,
                                                    amountPicoMob: paymentAmount.picoMob,
                                                    feePicoMob: feeAmount.picoMob,
-                                                   receiptData: mcReceiptData,
-                                                   transactionData: mcTransactionData,
                                                    blockIndex: mcLedgerBlockIndex ?? 0,
                                                    blockTimestamp: mcLedgerBlockTimestamp ?? 0,
                                                    memoMessage: memoMessage,
+                                                   spentKeyImages: mcSpentKeyImages,
+                                                   outputPublicKeys: mcOutputPublicKeys,
                                                    isDefragmentation: isDefragmentation)
-
         let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
@@ -1396,23 +1432,11 @@ public extension PaymentsImpl {
             // TODO: Require this?
             let recipientPublicAddressData = mobileCoinProto.recipientAddress
             let memoMessage = paymentProto.note
-            var receiptData: Data?
-            if let receipt = mobileCoinProto.receipt {
-                // Verify that the reciept can be parsed.
-                guard nil != MobileCoin.Receipt(serializedData: receipt) else {
-                    throw OWSAssertionError("Invalid receipt.")
-                }
-                receiptData = receipt
-            }
-            let transactionData = mobileCoinProto.transaction
-            guard let mcTransaction = MobileCoin.Transaction(serializedData: transactionData) else {
-                throw OWSAssertionError("Invalid transaction.")
-            }
-            let spentKeyImages = Array(mcTransaction.inputKeyImages)
+            let spentKeyImages = mobileCoinProto.spentKeyImages
             guard !spentKeyImages.isEmpty else {
                 throw OWSAssertionError("Missing spentKeyImages.")
             }
-            let outputPublicKeys = Array(mcTransaction.outputPublicKeys)
+            let outputPublicKeys = mobileCoinProto.outputPublicKeys
             guard !outputPublicKeys.isEmpty else {
                 throw OWSAssertionError("Missing outputPublicKeys.")
             }
@@ -1424,8 +1448,8 @@ public extension PaymentsImpl {
             // TODO: Support requests.
             let requestUuidString: String? = nil
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
-                                               transactionData: transactionData,
-                                               receiptData: receiptData,
+                                               transactionData: nil,
+                                               receiptData: nil,
                                                incomingTransactionPublicKeys: nil,
                                                spentKeyImages: spentKeyImages,
                                                outputPublicKeys: outputPublicKeys,
@@ -1433,30 +1457,26 @@ public extension PaymentsImpl {
                                                ledgerBlockIndex: ledgerBlockIndex,
                                                feeAmount: feeAmount)
             let hasLedgerBlockTimestamp = ledgerBlockTimestamp > 0
-            let paymentState: TSPaymentState = (hasLedgerBlockTimestamp
-                                                    ? .outgoingMissingLedgerTimestamp
-                                                    : .outgoingComplete)
+            let paymentState: TSPaymentState = .outgoingComplete
 
             let paymentType: TSPaymentType
             if recipientPublicAddressData == nil {
                 // Possible defragmentation.
                 guard recipientUuid == nil,
                       recipientPublicAddressData == nil,
-                      receiptData == nil,
                       paymentAmount.isValidAmount(canBeEmpty: true),
                       paymentAmount.picoMob == 0,
                       memoMessage == nil else {
                     throw OWSAssertionError("Invalid payment sync message.")
                 }
-                paymentType = .outgoingDefragmentation
+                paymentType = .outgoingDefragmentationFromLinkedDevice
             } else {
                 // Possible outgoing payment.
                 guard recipientUuid != nil,
-                      receiptData != nil,
                       paymentAmount.isValidAmount(canBeEmpty: false) else {
                     throw OWSAssertionError("Invalid payment sync message.")
                 }
-                paymentType = .outgoingPayment
+                paymentType = .outgoingPaymentFromLinkedDevice
             }
 
             // We use .outgoingSent, we're assuming that the linked device which
@@ -1486,37 +1506,10 @@ public extension PaymentsImpl {
             throw OWSAssertionError("Invalid paymentModel.")
         }
 
-        if !paymentModel.isUnidentified {
-            // Avoid creating duplicate payment models.
-            if paymentModel.isOutgoing {
-                if let transactionData = paymentModel.mobileCoin?.transactionData {
-                    let existingPaymentModels = PaymentFinder.paymentModels(forMcTransactionData: transactionData,
-                                                                            transaction: transaction)
-                    if existingPaymentModels.count > 1 {
-                        owsFailDebug("More than one conflict.")
-                    }
-                    if !existingPaymentModels.isEmpty {
-                        throw OWSAssertionError("Duplicate paymentModel.")
-                    }
-                } else {
-                    throw OWSAssertionError("Missing transactionData.")
-                }
-            }
-
-            if paymentModel.isIncoming {
-                if let receiptData = paymentModel.mobileCoin?.receiptData {
-                    let existingPaymentModels = PaymentFinder.paymentModels(forMcReceiptData: receiptData,
-                                                                            transaction: transaction)
-                    if existingPaymentModels.count > 1 {
-                        owsFailDebug("More than one conflict.")
-                    }
-                    if !existingPaymentModels.isEmpty {
-                        throw OWSAssertionError("Duplicate paymentModel.")
-                    }
-                } else {
-                    throw OWSAssertionError("Missing receiptData.")
-                }
-            }
+        let isRedundant = try isProposedPaymentModelRedundant(paymentModel,
+                                                              transaction: transaction)
+        guard !isRedundant else {
+            throw OWSAssertionError("Duplicate paymentModel.")
         }
 
         paymentModel.anyInsert(transaction: transaction)
@@ -1529,6 +1522,96 @@ public extension PaymentsImpl {
                                                                   transaction: transaction) {
             paymentRequestModel.anyRemove(transaction: transaction)
         }
+    }
+
+    // This method enforces invariants around TSPaymentModel.
+    private func isProposedPaymentModelRedundant(_ paymentModel: TSPaymentModel,
+                                                 transaction: SDSAnyWriteTransaction) throws -> Bool {
+        guard paymentModel.isValid else {
+            throw OWSAssertionError("Invalid paymentModel.")
+        }
+
+        // Only one model in the database should have a given transaction.
+        if paymentModel.canHaveMCTransaction {
+            if let transactionData = paymentModel.mobileCoin?.transactionData {
+                let existingPaymentModels = PaymentFinder.paymentModels(forMcTransactionData: transactionData,
+                                                                        transaction: transaction)
+                if existingPaymentModels.count > 1 {
+                    owsFailDebug("More than one conflict.")
+                }
+                if !existingPaymentModels.isEmpty {
+                    owsFailDebug("Transaction conflict.")
+                    return true
+                }
+            } else if paymentModel.shouldHaveMCTransaction {
+                throw OWSAssertionError("Missing transactionData.")
+            }
+        }
+
+        // Only one model in the database should have a given receipt.
+        if paymentModel.shouldHaveMCReceipt {
+            if let receiptData = paymentModel.mobileCoin?.receiptData {
+                let existingPaymentModels = PaymentFinder.paymentModels(forMcReceiptData: receiptData,
+                                                                        transaction: transaction)
+                if existingPaymentModels.count > 1 {
+                    owsFailDebug("More than one conflict.")
+                }
+                if !existingPaymentModels.isEmpty {
+                    owsFailDebug("Receipt conflict.")
+                    return true
+                }
+            } else {
+                throw OWSAssertionError("Missing receiptData.")
+            }
+        }
+
+        // Only one _identified_ payment model in the database should correspond to any given
+        // spentKeyImage or outputPublicKey.
+        //
+        // We don't need to worry about conflicts with unidentified payment models;
+        // PaymentsReconciliation will avoid / clean those up.
+        let mcLedgerBlockIndex = paymentModel.mobileCoin?.ledgerBlockIndex ?? 0
+        let spentKeyImages = Set(paymentModel.mobileCoin?.spentKeyImages ?? [])
+        let outputPublicKeys = Set(paymentModel.mobileCoin?.outputPublicKeys ?? [])
+        if !paymentModel.isUnidentified,
+           mcLedgerBlockIndex > 0 {
+
+            let otherPaymentModels = PaymentFinder.paymentModels(forMcLedgerBlockIndex: mcLedgerBlockIndex,
+                                                                 transaction: transaction)
+            for otherPaymentModel in otherPaymentModels {
+                guard !otherPaymentModel.isUnidentified else {
+                    continue
+                }
+                guard paymentModel.uniqueId != otherPaymentModel.uniqueId else {
+                    owsFailDebug("Duplicate paymentModel.")
+                    return true
+                }
+                let otherSpentKeyImages = Set(otherPaymentModel.mobileCoin?.spentKeyImages ?? [])
+                let otherOutputPublicKeys = Set(otherPaymentModel.mobileCoin?.outputPublicKeys ?? [])
+                if !spentKeyImages.intersection(otherSpentKeyImages).isEmpty {
+                    for value in spentKeyImages {
+                        Logger.verbose("spentKeyImage: \(value.hexadecimalString)")
+                    }
+                    for value in otherSpentKeyImages {
+                        Logger.verbose("otherSpentKeyImage: \(value.hexadecimalString)")
+                    }
+                    owsFailDebug("spentKeyImage conflict.")
+                    return true
+                }
+                if !outputPublicKeys.intersection(otherOutputPublicKeys).isEmpty {
+                    for value in outputPublicKeys {
+                        Logger.verbose("outputPublicKey: \(value.hexadecimalString)")
+                    }
+                    for value in otherOutputPublicKeys {
+                        Logger.verbose("otherOutputPublicKey: \(value.hexadecimalString)")
+                    }
+                    owsFailDebug("outputPublicKey conflict.")
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 
     func processReceivedTranscriptPaymentCancellation(thread: TSThread,

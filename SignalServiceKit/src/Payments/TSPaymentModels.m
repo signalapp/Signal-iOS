@@ -23,6 +23,8 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
     switch (value) {
         case TSPaymentTypeIncomingPayment:
             return @"IncomingPayment";
+        case TSPaymentTypeOutgoingPaymentFromLinkedDevice:
+            return @"OutgoingPaymentFromLinkedDevice";
         case TSPaymentTypeOutgoingPayment:
             return @"OutgoingPayment";
         case TSPaymentTypeIncomingUnidentified:
@@ -33,6 +35,8 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
             return @"OutgoingTransfer";
         case TSPaymentTypeOutgoingDefragmentation:
             return @"OutgoingDefragmentation";
+        case TSPaymentTypeOutgoingDefragmentationFromLinkedDevice:
+            return @"OutgoingDefragmentationFromLinkedDevice";
         default:
             OWSCFailDebug(@"Unknown value: %d", (int)value);
             return @"Unknown";
@@ -52,8 +56,6 @@ NSString *NSStringFromTSPaymentState(TSPaymentState value)
             return @"OutgoingSending";
         case TSPaymentStateOutgoingSent:
             return @"OutgoingSent";
-        case TSPaymentStateOutgoingMissingLedgerTimestamp:
-            return @"OutgoingMissingLedgerTimestamp";
         case TSPaymentStateOutgoingComplete:
             return @"OutgoingComplete";
         case TSPaymentStateOutgoingFailed:
@@ -63,8 +65,6 @@ NSString *NSStringFromTSPaymentState(TSPaymentState value)
             return @"IncomingUnverified";
         case TSPaymentStateIncomingVerified:
             return @"IncomingVerified";
-        case TSPaymentStateIncomingMissingLedgerTimestamp:
-            return @"IncomingMissingLedgerTimestamp";
         case TSPaymentStateIncomingComplete:
             return @"IncomingComplete";
         case TSPaymentStateIncomingFailed:

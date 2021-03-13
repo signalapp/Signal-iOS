@@ -55,7 +55,6 @@ public class PaymentsReconciliation {
     }()
 
     public class PaymentsReconciliationOperation: OWSOperation {
-
         override public func run() {
             firstly(on: .global()) {
                 PaymentsReconciliation.reconciliationPromise()
@@ -438,6 +437,30 @@ public class PaymentsReconciliation {
 
             databaseState.add(paymentModel: paymentModel)
         }
+
+        // 3. Fill in missing ledger timestamps.
+        for blockActivity in blockActivities {
+            // If we know the ledger block timestamp for a given block...
+            guard let ledgerBlockTimestamp = blockActivity.blockTimestamp else {
+                continue
+            }
+            let ledgerBlockIndex = blockActivity.blockIndex
+
+            // Review all existing payment models in the block and fill in
+            // any missing ledger block timestamps.
+            let paymentModels = databaseState.ledgerBlockIndexMap[ledgerBlockIndex]
+            for paymentModel in paymentModels {
+                let hasLedgerBlockIndex = (paymentModel.mobileCoin?.ledgerBlockIndex ?? 0) > 0
+                if !hasLedgerBlockIndex {
+                    if let transaction = transaction as? SDSAnyWriteTransaction {
+                        paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockTimestamp,
+                                            transaction: transaction)
+                    } else {
+                        throw ReconciliationError.unsavedChanges
+                    }
+                }
+            }
+        }
     }
 
     // When creating "unidentified" payments, the ledger block timestamp
@@ -790,6 +813,12 @@ internal class PaymentsDatabaseState {
     // (known, outgoing) transactions.
     var outputPublicKeyMap = [Data: TSPaymentModel]()
 
+    // A map of "ledger block index" to TSPaymentModel for
+    // all payment models.
+    //
+    // TODO: Extend unit test to verify this state.
+    var ledgerBlockIndexMap = MultiMap<UInt64, TSPaymentModel>()
+
     // MARK: -
 
     func add(paymentModel: TSPaymentModel) {
@@ -831,6 +860,11 @@ internal class PaymentsDatabaseState {
             } else if !paymentModel.isUnidentified {
                 owsFailDebug("Empty or missing mcOutputPublicKeys: \(formattedState).")
             }
+        }
+
+        let ledgerBlockIndex = paymentModel.mobileCoin?.ledgerBlockIndex ?? 0
+        if ledgerBlockIndex > 0 {
+            ledgerBlockIndexMap.add(key: ledgerBlockIndex, value: paymentModel)
         }
     }
 

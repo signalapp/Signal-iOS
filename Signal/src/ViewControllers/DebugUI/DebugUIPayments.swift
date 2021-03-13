@@ -229,7 +229,6 @@ class DebugUIPayments: DebugUIPage {
 
             paymentModel = insertPaymentModel(paymentType: .incomingPayment, paymentState: .incomingUnverified)
             paymentModel = insertPaymentModel(paymentType: .incomingPayment, paymentState: .incomingVerified)
-            paymentModel = insertPaymentModel(paymentType: .incomingPayment, paymentState: .incomingMissingLedgerTimestamp)
             paymentModel = insertPaymentModel(paymentType: .incomingPayment, paymentState: .incomingComplete)
 
             // MARK: - Outgoing
@@ -239,7 +238,6 @@ class DebugUIPayments: DebugUIPage {
             paymentModel = insertPaymentModel(paymentType: .outgoingPayment, paymentState: .outgoingVerified)
             paymentModel = insertPaymentModel(paymentType: .outgoingPayment, paymentState: .outgoingSending)
             paymentModel = insertPaymentModel(paymentType: .outgoingPayment, paymentState: .outgoingSent)
-            paymentModel = insertPaymentModel(paymentType: .outgoingPayment, paymentState: .outgoingMissingLedgerTimestamp)
             paymentModel = insertPaymentModel(paymentType: .outgoingPayment, paymentState: .outgoingComplete)
 
             // MARK: - Failures

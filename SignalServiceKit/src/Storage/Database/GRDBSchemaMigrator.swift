@@ -99,7 +99,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addWasIdentityVerified
         case storeMutedUntilDateAsMillisecondTimestamp
         case addPaymentModels15
-        case addPaymentModels39
+        case addPaymentModels40
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -961,7 +961,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addPaymentModels39.rawValue) { db in
+        migrator.registerMigration(MigrationId.addPaymentModels40.rawValue) { db in
             do {
                 // PAYMENTS TODO: Remove.
                 try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")

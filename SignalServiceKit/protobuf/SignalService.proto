@@ -520,11 +520,11 @@ message SyncMessage {
       // @required
       optional uint64 feePicoMob           = 3;
       optional bytes  receipt              = 4;
+      optional uint64 ledgerBlockTimestamp = 5;
       // @required
-      optional bytes  transaction          = 5;
-      optional uint64 ledgerBlockTimestamp = 6;
-      // @required
-      optional uint64 ledgerBlockIndex     = 7;
+      optional uint64 ledgerBlockIndex     = 6;
+      repeated bytes  spentKeyImages       = 7;
+      repeated bytes  outputPublicKeys     = 8;
     }
     optional string     recipientUuid = 1;
     optional string     note          = 2;		

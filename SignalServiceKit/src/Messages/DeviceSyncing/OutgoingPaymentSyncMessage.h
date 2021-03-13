@@ -12,23 +12,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *recipientAddress;
 @property (nonatomic, readonly) uint64_t amountPicoMob;
 @property (nonatomic, readonly) uint64_t feePicoMob;
-@property (nonatomic, readonly, nullable) NSData *receiptData;
-@property (nonatomic, readonly) NSData *transactionData;
 @property (nonatomic, readonly) uint64_t blockIndex;
 // This property will be zero if the timestamp is unknown.
 @property (nonatomic, readonly) uint64_t blockTimestamp;
 @property (nonatomic, readonly, nullable) NSString *memoMessage;
+@property (nonatomic, readonly) NSArray<NSData *> *spentKeyImages;
+@property (nonatomic, readonly) NSArray<NSData *> *outputPublicKeys;
 @property (nonatomic, readonly) BOOL isDefragmentation;
 
 - (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
                            recipientAddress:(nullable NSData *)recipientAddress
                               amountPicoMob:(uint64_t)amountPicoMob
                                  feePicoMob:(uint64_t)feePicoMob
-                                receiptData:(nullable NSData *)receiptData
-                            transactionData:(NSData *)transactionData
                                  blockIndex:(uint64_t)blockIndex
                              blockTimestamp:(uint64_t)blockTimestamp
                                 memoMessage:(nullable NSString *)memoMessage
+                             spentKeyImages:(NSArray<NSData *> *)spentKeyImages
+                           outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
                           isDefragmentation:(BOOL)isDefragmentation;
 
 @end

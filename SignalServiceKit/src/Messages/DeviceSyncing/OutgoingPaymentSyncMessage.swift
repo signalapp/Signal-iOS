@@ -15,11 +15,9 @@ public extension OutgoingPaymentSyncMessage {
         do {
             let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: mobileCoin.amountPicoMob,
                                                                                          feePicoMob: mobileCoin.feePicoMob,
-                                                                                         transaction: mobileCoin.transactionData,
                                                                                          ledgerBlockIndex: mobileCoin.blockIndex)
-            if let receiptData = mobileCoin.receiptData {
-                mobileCoinBuilder.setReceipt(receiptData)
-            }
+            mobileCoinBuilder.setSpentKeyImages(mobileCoin.spentKeyImages)
+            mobileCoinBuilder.setOutputPublicKeys(mobileCoin.outputPublicKeys)
             if let recipientAddress = mobileCoin.recipientAddress {
                 mobileCoinBuilder.setRecipientAddress(recipientAddress)
             }

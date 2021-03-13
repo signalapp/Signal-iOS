@@ -13,11 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
                            recipientAddress:(nullable NSData *)recipientAddress
                               amountPicoMob:(uint64_t)amountPicoMob
                                  feePicoMob:(uint64_t)feePicoMob
-                                receiptData:(nullable NSData *)receiptData
-                            transactionData:(NSData *)transactionData
                                  blockIndex:(uint64_t)blockIndex
                              blockTimestamp:(uint64_t)blockTimestamp
                                 memoMessage:(nullable NSString *)memoMessage
+                             spentKeyImages:(NSArray<NSData *> *)spentKeyImages
+                           outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
                           isDefragmentation:(BOOL)isDefragmentation
 {
     self = [super init];
@@ -29,11 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
     _recipientAddress = recipientAddress;
     _amountPicoMob = amountPicoMob;
     _feePicoMob = feePicoMob;
-    _receiptData = receiptData;
-    _transactionData = transactionData;
     _blockIndex = blockIndex;
     _blockTimestamp = blockTimestamp;
     _memoMessage = memoMessage;
+    _spentKeyImages = spentKeyImages;
+    _outputPublicKeys = outputPublicKeys;
     _isDefragmentation = isDefragmentation;
 
     return self;

@@ -34,10 +34,6 @@ public class PaymentsProcessor: NSObject {
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
-
-            DispatchQueue.global().asyncAfter(deadline: .now() + Self.missingLedgerTimestampProcessingDelay) { [weak self] in
-                self?.process()
-            }
         }
 
         NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
@@ -139,10 +135,6 @@ public class PaymentsProcessor: NSObject {
         }
     }
 
-    // Don't bother trying to process "missing ledger timestamp" payments until
-    // the app has been launched for a N minutes.
-    private static let missingLedgerTimestampProcessingDelay: TimeInterval = kMinuteInterval * 2
-
     private func buildProcessingOperations() {
 
         // Find all unresolved payment records.
@@ -152,13 +144,6 @@ public class PaymentsProcessor: NSObject {
         }
 
         let intervalSinceLaunch = abs(CurrentAppContext().appLaunchTime.timeIntervalSinceNow)
-        paymentModels = paymentModels.filter { paymentModel in
-            guard paymentModel.paymentState == .incomingMissingLedgerTimestamp ||
-                    paymentModel.paymentState == .outgoingMissingLedgerTimestamp else {
-                return true
-            }
-            return intervalSinceLaunch > Self.missingLedgerTimestampProcessingDelay
-        }
 
         paymentModels.sort { (left, right) -> Bool in
             left.sortDate.compare(right.sortDate) == .orderedAscending
@@ -201,10 +186,8 @@ public class PaymentsProcessor: NSObject {
             .outgoingVerified,
             .outgoingSending,
             .outgoingSent,
-            .outgoingMissingLedgerTimestamp,
             .incomingUnverified,
-            .incomingVerified,
-            .incomingMissingLedgerTimestamp
+            .incomingVerified
         ])
     }
 
@@ -447,18 +430,15 @@ private class PaymentProcessingOperation: OWSOperation {
     private func queuePriority(forPaymentModel paymentModel: TSPaymentModel) -> Operation.QueuePriority {
         switch paymentModel.paymentState {
         case .outgoingUnsubmitted,
-             .outgoingUnverified,
-             .outgoingVerified,
-             .outgoingSending,
-             .outgoingSent:
-            return .high
-        case .outgoingMissingLedgerTimestamp:
+             .outgoingUnverified:
+            return .veryHigh
+        case .outgoingVerified,
+            .outgoingSending,
+            .outgoingSent:
             return .normal
         case .incomingUnverified,
              .incomingVerified:
             return .high
-        case .incomingMissingLedgerTimestamp:
-            return .normal
         case .outgoingComplete,
              .incomingComplete,
              .outgoingFailed,
@@ -687,21 +667,15 @@ private class PaymentProcessingOperation: OWSOperation {
                 return self.sendPaymentNotificationMessage(paymentModel: paymentModel)
             case .outgoingSending,
                  .outgoingSent:
-                // After sending, make sure that the ledger timestamp is filled in.
                 return Self.updatePaymentStatePromise(paymentModel: paymentModel,
                                                       fromState: paymentModel.paymentState,
-                                                      toState: .outgoingMissingLedgerTimestamp)
-            case .outgoingMissingLedgerTimestamp:
-                return Self.fillInMissingLedgerTimestampOutgoing(paymentModel: paymentModel)
+                                                      toState: .outgoingComplete)
             case .incomingUnverified:
                 return self.verifyIncomingPayment(paymentModel: paymentModel)
             case .incomingVerified:
-                // After verifying, make sure that the ledger timestamp is filled in.
                 return Self.updatePaymentStatePromise(paymentModel: paymentModel,
                                                       fromState: .incomingVerified,
-                                                      toState: .incomingMissingLedgerTimestamp)
-            case .incomingMissingLedgerTimestamp:
-                return Self.fillInMissingLedgerTimestampIncoming(paymentModel: paymentModel)
+                                                      toState: .incomingComplete)
             case .outgoingComplete,
                  .incomingComplete,
                  .outgoingFailed,
@@ -1008,127 +982,6 @@ private class PaymentProcessingOperation: OWSOperation {
                     throw OWSAssertionError("Unexpected paymentState: \(paymentModel.paymentState.formatted) != \(fromState.formatted).")
                 }
                 paymentModel.update(paymentState: toState, transaction: transaction)
-            }
-        }
-    }
-
-    private static func fillInMissingLedgerTimestampIncoming(paymentModel: TSPaymentModel) -> Promise<Void> {
-        owsAssertDebug(paymentModel.paymentState == .incomingMissingLedgerTimestamp)
-
-        guard !paymentModel.hasMCLedgerBlockTimestamp else {
-            // The ledger timestamp isn't missing, we just need to update
-            // the payment state to reflect that.
-            return updatePaymentStatePromise(paymentModel: paymentModel,
-                                             fromState: .incomingMissingLedgerTimestamp,
-                                             toState: .incomingComplete)
-        }
-
-        Logger.verbose("")
-
-        return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
-        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCIncomingReceiptStatus> in
-            guard let mcReceiptData = paymentModel.mcReceiptData,
-                  let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
-                // We'll never be able to fill in the missing ledger timestamp
-                // without the receipt, so skip to complete.
-                try Self.databaseStorage.write { transaction in
-                    try paymentModel.updatePaymentModelState(fromState: .incomingMissingLedgerTimestamp,
-                                                             toState: .incomingComplete,
-                                                             transaction: transaction)
-                }
-                throw Self.buildBadDataError("Missing or invalid mcReceiptData.")
-            }
-            return mobileCoinAPI.getIncomingReceiptStatus(receipt: receipt)
-        }.map { (receiptStatus: MCIncomingReceiptStatus) -> Void in
-            Logger.verbose("receiptStatus: \(receiptStatus.receiptStatus)")
-
-            switch receiptStatus.receiptStatus {
-            case .unknown:
-                // This should never happen, since we've already verified the receipt.
-                owsFailDebug("Unexpected receiptStatus for verified receipt: .unknown")
-                throw PaymentsError.verificationStatusUnknown
-            case .received(let block):
-                guard let ledgerBlockDate = block.timestamp else {
-                    Logger.warn("Could not fill in ledger timestamp for transaction.")
-                    throw PaymentsError.ledgerBlockTimestampUnknown
-                }
-                try Self.databaseStorage.write { transaction in
-                    paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockDate.ows_millisecondsSince1970,
-                                        transaction: transaction)
-                    // This will throw if the fromState is unexpected.
-                    try paymentModel.updatePaymentModelState(fromState: .incomingMissingLedgerTimestamp,
-                                                             toState: .incomingComplete,
-                                                             transaction: transaction)
-                }
-            case .failed:
-                // This should never happen, since we've already verified the receipt.
-                owsFailDebug("Unexpected receiptStatus for verified receipt: .failed")
-                Self.markAsFailed(paymentModel: paymentModel,
-                                  paymentFailure: .validationFailed,
-                                  paymentState: .incomingFailed)
-                throw OWSAssertionError("Receipt status: failed.")
-            }
-        }
-    }
-
-    private static func fillInMissingLedgerTimestampOutgoing(paymentModel: TSPaymentModel) -> Promise<Void> {
-        owsAssertDebug(paymentModel.paymentState == .outgoingMissingLedgerTimestamp)
-
-        guard !paymentModel.hasMCLedgerBlockTimestamp else {
-            // The ledger timestamp isn't missing, we just need to update
-            // the payment state to reflect that.
-            Logger.verbose("ledgerBlockDate already present; just need to mark it as such.")
-            return updatePaymentStatePromise(paymentModel: paymentModel,
-                                             fromState: .outgoingMissingLedgerTimestamp,
-                                             toState: .outgoingComplete)
-        }
-
-        Logger.verbose("")
-
-        return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
-        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCOutgoingTransactionStatus> in
-            guard let mcTransactionData = paymentModel.mcTransactionData,
-                  let transaction = MobileCoin.Transaction(serializedData: mcTransactionData) else {
-                // We'll never be able to fill in the missing ledger timestamp
-                // without the transaction, so skip to complete.
-                try Self.databaseStorage.write { transaction in
-                    try paymentModel.updatePaymentModelState(fromState: .outgoingMissingLedgerTimestamp,
-                                                             toState: .outgoingComplete,
-                                                             transaction: transaction)
-                }
-                throw Self.buildBadDataError("Missing or invalid mcTransactionData.")
-            }
-            return mobileCoinAPI.getOutgoingTransactionStatus(transaction: transaction)
-        }.map { (transactionStatus: MCOutgoingTransactionStatus) -> Void in
-            Logger.verbose("transactionStatus: \(transactionStatus)")
-
-            switch transactionStatus.transactionStatus {
-            case .unknown:
-                // This should never happen, since we've already verified the transaction.
-                owsFailDebug("Unexpected receiptStatus for verified transaction: .unknown")
-                throw PaymentsError.verificationStatusUnknown
-            case .accepted(let block):
-                guard let ledgerBlockDate = block.timestamp else {
-                    Logger.warn("Could not fill in ledger timestamp for transaction.")
-                    throw PaymentsError.ledgerBlockTimestampUnknown
-                }
-                try Self.databaseStorage.write { transaction in
-                    paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockDate.ows_millisecondsSince1970,
-                                        transaction: transaction)
-                    // This will throw if the fromState is unexpected.
-                    try paymentModel.updatePaymentModelState(fromState: .outgoingMissingLedgerTimestamp,
-                                                             toState: .outgoingComplete,
-                                                             transaction: transaction)
-                }
-            case .failed:
-                // This should never happen, since we've already verified the transaction.
-                owsFailDebug("Unexpected receiptStatus for verified transaction: .failed")
-                Self.markAsFailed(paymentModel: paymentModel,
-                                  paymentFailure: .invalid,
-                                  paymentState: .outgoingFailed)
-                throw OWSAssertionError("Receipt status: failed.")
             }
         }
     }

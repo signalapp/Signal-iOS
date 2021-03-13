@@ -20,10 +20,12 @@ NSString *NSStringFromTSPaymentCurrency(TSPaymentCurrency value);
 typedef NS_ENUM(NSUInteger, TSPaymentType) {
     TSPaymentTypeIncomingPayment = 0,
     TSPaymentTypeOutgoingPayment,
+    TSPaymentTypeOutgoingPaymentFromLinkedDevice,
     TSPaymentTypeIncomingUnidentified,
     TSPaymentTypeOutgoingUnidentified,
     TSPaymentTypeOutgoingTransfer,
     TSPaymentTypeOutgoingDefragmentation,
+    TSPaymentTypeOutgoingDefragmentationFromLinkedDevice,
 };
 
 NSString *NSStringFromTSPaymentType(TSPaymentType value);
@@ -54,8 +56,6 @@ typedef NS_ENUM(NSUInteger, TSPaymentState) {
     // In ledger.
     TSPaymentStateOutgoingSent,
     // In ledger.
-    TSPaymentStateOutgoingMissingLedgerTimestamp,
-    // In ledger.
     TSPaymentStateOutgoingComplete,
     // Not in ledger.
     // Should be ignored during reconciliation.
@@ -65,8 +65,6 @@ typedef NS_ENUM(NSUInteger, TSPaymentState) {
     TSPaymentStateIncomingUnverified,
     // In ledger.
     TSPaymentStateIncomingVerified,
-    // In ledger.
-    TSPaymentStateIncomingMissingLedgerTimestamp,
     // In ledger.
     TSPaymentStateIncomingComplete,
     // Not in ledger.

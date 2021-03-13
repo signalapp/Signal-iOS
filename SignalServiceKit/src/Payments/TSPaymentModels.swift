@@ -443,12 +443,13 @@ extension TSPaymentModel: TSPaymentBaseModel {
             owsFailDebug("Missing mcRecipientPublicAddressData: \(formattedState).")
         }
 
-        let shouldHaveMCTransaction = isOutgoing && !isUnidentified && !isFailed
         if shouldHaveMCTransaction, mcTransactionData == nil {
             owsFailDebug("Missing mcTransactionData: \(formattedState).")
+            isValid = false
+        } else if !canHaveMCTransaction, mcTransactionData != nil {
+            owsFailDebug("Unexpected mcTransactionData: \(formattedState).")
         }
 
-        let shouldHaveMCReceipt = isIncoming && isIdentifiedPayment && !isFailed
         if shouldHaveMCReceipt, mcReceiptData == nil {
             owsFailDebug("Missing mcReceiptData: \(formattedState).")
             isValid = false
@@ -523,6 +524,18 @@ extension TSPaymentModel: TSPaymentBaseModel {
         return isValid
     }
 
+    public var canHaveMCTransaction: Bool {
+        isOutgoing && !isUnidentified && !isFailed
+    }
+
+    public var shouldHaveMCTransaction: Bool {
+        canHaveMCTransaction && !isFromLinkedDevice
+    }
+
+    public var shouldHaveMCReceipt: Bool {
+        isIncoming && isIdentifiedPayment && !isFailed
+    }
+
     public var isComplete: Bool {
         switch paymentState {
         case .outgoingComplete,
@@ -551,7 +564,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         case .outgoingVerified,
              .outgoingSending,
              .outgoingSent,
-             .outgoingMissingLedgerTimestamp,
              .outgoingComplete:
             return true
         case .outgoingFailed:
@@ -559,7 +571,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
         case .incomingUnverified:
             return false
         case .incomingVerified,
-             .incomingMissingLedgerTimestamp,
              .incomingComplete:
             return true
         case .incomingFailed:
@@ -592,6 +603,10 @@ extension TSPaymentModel: TSPaymentBaseModel {
 
     public var isDefragmentation: Bool {
         paymentType.isDefragmentation
+    }
+
+    public var isFromLinkedDevice: Bool {
+        paymentType.isFromLinkedDevice
     }
 
     public var hasMCLedgerBlockIndex: Bool {
@@ -731,13 +746,11 @@ extension TSPaymentState {
              .outgoingVerified,
              .outgoingSending,
              .outgoingSent,
-             .outgoingMissingLedgerTimestamp,
              .outgoingComplete,
              .outgoingFailed:
             return false
         case .incomingUnverified,
              .incomingVerified,
-             .incomingMissingLedgerTimestamp,
              .incomingComplete,
              .incomingFailed:
             return true
@@ -761,9 +774,11 @@ extension TSPaymentType {
              .incomingUnidentified:
             return true
         case .outgoingPayment,
+             .outgoingPaymentFromLinkedDevice,
              .outgoingUnidentified,
              .outgoingTransfer,
-             .outgoingDefragmentation:
+             .outgoingDefragmentation,
+             .outgoingDefragmentationFromLinkedDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -774,12 +789,14 @@ extension TSPaymentType {
     public var isIdentifiedPayment: Bool {
         switch self {
         case .incomingPayment,
-             .outgoingPayment:
+             .outgoingPayment,
+             .outgoingPaymentFromLinkedDevice:
             return true
         case .incomingUnidentified,
              .outgoingUnidentified,
              .outgoingTransfer,
-             .outgoingDefragmentation:
+             .outgoingDefragmentation,
+             .outgoingDefragmentationFromLinkedDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -794,8 +811,10 @@ extension TSPaymentType {
             return true
         case .incomingPayment,
              .outgoingPayment,
+             .outgoingPaymentFromLinkedDevice,
              .outgoingTransfer,
-             .outgoingDefragmentation:
+             .outgoingDefragmentation,
+             .outgoingDefragmentationFromLinkedDevice:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -805,13 +824,33 @@ extension TSPaymentType {
 
     public var isDefragmentation: Bool {
         switch self {
-        case .outgoingDefragmentation:
+        case .outgoingDefragmentation,
+             .outgoingDefragmentationFromLinkedDevice:
+            return true
+        case .incomingPayment,
+             .outgoingPayment,
+             .outgoingPaymentFromLinkedDevice,
+             .outgoingTransfer,
+             .incomingUnidentified,
+             .outgoingUnidentified:
+            return false
+        @unknown default:
+            owsFailDebug("Invalid value: \(rawValue)")
+            return false
+        }
+    }
+
+    public var isFromLinkedDevice: Bool {
+        switch self {
+        case .outgoingPaymentFromLinkedDevice,
+             .outgoingDefragmentationFromLinkedDevice:
             return true
         case .incomingPayment,
              .outgoingPayment,
              .outgoingTransfer,
              .incomingUnidentified,
-             .outgoingUnidentified:
+             .outgoingUnidentified,
+             .outgoingDefragmentation:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")

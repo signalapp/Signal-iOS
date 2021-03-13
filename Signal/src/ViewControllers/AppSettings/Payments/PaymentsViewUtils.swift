@@ -239,7 +239,6 @@ public extension TSPaymentModel {
                             : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
                                                 comment: "Status indicator for outgoing payments which are being sent."))
             case .outgoingSent,
-                 .outgoingMissingLedgerTimestamp,
                  .outgoingComplete:
                 result = (isLongForm
                             ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT",
@@ -255,7 +254,6 @@ public extension TSPaymentModel {
                             : NSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED",
                                                 comment: "Status indicator for incoming payments which have not yet been verified."))
             case .incomingVerified,
-                 .incomingMissingLedgerTimestamp,
                  .incomingComplete:
                 result = (isLongForm
                             ? NSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED",

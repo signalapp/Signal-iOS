@@ -3098,16 +3098,6 @@ struct SignalServiceProtos_SyncMessage {
       /// Clears the value of `receipt`. Subsequent reads from it will return its default value.
       mutating func clearReceipt() {self._receipt = nil}
 
-      /// @required
-      var transaction: Data {
-        get {return _transaction ?? Data()}
-        set {_transaction = newValue}
-      }
-      /// Returns true if `transaction` has been explicitly set.
-      var hasTransaction: Bool {return self._transaction != nil}
-      /// Clears the value of `transaction`. Subsequent reads from it will return its default value.
-      mutating func clearTransaction() {self._transaction = nil}
-
       var ledgerBlockTimestamp: UInt64 {
         get {return _ledgerBlockTimestamp ?? 0}
         set {_ledgerBlockTimestamp = newValue}
@@ -3127,6 +3117,10 @@ struct SignalServiceProtos_SyncMessage {
       /// Clears the value of `ledgerBlockIndex`. Subsequent reads from it will return its default value.
       mutating func clearLedgerBlockIndex() {self._ledgerBlockIndex = nil}
 
+      var spentKeyImages: [Data] = []
+
+      var outputPublicKeys: [Data] = []
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
@@ -3135,7 +3129,6 @@ struct SignalServiceProtos_SyncMessage {
       fileprivate var _amountPicoMob: UInt64?
       fileprivate var _feePicoMob: UInt64?
       fileprivate var _receipt: Data?
-      fileprivate var _transaction: Data?
       fileprivate var _ledgerBlockTimestamp: UInt64?
       fileprivate var _ledgerBlockIndex: UInt64?
     }
@@ -7001,9 +6994,10 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
     2: .same(proto: "amountPicoMob"),
     3: .same(proto: "feePicoMob"),
     4: .same(proto: "receipt"),
-    5: .same(proto: "transaction"),
-    6: .same(proto: "ledgerBlockTimestamp"),
-    7: .same(proto: "ledgerBlockIndex")
+    5: .same(proto: "ledgerBlockTimestamp"),
+    6: .same(proto: "ledgerBlockIndex"),
+    7: .same(proto: "spentKeyImages"),
+    8: .same(proto: "outputPublicKeys")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7016,9 +7010,10 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
       case 2: try { try decoder.decodeSingularUInt64Field(value: &self._amountPicoMob) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self._feePicoMob) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._receipt) }()
-      case 5: try { try decoder.decodeSingularBytesField(value: &self._transaction) }()
-      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockTimestamp) }()
-      case 7: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockIndex) }()
+      case 5: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockTimestamp) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self._ledgerBlockIndex) }()
+      case 7: try { try decoder.decodeRepeatedBytesField(value: &self.spentKeyImages) }()
+      case 8: try { try decoder.decodeRepeatedBytesField(value: &self.outputPublicKeys) }()
       default: break
       }
     }
@@ -7037,14 +7032,17 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
     if let v = self._receipt {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
-    if let v = self._transaction {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
-    }
     if let v = self._ledgerBlockTimestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
     }
     if let v = self._ledgerBlockIndex {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 6)
+    }
+    if !self.spentKeyImages.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.spentKeyImages, fieldNumber: 7)
+    }
+    if !self.outputPublicKeys.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.outputPublicKeys, fieldNumber: 8)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7054,9 +7052,10 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
     if lhs._amountPicoMob != rhs._amountPicoMob {return false}
     if lhs._feePicoMob != rhs._feePicoMob {return false}
     if lhs._receipt != rhs._receipt {return false}
-    if lhs._transaction != rhs._transaction {return false}
     if lhs._ledgerBlockTimestamp != rhs._ledgerBlockTimestamp {return false}
     if lhs._ledgerBlockIndex != rhs._ledgerBlockIndex {return false}
+    if lhs.spentKeyImages != rhs.spentKeyImages {return false}
+    if lhs.outputPublicKeys != rhs.outputPublicKeys {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

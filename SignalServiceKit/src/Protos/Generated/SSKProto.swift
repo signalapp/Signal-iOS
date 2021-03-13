@@ -10772,14 +10772,14 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     // MARK: - SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder
 
     @objc
-    public static func builder(amountPicoMob: UInt64, feePicoMob: UInt64, transaction: Data, ledgerBlockIndex: UInt64) -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
-        return SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
+    public static func builder(amountPicoMob: UInt64, feePicoMob: UInt64, ledgerBlockIndex: UInt64) -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
+        return SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, ledgerBlockIndex: ledgerBlockIndex)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder {
-        let builder = SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, transaction: transaction, ledgerBlockIndex: ledgerBlockIndex)
+        let builder = SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder(amountPicoMob: amountPicoMob, feePicoMob: feePicoMob, ledgerBlockIndex: ledgerBlockIndex)
         if let _value = recipientAddress {
             builder.setRecipientAddress(_value)
         }
@@ -10789,6 +10789,8 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         if hasLedgerBlockTimestamp {
             builder.setLedgerBlockTimestamp(ledgerBlockTimestamp)
         }
+        builder.setSpentKeyImages(spentKeyImages)
+        builder.setOutputPublicKeys(outputPublicKeys)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -10804,12 +10806,11 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(amountPicoMob: UInt64, feePicoMob: UInt64, transaction: Data, ledgerBlockIndex: UInt64) {
+        fileprivate init(amountPicoMob: UInt64, feePicoMob: UInt64, ledgerBlockIndex: UInt64) {
             super.init()
 
             setAmountPicoMob(amountPicoMob)
             setFeePicoMob(feePicoMob)
-            setTransaction(transaction)
             setLedgerBlockIndex(ledgerBlockIndex)
         }
 
@@ -10846,17 +10847,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         }
 
         @objc
-        @available(swift, obsoleted: 1.0)
-        public func setTransaction(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.transaction = valueParam
-        }
-
-        public func setTransaction(_ valueParam: Data) {
-            proto.transaction = valueParam
-        }
-
-        @objc
         public func setLedgerBlockTimestamp(_ valueParam: UInt64) {
             proto.ledgerBlockTimestamp = valueParam
         }
@@ -10864,6 +10854,26 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         @objc
         public func setLedgerBlockIndex(_ valueParam: UInt64) {
             proto.ledgerBlockIndex = valueParam
+        }
+
+        @objc
+        public func addSpentKeyImages(_ valueParam: Data) {
+            proto.spentKeyImages.append(valueParam)
+        }
+
+        @objc
+        public func setSpentKeyImages(_ wrappedItems: [Data]) {
+            proto.spentKeyImages = wrappedItems
+        }
+
+        @objc
+        public func addOutputPublicKeys(_ valueParam: Data) {
+            proto.outputPublicKeys.append(valueParam)
+        }
+
+        @objc
+        public func setOutputPublicKeys(_ wrappedItems: [Data]) {
+            proto.outputPublicKeys = wrappedItems
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -10888,9 +10898,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
 
     @objc
     public let feePicoMob: UInt64
-
-    @objc
-    public let transaction: Data
 
     @objc
     public let ledgerBlockIndex: UInt64
@@ -10928,6 +10935,16 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         return proto.hasLedgerBlockTimestamp
     }
 
+    @objc
+    public var spentKeyImages: [Data] {
+        return proto.spentKeyImages
+    }
+
+    @objc
+    public var outputPublicKeys: [Data] {
+        return proto.outputPublicKeys
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -10939,12 +10956,10 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
     private init(proto: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin,
                  amountPicoMob: UInt64,
                  feePicoMob: UInt64,
-                 transaction: Data,
                  ledgerBlockIndex: UInt64) {
         self.proto = proto
         self.amountPicoMob = amountPicoMob
         self.feePicoMob = feePicoMob
-        self.transaction = transaction
         self.ledgerBlockIndex = ledgerBlockIndex
     }
 
@@ -10970,11 +10985,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         }
         let feePicoMob = proto.feePicoMob
 
-        guard proto.hasTransaction else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: transaction")
-        }
-        let transaction = proto.transaction
-
         guard proto.hasLedgerBlockIndex else {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: ledgerBlockIndex")
         }
@@ -10987,7 +10997,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         self.init(proto: proto,
                   amountPicoMob: amountPicoMob,
                   feePicoMob: feePicoMob,
-                  transaction: transaction,
                   ledgerBlockIndex: ledgerBlockIndex)
     }
 
