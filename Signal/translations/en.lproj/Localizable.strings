@@ -4813,6 +4813,9 @@
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Details";
 
+/* Label for the 'enable payments' button in the 'payments not enabled' alert. */
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new digital currency protected by advanced encryption.";
 
@@ -4836,6 +4839,12 @@
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+
+/* Message for the 'payments not enabled' alert. */
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+
+/* Title for the 'payments not enabled' alert. */
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";

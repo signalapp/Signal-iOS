@@ -2708,10 +2708,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.payments.arePaymentsEnabled) {
-        OWSFailDebug(@"Payments not enabled.");
-        return;
-    }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         OWSFailDebug(@"Not a contact thread.");
         return;

@@ -127,6 +127,12 @@ public class SendPaymentViewController: OWSViewController {
                                                    initialPaymentAmount: TSPaymentAmount? = nil,
                                                    isOutgoingTransfer: Bool) {
 
+        guard payments.arePaymentsEnabled else {
+            Logger.info("Payments not enabled.")
+            showEnablePaymentsActionSheet(fromViewController: fromViewController)
+            return
+        }
+
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
             Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
@@ -748,6 +754,35 @@ public class SendPaymentViewController: OWSViewController {
                                                            delegate: self)
         self.actionSheet = actionSheet
         actionSheet.present(fromViewController: self)
+    }
+
+    private static func showEnablePaymentsActionSheet(fromViewController: UIViewController) {
+        let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE",
+                                      comment: "Title for the 'payments not enabled' alert.")
+        let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE",
+                                              comment: "Message for the 'payments not enabled' alert.")
+        let actionSheet = ActionSheetController(title: title,
+                                                message: message)
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_ENABLE_ACTION",
+                                                                         comment: "Label for the 'enable payments' button in the 'payments not enabled' alert."),
+                                                accessibilityIdentifier: "payments.send.enable",
+                                                style: .default) { _ in
+            Self.didTapEnablePaymentsButton()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        fromViewController.presentActionSheet(actionSheet)
+    }
+
+    private static func didTapEnablePaymentsButton() {
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFailDebug("could not identify frontmostViewController")
+            return
+        }
+        frontmostViewController.navigationController?.popToRootViewController(animated: true)
+        SignalApp.shared().showAppSettings(mode: .payments)
     }
 }
 
