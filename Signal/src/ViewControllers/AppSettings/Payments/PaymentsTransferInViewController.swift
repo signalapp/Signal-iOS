@@ -90,7 +90,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             innerStack.alignment = .center
             innerStack.layoutMargins = UIEdgeInsets(top: 44, leading: 44, bottom: 32, trailing: 44)
             innerStack.isLayoutMarginsRelativeArrangement = true
-            innerStack.addBackgroundView(withBackgroundColor: Theme.tableCell2BackgroundColor,
+            innerStack.addBackgroundView(withBackgroundColor: self.cellBackgroundColor,
                                          cornerRadius: 10)
 
             let outerStack = UIStackView(arrangedSubviews: [innerStack])
@@ -100,7 +100,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             outerStack.isLayoutMarginsRelativeArrangement = true
             cell.contentView.addSubview(outerStack)
             outerStack.autoPinEdgesToSuperviewMargins()
-            cell.addBackgroundView(backgroundColor: Theme.tableView2BackgroundColor)
+            cell.addBackgroundView(backgroundColor: self.tableBackgroundColor)
         }
 
         func configureForError() {

@@ -925,7 +925,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 public extension UITableViewCell {
     func addBackgroundView(backgroundColor: UIColor) {
         let backgroundView = UIView()
-        backgroundView.backgroundColor = Theme.tableView2BackgroundColor
+        backgroundView.backgroundColor = backgroundColor
         contentView.addSubview(backgroundView)
         contentView.sendSubviewToBack(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
