@@ -52,16 +52,6 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         backupPendingChanges()
     }
 
-    public func hasEverBackedUpOrRestored(transaction: SDSAnyReadTransaction) -> Bool {
-        // If we don't have backup keys, we know we've never backed up or restored.
-        guard KeyBackupService.DerivedKey.storageService.isAvailable else {
-            return false
-        }
-        let state = StorageServiceOperation.State.current(transaction: transaction)
-        // TODO: Verify with Nora that this test is correct.
-        return state.manifestVersion > 0
-    }
-
     // MARK: -
 
     @objc
@@ -1526,7 +1516,7 @@ class StorageServiceOperation: OWSOperation {
 
     private static var maxConsecutiveConflicts = 3
 
-    fileprivate struct State: Codable {
+    private struct State: Codable {
         var manifestVersion: UInt64 = 0
         private var _refetchLatestManifest: Bool?
         var refetchLatestManifest: Bool {
