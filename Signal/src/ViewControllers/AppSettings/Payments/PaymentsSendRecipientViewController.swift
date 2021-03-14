@@ -65,8 +65,7 @@ class PaymentsSendRecipientViewController: OWSViewController {
             // TODO: Should we try to fill in this state before showing the error alert?
             ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
 
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED",
-                                                                      comment: "Indicator that a given user cannot receive payments because the have not enabled payments."))
+            SendPaymentViewController.showRecipientNotEnabledAlert()
             return
         }
 

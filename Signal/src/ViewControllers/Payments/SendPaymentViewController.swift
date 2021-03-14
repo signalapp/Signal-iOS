@@ -119,61 +119,92 @@ public class SendPaymentViewController: OWSViewController {
         amounts.delegate = self
     }
 
-    @objc
-    public static func presentFromConversationView(_ fromViewController: UIViewController,
+    private enum PresentationMode {
+        case fromConversationView(fromViewController: UIViewController)
+        case inNavigationController(navigationController: UINavigationController)
+    }
+
+    private static func present(fromViewController: UIViewController,
+                                presentationMode: PresentationMode,
+                                delegate: SendPaymentViewDelegate,
+                                recipientAddress: SignalServiceAddress,
+                                paymentRequestModel: TSPaymentRequestModel?,
+                                initialPaymentAmount: TSPaymentAmount? = nil,
+                                isOutgoingTransfer: Bool,
+                                mode: SendPaymentMode) {
+
+        guard payments.arePaymentsEnabled else {
+            Logger.info("Payments not enabled.")
+            showEnablePaymentsActionSheet()
+            return
+        }
+
+        let hasProfileKeyForRecipient = databaseStorage.read { transaction in
+            nil != Self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
+        }
+        guard hasProfileKeyForRecipient else {
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",
+                                                                     comment: "Title for error alert indicating that a given user cannot receive payments because of a pending message request."),
+                                            message: NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE",
+                                                                       comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request."))
+            return
+        }
+
+        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
+            Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
+        }
+        if recipientHasPaymentsEnabled {
+            presentAfterRecipientCheck(presentationMode: presentationMode,
+                                       delegate: delegate,
+                                       recipientAddress: recipientAddress,
+                                       paymentRequestModel: paymentRequestModel,
+                                       initialPaymentAmount: initialPaymentAmount,
+                                       isOutgoingTransfer: isOutgoingTransfer,
+                                       mode: mode)
+        } else {
+            // Check whether recipient can receive payments.
+            ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: fromViewController) { modalActivityIndicator in
+                firstly(on: .global()) {
+                    ProfileFetcherJob.fetchProfilePromise(address: recipientAddress, ignoreThrottling: true)
+                }.done { (_) in
+                    AssertIsOnMainThread()
+
+                    modalActivityIndicator.dismiss {
+                        Self.presentAfterRecipientCheck(presentationMode: presentationMode,
+                                                        delegate: delegate,
+                                                        recipientAddress: recipientAddress,
+                                                        paymentRequestModel: paymentRequestModel,
+                                                        initialPaymentAmount: initialPaymentAmount,
+                                                        isOutgoingTransfer: isOutgoingTransfer,
+                                                        mode: mode)
+                    }
+                }.catch { error in
+                    AssertIsOnMainThread()
+                    owsFailDebug("Error: \(error)")
+
+                    modalActivityIndicator.dismiss {
+                        AssertIsOnMainThread()
+
+                        Self.showRecipientNotEnabledAlert()
+                    }
+                }
+            }
+        }
+    }
+
+    private static func presentAfterRecipientCheck(presentationMode: PresentationMode,
                                                    delegate: SendPaymentViewDelegate,
                                                    recipientAddress: SignalServiceAddress,
                                                    paymentRequestModel: TSPaymentRequestModel?,
                                                    initialPaymentAmount: TSPaymentAmount? = nil,
-                                                   isOutgoingTransfer: Bool) {
-
-        guard payments.arePaymentsEnabled else {
-            Logger.info("Payments not enabled.")
-            showEnablePaymentsActionSheet(fromViewController: fromViewController)
-            return
-        }
+                                                   isOutgoingTransfer: Bool,
+                                                   mode: SendPaymentMode) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
             Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         guard recipientHasPaymentsEnabled else {
-            // TODO: Should we try to fill in this state before showing the error alert?
-            ProfileFetcherJob.fetchProfile(address: recipientAddress, ignoreThrottling: true)
-
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED",
-                                                                      comment: "Indicator that a given user cannot receive payments because the have not enabled payments."))
-            return
-        }
-
-        let recipient: SendPaymentRecipientImpl = .address(address: recipientAddress)
-        let view = SendPaymentViewController(recipient: recipient,
-                                             paymentRequestModel: paymentRequestModel,
-                                             initialPaymentAmount: initialPaymentAmount,
-                                             isOutgoingTransfer: isOutgoingTransfer,
-                                             mode: .fromConversationView)
-        view.delegate = delegate
-        let navigationController = OWSNavigationController(rootViewController: view)
-        fromViewController.presentFormSheet(navigationController, animated: true)
-    }
-
-    @objc
-    public static func present(inNavigationController navigationController: UINavigationController,
-                               delegate: SendPaymentViewDelegate,
-                               recipientAddress: SignalServiceAddress,
-                               paymentRequestModel: TSPaymentRequestModel?,
-                               initialPaymentAmount: TSPaymentAmount? = nil,
-                               isOutgoingTransfer: Bool,
-                               mode: SendPaymentMode) {
-
-        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
-        }
-        guard recipientHasPaymentsEnabled else {
-            // TODO: Should we try to fill in this state before showing the error alert?
-            ProfileFetcherJob.fetchProfile(address: recipientAddress, ignoreThrottling: true)
-
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED",
-                                                                      comment: "Indicator that a given user cannot receive payments because the have not enabled payments."))
+            showRecipientNotEnabledAlert()
             return
         }
 
@@ -184,7 +215,55 @@ public class SendPaymentViewController: OWSViewController {
                                              isOutgoingTransfer: isOutgoingTransfer,
                                              mode: mode)
         view.delegate = delegate
-        navigationController.pushViewController(view, animated: true)
+        switch presentationMode {
+        case .fromConversationView(let fromViewController):
+            let navigationController = OWSNavigationController(rootViewController: view)
+            fromViewController.presentFormSheet(navigationController, animated: true)
+        case .inNavigationController(let navigationController):
+            navigationController.pushViewController(view, animated: true)
+        }
+    }
+
+    public static func showRecipientNotEnabledAlert() {
+        OWSActionSheets.showActionSheet(title: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
+                                                                 comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments."),
+                                        message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
+                                                                   comment: "Message for error alert indicating that a given user cannot receive payments because they have not enabled payments."))
+    }
+
+    @objc
+    public static func presentFromConversationView(_ fromViewController: UIViewController,
+                                                   delegate: SendPaymentViewDelegate,
+                                                   recipientAddress: SignalServiceAddress,
+                                                   paymentRequestModel: TSPaymentRequestModel?,
+                                                   initialPaymentAmount: TSPaymentAmount? = nil,
+                                                   isOutgoingTransfer: Bool) {
+        present(fromViewController: fromViewController,
+                presentationMode: .fromConversationView(fromViewController: fromViewController),
+                delegate: delegate,
+                recipientAddress: recipientAddress,
+                paymentRequestModel: paymentRequestModel,
+                initialPaymentAmount: initialPaymentAmount,
+                isOutgoingTransfer: isOutgoingTransfer,
+                mode: .fromConversationView)
+    }
+
+    @objc
+    public static func present(inNavigationController navigationController: UINavigationController,
+                               delegate: SendPaymentViewDelegate,
+                               recipientAddress: SignalServiceAddress,
+                               paymentRequestModel: TSPaymentRequestModel?,
+                               initialPaymentAmount: TSPaymentAmount? = nil,
+                               isOutgoingTransfer: Bool,
+                               mode: SendPaymentMode) {
+        present(fromViewController: navigationController,
+                presentationMode: .inNavigationController(navigationController: navigationController),
+                delegate: delegate,
+                recipientAddress: recipientAddress,
+                paymentRequestModel: paymentRequestModel,
+                initialPaymentAmount: initialPaymentAmount,
+                isOutgoingTransfer: isOutgoingTransfer,
+                mode: mode)
     }
 
     open override func viewDidLoad() {
@@ -756,7 +835,11 @@ public class SendPaymentViewController: OWSViewController {
         actionSheet.present(fromViewController: self)
     }
 
-    private static func showEnablePaymentsActionSheet(fromViewController: UIViewController) {
+    private static func showEnablePaymentsActionSheet() {
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFailDebug("could not identify frontmostViewController")
+            return
+        }
         let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE",
                                       comment: "Title for the 'payments not enabled' alert.")
         let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE",
@@ -773,7 +856,7 @@ public class SendPaymentViewController: OWSViewController {
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        fromViewController.presentActionSheet(actionSheet)
+        frontmostViewController.presentActionSheet(actionSheet)
     }
 
     private static func didTapEnablePaymentsButton() {
