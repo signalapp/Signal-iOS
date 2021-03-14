@@ -65,6 +65,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             self?.updateCurrentPaymentBalanceIfNecessary()
         }
 
+        if DebugFlags.internalLogging {
+            logSensitiveData = true
+        }
+        
         // TODO: Remove
         if DebugFlags.paymentsInternalBeta,
            CurrentAppContext().isMainApp,
