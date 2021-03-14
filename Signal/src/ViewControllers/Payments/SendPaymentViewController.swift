@@ -220,7 +220,7 @@ public class SendPaymentViewController: OWSViewController {
         view.backgroundColor = Theme.backgroundColor
         navigationItem.title = nil
         if mode.isModalRootView {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                                target: self,
                                                                action: #selector(didTapDismiss),
                                                                accessibilityIdentifier: "dismiss")

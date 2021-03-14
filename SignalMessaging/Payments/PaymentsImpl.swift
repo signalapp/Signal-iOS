@@ -165,9 +165,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             owsFailDebug("Missing countryCode: \(localNumber).")
             return false
         }
-        let callingCodePartsOfUK: Int = 44
-        let validCallingCodes = [ callingCodePartsOfUK ]
-        return validCallingCodes.contains(nsCountryCode.intValue)
+        let countryCodePartsOfUK: Int = 44
+        let validCountryCodes = [ countryCodePartsOfUK ]
+        return validCountryCodes.contains(nsCountryCode.intValue)
     }
 
     public var shouldShowPaymentsUI: Bool {

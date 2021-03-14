@@ -21,7 +21,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_TITLE",
                                   comment: "Label for the 'de-activate payments' view of the app settings.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                            target: self,
                                                            action: #selector(didTapDismiss),
                                                            accessibilityIdentifier: "dismiss")

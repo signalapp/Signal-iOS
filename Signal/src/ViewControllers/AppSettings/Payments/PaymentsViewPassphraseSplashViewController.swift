@@ -49,7 +49,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     }
 
     private func updateNavbar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                            target: self,
                                                            action: #selector(didTapDismiss),
                                                            accessibilityIdentifier: "dismiss")

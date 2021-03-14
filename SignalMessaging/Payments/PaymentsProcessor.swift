@@ -87,7 +87,7 @@ public class PaymentsProcessor: NSObject {
         operationQueue.name = "PaymentsProcessor.default"
         // We want a concurrency level high enough to ensure that
         // high-priority operations are processed in a timely manner.
-        operationQueue.maxConcurrentOperationCount = 5
+        operationQueue.maxConcurrentOperationCount = 3
         return operationQueue
     }()
 

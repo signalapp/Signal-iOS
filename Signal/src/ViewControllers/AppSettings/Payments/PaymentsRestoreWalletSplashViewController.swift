@@ -27,7 +27,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
                                   comment: "Title for the 'restore payments wallet' view of the app settings.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                            target: self,
                                                            action: #selector(didTapDismiss),
                                                            accessibilityIdentifier: "dismiss")

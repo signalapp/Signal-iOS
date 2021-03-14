@@ -38,7 +38,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                   comment: "Label for the 'payments' section of the app settings.")
 
         if mode == .standalone {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                                target: self,
                                                                action: #selector(didTapDismiss),
                                                                accessibilityIdentifier: "dismiss")
