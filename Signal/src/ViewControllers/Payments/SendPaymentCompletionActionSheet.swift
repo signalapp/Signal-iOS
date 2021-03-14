@@ -514,9 +514,14 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                                                     untilDate: untilDate)
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
                     PaymentsError.timeout
-                }.recover(on: .global()) { (_: Error) -> Guarantee<()> in
-                    Logger.warn("Could not verify outgoing payment.")
-                    return Guarantee.value(())
+                }.recover(on: .global()) { (error: Error) -> Guarantee<()> in
+                    Logger.warn("Could not verify outgoing payment: \(error).")
+                    if let paymentsError = error as? PaymentsError,
+                       paymentsError.isNetworkFailureOrTimeout {
+                        return Guarantee.value(())
+                    } else {
+                        throw error
+                    }
                 }
             }.done { _ in
                 AssertIsOnMainThread()
