@@ -239,9 +239,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         balanceLabel.textAlignment = .center
         balanceLabel.adjustsFontSizeToFitWidth = true
 
-        let balanceWrapper = UIView.container()
-        balanceWrapper.addSubview(balanceLabel)
-        balanceLabel.autoPinEdgesToSuperviewEdges()
+        let balanceStack = UIStackView(arrangedSubviews: [ balanceLabel ])
+        balanceStack.axis = .vertical
+        balanceStack.alignment = .fill
+        balanceStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
+                                                  vMargin: 0)
+        balanceStack.isLayoutMarginsRelativeArrangement = true
 
         let conversionRefreshSize: CGFloat = 20
         let conversionRefreshIcon = UIImageView.withTemplateImageName("refresh-20",
@@ -284,7 +287,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             balanceLabel.text = " "
 
             let activityIndicator = UIActivityIndicatorView(style: .gray)
-            balanceWrapper.addSubview(activityIndicator)
+            balanceStack.addSubview(activityIndicator)
             activityIndicator.autoCenterInSuperview()
             activityIndicator.startAnimating()
 
@@ -309,7 +312,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         buttonStack.distribution = .fillEqually
 
         let headerStack = UIStackView(arrangedSubviews: [
-            balanceWrapper,
+            balanceStack,
             UIView.spacer(withHeight: 8),
             conversionStack2,
             UIView.spacer(withHeight: 44),
@@ -318,9 +321,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         headerStack.axis = .vertical
         headerStack.alignment = .fill
         headerStack.layoutMargins = UIEdgeInsets(top: 30,
-                                                 leading: OWSTableViewController2.cellHOuterMargin * 2,
-                                                 bottom: 20,
-                                                 trailing: OWSTableViewController2.cellHOuterMargin * 2)
+                                                 leading: OWSTableViewController2.cellHOuterMargin,
+                                                 bottom: 8,
+                                                 trailing: OWSTableViewController2.cellHOuterMargin)
         headerStack.isLayoutMarginsRelativeArrangement = true
         headerStack.addBackgroundView(withBackgroundColor: Theme.tableView2BackgroundColor)
         cell.contentView.addSubview(headerStack)

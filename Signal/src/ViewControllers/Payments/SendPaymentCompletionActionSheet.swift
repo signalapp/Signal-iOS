@@ -123,7 +123,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         innerStack.axis = .vertical
         innerStack.alignment = .fill
-        innerStack.layoutMargins = UIEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+        innerStack.layoutMargins = UIEdgeInsets(top: 32, leading: 20, bottom: 22, trailing: 20)
         innerStack.isLayoutMarginsRelativeArrangement = true
 
         headerStack.axis = .horizontal
@@ -213,7 +213,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         updateBalanceLabel()
 
         setContents([
-            UIView.spacer(withHeight: 32),
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
             UIView.spacer(withHeight: 32),
             buildConfirmPaymentButtons(),
@@ -244,7 +243,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                                              comment: "Indicator that a new payment is being processed in the 'send payment' UI.")
 
         setContents([
-            UIView.spacer(withHeight: 32),
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
             UIView.spacer(withHeight: 32),
             // To void layout jitter, this view replaces the "bottom button"
@@ -273,7 +271,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         bottomLabel.text = CommonStrings.doneButton
 
         setContents([
-            UIView.spacer(withHeight: 32),
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
             UIView.spacer(withHeight: 32),
             // To void layout jitter, this view replaces the "bottom button"
@@ -313,7 +310,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         bottomLabel.text = Self.formatPaymentFailure(error)
 
         setContents([
-            UIView.spacer(withHeight: 32),
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
             UIView.spacer(withHeight: 32),
             // To void layout jitter, this view replaces the "bottom button"

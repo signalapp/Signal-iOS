@@ -236,7 +236,7 @@ public extension Theme {
         case .settingsAbout:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .settingsPayments:
-            return "payments-32"
+            return isDarkThemeEnabled ? "payments-solid-24" : "payments-outline-24"
 
         // Input Toolbar
         case .stickerButton:
@@ -256,7 +256,7 @@ public extension Theme {
         case .attachmentLocation:
             return "location-outline-32"
         case .attachmentPayment:
-            return "payments-outline-24"
+            return "payments-outline-32"
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
         case .messageActionForward:
