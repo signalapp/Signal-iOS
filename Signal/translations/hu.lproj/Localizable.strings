@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Engedélyezd a kontaktokhoz való hozzáférést az iOS Beállításokban, hogy lásd kik Signal felhasználók közülük.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "Üzeneteid törlésével az alkalmazás alaphelyzetbe áll. A Signal a folyamat végén bezárásra kerül.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Biztosan törölni akarsz minden adatot?";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Fiók törlése";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ez törölni fogja a Signal fiókod és alaphelyzetbe állítja az alkalmazást. A Signal a folyamat végén bezárásra kerül.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Biztosan törölni akarod a fiókod?";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Országkód";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Sikertelen fióktörlés. Ellenőrizd, hogy van WiFi vagy mobilnet kapcsolatod és próbáld újra.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Ezzel fiók információid, profilod és minden üzeneted törlésre kerül.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Fiók törlése...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nincs netkapcsolat. Ellenőrizd, hogy van WiFi vagy mobilnet kapcsolatod és próbáld újra.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonszám";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Erősítsd meg Signalos telefonszámodat";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Fiók törlése";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "A megadott szám nem egyezik a fiókodhoz tartozó telefonszámmal.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Minden üzenetet törölsz a beszélgetésben?";

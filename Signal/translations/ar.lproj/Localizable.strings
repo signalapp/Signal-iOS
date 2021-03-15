@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يُمكِنُك مَنح حقّ الوُصُول إلى جِهات الاِتصال مِن خِلال تَطبيق إعدادات iOS لِرُؤيَة جِهات الاِتِّصال التي تَستخدِم Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "سَوفَ يُؤدِّي هَذَا إلى إعادة تَعيِين التَّطبيق عَن طَريق حَذف رَسائِلك. سَوفَ يَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "حذف الحساب";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "سَوفَ يُؤدِّي هَذَا إلى حَذف حِسابك عَلَى Signal وإعداة تَعيِين التَّطبيق. سَوفَ يَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "هَل أنتَ مُتأكِد مِن أنَّكَ تُرِيدُ حَذف حِسابك؟";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "رمز البلد";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "فَشَلَ حَذف الحِساب. تأكُّد أنَّ الـWi-Fi أو بَيَانَات الجَوَّال تَعمَل، ثُمَّ حَاوِل مَرَّةً أُخرَى.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "سَوفَ يُؤدِّي هَذَا إلى حَذفِ مَعلُومَاتِ حِسابِك، مَلَفُّكَ الشَّخصِي وَجَمِيعُ الرَّسَائِلِ الخَاصَّةِ بِك.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "يَجري حَذفُ الحِساب...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "لَا يُوجَدُ اِتِّصَالٌ بالإنترنت. تَأكُّد مِن تَشغِيل الـWi-Fi أو بَيَانَات الجَوَّال، ثُمَّ حَاوِل مَرَّةً أُخرَى.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "رقم الهاتف";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "أكِّد رَقم Signal الخاصّ بِك";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "حذف الحساب";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "إنَّ رَقم الهَاتِف الَّذِي أدخَلتَه لَا يَتَطَابَقُ مَعَ الرَّقم الخاصّ بِحِسَابك.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف جميع الرسائل في المُحادثة؟";

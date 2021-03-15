@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ఇప్పుడు కాదు";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal గురించి";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "క్రొత్త భద్రతా సంఖ్యను అంగీకరించండి";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "సేవ్ చేయని మార్పులు";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "అన్నింటిని చూడు";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ఈ వినియోగదారు మీ పరిచయాలలో ఉన్నారు";

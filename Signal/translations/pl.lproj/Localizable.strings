@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Możesz zezwolić na dostęp do kontaktów w Ustawieniach systemu iOS, aby sprawdzić, kto z Twoich kontaktów jest użytkownikiem Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "To działanie zresetuje aplikację, usuwając wszystkie Twoje wiadomości. Po zakończeniu tego procesu aplikacja zostanie zamknięta.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Czy na pewno chcesz usunąć wszystkie dane?";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Usuń konto";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "To działanie usunie Twoje konto Signal i zresetuje aplikację. Po zakończeniu tego procesu, aplikacja zostanie zamknięta.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Czy na pewno chcesz usunąć swoje konto?";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kod kraju";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Nie udało się usunąć konta. Upewnij się, że masz włączone połączenie Wi-Fi lub dane mobilne i spróbuj ponownie.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "To działanie usunie informacje o Twoim koncie, profil i wszystkie wiadomości.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Usuwanie konta...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Brak połączenia z internetem. Upewnij się, że masz włączone połączenie Wi-Fi lub dane mobilne i spróbuj ponownie.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Numer telefonu";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Potwierdź swój numer Signal";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Usuń konto";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Podany numer telefonu nie pasuje do Twojego konta.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Usunąć wszystkie wiadomości w tej rozmowie?";

@@ -1,80 +1,80 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Not Now";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ھازىر ئەمەس";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal ھەققىدە";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
+"ACCEPT_NEW_IDENTITY_ACTION" = "يېڭى بىخەتەر نومۇرغا قوشۇل";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "قوشۇمچە";
 
 /* Accessibility label for audio. */
-"ACCESSIBILITY_LABEL_AUDIO" = "Audio";
+"ACCESSIBILITY_LABEL_AUDIO" = "ئۈن";
 
 /* Accessibility label for contact. */
-"ACCESSIBILITY_LABEL_CONTACT" = "Contact";
+"ACCESSIBILITY_LABEL_CONTACT" = "ئالاقەداش";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%@نىڭ ئالاقە ئۇچۇرى";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Media";
+"ACCESSIBILITY_LABEL_MEDIA" = "ۋاسىتە";
 
 /* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "You";
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "سىز";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Sticker";
+"ACCESSIBILITY_LABEL_STICKER" = "چىراي ئىپادە";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ئۈن ئۇچۇر";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "ئۈن ئۇچۇر %@ سېكۇنت";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal Call";
+"ACTION_AUDIO_CALL" = "Signal چاقىرىشى";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Invite to Signal";
+"ACTION_INVITE" = "Signal ئىشلىتىش تەكلىپى";
 
 /* Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Send Message";
+"ACTION_SEND_MESSAGE" = "ئۇچۇر يوللا";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
+"ACTION_SHARE_CONTACT" = "ئالاقەداش ھەمبەھىر";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "چېكىلسە چۈشۈرىدۇ";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video Call";
+"ACTION_VIDEO_CALL" = "سىنلىق چاقىرىش";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Add Member";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "ئەزا قوش";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "ئەزا قوش";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "«%2$@» غا ئەزا قوشامدۇ؟";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@ئەزانى «%2$@» غا قوشامدۇ؟";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "يېڭى ئەزا قوش";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "يېڭى ئەزا قوش";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "ئەزا قوش";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this group?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "شەخسىي ئۇچۇرلىرىڭىزنى بۇ گۇرۇپپىدىكىلەر بىلەن ھەمبەھىرلىنەمسىز؟";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Would you like to add this user to your contacts?";
@@ -107,7 +107,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Would you like to share your profile with this user?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Got it";
+"ALERT_ACTION_ACKNOWLEDGE" = "بىلدىم";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Discard";
@@ -119,7 +119,7 @@
 "ALERT_ERROR_TITLE" = "Error";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Save";
+"ALERT_SAVE" = "ساقلا";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Answer";
@@ -152,7 +152,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Enter your name";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ھازىر ئەمەس";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
@@ -161,7 +161,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "يېڭىلاش";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Dark";
@@ -173,7 +173,7 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "System";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "سىگنال";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archive";
@@ -182,7 +182,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "بايان قوش…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
@@ -206,10 +206,10 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ئەۋەت";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "قوشۇمچە";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
@@ -245,19 +245,19 @@
 "ATTACHMENT_HINT" = "Choose Media to Send";
 
 /* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "Camera";
+"ATTACHMENT_KEYBOARD_CAMERA" = "كامېرا";
 
 /* A button to select a contact from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CONTACT" = "Contact";
+"ATTACHMENT_KEYBOARD_CONTACT" = "ئالاقىلاشقۇچى";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "File";
+"ATTACHMENT_KEYBOARD_FILE" = "ھۆججەت";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Location";
+"ATTACHMENT_KEYBOARD_LOCATION" = "ئورنى";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
@@ -266,7 +266,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Attachment";
+"ATTACHMENT_LABEL" = "قوشۇمچە";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
@@ -278,25 +278,25 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_AUDIO" = "Audio";
+"ATTACHMENT_TYPE_AUDIO" = "ئۈن";
 
 /* Short text label for a file attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_FILE" = "File";
+"ATTACHMENT_TYPE_FILE" = "ھۆججەت";
 
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
 /* Short text label for an image attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_IMAGE" = "Image";
+"ATTACHMENT_TYPE_IMAGE" = "سۈرەت";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "Photo";
+"ATTACHMENT_TYPE_PHOTO" = "رەسىم";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VIDEO" = "Video";
+"ATTACHMENT_TYPE_VIDEO" = "سىن";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "ئاۋازلىق ئۇچۇر";
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
@@ -374,7 +374,7 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "چەكلەش";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
@@ -395,7 +395,7 @@
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "قالدۇرۇش";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
@@ -404,7 +404,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "گۇرۇپپا ئەزالىرى سىزنى بۇ گۇرۇپپىغا قايتا قوشالايدۇ.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
@@ -413,7 +413,7 @@
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "چەكلەش";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
@@ -437,28 +437,28 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "توسۇۋېتىلگەن ئىشلەتكۈچىلەر سىزگە تېلېفون قىلالمايدۇ ياكى ئۇچۇر ئەۋەتەلمەيدۇ.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
 
 /* Label for the 'add' button. */
-"BUTTON_ADD" = "Add";
+"BUTTON_ADD" = "قوشۇش";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "داۋاملىق";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "بولدى";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "Next";
+"BUTTON_NEXT" = "كېيىنكىسى";
 
 /* Label for the 'no' button. */
-"BUTTON_NO" = "No";
+"BUTTON_NO" = "ياق";
 
 /* Label for the 'not now' button. */
-"BUTTON_NOT_NOW" = "Not Now";
+"BUTTON_NOT_NOW" = "ھازىر ئەمەس";
 
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "Okay";
@@ -467,10 +467,10 @@
 "BUTTON_SELECT" = "Select";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "Submit";
+"BUTTON_SUBMIT" = "تاپشۇر";
 
 /* Label for the 'yes' button. */
-"BUTTON_YES" = "Yes";
+"BUTTON_YES" = "ھەئە";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
@@ -500,7 +500,7 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Call";
+"CALL_USER_ALERT_CALL_BUTTON" = "چاقىر";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
@@ -521,13 +521,13 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Answer";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "ئۈن";
 
 /* label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "ئاخىرلاشقان چاقىرىش";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Mute";
@@ -557,7 +557,7 @@
 "CAMERA_BUTTON_HINT" = "Take a picture and then send it";
 
 /* Accessibility label for camera button. */
-"CAMERA_BUTTON_LABEL" = "Camera";
+"CAMERA_BUTTON_LABEL" = "كامېرا";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
@@ -578,7 +578,7 @@
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Error";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Restore";
+"CHECK_FOR_BACKUP_RESTORE" = "ئەسلىگە كەلتۈرۈش";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
@@ -608,16 +608,16 @@
 "COMPOSE_BUTTON_LABEL" = "Compose";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "ئالاقىلاشقۇچىلار";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "گۇرۇپپا";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "تېلىفون نومۇرىنى ئىزدەش";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "قوللانغۇچىنى  ئىزدەش";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -635,7 +635,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "سىز ئەمدى بۇ گۇرۇپپىدا ئۇچۇر ئەۋەتەلمەيسىز ياكى تاپشۇرۇپ ئالالمايسىز.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
@@ -659,7 +659,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Unregistered Number";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "تەھرىر";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
@@ -695,10 +695,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "ئاتاق";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "قوشۇمچە نام";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organization";
@@ -716,7 +716,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
 
 /* Snooze action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_NOT_NOW_ACTION" = "Not Now";
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "ھازىر ئەمەس";
 
 /* Action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
@@ -740,7 +740,7 @@
 "CONTACT_PICKER_TITLE" = "Select Contact";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "ئالاقەداش ھەمبەھىر";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
@@ -752,7 +752,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "قوللىغۇچىلار  بىلەن ئالاقىلىشىڭ";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
@@ -791,7 +791,7 @@
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
 
 /* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "Groups";
+"CONVERSATION_PICKER_SECTION_GROUPS" = "گۇرۇپپا";
 
 /* table section header for section containing recent conversations */
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Recent Chats";
@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS" = "Chat Settings";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Add Members";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "ئەزا قوش";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
@@ -827,10 +827,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "ھەممىسى";
 
 /* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Disabled";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "تاقالغان";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
@@ -851,7 +851,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
 /* Label for the 'edit' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT" = "Edit";
+"CONVERSATION_SETTINGS_EDIT" = "تەھرىر";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
@@ -893,7 +893,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "ئەزالار";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
@@ -905,10 +905,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ئۇنسىز سۆھبەتلەردە ئاتالسىڭىز ئۇقتۇرۇش تاپشۇرۇۋالامسىز؟";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "تىلغا ئالغانلار";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
@@ -986,7 +986,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "ئالاقەداشلارغا قوش";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
@@ -1025,13 +1025,13 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "ھازىر";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "بۈگۈن";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "تۈنۈگۈن";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
@@ -1061,7 +1061,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
 
 /* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "ئورتاقلاش";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "One More Step";
@@ -1226,7 +1226,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Connecting…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "باغلىنىۋاتىدۇ...";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
@@ -1256,7 +1256,7 @@
 "DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"DISMISS_BUTTON_TEXT" = "تارقىتىۋېتىش";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
@@ -1286,7 +1286,7 @@
 "EDIT_GROUP_GROUP_NAME" = "Group Name";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Update";
+"EDIT_GROUP_UPDATE_BUTTON" = "يېڭىلاش";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
@@ -1346,7 +1346,7 @@
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy";
+"END_CALL_RESPONDER_IS_BUSY" = "ئالدىراش";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
@@ -1430,7 +1430,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "سۆھبەت يېڭىلاندى";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
@@ -1496,16 +1496,16 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Attachment";
+"GENERIC_ATTACHMENT_LABEL" = "قوشۇمچە";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get started";
+"GET_STARTED_BANNER_TITLE" = "ئىشلىتىشكە باشلاش";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New group";
+"GET_STARTED_CARD_NEW_GROUP" = "يېڭى توپ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
@@ -1559,10 +1559,10 @@
 "GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
 
 /* Description of the 'unknown' access level. */
-"GROUP_ACCESS_LEVEL_UNKNOWN" = "Unknown";
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "نامەلۇم";
 
 /* Description of the 'unsatisfiable' access level. */
-"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Disabled";
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "تاقالغان";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
@@ -1592,7 +1592,7 @@
 "GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
 
 /* A button to receive more info about not seeing a participant in group call grid */
-"GROUP_CALL_ERROR_DETAILS" = "More Info";
+"GROUP_CALL_ERROR_DETAILS" = "تېخىمۇ كۆپ ئۇچۇر";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
 "GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
@@ -1604,7 +1604,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "چاقىرىققا قېتىل";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -1619,13 +1619,13 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "بۇنداق بولۇشىنىڭ سەۋەبى ئۇلار سىزنىڭ بىخەتەرلىك نومۇرىنى ئۆزگەرتكەنلىكىڭىزنى دەلىللىمىگەن بولۇشى مۇمكىن، ياكى ئۇلارنىڭ ئۈسكۈنىسىدە مەسىلە بار ۋە ياكى ئۇلار سىزنى چەكلىۋەتكەن بولۇشى مۇمكىن.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "بۇ يەردە ھېچكىم يوق";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
@@ -1667,10 +1667,10 @@
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "چاقىرىق باشلا";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "گۇرۇپپا چاقىرىشنى باشلاش ئۈچۈن بۇ يەرنى چېكىڭ";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
@@ -1688,22 +1688,22 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
 
 /* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "You";
+"GROUP_CALL_YOU" = "سىز";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "سىز بۇ توپ چاقىرىشىدا";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "ھەقسىز شىفىرلانغان گۇرۇپپا چاقىرىشنى باشلاش ئۈچۈن «يېڭى گۇرۇپپا»نى ئېچىڭ";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "«گۇرۇپپا چاقىرىشلىرى»نى تونۇشتۇرۇش";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "بۇ گۇرۇپپىنى سىز قۇرغان.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
@@ -1754,7 +1754,7 @@
 "GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى چەكلىدىڭىز.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
@@ -1763,7 +1763,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
@@ -1772,7 +1772,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللىمەسلىكنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
@@ -1781,7 +1781,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى ئەسلىگە قايتۇردىڭىز.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -1790,7 +1790,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى چەكلىدىڭىز.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
@@ -1799,7 +1799,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
@@ -1829,13 +1829,13 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "قوشۇل";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Loading…";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "قاچىلىنىۋاتىدۇ...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "توپقا قوشۇلۇپ ئىسىم ۋە سۈرىتىڭىزنى توپ ئەزالىرى بىلەن ھەمبەھىرلىنەمسىز؟";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Please check if you are online and try again.";
@@ -1853,7 +1853,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "گۇرۇپپا ئۇلانمىسى ئارقىلىق قوشۇلماقچى بولغان يېڭى ئەزالارنى باشقۇرغۇچى دەلىللەيدۇ.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1874,7 +1874,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "بۇ كودنى تارىغان كىشى گۇرۇپپىڭىزغا كىرەلەيدۇ. ئەگەر باشقۇرغۇچى دەلىللەشنى قوزغاتقان بولسىڭىز ئۇنداقتا باشقۇرغۇچى قوشۇلسا ئاندىن گۇرۇپپىغا كىرەلەيدۇ.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
@@ -1895,7 +1895,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "گۇرۇپپا ئۇلانمىسى ئارقىلىق قوشۇلماقچى بولغان يېڭى ئەزالارنى باشقۇرغۇچى دەلىللەيدۇ.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
@@ -1904,13 +1904,13 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "گۇرۇپپا ئۇلانمىسىنى راستلا ئەسلىگە قايتۇرامسىز؟ ئەسلىگە قايتۇرۇلغاندىن كېيىن كىشىلەر ئىلگىرىكى ئۇلانما ئارقىلىق گۇرۇپپىغا قوشۇلالمايدۇ.";
 
 /* Label for the 'share link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK" = "Share";
+"GROUP_LINK_VIEW_SHARE_LINK" = "ئورتاقلاش";
 
 /* Label for the 'share group link via iOS sharing UI' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Share";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "ئورتاقلاش";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
@@ -1928,7 +1928,7 @@
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "ئەمدى سىز باشقۇرغۇچى.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
@@ -1955,13 +1955,13 @@
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "گۇرۇپپىغا تەكلىپ قىلىندىڭىز.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "گۇرۇپپىغا قوشۇلدىڭىز.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "توپ ئۇلانمىسى ئارقىلىق توپقا قوشۇلدىڭىز.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
@@ -1973,13 +1973,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "توپقا قوشۇلۇش ئىلتىماسىڭىزدىن ۋاز كەچتىڭىز.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "توپقا قوشۇلۇش ئىلتىماسى يوللىدىڭىز.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
@@ -2006,28 +2006,28 @@
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ Members";
 
 /* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "You";
+"GROUP_MEMBER_LOCAL_USER" = "سىز";
 
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "بۇ گۇرۇپپىنى قۇرغاندىن كېيىن دوستلارنى قوشالايسىز ياكى تەكلىپ قىلالايسىز.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ئەزالار";
 
 /* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Message";
+"GROUP_MEMBERS_SEND_MESSAGE" = "ئۇچۇر";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Video Call";
+"GROUP_MEMBERS_VIDEO_CALL" = "سىنلىق چاقىرىش";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap to review";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "كۆزدىن كەچۈرۈش ئۈچۈن چېكىڭ";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Member";
@@ -2045,7 +2045,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "گۇرۇپپا ئىسمى (تەلەپ قىلىنغان)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
@@ -2171,7 +2171,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
 
 /* Info message indicating that the group was updated by an unknown user. */
-"GROUP_UPDATED" = "Group updated.";
+"GROUP_UPDATED" = "گۇرۇپپا يېڭىلاندى.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
@@ -2192,7 +2192,7 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "You updated the group.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "گۇرۇپپىنى يېڭىلىدىڭىز.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
@@ -2237,7 +2237,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
 
 /* Message indicating that the local user left the group. */
-"GROUP_YOU_LEFT" = "You have left the group.";
+"GROUP_YOU_LEFT" = "سىز گۇرۇپپىدىن ئايرىلدىڭىز.";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
@@ -2258,7 +2258,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Invite friends";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
@@ -2291,7 +2291,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيا يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -2336,31 +2336,31 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "كونا گۇرۇپپا";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "بۇ گۇرۇپپىغا قوشۇلۇش تەكلىپنامىسىنى قوبۇل قىلىشىڭىز كېرەك ۋە سىز ئۇنى قوبۇل قىلغۇچە گۇرۇپپا ئۇچۇرلىرىنى كۆرەلمەيسىز.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "ئەگەر @ ئەسكەرتىشى ۋە باشقۇرغۇچى ئىقتىدارىنى ئىشلىتىش ئۈچۈن، مەزكۇر گۇرۇپپا دەرىجىسىنى ئۆستۈرۈڭ.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "«يېڭى گۇرۇپپىلار» دېگەن نېمە؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيالار يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "يېڭى گۇرۇپپىلارنىڭ @ئەتىكەتلەش(يەنى @mentions) ۋە گۇرۇپپا باشقۇرغۇچىلىرىغا ئوخشاش ئىقتىدارلىرى بار، كەلگۈسىدە تېخىمۇ كۆپ ئىقتىدارلارنى قوللايدۇ.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Add Members";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "ئەزا قوش";
 
 /* Title for the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
@@ -2369,7 +2369,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Add Members";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "ئەزا قوش";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
@@ -2378,7 +2378,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيالار يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -2399,7 +2399,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "«يېڭى گۇرۇپپا»غا يۇقىرلىتىڭ";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
@@ -2426,7 +2426,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "يېڭى باشقۇرغۇچى تاللاڭ";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
@@ -2456,7 +2456,7 @@
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ئاقتۇرۇش";
 
 /* A prefix indicating that a message preview is a draft */
 "HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
@@ -2477,7 +2477,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "ئۇچۇر ئىلتىماسى";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
@@ -2486,16 +2486,16 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Archive";
 
 /* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "سىگنال";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "خالىغان جاي سىزىلسا تۇتۇقلىشىدۇ";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "چىراي تۇتۇق";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "چىراي ياكى دائىرە سىزىلسا تۇتۇقلىشىدۇ";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
@@ -2513,7 +2513,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connecting…";
+"IN_CALL_CONNECTING" = "باغلىنىۋاتىدۇ...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device.";
@@ -2525,10 +2525,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "قايتا باغلىنىۋاتىدۇ...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringing…";
+"IN_CALL_RINGING" = "جىرىڭلاۋاتىدۇ…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Audio Call…";
@@ -2558,10 +2558,10 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ئىپادىلەر";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Voice Message";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ئاۋازلىق ئۇچۇر";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
@@ -2576,7 +2576,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Search";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ئاقتۇرۇش";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
@@ -2585,7 +2585,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "قوشۇل";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
@@ -2618,7 +2618,7 @@
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Search";
+"KEY_COMMAND_SEARCH" = "ئاقتۇرۇش";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Settings";
@@ -2633,7 +2633,7 @@
 "LEARN_MORE" = "Learn More";
 
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "Leave";
+"LEAVE_BUTTON_TITLE" = "ئايرىلىڭ";
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Leave Group";
@@ -2651,7 +2651,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Link this device?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "بۇ ئۈسكۈنىنى ئۇلامسىز؟";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Retry";
@@ -2678,7 +2678,7 @@
 "LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
 
 /* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Disable";
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "تاقاش";
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
@@ -2714,7 +2714,7 @@
 "LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "ئۇچۇر";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
 "MANY_GROUPS_IN_COMMON" = "%@ groups in common";
@@ -2723,7 +2723,7 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
 
 /* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
+"MEDIA_FROM_CAMERA_BUTTON" = "كامېرا";
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
@@ -2744,7 +2744,7 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "سىز";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
@@ -2777,7 +2777,7 @@
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "تېخىمۇ كۆپ ئۇچۇر";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
@@ -2792,7 +2792,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "ئۇچۇر";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "New Message";
@@ -2840,13 +2840,13 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+"MESSAGE_METADATA_VIEW_TITLE" = "ئۇچۇر";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "Block";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "چەكلەش";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "چەكلەش ۋە ئۆچۈرىۋېتىش";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
@@ -2861,7 +2861,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Delete";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ئۆچۈرۈش";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
@@ -2873,7 +2873,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "بۇ گۇرۇپپىدىن چىكىنىپ چىقىسىز، شۇنداقلا بۇ گۇرۇپ بارلىق ئۈسكۈنىلىرىڭىزدىن ئۆچۈرۈلىدۇ.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
@@ -2900,25 +2900,25 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accept";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "قوبۇل قىلىش";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Block";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "چەكلەش";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "بۇ توپنى چەكلەپ ھەمدە ئات ۋە باش سۈرىتىڭىزنى ھەمبەھىرلەشكە يول قويامسىز؟ سىز ئۇلارنى چەكلىۋېتىشتىن ئىلگىرى ھېچقانداق ئۇچۇر تاپشۇرۇۋالمايسىز.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
 
 /* A button used to continue a conversation and share your profile. */
-"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Continue";
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "داۋاملىق";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Delete";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ئۆچۈرۈش";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
@@ -2933,13 +2933,13 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "توپقا قوشۇلامسىز؟ سىز قوشۇلمىغىچە ئۇلارنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى ئۇلار بىلمەيدۇ.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Unblock";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "قالدۇرۇش";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "ئىلتىماسنى بىكار قىلىش";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2960,7 +2960,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "بىر قىسمى ئەۋەتىلدى، تەپسىلاتلار ئۈچۈن بېسىڭ";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Read";
@@ -2972,7 +2972,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "ئەۋەتىلىۋاتىدۇ";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";
@@ -3038,7 +3038,7 @@
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Skip";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "ئاتلاش";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
@@ -3065,7 +3065,7 @@
 "NEW_GROUP_BUTTON" = "New Group";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Create";
+"NEW_GROUP_CREATE_BUTTON" = "قۇرۇش";
 
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
@@ -3107,7 +3107,7 @@
 "new_message" = "New Message";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Search";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ئاقتۇرۇش";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
@@ -3116,7 +3116,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "No groups in common";
+"NO_GROUPS_IN_COMMON" = "ئورتاق گۇرۇپپا يوق";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
@@ -3134,7 +3134,7 @@
 "NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "ئۆزەمگە خاتىرە";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
@@ -3155,16 +3155,16 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
 
 /* Snooze action text for contact permission reminder megaphone */
-"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Not Now";
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "ھازىر ئەمەس";
 
 /* Action text for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ئالاقەداش ۋە توپنىڭ ئۇچۇرلىرىنى ھەرگىز ئۆتكۈزۈۋەتمەيدۇ.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "ئۇقتۇرۇشنى قوزغىتامدۇ؟";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
@@ -3194,7 +3194,7 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "يېڭى PIN قۇرۇڭ";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
@@ -3206,7 +3206,7 @@
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "خاتا PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
@@ -3218,7 +3218,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "ئەگەر PIN نى ئەسلىيەلمىسىڭىز، يېڭىدىن بىرنى قۇرسىڭىز بولىدۇ. ھېساباتىڭىزنى تىزىملىتالايسىز ۋە ئىشلىتەلەيسىز، ئەمما ئارخىپ ئۇچۇرلىرىڭىزغا ئوخشاش ساقلانغان تەڭشەكلەرنى يوقىتىپ قويىسىز.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
@@ -3272,7 +3272,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "تېلىفون نومۇرىڭىزنى كىرگۈزۇڭ";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
@@ -3293,7 +3293,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Account Locked";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Incorrect PIN";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "خاتا PIN";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
@@ -3416,7 +3416,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "باشقا گۇرۇپپا ئەزالىرى تەكلىپ قىلغان كىشىلەرنىڭ تەپسىلاتلىرى كۆرسىتىلمىدى. ئەگەر تەكلىپ قىلىنغانلار قاتنىشىشنى تاللىسا، ئۇلارنىڭ ئۇچۇرلىرى شۇ ۋاقىتتا ئ‍اندىن گۇرۇپپا بىلەن ئورتاقلىشىدۇ. ئۇلار تەكلىپنى قوبۇل قىلمىغۇچە گۇرۇپپىدىكى ھېچقانداق ئۇچۇرنى كۆرمەيدۇ.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
@@ -3425,37 +3425,37 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "باشقا گۇرۇپپا ئەزالىرىنىڭ تەكلىپلىرى";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "سىز تەكلىپ قىلغان كىشىلەر";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "بىرلا كۆرسەت ۋاسىتە";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ۋاسىتە";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "بىرلا كۆرسەت سۈرەت";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "بىرلا كۆرسەت سىن";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "View Photo";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "سۈرەت كۆرسەت";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "سىن كۆرسەت";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "كۆرگەن";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
@@ -3494,7 +3494,7 @@
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Home";
+"PHONE_NUMBER_TYPE_HOME" = "ئۆي";
 
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Home Fax";
@@ -3506,10 +3506,10 @@
 "PHONE_NUMBER_TYPE_MAIN" = "Main";
 
 /* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
+"PHONE_NUMBER_TYPE_MOBILE" = "يانفون";
 
 /* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "Other";
+"PHONE_NUMBER_TYPE_OTHER" = "باشقىلار";
 
 /* Label for 'Other FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_OTHER_FAX" = "Other Fax";
@@ -3518,10 +3518,10 @@
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "نامەلۇم";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Work";
+"PHONE_NUMBER_TYPE_WORK" = "خىزمەت";
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
@@ -3560,13 +3560,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN چەكلە";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "ئاگاھلاندۇرۇش";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
@@ -3608,10 +3608,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "PIN چەكلە";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "يېڭى PIN قۇر";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
@@ -3626,10 +3626,10 @@
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "PIN نىڭىزنى ئۇنتۇپ قالدىڭىزمۇ؟";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "PIN دەلىللەش";
 
 /* Body for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
@@ -3638,7 +3638,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN نى دەلىللەڭ";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
@@ -3689,7 +3689,7 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verified";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "دەلىللەندى";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
@@ -3758,7 +3758,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Working on something new";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "About";
+"PROFILE_BIO_VIEW_TITLE" = "ھەققىدە";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
@@ -3773,13 +3773,13 @@
 "PROFILE_NAME_VIEW_TITLE" = "Your Name";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "About";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "ھەققىدە";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "قوللانغۇچى";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
@@ -3809,10 +3809,10 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
 
 /* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+"PROFILE_VIEW_SAVE_BUTTON" = "ساقلاش";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profile";
+"PROFILE_VIEW_TITLE" = "ئارخىپ";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
@@ -3845,19 +3845,19 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "قوشۇمچە";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+"QUOTED_REPLY_TYPE_AUDIO" = "ئۈن";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+"QUOTED_REPLY_TYPE_IMAGE" = "سۈرەت";
 
 /* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+"QUOTED_REPLY_TYPE_VIDEO" = "سىن";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "All · %@";
@@ -3899,7 +3899,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
 /* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "You";
+"REACTIONS_DETAIL_YOU" = "سىز";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Read";
@@ -3935,13 +3935,13 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "خاتا PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
 "REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
+"REGISTER_2FA_SUBMIT_BUTTON" = "تاپشۇر";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Welcome!";
@@ -4013,7 +4013,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Edit";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تەھرىر";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
@@ -4040,16 +4040,16 @@
 "RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
 
 /* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "No thanks";
+"RESEARCH_MODAL_NO_THANKS" = "ياق، رەھمەت";
 
 /* Text explaining why the user should take the survey */
 "RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "راي سىناشقا قاتنىشىش";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "Signal تەتقىقاتى";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
@@ -4076,7 +4076,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "View";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "كۆرۈش";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
@@ -4118,7 +4118,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal نى ئاجرىتىڭ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
@@ -4262,7 +4262,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Search";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "ئاقتۇرۇش";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Other Contacts";
@@ -4271,7 +4271,7 @@
 "SEARCH_SECTION_CONVERSATIONS" = "Chats";
 
 /* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_MESSAGES" = "ئۇچۇرلار";
 
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
@@ -4340,7 +4340,7 @@
 "SEND_AGAIN_BUTTON" = "Send Again";
 
 /* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "Send";
+"SEND_BUTTON_TITLE" = "ئەۋەت";
 
 /* notification body */
 "SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
@@ -4370,13 +4370,13 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "سۆھبەت يېڭىلاندى";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "ئالدىن بېكىتىش";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Set Wallpaper";
@@ -4385,13 +4385,13 @@
 "SETTINGS_ACCOUNT" = "Account";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Block";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "چەكلەش";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
 
 /* Label for the 'manual censorship circumvention' country. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Location";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "ئورنى";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
@@ -4418,7 +4418,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN چەكلە";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
@@ -4556,10 +4556,10 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Signal غا ئىئانە قىلىڭ";
 
 /* Title for support page in app settings. */
-"SETTINGS_HELP" = "Help";
+"SETTINGS_HELP" = "ياردەم";
 
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Invite Your Friends";
@@ -4592,7 +4592,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
 
 /* Label for the 'audio' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Audio";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "ئۈن";
 
 /* Label for the 'document' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Documents";
@@ -4775,7 +4775,7 @@
 "SHARE_ACTION_MAIL" = "Mail";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "ئۇچۇر";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
@@ -4784,7 +4784,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "قاچىلىنىۋاتىدۇ...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
@@ -4823,7 +4823,7 @@
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
 
 /* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Disable";
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "تاقاش";
 
 /* Enable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Enable";
@@ -4838,7 +4838,7 @@
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "ھېچنىمە";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
@@ -4859,31 +4859,31 @@
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Install";
+"STICKERS_INSTALL_BUTTON" = "ئورنات";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal ئارتىس يۈرۈشلۈكى";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "تاپشۇرۇۋالغان چىراي ئىپادىلىرى";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Stickers";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ئورنىتىلغان چىراي ئىپادىلىرى";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Loading…";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "قاچىلىنىۋاتىدۇ...";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "چىراي ئىپادىسى ئورنىتىلمىغان";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "بۇ جايدا كەلگەن ئۇچۇرلاردىكى چىراي ئىپادىلىرى كۆرۈنىدۇ";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
+"STICKERS_MANAGE_VIEW_TITLE" = "ئىپادىلەر";
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
@@ -4955,16 +4955,16 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Off";
+"SWITCH_OFF" = "ئەت";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "On";
+"SWITCH_ON" = "ئاچ";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "دەلىللەش";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
+"THIS_MESSAGE_WAS_DELETED" = "بۇ ئۇچۇر ئۆچۈرۈلگەن";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
@@ -5036,10 +5036,10 @@
 "TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
 
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Cancel";
+"TXT_CANCEL_TITLE" = "بىكار قىل";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "Delete";
+"TXT_DELETE_TITLE" = "ئۆچۈرۈش";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Unarchive";
@@ -5075,7 +5075,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "Unknown";
+"UNKNOWN_USER" = "نامەلۇم";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
@@ -5084,7 +5084,7 @@
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "نامەلۇم";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Unlink";
@@ -5129,7 +5129,7 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "يېڭى PIN قۇر";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
@@ -5141,7 +5141,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN چەكلە";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
@@ -5174,7 +5174,7 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "قوللانغۇچى";
 
 /* An error indicating that the supplied username is too short. */
 "USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
@@ -5213,13 +5213,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "Video Call";
+"VIDEO_CALL_LABEL" = "سىنلىق چاقىرىش";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "بۇ جاي چېكىلسە ئوقۇلغاندىن كېيىن غايىپ بولىدىغان ئۇچۇر قۇرۇلىدۇ.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
@@ -5228,13 +5228,13 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "ئاۋازلىق ئۇچۇر";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "ئاۋازلىق ئۇچۇر";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
@@ -5252,7 +5252,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "بارلىق سۆھبەت ئۇچۈن تام قەغىزى قىلىش";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
@@ -5261,7 +5261,7 @@
 "WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "كۆرۈپ بېقىش";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
@@ -5282,7 +5282,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "كۆرۈپ بېقىش";
 
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
@@ -5297,10 +5297,10 @@
 "WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "بۇ ئۇچۇرنى ئۆچۈردىڭىز";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "سىز غايىپ ئۇچۇرنى چەكلىدىڭىز.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";

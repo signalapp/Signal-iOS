@@ -1205,7 +1205,7 @@
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Prenesi račun";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";

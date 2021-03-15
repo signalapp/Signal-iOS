@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para ver quais dos seus contactos são utilizadores do Signal, permita o acesso aos contactos nas definições iOS da aplicação.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "Isto irá redefinir a aplicação ao eliminar as suas mensagens. A aplicação irá encerrar depois deste processo estar completo.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Tem a certeza que deseja eliminar todos os dados?";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Alterações não guardadas";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Ver todos";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Este utilizador encontra-se nos seus contactos";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Eliminar conta";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "isto irá eliminar a sua conta do Signal e repôr a aplicação. A aplicação irá encerrar depois deste processo estar completo.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Deseja realmente eliminar a sua conta?";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Código do país";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Ocorreu um erro ao tentar eliminar a conta. Assegure-se que o Wi-Fi ou dados móveis se encontram ligados e tente novamente.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Isto irá eliminar a sua informação de conta, perfil e todas as suas mensagens.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "A eliminar conta...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Sem ligação à internet. Assegure-se que o Wi-Fi e ou os dados móveis se encontram ligados, depois tente novamente.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "N.º de telefone";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirme o seu número do Signal";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Eliminar conta";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "O número de telefone que inseriu não coincide com as suas contas.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Eliminar todas as mensagens na conversa?";
@@ -2711,7 +2711,7 @@
 "LOGGING_SECTION" = "Relatórios";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Os registos de depuração podem ajudar o Signal a corrigir problemas e erros.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mensagem";
@@ -4670,7 +4670,7 @@
 "SETTINGS_PINS_TITLE" = "PIN do Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Contorno de censura, retransmissão de chamadas e definições de remetente selado.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avançado";
@@ -4715,7 +4715,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Ocultar o ecrã no alternador de aplicações";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Exibe as chamadas na lista de 'Recentes' na aplicação do telefone iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
@@ -4727,13 +4727,13 @@
 "SETTINGS_SECURITY_DETAIL" = "Utilize o Touch ID, Face ID, ou a palavra-passe do seu dispositivo iOS para desbloquear o Sigal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Utilizar o Face ID para desbloquear o Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Utilize o código de desbloqueio do seu dispositivo para desbloquear o Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Utilizar o Touch ID para desbloquear o Signal.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Segurança da aplicação";
@@ -4757,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Emissor selado";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Exibir ícone de estado";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de todos";

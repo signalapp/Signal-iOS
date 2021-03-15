@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可在 iOS 设置中启用联系人读取权限，以便查看哪些联系人使用了 Signal。";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "这将删除消息来重置应用。该过程完成之后，应用将关闭。";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "您确认要删除所有数据吗？";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "删除账号";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "这将删除您的 Signal 帐户并重置应用。该过程完成之后，应用将关闭。";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "您确定要删除您的账号吗？";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "国家编码";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "删除帐户失败。请确保 Wi-Fi 或移动数据已开启，然后重试。";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "这将删除您的帐户、个人资料以及全部消息。";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "正在删除帐户...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "无互联网连接。请确保 Wi-Fi 或移动数据已开启，然后重试。";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "电话号码";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "请确认您的 Signal 号码";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "删除账号";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "输入的手机号码与 Signal 帐户的不匹配。";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "是否删除此对话中的所有消息？";
@@ -1139,13 +1139,13 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "设备列表更新失败。";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "停止迁移";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "停止转移";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "关闭当前窗口会停止你当前正进行的迁移，你确定要关闭么？";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "停止迁移？";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "停止转移？";
 
 /* The explanation for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "如果你还保留着你原来的 iOS 设备，你可以安全地迁移你的账户及消息到这个设备上。";
@@ -1205,7 +1205,7 @@
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "将你的 Signal 账户迁移到新的 iOS 设备上。确保你的新设备足够靠近且正常开机。";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "迁移账户";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "转移帐户";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "在你原来的设备上打开 Signal，保证它足够靠近并确保两个设备的 Wi-Fi 和蓝牙已经开启。";
@@ -1394,7 +1394,7 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "此设备已不再与您的电话号码关联。请重新安装 Signal。";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候再试。";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候重试。";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "发生了未知错误。";
@@ -3581,7 +3581,7 @@
 "PIN_CREATION_LEARN_MORE" = "了解更多 PIN 信息";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PIN 不匹配。请重新尝试。";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN 不匹配。请重试。";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN 码至少需要4位数。";

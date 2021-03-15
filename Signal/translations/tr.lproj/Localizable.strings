@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Şimdi Değil";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal Hakkında";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Yeni Güvenlik Numarasını Kabul et";
@@ -623,7 +623,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hangi kişilerinizin Signal kullandığını görmek için iOS Ayarlar uygulamasından kişiler erişimini etkinleştirebilirsiniz.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "Bu, iletilerinizi silerek uygulamayı sıfırlayacaktır. Bu işlem tamamlandıktan sonra uygulama kapanacaktır.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Tüm verileri silmek istediğinizden emin misiniz?";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Kaydedilmemiş Değişiklikler";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Tümünü Gör";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Bu kullanıcı kişileriniz arasında";
@@ -1079,7 +1079,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Hesabı Sil";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Bu Signal hesabınızı silecek ve uygulamayı sıfırlayacaktır. Bu işlem tamamlandıktan sonra uygulama kapanacaktır.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Hesabınızı silmek istediğinizden emin misiniz?";
@@ -1088,28 +1088,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Ülke Kodu";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Hesap silinmesi başarısız oldu. Wi-Fi veya mobil verinin açık olduğundan emin olun, daha sonra tekrar deneyin.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Bu işlem hesap bilginizi, profilinizi ve tüm iletilerinizi silecektir.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Hesap Siliniyor...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "İnternet bağlantısı yok. Kablosuz veya mobil verinin açık olduğundan emin olun ve tekrar deneyin.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefon Numarası";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Signal Numaranızı Doğrulayın";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Hesabı Sil";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Girdiğiniz telefon numarası hesabınızla eşleşmemektedir.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Konuşmadaki tüm iletiler silinsin mi?";
@@ -1130,10 +1130,10 @@
 "DEREGISTRATION_WARNING" = "Cihazınız artık kayıtlı değil. Telefon numaranız farklı bir cihazdaki Signal uygulamasına kaydedilmiş olabilir. Tekrar kaydetmek için dokunun.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Son görülme %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Bağlandı %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Cihaz listesi güncellenemedi.";
@@ -2024,7 +2024,7 @@
 "GROUP_MEMBERS_VIDEO_CALL" = "Görüntülü Arama";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ grup üyesi benzer isimlere sahip";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Gözden geçirmek için dokunun";
@@ -2036,13 +2036,13 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Üyeleri İncelle";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ grup üyesi benzer ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ grup üyesi aynı ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ grup üyesi aynı ada sahip.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Grup adı (gereklidir)";
@@ -2660,7 +2660,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Bağlamak istediğiniz cihazda görüntülenen karekodu taratın.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Yeni bir aygıt bağlamak için QR kodu tarayın.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Yeni Cihaz Bağlayın";
@@ -2711,7 +2711,7 @@
 "LOGGING_SECTION" = "Günlük";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "Hata günlükleri Signal'in sorunları ve göçmeleri çözmesine yardımcı olur.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "İleti";
@@ -3035,7 +3035,7 @@
 "MUTED_BADGE" = "Sessize Alındı";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Yakın zamanda profil adı %1$@ iken %2$@ olarak değiştirdi.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Atla";
@@ -3776,7 +3776,7 @@
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Hakkında";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Ad";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Kullanıcı adı";
@@ -4028,7 +4028,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Yeni Yönetici Seç";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "Anlık Bildirimler için Yeniden Kaydol";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Signal'i gezegendeki en iyi yazışma uygulaması yapmak için geri bildiriminizi duymaktan memnuniyet duyarız.";
@@ -4382,7 +4382,7 @@
 "SET_WALLPAPER_TITLE" = "Duvar kağıdı ayarla";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Hesap";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Engelle";
@@ -4430,10 +4430,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Hata Kayıtları";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Eğer varsa sistem kişi fotoğraflarını göster.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Sistem Kişi Fotoğraflarını Kullan";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -4517,7 +4517,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Konuşma Geçmişini Temizle";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nGPLv3'e altında lisanslanmıştır";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Veri kullanımı";
@@ -4526,7 +4526,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Daha Az Veri Kullan";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Kötü ağ koşullarında daha az veri kullanmak arama kalitesini arttırabilir.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Aramalar";
@@ -4535,7 +4535,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Sesli iletiler, bir kez görüntülenen içerik ve çıkartmalar (100 kb'nin altında) her zaman otomatik olarak indirilir.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Otomatik İndirme";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Otomatik İndirme Ayarlarını Sıfırla";
