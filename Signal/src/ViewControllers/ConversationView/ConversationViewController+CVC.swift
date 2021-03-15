@@ -478,6 +478,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         if scrollAction.action == .none, !self.isUserScrolling {
             for item in items {
                 switch item {
+                case .delete(let renderItem, _):
+                    // If we're just deleting a typing indicator, and we were at the
+                    // bottom, we want to animate its removal.
+                    guard isScrolledToBottom, renderItem.interactionType == .typingIndicator else { break }
+                    scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: true)
                 case .insert(let renderItem, _):
 
                     var wasJustInserted = false
@@ -512,14 +517,14 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                         // Whenever we send an outgoing message from the local device,
                         // auto-scroll to the bottom of the conversation, regardless
                         // of scroll state.
-                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
+                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: true)
                         break
                     } else if isAutoScrollInteraction,
                               isScrolledToBottom {
                         // If we're already at the bottom of the conversation and
                         // a freshly inserted message or typing indicator appears,
                         // auto-scroll to show it.
-                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
+                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: true)
                         break
                     }
                 default:
