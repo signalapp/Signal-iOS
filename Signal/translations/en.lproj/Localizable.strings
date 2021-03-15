@@ -3346,7 +3346,7 @@
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
 
-/* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. */
+/* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
 
 /* Indicator for unknown currency. */
@@ -4846,6 +4846,24 @@
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+
+/* Label for button in the 'Update PIN' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Update PIN";
+
+/* Description for the 'Update PIN' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Choosing a longer or alphanumeric PIN adds protection to your account.";
+
+/* Title for the 'Update PIN' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+
+/* Label for button in the 'View Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Your Phrase";
+
+/* Description for the 'View Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+
+/* Title for the 'View Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";

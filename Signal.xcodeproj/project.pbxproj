@@ -195,6 +195,10 @@
 		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
 		346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3025FD050F00F493C7 /* PaymentsTest.swift */; };
 		346EFC3425FD328200F493C7 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3325FD328100F493C7 /* PaymentsFormat.swift */; };
+		346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3725FFDC6900F493C7 /* restore.json */; };
+		346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3825FFDC6900F493C7 /* restore-dark.json */; };
+		346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3925FFDC6900F493C7 /* update-pin-dark.json */; };
+		346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3A25FFDC6A00F493C7 /* update-pin.json */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
@@ -1210,6 +1214,10 @@
 		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
 		346EFC3025FD050F00F493C7 /* PaymentsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTest.swift; sourceTree = "<group>"; };
 		346EFC3325FD328100F493C7 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
+		346EFC3725FFDC6900F493C7 /* restore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = restore.json; sourceTree = "<group>"; };
+		346EFC3825FFDC6900F493C7 /* restore-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "restore-dark.json"; sourceTree = "<group>"; };
+		346EFC3925FFDC6900F493C7 /* update-pin-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin-dark.json"; sourceTree = "<group>"; };
+		346EFC3A25FFDC6A00F493C7 /* update-pin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin.json"; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
@@ -3707,10 +3715,14 @@
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
+				346EFC3825FFDC6900F493C7 /* restore-dark.json */,
+				346EFC3725FFDC6900F493C7 /* restore.json */,
 				347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */,
 				347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				887CD4862473587300FDD265 /* transfer.json */,
+				346EFC3925FFDC6900F493C7 /* update-pin-dark.json */,
+				346EFC3A25FFDC6A00F493C7 /* update-pin.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 			);
 			path = Lottie;
@@ -4450,6 +4462,7 @@
 				3406D33225DD832800885B14 /* payments_spinner_dark.json in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
+				346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */,
 				34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
@@ -4514,14 +4527,17 @@
 				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
+				346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
 				34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
+				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
 				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
+				346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,

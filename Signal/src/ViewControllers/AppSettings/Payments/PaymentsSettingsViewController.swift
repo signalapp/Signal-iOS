@@ -32,6 +32,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     // MARK: - Help Cards
 
     private enum HelpCard: String, Equatable, CaseIterable {
+        case viewRecoveryPhrase
+        case updatePin
         case aboutMobileCoin
         case addMoney
         case cashOut
@@ -47,16 +49,39 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private var helpCardsForEnabled: [HelpCard] {
-        var helpCards: [HelpCard] = [
+        // Order matters as we build this list.
+        var helpCards = [HelpCard]()
+        let hasSignificantBalance: Bool = {
+            guard let paymentBalance = Self.paymentsSwift.currentPaymentBalance else {
+                return false
+            }
+            let significantPicoMob = 500 * PaymentsConstants.picoMobPerMob
+            return paymentBalance.amount.picoMob >= significantPicoMob
+        }()
+        if hasSignificantBalance {
+            helpCards.append(.viewRecoveryPhrase)
+
+            let hasShortOrMissingPin: Bool = {
+                guard let pinCode = OWS2FAManager.shared().pinCode else {
+                    return true
+                }
+                let shortPinLength: UInt = 4
+                return pinCode.count <= shortPinLength
+            }()
+            if hasShortOrMissingPin {
+                helpCards.append(.updatePin)
+            }
+        }
+        helpCards.append(contentsOf: [
             .aboutMobileCoin,
             .addMoney,
             .cashOut
-        ]
+        ])
+
         return filterDismissedHelpCards(helpCards)
     }
 
-    // TODO:
-    private static let helpCardStore = SDSKeyValueStore(collection: "paymentsHelpCardStore.1")
+    private static let helpCardStore = SDSKeyValueStore(collection: "paymentsHelpCardStore")
 
     private func filterDismissedHelpCards(_ helpCards: [HelpCard]) -> [HelpCard] {
         let dismissedKeys = databaseStorage.read { transaction in
@@ -553,12 +578,37 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         for helpCard in helpCards {
             switch helpCard {
+            case .viewRecoveryPhrase:
+                contents.addSection(buildHelpCard(helpCard: helpCard,
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE",
+                                                                           comment: "Title for the 'View Passphrase' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION",
+                                                                          comment: "Description for the 'View Passphrase' help card in the payments settings."),
+                                                  buttonText: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON",
+                                                                                comment: "Label for button in the 'View Passphrase' help card in the payments settings."),
+                                                  iconName: (Theme.isDarkThemeEnabled
+                                                                ? "restore-dark"
+                                                                : "restore"),
+                                                  selector: #selector(didTapViewPassphraseCard)))
+            case .updatePin:
+                contents.addSection(buildHelpCard(helpCard: helpCard,
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE",
+                                                                           comment: "Title for the 'Update PIN' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION",
+                                                                          comment: "Description for the 'Update PIN' help card in the payments settings."),
+                                                  buttonText: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON",
+                                                                                comment: "Label for button in the 'Update PIN' help card in the payments settings."),
+                                                  iconName: (Theme.isDarkThemeEnabled
+                                                                ? "update-pin-dark"
+                                                                : "update-pin"),
+                                                  selector: #selector(didTapUpdatePinCard)))
             case .aboutMobileCoin:
                 contents.addSection(buildHelpCard(helpCard: helpCard,
                                                   title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE",
                                                                            comment: "Title for the 'About MobileCoin' help card in the payments settings."),
                                                   body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION",
                                                                           comment: "Description for the 'About MobileCoin' help card in the payments settings."),
+                                                  buttonText: CommonStrings.learnMore,
                                                   iconName: "about-mobilecoin",
                                                   selector: #selector(didTapAboutMobileCoinCard)))
             case .addMoney:
@@ -567,6 +617,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                            comment: "Title for the 'Adding to your wallet' help card in the payments settings."),
                                                   body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION",
                                                                           comment: "Description for the 'Adding to your wallet' help card in the payments settings."),
+                                                  buttonText: CommonStrings.learnMore,
                                                   iconName: "add-money",
                                                   selector: #selector(didTapAddingToYourWalletCard)))
             case .cashOut:
@@ -575,6 +626,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                            comment: "Title for the 'Cashing Out' help card in the payments settings."),
                                                   body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION",
                                                                           comment: "Description for the 'Cashing Out' help card in the payments settings."),
+                                                  buttonText: CommonStrings.learnMore,
                                                   iconName: "cash-out",
                                                   selector: #selector(didTapCashingOutCoinCard)))
             }
@@ -585,6 +637,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func buildHelpCard(helpCard: HelpCard,
                                title: String,
                                body: String,
+                               buttonText: String,
                                iconName: String,
                                selector: Selector) -> OWSTableSection {
         let section = OWSTableSection()
@@ -604,10 +657,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             bodyLabel.numberOfLines = 0
             bodyLabel.lineBreakMode = .byWordWrapping
 
-            let learnMoreLabel = UILabel()
-            learnMoreLabel.text = CommonStrings.learnMore
-            learnMoreLabel.textColor = Theme.accentBlueColor
-            learnMoreLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+            let buttonLabel = UILabel()
+            buttonLabel.text = buttonText
+            buttonLabel.textColor = Theme.accentBlueColor
+            buttonLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
 
             let animationView = AnimationView(name: iconName)
             animationView.contentMode = .scaleAspectFit
@@ -616,7 +669,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let vStack = UIStackView(arrangedSubviews: [
                 titleLabel,
                 bodyLabel,
-                learnMoreLabel
+                buttonLabel
             ])
             vStack.axis = .vertical
             vStack.alignment = .leading
@@ -779,6 +832,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapViewPaymentsPassphraseButton() {
+        showViewPaymentsPassphraseUI()
+    }
+
+    private func showViewPaymentsPassphraseUI() {
         guard let passphrase = paymentsSwift.passphrase else {
             owsFailDebug("Missing passphrase.")
             return
@@ -864,6 +921,31 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didTapCashingOutCoinCard() {
         // TODO: Pending design/support URL.
+    }
+
+    @objc
+    private func didTapUpdatePinCard() {
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        switch mode {
+        case .inAppSettings:
+            navigationController.popViewController(animated: true) {
+                let accountSettingsView = AccountSettingsViewController()
+                navigationController.pushViewController(accountSettingsView, animated: true)
+                accountSettingsView.showCreateOrChangePin()
+            }
+        case .standalone:
+            let accountSettingsView = AccountSettingsViewController()
+            navigationController.pushViewController(accountSettingsView, animated: true)
+            accountSettingsView.showCreateOrChangePin()
+        }
+    }
+
+    @objc
+    private func didTapViewPassphraseCard() {
+        showViewPaymentsPassphraseUI()
     }
 }
 
