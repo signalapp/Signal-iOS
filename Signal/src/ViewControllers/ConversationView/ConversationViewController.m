@@ -3809,10 +3809,15 @@ typedef enum : NSUInteger {
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
 {
     [super traitCollectionDidChange:previousTraitCollection];
-
-    [self ensureBannerState];
     [self updateBarButtonItems];
     [self updateNavigationBarSubtitleLabel];
+
+    // Invoking -ensureBannerState synchronously can lead to reenterant updates to the
+    // trait collection while building the banners. This can lead us to blow out the stack
+    // on unrelated trait collection changes (e.g. rotating to landscape).
+    // We workaround this by just asyncing any banner updates to break the synchronous
+    // dependency chain.
+    dispatch_async(dispatch_get_main_queue(), ^{ [self ensureBannerState]; });
 }
 
 - (void)resetForSizeOrOrientationChange

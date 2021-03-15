@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)
@@ -87,7 +87,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
 
         guard address1 != address2 else { return false }
         let name1 = address1.displayName(transaction: transaction)
-        let name2 = address1.displayName(transaction: transaction)
+        let name2 = address2.displayName(transaction: transaction)
         return name1 == name2
     }
 }
@@ -100,7 +100,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
     /// "Recent" is defined as all profile update messages since a call to `markCollisionsAsResolved`
     /// This is only fetched once for the lifetime of the collision finder. Thread-safe.
     let lock = UnfairLock()
-    private var recentProfileUpdateMessages: [SignalServiceAddress: [TSInfoMessage]]? = nil
+    private var recentProfileUpdateMessages: [SignalServiceAddress: [TSInfoMessage]]?
     public var hasFetchedProfileUpdateMessages: Bool {
         lock.withLock { recentProfileUpdateMessages != nil }
     }
@@ -114,7 +114,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
             return []
         }
         groupThread = updatedThread
-        
+
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
         let collisionMap: [String: [SignalServiceAddress]] = groupMembers.reduce(into: [:]) { (dictBuilder, address) in
