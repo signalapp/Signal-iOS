@@ -123,18 +123,18 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
                                                selector: #selector(didTapStartButton))
         startButton.autoSetHeightUsingFont()
 
-        let vSpacerFactory = VSpacerFactory()
+        let spacerFactory = SpacerFactory()
 
         rootView.removeAllSubviews()
         rootView.addArrangedSubviews([
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             topStack,
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             startButton,
             UIView.spacer(withHeight: 8)
         ])
 
-        vSpacerFactory.finalizeSpacers()
+        spacerFactory.finalizeSpacers()
     }
 
     // MARK: - Events

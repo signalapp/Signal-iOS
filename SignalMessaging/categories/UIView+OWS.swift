@@ -288,6 +288,17 @@ public extension UIView {
         }
     }
 
+    static func matchWidthsOfViews(_ views: [UIView]) {
+        var firstView: UIView?
+        for view in views {
+            if let otherView = firstView {
+                view.autoMatch(.width, to: .width, of: otherView)
+            } else {
+                firstView = view
+            }
+        }
+    }
+
     static func matchHeightsOfViews(_ views: [UIView]) {
         var firstView: UIView?
         for view in views {

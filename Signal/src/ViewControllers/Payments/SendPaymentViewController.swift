@@ -50,6 +50,7 @@ public class SendPaymentViewController: OWSViewController {
 
     private let bigAmountLabel = UILabel()
     private let smallAmountLabel = UILabel()
+    private let currencyConversionInfoView = UIImageView()
 
     private let balanceLabel = SendPaymentHelper.buildBottomLabel()
 
@@ -357,15 +358,27 @@ public class SendPaymentViewController: OWSViewController {
         memoStack.isUserInteractionEnabled = true
         memoStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAddMemo)))
 
-        let vSpacerFactory = VSpacerFactory()
+        let spacerFactory = SpacerFactory()
 
-        let keyboardViews = buildKeyboard(vSpacerFactory: vSpacerFactory)
+        let keyboardViews = buildKeyboard(spacerFactory: spacerFactory)
 
         let amountButtons = buildAmountButtons()
 
+        let smallAmountSpacerFactory = SpacerFactory()
+        let smallAmountRow = UIStackView(arrangedSubviews: [
+            smallAmountSpacerFactory.buildHSpacer(),
+                                            smallAmountLabel,
+                                            currencyConversionInfoView,
+            smallAmountSpacerFactory.buildHSpacer()
+                                            ])
+        smallAmountSpacerFactory.finalizeSpacers()
+        smallAmountRow.axis = .horizontal
+        smallAmountRow.alignment = .center
+        smallAmountRow.spacing = 8
+
         let requiredViews = [
             bigAmountRow,
-            smallAmountLabel,
+            smallAmountRow,
             memoStack,
             amountButtons,
             balanceLabel
@@ -377,23 +390,23 @@ public class SendPaymentViewController: OWSViewController {
 
         rootStack.removeAllSubviews()
         rootStack.addArrangedSubviews([
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             bigAmountRow,
-            vSpacerFactory.buildVSpacer(),
-            smallAmountLabel,
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
+            smallAmountRow,
+            spacerFactory.buildVSpacer(),
             memoStack,
-            vSpacerFactory.buildVSpacer()
+            spacerFactory.buildVSpacer()
         ] +
         keyboardViews.allRows
         + [
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             amountButtons,
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             balanceLabel
         ])
 
-        vSpacerFactory.finalizeSpacers()
+        spacerFactory.finalizeSpacers()
 
         UIView.matchHeightsOfViews(keyboardViews.keyboardRows)
     }
@@ -403,7 +416,7 @@ public class SendPaymentViewController: OWSViewController {
         let keyboardRows: [UIView]
     }
 
-    private func buildKeyboard(vSpacerFactory: VSpacerFactory) -> KeyboardViews {
+    private func buildKeyboard(spacerFactory: SpacerFactory) -> KeyboardViews {
 
         let keyboardHSpacing: CGFloat = 25
         let buttonFont = UIFont.ows_dynamicTypeTitle1Clamped
@@ -482,7 +495,7 @@ public class SendPaymentViewController: OWSViewController {
                     self?.keyboardPressedNumeral("3")
                 }
             ]),
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             buildAmountKeyboardRow([
                 buildAmountKeyboardButton(title: "4") { [weak self] in
                     self?.keyboardPressedNumeral("4")
@@ -494,7 +507,7 @@ public class SendPaymentViewController: OWSViewController {
                     self?.keyboardPressedNumeral("6")
                 }
             ]),
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             buildAmountKeyboardRow([
                 buildAmountKeyboardButton(title: "7") { [weak self] in
                     self?.keyboardPressedNumeral("7")
@@ -506,7 +519,7 @@ public class SendPaymentViewController: OWSViewController {
                     self?.keyboardPressedNumeral("9")
                 }
             ]),
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             buildAmountKeyboardRow([
                 buildAmountKeyboardButton(imageName: "decimal-32") { [weak self] in
                     self?.keyboardPressedPeriod()
@@ -560,9 +573,17 @@ public class SendPaymentViewController: OWSViewController {
         bigAmountLabel.setCompressionResistanceVerticalHigh()
 
         smallAmountLabel.font = UIFont.ows_dynamicTypeBody2
+        smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
         smallAmountLabel.textAlignment = .center
         smallAmountLabel.setContentHuggingVerticalHigh()
         smallAmountLabel.setCompressionResistanceVerticalHigh()
+
+        currencyConversionInfoView.setTemplateImageName("info-outline-24",
+                                                        tintColor: Theme.secondaryTextAndIconColor)
+        currencyConversionInfoView.autoSetDimensions(to: .square(16))
+        currencyConversionInfoView.setCompressionResistanceHigh()
+        currencyConversionInfoView.isUserInteractionEnabled = true
+        currencyConversionInfoView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
     }
 
     private func updateAmountLabels() {
@@ -571,33 +592,64 @@ public class SendPaymentViewController: OWSViewController {
             smallAmountLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
                                                       comment: "Label for the 'invalid amount' button.")
             smallAmountLabel.textColor = UIColor.ows_accentRed
+            currencyConversionInfoView.tintColor = .clear
+        }
+
+        func enableSmallLabel(_ text: String) {
+            smallAmountLabel.text = text
+            smallAmountLabel.textColor = Theme.secondaryTextAndIconColor
+            currencyConversionInfoView.tintColor = Theme.secondaryTextAndIconColor
         }
 
         bigAmountLabel.attributedText = amount.formatAsKeyboardInputAttributed(withSpace: false)
 
         switch amount {
         case .mobileCoin:
-            if let otherCurrencyAmount = self.otherCurrencyAmount {
-                smallAmountLabel.attributedText = otherCurrencyAmount.formatForDisplayAttributed(withSpace: true)
+            if let otherCurrencyAmount = self.otherCurrencyAmount,
+               let currencyConversion = otherCurrencyAmount.currencyConversion {
+                let formattedAmount = otherCurrencyAmount.formatForDisplay(withSpace: true).string
+                enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
+                                                                    currencyConversion: currencyConversion,
+                                                                    isZero: amount.inputString.isZero))
             } else if let currencyConversion = currentCurrencyConversion,
                       let fiatCurrencyAmount = currencyConversion.convertToFiatCurrency(paymentAmount: parsedPaymentAmount),
                       let fiatString = PaymentsFormat.attributedFormat(fiatCurrencyAmount: fiatCurrencyAmount,
                                                                        currencyCode: currencyConversion.currencyCode,
                                                                        withSpace: true) {
-                smallAmountLabel.attributedText = fiatString
+                enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: fiatString.string,
+                                                                    currencyConversion: currencyConversion,
+                                                                    isZero: amount.inputString.isZero))
             } else {
                 disableSmallLabel()
             }
         case .fiatCurrency(_, let currencyConversion):
             if let otherCurrencyAmount = self.otherCurrencyAmount {
-                smallAmountLabel.attributedText = otherCurrencyAmount.formatForDisplayAttributed(withSpace: true)
+                let formattedAmount = otherCurrencyAmount.formatForDisplay(withSpace: true).string
+                enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
+                                                                    currencyConversion: currencyConversion,
+                                                                    isZero: amount.inputString.isZero))
             } else {
                 let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
-                smallAmountLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
-                                                                                  isShortForm: false,
-                                                                                  withSpace: true)
+                let formattedAmount = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
+                                                                      isShortForm: false,
+                                                                      withSpace: true).string
+                enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
+                                                                    currencyConversion: currencyConversion,
+                                                                    isZero: amount.inputString.isZero))
             }
         }
+    }
+
+    static func formatWithConversionFreshness(formattedAmount: String,
+                                              currencyConversion: CurrencyConversionInfo,
+                                              isZero: Bool) -> String {
+        guard !isZero else {
+            return formattedAmount
+        }
+        let formattedFreshness = DateUtil.formatDate(asTime: currencyConversion.conversionDate)
+        let conversionFormat = NSLocalizedString("PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT",
+                                                 comment: "Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}.")
+        return String(format: conversionFormat, formattedAmount, formattedFreshness)
     }
 
     private func updateBalanceLabel() {
@@ -867,6 +919,12 @@ public class SendPaymentViewController: OWSViewController {
         frontmostViewController.navigationController?.popToRootViewController(animated: true)
         SignalApp.shared().showAppSettings(mode: .payments)
     }
+
+    @objc
+    private func didTapCurrencyConversionInfo() {
+        Logger.info("")
+        // TODO: Pending design/support URL.
+    }
 }
 
 // MARK: -
@@ -986,12 +1044,30 @@ private enum Amount {
         }
     }
 
+    var isZero: Bool {
+        switch self {
+        case .mobileCoin(let inputString, _):
+            return inputString.isZero
+        case .fiatCurrency(let inputString, _):
+            return inputString.isZero
+        }
+    }
+
     var inputString: InputString {
         switch self {
         case .mobileCoin(let inputString, _):
             return inputString
         case .fiatCurrency(let inputString, _):
             return inputString
+        }
+    }
+
+    var currencyConversion: CurrencyConversionInfo? {
+        switch self {
+        case .mobileCoin:
+            return nil
+        case .fiatCurrency(_, let currencyConversion):
+            return currencyConversion
         }
     }
 
@@ -1022,7 +1098,7 @@ private enum Amount {
         inputString.formatAsKeyboardInput
     }
 
-    func formatForDisplayAttributed(withSpace: Bool) -> NSAttributedString {
+    func formatForDisplay(withSpace: Bool) -> NSAttributedString {
         switch self {
         case .mobileCoin:
             return PaymentsFormat.attributedFormat(mobileCoinString: formatForDisplay,
@@ -1211,6 +1287,24 @@ private struct InputString: Equatable {
             digitCountAfterDecimal <= maxDigitsAfterDecimal)
     }
 
+    var isZero: Bool {
+        !isNonZero
+    }
+
+    var isNonZero: Bool {
+        for char in chars {
+            switch char {
+            case .digit(let digit):
+                if digit != "0" {
+                    return true
+                }
+            case .decimal:
+                continue
+            }
+        }
+        return false
+    }
+
     static func maxDigitsBeforeDecimal(isFiat: Bool) -> UInt {
         // Max transaction size: 1 billion MOB.
         Logger.verbose("maxMobNonDecimalDigits: \(PaymentsConstants.maxMobNonDecimalDigits)")
@@ -1339,17 +1433,26 @@ private struct InputString: Equatable {
 // This view's contents must adapt to a wide variety of form factors.
 // We use vertical spacers of equal height to ensure the layout is
 // both responsive and balanced.
-class VSpacerFactory {
-    private var spacers = [UIView]()
+class SpacerFactory {
+    private var hSpacers = [UIView]()
+    private var vSpacers = [UIView]()
+
+    func buildHSpacer() -> UIView {
+        let spacer = UIView.container()
+        spacer.setContentHuggingHorizontalLow()
+        hSpacers.append(spacer)
+        return spacer
+    }
 
     func buildVSpacer() -> UIView {
         let spacer = UIView.container()
         spacer.setContentHuggingVerticalLow()
-        spacers.append(spacer)
+        vSpacers.append(spacer)
         return spacer
     }
 
     func finalizeSpacers() {
-        UIView.matchHeightsOfViews(spacers)
+        UIView.matchWidthsOfViews(hSpacers)
+        UIView.matchHeightsOfViews(vSpacers)
     }
 }

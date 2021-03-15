@@ -93,12 +93,12 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
                                                selector: #selector(didTapStartButton))
         startButton.autoSetHeightUsingFont()
 
-        let vSpacerFactory = VSpacerFactory()
+        let spacerFactory = SpacerFactory()
 
         let rootView = UIStackView(arrangedSubviews: [
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             topStack,
-            vSpacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             startButton,
             UIView.spacer(withHeight: 8)
         ])
@@ -109,7 +109,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
         rootView.autoPinWidthToSuperviewMargins()
 
-        vSpacerFactory.finalizeSpacers()
+        spacerFactory.finalizeSpacers()
     }
 
     // MARK: - Events
