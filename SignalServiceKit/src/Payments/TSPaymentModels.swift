@@ -30,6 +30,10 @@ extension TSPaymentAmount: TSPaymentBaseModel {
         }
     }
 
+    public var isZero: Bool {
+        picoMob == 0
+    }
+
     public func buildProto() throws -> SSKProtoDataMessagePaymentAmount {
         guard isValid,
               currency == .mobileCoin else {
