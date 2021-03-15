@@ -4863,10 +4863,10 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signal now supports payments in a new digital currency called MobileCoin. Activating payments will let you send and receive MobileCoin via chats in Signal.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signal now supports payments in a new digital currency called MobileCoin. Activating payments will let you send and receive MobileCoin in Signal. This is a Beta feature that we will be continuously adding functionality to.";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Write it down and store it in a safe place. You can use this phrase to restore your balance.";
@@ -5044,6 +5044,9 @@
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "View Recovery Phrase";
+
+/* Title for the 'payments settings' view in the app settings. */
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";

@@ -34,8 +34,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         useThemeBackgroundColors = true
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_TITLE",
-                                  comment: "Label for the 'payments' section of the app settings.")
+        title = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_TITLE",
+                                  comment: "Title for the 'payments settings' view in the app settings.")
 
         if mode == .standalone {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
@@ -429,14 +429,33 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
         heroImageView.autoSetDimension(.height, toSize: heroSize)
 
+        let bodyAttributed = NSMutableAttributedString()
+        bodyAttributed.append(NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
+                                                comment: "Message for the 'payments opt-in' view in the app settings."),
+                              attributes: [
+                                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                                .foregroundColor: Theme.secondaryTextAndIconColor
+                              ])
+        bodyAttributed.append(" ",
+                              attributes: [
+                                .font: UIFont.ows_dynamicTypeSubheadlineClamped
+                              ])
+        bodyAttributed.append(CommonStrings.learnMore,
+                              attributes: [
+                                .font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
+                                .foregroundColor: Theme.primaryTextColor
+                              ])
+
         let bodyLabel = UILabel()
-        bodyLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
-                                           comment: "Message for the 'payments opt-in' view in the app settings.")
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
         bodyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        bodyLabel.attributedText = bodyAttributed
         bodyLabel.textAlignment = .center
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.isUserInteractionEnabled = true
+        bodyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                              action: #selector(didTapLearnMoreAboutActivate)))
 
         let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
                                             comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
@@ -720,6 +739,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapHelpButton() {
+        // TODO: Pending design/support URL.
+    }
+
+    @objc
+    private func didTapLearnMoreAboutActivate() {
         // TODO: Pending design/support URL.
     }
 
