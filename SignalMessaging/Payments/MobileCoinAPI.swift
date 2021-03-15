@@ -97,60 +97,38 @@ class MobileCoinAPI {
 
     struct MobileCoinNetworkConfig {
         let consensusUrl: String
-        let fogViewUrl: String
-        let fogLedgerUrl: String
-        let fogReportUrl: String
+        let fogUrl: String
 
         static var signalProduction: MobileCoinNetworkConfig {
             let consensusUrl = "mc://api.consensus.payments.namda.net:443"
-            let fogViewUrl = "fog-view://api.view.payments.namda.net:443"
-            let fogLedgerUrl = "fog-ledger://api.ledger.payments.namda.net:443"
-            let fogReportUrl = "fog://api.report.payments.namda.net:443"
+            let fogUrl = "fog://api.report.payments.namda.net:443"
 
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogViewUrl: fogViewUrl,
-                                           fogLedgerUrl: fogLedgerUrl,
-                                           fogReportUrl: fogReportUrl)
+                                           fogUrl: fogUrl)
         }
 
         static var signalStaging: MobileCoinNetworkConfig {
             let consensusUrl = "mc://ccn101.test.consensus.payments.namda.net:443"
-            let fogViewUrl = "fog-view://api-staging.view.payments.namda.net:443"
-            let fogLedgerUrl = "fog-ledger://api-staging.ledger.payments.namda.net:443"
-            let fogReportUrl = "fog://api-staging.report.payments.namda.net:443"
+            let fogUrl = "fog://api-staging.report.payments.namda.net:443"
 
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogViewUrl: fogViewUrl,
-                                           fogLedgerUrl: fogLedgerUrl,
-                                           fogReportUrl: fogReportUrl)
+                                           fogUrl: fogUrl)
         }
 
         static var mobileCoinAlphaNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.alpha.mobilecoin.com"
-            let fogViewUrl = "fog-view://fog-view.alpha.mobilecoin.com"
-            let fogLedgerUrl = "fog-ledger://fog-ledger.alpha.mobilecoin.com"
-            let fogReportUrl = "fog://fog-report.alpha.mobilecoin.com"
+            let fogUrl = "fog://fog.alpha.mobilecoin.com"
 
-            //        let consensusUrl = "mc://node1.alpha.mobilecoin.com"
-            //        let fogViewUrl = "fog-view://discovery.alpha.mobilecoin.com"
-            //        let fogLedgerUrl = "fog-ledger://fog-ledger.alpha.mobilecoin.com"
-            //        let fogReportUrl = "fog://discovery.alpha.mobilecoin.com"
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogViewUrl: fogViewUrl,
-                                           fogLedgerUrl: fogLedgerUrl,
-                                           fogReportUrl: fogReportUrl)
+                                           fogUrl: fogUrl)
         }
 
         static var mobileCoinMobileDev: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.mobiledev.mobilecoin.com"
-            let fogViewUrl = "fog-view://fog-view.mobiledev.mobilecoin.com"
-            let fogLedgerUrl = "fog-ledger://fog-ledger.mobiledev.mobilecoin.com"
-            let fogReportUrl = "fog://fog-report.mobiledev.mobilecoin.com"
+            let fogUrl = "fog://fog.mobiledev.mobilecoin.com"
 
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogViewUrl: fogViewUrl,
-                                           fogLedgerUrl: fogLedgerUrl,
-                                           fogReportUrl: fogReportUrl)
+                                           fogUrl: fogUrl)
         }
 
         static func networkConfig(environment: Environment) -> MobileCoinNetworkConfig {
@@ -413,18 +391,12 @@ class MobileCoinAPI {
             }
 
             var config = config
-            switch config.setFogLedgerTrustRoots(trustRootCertDatas) {
+            switch config.setFogTrustRoots(trustRootCertDatas) {
             case .success:
-                switch config.setFogViewTrustRoots(trustRootCertDatas) {
+                switch config.setConsensusTrustRoots(trustRootCertDatas) {
                 case .success:
-                    switch config.setConsensusTrustRoots(trustRootCertDatas) {
-                    case .success:
-                        return config
+                    return config
 
-                    case .failure(let error):
-                        owsFailDebug("Error: \(error)")
-                        throw error
-                    }
                 case .failure(let error):
                     owsFailDebug("Error: \(error)")
                     throw error
@@ -457,9 +429,8 @@ class MobileCoinAPI {
             let attestationConfig = OWSAttestationConfig.attestationConfig(environment: environment)
             let configResult = MobileCoinClient.Config.make(consensusUrl: networkConfig.consensusUrl,
                                                             consensusAttestation: attestationConfig.consensus,
-                                                            fogViewUrl: networkConfig.fogViewUrl,
+                                                            fogUrl: networkConfig.fogUrl,
                                                             fogViewAttestation: attestationConfig.fogView,
-                                                            fogLedgerUrl: networkConfig.fogLedgerUrl,
                                                             fogKeyImageAttestation: attestationConfig.fogKeyImage,
                                                             fogMerkleProofAttestation: attestationConfig.fogMerkleProof,
                                                             fogReportAttestation: attestationConfig.fogReport)
@@ -528,7 +499,7 @@ class MobileCoinAPI {
         let fogAuthoritySpki = Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
         let fogReportId = ""
         let result = MobileCoin.AccountKey.make(rootEntropy: rootEntropy,
-                                                fogReportUrl: networkConfig.fogReportUrl,
+                                                fogReportUrl: networkConfig.fogUrl,
                                                 fogReportId: fogReportId,
                                                 fogAuthoritySpki: fogAuthoritySpki)
         switch result {
