@@ -57,10 +57,6 @@ public protocol Payments: AnyObject {
 
     var mcRootEntropy: Data? { get }
 
-    var paymentsEntropyLength: UInt { get }
-
-    var mcRootEntropyLength: UInt { get }
-
     func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data?
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
@@ -203,8 +199,8 @@ public enum PaymentsState: Equatable {
         guard let paymentsEntropy = paymentsEntropy else {
             return .disabled
         }
-        guard paymentsEntropy.count == payments.paymentsEntropyLength else {
-            owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(payments.paymentsEntropyLength).")
+        guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
+            owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(PaymentsConstants.paymentsEntropyLength).")
             return .disabled
         }
         guard let mcRootEntropy = payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
@@ -213,8 +209,8 @@ public enum PaymentsState: Equatable {
             // can't derive a valid mcRootEntropy from it.
             return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
         }
-        guard mcRootEntropy.count == payments.mcRootEntropyLength else {
-            owsFailDebug("mcRootEntropy has invalid length: \(mcRootEntropy.count) != \(payments.mcRootEntropyLength).")
+        guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
+            owsFailDebug("mcRootEntropy has invalid length: \(mcRootEntropy.count) != \(PaymentsConstants.mcRootEntropyLength).")
             // It's essential that we _not_ discard paymentsEntropy even if we
             // can't derive a valid mcRootEntropy from it.
             return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
@@ -336,10 +332,6 @@ extension MockPayments: PaymentsSwift {
     public var paymentsEntropy: Data? { nil }
 
     public var mcRootEntropy: Data? { nil }
-
-    public var paymentsEntropyLength: UInt { 13 }
-
-    public var mcRootEntropyLength: UInt { 11 }
 
     public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
         owsFail("Not implemented.")

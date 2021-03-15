@@ -208,22 +208,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         paymentsState.mcRootEntropy
     }
 
-    public static var paymentsEntropyLength: UInt {
-        PaymentsConstants.paymentsEntropyLength
-    }
-
-    public static var mcRootEntropyLength: UInt {
-        PaymentsConstants.mcRootEntropyLength
-    }
-
-    public var paymentsEntropyLength: UInt {
-        Self.paymentsEntropyLength
-    }
-
-    public var mcRootEntropyLength: UInt {
-        Self.mcRootEntropyLength
-    }
-
     public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
         do {
             return try MobileCoinAPI.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
@@ -370,7 +354,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public static func generateRandomPaymentsEntropy() -> Data {
-        Cryptography.generateRandomBytes(paymentsEntropyLength)
+        Cryptography.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
     }
 
     // MARK: - Public Keys
