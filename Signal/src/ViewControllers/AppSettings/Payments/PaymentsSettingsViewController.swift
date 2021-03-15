@@ -29,6 +29,51 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
+    // MARK: - Help Cards
+
+    private enum HelpCard: String, Equatable, CaseIterable {
+        case aboutMobileCoin
+        case addMoney
+        case cashOut
+    }
+
+    private var helpCardsForNotEnabled: [HelpCard] {
+        let helpCards: [HelpCard] = [
+            .aboutMobileCoin,
+            .addMoney,
+            .cashOut
+        ]
+        return filterDismissedHelpCards(helpCards)
+    }
+
+    private var helpCardsForEnabled: [HelpCard] {
+        var helpCards: [HelpCard] = [
+            .aboutMobileCoin,
+            .addMoney,
+            .cashOut
+        ]
+        return filterDismissedHelpCards(helpCards)
+    }
+
+    // TODO:
+    private static let helpCardStore = SDSKeyValueStore(collection: "paymentsHelpCardStore.1")
+
+    private func filterDismissedHelpCards(_ helpCards: [HelpCard]) -> [HelpCard] {
+        let dismissedKeys = databaseStorage.read { transaction in
+            Self.helpCardStore.allKeys(transaction: transaction)
+        }
+        return helpCards.filter { helpCard in !dismissedKeys.contains(helpCard.rawValue) }
+    }
+
+    private func dismissHelpCard(_ helpCard: HelpCard) {
+        databaseStorage.write { transaction in
+            Self.helpCardStore.setString(helpCard.rawValue, key: helpCard.rawValue, transaction: transaction)
+        }
+        updateTableContents()
+    }
+
+    // MARK: -
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -157,7 +202,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         configureHistorySection(historySection, paymentsHistoryDataSource: paymentsHistoryDataSource)
         contents.addSection(historySection)
 
-        addHelpCards(contents: contents)
+        addHelpCards(contents: contents,
+                     helpCards: helpCardsForEnabled)
 
         self.contents = contents
     }
@@ -407,7 +453,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         actionBlock: nil))
         contents.addSection(headerSection)
 
-        addHelpCards(contents: contents)
+        addHelpCards(contents: contents,
+                     helpCards: helpCardsForNotEnabled)
 
         self.contents = contents
     }
@@ -501,33 +548,42 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         stack.autoPinEdgesToSuperviewMargins()
     }
 
-    private func addHelpCards(contents: OWSTableContents) {
-        contents.addSection(buildHelpCard(title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE",
-                                                                   comment: "Title for the 'About MobileCoin' help card in the payments settings."),
-                                          body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION",
-                                                                  comment: "Description for the 'About MobileCoin' help card in the payments settings."),
-                                          iconName: "about-mobilecoin",
-                                          selector: #selector(didTapAboutMobileCoinCard)))
+    private func addHelpCards(contents: OWSTableContents,
+                              helpCards: [HelpCard]) {
 
-        contents.addSection(buildHelpCard(title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE",
-                                                                   comment: "Title for the 'Adding to your wallet' help card in the payments settings."),
-                                          body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION",
-                                                                  comment: "Description for the 'Adding to your wallet' help card in the payments settings."),
-                                          iconName: "add-money",
-                                          selector: #selector(didTapAddingToYourWalletCard)))
-
-        contents.addSection(buildHelpCard(title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE",
-                                                                   comment: "Title for the 'Cashing Out' help card in the payments settings."),
-                                          body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION",
-                                                                  comment: "Description for the 'Cashing Out' help card in the payments settings."),
-                                          iconName: "cash-out",
-                                          selector: #selector(didTapCashingOutCoinCard)))
+        for helpCard in helpCards {
+            switch helpCard {
+            case .aboutMobileCoin:
+                contents.addSection(buildHelpCard(helpCard: helpCard,
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE",
+                                                                           comment: "Title for the 'About MobileCoin' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION",
+                                                                          comment: "Description for the 'About MobileCoin' help card in the payments settings."),
+                                                  iconName: "about-mobilecoin",
+                                                  selector: #selector(didTapAboutMobileCoinCard)))
+            case .addMoney:
+                contents.addSection(buildHelpCard(helpCard: helpCard,
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE",
+                                                                           comment: "Title for the 'Adding to your wallet' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION",
+                                                                          comment: "Description for the 'Adding to your wallet' help card in the payments settings."),
+                                                  iconName: "add-money",
+                                                  selector: #selector(didTapAddingToYourWalletCard)))
+            case .cashOut:
+                contents.addSection(buildHelpCard(helpCard: helpCard,
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE",
+                                                                           comment: "Title for the 'Cashing Out' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION",
+                                                                          comment: "Description for the 'Cashing Out' help card in the payments settings."),
+                                                  iconName: "cash-out",
+                                                  selector: #selector(didTapCashingOutCoinCard)))
+            }
+        }
     }
 
-    // TODO: How do we remove help cards?
-    // TODO: What are the links for the help cards?
-    // TODO: What are the "learn more" behaviors?
-    private func buildHelpCard(title: String,
+    // TODO: What are the links/behaviors for the help cards?
+    private func buildHelpCard(helpCard: HelpCard,
+                               title: String,
                                body: String,
                                iconName: String,
                                selector: Selector) -> OWSTableSection {
@@ -577,6 +633,25 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             let cell = OWSTableItem.newCell()
             cell.contentView.addSubview(hStack)
             hStack.autoPinEdgesToSuperviewMargins()
+
+            let dismissIconView = UIImageView.withTemplateImageName("x-24",
+                                                                    tintColor: (Theme.isDarkThemeEnabled
+                                                                                    ? .ows_gray05
+                                                                                    : .ows_gray45))
+            dismissIconView.autoSetDimensions(to: .square(10))
+            let dismissButton = OWSLayerView.circleView()
+            dismissButton.backgroundColor = (Theme.isDarkThemeEnabled
+                                                ? .ows_gray65
+                                                : .ows_gray02)
+            dismissButton.addTapGesture { [weak self] in
+                self?.dismissHelpCard(helpCard)
+            }
+            dismissButton.autoSetDimensions(to: .square(20))
+            dismissButton.addSubview(dismissIconView)
+            dismissIconView.autoCenterInSuperview()
+            cell.contentView.addSubview(dismissButton)
+            dismissButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+            dismissButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8 + OWSTableViewController2.cellHOuterMargin)
 
             cell.isUserInteractionEnabled = true
             cell.addGestureRecognizer(tapGestureRecognizer)
