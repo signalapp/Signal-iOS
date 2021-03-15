@@ -16,7 +16,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
     private let textfield = UITextField()
 
     private var wordText: String? {
-        textfield.text?.stripped
+        textfield.text?.strippedOrNil?.lowercased()
     }
     private var hasValidWord: Bool {
         isValidWord(wordText)
@@ -26,7 +26,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
               !wordText.isEmpty else {
             return false
         }
-        return Self.paymentsSwift.allPossiblePassphraseWords.contains(wordText)
+        return Self.paymentsSwift.isValidPassphraseWord(wordText)
     }
 
     private let warningLabel = UILabel()
@@ -240,7 +240,12 @@ public class PartialPaymentsPassphrase {
             words.append(word)
         }
 
-        return PaymentsPassphrase(words: words)
+        do {
+            return try PaymentsPassphrase(words: words)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
     }
 
     public func reset() {

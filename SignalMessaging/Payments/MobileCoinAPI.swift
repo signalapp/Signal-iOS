@@ -18,12 +18,69 @@ class MobileCoinAPI {
         SSKEnvironment.shared.payments as! PaymentsImpl
     }
 
+    // MARK: - Passphrases & Entropy
+
+    public static func passphrase(forPaymentsEntropy paymentsEntropy: Data) throws -> PaymentsPassphrase {
+        guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
+            throw PaymentsError.invalidEntropy
+        }
+        let result = MobileCoin.Mnemonic.mnemonic(fromEntropy: paymentsEntropy)
+        switch result {
+        case .success(let mnemonic):
+            return try PaymentsPassphrase.parse(passphrase: mnemonic)
+        case .failure(let error):
+            owsFailDebug("Error: \(error)")
+            let error = Self.convertMCError(error: error)
+            throw error
+        }
+    }
+
+    public static func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) throws -> Data {
+        let mnemonic = passphrase.asPassphrase
+        let result = MobileCoin.Mnemonic.entropy(fromMnemonic: mnemonic)
+        switch result {
+        case .success(let paymentsEntropy):
+            guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
+                throw PaymentsError.invalidEntropy
+            }
+            return paymentsEntropy
+        case .failure(let error):
+            owsFailDebug("Error: \(error)")
+            let error = Self.convertMCError(error: error)
+            throw error
+        }
+    }
+
+    public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) throws -> Data {
+        guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
+            throw PaymentsError.invalidEntropy
+        }
+        let passphrase = try Self.passphrase(forPaymentsEntropy: paymentsEntropy)
+        let mnemonic = passphrase.asPassphrase
+        let result = AccountKey.rootEntropy(fromMnemonic: mnemonic, accountIndex: 0)
+        switch result {
+        case .success(let mcRootEntropy):
+            guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
+                throw PaymentsError.invalidEntropy
+            }
+            return mcRootEntropy
+        case .failure(let error):
+            owsFailDebug("Error: \(error)")
+            let error = Self.convertMCError(error: error)
+            throw error
+        }
+    }
+
+    public static func isValidPassphraseWord(_ word: String?) -> Bool {
+        guard let word = word?.strippedOrNil else {
+            return false
+        }
+        return !MobileCoin.Mnemonic.words(matchingPrefix: word).isEmpty
+    }
+
     // MARK: -
 
-    private let localRootEntropy: Data
-
-    // PAYMENTS TODO: Does the SDK define this anywhere?
-    static let rootEntropyLength: UInt = 32
+    private let mcRootEntropy: Data
 
     // TODO: Remove.
     // account key 0
@@ -44,13 +101,17 @@ class MobileCoinAPI {
 
     private let client: MobileCoinClient
 
-    private init(localRootEntropy: Data,
+    private init(mcRootEntropy: Data,
                  localAccount: MobileCoinAccount,
                  client: MobileCoinClient) throws {
 
+        guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
+            throw PaymentsError.invalidEntropy
+        }
+
         owsAssertDebug(Self.payments.arePaymentsEnabled)
 
-        self.localRootEntropy = localRootEntropy
+        self.mcRootEntropy = mcRootEntropy
         self.localAccount = localAccount
         self.client = client
     }
@@ -65,8 +126,8 @@ class MobileCoinAPI {
 
     // MARK: -
 
-    public static func buildLocalAccount(localRootEntropy: Data) throws -> MobileCoinAccount {
-        try Self.buildAccount(forRootEntropy: localRootEntropy)
+    public static func buildLocalAccount(mcRootEntropy: Data) throws -> MobileCoinAccount {
+        try Self.buildAccount(forMCRootEntropy: mcRootEntropy)
     }
 
     private static func parseAuthorizationResponse(responseObject: Any?) throws -> OWSAuthorization {
@@ -78,16 +139,16 @@ class MobileCoinAPI {
         return OWSAuthorization(username: username, password: password)
     }
 
-    public static func buildPromise(localRootEntropy: Data) -> Promise<MobileCoinAPI> {
+    public static func buildPromise(mcRootEntropy: Data) -> Promise<MobileCoinAPI> {
         firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
         }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> OWSAuthorization in
             try Self.parseAuthorizationResponse(responseObject: responseObject)
         }.map(on: .global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
-            let localAccount = try Self.buildAccount(forRootEntropy: localRootEntropy)
+            let localAccount = try Self.buildAccount(forMCRootEntropy: mcRootEntropy)
             let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
-            return try MobileCoinAPI(localRootEntropy: localRootEntropy,
+            return try MobileCoinAPI(mcRootEntropy: mcRootEntropy,
                                      localAccount: localAccount,
                                      client: client)
         }
@@ -482,23 +543,23 @@ class MobileCoinAPI {
     }
 
     // PAYMENTS TODO: Network config could theoretically differ for each account.
-    class func buildAccount(forRootEntropy rootEntropy: Data) throws -> MobileCoinAccount {
+    class func buildAccount(forMCRootEntropy mcRootEntropy: Data) throws -> MobileCoinAccount {
         let environment = Environment.current
         let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
-        let accountKey = try buildAccountKey(forRootEntropy: rootEntropy,
+        let accountKey = try buildAccountKey(forMCRootEntropy: mcRootEntropy,
                                              networkConfig: networkConfig)
         return MobileCoinAccount(environment: environment,
                                  accountKey: accountKey)
     }
 
-    class func buildAccountKey(forRootEntropy rootEntropy: Data,
+    class func buildAccountKey(forMCRootEntropy mcRootEntropy: Data,
                                networkConfig: MobileCoinNetworkConfig) throws -> MobileCoin.AccountKey {
         // Payments TODO:
         //
         // TODO: This is the value for alpha net.
         let fogAuthoritySpki = Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
         let fogReportId = ""
-        let result = MobileCoin.AccountKey.make(rootEntropy: rootEntropy,
+        let result = MobileCoin.AccountKey.make(rootEntropy: mcRootEntropy,
                                                 fogReportUrl: networkConfig.fogUrl,
                                                 fogReportId: fogReportId,
                                                 fogAuthoritySpki: fogAuthoritySpki)
@@ -1060,7 +1121,9 @@ public extension PaymentsError {
              .defragmentationRequired,
              .invalidTransaction,
              .inputsAlreadySpent,
-             .defragmentationFailed:
+             .defragmentationFailed,
+             .invalidPassphrase,
+             .invalidEntropy:
             return false
         case .connectionFailure,
              .timeout:

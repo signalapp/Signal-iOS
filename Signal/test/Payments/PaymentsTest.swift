@@ -49,4 +49,18 @@ class PaymentsTest: SignalBaseTest {
         }
         XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddressFromUrl))
     }
+
+    func test_passphraseRoundtrip() {
+        let paymentsEntropy = Randomness.generateRandomBytes(Int32(PaymentsConstants.paymentsEntropyLength))
+        guard let passphrase = self.payments.passphrase(forPaymentsEntropy: paymentsEntropy) else {
+            XCTFail("Missing passphrase.")
+            return
+        }
+        XCTAssertEqual(paymentsEntropy, self.payments.paymentsEntropy(forPassphrase: passphrase))
+        guard let mcRootEntropy = self.payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
+            XCTFail("Missing mcRootEntropy.")
+            return
+        }
+        XCTAssertEqual(mcRootEntropy.count, Int(PaymentsConstants.mcRootEntropyLength))
+    }
 }

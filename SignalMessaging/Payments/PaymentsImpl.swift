@@ -123,7 +123,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         return firstly(on: .global()) {
-            MobileCoinAPI.buildPromise(localRootEntropy: mcRootEntropy)
+            MobileCoinAPI.buildPromise(mcRootEntropy: mcRootEntropy)
         }.map(on: .global()) { (api: MobileCoinAPI) -> MobileCoinAPI in
             setCurrentApi(api)
             return api
@@ -209,13 +209,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public static var paymentsEntropyLength: UInt {
-        // TODO: This is wrong; pending SDK changes.
-        MobileCoinAPI.rootEntropyLength
+        PaymentsConstants.paymentsEntropyLength
     }
 
     public static var mcRootEntropyLength: UInt {
-        // PAYMENTS TODO: Confirm this is correct.
-        MobileCoinAPI.rootEntropyLength
+        PaymentsConstants.mcRootEntropyLength
     }
 
     public var paymentsEntropyLength: UInt {
@@ -227,12 +225,42 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
-        guard paymentsEntropy.count == paymentsEntropyLength else {
-            owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(paymentsEntropyLength).")
+        do {
+            return try MobileCoinAPI.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
+        } catch {
+            owsFailDebug("Error: \(error)")
             return nil
         }
-        // TODO: This is wrong; pending SDK changes.
-        return paymentsEntropy
+    }
+
+    public var passphrase: PaymentsPassphrase? {
+        guard let paymentsEntropy = paymentsEntropy else {
+            owsFailDebug("Missing paymentsEntropy.")
+            return nil
+        }
+        return passphrase(forPaymentsEntropy: paymentsEntropy)
+    }
+
+    public func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase? {
+        do {
+            return try MobileCoinAPI.passphrase(forPaymentsEntropy: paymentsEntropy)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
+    public func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data? {
+        do {
+            return try MobileCoinAPI.paymentsEntropy(forPassphrase: passphrase)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
+    public func isValidPassphraseWord(_ word: String?) -> Bool {
+        MobileCoinAPI.isValidPassphraseWord(word)
     }
 
     public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
@@ -342,7 +370,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public static func generateRandomPaymentsEntropy() -> Data {
-        // PAYMENTS TODO: Confirm this is correct.
         Cryptography.generateRandomBytes(paymentsEntropyLength)
     }
 
@@ -708,7 +735,7 @@ public extension PaymentsImpl {
         }
 
         do {
-            return try MobileCoinAPI.buildLocalAccount(localRootEntropy: mcRootEntropy)
+            return try MobileCoinAPI.buildLocalAccount(mcRootEntropy: mcRootEntropy)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -1627,88 +1654,6 @@ public extension PaymentsImpl {
                                                                   transaction: transaction) {
             paymentRequestModel.anyRemove(transaction: transaction)
         }
-    }
-}
-
-// MARK: - Passphrases
-
-public extension PaymentsImpl {
-
-    var passphrase: PaymentsPassphrase? {
-        guard let paymentsEntropy = paymentsEntropy else {
-            owsFailDebug("Missing paymentsEntropy.")
-            return nil
-        }
-        return passphrase(forPaymentsEntropy: paymentsEntropy)
-    }
-
-    // See: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
-    func passphrase(forPaymentsEntropy paymentsEntropy: Data) -> PaymentsPassphrase? {
-        // TODO: This is temporary until the SDK supports passphrases.
-        return PaymentsPassphrase(words: Array(allPossiblePassphraseWords.prefix(PaymentsConstants.passphraseWordCount)))
-    }
-
-    func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data? {
-        // TODO: This is temporary until the SDK supports passphrases.
-        if passphrase == self.passphrase {
-            return self.paymentsEntropy
-        } else {
-            return Self.generateRandomPaymentsEntropy()
-        }
-    }
-
-    var allPossiblePassphraseWords: [String] {
-        // TODO: This is temporary until the SDK supports passphrases.
-        [
-            "abandon",
-            "ability",
-            "able",
-            "about",
-            "above",
-            "absent",
-            "absorb",
-            "abstract",
-            "absurd",
-            "abuse",
-            "access",
-            "accident",
-            "account",
-            "accuse",
-            "achieve",
-            "acid",
-            "acoustic",
-            "acquire",
-            "across",
-            "act",
-            "action",
-            "actor",
-            "actress",
-            "actual",
-            "adapt",
-            "add",
-            "addict",
-            "address",
-            "adjust",
-            "admit",
-            "adult",
-            "advance",
-            "advice",
-            "aerobic",
-            "affair",
-            "afford",
-            "afraid",
-            "again",
-            "age",
-            "agent",
-            "agree",
-            "ahead",
-            "aim",
-            "air",
-            "airport",
-            "aisle",
-            "alarm",
-            "album"
-        ]
     }
 }
 

@@ -34,6 +34,8 @@ public enum PaymentsError: Error {
     case invalidTransaction
     case inputsAlreadySpent
     case defragmentationFailed
+    case invalidPassphrase
+    case invalidEntropy
 }
 
 // MARK: -
@@ -149,7 +151,7 @@ public protocol PaymentsSwift: Payments {
 
     func paymentsEntropy(forPassphrase passphrase: PaymentsPassphrase) -> Data?
 
-    var allPossiblePassphraseWords: [String] { get }
+    func isValidPassphraseWord(_ word: String?) -> Bool
 
     func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool>
 }
@@ -271,15 +273,29 @@ public struct PaymentsPassphrase: Equatable {
 
     public let words: [String]
 
-    public init(words: [String]) {
-        owsAssertDebug(words.count == PaymentsConstants.passphraseWordCount)
+    public init(words: [String]) throws {
+        guard words.count == PaymentsConstants.passphraseWordCount else {
+            owsFailDebug("words.count \(words.count) != \(PaymentsConstants.passphraseWordCount)")
+            throw PaymentsError.invalidPassphrase
+        }
 
         self.words = words
     }
 
     public var wordCount: Int { words.count }
 
-    public var debugDescription: String { words.joined(separator: " ") }
+    public var asPassphrase: String { words.joined(separator: " ") }
+
+    public var debugDescription: String { asPassphrase }
+
+    public static func parse(passphrase: String) throws -> PaymentsPassphrase {
+        let words = Array(passphrase.components(separatedBy: " "))
+        guard words.count == PaymentsConstants.passphraseWordCount else {
+            owsFailDebug("words.count \(words.count) != \(PaymentsConstants.passphraseWordCount)")
+            throw PaymentsError.invalidPassphrase
+        }
+        return try PaymentsPassphrase(words: words)
+    }
 }
 
 // MARK: -
@@ -473,7 +489,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public var allPossiblePassphraseWords: [String] {
+    public func isValidPassphraseWord(_ word: String?) -> Bool {
         owsFail("Not implemented.")
     }
 
@@ -600,6 +616,10 @@ public class PaymentsConstants {
     public static var groupingSize: Int {
         decimalFormattingInfo.groupingSize
     }
+
+    public static let paymentsEntropyLength: UInt = 32
+
+    public static let mcRootEntropyLength: UInt = 32
 }
 
 // MARK: -
