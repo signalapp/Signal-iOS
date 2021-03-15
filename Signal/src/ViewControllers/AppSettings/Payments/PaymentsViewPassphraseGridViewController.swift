@@ -74,9 +74,10 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         section.customFooterView = buildFooter()
 
         let passphrase = self.passphrase
-        section.add(OWSTableItem(customCellBlock: {
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
-            let passphraseGrid = PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase)
+            guard let self = self else { return cell }
+            let passphraseGrid = self.buildPassphraseGrid(passphrase: passphrase)
             cell.contentView.addSubview(passphraseGrid)
             passphraseGrid.autoPinEdgesToSuperviewMargins()
             return cell
@@ -85,6 +86,26 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         contents.addSection(section)
 
         self.contents = contents
+    }
+
+    private func buildPassphraseGrid(passphrase: PaymentsPassphrase) -> UIView {
+        let copyToClipboardLabel = UILabel()
+        copyToClipboardLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD",
+                                                      comment: "Label for the 'copy to clipboard' button in the 'view payments passphrase' views.")
+        copyToClipboardLabel.textColor = .ows_accentBlue
+        copyToClipboardLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+
+        let copyToClipboardButton = OWSLayerView.pillView()
+        copyToClipboardButton.backgroundColor = Theme.secondaryBackgroundColor
+        copyToClipboardButton.addSubview(copyToClipboardLabel)
+        copyToClipboardButton.layoutMargins = .init(hMargin: 16, vMargin: 4)
+        copyToClipboardLabel.autoPinEdgesToSuperviewMargins()
+        copyToClipboardButton.isUserInteractionEnabled = true
+        copyToClipboardButton.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                                          action: #selector(didTapCopyToClipboard)))
+
+        return PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase,
+                                                     footerButton: copyToClipboardButton)
     }
 
     private func buildHeader() -> UIView {
@@ -140,5 +161,14 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let view = PaymentsViewPassphraseConfirmViewController(passphrase: passphrase,
                                                                viewPassphraseDelegate: viewPassphraseDelegate)
         navigationController?.pushViewController(view, animated: true)
+    }
+
+    @objc
+    func didTapCopyToClipboard() {
+        UIPasteboard.general.string = passphrase.words.joined(separator: " ")
+
+        self.presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD",
+                                                  comment: "Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views."),
+                          extraVInset: bottomStack.height)
     }
 }

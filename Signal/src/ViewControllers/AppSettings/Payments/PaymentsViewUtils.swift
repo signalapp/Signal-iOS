@@ -101,7 +101,8 @@ public class PaymentsViewUtils: NSObject {
         }
     }
 
-    static func buildPassphraseGrid(passphrase: PaymentsPassphrase) -> UIView {
+    static func buildPassphraseGrid(passphrase: PaymentsPassphrase,
+                                    footerButton: UIView? = nil) -> UIView {
 
         struct WordAndIndex {
             let word: String
@@ -169,6 +170,13 @@ public class PaymentsViewUtils: NSObject {
         stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
         stack.addBackgroundView(withBackgroundColor: Theme.backgroundColor,
                                 cornerRadius: 10)
+
+        if let footerButton = footerButton {
+            let footerButtonStack = UIStackView(arrangedSubviews: [ footerButton ])
+            footerButtonStack.axis = .vertical
+            footerButtonStack.alignment = .center
+            stack.addArrangedSubview(footerButtonStack)
+        }
 
         return stack
     }

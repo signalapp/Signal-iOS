@@ -5027,6 +5027,12 @@
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
 
+/* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+
+/* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
 
