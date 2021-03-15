@@ -375,6 +375,8 @@ public class SendPaymentViewController: OWSViewController {
         smallAmountRow.axis = .horizontal
         smallAmountRow.alignment = .center
         smallAmountRow.spacing = 8
+        smallAmountRow.isUserInteractionEnabled = true
+        smallAmountRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
 
         let requiredViews = [
             bigAmountRow,
@@ -582,11 +584,11 @@ public class SendPaymentViewController: OWSViewController {
                                                         tintColor: Theme.secondaryTextAndIconColor)
         currencyConversionInfoView.autoSetDimensions(to: .square(16))
         currencyConversionInfoView.setCompressionResistanceHigh()
-        currencyConversionInfoView.isUserInteractionEnabled = true
-        currencyConversionInfoView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
     }
 
     private func updateAmountLabels() {
+
+        let isZero = amount.inputString.isZero
 
         func disableSmallLabel() {
             smallAmountLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
@@ -610,7 +612,7 @@ public class SendPaymentViewController: OWSViewController {
                 let formattedAmount = otherCurrencyAmount.formatForDisplay(withSpace: true).string
                 enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
                                                                     currencyConversion: currencyConversion,
-                                                                    isZero: amount.inputString.isZero))
+                                                                    isZero: isZero))
             } else if let currencyConversion = currentCurrencyConversion,
                       let fiatCurrencyAmount = currencyConversion.convertToFiatCurrency(paymentAmount: parsedPaymentAmount),
                       let fiatString = PaymentsFormat.attributedFormat(fiatCurrencyAmount: fiatCurrencyAmount,
@@ -618,7 +620,7 @@ public class SendPaymentViewController: OWSViewController {
                                                                        withSpace: true) {
                 enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: fiatString.string,
                                                                     currencyConversion: currencyConversion,
-                                                                    isZero: amount.inputString.isZero))
+                                                                    isZero: isZero))
             } else {
                 disableSmallLabel()
             }
@@ -627,7 +629,7 @@ public class SendPaymentViewController: OWSViewController {
                 let formattedAmount = otherCurrencyAmount.formatForDisplay(withSpace: true).string
                 enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
                                                                     currencyConversion: currencyConversion,
-                                                                    isZero: amount.inputString.isZero))
+                                                                    isZero: isZero))
             } else {
                 let paymentAmount = currencyConversion.convertFromFiatCurrencyToMOB(amount.asDouble)
                 let formattedAmount = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
@@ -635,7 +637,7 @@ public class SendPaymentViewController: OWSViewController {
                                                                       withSpace: true).string
                 enableSmallLabel(Self.formatWithConversionFreshness(formattedAmount: formattedAmount,
                                                                     currencyConversion: currencyConversion,
-                                                                    isZero: amount.inputString.isZero))
+                                                                    isZero: isZero))
             }
         }
     }
