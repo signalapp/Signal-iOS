@@ -55,6 +55,16 @@ class MobileCoinAPI {
         self.client = client
     }
 
+    // MARK: -
+
+    public static func configureSDKLogging() {
+        if DebugFlags.internalLogging {
+            MobileCoinLogging.logSensitiveData = true
+        }
+    }
+
+    // MARK: -
+
     public static func buildLocalAccount(localRootEntropy: Data) throws -> MobileCoinAccount {
         try Self.buildAccount(forRootEntropy: localRootEntropy)
     }
@@ -327,6 +337,105 @@ class MobileCoinAPI {
         }
     }
 
+    @objc
+    private class TrustRootCerts: NSObject {
+
+        static func load(environment: Environment) throws -> [Data] {
+            switch environment {
+            case .mobileCoinAlphaNet:
+                return anchorCertificates_mobileCoinAlphaNet
+            case .mobileCoinMobileDev:
+                // PAYMENTS TODO:
+                return []
+            case .signalStaging:
+                // PAYMENTS TODO:
+                return []
+            case .signalProduction:
+                // PAYMENTS TODO:
+                return []
+            }
+        }
+
+        enum CertificateBundle {
+            case mainApp
+            case ssk
+        }
+
+        static func certificateData(forService certFilename: String,
+                                    type: String,
+                                    certificateBundle: CertificateBundle,
+                                    verifyDer: Bool = false) -> Data {
+            let bundle: Bundle = {
+                switch certificateBundle {
+                case .mainApp:
+                    return Bundle(for: self)
+                case .ssk:
+                    return Bundle(for: OWSHTTPSecurityPolicy.self)
+                }
+            }()
+            guard let filepath = bundle.path(forResource: certFilename, ofType: type) else {
+                owsFail("Missing cert: \(certFilename)")
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: filepath) else {
+                owsFail("Missing cert: \(certFilename)")
+            }
+            let data = try! Data(contentsOf: URL(fileURLWithPath: filepath))
+            guard !data.isEmpty else {
+                owsFail("Invalid cert: \(certFilename)")
+            }
+            if verifyDer {
+                guard let certificate = SecCertificateCreateWithData(nil, data as CFData) else {
+                    owsFail("Invalid cert: \(certFilename)")
+                }
+                let derData = SecCertificateCopyData(certificate) as Data
+                return derData
+            } else {
+                return data
+            }
+        }
+
+        static let anchorCertificates_mobileCoinAlphaNet: [Data] = {
+            [
+                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
+//                certificateData(forService: "8395", type: "crt", certificateBundle: .ssk, verifyDer: true),
+//                certificateData(forService: "GSR2", type: "crt", certificateBundle: .ssk, verifyDer: true),
+//                certificateData(forService: "DigiCertGlobalRootG2", type: "crt", certificateBundle: .ssk, verifyDer: true),
+//                certificateData(forService: "textsecure", type: "cer", certificateBundle: .ssk, verifyDer: true)
+            ]
+        }()
+
+        // TODO: Verify pinning behavior.
+        static func pinConfig(_ config: MobileCoinClient.Config,
+                              environment: Environment) throws -> MobileCoinClient.Config {
+            let trustRootCertDatas = try load(environment: environment)
+            guard !trustRootCertDatas.isEmpty else {
+                return config
+            }
+
+            var config = config
+            switch config.setFogLedgerTrustRoots(trustRootCertDatas) {
+            case .success:
+                switch config.setFogViewTrustRoots(trustRootCertDatas) {
+                case .success:
+                    switch config.setConsensusTrustRoots(trustRootCertDatas) {
+                    case .success:
+                        return config
+
+                    case .failure(let error):
+                        owsFailDebug("Error: \(error)")
+                        throw error
+                    }
+                case .failure(let error):
+                    owsFailDebug("Error: \(error)")
+                    throw error
+                }
+            case .failure(let error):
+                owsFailDebug("Error: \(error)")
+                throw error
+            }
+        }
+    }
+
     struct MobileCoinAccount {
         let environment: Environment
         let accountKey: MobileCoin.AccountKey
@@ -356,6 +465,9 @@ class MobileCoinAPI {
                                                             fogReportAttestation: attestationConfig.fogReport)
             switch configResult {
             case .success(let config):
+
+                let config = try TrustRootCerts.pinConfig(config, environment: environment)
+
                 let clientResult = MobileCoinClient.make(accountKey: accountKey, config: config)
                 switch clientResult {
                 case .success(let client):
