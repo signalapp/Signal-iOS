@@ -39,7 +39,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         navigationItem.title = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didPressCloseButton))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
     }
