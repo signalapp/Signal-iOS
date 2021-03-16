@@ -122,7 +122,7 @@
 "ALERT_SAVE" = "ساقلا";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Answer";
+"ANSWER_CALL_BUTTON_TITLE" = "جاۋاب";
 
 /* notification body */
 "APN_Message" = "New Message!";
@@ -200,7 +200,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Saved";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "ساقلاندى";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
@@ -305,7 +305,7 @@
 "AUDIO_CALL_LABEL" = "Audio Call";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ياڭراتقۇ";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Back";
@@ -515,16 +515,16 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "سىنسىز جاۋاب";
 
 /* label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Answer";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "جاۋاب";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ئۈن";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "رەت قىل";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "ئاخىرلاشقان چاقىرىش";
@@ -1658,13 +1658,13 @@
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "بىرەيلەن ئۆزگەرتىلگەن بىخەتەرلىك نومۇرى بىلەن بۇ چاقىرىشقا قوشۇلدى.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "ئۈستىگە سۈرۈلسە ئۆزگىرىشنى كۆرسىتىدۇ";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "چاقىرىق باشلا";
@@ -2432,7 +2432,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تەۋسىيە ئەزا چېكىگە يەتتى";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
@@ -3821,7 +3821,7 @@
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "جاۋاب";
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
@@ -4529,7 +4529,7 @@
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_HEADER" = "Calls";
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "چاقىرىشلار";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";

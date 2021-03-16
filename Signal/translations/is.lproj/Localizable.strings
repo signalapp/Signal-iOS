@@ -65,7 +65,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Bæta %1$@ meðlimum í \"%2$@\"?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Bæta við nýjum meðlim";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Bæta við nýjum meðlimi";
 
 /* Title for the 'add group members' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Bæta við nýjum meðlimum";
@@ -140,7 +140,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Uppfærðu Signal í nýjustu útgáfu.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Óþekkt gagnagrunns útgáfa.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Óþekkt útgáfa gagnagrunns.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Ekki var hægt að endurheimta gögnin sem voru yfirfærð af gamla tækinu þínu. Sendu villumeldingaskrá til support@signal.org þannig að við getum leyst þetta vandamál. Ef þú setur Signal upp aftur gæti ferill skilaboðanna þinna tapast.";
@@ -176,7 +176,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Label for the archive button for conversations list view */
-"ARCHIVE_ACTION" = "Safn";
+"ARCHIVE_ACTION" = "Geymsla";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Takmörkum á skýringatexta er náð.";
@@ -263,7 +263,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Þú þarft að veita aðgang að myndum í stillingnuum til að hægt sé að senda þær hér.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Eftir að þú hefur tekið myndir, muntu geta sent hér úr nýlegum atriðum.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Viðhengi";
@@ -1004,7 +1004,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lesa meira";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Ef setan þín er endurstillt muntu í framtíðinni geta tekið við skilaboðum frá %@, en það mun ekki endurheimta nein skilaboð sem þegar hafa skemmst.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Veldu landskóða";
@@ -1067,7 +1067,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Eitt skref í viðbót";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-tengillinn var afritaður á klippispjaldið þitt. Þér verður fljótlega endurbeint inn á verkbeiðnalista GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Endurbeining GitHub";
@@ -1298,7 +1298,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Afrita";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hæ,\n\nAð undanförnu hef ég verið að nota Signal til að halda spjalli á iPhone-símanum mínum út af fyrir mig. Það væri frábært ef þú myndir líka setja það upp, svo að við geturm treyst því að bara ég og þú séum að lesa skilaboðin eða hlusta á símtölin sem fara okkar á milli.\n\nSignal er til fyrir iPhone og Android. Sæktu það hér: %@\n\nSignal virkar eins og venjuleg skilaboðaforrit. Við getum sent myndir og myndskeið, hringt símtöl og útbúið hópspjall. Rúsínan í pylsuendanum er að enginn annar en sá sem við leyfum getur séð neitt af þessu, ekki einusinni fólkið sem býr til Signal!\n\nÞú getur lesið hér meira um Open Whisper Systems, fólksins sem gerir Signal: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Skiptum yfir í Signal";
@@ -2483,7 +2483,7 @@
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Engar niðurstöður fundust fyrir '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Safn";
+"HOME_VIEW_TITLE_ARCHIVE" = "Geymsla";
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -2543,7 +2543,7 @@
 "IN_CALL_TERMINATED" = "Símtali lokið.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Þessi samtöl eru í safni og munu aðeins birtast í innhólfinu ef ný skilaboð berast.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Þessi samtöl eru í geymslu og munu aðeins birtast í innhólfinu ef ný skilaboð berast.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ekkert spjall ennþá.\nByrjaðu á að send vini skilaboð.";
@@ -3254,7 +3254,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Gefa heimildir";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Með því að leyfa tilkynningar og tengiliði muntu geta séð þegar skilaboð berast og auðveldar þér að finna fólk sem þú þekkir. Tengiliðir eru dulritaðir þannig að Signal-þjónustan sér þá ekki.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Gefa heimildir";
@@ -3278,13 +3278,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ógilt símanúmer. Settu inn gilt símanúmer til að skrá þig.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Þú hefur klárað tækifærin til að giska á PIN-númerið, en þú getur samt fengið aðgang að Signal-aðgangnum þínum með því að útbúa nýtt PIN-númer. Til að tryggja gagnaleynd og öryggi verður aðgangurinn endurheimtur án nokkurra vistaðra upplýsinga eða stillinga notandasniðsins.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Fræðstu meira um PIN-númer";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Til að vernda einkalíf þitt og öryggi aðgangsins þíns höfum við lokað honum í 7 daga. \n\nEftir 7 daga án virkni, geturðu endurskráð þig án PIN-númersins þíns. Öllu efni á aðgangnum þínum verður eytt.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Fræðstu meira um læsta aðganga";
@@ -3416,7 +3416,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Afturkalla boð í hóp fyrir \"%@\"?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Nánari upplýsingar um fólk sem boðið er af öðrum meðlimum hópsins eru ekki birtar. Ef boðsgestir ákveða að ganga í hópinn, verður upplýsingum um þá deilt með hópnum á þeim tímapunkti. Þeir munu ekki sjá nein skilaboð frá hápnum fyrr en þeir ganga í hópinn.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Fólk á þessum lista er að reyna að ganga í \"%@\" með hóptengli.";
@@ -3467,7 +3467,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Enginn";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Enginn á Signal mun geta fundið þig með símanúmerinu þínu. Þú verður ekki sýnileg/ur sem tengiliður hjá fólki sem er með símanúmerið þitt í tengiliðaskránni sinni og aðrir munu ekki geta fundið þig með því að leita að símanúmerinu.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Dæmi: %@";
@@ -4367,7 +4367,7 @@
 "SEND_SMS_INVITE_TITLE" = "Myndirðu vilja bjóða eftirfarandi símanúmeri á Signal: ";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal notar enda-í-enda dulritun og gæti þurft öðru hvoru að endurlesa spjallferilinn þinn. Þetta hefur ekki áhrif á öryggi spjallsins þíns, en þú gætir hafa misst af skilaboðum frá þessum tengilið og þú ættir kannski að biðja viðkomandi um að endursenda skilaboðin.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Spjallseta endurlesin";
@@ -4394,10 +4394,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Staðsetning";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ef þetta er virkt, mun Signal reyna að fara framhjá ritskoðun. Ekki virkja þetta nema þú sért á slóðum þar sem ritskoðun Signal fer fram.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Leið framhjá ritskoðun var virkjuð út frá símanúmerinu sem tengt er notandaaðgangnum þínum.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Þú hefur handvirkt gert leiðir framhjá ritskoðun óvirkar.";
@@ -4763,7 +4763,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Leyfa frá hverjum sem er";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Virkja innsiglun sendenda á þau skilaboð sem berast frá fólki sem er ekki í tengiliðaskránni þinni og fólki sem þú hefur ekki deilt notandasniðinu þínu með.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Útgáfa";
@@ -5150,7 +5150,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Uppfæra iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Notendanöfn eru valfrjáls á Signal. Ef þú kýst að útbúa notandanafn munu aðrir notendur Signal geta fundið þig með þessu notandanafni og haft samband við þig án þess að þekkja símanúmerið þitt.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Notendanöfn mega bara innihalda a-z, 0-9, and _";
@@ -5159,7 +5159,7 @@
 "USERNAME_LOOKUP_ERROR" = "Villa kom upp við að fletta upp notandanafninu. Reyndu aftur síðar.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ er ekki Signalnotandi. Gakktu úr skugga um að þú hafir sett inn allt notandanafnið.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ er ekki Signal-notandi. Gakktu úr skugga um að þú hafir sett inn allt notandanafnið.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Notandi fannst ekki";
@@ -5276,10 +5276,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dökkt þema dekkir bakgrunnsmynd";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Ekki tókst að hreinsa bakgrunnsmyndina, reyndu aftur síðar eða hafðu samband við aðstoðarteymið ef vandamálið er viðvarandi.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Ekki tókst að endurstilla allar bakgrunnsmyndirnar, reyndu aftur síðar eða hafðu samband við aðstoðarteymið ef vandamálið er viðvarandi.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Forskoða";

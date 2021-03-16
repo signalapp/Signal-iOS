@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Newidiadau heb eu Cadw";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "See All";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Gweld Popeth";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Mae'r defnyddiwr hwn yn eich cysylltiadau.";
@@ -1130,10 +1130,10 @@
 "DEREGISTRATION_WARNING" = "Nid yw'r ddyfais wedi'i chofrestru mwyach. Efallai bod eich rhif ffôn wedi'i gofrestru gyda Signal ar ddyfais wahanol. Tapiwch i ailgofrestru.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Gwelwyd ddiwethaf %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Cysylltwyd %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Methwyd diweddaru rhestr dyfeisiau.";
@@ -2660,7 +2660,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Sganiwch y côd QR sydd yw weld ar y ddyfais i'w chysylltu.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Sganio Cod QR i gysylltu dyfais newydd.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Cysylltu Dyfais Newydd";
@@ -3032,7 +3032,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Ni fyddwch yn derbyn hysbysiadau ar gyfer sgyrsiau wedi'u distewi.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Distewyd";
+"MUTED_BADGE" = "Wedi Tewi";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3254,7 +3254,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Galluogi Cantiatâd";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Mae caniatáu hysbysiadau a chysylltiadau yn gadael ichi weld pan fydd negeseuon yn cyrraedd ac yn eich helpu i ddod o hyd i bobl rydych chi'n eu hadnabod. Mae cysylltiadau wedi'u hamgryptio fel na all y gwasanaeth Signal eu gweld.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Galluogi Cantiatâd";
@@ -3335,13 +3335,13 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Ailanfon Côd";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Ailanfon Côd mewn %@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Rhowch y côd a anfonwyd i %@";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Cod gwirio";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Gosodiadau";
@@ -4028,7 +4028,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Dewiswch Gweinyddwr Newydd";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "Ailgofrestru Hysbysiadau Gwthio";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "I wneud Signal yr ap negeseuon gorau ar y planed, hoffwn glywed eich adborth.";
@@ -4430,10 +4430,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Cofnod Gwallau";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Dangos lluniau cysylltiadau system os ar gael.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Defnyddio Lluniau Cysylltiadau System";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Thema";
@@ -4517,7 +4517,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Clirio Hanes Sgwrsio";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Hawlfraint Signal Messenger\nDan drwydded GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Defnydd Data";
@@ -4526,7 +4526,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Defnyddio Llai o Ddata";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Efallai bydd defnyddio llai o ddata yn gwella galwadau ar rhai rhwydweithiau.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Galwadau";
@@ -4535,7 +4535,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Bydd negeseuon llais, ffeiliau cyfrwng gweld-unwaith, a sticeri (o dan 100kb) bob amser yn cael eu lawrlwytho.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Awto-Lawrlwytho";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Ail-osod Gosodiadau Awto-Lawrlwytho";
@@ -4613,19 +4613,19 @@
 "SETTINGS_NAV_BAR_TITLE" = "Gosodiadau";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Cynnwys Sgyrsiau Wedi Tewi";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Bathodyn Cyfri";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Gall hysbysiadau Galwad neu Sgwrsio ymddangos pan fod y ffôn dan glo.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Cynnwys Hysbysiadau";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Cysylltiad yn ymuno â Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
@@ -4658,7 +4658,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Atgofiadau PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Mae PIN yn cadw gwybodaeth wedi'i storio gyda Signal wedi'i hamgryptio felly dim ond chi sy'n cael mynediad ati. Ni allwch adfer y PIN. Bydd eich proffil, gosodiadau, a chysylltiadau yn cael eu hadfer pan fyddwch yn ailosod Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Newid eich PIN";
@@ -4712,7 +4712,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Clo Sgrîn";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "Cuddio Sgrîn yn Newidiwr Apiau";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
@@ -4736,10 +4736,10 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "Diogelwch Ap";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "Dangos Sgyrsiau yn Awgrymiadau";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Mae sgyrsiau Signal yn cael eu dangos fel awgrymiadau pan yn rhannu o apiau eraill.";
@@ -4748,7 +4748,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Clo Cofrestru";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Gwneud eich PIN Signal yn ofynnol i gorestru eich ffôn eto â Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Dangosyddion Teipio";
@@ -4757,7 +4757,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Anfonwr dan Sêl";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Dangos Eicon Statws";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Caniatáu gan Bawb";
