@@ -379,22 +379,6 @@ class MobileCoinAPI {
     @objc
     private class TrustRootCerts: NSObject {
 
-        static func load(environment: Environment) throws -> [Data] {
-            switch environment {
-            case .mobileCoinAlphaNet:
-                return anchorCertificates_mobileCoinAlphaNet
-            case .mobileCoinMobileDev:
-                // PAYMENTS TODO:
-                return []
-            case .signalStaging:
-                // PAYMENTS TODO:
-                return []
-            case .signalProduction:
-                // PAYMENTS TODO:
-                return []
-            }
-        }
-
         enum CertificateBundle {
             case mainApp
             case ssk
@@ -433,20 +417,21 @@ class MobileCoinAPI {
             }
         }
 
-        static let anchorCertificates_mobileCoinAlphaNet: [Data] = {
+        static func anchorCertificates_mobileCoin() -> [Data] {
             [
-                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
-//                certificateData(forService: "8395", type: "crt", certificateBundle: .ssk, verifyDer: true),
-//                certificateData(forService: "GSR2", type: "crt", certificateBundle: .ssk, verifyDer: true),
-//                certificateData(forService: "DigiCertGlobalRootG2", type: "crt", certificateBundle: .ssk, verifyDer: true),
-//                certificateData(forService: "textsecure", type: "cer", certificateBundle: .ssk, verifyDer: true)
+//                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
+                certificateData(forService: "textsecure", type: "cer", certificateBundle: .ssk, verifyDer: true)
             ]
-        }()
+        }
+
+        static func loadTrustRootCerts() -> [Data] {
+            anchorCertificates_mobileCoin()
+        }
 
         // TODO: Verify pinning behavior.
         static func pinConfig(_ config: MobileCoinClient.Config,
                               environment: Environment) throws -> MobileCoinClient.Config {
-            let trustRootCertDatas = try load(environment: environment)
+            let trustRootCertDatas = loadTrustRootCerts()
             guard !trustRootCertDatas.isEmpty else {
                 return config
             }

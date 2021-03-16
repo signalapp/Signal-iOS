@@ -77,31 +77,26 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let explanationAttributed = NSMutableAttributedString()
-        explanationAttributed.append(NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
-                                                       comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings."),
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                     ])
-        explanationAttributed.append(" ",
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped
-                                     ])
-        explanationAttributed.append(CommonStrings.learnMore,
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped.ows_semibold,
-                                        .foregroundColor: Theme.primaryTextColor
-                                     ])
+        // TODO: Update support article link.
+        let explanationAttributed = NSAttributedString.composed(of: [
+            NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
+                              comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings."),
+            " ",
+            CommonStrings.learnMore.styled(with:
+                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
+                                           .font(.ows_dynamicTypeBody2Clamped),
+                                           .color(Theme.primaryTextColor)
+            )
+        ]).styled(
+            with: .font(.ows_dynamicTypeBody2Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
 
         let explanationLabel = UILabel()
         explanationLabel.attributedText = explanationAttributed
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                     action: #selector(didTapExplanation)))
 
         let topStack = UIStackView(arrangedSubviews: [
             heroImage,
@@ -147,11 +142,6 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     @objc
     func didTapStartButton() {
         didTapNextButton()
-    }
-
-    @objc
-    private func didTapExplanation() {
-        // TODO: Need a support article link.
     }
 
     @objc

@@ -99,8 +99,8 @@ class AppSettingsViewController: OWSTableViewController2 {
                     nameLabel.textColor = Theme.primaryTextColor
                     nameLabel.font = OWSTableItem.primaryLabelFont
                     nameLabel.adjustsFontForContentSizeCategory = true
-                    nameLabel.numberOfLines = 1
-                    nameLabel.lineBreakMode = .byTruncatingTail
+                    nameLabel.numberOfLines = 0
+                    nameLabel.lineBreakMode = .byWordWrapping
                     nameLabel.setContentHuggingLow()
                     nameLabel.setCompressionResistanceHigh()
                     subviews.append(nameLabel)

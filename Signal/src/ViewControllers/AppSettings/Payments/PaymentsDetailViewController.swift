@@ -247,23 +247,21 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                         bottomText: bottomText))
         }
 
-        let footerAttributedTitle = NSMutableAttributedString()
-        footerAttributedTitle.append(NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
-                                                       comment: "Footer string for the status section of the payment details view in the app settings."),
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeCaption1Clamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                     ])
-        footerAttributedTitle.append(" ",
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeCaption1Clamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                     ])
-        footerAttributedTitle.append(CommonStrings.learnMore,
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold,
-                                        .foregroundColor: Theme.primaryTextColor
-                                     ])
+        // TODO: Update support article link.
+        let footerAttributedTitle = NSAttributedString.composed(of: [
+            NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
+                              comment: "Footer string for the status section of the payment details view in the app settings."),
+            " ",
+            CommonStrings.learnMore.styled(with:
+                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
+                                           .font(.ows_dynamicTypeCaption1Clamped),
+                                           .color(Theme.primaryTextColor)
+            )
+        ]).styled(
+            with: .font(.ows_dynamicTypeCaption1Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
+
         let footerLabel = UILabel()
         footerLabel.attributedText = footerAttributedTitle
         footerLabel.numberOfLines = 0
@@ -275,8 +273,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                             OWSTableViewController2.cellHInnerMargin),
                                                  vMargin: 12)
         footerStack.isLayoutMarginsRelativeArrangement = true
-        footerStack.isUserInteractionEnabled = true
-        footerStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapStatusFooter)))
         section.customFooterView = footerStack
 
         return section
@@ -462,11 +458,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                 transaction: transaction)
         }
         navigationController?.popViewController(animated: true)
-    }
-
-    @objc
-    private func didTapStatusFooter() {
-        // TODO: Need support link.
     }
 }
 

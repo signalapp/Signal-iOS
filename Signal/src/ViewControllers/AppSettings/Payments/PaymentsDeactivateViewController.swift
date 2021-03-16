@@ -100,31 +100,26 @@ public class PaymentsDeactivateViewController: OWSViewController {
         subtitleLabel.textColor = Theme.secondaryTextAndIconColor
         subtitleLabel.textAlignment = .center
 
-        let explanationAttributed = NSMutableAttributedString()
-        explanationAttributed.append(NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
-                                                       comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                     ])
-        explanationAttributed.append(" ",
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped
-                                     ])
-        explanationAttributed.append(CommonStrings.learnMore,
-                                     attributes: [
-                                        .font: UIFont.ows_dynamicTypeBody2Clamped.ows_semibold,
-                                        .foregroundColor: Theme.primaryTextColor
-                                     ])
+        // TODO: Update support article link.
+        let explanationAttributed = NSAttributedString.composed(of: [
+            NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
+                              comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
+            " ",
+            CommonStrings.learnMore.styled(with:
+                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
+                                           .font(.ows_dynamicTypeBody2Clamped),
+                                           .color(Theme.primaryTextColor)
+            )
+        ]).styled(
+            with: .font(.ows_dynamicTypeBody2Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
 
         let explanationLabel = UILabel()
         explanationLabel.attributedText = explanationAttributed
         explanationLabel.textAlignment = .center
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                     action: #selector(didTapExplanation)))
 
         let transferBalanceButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",
                                                                                   comment: "Label for 'transfer balance' button in the 'deactivate payments' settings."),
@@ -231,11 +226,6 @@ public class PaymentsDeactivateViewController: OWSViewController {
                 Self.paymentsSwift.disablePayments(transaction: transaction)
             }
         }
-    }
-
-    @objc
-    private func didTapExplanation() {
-        // TODO: Need a support article link.
     }
 
     @objc

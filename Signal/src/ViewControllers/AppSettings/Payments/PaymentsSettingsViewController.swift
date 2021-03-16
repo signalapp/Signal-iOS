@@ -62,6 +62,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             helpCards.append(.viewRecoveryPhrase)
 
             let hasShortOrMissingPin: Bool = {
+                guard OWS2FAManager.shared().is2FAEnabled() else {
+                    return true
+                }
                 guard let pinCode = OWS2FAManager.shared().pinCode else {
                     return true
                 }
@@ -504,22 +507,20 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
         heroImageView.autoSetDimension(.height, toSize: heroSize)
 
-        let bodyAttributed = NSMutableAttributedString()
-        bodyAttributed.append(NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
-                                                comment: "Message for the 'payments opt-in' view in the app settings."),
-                              attributes: [
-                                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
-                                .foregroundColor: Theme.secondaryTextAndIconColor
-                              ])
-        bodyAttributed.append(" ",
-                              attributes: [
-                                .font: UIFont.ows_dynamicTypeSubheadlineClamped
-                              ])
-        bodyAttributed.append(CommonStrings.learnMore,
-                              attributes: [
-                                .font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
-                                .foregroundColor: Theme.primaryTextColor
-                              ])
+        // TODO: Update support article link.
+        let bodyAttributed = NSAttributedString.composed(of: [
+            NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
+                              comment: "Message for the 'payments opt-in' view in the app settings."),
+            " ",
+            CommonStrings.learnMore.styled(with:
+                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
+                                            .font(.ows_dynamicTypeSubheadlineClamped),
+                                            .color(Theme.primaryTextColor)
+            )
+        ]).styled(
+            with: .font(.ows_dynamicTypeSubheadlineClamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
 
         let bodyLabel = UILabel()
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
@@ -528,9 +529,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         bodyLabel.textAlignment = .center
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.isUserInteractionEnabled = true
-        bodyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                              action: #selector(didTapLearnMoreAboutActivate)))
 
         let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
                                             comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
@@ -874,11 +872,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapHelpButton() {
-        // TODO: Pending design/support URL.
-    }
-
-    @objc
-    private func didTapLearnMoreAboutActivate() {
         // TODO: Pending design/support URL.
     }
 
