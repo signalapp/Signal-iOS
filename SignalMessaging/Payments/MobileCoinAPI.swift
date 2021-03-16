@@ -419,8 +419,7 @@ class MobileCoinAPI {
 
         static func anchorCertificates_mobileCoin() -> [Data] {
             [
-//                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
-                certificateData(forService: "textsecure", type: "cer", certificateBundle: .ssk, verifyDer: true)
+                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
             ]
         }
 
