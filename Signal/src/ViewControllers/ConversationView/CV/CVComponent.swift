@@ -203,6 +203,10 @@ public class CVComponentBase: NSObject {
     var isShowingSelectionUI: Bool {
         itemModel.itemViewState.isShowingSelectionUI
     }
+
+    var wasShowingSelectionUI: Bool {
+        itemModel.itemViewState.wasShowingSelectionUI
+    }
 }
 
 // MARK: -

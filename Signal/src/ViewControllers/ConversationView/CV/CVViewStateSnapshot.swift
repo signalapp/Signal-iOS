@@ -35,6 +35,7 @@ struct CVViewStateSnapshot {
     let typingIndicatorsSender: SignalServiceAddress?
 
     let isShowingSelectionUI: Bool
+    let wasShowingSelectionUI: Bool
 
     let searchText: String?
 
@@ -44,12 +45,14 @@ struct CVViewStateSnapshot {
 
     static func snapshot(viewState: CVViewState,
                          typingIndicatorsSender: SignalServiceAddress?,
-                         hasClearedUnreadMessagesIndicator: Bool) -> CVViewStateSnapshot {
+                         hasClearedUnreadMessagesIndicator: Bool,
+                         wasShowingSelectionUI: Bool) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: viewState.textExpansion.copy(),
                             swipeToReplyState: viewState.swipeToReplyState.copy(),
                             coreState: viewState.asCoreState,
                             typingIndicatorsSender: typingIndicatorsSender,
                             isShowingSelectionUI: viewState.isShowingSelectionUI,
+                            wasShowingSelectionUI: wasShowingSelectionUI,
                             searchText: viewState.lastSearchedText,
                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
                             currentCallThreadId: callService.currentCall?.thread.uniqueId)
@@ -61,6 +64,7 @@ struct CVViewStateSnapshot {
                             coreState: coreState,
                             typingIndicatorsSender: nil,
                             isShowingSelectionUI: false,
+                            wasShowingSelectionUI: false,
                             searchText: nil,
                             hasClearedUnreadMessagesIndicator: false,
                             currentCallThreadId: nil)
