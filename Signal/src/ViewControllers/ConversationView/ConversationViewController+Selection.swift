@@ -64,7 +64,6 @@ extension ConversationViewController {
     func clearSelection() {
         cellSelection.reset()
         clearCollectionViewSelection()
-        updateSelectionHighlight()
     }
 
     func clearCollectionViewSelection() {
@@ -174,76 +173,6 @@ extension ConversationViewController {
                 collectionView.deselectItem(at: indexPath, animated: false)
             }
         }
-        updateSelectionHighlight()
-    }
-
-    @objc
-    public func updateSelectionHighlight() {
-        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
-            owsFailDebug("indexPaths was unexpectedly nil")
-            return
-        }
-
-        let groups: [[IndexPath]] = Self.consecutivelyGrouped(indexPaths: indexPaths)
-
-        let frames = groups.compactMap {
-            self.boundingFrame(indexPaths: $0)
-        }.map {
-            self.selectionHighlightView.convert($0, from: self.collectionView)
-        }
-        collectionView.sendSubviewToBack(selectionHighlightView)
-        selectionHighlightView.setHighlightedFrames(frames)
-    }
-
-    func boundingFrame(indexPaths: [IndexPath]) -> CGRect? {
-        guard let first = indexPaths.first else {
-            return nil
-        }
-
-        guard let firstFrame = layout.layoutAttributesForItem(at: first)?.frame else {
-            owsFailDebug("firstFrame was unexpectedly nil")
-            return nil
-        }
-
-        let topMargin: CGFloat
-        if first.row - 1 >= 0,
-           let firstItem = renderItem(forIndex: first.row),
-           let previousItem = renderItem(forIndex: first.row - 1) {
-            let spacing = firstItem.vSpacing(previousLayoutItem: previousItem)
-            topMargin = spacing / 2
-        } else if first.row - 1 < 0 {
-            topMargin = ConversationStyle.defaultMessageSpacing / 2
-        } else {
-            topMargin = 0
-        }
-
-        guard let last = indexPaths.last else {
-            owsFailDebug("last was unexpectedly nil")
-            return nil
-        }
-
-        guard let lastFrame = self.layout.layoutAttributesForItem(at: last)?.frame else {
-            owsFailDebug("lastFrame was unexpectedly nil")
-            return nil
-        }
-
-        let bottomMargin: CGFloat
-        if last.row + 1 < renderItems.count,
-           let lastItem = renderItem(forIndex: last.row),
-           let afterLastItem = renderItem(forIndex: last.row + 1) {
-            let spacing = afterLastItem.vSpacing(previousLayoutItem: lastItem)
-            bottomMargin = spacing / 2
-        } else if last.row + 1 >= renderItems.count {
-            bottomMargin = ConversationStyle.defaultMessageSpacing / 2
-        } else {
-            bottomMargin = 0
-        }
-
-        let height = lastFrame.bottomLeft.y - firstFrame.topLeft.y + topMargin + bottomMargin
-        return CGRect(x: firstFrame.topLeft.x,
-                      y: firstFrame.topLeft.y - topMargin,
-                      width: firstFrame.width,
-                      height: height)
     }
 
     class func consecutivelyGrouped(indexPaths: [IndexPath]) -> [[IndexPath]] {
@@ -302,7 +231,6 @@ extension ConversationViewController {
         addToSelection(interactionId)
 
         updateSelectionButtons()
-        updateSelectionHighlight()
     }
 
     @objc
@@ -320,32 +248,6 @@ extension ConversationViewController {
         removeFromSelection(interactionId)
 
         updateSelectionButtons()
-        updateSelectionHighlight()
-    }
-}
-
-// MARK: -
-
-@objc
-public class SelectionHighlightView: UIView {
-    func setHighlightedFrames(_ frames: [CGRect]) {
-        subviews.forEach { $0.removeFromSuperview() }
-
-        for frame in frames {
-            if UIAccessibility.isReduceTransparencyEnabled {
-                let highlight = UIView(frame: frame)
-                highlight.backgroundColor = Theme.selectedConversationCellColor
-                addSubview(highlight)
-            } else {
-                let highlight = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-                highlight.frame = frame
-                let overlay = UIView()
-                overlay.backgroundColor = Theme.selectedConversationCellColor
-                highlight.contentView.addSubview(overlay)
-                overlay.frame = highlight.bounds
-                addSubview(highlight)
-            }
-        }
     }
 }
 

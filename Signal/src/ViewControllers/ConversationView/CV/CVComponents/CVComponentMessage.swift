@@ -305,26 +305,23 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         self.swipeToReplyReference = nil
         self.swipeToReplyProgress = swipeToReplyState.getProgress(interactionId: interaction.uniqueId)
 
-        var leadingView: UIView?
-        if isShowingSelectionUI {
+        let selectionView = componentView.selectionView
+        if isShowingSelectionUI || wasShowingSelectionUI {
             owsAssertDebug(!isReusing)
 
-            let selectionView = componentView.selectionView
+            selectionView.alpha = 1
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
-            cellView.addSubview(selectionView)
+            cellView.insertSubview(selectionView, belowSubview: rootView)
             selectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-            leadingView = selectionView
         }
 
+        var leadingConstraint: NSLayoutConstraint?
+
         if isReusing {
-            owsAssertDebug(leadingView == nil)
+            owsAssertDebug(!isShowingSelectionUI)
             owsAssertDebug(!hasSendFailureBadge)
         } else if isIncoming {
-            if let leadingView = leadingView {
-                rootView.autoPinEdge(.leading, to: .trailing, of: leadingView, withOffset: selectionViewSpacing)
-            } else {
-                rootView.autoPinEdge(toSuperviewMargin: .leading)
-            }
+            leadingConstraint = rootView.autoPinEdge(toSuperviewMargin: .leading)
         } else if hasSendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = UIImageView()
@@ -348,6 +345,65 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             rootView.autoPinEdge(.trailing, to: .leading, of: sendFailureBadge, withOffset: -sendFailureBadgeSpacing)
         } else {
             rootView.autoPinEdge(toSuperviewMargin: .trailing)
+        }
+
+        if isShowingSelectionUI {
+            func updateLeadingConstraint() {
+                if let leadingConstraint = leadingConstraint {
+                    leadingConstraint.isActive = false
+                    rootView.autoPinEdge(.leading, to: .trailing, of: selectionView, withOffset: self.selectionViewSpacing)
+                }
+            }
+
+            if wasShowingSelectionUI {
+                updateLeadingConstraint()
+            } else {
+                // Animate in selection view.
+                selectionView.alpha = 0
+
+                cellView.setNeedsLayout()
+                cellView.layoutIfNeeded()
+
+                // For some reason, animations from this
+                // context don't work unless we dispatch
+                // them until the next runloop.
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.2) {
+                        updateLeadingConstraint()
+
+                        cellView.setNeedsLayout()
+                        cellView.layoutIfNeeded()
+
+                        selectionView.alpha = 1
+                    }
+                }
+            }
+        } else if wasShowingSelectionUI {
+            // Animate out selection view.
+            var selectionLeadingConstraint: NSLayoutConstraint?
+            if let leadingConstraint = leadingConstraint {
+                leadingConstraint.isActive = false
+                selectionLeadingConstraint = rootView.autoPinEdge(.leading, to: .trailing, of: selectionView, withOffset: self.selectionViewSpacing)
+            }
+
+            cellView.setNeedsLayout()
+            cellView.layoutIfNeeded()
+
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.2) {
+                    if let leadingConstraint = leadingConstraint, let selectionLeadingConstraint = selectionLeadingConstraint {
+                        selectionLeadingConstraint.isActive = false
+                        leadingConstraint.isActive = true
+                    }
+
+                    cellView.setNeedsLayout()
+                    cellView.layoutIfNeeded()
+
+                    selectionView.alpha = 0
+                } completion: { _ in
+                    selectionView.removeFromSuperview()
+                }
+            }
         }
     }
 

@@ -27,7 +27,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @class MessageActionsToolbar;
 @class SDSAnyReadTransaction;
 @class SDSDatabaseStorage;
-@class SelectionHighlightView;
 @class TSMessage;
 @class TSThread;
 @class ThreadViewModel;
@@ -117,7 +116,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 #pragma mark - Selection
 
 @property (nonatomic, readonly) MessageActionsToolbar *selectionToolbar;
-@property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
 
 @property (nonatomic, readonly) id<CVComponentDelegate> componentDelegate;
 
