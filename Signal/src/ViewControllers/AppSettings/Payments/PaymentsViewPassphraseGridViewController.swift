@@ -165,7 +165,11 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     @objc
     func didTapCopyToClipboard() {
-        UIPasteboard.general.string = passphrase.words.joined(separator: " ")
+        // Ensure that passphrase only resides in pasteboard for short window of time.
+        let pasteboardDuration = kSecondInterval * 30
+        let expireDate = Date().addingTimeInterval(pasteboardDuration)
+        UIPasteboard.general.setItems([[UIPasteboard.typeAutomatic: passphrase.asPassphrase]],
+                                      options: [.expirationDate: expireDate])
 
         self.presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD",
                                                   comment: "Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views."),
