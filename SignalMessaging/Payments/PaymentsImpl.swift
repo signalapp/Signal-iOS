@@ -466,11 +466,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     // MARK: - Operations
 
-    // PAYMENTS TODO:
+    // PAYMENTS TODO: Remove.
     private enum DevFlags {
         static var useFakeRootEntropy_self: Bool {
-            //            return false
-            //            return true
             #if DEBUG
             return (MobileCoinAPI.Environment.current == .mobileCoinAlphaNet ||
                         MobileCoinAPI.Environment.current == .mobileCoinMobileDev)

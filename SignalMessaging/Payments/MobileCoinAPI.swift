@@ -160,36 +160,36 @@ class MobileCoinAPI {
         let consensusUrl: String
         let fogUrl: String
 
-        static var signalProduction: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://api.consensus.payments.namda.net:443"
-            let fogUrl = "fog://api.report.payments.namda.net:443"
-
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogUrl: fogUrl)
+        static var signalMainNet: MobileCoinNetworkConfig {
+            owsFail("TODO: Set this value.")
         }
 
-        static var signalStaging: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://ccn101.test.consensus.payments.namda.net:443"
-            let fogUrl = "fog://api-staging.report.payments.namda.net:443"
+        static var mobileCoinMainNet: MobileCoinNetworkConfig {
+            owsFail("TODO: Set this value.")
+        }
 
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogUrl: fogUrl)
+        static var signalTestNet: MobileCoinNetworkConfig {
+            let consensusUrl = "mc://node1.test.mobilecoin.com"
+            let fogUrl = "fog://service.fog.mob.staging.namda.net"
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+        }
+
+        static var mobileCoinTestNet: MobileCoinNetworkConfig {
+            let consensusUrl = "mc://node1.test.mobilecoin.com"
+            let fogUrl = "fog://fog.test.mobilecoin.com"
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }
 
         static var mobileCoinAlphaNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.alpha.mobilecoin.com"
             let fogUrl = "fog://fog.alpha.mobilecoin.com"
-
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogUrl: fogUrl)
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }
 
         static var mobileCoinMobileDev: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.mobiledev.mobilecoin.com"
             let fogUrl = "fog://fog.mobiledev.mobilecoin.com"
-
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl,
-                                           fogUrl: fogUrl)
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }
 
         static func networkConfig(environment: Environment) -> MobileCoinNetworkConfig {
@@ -198,22 +198,24 @@ class MobileCoinAPI {
                 return MobileCoinNetworkConfig.mobileCoinAlphaNet
             case .mobileCoinMobileDev:
                 return MobileCoinNetworkConfig.mobileCoinMobileDev
-            case .signalStaging:
-                return MobileCoinNetworkConfig.signalStaging
-            case .signalProduction:
-                return MobileCoinNetworkConfig.signalProduction
+            case .mobileCoinTestNet:
+                return MobileCoinNetworkConfig.mobileCoinTestNet
+            case .signalTestNet:
+                return MobileCoinNetworkConfig.signalTestNet
+            case .mobileCoinMainNet:
+                return MobileCoinNetworkConfig.mobileCoinMainNet
+            case .signalMainNet:
+                return MobileCoinNetworkConfig.signalMainNet
             }
         }
     }
 
-    struct OWSAttestationConfig {
-        let consensus: Attestation
-        let fogView: Attestation
-        let fogKeyImage: Attestation
-        let fogMerkleProof: Attestation
-        let fogReport: Attestation
+    private struct AttestationInfo {
+        let productId: UInt16
+        let minimumSecurityVersion: UInt16
+        let allowedConfigAdvisories: [String]
+        let allowedHardeningAdvisories: [String]
 
-        // PAYMENTS TODO: What are the correct values?
         static let CONSENSUS_PRODUCT_ID: UInt16 = 1
         static let CONSENSUS_SECURITY_VERSION: UInt16 = 1
         static let FOG_VIEW_PRODUCT_ID: UInt16 = 3
@@ -225,17 +227,67 @@ class MobileCoinAPI {
 
         static var allowedHardeningAdvisories: [String] { ["INTEL-SA-00334"] }
 
-        // PAYMENTS TODO: What are the correct values?
+        init(productId: UInt16,
+             minimumSecurityVersion: UInt16,
+             allowedConfigAdvisories: [String] = [],
+             allowedHardeningAdvisories: [String] = []) {
+
+            self.productId = productId
+            self.minimumSecurityVersion = minimumSecurityVersion
+            self.allowedConfigAdvisories = allowedConfigAdvisories
+            self.allowedHardeningAdvisories = allowedHardeningAdvisories
+        }
+
+        static var consensus: AttestationInfo {
+            .init(productId: CONSENSUS_PRODUCT_ID,
+                  minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        }
+
+        static var fogView: AttestationInfo {
+            .init(productId: FOG_VIEW_PRODUCT_ID,
+                  minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
+                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        }
+
+        static var fogKeyImage: AttestationInfo {
+            .init(productId: FOG_LEDGER_PRODUCT_ID,
+                  minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
+                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        }
+
+        static var fogMerkleProof: AttestationInfo {
+            .init(productId: FOG_LEDGER_PRODUCT_ID,
+                  minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
+                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        }
+
+        static var fogReport: AttestationInfo {
+            .init(productId: FOG_REPORT_PRODUCT_ID,
+                  minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
+                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        }
+    }
+
+    private enum AttestationType {
+        case mrSigner(mrSignerData: Data)
+        case mrEnclave(mrEnclaveData: Data)
+    }
+
+    private struct OWSAttestationConfig {
+        let consensus: Attestation
+        let fogView: Attestation
+        let fogKeyImage: Attestation
+        let fogMerkleProof: Attestation
+        let fogReport: Attestation
+
         private static func buildMrSigner(mrSignerData: Data,
-                                          productId: UInt16,
-                                          minimumSecurityVersion: UInt16,
-                                          allowedConfigAdvisories: [String] = [],
-                                          allowedHardeningAdvisories: [String] = []) throws -> MobileCoin.Attestation.MrSigner {
+                                          attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation.MrSigner {
             let result = MobileCoin.Attestation.MrSigner.make(mrSigner: mrSignerData,
-                                                              productId: productId,
-                                                              minimumSecurityVersion: minimumSecurityVersion,
-                                                              allowedConfigAdvisories: allowedConfigAdvisories,
-                                                              allowedHardeningAdvisories: allowedHardeningAdvisories)
+                                                              productId: attestationInfo.productId,
+                                                              minimumSecurityVersion: attestationInfo.minimumSecurityVersion,
+                                                              allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
+                                                              allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)
             switch result {
             case .success(let mrSigner):
                 return mrSigner
@@ -245,101 +297,113 @@ class MobileCoinAPI {
             }
         }
 
-        private static func buildAttestation(mrSigner mrSignerData: Data,
-                                             productId: UInt16,
-                                             minimumSecurityVersion: UInt16,
-                                             allowedConfigAdvisories: [String] = [],
-                                             allowedHardeningAdvisories: [String] = []) throws -> MobileCoin.Attestation {
-            let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
-                                             productId: productId,
-                                             minimumSecurityVersion: minimumSecurityVersion,
-                                             allowedConfigAdvisories: allowedConfigAdvisories,
-                                             allowedHardeningAdvisories: allowedHardeningAdvisories)
-            return MobileCoin.Attestation(mrSigners: [mrSigner])
+        private static func buildMrEnclave(mrEnclaveData: Data,
+                                          attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation.MrEnclave {
+            let result = MobileCoin.Attestation.MrEnclave.make(mrEnclave: mrEnclaveData,
+                                                              allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
+                                                              allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)
+            switch result {
+            case .success(let mrEnclave):
+                return mrEnclave
+            case .failure(let error):
+                owsFailDebug("Error: \(error)")
+                throw error
+            }
         }
 
-        private static func consensusAttestation(mrSigner mrSignerData: Data) throws -> MobileCoin.Attestation {
-            try buildAttestation(mrSigner: mrSignerData,
-                                 productId: CONSENSUS_PRODUCT_ID,
-                                 minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
-                                 allowedHardeningAdvisories: allowedHardeningAdvisories)
-        }
-
-        private static func fogViewAttestation(mrSigner mrSignerData: Data) throws -> MobileCoin.Attestation {
-            try buildAttestation(mrSigner: mrSignerData,
-                                 productId: FOG_VIEW_PRODUCT_ID,
-                                 minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
-                                 allowedHardeningAdvisories: allowedHardeningAdvisories)
-        }
-
-        private static func fogKeyImageAttestation(mrSigner mrSignerData: Data) throws -> MobileCoin.Attestation {
-            try buildAttestation(mrSigner: mrSignerData,
-                                 productId: FOG_LEDGER_PRODUCT_ID,
-                                 minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
-                                 allowedHardeningAdvisories: allowedHardeningAdvisories)
-        }
-
-        private static func fogMerkleProofAttestation(mrSigner mrSignerData: Data) throws -> MobileCoin.Attestation {
-            try buildAttestation(mrSigner: mrSignerData,
-                                 productId: FOG_LEDGER_PRODUCT_ID,
-                                 minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
-                                 allowedHardeningAdvisories: allowedHardeningAdvisories)
-        }
-
-        private static func fogReportAttestation(mrSigner mrSignerData: Data) throws -> MobileCoin.Attestation {
-            try buildAttestation(mrSigner: mrSignerData,
-                                 productId: FOG_REPORT_PRODUCT_ID,
-                                 minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
-                                 allowedHardeningAdvisories: allowedHardeningAdvisories)
+        private static func buildAttestation(attestationType: AttestationType,
+                                             attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation {
+            switch attestationType {
+            case .mrSigner(let mrSignerData):
+                let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
+                                                 attestationInfo: attestationInfo)
+                return MobileCoin.Attestation(mrSigners: [mrSigner])
+            case .mrEnclave(let mrEnclaveData):
+                let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
+                                                   attestationInfo: attestationInfo)
+                return MobileCoin.Attestation(mrEnclaves: [mrEnclave])
+            }
         }
 
         private static func buildAttestationConfig(mrSigner mrSignerData: Data) -> OWSAttestationConfig {
             do {
+                let attestationType: AttestationType = .mrSigner(mrSignerData: mrSignerData)
+                func _buildAttestation(attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation {
+                    try buildAttestation(attestationType: attestationType, attestationInfo: attestationInfo)
+                }
                 return OWSAttestationConfig(
-                    consensus: try consensusAttestation(mrSigner: mrSignerData),
-                    fogView: try fogViewAttestation(mrSigner: mrSignerData),
-                    fogKeyImage: try fogKeyImageAttestation(mrSigner: mrSignerData),
-                    fogMerkleProof: try fogMerkleProofAttestation(mrSigner: mrSignerData),
-                    fogReport: try fogReportAttestation(mrSigner: mrSignerData))
+                    consensus: try _buildAttestation(attestationInfo: .consensus),
+                    fogView: try _buildAttestation(attestationInfo: .fogView),
+                    fogKeyImage: try _buildAttestation(attestationInfo: .fogKeyImage),
+                    fogMerkleProof: try _buildAttestation(attestationInfo: .fogMerkleProof),
+                    fogReport: try _buildAttestation(attestationInfo: .fogReport))
             } catch {
                 owsFail("Invalid attestationConfig: \(error)")
             }
         }
 
-        static var testnet: OWSAttestationConfig {
-            // PAYMENTS TODO: Use mrEnclave, not mrSigner.
-            let phonyMrSigner = Data([
-                191, 127, 169, 87, 166, 169, 74, 203, 88, 136, 81, 188, 135, 103, 224, 202, 87, 112, 108,
-                121, 244, 252, 42, 166, 188, 185, 147, 1, 44, 60, 56, 108
-            ])
-            return buildAttestationConfig(mrSigner: phonyMrSigner)
+        private static func buildAttestationConfig(mrEnclaveConsensus: Data,
+                                                   mrEnclaveFogView: Data,
+                                                   mrEnclaveFogKeyImage: Data,
+                                                   mrEnclaveFogMerkleProof: Data,
+                                                   mrEnclaveFogReport: Data) -> OWSAttestationConfig {
+            do {
+                return OWSAttestationConfig(
+                    consensus: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveConsensus),
+                                                    attestationInfo: .consensus),
+                    fogView: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogView),
+                                                  attestationInfo: .fogView),
+                    fogKeyImage: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogKeyImage),
+                                                      attestationInfo: .fogKeyImage),
+                    fogMerkleProof: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogMerkleProof),
+                                                         attestationInfo: .fogMerkleProof),
+                    fogReport: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogReport),
+                                                    attestationInfo: .fogReport)
+                )
+            } catch {
+                owsFail("Invalid attestationConfig: \(error)")
+            }
         }
 
-        static var mainnet: OWSAttestationConfig {
-            // PAYMENTS TODO: Use mrEnclave, not mrSigner.
-            let phonyMrSigner = Data([
-                191, 127, 169, 87, 166, 169, 74, 203, 88, 136, 81, 188, 135, 103, 224, 202, 87, 112, 108,
-                121, 244, 252, 42, 166, 188, 185, 147, 1, 44, 60, 56, 108
-            ])
-            return buildAttestationConfig(mrSigner: phonyMrSigner)
+        static var signalMainNet: OWSAttestationConfig {
+            owsFail("TODO: Set this value.")
+        }
+
+        static var mobileCoinMainNet: OWSAttestationConfig {
+            owsFail("TODO: Set this value.")
+        }
+
+        static var mobileCoinTestNet: OWSAttestationConfig {
+            // These networks currently share the same attestation config.
+            signalTestNet
+        }
+
+        static var signalTestNet: OWSAttestationConfig {
+            let mrEnclaveConsensus = Data.data(fromHex: "cad79d32f4339f650671ce74d072ae9c1c01d84edd059bd4314932a7a8b29f3f")!
+            let mrEnclaveFogView = Data.data(fromHex: "4e598799faa4bb08a3bd55c0bcda7e1d22e41151d0c591f6c2a48b3562b0881e")!
+            let mrEnclaveFogIngest = Data.data(fromHex: "185875464ccd67a879d58181055383505a719b364b12d56d9bef90a40bed07ca")!
+            let mrEnclaveFogLedger = Data.data(fromHex: "7330c9987f21b91313b39dcdeaa7da8da5ca101c929f5740c207742c762e6dcd")!
+            return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
+                                          mrEnclaveFogView: mrEnclaveFogView,
+                                          mrEnclaveFogKeyImage: mrEnclaveFogLedger,
+                                          mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
+                                          mrEnclaveFogReport: mrEnclaveFogIngest)
         }
 
         static var mobileCoinAlphaNet: OWSAttestationConfig {
-            // PAYMENTS TODO: I believe this value is correct.
-            let phonyMrSigner = Data([
+            let mrSigner = Data([
                 126, 229, 226, 157, 116, 98, 63, 219, 198, 251, 241, 69, 75, 230, 243, 187, 11, 134, 193,
                 35, 102, 183, 180, 120, 173, 19, 53, 62, 68, 222, 132, 17
             ])
-            return buildAttestationConfig(mrSigner: phonyMrSigner)
+            return buildAttestationConfig(mrSigner: mrSigner)
         }
 
         static var mobileCoinMobileDev: OWSAttestationConfig {
-            // PAYMENTS TODO: I believe this value is correct.
-            let phonyMrSigner = Data([
+            let mrSigner = Data([
                 191, 127, 169, 87, 166, 169, 74, 203, 88, 136, 81, 188, 135, 103, 224, 202, 87, 112, 108,
                 121, 244, 252, 42, 166, 188, 185, 147, 1, 44, 60, 56, 108
             ])
-            return buildAttestationConfig(mrSigner: phonyMrSigner)
+            return buildAttestationConfig(mrSigner: mrSigner)
         }
 
         static func attestationConfig(environment: Environment) -> OWSAttestationConfig {
@@ -348,12 +412,14 @@ class MobileCoinAPI {
                 return mobileCoinAlphaNet
             case .mobileCoinMobileDev:
                 return mobileCoinMobileDev
-            case .signalStaging:
-                // PAYMENTS TODO: Revisit this mapping.
-                return testnet
-            case .signalProduction:
-                // PAYMENTS TODO: Revisit this mapping.
-                return mainnet
+            case .mobileCoinTestNet:
+                return mobileCoinTestNet
+            case .signalTestNet:
+                return signalTestNet
+            case .mobileCoinMainNet:
+                return mobileCoinMainNet
+            case .signalMainNet:
+                return signalMainNet
             }
         }
     }
@@ -374,10 +440,18 @@ class MobileCoinAPI {
             OWSAuthorization(username: testAuthUsername,
                              password: testAuthPassword)
         }
+
+        static var mobileCoinTestNet: OWSAuthorization {
+            owsFail("TODO: Set this value.")
+        }
+
+        static var mobileCoinMainNet: OWSAuthorization {
+            owsFail("TODO: Set this value.")
+        }
     }
 
     @objc
-    private class TrustRootCerts: NSObject {
+    private class Certificates: NSObject {
 
         enum CertificateBundle {
             case mainApp
@@ -416,10 +490,14 @@ class MobileCoinAPI {
                 return data
             }
         }
+    }
+
+    @objc
+    private class TrustRootCerts: NSObject {
 
         static func anchorCertificates_mobileCoin() -> [Data] {
             [
-                certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
+                Certificates.certificateData(forService: "8395", type: "der", certificateBundle: .ssk, verifyDer: true)
             ]
         }
 
@@ -427,7 +505,6 @@ class MobileCoinAPI {
             anchorCertificates_mobileCoin()
         }
 
-        // TODO: Verify pinning behavior.
         static func pinConfig(_ config: MobileCoinClient.Config,
                               environment: Environment) throws -> MobileCoinClient.Config {
             let trustRootCertDatas = loadTrustRootCerts()
@@ -459,12 +536,14 @@ class MobileCoinAPI {
 
         fileprivate func authorization(signalAuthorization: OWSAuthorization) -> OWSAuthorization {
             switch environment {
-            case .signalProduction, .signalStaging:
+            case .signalTestNet, .signalMainNet:
                 return signalAuthorization
             case .mobileCoinAlphaNet:
                 return OWSAuthorization.mobileCoinAlpha
             case .mobileCoinMobileDev:
                 return OWSAuthorization.mobileCoinMobileDev
+            case .mobileCoinTestNet, .mobileCoinMainNet:
+                return signalAuthorization
             }
         }
 
@@ -481,7 +560,6 @@ class MobileCoinAPI {
                                                             fogReportAttestation: attestationConfig.fogReport)
             switch configResult {
             case .success(let config):
-
                 let config = try TrustRootCerts.pinConfig(config, environment: environment)
 
                 let clientResult = MobileCoinClient.make(accountKey: accountKey, config: config)
@@ -501,28 +579,51 @@ class MobileCoinAPI {
         }
     }
 
-    // PAYMENTS TODO:
-    private enum DevFlags {
-        static let useMobileCoinAlphaNet = DebugFlags.paymentsInternalBeta
-        static let useMobileCoinMobileDev = false
-    }
-
     enum Environment {
         case mobileCoinAlphaNet
         case mobileCoinMobileDev
-        case signalStaging
-        case signalProduction
+        case signalTestNet
+        case mobileCoinTestNet
+        case signalMainNet
+        case mobileCoinMainNet
 
         static var current: Environment {
-            if DevFlags.useMobileCoinAlphaNet {
+            if DebugFlags.paymentsInternalBeta {
+                // TODO: Revisit.
+//                return .signalTestNet
                 return .mobileCoinAlphaNet
-            } else if DevFlags.useMobileCoinMobileDev {
-                return .mobileCoinMobileDev
             } else {
-                return (FeatureFlags.isUsingProductionService
-                            ? .signalProduction
-                            : .signalStaging)
+                return .signalMainNet
             }
+        }
+    }
+
+    private static func fogAuthoritySpki(environment: Environment) -> Data {
+        switch environment {
+        case .mobileCoinAlphaNet,
+             .mobileCoinMobileDev:
+            return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
+        case .mobileCoinTestNet:
+            return Certificates.certificateData(forService: "authority-mobilecoin-testnet", type: "pem", certificateBundle: .ssk)
+        case .signalTestNet:
+//            return Certificates.certificateData(forService: "authority-signal-testnet", type: "pem", certificateBundle: .ssk)
+            return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoCMq8nnjTq5EEQ4EI7yr" +
+                            "ABL9P4y4h1P/h0DepWgXx+w/fywcfRSZINxbaMpvcV3uSJayExrpV1KmaS2wfASe" +
+                            "YhSj+rEzAm0XUOw3Q94NOx5A/dOQag/d1SS6/QpF3PQYZTULnRFetmM4yzEnXsXc" +
+                            "WtzEu0hh02wYJbLeAq4CCcPTPe2qckrbUP9sD18/KOzzNeypF4p5dQ2m/ezfxtga" +
+                            "LvdUMVDVIAs2v9a5iu6ce4bIcwTIUXgX0w3+UKRx8zqowc3HIqo9yeaGn4ZOwQHv" +
+                            "AJZecPmb2pH1nK+BtDUvHpvf+Y3/NJxwh+IPp6Ef8aoUxs2g5oIBZ3Q31fjS2Bh2" +
+                            "gmwoVooyytEysPAHvRPVBxXxLi36WpKfk1Vq8K7cgYh3IraOkH2/l2Pyi8EYYFkW" +
+                            "sLYofYogaiPzVoq2ZdcizfoJWIYei5mgq+8m0ZKZYLebK1i2GdseBJNIbSt3wCNX" +
+                            "ZxyN6uqFHOCB29gmA5cbKvs/j9mDz64PJe9LCanqcDQV1U5l9dt9UdmUt7Ab1PjB" +
+                            "toIFaP+u473Z0hmZdCgAivuiBMMYMqt2V2EIw4IXLASE3roLOYp0p7h0IQHb+lVI" +
+                            "uEl0ZmwAI30ZmzgcWc7RBeWD1/zNt55zzhfPRLx/DfDY5Kdp6oFHWMvI2r1/oZkd" +
+                            "hjFp7pV6qrl7vOyR5QqmuRkCAwEAAQ==")!
+
+        case .mobileCoinMainNet:
+            owsFail("TODO: Set this value.")
+        case .signalMainNet:
+            owsFail("TODO: Set this value.")
         }
     }
 
@@ -538,10 +639,7 @@ class MobileCoinAPI {
 
     class func buildAccountKey(forMCRootEntropy mcRootEntropy: Data,
                                networkConfig: MobileCoinNetworkConfig) throws -> MobileCoin.AccountKey {
-        // Payments TODO:
-        //
-        // TODO: This is the value for alpha net.
-        let fogAuthoritySpki = Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
+        let fogAuthoritySpki = Self.fogAuthoritySpki(environment: .current)
         let fogReportId = ""
         let result = MobileCoin.AccountKey.make(rootEntropy: mcRootEntropy,
                                                 fogReportUrl: networkConfig.fogUrl,
@@ -980,32 +1078,32 @@ extension MobileCoinAPI {
         case let error as MobileCoin.ConnectionError:
             switch error {
             case .connectionFailure(let reason):
-                Logger.warn("Error: \(error), \(reason)")
+                Logger.warn("Error: \(error), reason: \(reason)")
                 return PaymentsError.connectionFailure
             case .authorizationFailure(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
 
                 // Immediately discard the SDK client instance; the auth token may be stale.
                 SSKEnvironment.shared.payments.didReceiveMCAuthError()
 
                 return PaymentsError.authorizationFailure
             case .invalidServerResponse(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidServerResponse
             case .attestationVerificationFailed(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.attestationVerificationFailed
             case .outdatedClient(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.outdatedClient
             case .serverRateLimited(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.serverRateLimited
             }
         case let error as MobileCoin.TransactionPreparationError:
             switch error {
             case .invalidInput(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidInput
             case .insufficientBalance:
                 Logger.warn("Error: \(error)")
@@ -1039,7 +1137,7 @@ extension MobileCoinAPI {
         case let error as MobileCoin.TransactionEstimationError:
             switch error {
             case .invalidInput(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidInput
             case .insufficientBalance:
                 Logger.warn("Error: \(error)")
@@ -1048,7 +1146,7 @@ extension MobileCoinAPI {
         case let error as MobileCoin.DefragTransactionPreparationError:
             switch error {
             case .invalidInput(let reason):
-                owsFailDebug("Error: \(error), \(reason)")
+                owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidInput
             case .insufficientBalance:
                 Logger.warn("Error: \(error)")
