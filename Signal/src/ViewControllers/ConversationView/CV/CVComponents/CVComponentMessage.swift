@@ -6,6 +6,8 @@ import Foundation
 
 @objc
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
+    @objc
+    public static let selectionAnimationDuration: TimeInterval = 0.2
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         guard !isShowingSelectionUI else {
@@ -368,7 +370,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // context don't work unless we dispatch
                 // them until the next runloop.
                 DispatchQueue.main.async {
-                    UIView.animate(withDuration: 0.2) {
+                    UIView.animate(withDuration: CVComponentMessage.selectionAnimationDuration) {
                         updateLeadingConstraint()
 
                         cellView.setNeedsLayout()
@@ -390,7 +392,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             cellView.layoutIfNeeded()
 
             DispatchQueue.main.async {
-                UIView.animate(withDuration: 0.2) {
+                UIView.animate(withDuration: CVComponentMessage.selectionAnimationDuration) {
                     if let leadingConstraint = leadingConstraint, let selectionLeadingConstraint = selectionLeadingConstraint {
                         selectionLeadingConstraint.isActive = false
                         leadingConstraint.isActive = true
