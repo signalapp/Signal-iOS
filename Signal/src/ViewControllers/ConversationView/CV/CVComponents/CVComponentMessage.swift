@@ -307,23 +307,22 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         self.swipeToReplyReference = nil
         self.swipeToReplyProgress = swipeToReplyState.getProgress(interactionId: interaction.uniqueId)
 
+        var rootViewLeadingConstraint: NSLayoutConstraint?
+
         let selectionView = componentView.selectionView
         if isShowingSelectionUI || wasShowingSelectionUI {
             owsAssertDebug(!isReusing)
 
-            selectionView.alpha = 1
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
             cellView.insertSubview(selectionView, belowSubview: rootView)
-            selectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
+            selectionView.autoPinHeightToSuperviewMargins()
         }
-
-        var leadingConstraint: NSLayoutConstraint?
 
         if isReusing {
             owsAssertDebug(!isShowingSelectionUI)
             owsAssertDebug(!hasSendFailureBadge)
         } else if isIncoming {
-            leadingConstraint = rootView.autoPinEdge(toSuperviewMargin: .leading)
+            rootViewLeadingConstraint = rootView.autoPinEdge(toSuperviewMargin: .leading)
         } else if hasSendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = UIImageView()
@@ -350,18 +349,23 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if isShowingSelectionUI {
-            func updateLeadingConstraint() {
-                if let leadingConstraint = leadingConstraint {
+            var selectionViewStartingConstraint: NSLayoutConstraint?
+
+            func updateSelectionViewConstraints() {
+                if let leadingConstraint = rootViewLeadingConstraint {
                     leadingConstraint.isActive = false
                     rootView.autoPinEdge(.leading, to: .trailing, of: selectionView, withOffset: self.selectionViewSpacing)
                 }
+
+                selectionViewStartingConstraint?.isActive = false
+                selectionView.autoPinEdge(toSuperviewMargin: .leading)
             }
 
             if wasShowingSelectionUI {
-                updateLeadingConstraint()
+                updateSelectionViewConstraints()
             } else {
-                // Animate in selection view.
-                selectionView.alpha = 0
+                // Animate in selection view. We start off the edge of the screen and slide in.
+                selectionViewStartingConstraint = selectionView.autoPinEdge(.trailing, to: .leading, of: cellView)
 
                 cellView.setNeedsLayout()
                 cellView.layoutIfNeeded()
@@ -371,37 +375,44 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // them until the next runloop.
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: CVComponentMessage.selectionAnimationDuration) {
-                        updateLeadingConstraint()
+                        updateSelectionViewConstraints()
 
                         cellView.setNeedsLayout()
                         cellView.layoutIfNeeded()
-
-                        selectionView.alpha = 1
                     }
                 }
             }
         } else if wasShowingSelectionUI {
-            // Animate out selection view.
-            var selectionLeadingConstraint: NSLayoutConstraint?
-            if let leadingConstraint = leadingConstraint {
-                leadingConstraint.isActive = false
-                selectionLeadingConstraint = rootView.autoPinEdge(.leading, to: .trailing, of: selectionView, withOffset: self.selectionViewSpacing)
+            // Animate out selection view. It will slide out.
+            var startingConstraints = [NSLayoutConstraint]()
+
+            if let rootViewLeadingConstraint = rootViewLeadingConstraint {
+                rootViewLeadingConstraint.isActive = false
+                startingConstraints.append(rootView.autoPinEdge(
+                    .leading,
+                    to: .trailing,
+                    of: selectionView,
+                    withOffset: self.selectionViewSpacing
+                ))
             }
+
+            startingConstraints.append(selectionView.autoPinEdge(toSuperviewMargin: .leading))
 
             cellView.setNeedsLayout()
             cellView.layoutIfNeeded()
 
             DispatchQueue.main.async {
                 UIView.animate(withDuration: CVComponentMessage.selectionAnimationDuration) {
-                    if let leadingConstraint = leadingConstraint, let selectionLeadingConstraint = selectionLeadingConstraint {
-                        selectionLeadingConstraint.isActive = false
-                        leadingConstraint.isActive = true
+                    NSLayoutConstraint.deactivate(startingConstraints)
+
+                    if let rootViewLeadingConstraint = rootViewLeadingConstraint {
+                        rootViewLeadingConstraint.isActive = true
                     }
+
+                    selectionView.autoPinEdge(.trailing, to: .leading, of: cellView)
 
                     cellView.setNeedsLayout()
                     cellView.layoutIfNeeded()
-
-                    selectionView.alpha = 0
                 } completion: { _ in
                     selectionView.removeFromSuperview()
                 }
