@@ -192,7 +192,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
             }
         }()
 
-        let actions: [NameCollisionActionCell.Action] = {
+        let actions: [NameCollisionCell.Action] = {
             switch (thread: thread, address: model.address, isBlocked: model.isBlocked) {
             case (thread: is TSContactThread, address: flattenedCellModels.first?.address, isBlocked: false):
                 return [
@@ -217,19 +217,20 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
             }
         }()
 
-        let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
-        let section = OWSTableSection(title: header, items: [
-            OWSTableItem(customCell: contactInfoCell)
+        return OWSTableSection(title: header, items: [
+            OWSTableItem(
+                customCellBlock: {
+                    NameCollisionCell.createWithModel(model, actions: actions)
+                },
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+                    MemberActionSheet(
+                        address: model.address,
+                        groupViewHelper: self.groupViewHelper
+                    ).present(fromViewController: self)
+                }
+            )
         ])
-
-        if actions.isEmpty {
-            contactInfoCell.isPairedWithActions = false
-        } else {
-            contactInfoCell.isPairedWithActions = true
-            section.add(OWSTableItem(customCell: NameCollisionActionCell(actions: actions)))
-        }
-
-        return section
     }
 
     // MARK: - Resolution Actions
