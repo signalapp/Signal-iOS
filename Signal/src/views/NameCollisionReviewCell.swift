@@ -197,8 +197,6 @@ class NameCollisionCell: UITableViewCell {
         contentView.addSubview(horizontalStack)
         horizontalStack.autoPinEdgesToSuperviewMargins()
         avatarView.autoSetDimensions(to: CGSize(square: 64))
-
-        avatarView.autoPinEdge(.bottom, to: .bottom, of: contentView, withOffset: -16, relation: .lessThanOrEqual)
         separatorView.autoConstrainAttribute(.horizontal, to: .bottom, of: avatarView, withMultiplier: 1, relation: .greaterThanOrEqual)
     }
 
