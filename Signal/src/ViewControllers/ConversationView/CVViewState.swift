@@ -7,7 +7,7 @@ import PromiseKit
 
 @objc
 public protocol CVViewStateDelegate: class {
-    func viewStateUIModeDidChange(oldValue: ConversationUIMode)
+    func uiModeDidChange()
 }
 
 // MARK: -
@@ -81,13 +81,12 @@ public class CVViewState: NSObject {
             let didChange = uiMode != oldValue
             if didChange {
                 cellSelection.reset()
-                delegate?.viewStateUIModeDidChange(oldValue: oldValue)
+                delegate?.uiModeDidChange()
             }
         }
     }
     @objc
     public var isShowingSelectionUI: Bool { uiMode == .selection }
-    public var isAnimatingSelectionUI = false
 
     public let cellSelection = CVCellSelection()
     public let textExpansion = CVTextExpansion()

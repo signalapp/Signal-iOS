@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationCollectionView.h"
@@ -64,13 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
 {
-    // If we're already scrolled where we need to be, ignore the
-    // animated flag. Otherwise, scrollViewDidEndScrollingAnimation
-    // is never called.
-    if (CGPointEqualToPoint(self.contentOffset, contentOffset)) {
-        animated = NO;
-    }
-
     if (animated) {
         [self.layoutDelegate collectionViewWillAnimate];
     }

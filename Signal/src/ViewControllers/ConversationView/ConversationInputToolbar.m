@@ -530,24 +530,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    void (^cleanupSubviewsBlock)(void) = ^{
-        for (UIView *subview in self.quotedReplyWrapper.subviews) {
-            [subview removeFromSuperview];
-        }
-    };
+    [self clearQuotedMessagePreview];
 
     _quotedReply = quotedReply;
 
     if (!quotedReply) {
-        [UIView animateWithDuration:0.1
-            animations:^{ self.quotedReplyWrapper.hidden = YES; }
-            completion:^(BOOL finished) { cleanupSubviewsBlock(); }];
-
         [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
         return;
     }
-
-    cleanupSubviewsBlock();
 
     QuotedReplyPreview *quotedMessagePreview =
         [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
@@ -555,14 +545,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [quotedMessagePreview setContentHuggingHorizontalLow];
     [quotedMessagePreview setCompressionResistanceHorizontalLow];
 
+    self.quotedReplyWrapper.hidden = NO;
     self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsZero;
     [self.quotedReplyWrapper addSubview:quotedMessagePreview];
     [quotedMessagePreview autoPinEdgesToSuperviewMargins];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, quotedMessagePreview);
-
-    if (self.quotedReplyWrapper.isHidden) {
-        [UIView animateWithDuration:0.2 animations:^{ self.quotedReplyWrapper.hidden = NO; }];
-    }
 
     self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
 
@@ -572,6 +559,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (CGFloat)quotedMessageTopMargin
 {
     return 5.f;
+}
+
+- (void)clearQuotedMessagePreview
+{
+    self.quotedReplyWrapper.hidden = YES;
+    for (UIView *subview in self.quotedReplyWrapper.subviews) {
+        [subview removeFromSuperview];
+    }
 }
 
 - (void)beginEditingMessage
