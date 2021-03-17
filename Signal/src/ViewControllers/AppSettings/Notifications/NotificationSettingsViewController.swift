@@ -105,6 +105,19 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         ))
         contents.addSection(notifyWhenSection)
 
+        if DebugFlags.internalSettings {
+            let internalSettingsSection = OWSTableSection()
+            internalSettingsSection.add(.switch(
+                withText: "Keep Muted Chats Archived",
+                isOn: {
+                    Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+                },
+                target: self,
+                selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
+            ))
+            contents.addSection(internalSettingsSection)
+        }
+
         let reregisterPushSection = OWSTableSection()
         reregisterPushSection.add(.actionItem(
             withText: NSLocalizedString("REREGISTER_FOR_PUSH", comment: ""),
@@ -135,6 +148,13 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         let currentValue = databaseStorage.read { Self.preferences.shouldNotifyOfNewAccounts(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         databaseStorage.write { Self.preferences.shouldNotifyOfNewAccounts(sender.isOn, transaction: $0) }
+    }
+
+    @objc
+    func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
+        let currentValue = databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+        guard currentValue != sender.isOn else { return }
+        databaseStorage.write { SSKPreferences.setShouldKeepMutedChatsArchived(sender.isOn, transaction: $0) }
     }
 
     private func syncPushTokens() {

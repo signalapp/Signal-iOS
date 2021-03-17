@@ -508,6 +508,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         needsToClearArchived = NO;
     }
 
+    // Don't clear archive if muted and the user has
+    // requested we don't for muted conversations.
+    if (self.isMuted && [SSKPreferences shouldKeepMutedChatsArchivedWithTransaction:transaction]) {
+        needsToClearArchived = NO;
+    }
+
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
 
     BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;

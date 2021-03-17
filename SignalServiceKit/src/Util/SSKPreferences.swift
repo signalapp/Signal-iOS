@@ -251,4 +251,18 @@ public class SSKPreferences: NSObject {
         }
         return false
     }
+
+    // MARK: - Keep Muted Chats Archived
+
+    private static let shouldKeepMutedChatsArchivedKey = "shouldKeepMutedChatsArchived"
+
+    @objc
+    public static func shouldKeepMutedChatsArchived(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(shouldKeepMutedChatsArchivedKey, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
+    public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
+    }
 }
