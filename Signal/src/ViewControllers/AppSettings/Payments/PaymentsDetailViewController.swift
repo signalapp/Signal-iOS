@@ -291,6 +291,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             bottomLabel.text = bottomText
             bottomLabel.textColor = Theme.secondaryTextAndIconColor
             bottomLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+            bottomLabel.numberOfLines = 0
+            bottomLabel.lineBreakMode = .byWordWrapping
 
             let stack = UIStackView(arrangedSubviews: [topLabel, bottomLabel])
             stack.axis = .vertical
