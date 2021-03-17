@@ -1398,6 +1398,7 @@ private struct InputString: Equatable {
         let groupingSeparator = PaymentsConstants.groupingSeparator
         let decimalSeparator = PaymentsConstants.decimalSeparator
         let groupingSize = PaymentsConstants.groupingSize
+        let shouldUseGroupingSeparatorsAfterDecimal = PaymentsConstants.shouldUseGroupingSeparatorsAfterDecimal
 
         func addGroupingSeparators(digits: [String], afterGroupsOfSize groupSize: Int) -> [String] {
             var result = [String]()
@@ -1422,8 +1423,13 @@ private struct InputString: Equatable {
         if hasDecimal {
             formattedChars.append(decimalSeparator)
         }
-        formattedChars.append(contentsOf: addGroupingSeparators(digits: digitsAfterDecimal,
-                                                                afterGroupsOfSize: groupingSize))
+
+        if shouldUseGroupingSeparatorsAfterDecimal {
+            formattedChars.append(contentsOf: addGroupingSeparators(digits: digitsAfterDecimal,
+                                                                    afterGroupsOfSize: groupingSize))
+        } else {
+            formattedChars.append(contentsOf: digitsAfterDecimal)
+        }
 
         let formatted = formattedChars.joined()
         return formatted

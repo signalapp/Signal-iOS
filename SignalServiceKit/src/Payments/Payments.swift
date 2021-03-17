@@ -563,6 +563,7 @@ public class PaymentsConstants {
         let decimalSeparator: String
         let groupingSeparator: String
         let groupingSize: Int
+        let shouldUseGroupingSeparatorsAfterDecimal: Bool
     }
 
     private static let decimalFormattingInfo: DecimalFormattingInfo = {
@@ -570,6 +571,37 @@ public class PaymentsConstants {
         let decimalSeparator = numberFormatter.decimalSeparator ?? ""
         let groupingSeparator = numberFormatter.groupingSeparator ?? ""
         let groupingSize = numberFormatter.groupingSize
+
+        // NumberFormatter doesn't expose a property for this behavior,
+        // but we can infer the appropriate behavior for the user's locale
+        // by examining NumberFormatter's output.
+        let shouldUseGroupingSeparatorsAfterDecimal: Bool = {
+            let defaultValue = true
+
+            // Build a decimal formatter for user locale.
+            let formatter = NumberFormatter()
+            formatter.locale = Locale.current
+            formatter.numberStyle = .decimal
+            formatter.usesSignificantDigits = false
+            formatter.maximumSignificantDigits = 32
+            formatter.maximumFractionDigits = 32
+            formatter.minimumFractionDigits = 32
+
+            // Format an exemplary value that should have a grouping separator
+            // after the decimal if that's appropriate for the locale.
+            guard let formatted = formatter.string(from: NSNumber(value: 1.23456789)) else {
+                owsFailDebug("Could not format exemplary value.")
+                return defaultValue
+            }
+            let components = formatted.components(separatedBy: formatter.decimalSeparator)
+            guard components.count == 2,
+                  let decimalComponent = components[safe: 1] else {
+                owsFailDebug("Could not parse exemplary value.")
+                return defaultValue
+            }
+            let shouldUseGroupingSeparatorsAfterDecimal = decimalComponent.contains(formatter.groupingSeparator)
+            return shouldUseGroupingSeparatorsAfterDecimal
+        }()
 
         // https://en.wikipedia.org/wiki/Decimal_separator
         let validDecimalSeparators = [",", ".", "'", "·"]
@@ -584,17 +616,20 @@ public class PaymentsConstants {
                 // Fall back to US/UK style formatting.
                 return DecimalFormattingInfo(decimalSeparator: ".",
                                              groupingSeparator: ",",
-                                             groupingSize: 3)
+                                             groupingSize: 3,
+                                             shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
             } else {
                 // Fall back to the most common international style formatting.
                 return DecimalFormattingInfo(decimalSeparator: ",",
                                              groupingSeparator: ".",
-                                             groupingSize: 3)
+                                             groupingSize: 3,
+                                             shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
             }
         }
         return DecimalFormattingInfo(decimalSeparator: decimalSeparator,
                                      groupingSeparator: groupingSeparator,
-                                     groupingSize: groupingSize)
+                                     groupingSize: groupingSize,
+                                     shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
     }()
 
     public static var decimalSeparator: String {
@@ -607,6 +642,10 @@ public class PaymentsConstants {
 
     public static var groupingSize: Int {
         decimalFormattingInfo.groupingSize
+    }
+
+    public static var shouldUseGroupingSeparatorsAfterDecimal: Bool {
+        decimalFormattingInfo.shouldUseGroupingSeparatorsAfterDecimal
     }
 
     public static let paymentsEntropyLength: UInt = 32
