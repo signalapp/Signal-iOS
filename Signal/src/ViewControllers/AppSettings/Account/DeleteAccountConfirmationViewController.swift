@@ -253,12 +253,11 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 owsFailDebug("Missing navigationController.")
                 return
             }
-            navigationController.popViewController(animated: true) {
-                let paymentSettingsView = PaymentsSettingsViewController(mode: .inAppSettings)
-                navigationController.pushViewController(paymentSettingsView, animated: true)
-                let transferOutView = PaymentsTransferOutViewController(transferAmount: nil)
-                navigationController.pushViewController(transferOutView, animated: true)
-            }
+            var viewControllers = navigationController.viewControllers
+            _ = viewControllers.removeLast()
+            viewControllers.append(PaymentsSettingsViewController(mode: .inAppSettings))
+            viewControllers.append(PaymentsTransferOutViewController(transferAmount: nil))
+            navigationController.setViewControllers(viewControllers, animated: true)
         }
     }
 
