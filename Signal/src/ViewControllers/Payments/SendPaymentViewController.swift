@@ -81,6 +81,12 @@ public class SendPaymentViewController: OWSViewController {
         self.mode = mode
         self.isOutgoingTransfer = isOutgoingTransfer
 
+        if Self.wasLastPaymentInFiat {
+            amounts.set(currentAmount: Amounts.defaultFiatAmount, otherCurrencyAmount: nil)
+        } else {
+            amounts.set(currentAmount: Amounts.defaultMCAmount, otherCurrencyAmount: nil)
+        }
+
         if !FeatureFlags.paymentsRequests {
             owsAssertDebug(paymentRequestModel == nil)
             self.paymentRequestModel = nil
@@ -747,6 +753,28 @@ public class SendPaymentViewController: OWSViewController {
         //        currentStep = .confirmRequest(paymentAmount: paymentAmount, currencyConversion: currencyConversion)
     }
 
+    // MARK: -
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "SendPaymentView")
+    private static let wasLastPaymentInFiatKey = "wasLastPaymentInFiat"
+
+    private static var wasLastPaymentInFiat: Bool {
+        Self.databaseStorage.read { transaction in
+            Self.keyValueStore.getBool(Self.wasLastPaymentInFiatKey,
+                                       defaultValue: false,
+                                       transaction: transaction)
+        }
+    }
+
+    private func setWasLastPaymentInFiat(_ value: Bool) {
+        Self.databaseStorage.write { transaction in
+            Self.keyValueStore.setBool(value,
+                                       key: Self.wasLastPaymentInFiatKey,
+                                       transaction: transaction)
+        }
+    }
+
+    // MARK: -
     private var actionSheet: SendPaymentCompletionActionSheet?
 
     @objc
@@ -756,6 +784,9 @@ public class SendPaymentViewController: OWSViewController {
             showInvalidAmountAlert()
             return
         }
+
+        setWasLastPaymentInFiat(amounts.currentAmount.isFiat)
+
         getEstimatedFeeAndSubmit(paymentAmount: paymentAmount)
     }
 
@@ -1136,8 +1167,13 @@ private protocol AmountsDelegate: class {
 private class Amounts {
     weak var delegate: AmountsDelegate?
 
-    private static var defaultMCAmount: Amount {
+    public static var defaultMCAmount: Amount {
         .mobileCoin(inputString: InputString.defaultString(isFiat: false),
+                    exactAmount: nil)
+    }
+
+    public static var defaultFiatAmount: Amount {
+        .mobileCoin(inputString: InputString.defaultString(isFiat: true),
                     exactAmount: nil)
     }
 
