@@ -589,9 +589,12 @@ class MobileCoinAPI {
 
         static var current: Environment {
             if DebugFlags.paymentsInternalBeta {
-                // TODO: Revisit.
+                // TODO: Revisit. 
+                #if TESTABLE_BUILD
+                return .mobileCoinAlphaNet
+                #else
                 return .signalTestNet
-//                return .mobileCoinAlphaNet
+                #endif
             } else {
                 return .signalMainNet
             }
