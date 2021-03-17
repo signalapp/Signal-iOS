@@ -192,6 +192,7 @@ public class SignalAttachment: NSObject {
     // images, we cache the UIImage associated with this attachment if
     // possible.
     private var cachedImage: UIImage?
+    private var cachedThumbnail: UIImage?
     private var cachedVideoPreview: UIImage?
 
     @objc
@@ -231,6 +232,7 @@ public class SignalAttachment: NSObject {
     @objc
     func didReceiveMemoryWarningNotification() {
         cachedImage = nil
+        cachedThumbnail = nil
         cachedVideoPreview = nil
     }
 
@@ -333,16 +335,28 @@ public class SignalAttachment: NSObject {
 
     @objc
     public func staticThumbnail() -> UIImage? {
-        if isAnimatedImage {
-            return image()
-        } else if isImage {
-            return image()
-        } else if isVideo {
-            return videoPreview()
-        } else if isAudio {
-            return nil
-        } else {
-            return nil
+        if let cachedThumbnail = cachedThumbnail {
+            return cachedThumbnail
+        }
+
+        return autoreleasepool {
+            guard let image: UIImage = {
+                if isAnimatedImage {
+                    return image()
+                } else if isImage {
+                    return image()
+                } else if isVideo {
+                    return videoPreview()
+                } else if isAudio {
+                    return nil
+                } else {
+                    return nil
+                }
+            }() else { return nil }
+
+            let thumbnail = image.resized(withMaxDimensionPoints: 60)
+            cachedThumbnail = thumbnail
+            return thumbnail
         }
     }
 
