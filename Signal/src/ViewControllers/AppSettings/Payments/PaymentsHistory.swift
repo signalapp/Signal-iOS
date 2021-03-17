@@ -25,6 +25,10 @@ public struct PaymentsHistoryItem {
         paymentModel.isUnidentified
     }
 
+    var isFailed: Bool {
+        paymentModel.isFailed
+    }
+
     var isDefragmentation: Bool {
         paymentModel.isDefragmentation
     }

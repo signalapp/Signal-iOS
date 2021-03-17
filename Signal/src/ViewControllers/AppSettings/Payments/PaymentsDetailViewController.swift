@@ -415,7 +415,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         amountWrapper.addSubview(amountLabel)
         amountLabel.autoPinEdgesToSuperviewEdges()
 
-        if let paymentAmount = paymentItem.paymentAmount {
+        if paymentItem.isFailed {
+            amountLabel.text = nil
+        } else if let paymentAmount = paymentItem.paymentAmount {
             amountLabel.attributedText = PaymentsFormat.attributedFormat(paymentAmount: paymentAmount,
                                                                          isShortForm: false,
                                                                          paymentType: paymentItem.paymentType)
