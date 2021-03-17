@@ -209,15 +209,50 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let paymentItem = self.paymentItem
         let paymentModel = paymentItem.paymentModel
 
+        // Type/Amount
+        if let paymentAmount = paymentItem.paymentAmount,
+           !paymentAmount.isZero {
+            let title: String
+            if let address = paymentModel.address {
+                let username = Self.contactsManager.displayName(for: address)
+                let titleFormat: String
+                if paymentItem.isIncoming {
+                    titleFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT",
+                                                    comment: "Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}.")
+                } else {
+                    titleFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT",
+                                                    comment: "Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}.")
+                }
+                title = String(format: titleFormat, username)
+            } else {
+                if paymentItem.isIncoming {
+                    title = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED",
+                                              comment: "Indicates that you received a payment in the payment details view in the app settings.")
+                } else {
+                    title = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT",
+                                              comment: "Indicates that you sent a payment in the payment details view in the app settings.")
+                }
+            }
+
+            let value = PaymentsFormat.format(paymentAmount: paymentAmount,
+                                              isShortForm: false,
+                                              withCurrencyCode: true,
+                                              withSpace: true)
+
+            section.add(buildStatusItem(topText: title,
+                                        bottomText: value))
+        }
+
+        // Fee
         if paymentModel.isOutgoing,
            let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount {
-            let bottomText = PaymentsFormat.format(paymentAmount: feeAmount,
+            let value = PaymentsFormat.format(paymentAmount: feeAmount,
                                                    isShortForm: false,
                                                    withCurrencyCode: true,
                                                    withSpace: true)
             section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE",
                                                                    comment: "Label for the 'MobileCoin network fee' in the payment details view in the app settings."),
-                                        bottomText: bottomText))
+                                        bottomText: value))
         }
 
         // TODO: We might not want to include dates if an incoming
@@ -227,24 +262,31 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                                comment: "Label for the transaction status in the payment details view in the app settings."),
                                     bottomText: paymentModel.statusDescription(isLongForm: true)))
 
-        if let address = paymentModel.address {
-            var sender: String
-            if paymentItem.isIncoming {
-                sender = Self.contactsManager.displayName(for: address)
+        // Sender
+        do {
+            let sender = { () -> String in
+                if paymentItem.isOutgoing {
+                    return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU",
+                                             comment: "Indicates that you send the payment in the payment details view in the app settings.")
+                }
+                if let address = paymentModel.address {
+                    return Self.contactsManager.displayName(for: address)
+                }
+                return Self.contactsManager.unknownUserLabel
+            }()
+            let value: String
+            if let mcLedgerBlockDate = paymentItem.paymentModel.mcLedgerBlockDate {
+                let senderFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT",
+                                                     comment: "Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}.")
+                value = String(format: senderFormat,
+                               sender,
+                               TSPaymentModel.formatDate(mcLedgerBlockDate, isLongForm: true))
             } else {
-                sender = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU",
-                                           comment: "Indicates that you send the payment in the payment details view in the app settings.")
+                value = sender
             }
-            let senderFormat = NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT",
-                                                 comment: "Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}.")
-            let bottomText = String(format: senderFormat,
-                                    sender,
-                                    TSPaymentModel.formateDate(paymentItem.sortDate,
-                                                               isLongForm: true))
-
             section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER",
                                                                    comment: "Label for the sender in the payment details view in the app settings."),
-                                        bottomText: bottomText))
+                                        bottomText: value))
         }
 
         // TODO: Update support article link.

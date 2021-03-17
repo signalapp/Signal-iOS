@@ -17,6 +17,10 @@ public struct PaymentsHistoryItem {
         paymentModel.isIncoming
     }
 
+    var isOutgoing: Bool {
+        paymentModel.isOutgoing
+    }
+
     var isOutgoingTransfer: Bool {
         paymentModel.isOutgoingTransfer
     }

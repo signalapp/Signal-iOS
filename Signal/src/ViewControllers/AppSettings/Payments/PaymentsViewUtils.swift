@@ -279,12 +279,12 @@ public extension TSPaymentModel {
             }
         }
         result.append(" ")
-        result.append(Self.formateDate(sortDate, isLongForm: isLongForm))
+        result.append(Self.formatDate(sortDate, isLongForm: isLongForm))
 
         return result
     }
 
-    static func formateDate(_ date: Date, isLongForm: Bool) -> String {
+    static func formatDate(_ date: Date, isLongForm: Bool) -> String {
         if isLongForm {
             return statusDateTimeLongFormatter.string(from: date)
         } else {
