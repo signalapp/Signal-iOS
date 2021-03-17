@@ -660,8 +660,13 @@ public class KeyBackupService: NSObject {
             state.masterKey != nil,
             tsAccountManager.isRegisteredAndReady else { return }
 
+        guard OWS2FAManager.shared.is2FAEnabled() else {
+            Logger.warn("Can't migrate KBS enclave because pins are not enabled.")
+            return
+        }
         guard let pin = OWS2FAManager.shared.pinCode else {
-            return owsFailDebug("Can't migrate KBS enclave because local pin is missing")
+            owsFailDebug("Can't migrate KBS enclave because local pin is missing")
+            return
         }
 
         Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(currentEnclave.name)")

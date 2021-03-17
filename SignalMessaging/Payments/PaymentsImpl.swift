@@ -248,7 +248,13 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
-        Self.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
+        if DevFlags.useFakeRootEntropy_self,
+           let localAddress = Self.tsAccountManager.localAddress,
+           Self.hasMCFakeRootEntropy(forAddress: localAddress) {
+            return Self.fakeMCRootEntropy(forAddress: localAddress)
+        } else {
+            return Self.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
+        }
     }
 
     public func enablePayments(transaction: SDSAnyWriteTransaction) {
@@ -334,14 +340,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             guard tsAccountManager.isRegisteredAndReady else {
                 return nil
             }
-            // TODO: We'll need to revisit this once SDK supports entropy derivation.
-            if DevFlags.useFakeRootEntropy_self,
-               let localAddress = tsAccountManager.localAddress,
-               hasFakeRootEntropy(forAddress: localAddress) {
-                return fakeRootEntropy(forAddress: localAddress)
-            } else {
-                return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
-            }
+            return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
         }
         guard let paymentsEntropy = loadPaymentsEntropy() else {
             return .disabled
@@ -482,11 +481,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // TODO: Remove.
     private struct DevDevice {
         fileprivate let address: SignalServiceAddress
-        fileprivate let fakeRootEntropy: Data
+        fileprivate let fakeMCRootEntropy: Data
 
-        init(phoneNumber: String, fakeRootEntropy: Data) throws {
+        init(phoneNumber: String, fakeMCRootEntropy: Data) throws {
             self.address = SignalServiceAddress(phoneNumber: phoneNumber)
-            self.fakeRootEntropy = fakeRootEntropy
+            self.fakeMCRootEntropy = fakeMCRootEntropy
         }
     }
 
@@ -494,7 +493,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         return [
             // iPhone 11 Pro Max Simulator
             try! DevDevice(phoneNumber: "+441752395464",
-                           fakeRootEntropy: MobileCoinAPI.rootEntropy1)
+                           fakeMCRootEntropy: MobileCoinAPI.rootEntropy1)
 
             //            // iPhone Xs Simulator
             //            try! DevDevice(phoneNumber: "+14503002620",
@@ -518,12 +517,12 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         ]
     }
 
-    private class func fakeRootEntropy(forAddress address: SignalServiceAddress) -> Data {
+    private class func fakeMCRootEntropy(forAddress address: SignalServiceAddress) -> Data {
         let device = fakeDevDevices.filter { $0.address == address }.first!
-        return device.fakeRootEntropy
+        return device.fakeMCRootEntropy
     }
 
-    private class func hasFakeRootEntropy(forAddress address: SignalServiceAddress) -> Bool {
+    private class func hasMCFakeRootEntropy(forAddress address: SignalServiceAddress) -> Bool {
         !fakeDevDevices.filter { $0.address == address }.isEmpty
     }
 
