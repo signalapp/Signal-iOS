@@ -2120,6 +2120,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction
 {
+    if (!self.payments.arePaymentsEnabled) {
+        self.unreadPaymentNotificationsCount = 0;
+        self.firstUnreadPaymentModel = nil;
+
+        [self updateBarButtonItems];
+        [self updateReminderViews];
+        return;
+    }
+
     __block NSUInteger unreadPaymentNotificationsCount;
     __block TSPaymentModel *_Nullable firstUnreadPaymentModel;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {

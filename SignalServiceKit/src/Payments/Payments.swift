@@ -268,6 +268,14 @@ public enum PaymentsState: Equatable {
 
 public struct PaymentsPassphrase: Equatable {
 
+    // MARK: - Dependencies
+
+    private static var payments: PaymentsSwift {
+        SSKEnvironment.shared.payments as! PaymentsSwift
+    }
+
+    // MARK: -
+
     public let words: [String]
 
     public init(words: [String]) throws {
@@ -285,11 +293,21 @@ public struct PaymentsPassphrase: Equatable {
 
     public var debugDescription: String { asPassphrase }
 
-    public static func parse(passphrase: String) throws -> PaymentsPassphrase {
-        let words = Array(passphrase.components(separatedBy: " "))
+    public static func parse(passphrase: String,
+                             validateWords: Bool) throws -> PaymentsPassphrase {
+        let words = Array(passphrase.lowercased().stripped.components(separatedBy: " ").compactMap { $0.nilIfEmpty })
         guard words.count == PaymentsConstants.passphraseWordCount else {
-            owsFailDebug("words.count \(words.count) != \(PaymentsConstants.passphraseWordCount)")
+            Logger.warn("words.count \(words.count) != \(PaymentsConstants.passphraseWordCount)")
             throw PaymentsError.invalidPassphrase
+        }
+        if validateWords {
+            for word in words {
+                guard Self.payments.isValidPassphraseWord(word) else {
+                    Logger.verbose("Invalid passphrase word: \(word).")
+                    Logger.warn("Invalid passphrase word.")
+                    throw PaymentsError.invalidPassphrase
+                }
+            }
         }
         return try PaymentsPassphrase(words: words)
     }
@@ -539,6 +557,9 @@ public class PaymentsConstants {
     @objc
     public static let mobileCoinCurrencyIdentifier = "MOB"
 
+    @objc
+    public static let currencyCodeGBP = "GBP"
+
     public static func convertMobToPicoMob(_ mob: Double) -> UInt64 {
         UInt64(round(mob * Double(picoMobPerMob)))
     }
@@ -720,7 +741,7 @@ public struct CurrencyConversionInfo {
 
 public class MockPaymentsCurrencies: NSObject, PaymentsCurrenciesSwift {
 
-    public let currentCurrencyCode: CurrencyCode = "USD"
+    public let currentCurrencyCode: CurrencyCode = PaymentsConstants.currencyCodeGBP
 
     public func setCurrentCurrencyCode(_ currencyCode: PaymentsCurrencies.CurrencyCode, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")

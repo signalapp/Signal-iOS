@@ -57,9 +57,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
 
     private static let unfairLock = UnfairLock()
 
-    private static let currencyCodeUSD = "USD"
-
-    static let defaultCurrencyCode = currencyCodeUSD
+    static let defaultCurrencyCode = PaymentsConstants.currencyCodeGBP
 
     private static let keyValueStore = SDSKeyValueStore(collection: "PaymentsCurrencies")
 
@@ -311,7 +309,6 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
     private static let preferredCurrencyCodes: [CurrencyCode] = [
         "EUR",
         "GBP",
-        "USD",
         "JPY",
         "CNY",
         "AUD",

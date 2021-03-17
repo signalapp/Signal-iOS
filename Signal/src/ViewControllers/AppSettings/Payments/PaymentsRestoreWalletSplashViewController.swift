@@ -80,13 +80,23 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
-        let startButton = OWSFlatButton.button(title: CommonStrings.startButton,
+        let pasteFromPasteboardButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD",
+                                                                                      comment: "Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view."),
+                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                                               titleColor: .ows_accentBlue,
+                                               backgroundColor: Theme.tableViewBackgroundColor,
+                                               target: self,
+                                               selector: #selector(didTapPasteFromPasteboardButton))
+        pasteFromPasteboardButton.autoSetHeightUsingFont()
+
+        let enterManuallyButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY",
+                                                                                comment: "Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view."),
                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                titleColor: .white,
                                                backgroundColor: .ows_accentBlue,
                                                target: self,
-                                               selector: #selector(didTapStartButton))
-        startButton.autoSetHeightUsingFont()
+                                               selector: #selector(didTapEnterManuallyButton))
+        enterManuallyButton.autoSetHeightUsingFont()
 
         let spacerFactory = SpacerFactory()
 
@@ -94,7 +104,9 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             spacerFactory.buildVSpacer(),
             topStack,
             spacerFactory.buildVSpacer(),
-            startButton,
+            pasteFromPasteboardButton,
+            UIView.spacer(withHeight: 8),
+            enterManuallyButton,
             UIView.spacer(withHeight: 8)
         ])
         rootView.axis = .vertical
@@ -115,7 +127,18 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
     }
 
     @objc
-    func didTapStartButton() {
+    private func didTapPasteFromPasteboardButton() {
+        guard let restoreWalletDelegate = restoreWalletDelegate else {
+            owsFailDebug("Missing restoreWalletDelegate.")
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        let view = PaymentsRestoreWalletPasteboardViewController(restoreWalletDelegate: restoreWalletDelegate)
+        navigationController?.pushViewController(view, animated: true)
+    }
+
+    @objc
+    private func didTapEnterManuallyButton() {
         guard let restoreWalletDelegate = restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)

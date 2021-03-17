@@ -27,7 +27,8 @@ class MobileCoinAPI {
         let result = MobileCoin.Mnemonic.mnemonic(fromEntropy: paymentsEntropy)
         switch result {
         case .success(let mnemonic):
-            return try PaymentsPassphrase.parse(passphrase: mnemonic)
+            return try PaymentsPassphrase.parse(passphrase: mnemonic,
+                                                validateWords: false)
         case .failure(let error):
             owsFailDebug("Error: \(error)")
             let error = Self.convertMCError(error: error)

@@ -199,6 +199,7 @@
 		346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3825FFDC6900F493C7 /* restore-dark.json */; };
 		346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3925FFDC6900F493C7 /* update-pin-dark.json */; };
 		346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3A25FFDC6A00F493C7 /* update-pin.json */; };
+		346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
@@ -1218,6 +1219,7 @@
 		346EFC3825FFDC6900F493C7 /* restore-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "restore-dark.json"; sourceTree = "<group>"; };
 		346EFC3925FFDC6900F493C7 /* update-pin-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin-dark.json"; sourceTree = "<group>"; };
 		346EFC3A25FFDC6A00F493C7 /* update-pin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin.json"; sourceTree = "<group>"; };
+		346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletPasteboardViewController.swift; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
@@ -2729,14 +2731,15 @@
 				3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */,
 				3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */,
 				3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */,
+				346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */,
 				3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */,
 				3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */,
 				3497971425D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift */,
 				3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */,
 				34848D6225D44EBD00E5034B /* PaymentsTransferInViewController.swift */,
 				3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */,
-				3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */,
 				3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */,
+				3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */,
 				3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */,
 				34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */,
 			);
@@ -5685,6 +5688,7 @@
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
+				346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */,
