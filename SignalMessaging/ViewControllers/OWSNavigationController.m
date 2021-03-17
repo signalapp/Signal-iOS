@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNavigationController.h"
@@ -142,6 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
         UIViewController *presentedViewController = self.presentedViewController;
         if (presentedViewController != nil && !presentedViewController.isBeingDismissed) {
             return presentedViewController.preferredStatusBarStyle;
+        } else if (@available(iOS 13, *)) {
+            return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : UIStatusBarStyleDarkContent);
         } else {
             return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);
         }
