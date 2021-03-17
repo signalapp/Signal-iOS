@@ -81,8 +81,9 @@ public class SendPaymentViewController: OWSViewController {
         self.mode = mode
         self.isOutgoingTransfer = isOutgoingTransfer
 
-        if Self.wasLastPaymentInFiat {
-            amounts.set(currentAmount: Amounts.defaultFiatAmount, otherCurrencyAmount: nil)
+        if Self.wasLastPaymentInFiat,
+           let defaultFiatAmount = Amounts.defaultFiatAmount {
+            amounts.set(currentAmount: defaultFiatAmount, otherCurrencyAmount: nil)
         } else {
             amounts.set(currentAmount: Amounts.defaultMCAmount, otherCurrencyAmount: nil)
         }
@@ -1165,6 +1166,15 @@ private protocol AmountsDelegate: class {
 // MARK: -
 
 private class Amounts {
+
+    // MARK: - Dependencies
+
+    private static var paymentsCurrencies: PaymentsCurrenciesSwift {
+        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
+    }
+
+    // MARK: -
+
     weak var delegate: AmountsDelegate?
 
     public static var defaultMCAmount: Amount {
@@ -1172,9 +1182,13 @@ private class Amounts {
                     exactAmount: nil)
     }
 
-    public static var defaultFiatAmount: Amount {
-        .mobileCoin(inputString: InputString.defaultString(isFiat: true),
-                    exactAmount: nil)
+    public static var defaultFiatAmount: Amount? {
+        let currentCurrencyCode = Self.paymentsCurrencies.currentCurrencyCode
+        guard let currencyConversion = Self.paymentsCurrencies.conversionInfo(forCurrencyCode: currentCurrencyCode) else {
+            return nil
+        }
+        return .fiatCurrency(inputString: InputString.defaultString(isFiat: true),
+                             currencyConversion: currencyConversion)
     }
 
     fileprivate private(set) var currentAmount: Amount = Amounts.defaultMCAmount

@@ -548,6 +548,7 @@ class MobileCoinAPI {
         }
 
         fileprivate func buildClient(signalAuthorization: OWSAuthorization) throws -> MobileCoinClient {
+            Logger.info("Environment: \(environment)")
             let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
             let authorization = self.authorization(signalAuthorization: signalAuthorization)
             let attestationConfig = OWSAttestationConfig.attestationConfig(environment: environment)
