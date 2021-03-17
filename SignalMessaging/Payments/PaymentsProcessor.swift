@@ -525,7 +525,8 @@ private class PaymentProcessingOperation: OWSOperation {
                      .inputsAlreadySpent,
                      .defragmentationFailed,
                      .invalidPassphrase,
-                     .invalidEntropy:
+                     .invalidEntropy,
+                     .killSwitch:
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -578,7 +579,8 @@ private class PaymentProcessingOperation: OWSOperation {
                  .inputsAlreadySpent,
                  .defragmentationFailed,
                  .invalidPassphrase,
-                 .invalidEntropy:
+                 .invalidEntropy,
+                 .killSwitch:
                 // Do not retry these errors.
                 delegate?.endProcessing(paymentId: self.paymentId)
             case .serverRateLimited:

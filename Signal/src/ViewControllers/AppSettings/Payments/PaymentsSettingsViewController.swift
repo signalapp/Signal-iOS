@@ -792,6 +792,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     func didTapEnablePaymentsButton(_ sender: UIButton) {
         AssertIsOnMainThread()
 
+        guard !RemoteConfig.paymentsResetKillSwitch else {
+            // TODO: Need copy.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH",
+                                                                      comment: "Error message indicating that payments could not be activated because the feature is not currently available."))
+            return
+        }
+
         databaseStorage.asyncWrite { transaction in
             Self.paymentsSwift.enablePayments(transaction: transaction)
 
@@ -895,6 +902,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapSendPaymentButton(sender: UIGestureRecognizer) {
+        guard !RemoteConfig.paymentsResetKillSwitch else {
+            // TODO: Need copy.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
+                                                                      comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
+            return
+        }
         PaymentsSendRecipientViewController.presentAsFormSheet(fromViewController: self,
                                                                paymentRequestModel: nil)
     }

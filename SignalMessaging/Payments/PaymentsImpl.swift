@@ -819,6 +819,11 @@ public extension PaymentsImpl {
 
         switch recipient {
         case .address(let recipientAddress):
+            // Cannot send "user-to-user" payment if kill switch is active.
+            guard !RemoteConfig.paymentsResetKillSwitch else {
+                return Promise(error: PaymentsError.killSwitch)
+            }
+
             return firstly(on: .global()) { () -> Promise<MobileCoin.PublicAddress> in
                 self.fetchPublicAddress(forAddress: recipientAddress)
             }.then(on: .global()) { (recipientPublicAddress: MobileCoin.PublicAddress) -> Promise<TSPaymentModel> in

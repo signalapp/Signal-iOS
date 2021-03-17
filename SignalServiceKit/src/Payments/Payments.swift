@@ -36,6 +36,7 @@ public enum PaymentsError: Error {
     case defragmentationFailed
     case invalidPassphrase
     case invalidEntropy
+    case killSwitch
 }
 
 // MARK: -

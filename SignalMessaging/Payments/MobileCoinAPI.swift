@@ -1208,7 +1208,8 @@ public extension PaymentsError {
              .inputsAlreadySpent,
              .defragmentationFailed,
              .invalidPassphrase,
-             .invalidEntropy:
+             .invalidEntropy,
+             .killSwitch:
             return false
         case .connectionFailure,
              .timeout:

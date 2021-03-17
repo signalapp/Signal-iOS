@@ -208,6 +208,11 @@ public class RemoteConfig: BaseFlags {
         }
     }
 
+    @objc
+    public static var paymentsResetKillSwitch: Bool {
+        isEnabled(.paymentsResetKillSwitch)
+    }
+
     // MARK: -
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
@@ -345,6 +350,7 @@ private struct Flags {
         case groupsV2blockingMigrations
         case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
+        case paymentsResetKillSwitch
     }
 
     // Values defined in this array remain set once they are

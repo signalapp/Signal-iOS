@@ -2715,6 +2715,15 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
+    if (RemoteConfig.paymentsResetKillSwitch) {
+        // TODO: Need copy.
+        [OWSActionSheets
+            showErrorAlertWithMessage:NSLocalizedString(@"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
+                                          @"Error message indicating that payments cannot be sent because the feature "
+                                          @"is not currently available.")];
+        return;
+    }
+
     TSContactThread *thread = (TSContactThread *)self.thread;
     [SendPaymentViewController presentFromConversationView:self
                                                   delegate:self

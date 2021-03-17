@@ -78,7 +78,7 @@ class PaymentsSendRecipientViewController: OWSViewController {
                                           recipientAddress: address,
                                           paymentRequestModel: nil,
                                           isOutgoingTransfer: true,
-                                          mode: .fromTransferOutFlow)
+                                          mode: .fromPaymentSettings)
     }
 }
 
