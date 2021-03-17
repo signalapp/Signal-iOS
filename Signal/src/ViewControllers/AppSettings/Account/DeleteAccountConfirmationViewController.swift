@@ -244,15 +244,21 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     private func transferPaymentsButton() {
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("Missing navigationController.")
-            return
-        }
         dismiss(animated: true) {
-            let paymentSettingsView = PaymentsSettingsViewController(mode: .inAppSettings)
-            navigationController.pushViewController(paymentSettingsView, animated: true)
-            let transferOutView = PaymentsTransferOutViewController(transferAmount: nil)
-            navigationController.pushViewController(transferOutView, animated: true)
+            guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+                owsFailDebug("Could not identify frontmostViewController")
+                return
+            }
+            guard let navigationController = frontmostViewController.navigationController else {
+                owsFailDebug("Missing navigationController.")
+                return
+            }
+            navigationController.popViewController(animated: true) {
+                let paymentSettingsView = PaymentsSettingsViewController(mode: .inAppSettings)
+                navigationController.pushViewController(paymentSettingsView, animated: true)
+                let transferOutView = PaymentsTransferOutViewController(transferAmount: nil)
+                navigationController.pushViewController(transferOutView, animated: true)
+            }
         }
     }
 
