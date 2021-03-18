@@ -62,9 +62,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
             return cell
         },
-        actionBlock: { [weak self] in
-            self?.didTapLearnMore()
-        }))
+        actionBlock: nil))
+
         contents.addSection(infoSection)
 
         self.contents = contents
@@ -187,10 +186,5 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             return
         }
         AttachmentSharing.showShareUI(forText: walletAddressQRUrl.absoluteString, sender: self)
-    }
-
-    @objc
-    func didTapLearnMore() {
-        // TODO: Pending design/support URL.
     }
 }

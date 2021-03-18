@@ -550,7 +550,6 @@ public class PaymentsConstants {
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}
 
-    // PAYMENTS TODO: Use SDK constant?
     @objc
     public static let picoMobPerMob: UInt64 = 1000 * 1000 * 1000 * 1000
 
@@ -578,7 +577,6 @@ public class PaymentsConstants {
     // Unsafe: 99,999,999.999,999,999,999.
     public static let maxMobNonDecimalDigits: UInt = 7
 
-    // TODO: Is this value final?
     public static let passphraseWordCount: Int = 24
 
     private struct DecimalFormattingInfo {

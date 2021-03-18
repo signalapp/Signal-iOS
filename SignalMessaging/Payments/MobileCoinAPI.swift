@@ -632,7 +632,6 @@ class MobileCoinAPI {
         }
     }
 
-    // PAYMENTS TODO: Network config could theoretically differ for each account.
     class func buildAccount(forMCRootEntropy mcRootEntropy: Data) throws -> MobileCoinAccount {
         let environment = Environment.current
         let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
@@ -1277,7 +1276,6 @@ extension MobileCoinAPI {
     }
 
     static func parse(publicAddressBase58 base58: String) -> MobileCoin.PublicAddress? {
-        // TODO: Replace with SDK method when available.
         guard let result = Base58Coder.decode(base58) else {
             Logger.verbose("Invalid base58: \(base58)")
             Logger.warn("Invalid base58.")
