@@ -6,9 +6,20 @@ import Foundation
 import Lottie
 
 @objc
-public enum PaymentsSettingsMode: UInt {
+public enum PaymentsSettingsMode: UInt, CustomStringConvertible {
     case inAppSettings
     case standalone
+
+    // MARK: - CustomStringConvertible
+
+    public var description: String {
+        switch self {
+        case .inAppSettings:
+            return "inAppSettings"
+        case .standalone:
+            return "standalone"
+        }
+    }
 }
 
 // MARK: -
@@ -115,6 +126,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                target: self,
                                                                action: #selector(didTapDismiss),
                                                                accessibilityIdentifier: "dismiss")
+        } else {
+            navigationItem.leftBarButtonItem = nil
         }
 
         addListeners()

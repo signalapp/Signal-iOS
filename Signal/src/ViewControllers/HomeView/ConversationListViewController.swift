@@ -200,24 +200,23 @@ public extension ConversationListViewController {
 
         let navigationController = AppSettingsViewController.inModalNavigationController()
 
+        var viewControllers = navigationController.viewControllers
         switch mode {
         case .none:
             break
         case .payments:
-            let paymentSettings = PaymentsSettingsViewController(mode: .inAppSettings)
-            navigationController.pushViewController(paymentSettings, animated: false)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            viewControllers += [ paymentsSettings ]
         case .payment(let paymentsHistoryItem):
-            let paymentSettings = PaymentsSettingsViewController(mode: .inAppSettings)
-            navigationController.pushViewController(paymentSettings, animated: false)
-            let view = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
-            navigationController.pushViewController(view, animated: false)
-        case .paymentsTransferIn:
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
+            let paymentsDetail = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
+            viewControllers += [ paymentsSettings, paymentsDetail ]
+       case .paymentsTransferIn:
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsTransferIn = PaymentsTransferInViewController()
-            navigationController.pushViewController(paymentsSettings, animated: false)
-            navigationController.pushViewController(paymentsTransferIn, animated: false)
+            viewControllers += [ paymentsSettings, paymentsTransferIn ]
         }
-
+        navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true)
     }
 }
