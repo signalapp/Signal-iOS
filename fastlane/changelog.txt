@@ -1,5 +1,4 @@
-• We redesigned lots of screens within the app, and even more will be updated soon. If you're reading these release notes on a plane that is flying back from Paris Fashion Week, go ahead and download this update before you take off to help our hot new 2021 looks make a last-minute runway debut.
-• If you've been searching for an option that you can't seem to find, just retrace your steps with the new and improved Signal Settings menu. It's probably wherever you set it last.
-• Bandwidth shouldn't be the limiting factor that determines whether or not you can talk to someone (unless it's emotional bandwidth) so this release includes a few tweaks to help low-bandwidth calls perform even better.
+• We fixed a crash that prevented some users from sharing more than a few pictures at once. Now you can once again send photo albums instead of photo EPs.
+• The bug where large stickers wouldn't automatically download is no longer creating sticky situations. Stickers were meant to get stuck, but not like this.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
