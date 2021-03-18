@@ -181,21 +181,51 @@ public class PaymentsViewUtils: NSObject {
         return stack
     }
 
-    static func buildTextWithLearnMoreLink(text: String,
-                                           font: UIFont,
-                                           learnMoreUrl: String) -> NSAttributedString {
-        NSAttributedString.composed(of: [
+    static func buildTextWithLearnMoreLinkLabel(text: String,
+                                                font: UIFont,
+                                                learnMoreUrl: String) -> UILabel {
+        let label = LinkLabel(linkUrl: URL(string: learnMoreUrl)!)
+        label.attributedText = NSAttributedString.composed(of: [
             text,
             " ",
-            CommonStrings.learnMore.styled(with:
-                                            .link(URL(string: learnMoreUrl)!),
-                                           .font(font),
-                                           .color(Theme.primaryTextColor),
-                                           .underline([], Theme.primaryTextColor)
+            CommonStrings.learnMore.styled(with: .color(Theme.primaryTextColor)
             )
         ]).styled(
             with: .font(font),
             .color(Theme.secondaryTextAndIconColor)
+        )
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }
+}
+
+// MARK: -
+
+@objc
+public class LinkLabel: UILabel {
+    private let linkUrl: URL
+
+    @objc
+    public required init(linkUrl: URL) {
+        self.linkUrl = linkUrl
+
+        super.init(frame: .zero)
+
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    private func didTap() {
+        UIApplication.shared.open(
+            linkUrl,
+            options: [:],
+            completionHandler: nil
         )
     }
 }

@@ -518,18 +518,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
         heroImageView.autoSetDimension(.height, toSize: heroSize)
 
-        let bodyLabel = UILabel()
-        bodyLabel.textColor = Theme.secondaryTextAndIconColor
-        bodyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         // TODO: Update support article link.
-        bodyLabel.attributedText = PaymentsViewUtils.buildTextWithLearnMoreLink(
+        let bodyLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
             text: NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
                                     comment: "Message for the 'payments opt-in' view in the app settings."),
             font: .ows_dynamicTypeSubheadlineClamped,
             learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
         bodyLabel.textAlignment = .center
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
 
         let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
                                             comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
