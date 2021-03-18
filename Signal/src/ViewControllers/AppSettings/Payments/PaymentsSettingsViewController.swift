@@ -631,7 +631,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    // TODO: What are the links/behaviors for the help cards?
     private func buildHelpCard(helpCard: HelpCard,
                                title: String,
                                body: String,
@@ -788,6 +787,42 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     func didTapEnablePaymentsButton(_ sender: UIButton) {
         AssertIsOnMainThread()
 
+        showEnablePaymentsConfirmUI()
+    }
+
+    private func showEnablePaymentsConfirmUI() {
+        AssertIsOnMainThread()
+
+        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE",
+                                                                         comment: "Title for the 'activate payments confirmation' UI in the payment settings."),
+                                                message: NSLocalizedString("SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION",
+                                                                           comment: "Description for the 'activate payments confirmation' UI in the payment settings."))
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE",
+                                                                         comment: "Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings."),
+                                                accessibilityIdentifier: "payments.settings.activate.agree",
+                                                style: .default) { [weak self] _ in
+            self?.enablePayments()
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS",
+                                                                         comment: "Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings."),
+                                                accessibilityIdentifier: "payments.settings.activate.view-terms",
+                                                style: .default) { _ in
+            // TODO: Verify that this URL is final.
+            UIApplication.shared.open(
+                URL(string: "https://signal.org/legal/")!,
+                options: [:],
+                completionHandler: nil
+            )
+        })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    private func enablePayments() {
+        AssertIsOnMainThread()
+
         guard !RemoteConfig.paymentsResetKillSwitch else {
             // TODO: Need copy.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH",
@@ -919,17 +954,29 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didTapAboutMobileCoinCard() {
-        // TODO: Pending design/support URL.
+        UIApplication.shared.open(
+            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_which_ones")!,
+            options: [:],
+            completionHandler: nil
+        )
     }
 
     @objc
     private func didTapAddingToYourWalletCard() {
-        // TODO: Pending design/support URL.
+        UIApplication.shared.open(
+            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_from_exchange")!,
+            options: [:],
+            completionHandler: nil
+        )
     }
 
     @objc
     private func didTapCashingOutCoinCard() {
-        // TODO: Pending design/support URL.
+        UIApplication.shared.open(
+            URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_to_exchange")!,
+            options: [:],
+            completionHandler: nil
+        )
     }
 
     @objc

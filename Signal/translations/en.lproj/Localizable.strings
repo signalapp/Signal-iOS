@@ -3361,9 +3361,6 @@
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Wallet Defragmentation";
 
-/* Error message indicating that the estimated fee for a payment could not be determined. */
-"PAYMENTS_ERROR_COULD_NOT_ESTIMATE_FEE" = "Could not determine fee for payment";
-
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
 
@@ -4777,6 +4774,18 @@
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
+/* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Agree";
+
+/* Description for the 'activate payments confirmation' UI in the payment settings. */
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "By continuing, you agree to Signal’s Terms & Conditions.";
+
+/* Title for the 'activate payments confirmation' UI in the payment settings. */
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Accept Terms";
+
+/* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View Terms";
+
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Money";
 
@@ -4947,9 +4956,6 @@
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
-
-/* Message for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_UNKNOWN" = "You don’t have enough MOB to complete this payment.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";

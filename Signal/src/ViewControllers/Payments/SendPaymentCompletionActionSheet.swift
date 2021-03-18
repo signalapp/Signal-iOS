@@ -324,20 +324,35 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         var rows = [UIView]()
 
-        func addRow(titleView: UIView, valueView: UIView) {
+        @discardableResult
+        func addRow(titleView: UIView,
+                    valueView: UIView,
+                    titleIconView: UIView? = nil) -> UIView {
 
             valueView.setCompressionResistanceHorizontalHigh()
             valueView.setContentHuggingHorizontalHigh()
 
-            let row = UIStackView(arrangedSubviews: [titleView, valueView])
+            let subviews: [UIView]
+            if let titleIconView = titleIconView {
+                subviews = [titleView, titleIconView, UIView.hStretchingSpacer(), valueView]
+            } else {
+                subviews = [titleView, valueView]
+            }
+
+            let row = UIStackView(arrangedSubviews: subviews)
             row.axis = .horizontal
             row.alignment = .center
             row.spacing = 8
 
             rows.append(row)
+            return row
         }
 
-        func addRow(title: String, value: String, isTotal: Bool = false) {
+        @discardableResult
+        func addRow(title: String,
+                    value: String,
+                    titleIconView: UIView? = nil,
+                    isTotal: Bool = false) -> UIView {
 
             let titleLabel = UILabel()
             titleLabel.text = title
@@ -355,7 +370,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 valueLabel.textColor = Theme.secondaryTextAndIconColor
             }
 
-            addRow(titleView: titleLabel, valueView: valueLabel)
+            return addRow(titleView: titleLabel,
+                          valueView: valueLabel,
+                          titleIconView: titleIconView)
         }
 
         let recipientDescription = recipientDescriptionWithSneakyTransaction(paymentInfo: paymentInfo)
@@ -367,8 +384,18 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                                                                         currencyConversionInfo: currencyConversion) {
                 let fiatFormat = NSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
                                                    comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.")
-                addRow(title: String(format: fiatFormat, currencyConversion.currencyCode),
-                       value: fiatAmountString)
+
+                let currencyConversionInfoView = UIImageView.withTemplateImageName("info-outline-24",
+                                                                                   tintColor: Theme.secondaryTextAndIconColor)
+                currencyConversionInfoView.autoSetDimensions(to: .square(16))
+                currencyConversionInfoView.setCompressionResistanceHigh()
+
+                let row = addRow(title: String(format: fiatFormat, currencyConversion.currencyCode),
+                                 value: fiatAmountString,
+                                 titleIconView: currencyConversionInfoView)
+
+                row.isUserInteractionEnabled = true
+                row.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
             } else {
                 owsFailDebug("Could not convert to fiat.")
             }
@@ -610,6 +637,11 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         default:
             owsFailDebug("Invalid step.")
         }
+    }
+
+    @objc
+    private func didTapCurrencyConversionInfo() {
+        SendPaymentViewController.showCurrencyConversionInfoAlert(fromViewController: self)
     }
 }
 
