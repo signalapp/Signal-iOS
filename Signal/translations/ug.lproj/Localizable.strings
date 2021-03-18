@@ -1310,19 +1310,19 @@
 "EMAIL_SIGNAL_TITLE" = "Email unavailable";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "پائالىيەت";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "بايراق";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "نەرسە";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1331,7 +1331,7 @@
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "بەلگە";
 
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
@@ -2804,7 +2804,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ئەۋەتىلگەن";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
@@ -2816,7 +2816,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "يوللانغان";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
@@ -2828,13 +2828,13 @@
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "تاپشۇرۇۋالغان";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENDER" = "Sender";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "يوللانغان";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
@@ -2948,7 +2948,7 @@
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "ئەۋەتىلگەن";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "Downloading";
@@ -2969,13 +2969,13 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "ئەۋەتەلمىدى";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "ئەۋەتىلىۋاتىدۇ";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "يوللانغان";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading…";
@@ -3047,7 +3047,7 @@
 "NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
 
 /* String representing the 'never' condition of having no supported network interfaces */
-"NETWORK_INTERFACE_SET_NEVER" = "Never";
+"NETWORK_INTERFACE_SET_NEVER" = "ھەرگىز";
 
 /* String representing only the wifi interface */
 "NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
@@ -3464,7 +3464,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nobody";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "ھېچكىم";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
@@ -3485,7 +3485,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "Nobody";
+"PHONE_NUMBER_SHARING_NOBODY" = "ھېچكىم";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
@@ -3545,7 +3545,7 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "PIN نىڭنى ئۆزگەرت";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
@@ -3596,7 +3596,7 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
+"PIN_CREATION_RECREATION_TITLE" = "PIN نىڭنى ئۆزگەرت";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Turn Off";
@@ -3674,7 +3674,7 @@
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_TITLE" = "بىر PIN قۇرۇڭ";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
@@ -3734,28 +3734,28 @@
 "PROCEED_BUTTON" = "Proceed";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Write a few words about yourself…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "ئۆزىڭىز ھەققىدە بايان…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "ئاقكۆڭۈل";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "قەھۋەچىلەر";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "شىفىرلاندى";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "كوتۇلدايلى";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "ئارام ئارايلى";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Working on something new";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "يېڭىلىقنى سىنايلى";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "ھەققىدە";
@@ -4067,13 +4067,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Anyway";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "تۆۋەندىكى كىشىلەر قايتا قاچىلىغان ياكى ئۈسكىنىسىنى ئالماشتۇرغاندەك قىلىدۇ. مەخپىيەتلىكنى ساقلاش ئۈچۈن ئۇلار بىلەن ئاراڭدىكى بىخەتەرلىك نومۇرىنى توغرىلا.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "بىخەتەرلىك نومۇرى ئۆزگەردى";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "كۆرۈش";
@@ -4580,10 +4580,10 @@
 "SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "سىز يوللىغان تور بېكەت ئۇلانمىسىدىن بىۋاسىتە ئالدىن كۆرسىتىش ھاسىللايدۇ.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Never";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "ھەرگىز";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
@@ -4595,7 +4595,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "ئۈن";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Documents";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "پۈتۈكلەر";
 
 /* Label for the 'photo' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Photos";
@@ -4661,10 +4661,10 @@
 "SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "PIN نىڭنى ئۆزگەرت";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "بىر PIN قۇرۇڭ";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "Signal PIN";
@@ -4907,7 +4907,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Contact Us";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "نېمە ئىش بولغانلىقىنى ئېيىتىڭ";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
@@ -4943,16 +4943,16 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+"SUPPORT_EMOJI_PROMPT" = "قانداقراق ھېس قىلىۋاتىسىز؟ (تاللاشچان)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+"SUPPORT_FAQ_PROMPT" = "كۆپ ئۇچرايدىغان مەسىلىگە جاۋابنى ئوقۇدىڭىزمۇ؟";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "قاچىلىنىۋاتىدۇ";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "ئەت";

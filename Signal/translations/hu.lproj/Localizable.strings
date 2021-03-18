@@ -914,7 +914,7 @@
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Elnémítás";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Elnémítás";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Némítás";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nincs némítva";

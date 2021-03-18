@@ -2669,7 +2669,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pratinjau Tautan";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Pesawat yang terhubung";
+"LINKED_DEVICES_TITLE" = "Perangkat Terhubung";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Gagal Menautkan Perangkat";
