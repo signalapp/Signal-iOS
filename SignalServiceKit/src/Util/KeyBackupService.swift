@@ -659,7 +659,7 @@ public class KeyBackupService: NSObject {
         guard state.enclaveName != currentEnclave.name,
             state.masterKey != nil,
             tsAccountManager.isRegisteredAndReady else { return }
-        guard KeyBackupService.hasBackedUpMasterKey else {
+        guard state.isMasterKeyBackedUp else {
             Logger.warn("Can't migrate KBS enclave because pins are not enabled.")
             return
         }
