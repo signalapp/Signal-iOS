@@ -190,6 +190,9 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
                 stack.spacing = 8
                 cell.contentView.addSubview(stack)
                 stack.autoPinEdgesToSuperviewMargins()
+                wordTextfield.setContentHuggingHorizontalLow()
+                correctnessIconView.setContentHuggingHigh()
+                correctnessIconView.setCompressionResistanceHigh()
 
                 return cell
             },
