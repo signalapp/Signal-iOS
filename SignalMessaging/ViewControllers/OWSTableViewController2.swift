@@ -83,6 +83,13 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     public override init() {
         super.init()
+
+        // We never want to show titles on back buttons, so we replace it with
+        // blank spaces. We pad it out slightly so that it's more tappable.
+        //
+        // We also do this in applyTheme(), but we also need to do it here
+        // for the case where we push multiple table views at the same time.
+        navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
     open override func viewDidLoad() {

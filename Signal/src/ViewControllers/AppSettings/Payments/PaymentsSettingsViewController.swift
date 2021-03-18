@@ -126,8 +126,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                target: self,
                                                                action: #selector(didTapDismiss),
                                                                accessibilityIdentifier: "dismiss")
-        } else {
-            navigationItem.leftBarButtonItem = nil
         }
 
         addListeners()

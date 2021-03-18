@@ -9,7 +9,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
     @objc
     class func inModalNavigationController() -> OWSNavigationController {
-        return OWSNavigationController(rootViewController: AppSettingsViewController())
+        OWSNavigationController(rootViewController: AppSettingsViewController())
     }
 
     override func viewDidLoad() {
