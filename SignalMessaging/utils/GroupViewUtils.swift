@@ -80,8 +80,7 @@ public class GroupViewUtils {
                                                 style: .default) { _ in
                                                     self.showCantAddMemberView(fromViewController: fromViewController)
         })
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
-                                                style: .default))
+        actionSheet.addAction(OWSActionSheets.okayAction)
         fromViewController.presentActionSheet(actionSheet)
     }
 

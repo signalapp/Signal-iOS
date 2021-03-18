@@ -4804,6 +4804,9 @@
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "This feature is not currently available.";
 
+/* Message for the 'currency conversions info' alert. */
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSiONS_INFO_ALERT_MESSAGE" = "Conversions are estimated prices that should be used as a guide at the time of transfer.";
+
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
 

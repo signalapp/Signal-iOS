@@ -956,8 +956,11 @@ public class SendPaymentViewController: OWSViewController {
 
     @objc
     private func didTapCurrencyConversionInfo() {
-        Logger.info("")
-        // TODO: Pending design/support URL.
+        let message = NSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_CONVERSiONS_INFO_ALERT_MESSAGE",
+                                        comment: "Message for the 'currency conversions info' alert.")
+        let actionSheet = ActionSheetController(title: nil, message: message)
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        presentActionSheet(actionSheet)
     }
 }
 

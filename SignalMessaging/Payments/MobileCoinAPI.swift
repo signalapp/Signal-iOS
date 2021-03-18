@@ -720,7 +720,11 @@ class MobileCoinAPI {
             return fee
         case .failure(let error):
             let error = Self.convertMCError(error: error)
-            owsFailDebugUnlessMCNetworkFailure(error)
+            if case PaymentsError.insufficientFunds = error {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebugUnlessMCNetworkFailure(error)
+            }
             throw error
         }
     }
