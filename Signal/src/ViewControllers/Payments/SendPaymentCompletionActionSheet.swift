@@ -307,7 +307,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         // To void layout jitter, we use an empty placeholder label
         // that occupies the exact same height
         let bottomLabel = buildBottomLabel()
-        bottomLabel.text = Self.formatPaymentFailure(error)
+        bottomLabel.text = Self.formatPaymentFailure(error, withErrorPrefix: true)
 
         setContents([
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
@@ -422,7 +422,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         return String(format: userFormat, otherUserName)
     }
 
-    private static func formatPaymentFailure(_ error: Error) -> String {
+    public static func formatPaymentFailure(_ error: Error, withErrorPrefix: Bool) -> String {
 
         // PAYMENTS TODO: Revisit which errors we surface and how.
         let errorDescription: String = {
@@ -465,6 +465,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                                                      comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
             }
         }()
+
+        guard withErrorPrefix else {
+            return errorDescription
+        }
 
         // PAYMENTS TODO: We need copy from design.
         let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_FORMAT",

@@ -1703,4 +1703,8 @@ public enum SendPaymentRecipientImpl: SendPaymentRecipient {
             return nil
         }
     }
+
+    public var isIdentifiedPayment: Bool {
+        address != nil
+    }
 }

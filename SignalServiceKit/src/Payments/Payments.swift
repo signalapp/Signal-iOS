@@ -157,6 +157,7 @@ public protocol PaymentsSwift: Payments {
 
 public protocol SendPaymentRecipient {
     var address: SignalServiceAddress? { get }
+    var isIdentifiedPayment: Bool { get }
 }
 
 // MARK: -

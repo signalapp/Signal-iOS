@@ -72,6 +72,10 @@ public class SendPaymentViewController: OWSViewController {
 
     private var currentCurrencyConversion: CurrencyConversionInfo? { helper?.currentCurrencyConversion }
 
+    private var isIdentifiedPayment: Bool {
+        recipient.isIdentifiedPayment
+    }
+
     public required init(recipient: SendPaymentRecipient,
                          paymentRequestModel: TSPaymentRequestModel?,
                          initialPaymentAmount: TSPaymentAmount?,
@@ -385,13 +389,20 @@ public class SendPaymentViewController: OWSViewController {
         smallAmountRow.isUserInteractionEnabled = true
         smallAmountRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
 
-        let requiredViews = [
+        var requiredViews = [UIView]()
+        requiredViews += [
             bigAmountRow,
-            smallAmountRow,
-            memoStack,
+            smallAmountRow
+        ]
+        if isIdentifiedPayment {
+            requiredViews.append(memoStack)
+        }
+        requiredViews += [
             amountButtons,
             balanceLabel
-        ] + keyboardViews.keyboardRows
+        ]
+        requiredViews += keyboardViews.keyboardRows
+
         for requiredView in requiredViews {
             requiredView.setCompressionResistanceVerticalHigh()
             requiredView.setContentHuggingHigh()
@@ -804,14 +815,19 @@ public class SendPaymentViewController: OWSViewController {
                 }
             }.catch { error in
                 AssertIsOnMainThread()
-                owsFailDebug("Error: \(error)")
+                if case PaymentsError.insufficientFunds = error {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebugUnlessMCNetworkFailure(error)
+                }
 
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()
 
-                    // TODO: Copy.
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_ERROR_COULD_NOT_ESTIMATE_FEE",
-                                                                              comment: "Error message indicating that the estimated fee for a payment could not be determined."))
+                    OWSActionSheets.showErrorAlert(
+                        message: SendPaymentCompletionActionSheet.formatPaymentFailure(error,
+                                                                                       withErrorPrefix: false)
+                    )
                 }
             }
         }
