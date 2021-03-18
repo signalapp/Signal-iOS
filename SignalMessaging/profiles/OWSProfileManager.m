@@ -1354,6 +1354,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 OWSFailDebug(@"Invalid profileKeyData.");
                 continue;
             }
+            NSData *_Nullable existingProfileKeyData = [self profileKeyDataForAddress:address transaction:transaction];
+            if ([NSObject isNullableObject:existingProfileKeyData equalTo:profileKeyData]) {
+                // Redundant profileKeyData; no need to update.
+                continue;
+            }
             OWSLogInfo(@"Filling in missing profile key for: %@", address);
             [self setProfileKeyData:profileKeyData
                          forAddress:address
