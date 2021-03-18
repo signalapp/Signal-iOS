@@ -749,7 +749,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             self?.didTapViewPaymentsPassphraseButton()
         })
 
-        // TODO: Design: do we still need this?
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.help,
                                                 accessibilityIdentifier: "payments.settings.help",
                                                 style: .default) { [weak self] _ in

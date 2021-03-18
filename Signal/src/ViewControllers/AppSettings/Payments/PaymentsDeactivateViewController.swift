@@ -158,8 +158,6 @@ public class PaymentsDeactivateViewController: OWSViewController {
 
     @objc
     private func didTapTransferBalanceButton() {
-        // TODO: Test this flow.
-
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { [weak self] modalActivityIndicator in
             firstly(on: .global()) {
