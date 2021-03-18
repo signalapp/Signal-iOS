@@ -180,6 +180,24 @@ public class PaymentsViewUtils: NSObject {
 
         return stack
     }
+
+    static func buildTextWithLearnMoreLink(text: String,
+                                           font: UIFont,
+                                           learnMoreUrl: String) -> NSAttributedString {
+        NSAttributedString.composed(of: [
+            text,
+            " ",
+            CommonStrings.learnMore.styled(with:
+                                            .link(URL(string: learnMoreUrl)!),
+                                           .font(font),
+                                           .color(Theme.primaryTextColor),
+                                           .underline([], Theme.primaryTextColor)
+            )
+        ]).styled(
+            with: .font(font),
+            .color(Theme.secondaryTextAndIconColor)
+        )
+    }
 }
 
 // MARK: -

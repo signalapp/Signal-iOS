@@ -289,23 +289,13 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                         bottomText: value))
         }
 
-        // TODO: Update support article link.
-        let footerAttributedTitle = NSAttributedString.composed(of: [
-            NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
-                              comment: "Footer string for the status section of the payment details view in the app settings."),
-            " ",
-            CommonStrings.learnMore.styled(with:
-                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
-                                           .font(.ows_dynamicTypeCaption1Clamped),
-                                           .color(Theme.primaryTextColor)
-            )
-        ]).styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
-
         let footerLabel = UILabel()
-        footerLabel.attributedText = footerAttributedTitle
+        // TODO: Update support article link.
+        footerLabel.attributedText = PaymentsViewUtils.buildTextWithLearnMoreLink(
+            text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
+                                    comment: "Footer string for the status section of the payment details view in the app settings."),
+            font: .ows_dynamicTypeCaption1Clamped,
+            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
         footerLabel.numberOfLines = 0
         footerLabel.lineBreakMode = .byWordWrapping
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])

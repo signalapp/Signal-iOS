@@ -518,25 +518,15 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
         heroImageView.autoSetDimension(.height, toSize: heroSize)
 
-        // TODO: Update support article link.
-        let bodyAttributed = NSAttributedString.composed(of: [
-            NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
-                              comment: "Message for the 'payments opt-in' view in the app settings."),
-            " ",
-            CommonStrings.learnMore.styled(with:
-                                            .link(URL(string: "https://support.signal.org/hc/articles/360007059792")!),
-                                            .font(.ows_dynamicTypeSubheadlineClamped),
-                                            .color(Theme.primaryTextColor)
-            )
-        ]).styled(
-            with: .font(.ows_dynamicTypeSubheadlineClamped),
-            .color(Theme.secondaryTextAndIconColor)
-        )
-
         let bodyLabel = UILabel()
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
         bodyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        bodyLabel.attributedText = bodyAttributed
+        // TODO: Update support article link.
+        bodyLabel.attributedText = PaymentsViewUtils.buildTextWithLearnMoreLink(
+            text: NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
+                                    comment: "Message for the 'payments opt-in' view in the app settings."),
+            font: .ows_dynamicTypeSubheadlineClamped,
+            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
         bodyLabel.textAlignment = .center
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
