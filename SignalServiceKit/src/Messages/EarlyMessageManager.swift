@@ -76,6 +76,9 @@ public class EarlyMessageManager: NSObject {
         }
 
         let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+
+        Logger.info("Recording early envelope \(OWSMessageManager.description(for: envelope)) for message \(identifier)")
+
         serialQueue.sync {
             var envelopes = pendingEnvelopes[identifier] ?? []
 
@@ -110,10 +113,13 @@ public class EarlyMessageManager: NSObject {
             return owsFailDebug("missing local address")
         }
 
+        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: localAddress)
+
+        Logger.info("Recording early \(type) receipt for outgoing message \(identifier)")
+
         recordEarlyReceipt(
             .init(receiptType: type, sender: sender, timestamp: timestamp),
-            associatedMessageTimestamp: associatedMessageTimestamp,
-            associatedMessageAuthor: localAddress
+            identifier: identifier
         )
     }
 
@@ -123,19 +129,20 @@ public class EarlyMessageManager: NSObject {
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
+        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+
+        Logger.info("Recording early read receipt from linked device for message \(identifier)")
+
         recordEarlyReceipt(
             .messageReadOnLinkedDevice(timestamp: timestamp),
-            associatedMessageTimestamp: associatedMessageTimestamp,
-            associatedMessageAuthor: associatedMessageAuthor
+            identifier: identifier
         )
     }
 
     private func recordEarlyReceipt(
         _ earlyReceipt: EarlyReceipt,
-        associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: SignalServiceAddress
+        identifier: MessageIdentifier
     ) {
-        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
         serialQueue.sync {
             var receipts = pendingReceipts[identifier] ?? []
 
@@ -181,6 +188,8 @@ public class EarlyMessageManager: NSObject {
         for earlyReceipt in earlyReceipts ?? [] {
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let timestamp):
+                Logger.info("Applying early read receipt from \(sender) for outgoing message \(identifier)")
+
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
                     continue
@@ -191,6 +200,8 @@ public class EarlyMessageManager: NSObject {
                     transaction: transaction
                 )
             case .outgoingMessageDelivered(let sender, let timestamp):
+                Logger.info("Applying early delivery receipt from \(sender) for outgoing message \(identifier)")
+
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
                     continue
@@ -201,6 +212,8 @@ public class EarlyMessageManager: NSObject {
                     transaction: transaction
                 )
             case .messageReadOnLinkedDevice(let timestamp):
+                Logger.info("Applying early read receipt from linked device for message \(identifier)")
+
                 OWSReadReceiptManager.shared.markAsRead(
                     onLinkedDevice: message,
                     thread: message.thread(transaction: transaction),
@@ -212,6 +225,8 @@ public class EarlyMessageManager: NSObject {
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
+            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for message \(identifier)")
+
             Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,
                 plaintextData: earlyEnvelope.plainTextData,
