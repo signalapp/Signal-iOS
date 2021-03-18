@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalClient
 
 #if TESTABLE_BUILD
 /// A helper for tests which can initializes Signal Protocol sessions
@@ -13,28 +14,99 @@ public struct TestProtocolRunner {
 
     public func initialize(senderClient: TestSignalClient, recipientClient: TestSignalClient, transaction: SDSAnyWriteTransaction) throws {
 
-        let senderIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
-        let recipientIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
+        _ = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
+        _ = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
 
-        try SignalProtocolHelper.sessionInitialization(withAliceSessionStore: senderClient.sessionStore,
-                                                       aliceIdentityKeyStore: senderClient.identityKeyStore,
-                                                       aliceIdentifier: senderIdentifier,
-                                                       aliceIdentityKeyPair: senderClient.identityKeyPair,
-                                                       bobSessionStore: recipientClient.sessionStore,
-                                                       bobIdentityKeyStore: recipientClient.identityKeyStore,
-                                                       bobIdentifier: recipientIdentifier,
-                                                       bobIdentityKeyPair: recipientClient.identityKeyPair,
-                                                       protocolContext: transaction)
+        let bobPreKey = PrivateKey.generate()
+        let bobSignedPreKey = PrivateKey.generate()
+
+        let bobSignedPreKeyPublic = bobSignedPreKey.publicKey.serialize()
+
+        let bobIdentityKey = recipientClient.identityKeyPair.identityKeyPair
+        let bobSignedPreKeySignature = bobIdentityKey.privateKey.generateSignature(message: bobSignedPreKeyPublic)
+        let bobRegistrationId = try recipientClient.identityKeyStore.localRegistrationId(context: transaction)
+
+        let prekeyId: UInt32 = 4570
+        let signedPrekeyId: UInt32 = 3006
+
+        let bobBundle = try PreKeyBundle(registrationId: bobRegistrationId,
+                                         deviceId: recipientClient.deviceId,
+                                         prekeyId: prekeyId,
+                                         prekey: bobPreKey.publicKey,
+                                         signedPrekeyId: signedPrekeyId,
+                                         signedPrekey: bobSignedPreKey.publicKey,
+                                         signedPrekeySignature: bobSignedPreKeySignature,
+                                         identity: bobIdentityKey.identityKey)
+
+        // Alice processes the bundle:
+        try processPreKeyBundle(bobBundle,
+                                for: recipientClient.protocolAddress,
+                                sessionStore: senderClient.sessionStore,
+                                identityStore: senderClient.identityKeyStore,
+                                context: transaction)
+
+        // Bob does the same:
+        try recipientClient.preKeyStore.storePreKey(PreKeyRecord(id: prekeyId, privateKey: bobPreKey),
+                                                    id: prekeyId,
+                                                    context: transaction)
+
+        try recipientClient.signedPreKeyStore.storeSignedPreKey(
+            SignedPreKeyRecord(
+                id: signedPrekeyId,
+                timestamp: 42000,
+                privateKey: bobSignedPreKey,
+                signature: bobSignedPreKeySignature
+            ),
+            id: signedPrekeyId,
+            context: transaction)
+
+        // Then Alice sends a message to Bob so he gets her pre-key as well.
+        let aliceMessage = try encrypt(Data(),
+                                       senderClient: senderClient,
+                                       recipient: recipientClient.protocolAddress,
+                                       context: transaction)
+        _ = try signalDecryptPreKey(message: PreKeySignalMessage(bytes: aliceMessage.serialize()),
+                                    from: senderClient.protocolAddress,
+                                    sessionStore: recipientClient.sessionStore,
+                                    identityStore: recipientClient.identityKeyStore,
+                                    preKeyStore: recipientClient.preKeyStore,
+                                    signedPreKeyStore: recipientClient.signedPreKeyStore,
+                                    context: transaction)
+
+        // Finally, Bob sends a message back to acknowledge the pre-key.
+        let bobMessage = try encrypt(Data(),
+                                     senderClient: recipientClient,
+                                     recipient: senderClient.protocolAddress,
+                                     context: transaction)
+        _ = try signalDecrypt(message: SignalMessage(bytes: bobMessage.serialize()),
+                              from: recipientClient.protocolAddress,
+                              sessionStore: senderClient.sessionStore,
+                              identityStore: senderClient.identityKeyStore,
+                              context: transaction)
     }
 
-    public func encrypt(plaintext: Data, senderClient: TestSignalClient, recipientAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> CipherMessage {
-        let sessionCipher = try senderClient.sessionCipher(for: recipientAccountId)
-        return try sessionCipher.encryptMessage(plaintext, protocolContext: protocolContext)
+    public func encrypt(_ plaintext: Data,
+                        senderClient: TestSignalClient,
+                        recipient: ProtocolAddress,
+                        context: StoreContext) throws -> CiphertextMessage {
+        return try signalEncrypt(message: plaintext,
+                                 for: recipient,
+                                 sessionStore: senderClient.sessionStore,
+                                 identityStore: senderClient.identityKeyStore,
+                                 context: context)
     }
 
-    public func decrypt(cipherMessage: CipherMessage, recipientClient: TestSignalClient, senderAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> Data {
-        let sessionCipher = try recipientClient.sessionCipher(for: senderAccountId)
-        return try sessionCipher.decrypt(cipherMessage, protocolContext: protocolContext)
+    public func decrypt(_ cipherMessage: CiphertextMessage,
+                        recipientClient: TestSignalClient,
+                        sender: ProtocolAddress,
+                        context: StoreContext) throws -> Data {
+        owsAssert(cipherMessage.messageType == .whisper, "only bare SignalMessages are supported")
+        let message = try SignalMessage(bytes: cipherMessage.serialize())
+        return Data(try signalDecrypt(message: message,
+                                      from: sender,
+                                      sessionStore: recipientClient.sessionStore,
+                                      identityStore: recipientClient.identityKeyStore,
+                                      context: context))
     }
 }
 
@@ -52,13 +124,12 @@ public protocol TestSignalClient {
     var uuid: UUID { get }
     var deviceId: UInt32 { get }
     var address: SignalServiceAddress { get }
+    var protocolAddress: ProtocolAddress { get }
 
-    var sessionStore: SessionStore { get }
-    var preKeyStore: PreKeyStore { get }
-    var signedPreKeyStore: SignedPreKeyStore { get }
-    var identityKeyStore: IdentityKeyStore { get }
-
-    func sessionCipher(for accountId: SignalAccountIdentifier) throws -> SessionCipher
+    var sessionStore: SignalClient.SessionStore { get }
+    var preKeyStore: SignalClient.PreKeyStore { get }
+    var signedPreKeyStore: SignalClient.SignedPreKeyStore { get }
+    var identityKeyStore: SignalClient.IdentityKeyStore { get }
 }
 
 public extension TestSignalClient {
@@ -74,13 +145,8 @@ public extension TestSignalClient {
         return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
     }
 
-    func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher {
-        return SessionCipher(sessionStore: sessionStore,
-                             preKeyStore: preKeyStore,
-                             signedPreKeyStore: signedPreKeyStore,
-                             identityKeyStore: identityKeyStore,
-                             recipientId: e164Identifier,
-                             deviceId: 1)
+    var protocolAddress: ProtocolAddress {
+        return try! ProtocolAddress(name: uuidIdentifier, deviceId: deviceId)
     }
 
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
@@ -92,31 +158,30 @@ public extension TestSignalClient {
 /// i.e. someone who's sending messages to the local client.
 public struct FakeSignalClient: TestSignalClient {
 
-    public var sessionStore: SessionStore { return protocolStore }
-    public var preKeyStore: PreKeyStore { return protocolStore }
-    public var signedPreKeyStore: SignedPreKeyStore { return protocolStore }
-    public var identityKeyStore: IdentityKeyStore { return protocolStore }
+    public var sessionStore: SignalClient.SessionStore { return protocolStore }
+    public var preKeyStore: SignalClient.PreKeyStore { return protocolStore }
+    public var signedPreKeyStore: SignalClient.SignedPreKeyStore { return protocolStore }
+    public var identityKeyStore: SignalClient.IdentityKeyStore { return protocolStore }
 
     public let e164Identifier: SignalE164Identifier?
     public let uuid: UUID
-    public let deviceId: UInt32
-    public let identityKeyPair: ECKeyPair
-    public let protocolStore: AxolotlStore
+    public let protocolStore: InMemorySignalProtocolStore
+
+    public var deviceId: UInt32 { return 1 }
+    public var identityKeyPair: ECKeyPair {
+        return ECKeyPair(try! protocolStore.identityKeyPair(context: NullContext()))
+    }
 
     public static func generate() -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: CommonGenerator.e164(),
                                 uuid: UUID(),
-                                deviceId: 1,
-                                identityKeyPair: Curve25519.generateKeyPair(),
-                                protocolStore: SPKMockProtocolStore())
+                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), deviceId: 1))
     }
 
     public static func generate(e164Identifier: SignalE164Identifier? = nil, uuid: UUID? = nil) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
                                 uuid: uuid ?? UUID(),
-                                deviceId: 1,
-                                identityKeyPair: Curve25519.generateKeyPair(),
-                                protocolStore: SPKMockProtocolStore())
+                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), deviceId: 1))
     }
 }
 
@@ -144,19 +209,19 @@ public struct LocalSignalClient: TestSignalClient {
 
     public let deviceId: UInt32 = 1
 
-    public var sessionStore: SessionStore {
+    public var sessionStore: SignalClient.SessionStore {
         return SSKEnvironment.shared.sessionStore
     }
 
-    public var preKeyStore: PreKeyStore {
+    public var preKeyStore: SignalClient.PreKeyStore {
         return SSKEnvironment.shared.preKeyStore
     }
 
-    public var signedPreKeyStore: SignedPreKeyStore {
+    public var signedPreKeyStore: SignalClient.SignedPreKeyStore {
         return SSKEnvironment.shared.signedPreKeyStore
     }
 
-    public var identityKeyStore: IdentityKeyStore {
+    public var identityKeyStore: SignalClient.IdentityKeyStore {
         return SSKEnvironment.shared.identityManager
     }
 }
@@ -192,15 +257,15 @@ public struct FakeService {
 
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(bodyText: bodyText)
-        let cipherMessage: CipherMessage = databaseStorage.write { transaction in
-            return try! self.runner.encrypt(plaintext: plaintext,
+        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+            return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
-                                            recipientAccountId: self.localClient.accountId(transaction: transaction),
-                                            protocolContext: transaction)
+                                            recipient: self.localClient.protocolAddress,
+                                            context: transaction)
         }
 
-        assert(cipherMessage is WhisperMessage)
-        return cipherMessage.serialized()
+        assert(cipherMessage.messageType == .whisper)
+        return Data(cipherMessage.serialize())
     }
 
     public func buildContentData(bodyText: String?) throws -> Data {
