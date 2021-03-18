@@ -100,12 +100,11 @@ public class PaymentsDeactivateViewController: OWSViewController {
         subtitleLabel.textColor = Theme.secondaryTextAndIconColor
         subtitleLabel.textAlignment = .center
 
-        // TODO: Update support article link.
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
             text: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION",
                                     comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
             font: .ows_dynamicTypeBody2Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
+            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_deactivate")
         explanationLabel.textAlignment = .center
 
         let transferBalanceButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",

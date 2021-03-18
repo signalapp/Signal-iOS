@@ -518,12 +518,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
         heroImageView.autoSetDimension(.height, toSize: heroSize)
 
-        // TODO: Update support article link.
-        let bodyLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
-            text: NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
-                                    comment: "Message for the 'payments opt-in' view in the app settings."),
-            font: .ows_dynamicTypeSubheadlineClamped,
-            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
+        let bodyLabel = UILabel()
+        bodyLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_MESSAGE",
+                                           comment: "Message for the 'payments opt-in' view in the app settings.")
+        bodyLabel.font = .ows_dynamicTypeSubheadlineClamped
+        bodyLabel.textColor = Theme.secondaryTextAndIconColor
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
 
         let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
@@ -875,8 +876,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapHelpButton() {
-        // TODO: Pending design/support URL.
-    }
+        UIApplication.shared.open(
+            SupportConstants.supportURL,
+            options: [:],
+            completionHandler: nil
+        )
+     }
 
     private func didTapTransferToExchangeButton() {
         let view = PaymentsTransferOutViewController(transferAmount: nil)

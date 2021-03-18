@@ -51,27 +51,14 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         infoSection.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
-            let label1 = UILabel()
-            label1.text = NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
-                                            comment: "Explanation of the process for adding money in the 'add money' settings view.")
-            label1.textColor = Theme.secondaryTextAndIconColor
-            label1.font = .ows_dynamicTypeBody2Clamped
-            label1.numberOfLines = 0
-            label1.lineBreakMode = .byWordWrapping
-            label1.textAlignment = .center
-
-            let label2 = UILabel()
-            label2.text = CommonStrings.learnMore
-            label2.textColor = Theme.primaryTextColor
-            label2.font = UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
-            label2.textAlignment = .center
-
-            let stack = UIStackView(arrangedSubviews: [label1, label2])
-            stack.axis = .vertical
-            stack.alignment = .center
-            stack.spacing = 8
-            cell.contentView.addSubview(stack)
-            stack.autoPinEdgesToSuperviewMargins()
+            let label = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
+                text: NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
+                                        comment: "Explanation of the process for adding money in the 'add money' settings view."),
+                font: .ows_dynamicTypeBody2Clamped,
+                learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_transfer_from_exchange")
+            label.textAlignment = .center
+            cell.contentView.addSubview(label)
+            label.autoPinEdgesToSuperviewMargins()
 
             return cell
         },

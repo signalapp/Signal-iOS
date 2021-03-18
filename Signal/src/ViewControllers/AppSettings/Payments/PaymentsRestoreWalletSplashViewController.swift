@@ -47,12 +47,11 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        // TODO: Update support article link.
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
             text: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
                                     comment: "Explanation of the 'restore payments wallet' process payments settings."),
             font: .ows_dynamicTypeBody2Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
+            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_wallet_restore_passphrase")
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [

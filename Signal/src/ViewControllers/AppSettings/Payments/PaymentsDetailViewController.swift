@@ -289,12 +289,11 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                         bottomText: value))
         }
 
-        // TODO: Update support article link.
         let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
             text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
                                     comment: "Footer string for the status section of the payment details view in the app settings."),
             font: .ows_dynamicTypeCaption1Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
+            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_details")
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])
         footerStack.axis = .vertical
         footerStack.alignment = .fill

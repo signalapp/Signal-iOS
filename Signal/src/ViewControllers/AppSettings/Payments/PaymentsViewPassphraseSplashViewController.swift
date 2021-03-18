@@ -77,12 +77,11 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        // TODO: Update support article link.
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
             text: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
                                     comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings."),
             font: .ows_dynamicTypeBody2Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/articles/360007059792")
+            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_wallet_view_passphrase")
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [
