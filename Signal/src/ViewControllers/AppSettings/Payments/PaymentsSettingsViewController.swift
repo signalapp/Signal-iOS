@@ -879,7 +879,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Missing passphrase.")
             return
         }
-        let shouldShowConfirm = !hasReviewedPassphraseWithSneakyTransaction()
+        let shouldShowConfirm = !Self.hasReviewedPassphraseWithSneakyTransaction()
         let view = PaymentsViewPassphraseSplashViewController(passphrase: passphrase,
                                                               shouldShowConfirm: shouldShowConfirm,
                                                               viewPassphraseDelegate: self)
@@ -1032,7 +1032,7 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
     private static let keyValueStore = SDSKeyValueStore(collection: "PaymentSettings")
     private static let hasReviewedPassphraseKey = "hasReviewedPassphrase"
 
-    private func hasReviewedPassphraseWithSneakyTransaction() -> Bool {
+    public static func hasReviewedPassphraseWithSneakyTransaction() -> Bool {
         databaseStorage.read { transaction in
             Self.keyValueStore.getBool(Self.hasReviewedPassphraseKey,
                                        defaultValue: false,
@@ -1040,7 +1040,7 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
         }
     }
 
-    private func setHasReviewedPassphraseWithSneakyTransaction() {
+    public static func setHasReviewedPassphraseWithSneakyTransaction() {
         databaseStorage.write { transaction in
             Self.keyValueStore.setBool(true,
                                        key: Self.hasReviewedPassphraseKey,
@@ -1049,8 +1049,8 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
     }
 
     public func viewPassphraseDidComplete() {
-        if !hasReviewedPassphraseWithSneakyTransaction() {
-            setHasReviewedPassphraseWithSneakyTransaction()
+        if !Self.hasReviewedPassphraseWithSneakyTransaction() {
+            Self.setHasReviewedPassphraseWithSneakyTransaction()
 
             presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST",
                                                  comment: "Message indicating that 'payments passphrase review' is complete."))

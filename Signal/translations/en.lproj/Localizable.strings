@@ -4981,6 +4981,15 @@
 /* Label for the 'recent payments' section in the payment settings. */
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
 
+/* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+
+/* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+
+/* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
 
