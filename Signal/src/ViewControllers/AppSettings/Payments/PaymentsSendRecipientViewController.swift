@@ -8,12 +8,19 @@ import PromiseKit
 @objc
 class PaymentsSendRecipientViewController: OWSViewController {
 
+    private let isOutgoingTransfer: Bool
+
     let recipientPicker = RecipientPickerViewController()
+
+    public init(isOutgoingTransfer: Bool) {
+        self.isOutgoingTransfer = isOutgoingTransfer
+    }
 
     @objc
     public static func presentAsFormSheet(fromViewController: UIViewController,
+                                          isOutgoingTransfer: Bool,
                                           paymentRequestModel: TSPaymentRequestModel?) {
-        let view = PaymentsSendRecipientViewController()
+        let view = PaymentsSendRecipientViewController(isOutgoingTransfer: isOutgoingTransfer)
         let navigationController = OWSNavigationController(rootViewController: view)
         fromViewController.presentFormSheet(navigationController, animated: true)
     }
@@ -77,7 +84,7 @@ class PaymentsSendRecipientViewController: OWSViewController {
                                           delegate: self,
                                           recipientAddress: address,
                                           paymentRequestModel: nil,
-                                          isOutgoingTransfer: true,
+                                          isOutgoingTransfer: isOutgoingTransfer,
                                           mode: .fromPaymentSettings)
     }
 }

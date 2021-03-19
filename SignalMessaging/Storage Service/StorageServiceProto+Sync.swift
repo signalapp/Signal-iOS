@@ -724,7 +724,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
                                                           paymentsEntropy: paymentsEntropy)
 
-            Self.paymentsSwift.setPaymentsState(mergedPaymentsState, transaction: transaction)
+            Self.paymentsSwift.setPaymentsState(mergedPaymentsState,
+                                                updateStorageService: false,
+                                                transaction: transaction)
         }
 
         return mergeState

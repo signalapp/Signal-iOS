@@ -123,7 +123,9 @@ public protocol Payments: AnyObject {
 public protocol PaymentsSwift: Payments {
 
     var paymentsState: PaymentsState { get }
-    func setPaymentsState(_ value: PaymentsState, transaction: SDSAnyWriteTransaction)
+    func setPaymentsState(_ value: PaymentsState,
+                          updateStorageService: Bool,
+                          transaction: SDSAnyWriteTransaction)
     func enablePayments(transaction: SDSAnyWriteTransaction)
     func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
     func disablePayments(transaction: SDSAnyWriteTransaction)
@@ -325,7 +327,9 @@ extension MockPayments: PaymentsSwift {
 
     public var paymentsState: PaymentsState { .disabled }
 
-    public func setPaymentsState(_ value: PaymentsState, transaction: SDSAnyWriteTransaction) {
+    public func setPaymentsState(_ value: PaymentsState,
+                                 updateStorageService: Bool,
+                                 transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 

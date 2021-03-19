@@ -73,7 +73,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
            !CurrentAppContext().isRunningTests {
             AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
                 if Self.tsAccountManager.isRegisteredAndReady {
-                    Self.storageServiceManager.recordPendingLocalAccountUpdates()
                     Self.profileManager.reuploadLocalProfile()
                 }
             }
@@ -272,7 +271,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         let paymentsState = PaymentsState.build(arePaymentsEnabled: true,
                                                 paymentsEntropy: newPaymentsEntropy)
         owsAssertDebug(paymentsState.isEnabled)
-        setPaymentsState(paymentsState, transaction: transaction)
+        setPaymentsState(paymentsState,
+                         updateStorageService: true,
+                         transaction: transaction)
         owsAssertDebug(arePaymentsEnabled)
         return true
     }
@@ -281,6 +282,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         switch paymentsState {
         case .enabled(let paymentsEntropy, _):
             setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
+                             updateStorageService: true,
                              transaction: transaction)
         case .disabled, .disabledWithPaymentsEntropy:
             owsFailDebug("Payments already disabled.")
@@ -288,7 +290,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         owsAssertDebug(!arePaymentsEnabled)
     }
 
-    public func setPaymentsState(_ newPaymentsState: PaymentsState, transaction: SDSAnyWriteTransaction) {
+    public func setPaymentsState(_ newPaymentsState: PaymentsState,
+                                 updateStorageService: Bool,
+                                 transaction: SDSAnyWriteTransaction) {
         let oldPaymentsState = self.paymentsState
 
         guard oldPaymentsState.isEnabled || canEnablePayments else {
@@ -324,7 +328,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
             Self.profileManager.reuploadLocalProfile()
 
-            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+            if updateStorageService {
+                Self.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
         }
     }
 

@@ -942,6 +942,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return
         }
         PaymentsSendRecipientViewController.presentAsFormSheet(fromViewController: self,
+                                                               isOutgoingTransfer: false,
                                                                paymentRequestModel: nil)
     }
 
