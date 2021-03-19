@@ -910,11 +910,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapHelpButton() {
-        UIApplication.shared.open(
-            SupportConstants.supportURL,
-            options: [:],
-            completionHandler: nil
-        )
+        let view = ContactSupportViewController(mode: .payments)
+        let navigationVC = OWSNavigationController(rootViewController: view)
+        present(navigationVC, animated: true)
      }
 
     private func didTapTransferToExchangeButton() {
