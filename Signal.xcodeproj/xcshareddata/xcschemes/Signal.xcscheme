@@ -34,6 +34,20 @@
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4C10B17F23176D250099396B"
+               BuildableName = "SignalPerformanceTests.xctest"
+               BlueprintName = "SignalPerformanceTests"
+               ReferencedContainer = "container:Signal.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -106,6 +120,16 @@
                BuildableName = "SignalMetadataKit-Unit-Tests.xctest"
                BlueprintName = "SignalMetadataKit-Unit-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4C10B17F23176D250099396B"
+               BuildableName = "SignalPerformanceTests.xctest"
+               BlueprintName = "SignalPerformanceTests"
+               ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
