@@ -10,6 +10,10 @@ public class SSKSessionStore: NSObject {
     @objc // Used by migration, exposed in <SignalMessaging/PrivateMethodsForMigration.h>
     private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
 
+    public override init() {
+        LegacySessionRecord.setUpKeyedArchiverSubstitutions()
+    }
+
     fileprivate func loadSerializedSession(for address: SignalServiceAddress,
                                            deviceId: Int32,
                                            transaction: SDSAnyWriteTransaction) -> Data? {
@@ -22,7 +26,7 @@ public class SSKSessionStore: NSObject {
         switch entry {
         case let data as Data:
             return data
-        case let record as SignalServiceKit.SessionRecord:
+        case let record as LegacySessionRecord:
             do {
                 return try record.serializeProto()
             } catch {

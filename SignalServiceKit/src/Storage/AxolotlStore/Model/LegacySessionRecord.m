@@ -2,14 +2,17 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SessionRecord.h"
-#import "SessionState.h"
+#import <SignalServiceKit/LegacySessionRecord.h>
+#import <SignalServiceKit/LegacyChainKey.h>
+#import <SignalServiceKit/LegacyReceivingChain.h>
+#import <SignalServiceKit/LegacySendingChain.h>
+#import <SignalServiceKit/LegacySessionState.h>
 
 #define ARCHIVED_STATES_MAX_LENGTH 40
 
-@interface SessionRecord()
+@interface LegacySessionRecord()
 
-@property (nonatomic, retain) SessionState* sessionState;
+@property (nonatomic, retain) LegacySessionState* sessionState;
 @property (nonatomic, retain) NSMutableArray* previousStates;
 @property (nonatomic) BOOL fresh;
 
@@ -18,21 +21,42 @@
 #define currentSessionStateKey   @"currentSessionStateKey"
 #define previousSessionsStateKey @"previousSessionStateKeys"
 
-@implementation SessionRecord
+@implementation LegacySessionRecord
 
 - (instancetype)init{
     self = [super init];
     
     if (self) {
         _fresh = YES;
-        _sessionState = [SessionState new];
+        _sessionState = [LegacySessionState new];
         _previousStates = [NSMutableArray new];
     }
     
     return self;
 }
 
++ (void)initialize {
+#define REGISTER(X) {\
+    Class cls = [Legacy##X class];\
+    [NSKeyedArchiver setClassName:@#X forClass:cls];\
+    [NSKeyedUnarchiver setClass:cls forClassName:@#X];\
+}
+    REGISTER(ChainKey)
+    REGISTER(MessageKeys)
+    REGISTER(PendingPreKey)
+    REGISTER(ReceivingChain)
+    REGISTER(RootKey)
+    REGISTER(SendingChain)
+    REGISTER(SessionRecord)
+    REGISTER(SessionState)
+#undef REGISTER
+}
+
 #pragma mark Serialization
+
++ (void)setUpKeyedArchiverSubstitutions {
+    // +initialize will have been called by this point, so we don't actually need any extra work.
+}
 
 + (BOOL)supportsSecureCoding{
     return YES;
@@ -49,16 +73,16 @@
     self.fresh = false;
     
     self.previousStates = [aDecoder decodeObjectOfClass:[NSMutableArray class] forKey:previousSessionsStateKey];
-    self.sessionState   = [aDecoder decodeObjectOfClass:[SessionState class]   forKey:currentSessionStateKey];
+    self.sessionState   = [aDecoder decodeObjectOfClass:[LegacySessionState class]   forKey:currentSessionStateKey];
     
     return self;
 }
 
-- (SessionState*)sessionState{
+- (LegacySessionState*)sessionState{
     return _sessionState;
 }
 
-- (NSArray<SessionState *> *)previousSessionStates
+- (NSArray<LegacySessionState *> *)previousSessionStates
 {
     return _previousStates;
 }
@@ -77,10 +101,10 @@
         OWSLogInfo(@"Skipping archive, current session state is fresh.");
         return;
     }
-    [self promoteState:[SessionState new]];
+    [self promoteState:[LegacySessionState new]];
 }
 
-- (void)promoteState:(SessionState *)promotedState{
+- (void)promoteState:(LegacySessionState *)promotedState{
     [self.previousStates insertObject:self.sessionState atIndex:0];
     self.sessionState = promotedState;
     
@@ -93,7 +117,7 @@
     }
 }
 
-- (void)setState:(SessionState *)sessionState{
+- (void)setState:(LegacySessionState *)sessionState{
     self.sessionState = sessionState;
 }
 

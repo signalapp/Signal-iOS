@@ -2,13 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "RootKey.h"
-#import "ChainKey.h"
+#import "LegacyRootKey.h"
+#import "LegacyChainKey.h"
 #import <Curve25519Kit/Curve25519.h>
 
 static NSString* const kCoderData      = @"kCoderData";
 
-@implementation RootKey
+@implementation LegacyRootKey
 
 +(BOOL)supportsSecureCoding{
     return YES;

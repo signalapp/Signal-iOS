@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "ReceivingChain.h"
+#import "LegacyReceivingChain.h"
 
-@interface ReceivingChain ()
+@interface LegacyReceivingChain ()
 
-@property (nonatomic)ChainKey *chainKey;
+@property (nonatomic)LegacyChainKey *chainKey;
 
 @end
 
-@implementation ReceivingChain
+@implementation LegacyReceivingChain
 
 static NSString* const kCoderChainKey      = @"kCoderChainKey";
 static NSString* const kCoderSenderRatchet = @"kCoderSenderRatchet";
@@ -36,7 +36,7 @@ static NSString* const kCoderMessageKeys   = @"kCoderMessageKeys";
     [aCoder encodeObject:self.messageKeysList forKey:kCoderMessageKeys];
 }
 
-- (instancetype)initWithChainKey:(ChainKey *)chainKey senderRatchetKey:(NSData *)senderRatchet{
+- (instancetype)initWithChainKey:(LegacyChainKey *)chainKey senderRatchetKey:(NSData *)senderRatchet{
     OWSAssert(chainKey);
     OWSAssert(senderRatchet);
 

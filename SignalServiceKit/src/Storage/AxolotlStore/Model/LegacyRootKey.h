@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RootKey : NSObject <NSSecureCoding>
+@interface LegacyRootKey : NSObject <NSSecureCoding>
 
 - (instancetype)initWithData:(NSData *)data;
 

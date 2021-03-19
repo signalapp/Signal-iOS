@@ -4,18 +4,18 @@
 
 #import <Foundation/Foundation.h>
 
-@class ChainKey;
 @class ECKeyPair;
-@class ReceivingChain;
+@class LegacyChainKey;
+@class LegacyReceivingChain;
 
-#import <SignalServiceKit/MessageKeys.h>
-#import <SignalServiceKit/RootKey.h>
+#import <SignalServiceKit/LegacyMessageKeys.h>
+#import <SignalServiceKit/LegacyRootKey.h>
 
 /**
  *  Pending PreKeys
  */
 
-@interface PendingPreKey : NSObject <NSSecureCoding>
+@interface LegacyPendingPreKey : NSObject <NSSecureCoding>
 
 @property (readonly) int preKeyId;
 @property (readonly) int signedPreKeyId;
@@ -25,7 +25,7 @@
 
 @end
 
-@interface SessionState : NSObject <NSSecureCoding>
+@interface LegacySessionState : NSObject <NSSecureCoding>
 
 /**
  *  AxolotlSessions are either retreived from the database or initiated on new discussions. They are serialized before being stored to make storing abstractions significantly simpler. Because we propose no abstraction for a contact and TextSecure has multi-device (multiple sessions with same identity key) support, the identityKeys need to be added manually.
@@ -36,9 +36,9 @@
 @property(nonatomic) NSData *remoteIdentityKey;
 @property(nonatomic) NSData *localIdentityKey;
 @property(nonatomic) int previousCounter;
-@property(nonatomic) RootKey *rootKey;
+@property(nonatomic) LegacyRootKey *rootKey;
 
-@property(nonatomic) NSArray<ReceivingChain *> *receivingChains;
+@property(nonatomic) NSArray<LegacyReceivingChain *> *receivingChains;
 
 @property(nonatomic)int remoteRegistrationId;
 @property(nonatomic)int localRegistrationId;
@@ -48,11 +48,11 @@
 - (NSData*)senderRatchetKey;
 - (ECKeyPair*)senderRatchetKeyPair;
 
-- (void)setSenderChain:(ECKeyPair*)senderRatcherKeyPair chainKey:(ChainKey*)chainKey;
+- (void)setSenderChain:(ECKeyPair*)senderRatcherKeyPair chainKey:(LegacyChainKey*)chainKey;
 
-- (ChainKey*)senderChainKey;
+- (LegacyChainKey*)senderChainKey;
 
 - (void)setUnacknowledgedPreKeyMessage:(int)preKeyId signedPreKey:(int)signedPreKeyId baseKey:(NSData*)baseKey;
-- (PendingPreKey*)unacknowledgedPreKeyMessageItems;
+- (LegacyPendingPreKey*)unacknowledgedPreKeyMessageItems;
 
 @end

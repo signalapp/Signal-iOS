@@ -3,11 +3,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SignalServiceKit/MessageKeys.h>
+#import <SignalServiceKit/LegacyMessageKeys.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ChainKey : NSObject <NSSecureCoding>
+@interface LegacyChainKey : NSObject <NSSecureCoding>
 
 @property (nonatomic, readonly) int index;
 @property (nonatomic, readonly) NSData *key;

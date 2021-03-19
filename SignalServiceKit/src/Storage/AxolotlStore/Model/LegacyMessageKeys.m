@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MessageKeys.h"
+#import "LegacyMessageKeys.h"
 
 static NSString* const kCoderMessageKeysCipherKey = @"kCoderMessageKeysCipherKey";
 static NSString* const kCoderMessageKeysMacKey    = @"kCoderMessageKeysMacKey";
@@ -10,7 +10,7 @@ static NSString* const kCoderMessageKeysIVKey     = @"kCoderMessageKeysIVKey";
 static NSString* const kCoderMessageKeysIndex     = @"kCoderMessageKeysIndex";
 
 
-@implementation MessageKeys
+@implementation LegacyMessageKeys
 
 + (BOOL)supportsSecureCoding{
     return YES;

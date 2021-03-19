@@ -24,7 +24,7 @@ private func removeKeyType(from data: Data) -> Data {
     return data.dropFirst()
 }
 
-extension ChainKey {
+extension LegacyChainKey {
     fileprivate func buildProto() -> SessionRecordProtos_SessionStructure.Chain.ChainKey {
         var result = SessionRecordProtos_SessionStructure.Chain.ChainKey()
 
@@ -41,7 +41,7 @@ extension ChainKey {
     }
 }
 
-extension MessageKeys {
+extension LegacyMessageKeys {
     fileprivate func buildProto() -> SessionRecordProtos_SessionStructure.Chain.MessageKey {
         validate(cipherKey.count == 32)
         validate(macKey.count == 32)
@@ -67,7 +67,7 @@ extension MessageKeys {
     }
 }
 
-extension ReceivingChain {
+extension LegacyReceivingChain {
     fileprivate func buildProto() -> SessionRecordProtos_SessionStructure.Chain {
         validate(senderRatchetKey.count == 32)
 
@@ -76,7 +76,7 @@ extension ReceivingChain {
         result.senderRatchetKey = prependKeyType(to: senderRatchetKey)
         result.chainKey = chainKey.buildProto()
         for messageKeys in messageKeysList {
-            let messageKeys = messageKeys as! MessageKeys
+            let messageKeys = messageKeys as! LegacyMessageKeys
             result.messageKeys.append(messageKeys.buildProto())
         }
 
@@ -86,14 +86,14 @@ extension ReceivingChain {
     fileprivate convenience init(_ proto: SessionRecordProtos_SessionStructure.Chain) {
         validate(proto.unknownFields.data.isEmpty)
 
-        self.init(chainKey: ChainKey(proto.chainKey), senderRatchetKey: removeKeyType(from: proto.senderRatchetKey))
+        self.init(chainKey: LegacyChainKey(proto.chainKey), senderRatchetKey: removeKeyType(from: proto.senderRatchetKey))
         for messageKeysProto in proto.messageKeys {
-            messageKeysList.add(MessageKeys(messageKeysProto))
+            messageKeysList.add(LegacyMessageKeys(messageKeysProto))
         }
     }
 }
 
-extension PendingPreKey {
+extension LegacyPendingPreKey {
     fileprivate func buildProto() -> SessionRecordProtos_SessionStructure.PendingPreKey {
         var result = SessionRecordProtos_SessionStructure.PendingPreKey()
 
@@ -108,7 +108,7 @@ extension PendingPreKey {
     }
 }
 
-extension SessionState {
+extension LegacySessionState {
     private func buildSenderChain() -> SessionRecordProtos_SessionStructure.Chain? {
         guard let ratchetKeyPair = senderRatchetKeyPair() else {
             return nil
@@ -163,7 +163,7 @@ extension SessionState {
         version = Int32(proto.sessionVersion)
         localIdentityKey = removeKeyType(from: proto.localIdentityPublic)
         remoteIdentityKey = removeKeyType(from: proto.remoteIdentityPublic)
-        rootKey = RootKey(data: proto.rootKey)
+        rootKey = LegacyRootKey(data: proto.rootKey)
         previousCounter = Int32(proto.previousCounter)
         if proto.hasSenderChain {
             validate(proto.senderChain.unknownFields.data.isEmpty)
@@ -175,9 +175,9 @@ extension SessionState {
             let senderRatchetKeyPair = ECKeyPair(IdentityKeyPair(publicKey: senderRatchetKey!,
                                                                  privateKey: senderRatchetKeyPrivate!))
             setSenderChain(senderRatchetKeyPair,
-                           chainKey: ChainKey(proto.senderChain.chainKey))
+                           chainKey: LegacyChainKey(proto.senderChain.chainKey))
         }
-        receivingChains = proto.receiverChains.map { ReceivingChain($0) }
+        receivingChains = proto.receiverChains.map { LegacyReceivingChain($0) }
         if proto.hasPendingPreKey {
             validate(proto.pendingPreKey.unknownFields.data.isEmpty)
 
@@ -189,11 +189,13 @@ extension SessionState {
         }
         remoteRegistrationId = Int32(bitPattern: proto.remoteRegistrationID)
         localRegistrationId = Int32(bitPattern: proto.localRegistrationID)
-        aliceBaseKey = removeKeyType(from: proto.aliceBaseKey)
+        if proto.hasAliceBaseKey {
+            aliceBaseKey = removeKeyType(from: proto.aliceBaseKey)
+        }
     }
 }
 
-extension SignalServiceKit.SessionRecord {
+extension LegacySessionRecord {
     fileprivate func buildProto() -> SessionRecordProtos_RecordStructure {
         var result = SessionRecordProtos_RecordStructure()
 
@@ -223,11 +225,11 @@ extension SignalServiceKit.SessionRecord {
 
         self.init()
         for stateProto in deserialized.previousSessions.reversed() {
-            self.setState(SessionState(stateProto))
+            self.setState(LegacySessionState(stateProto))
             self.archiveCurrentState()
         }
         if deserialized.hasCurrentSession {
-            self.setState(SessionState(deserialized.currentSession))
+            self.setState(LegacySessionState(deserialized.currentSession))
         }
     }
 }

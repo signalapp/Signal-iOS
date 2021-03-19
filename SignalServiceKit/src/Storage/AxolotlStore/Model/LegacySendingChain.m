@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SendingChain.h"
-#import "ChainKey.h"
+#import "LegacySendingChain.h"
+#import "LegacyChainKey.h"
 
-@interface SendingChain ()
+@interface LegacySendingChain ()
 
-@property (nonatomic)ChainKey *chainKey;
+@property (nonatomic)LegacyChainKey *chainKey;
 
 @end
 
-@implementation SendingChain
+@implementation LegacySendingChain
 
 static NSString* const kCoderChainKey      = @"kCoderChainKey";
 static NSString* const kCoderSenderRatchet = @"kCoderSenderRatchet";
@@ -21,7 +21,7 @@ static NSString* const kCoderSenderRatchet = @"kCoderSenderRatchet";
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder{
-    self = [self initWithChainKey:[aDecoder decodeObjectOfClass:[ChainKey class] forKey:kCoderChainKey]
+    self = [self initWithChainKey:[aDecoder decodeObjectOfClass:[LegacyChainKey class] forKey:kCoderChainKey]
              senderRatchetKeyPair:[aDecoder decodeObjectOfClass:[ECKeyPair class] forKey:kCoderSenderRatchet]];
     
     return self;
@@ -32,7 +32,7 @@ static NSString* const kCoderSenderRatchet = @"kCoderSenderRatchet";
     [aCoder encodeObject:self.senderRatchetKeyPair forKey:kCoderSenderRatchet];
 }
 
-- (instancetype)initWithChainKey:(ChainKey *)chainKey senderRatchetKeyPair:(ECKeyPair *)keyPair{
+- (instancetype)initWithChainKey:(LegacyChainKey *)chainKey senderRatchetKeyPair:(ECKeyPair *)keyPair{
     self = [super init];
 
     OWSAssert(chainKey.key.length == 32);
@@ -46,7 +46,7 @@ static NSString* const kCoderSenderRatchet = @"kCoderSenderRatchet";
     return self;
 }
 
--(ChainKey *)chainKey{
+-(LegacyChainKey *)chainKey{
     return _chainKey;
 }
 

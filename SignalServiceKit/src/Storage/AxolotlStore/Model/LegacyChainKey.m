@@ -2,13 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "ChainKey.h"
+#import "LegacyChainKey.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <Curve25519Kit/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation ChainKey
+@implementation LegacyChainKey
 
 static NSString *const kCoderKey = @"kCoderKey";
 static NSString *const kCoderIndex = @"kCoderIndex";

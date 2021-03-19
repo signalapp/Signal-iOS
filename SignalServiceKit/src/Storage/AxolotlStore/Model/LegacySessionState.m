@@ -2,12 +2,12 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SessionState.h"
-#import "ReceivingChain.h"
-#import "SendingChain.h"
+#import "LegacySessionState.h"
+#import "LegacyReceivingChain.h"
+#import "LegacySendingChain.h"
 #import <Curve25519Kit/Curve25519.h>
 
-@implementation PendingPreKey
+@implementation LegacyPendingPreKey
 
 static NSString* const kCoderPreKeyId       = @"kCoderPreKeyId";
 static NSString* const kCoderSignedPreKeyId = @"kCoderSignedPreKeyId";
@@ -45,10 +45,10 @@ static NSString* const kCoderBaseKey        = @"kCoderBaseKey";
 
 @end
 
-@interface SessionState ()
+@interface LegacySessionState ()
 
-@property SendingChain       *sendingChain;               // The outgoing sending chain
-@property PendingPreKey      *pendingPreKey;
+@property LegacySendingChain       *sendingChain;               // The outgoing sending chain
+@property LegacyPendingPreKey      *pendingPreKey;
 
 @end
 
@@ -66,7 +66,7 @@ static NSString* const kCoderReceiverChains   = @"kCoderReceiverChains";
 static NSString* const kCoderSendingChain     = @"kCoderSendingChain";
 static NSString* const kCoderPendingPrekey    = @"kCoderPendingPrekey";
 
-@implementation SessionState
+@implementation LegacySessionState
 
 + (BOOL)supportsSecureCoding{
     return YES;
@@ -94,9 +94,9 @@ static NSString* const kCoderPendingPrekey    = @"kCoderPendingPrekey";
         self.rootKey              = [aDecoder decodeObjectOfClass:[NSData class] forKey:kCoderRootKey];
         self.remoteRegistrationId = [[aDecoder decodeObjectOfClass:[NSNumber class] forKey:kCoderRemoteRegID] intValue];
         self.localRegistrationId  = [[aDecoder decodeObjectOfClass:[NSNumber class] forKey:kCoderLocalRegID] intValue];
-        self.sendingChain         = [aDecoder decodeObjectOfClass:[SendingChain class] forKey:kCoderSendingChain];
+        self.sendingChain         = [aDecoder decodeObjectOfClass:[LegacySendingChain class] forKey:kCoderSendingChain];
         self.receivingChains      = [aDecoder decodeObjectOfClass:[NSArray class] forKey:kCoderReceiverChains];
-        self.pendingPreKey        = [aDecoder decodeObjectOfClass:[PendingPreKey class] forKey:kCoderPendingPrekey];
+        self.pendingPreKey        = [aDecoder decodeObjectOfClass:[LegacyPendingPreKey class] forKey:kCoderPendingPrekey];
     }
     
     return self;
@@ -129,21 +129,21 @@ static NSString* const kCoderPendingPrekey    = @"kCoderPendingPrekey";
     return [[self sendingChain] senderRatchetKeyPair];
 }
 
-- (void)setSenderChain:(ECKeyPair*)senderRatchetKeyPair chainKey:(ChainKey*)chainKey{
+- (void)setSenderChain:(ECKeyPair*)senderRatchetKeyPair chainKey:(LegacyChainKey*)chainKey{
     OWSAssert(senderRatchetKeyPair);
     OWSAssert(chainKey);
 
-    self.sendingChain = [[SendingChain alloc]initWithChainKey:chainKey senderRatchetKeyPair:senderRatchetKeyPair];
+    self.sendingChain = [[LegacySendingChain alloc]initWithChainKey:chainKey senderRatchetKeyPair:senderRatchetKeyPair];
 }
 
-- (ChainKey*)senderChainKey{
+- (LegacyChainKey*)senderChainKey{
     return self.sendingChain.chainKey;
 }
 
 - (void)setUnacknowledgedPreKeyMessage:(int)preKeyId signedPreKey:(int)signedPreKeyId baseKey:(NSData*)baseKey{
     OWSAssert(baseKey);
 
-    PendingPreKey *pendingPreKey = [[PendingPreKey alloc] initWithBaseKey:baseKey preKeyId:preKeyId signedPreKeyId:signedPreKeyId];
+    LegacyPendingPreKey *pendingPreKey = [[LegacyPendingPreKey alloc] initWithBaseKey:baseKey preKeyId:preKeyId signedPreKeyId:signedPreKeyId];
     
     self.pendingPreKey = pendingPreKey;
 }
@@ -152,7 +152,7 @@ static NSString* const kCoderPendingPrekey    = @"kCoderPendingPrekey";
     return self.pendingPreKey?YES:NO;
 }
 
-- (PendingPreKey*)unacknowledgedPreKeyMessageItems{
+- (LegacyPendingPreKey*)unacknowledgedPreKeyMessageItems{
     return self.pendingPreKey;
 }
 
