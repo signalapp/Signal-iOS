@@ -251,6 +251,7 @@
 		B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A62398B23E00211ABE /* QRCodeVC.swift */; };
 		B886B4A92398BA1500211ABE /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B886B4A82398BA1500211ABE /* QRCode.swift */; };
 		B88A1AC725C90A4700E6D421 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
+		B88FA7B826045D100049422F /* OpenGroupAPIV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B88FA7B726045D100049422F /* OpenGroupAPIV2.swift */; };
 		B893063F2383961A005EAA8E /* ScanQRCodeWrapperVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */; };
 		B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0742339EDCF00B4D94D /* NukeDataModal.swift */; };
 		B897621C25D201F7004F83B2 /* ScrollToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */; };
@@ -310,6 +311,7 @@
 		C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */; };
 		C31D1DE9252172D4005D4DA8 /* ContactUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */; };
 		C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */; };
+		C3227FF6260AAD66006EA627 /* OpenGroupMessageV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3227FF5260AAD66006EA627 /* OpenGroupMessageV2.swift */; };
 		C32824D325C9F9790062D0A7 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C328250F25CA06020062D0A7 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C328250E25CA06020062D0A7 /* VoiceMessageView.swift */; };
 		C328251F25CA3A900062D0A7 /* QuoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C328251E25CA3A900062D0A7 /* QuoteView.swift */; };
@@ -1234,6 +1236,7 @@
 		B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		B886B4A62398B23E00211ABE /* QRCodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeVC.swift; sourceTree = "<group>"; };
 		B886B4A82398BA1500211ABE /* QRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCode.swift; sourceTree = "<group>"; };
+		B88FA7B726045D100049422F /* OpenGroupAPIV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupAPIV2.swift; sourceTree = "<group>"; };
 		B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeWrapperVC.swift; sourceTree = "<group>"; };
 		B894D0742339EDCF00B4D94D /* NukeDataModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeDataModal.swift; sourceTree = "<group>"; };
 		B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollToBottomButton.swift; sourceTree = "<group>"; };
@@ -1306,6 +1309,7 @@
 		C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSelectionVC.swift; sourceTree = "<group>"; };
 		C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUtilities.swift; sourceTree = "<group>"; };
 		C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairUtilities.swift; sourceTree = "<group>"; };
+		C3227FF5260AAD66006EA627 /* OpenGroupMessageV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupMessageV2.swift; sourceTree = "<group>"; };
 		C328250E25CA06020062D0A7 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		C328251E25CA3A900062D0A7 /* QuoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteView.swift; sourceTree = "<group>"; };
 		C328252F25CA55360062D0A7 /* ContextMenuWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuWindow.swift; sourceTree = "<group>"; };
@@ -2495,6 +2499,26 @@
 			path = Meta;
 			sourceTree = "<group>";
 		};
+		C3227FF4260AAD58006EA627 /* V2 */ = {
+			isa = PBXGroup;
+			children = (
+				B88FA7B726045D100049422F /* OpenGroupAPIV2.swift */,
+				C3227FF5260AAD66006EA627 /* OpenGroupMessageV2.swift */,
+			);
+			path = V2;
+			sourceTree = "<group>";
+		};
+		C3228005260AAD7E006EA627 /* V1 */ = {
+			isa = PBXGroup;
+			children = (
+				C3A721352558BDF90043A11F /* OpenGroupAPI.swift */,
+				C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */,
+				C3A721342558BDF90043A11F /* OpenGroupMessage.swift */,
+				C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */,
+			);
+			path = V1;
+			sourceTree = "<group>";
+		};
 		C328252E25CA54F70062D0A7 /* Context Menu */ = {
 			isa = PBXGroup;
 			children = (
@@ -3158,11 +3182,9 @@
 		C3A721332558BDDF0043A11F /* Open Groups */ = {
 			isa = PBXGroup;
 			children = (
+				C3228005260AAD7E006EA627 /* V1 */,
+				C3227FF4260AAD58006EA627 /* V2 */,
 				C3A721372558BDFA0043A11F /* OpenGroup.swift */,
-				C3A721352558BDF90043A11F /* OpenGroupAPI.swift */,
-				C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */,
-				C3A721342558BDF90043A11F /* OpenGroupMessage.swift */,
-				C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */,
 				C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */,
 			);
 			path = "Open Groups";
@@ -4733,6 +4755,7 @@
 				C32C5BDD256DC88D003C73A2 /* OWSReadReceiptManager.m in Sources */,
 				C3D9E3BF25676AD70040E4F3 /* TSAttachmentStream.m in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
+				C3227FF6260AAD66006EA627 /* OpenGroupMessageV2.swift in Sources */,
 				B8B32021258B1A650020074B /* Contact.swift in Sources */,
 				C32C5C89256DD0D2003C73A2 /* Storage+Jobs.swift in Sources */,
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
@@ -4801,6 +4824,7 @@
 				C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */,
 				C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */,
 				C34A977425A3E34A00852C71 /* ClosedGroupControlMessage.swift in Sources */,
+				B88FA7B826045D100049422F /* OpenGroupAPIV2.swift in Sources */,
 				C32C5E97256DE0CB003C73A2 /* OWSPrimaryStorage.m in Sources */,
 				C32C5EB9256DE130003C73A2 /* OWSQuotedReplyModel+Conversion.swift in Sources */,
 				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,
