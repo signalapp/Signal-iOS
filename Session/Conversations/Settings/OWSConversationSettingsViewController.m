@@ -265,7 +265,9 @@ CGFloat kIconViewLength = 24;
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:title customBackButton:YES];
     self.tableView.backgroundColor = UIColor.clearColor;
     
-    [self updateNavBarButtons];
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [self updateNavBarButtons];
+    }
 }
 
 - (void)updateTableContents
