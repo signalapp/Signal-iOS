@@ -5074,6 +5074,9 @@
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "Payments";
 
+/* Error indicating that it is not valid to send yourself a payment. */
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Cannot transfer to your own wallet address. Please enter the wallet address of the exchange.";
+
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can withdraw MobileCoin by completing a transfer to another wallet address. From another wallet, look for the 26-35 string of numbers and letters most commonly below the QR code.";
 
