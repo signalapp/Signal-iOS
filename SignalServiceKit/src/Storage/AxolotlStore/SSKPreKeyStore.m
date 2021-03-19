@@ -113,29 +113,20 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 }
 
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
-                      protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
-    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
-
     return [self.keyStore preKeyRecordForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
 - (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
-    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
+        transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
-    
     [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
 - (void)removePreKey:(int)preKeyId
-     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
+         transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
-
     OWSLogInfo(@"Removing prekeyID: %lu", (unsigned long)preKeyId);
 
     [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];

@@ -35,7 +35,7 @@
 {
     __block PreKeyRecord *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self loadPreKey:preKeyId protocolContext:transaction];
+        result = [self loadPreKey:preKeyId transaction:transaction];
     }];
     return result;
 }
@@ -93,7 +93,7 @@
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.preKeyStore removePreKey:lastPreKeyRecord.Id protocolContext:transaction];
+        [self.preKeyStore removePreKey:lastPreKeyRecord.Id transaction:transaction];
     }];
 
     XCTAssertNil([self.preKeyStore loadPreKey:lastPreKeyRecord.Id]);

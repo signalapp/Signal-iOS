@@ -50,7 +50,6 @@
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
-#import <SignalServiceKit/SPKProtocolContext.h>
 #import <SignalServiceKit/SSKJobRecord.h>
 #import <SignalServiceKit/SSKMessageDecryptJobRecord.h>
 #import <SignalServiceKit/SSKMessageSenderJobRecord.h>

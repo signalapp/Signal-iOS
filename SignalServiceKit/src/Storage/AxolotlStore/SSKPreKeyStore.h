@@ -3,11 +3,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SignalServiceKit/SPKProtocolContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class PreKeyRecord;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 
@@ -22,16 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction;
 #endif
 
-// MARK: AxolotlKit
-
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
-                      protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext;
+                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
-    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext;
+        transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removePreKey:(int)preKeyId
-     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext;
+         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

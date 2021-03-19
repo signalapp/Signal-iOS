@@ -145,7 +145,7 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
 // there are backdoors like `transitional_yapReadTransaction` which will unwrap
 // the underlying YapDatabaseRead/WriteTransaction.
 @objc
-public class SDSAnyReadTransaction: NSObject, SPKProtocolReadContext {
+public class SDSAnyReadTransaction: NSObject {
     public enum ReadTransactionType {
         case yapRead(_ transaction: YapDatabaseReadTransaction)
         case grdbRead(_ transaction: GRDBReadTransaction)
@@ -197,7 +197,7 @@ public class SDSAnyReadTransaction: NSObject, SPKProtocolReadContext {
 }
 
 @objc
-public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteContext, StoreContext {
+public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
     public enum WriteTransactionType {
         case yapWrite(_ transaction: YapDatabaseReadWriteTransaction)
         case grdbWrite(_ transaction: GRDBWriteTransaction)
