@@ -46,6 +46,7 @@
 #import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -1447,18 +1448,6 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         // NSUnderlyingErrorKey isn't a normal NSException user info key, but it's appropriate here.
         OWSRaiseExceptionWithUserInfo(
             @"sessionCreationException", @{ NSUnderlyingErrorKey : error }, @"Failed to create session: %@", error);
-    }
-}
-
-- (TSWhisperMessageType)messageTypeForCipherMessage:(id<CipherMessage>)cipherMessage
-{
-    switch (cipherMessage.cipherMessageType) {
-        case CipherMessageType_Whisper:
-            return TSEncryptedWhisperMessageType;
-        case CipherMessageType_Prekey:
-            return TSPreKeyWhisperMessageType;
-        default:
-            return TSUnknownMessageType;
     }
 }
 

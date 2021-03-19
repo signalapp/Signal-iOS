@@ -15,12 +15,6 @@ pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', test
 pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
 # pod 'SignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
-pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
-# pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
-
-pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
-# pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
-
 pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 

@@ -1,15 +1,16 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKSignedPreKeyStore.h"
 #import "OWSIdentityManager.h"
 #import "SDSKeyValueStore+ObjC.h"
 #import "SSKPreKeyStore.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Ed25519.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/SignedPreKeyRecord.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,15 +1,16 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <AxolotlKit/SignedPreKeyStore.h>
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignedPreKeyRecord;
 
-@interface SSKSignedPreKeyStore : NSObject <SignedPreKeyStore>
+@interface SSKSignedPreKeyStore : NSObject
 
 #pragma mark - SignedPreKeyStore transactions
 

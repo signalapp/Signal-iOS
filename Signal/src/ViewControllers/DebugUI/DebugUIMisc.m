@@ -8,7 +8,6 @@
 #import "OWSCountryMetadata.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>

@@ -12,13 +12,13 @@
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/SignedPreKeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/SignedPreKeyRecord.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

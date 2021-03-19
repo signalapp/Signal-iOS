@@ -20,10 +20,10 @@
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "UnfairLock.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

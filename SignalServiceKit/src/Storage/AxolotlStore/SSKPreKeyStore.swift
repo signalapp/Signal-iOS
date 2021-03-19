@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -22,9 +22,9 @@ extension SSKPreKeyStore: SignalClient.PreKeyStore {
     public func storePreKey(_ record: SignalClient.PreKeyRecord, id: UInt32, context: StoreContext) throws {
         let keyPair = IdentityKeyPair(publicKey: record.publicKey, privateKey: record.privateKey)
         self.storePreKey(Int32(bitPattern: id),
-                         preKeyRecord: AxolotlKit.PreKeyRecord(id: Int32(bitPattern: id),
-                                                               keyPair: ECKeyPair(keyPair),
-                                                               createdAt: Date()),
+                         preKeyRecord: SignalServiceKit.PreKeyRecord(id: Int32(bitPattern: id),
+                                                                     keyPair: ECKeyPair(keyPair),
+                                                                     createdAt: Date()),
                          protocolContext: context.asTransaction)
     }
 

@@ -1,15 +1,17 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <AxolotlKit/PreKeyStore.h>
+#import <Foundation/Foundation.h>
+#import <SignalServiceKit/SPKProtocolContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PreKeyRecord;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 
-@interface SSKPreKeyStore : NSObject <PreKeyStore>
+@interface SSKPreKeyStore : NSObject
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyStore;
 
@@ -19,6 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 #if TESTABLE_BUILD
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction;
 #endif
+
+// MARK: AxolotlKit
+
+- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
+                      protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext;
+
+- (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
+    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext;
+
+- (void)removePreKey:(int)preKeyId
+     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext;
 
 @end
 

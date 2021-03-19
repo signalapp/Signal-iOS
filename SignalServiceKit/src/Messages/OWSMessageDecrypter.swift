@@ -141,7 +141,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return decrypt(
                 envelope,
                 envelopeData: envelopeData,
-                cipherType: .prekey,
+                cipherType: .preKey,
                 transaction: transaction
             )
         case .receipt, .keyExchange, .unknown:
@@ -361,7 +361,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
     private func decrypt(_ envelope: SSKProtoEnvelope,
                          envelopeData: Data,
-                         cipherType: CipherMessageType,
+                         cipherType: CiphertextMessage.MessageType,
                          transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
 
         do {
@@ -394,7 +394,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                               identityStore: SSKEnvironment.shared.identityManager,
                                               context: transaction)
 
-            case .prekey:
+            case .preKey:
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(message: message,
                                                     from: protocolAddress,
@@ -404,7 +404,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                     signedPreKeyStore: SSKEnvironment.shared.signedPreKeyStore,
                                                     context: transaction)
 
-            @unknown default:
+            // FIXME: return this to @unknown default once SenderKey messages are handled.
+            // (Right now CiphertextMessage.MessageType erroneously includes SenderKeyDistributionMessage.)
+            default:
                 owsFailDebug("Unexpected ciphertext type: \(cipherType.rawValue)")
                 throw OWSErrorWithCodeDescription(.failedToDecryptMessage,
                                                   "Unexpected ciphertext type: \(cipherType.rawValue)")

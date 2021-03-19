@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
 #import "SSKSignedPreKeyStore.h"
 #import "TSPreKeyManager.h"
-#import <AxolotlKit/SignedPrekeyRecord.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/SignedPrekeyRecord.h>
 
 @interface TSPreKeyManager (Testing)
 

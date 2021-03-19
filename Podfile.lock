@@ -6,18 +6,6 @@ PODS:
   - AFNetworking/Reachability (3.2.1)
   - AFNetworking/Security (3.2.1)
   - AFNetworking/Serialization (3.2.1)
-  - AxolotlKit (0.9.0):
-    - CocoaLumberjack
-    - Curve25519Kit (~> 2.1.0)
-    - HKDFKit (~> 0.0.3)
-    - SignalCoreKit
-    - SwiftProtobuf
-  - AxolotlKit/Tests (0.9.0):
-    - CocoaLumberjack
-    - Curve25519Kit (~> 2.1.0)
-    - HKDFKit (~> 0.0.3)
-    - SignalCoreKit
-    - SwiftProtobuf
   - blurhash (0.0.1)
   - BonMot (5.6.0)
   - CocoaLumberjack (3.7.0):
@@ -34,12 +22,6 @@ PODS:
   - GRDB.swift/SQLCipher (4.3.0):
     - SQLCipher (>= 3.4.0)
   - GRKOpenSSLFramework (1.0.2.19)
-  - HKDFKit (0.0.4):
-    - CocoaLumberjack
-    - SignalCoreKit
-  - HKDFKit/Tests (0.0.4):
-    - CocoaLumberjack
-    - SignalCoreKit
   - libPhoneNumber-iOS (0.9.15)
   - libwebp (1.0.2):
     - libwebp/core (= 1.0.2)
@@ -114,7 +96,6 @@ PODS:
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
     - AFNetworking/NSURLSession
-    - AxolotlKit
     - blurhash
     - CocoaLumberjack
     - Curve25519Kit
@@ -136,7 +117,6 @@ PODS:
     - YYImage/WebP
   - SignalServiceKit/Tests (0.9.0):
     - AFNetworking/NSURLSession
-    - AxolotlKit
     - blurhash
     - CocoaLumberjack
     - Curve25519Kit
@@ -239,16 +219,12 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking/NSURLSession
-  - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
-  - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
   - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`, branch `mkirk/1.0.2t`)
-  - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
-  - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
@@ -293,9 +269,6 @@ SPEC REPOS:
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
-  AxolotlKit:
-    :branch: master
-    :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :branch: signal-master
     :git: https://github.com/signalapp/blurhash
@@ -305,8 +278,6 @@ EXTERNAL SOURCES:
   GRKOpenSSLFramework:
     :branch: mkirk/1.0.2t
     :git: https://github.com/signalapp/GRKOpenSSLFramework
-  HKDFKit:
-    :git: https://github.com/signalapp/HKDFKit.git
   libPhoneNumber-iOS:
     :branch: signal-master
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -341,9 +312,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/zxingify/zxingify-objc.git
 
 CHECKOUT OPTIONS:
-  AxolotlKit:
-    :commit: 36601e4bbeac575782167e4d482dd77e73b8ae30
-    :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
@@ -353,9 +321,6 @@ CHECKOUT OPTIONS:
   GRKOpenSSLFramework:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
     :git: https://github.com/signalapp/GRKOpenSSLFramework
-  HKDFKit:
-    :commit: b6985abcacda0292b82785ba93b8be47c0d608b6
-    :git: https://github.com/signalapp/HKDFKit.git
   libPhoneNumber-iOS:
     :commit: 9e30e12883947b95972c1eee36b6801a09689364
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -393,14 +358,12 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   BonMot: 2217a66e5ddc6a8d2ffb759fe8c85a8528e0d3e7
   CocoaLumberjack: e8955b9d337ac307103b0a34fd141c32f27e53c5
   Curve25519Kit: 4b6cddbe2d44be0ccb37e15ba719a145edab8aff
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
-  HKDFKit: bd6b9566654253aa45ef60a205979ec291f00641
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
@@ -414,7 +377,7 @@ SPEC CHECKSUMS:
   SignalCoreKit: 43daa8f15d6125d54705f35628ac35051bb205c6
   SignalMetadataKit: eb928ec98376ab5a6ef2108a7fcd3b2d792b8c65
   SignalRingRTC: 1769d40e1a155a2d6ddd95c404e7822bedd97076
-  SignalServiceKit: af084384e66b5b2ea468261a15eb01552677d600
+  SignalServiceKit: b3337d511fc32129c8b8819a9ac2700490ecdd6f
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
@@ -424,6 +387,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 70ac5af4c2290ee2d38793a59f26395582cd0bd8
+PODFILE CHECKSUM: 8470f6214af1e5e4c437a903764cb001011d8167
 
 COCOAPODS: 1.9.2

@@ -1,8 +1,7 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import AxolotlKit
 import SignalClient
 
 private func validate(_ condition: @autoclosure () -> Bool,
@@ -199,7 +198,7 @@ extension SessionState {
     }
 }
 
-extension AxolotlKit.SessionRecord {
+extension SignalServiceKit.SessionRecord {
     fileprivate func buildProto() -> SessionRecordProtos_RecordStructure {
         var result = SessionRecordProtos_RecordStructure()
 

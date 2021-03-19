@@ -177,8 +177,8 @@ extension MessageSender {
 
             Logger.verbose("Fetching prekey for: \(messageSend.address), \(deviceId)")
 
-            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<AxolotlKit.PreKeyBundle> in
-                let (promise, resolver) = Promise<AxolotlKit.PreKeyBundle>.pending()
+            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
+                let (promise, resolver) = Promise<SignalServiceKit.PreKeyBundle>.pending()
                 self.makePrekeyRequest(
                     messageSend: messageSend,
                     deviceId: NSNumber(value: deviceId),
@@ -194,7 +194,7 @@ extension MessageSender {
                     }
                 )
                 return promise
-            }.done(on: .global()) { (preKeyBundle: AxolotlKit.PreKeyBundle) -> Void in
+            }.done(on: .global()) { (preKeyBundle: SignalServiceKit.PreKeyBundle) -> Void in
                 try self.databaseStorage.write { transaction in
                     // Since we successfully fetched the prekey bundle,
                     // we know this device is registered. We can safely
@@ -251,7 +251,7 @@ public extension MessageSender {
     class func makePrekeyRequest(messageSend: OWSMessageSend,
                                  deviceId: NSNumber,
                                  accountId: AccountId?,
-                                 success: @escaping (AxolotlKit.PreKeyBundle?) -> Void,
+                                 success: @escaping (SignalServiceKit.PreKeyBundle?) -> Void,
                                  failure: @escaping (Error) -> Void) {
         assert(!Thread.isMainThread)
 
@@ -308,7 +308,7 @@ public extension MessageSender {
             guard let responseObject = result.responseObject as? [AnyHashable: Any] else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
-            let bundle = AxolotlKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
+            let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
             success(bundle)
         }.catch(on: .global()) { error in
             if let httpStatusCode = error.httpStatusCode {
@@ -324,7 +324,7 @@ public extension MessageSender {
     }
 
     @objc(createSessionForPreKeyBundle:accountId:recipientAddress:deviceId:transaction:error:)
-    class func createSession(forPreKeyBundle preKeyBundle: AxolotlKit.PreKeyBundle,
+    class func createSession(forPreKeyBundle preKeyBundle: SignalServiceKit.PreKeyBundle,
                              accountId: String,
                              recipientAddress: SignalServiceAddress,
                              deviceId: NSNumber,
@@ -384,7 +384,7 @@ public extension MessageSender {
 
     class func handleUntrustedIdentityKeyError(accountId: String,
                                                recipientAddress: SignalServiceAddress,
-                                               preKeyBundle: AxolotlKit.PreKeyBundle,
+                                               preKeyBundle: SignalServiceKit.PreKeyBundle,
                                                transaction: SDSAnyWriteTransaction) {
         saveRemoteIdentity(recipientAddress: recipientAddress,
                            preKeyBundle: preKeyBundle,
@@ -399,7 +399,7 @@ public extension MessageSender {
     }
 
     private class func saveRemoteIdentity(recipientAddress: SignalServiceAddress,
-                                          preKeyBundle: AxolotlKit.PreKeyBundle,
+                                          preKeyBundle: SignalServiceKit.PreKeyBundle,
                                           transaction: SDSAnyWriteTransaction) {
         Logger.info("recipientAddress: \(recipientAddress)")
         do {
@@ -428,7 +428,7 @@ fileprivate extension MessageSender {
 
     class func hadUntrustedIdentityKeyError(recipientAddress: SignalServiceAddress,
                                             currentIdentityKey: Data,
-                                            preKeyBundle: AxolotlKit.PreKeyBundle) {
+                                            preKeyBundle: SignalServiceKit.PreKeyBundle) {
         assert(!Thread.isMainThread)
 
         let newIdentityKey: Data

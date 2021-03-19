@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKPreKeyStore.h"
 #import "SDSKeyValueStore+ObjC.h"
 #import "TSStorageKeys.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/PreKeyRecord.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 #define BATCH_SIZE 100
+
+static const int kPreKeyOfLastResortId = 0xFFFFFF;
 
 NS_ASSUME_NONNULL_BEGIN
 

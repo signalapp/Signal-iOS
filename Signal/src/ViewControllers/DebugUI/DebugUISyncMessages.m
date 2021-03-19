@@ -6,7 +6,6 @@
 #import "DebugUIContacts.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>

@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "Theme.h"
 #import "VersionMigrations.h"
-#import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
