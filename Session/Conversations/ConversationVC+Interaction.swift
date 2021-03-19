@@ -49,7 +49,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
-        scrollToBottom(isAnimated: false)
         resetMentions()
         self.snInputView.text = ""
         dismiss(animated: true) { }
@@ -233,10 +232,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         Storage.write(with: { transaction in
             tsMessage.save(with: transaction)
+            // The new cell will be inserted here, but the TSOutgoingMessage now has no attachment.
         }, completion: { [weak self] in
-            Storage.write { transaction in
+            Storage.write(with: { transaction in
                 MessageSender.send(message, with: attachments, in: thread, using: transaction)
-            }
+            }, completion: { [weak self] in
+                // The TSOutgoingMessage has no attachment IDs until the `prep` finished.
+                // Scroll to bottom here so the tableview can calculate the cell's height with the attachments correctly.
+                self?.scrollToBottom(isAnimated: false)
+            })
             self?.handleMessageSent()
         })
     }
