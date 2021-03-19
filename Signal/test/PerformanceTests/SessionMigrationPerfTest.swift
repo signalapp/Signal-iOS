@@ -1,29 +1,32 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import XCTest
-import AxolotlKit
 import SignalServiceKit
 import SignalClient
 
 class SessionMigrationPerfTest: PerformanceBaseTest {
-    func makeDeepSession(depth: Int = 2000) -> AxolotlKit.SessionRecord {
-        let session = AxolotlKit.SessionRecord()!
+    static let newlyInitializedSessionStateData: Data = {
+        let dataURL = Bundle(for: SessionMigrationPerfTest.self).url(forResource: "newlyInitializedSessionState",
+                                                                     withExtension: "")!
+        return try! Data(contentsOf: dataURL)
+    }()
+
+    static func makeNewlyInitializedSessionState() -> SignalServiceKit.SessionState {
+        let result = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(Self.newlyInitializedSessionStateData)
+        return result as! SignalServiceKit.SessionState
+    }
+
+    func makeDeepSession(depth: Int = 2000) -> SignalServiceKit.SessionRecord {
+        let session = SignalServiceKit.SessionRecord()!
 
         for _ in 1...5 {
             session.archiveCurrentState()
 
-            let state = session.sessionState()!
-            state.rootKey = RootKey(data: Curve25519.generateKeyPair().publicKey)
-            let aliceParams = AliceAxolotlParameters(identityKey: Curve25519.generateKeyPair(),
-                                                     theirIdentityKey: Curve25519.generateKeyPair().publicKey,
-                                                     ourBaseKey: Curve25519.generateKeyPair(),
-                                                     theirSignedPreKey: Curve25519.generateKeyPair().publicKey,
-                                                     theirOneTimePreKey: nil,
-                                                     theirRatchetKey: Curve25519.generateKeyPair().publicKey)
-            try! RatchetingSession.initializeSession(state, sessionVersion: 3, aliceParameters: aliceParams)
+            let state = Self.makeNewlyInitializedSessionState()
+            session.setState(state)
 
             let receivingChains: [ReceivingChain] = (1...5).map { _ in
                 let senderRatchetKey = Curve25519.generateKeyPair().publicKey
