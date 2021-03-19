@@ -10,7 +10,6 @@
 
 - (instancetype)init;
 
-- (BOOL)hasSessionState:(int)version baseKey:(NSData*)aliceBaseKey;
 - (SessionState*)sessionState;
 - (NSArray<SessionState *> *)previousSessionStates;
 

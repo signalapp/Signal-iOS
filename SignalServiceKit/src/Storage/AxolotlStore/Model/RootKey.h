@@ -4,9 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class ECKeyPair;
-@class RKCK;
-
 @interface RootKey : NSObject <NSSecureCoding>
 
 - (instancetype)initWithData:(NSData *)data;

@@ -74,7 +74,7 @@ extension ReceivingChain {
         var result = SessionRecordProtos_SessionStructure.Chain()
 
         result.senderRatchetKey = prependKeyType(to: senderRatchetKey)
-        result.chainKey = chainKey().buildProto()
+        result.chainKey = chainKey.buildProto()
         for messageKeys in messageKeysList {
             let messageKeys = messageKeys as! MessageKeys
             result.messageKeys.append(messageKeys.buildProto())
@@ -109,11 +109,6 @@ extension PendingPreKey {
 }
 
 extension SessionState {
-    private var receivingChains: [ReceivingChain] {
-        get { return value(forKey: "receivingChains") as! [ReceivingChain] }
-        set { setValue(NSMutableArray(array: newValue), forKey: "receivingChains") }
-    }
-
     private func buildSenderChain() -> SessionRecordProtos_SessionStructure.Chain? {
         guard let ratchetKeyPair = senderRatchetKeyPair() else {
             return nil

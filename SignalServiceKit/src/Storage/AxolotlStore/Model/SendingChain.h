@@ -4,12 +4,14 @@
 
 #import <Curve25519Kit/Curve25519.h>
 #import <Foundation/Foundation.h>
-#import <SignalServiceKit/Chain.h>
 
-@interface SendingChain : NSObject <Chain, NSSecureCoding>
+@class ChainKey;
+
+@interface SendingChain : NSObject <NSSecureCoding>
 
 -(instancetype)initWithChainKey:(ChainKey*)chainKey senderRatchetKeyPair:(ECKeyPair*)keyPair;
 
 @property ECKeyPair *senderRatchetKeyPair;
+@property(readonly,nonatomic) ChainKey *chainKey;
 
 @end

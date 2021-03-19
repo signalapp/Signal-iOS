@@ -54,20 +54,6 @@
     return self;
 }
 
-- (BOOL)hasSessionState:(int)version baseKey:(NSData *)aliceBaseKey{
-    if (self.sessionState.version == version && [aliceBaseKey isEqualToData:self.sessionState.aliceBaseKey]) {
-        return YES;
-    }
-    
-    for (SessionState *state in self.previousStates) {
-        if (state.version == version && [aliceBaseKey isEqualToData:self.sessionState.aliceBaseKey]) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
-
 - (SessionState*)sessionState{
     return _sessionState;
 }

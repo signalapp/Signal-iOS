@@ -28,7 +28,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
             let state = Self.makeNewlyInitializedSessionState()
             session.setState(state)
 
-            let receivingChains: [ReceivingChain] = (1...5).map { _ in
+            state.receivingChains = (1...5).map { _ in
                 let senderRatchetKey = Curve25519.generateKeyPair().publicKey
                 let chain = ReceivingChain(chainKey: ChainKey(data: senderRatchetKey, index: 0),
                                            senderRatchetKey: senderRatchetKey)!
@@ -39,7 +39,6 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
                 chain.messageKeysList.addObjects(from: Array(repeating: dummyKeys, count: depth))
                 return chain
             }
-            state.setValue(receivingChains, forKey: "receivingChains")
         }
 
         return session

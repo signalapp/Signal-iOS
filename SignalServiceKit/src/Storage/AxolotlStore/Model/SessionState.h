@@ -4,11 +4,11 @@
 
 #import <Foundation/Foundation.h>
 
+@class ChainKey;
 @class ECKeyPair;
+@class ReceivingChain;
 
-#import <SignalServiceKit/Chain.h>
 #import <SignalServiceKit/MessageKeys.h>
-#import <SignalServiceKit/RKCK.h>
 #import <SignalServiceKit/RootKey.h>
 
 /**
@@ -38,6 +38,8 @@
 @property(nonatomic) int previousCounter;
 @property(nonatomic) RootKey *rootKey;
 
+@property(nonatomic) NSArray<ReceivingChain *> *receivingChains;
+
 @property(nonatomic)int remoteRegistrationId;
 @property(nonatomic)int localRegistrationId;
 
@@ -46,30 +48,11 @@
 - (NSData*)senderRatchetKey;
 - (ECKeyPair*)senderRatchetKeyPair;
 
-- (BOOL)hasReceiverChain:(NSData *)senderEphemeral;
-- (BOOL)hasSenderChain;
-
-- (ChainKey *)receiverChainKey:(NSData *)senderEphemeral;
-
-- (void)setReceiverChainKey:(NSData*)senderEphemeral chainKey:(ChainKey*)chainKey;
-
-- (void)addReceiverChain:(NSData*)senderRatchetKey chainKey:(ChainKey*)chainKey;
-
 - (void)setSenderChain:(ECKeyPair*)senderRatcherKeyPair chainKey:(ChainKey*)chainKey;
 
 - (ChainKey*)senderChainKey;
 
-- (void)setSenderChainKey:(ChainKey*)nextChainKey;
-
-- (BOOL)hasMessageKeys:(NSData*)senderRatchetKey counter:(int)counter;
-
-- (MessageKeys*)removeMessageKeys:(NSData*)senderRatcherKey counter:(int)counter;
-
-- (void)setMessageKeys:(NSData*)senderRatchetKey messageKeys:(MessageKeys*)messageKeys;
-
 - (void)setUnacknowledgedPreKeyMessage:(int)preKeyId signedPreKey:(int)signedPreKeyId baseKey:(NSData*)baseKey;
-- (BOOL)hasUnacknowledgedPreKeyMessage;
 - (PendingPreKey*)unacknowledgedPreKeyMessageItems;
-- (void)clearUnacknowledgedPreKeyMessage;
 
 @end
