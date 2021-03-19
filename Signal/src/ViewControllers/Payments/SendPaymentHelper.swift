@@ -65,12 +65,15 @@ class SendPaymentHelper {
         }
     }
 
+    private var maximumPaymentAmount: TSPaymentAmount?
+
     required init(delegate: SendPaymentHelperDelegate) {
         self.delegate = delegate
 
         addObservers()
 
         updateCurrentCurrencyConversion()
+        updateMaximumPaymentAmount()
     }
 
     private func addObservers() {
@@ -144,9 +147,9 @@ class SendPaymentHelper {
         return label
     }
 
-    public static func updateBalanceLabel(_ balanceLabel: UILabel) {
+    public func updateBalanceLabel(_ balanceLabel: UILabel) {
 
-        guard let paymentBalance = Self.paymentsSwift.currentPaymentBalance else {
+        guard let maximumPaymentAmount = self.maximumPaymentAmount else {
             // Use whitespace to ensure that the height of the label
             // is constant, avoiding layout jitter.
             balanceLabel.text = " "
@@ -156,12 +159,28 @@ class SendPaymentHelper {
         let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT",
                                        comment: "Format for the 'balance' indicator. Embeds {{ the current payments balance }}.")
         balanceLabel.text = String(format: format,
-                                   Self.formatMobileCoinAmount(paymentBalance.amount))
+                                   Self.formatMobileCoinAmount(maximumPaymentAmount))
+    }
+
+    private func updateMaximumPaymentAmount() {
+        firstly {
+            Self.paymentsSwift.maximumPaymentAmount()
+        }.done(on: .main) { [weak self] maximumPaymentAmount in
+            guard let self = self else { return }
+            self.maximumPaymentAmount = maximumPaymentAmount
+            self.delegate?.balanceDidChange()
+        }.catch(on: .global()) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+        }
+
+        delegate?.balanceDidChange()
     }
 
     @objc
     private func currentPaymentBalanceDidChange() {
         delegate?.balanceDidChange()
+
+        updateMaximumPaymentAmount()
     }
 
     @objc

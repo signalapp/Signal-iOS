@@ -514,7 +514,11 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     @objc
     public func updateBalanceLabel() {
-        SendPaymentHelper.updateBalanceLabel(balanceLabel)
+        guard let helper = helper else {
+            Logger.verbose("Missing helper.")
+            return
+        }
+        helper.updateBalanceLabel(balanceLabel)
     }
 
     private func tryToSendPayment(paymentInfo: PaymentInfo) {

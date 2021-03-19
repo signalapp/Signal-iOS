@@ -673,7 +673,11 @@ public class SendPaymentViewController: OWSViewController {
     }
 
     private func updateBalanceLabel() {
-        SendPaymentHelper.updateBalanceLabel(balanceLabel)
+        guard let helper = helper else {
+            Logger.verbose("Missing helper.")
+            return
+        }
+        helper.updateBalanceLabel(balanceLabel)
     }
 
     private func showInvalidAmountAlert() {

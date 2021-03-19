@@ -3392,7 +3392,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
