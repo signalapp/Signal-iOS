@@ -4,7 +4,7 @@
 
 import SignalClient
 
-extension SSKSignedPreKeyStore: SignalClient.SignedPreKeyStore {
+extension SSKSignedPreKeyStore: SignedPreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }

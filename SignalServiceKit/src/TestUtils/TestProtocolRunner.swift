@@ -126,10 +126,10 @@ public protocol TestSignalClient {
     var address: SignalServiceAddress { get }
     var protocolAddress: ProtocolAddress { get }
 
-    var sessionStore: SignalClient.SessionStore { get }
-    var preKeyStore: SignalClient.PreKeyStore { get }
-    var signedPreKeyStore: SignalClient.SignedPreKeyStore { get }
-    var identityKeyStore: SignalClient.IdentityKeyStore { get }
+    var sessionStore: SessionStore { get }
+    var preKeyStore: PreKeyStore { get }
+    var signedPreKeyStore: SignedPreKeyStore { get }
+    var identityKeyStore: IdentityKeyStore { get }
 }
 
 public extension TestSignalClient {
@@ -158,10 +158,10 @@ public extension TestSignalClient {
 /// i.e. someone who's sending messages to the local client.
 public struct FakeSignalClient: TestSignalClient {
 
-    public var sessionStore: SignalClient.SessionStore { return protocolStore }
-    public var preKeyStore: SignalClient.PreKeyStore { return protocolStore }
-    public var signedPreKeyStore: SignalClient.SignedPreKeyStore { return protocolStore }
-    public var identityKeyStore: SignalClient.IdentityKeyStore { return protocolStore }
+    public var sessionStore: SessionStore { return protocolStore }
+    public var preKeyStore: PreKeyStore { return protocolStore }
+    public var signedPreKeyStore: SignedPreKeyStore { return protocolStore }
+    public var identityKeyStore: IdentityKeyStore { return protocolStore }
 
     public let e164Identifier: SignalE164Identifier?
     public let uuid: UUID
@@ -209,19 +209,19 @@ public struct LocalSignalClient: TestSignalClient {
 
     public let deviceId: UInt32 = 1
 
-    public var sessionStore: SignalClient.SessionStore {
+    public var sessionStore: SessionStore {
         return SSKEnvironment.shared.sessionStore
     }
 
-    public var preKeyStore: SignalClient.PreKeyStore {
+    public var preKeyStore: PreKeyStore {
         return SSKEnvironment.shared.preKeyStore
     }
 
-    public var signedPreKeyStore: SignalClient.SignedPreKeyStore {
+    public var signedPreKeyStore: SignedPreKeyStore {
         return SSKEnvironment.shared.signedPreKeyStore
     }
 
-    public var identityKeyStore: SignalClient.IdentityKeyStore {
+    public var identityKeyStore: IdentityKeyStore {
         return SSKEnvironment.shared.identityManager
     }
 }

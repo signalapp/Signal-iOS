@@ -71,7 +71,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
         let x = makeDeepSession()
         let data = try! x.serializeProto()
         measure {
-            _ = try! SignalClient.SessionRecord(bytes: data)
+            _ = try! SessionRecord(bytes: data)
         }
     }
 
@@ -102,7 +102,7 @@ class SessionMigrationPerfTest: PerformanceBaseTest {
         let x = makeDeepSession(depth: 200)
         let data = try! x.serializeProto()
         measure {
-            _ = try! SignalClient.SessionRecord(bytes: data)
+            _ = try! SessionRecord(bytes: data)
         }
     }
 }

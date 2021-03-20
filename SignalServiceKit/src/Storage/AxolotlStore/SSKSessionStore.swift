@@ -98,7 +98,7 @@ public class SSKSessionStore: NSObject {
         }
 
         do {
-            let session = try SignalClient.SessionRecord(bytes: serializedData)
+            let session = try SessionRecord(bytes: serializedData)
             return session.hasCurrentState
         } catch {
             owsFailDebug("serialized session data was not valid: \(error)")
@@ -164,7 +164,7 @@ public class SSKSessionStore: NSObject {
             }
 
             do {
-                let session = try SignalClient.SessionRecord(bytes: data)
+                let session = try SessionRecord(bytes: data)
                 session.archiveCurrentState()
                 return Data(session.serialize()) as NSData
             } catch {
@@ -198,7 +198,7 @@ public class SSKSessionStore: NSObject {
                     return
                 }
                 do {
-                    let sessionRecord = try SignalClient.SessionRecord(bytes: data)
+                    let sessionRecord = try SessionRecord(bytes: data)
                     Logger.debug("         Device: \(key) hasCurrentState: \(sessionRecord.hasCurrentState)")
                 } catch {
                     owsFailDebug("invalid session record: \(error)")
@@ -213,7 +213,7 @@ extension SSKSessionStore {
         for address: SignalServiceAddress,
         deviceId: Int32,
         transaction: SDSAnyWriteTransaction
-    ) throws -> SignalClient.SessionRecord? {
+    ) throws -> SessionRecord? {
         guard let serializedData = loadSerializedSession(for: address,
                                                          deviceId: deviceId,
                                                          transaction: transaction) else {
@@ -222,7 +222,7 @@ extension SSKSessionStore {
         return try SessionRecord(bytes: serializedData)
     }
 
-    fileprivate func storeSession(_ record: SignalClient.SessionRecord,
+    fileprivate func storeSession(_ record: SessionRecord,
                                   for address: SignalServiceAddress,
                                   deviceId: Int32,
                                   transaction: SDSAnyWriteTransaction) throws {
@@ -244,16 +244,14 @@ extension SSKSessionStore {
     }
 }
 
-extension SSKSessionStore: SignalClient.SessionStore {
-    public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SignalClient.SessionRecord? {
+extension SSKSessionStore: SessionStore {
+    public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SessionRecord? {
         return try loadSession(for: SignalServiceAddress(from: address),
                                deviceId: Int32(bitPattern: address.deviceId),
                                transaction: context.asTransaction)
     }
 
-    public func storeSession(_ record: SignalClient.SessionRecord,
-                             for address: ProtocolAddress,
-                             context: StoreContext) throws {
+    public func storeSession(_ record: SessionRecord, for address: ProtocolAddress, context: StoreContext) throws {
         try storeSession(record,
                          for: SignalServiceAddress(from: address),
                          deviceId: Int32(bitPattern: address.deviceId),

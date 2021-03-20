@@ -21,7 +21,7 @@ extension SignalClient.IdentityKey {
     }
 }
 
-extension OWSIdentityManager: SignalClient.IdentityKeyStore {
+extension OWSIdentityManager: IdentityKeyStore {
     public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
         let transaction = context.asTransaction
         if let keyPair = self.identityKeyPair(with: transaction) {
