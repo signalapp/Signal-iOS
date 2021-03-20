@@ -289,6 +289,15 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
+                if let requiredRevision = requiredRevision,
+                   groupModel.revision != requiredRevision {
+                    if DebugFlags.internalLogging {
+                        Logger.info("requiredRevision: \(requiredRevision) != revision: \(groupModel.revision).")
+                    } else {
+                        Logger.info("requiredRevision: != revision.")
+                    }
+                    throw GroupsV2Error.unexpectedRevision
+                }
                 return changes.buildGroupChangeProto(currentGroupModel: groupModel,
                                                      currentDisappearingMessageToken: disappearingMessageToken)
             }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
@@ -312,16 +321,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
             let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                                          ignoreSignature: true)
-
-            if let requiredRevision = requiredRevision,
-               changeActionsProto.revision != requiredRevision {
-                if DebugFlags.internalLogging {
-                    Logger.info("requiredRevision: \(requiredRevision) != revision: \(changeActionsProto.revision).")
-                } else {
-                    Logger.info("requiredRevision: != revision.")
-                }
-                throw GroupsV2Error.unexpectedRevision
-            }
 
             // Collect avatar state from our change set so that we can
             // avoid downloading any avatars we just uploaded while

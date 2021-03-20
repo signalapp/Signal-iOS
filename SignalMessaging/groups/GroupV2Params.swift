@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -164,14 +164,19 @@ public extension GroupV2Params {
     }
 
     func encryptDisappearingMessagesTimer(_ token: DisappearingMessageToken) throws -> Data {
-        let duration = (token.isEnabled
-            ? token.durationSeconds
-            : 0)
-        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
-        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
-        let blobData = try blobBuilder.buildSerializedData()
-        let encryptedTimerData = try encryptBlob(blobData)
-        return encryptedTimerData
+        do {
+            let duration = (token.isEnabled
+                                ? token.durationSeconds
+                                : 0)
+            var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+            blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
+            let blobData = try blobBuilder.buildSerializedData()
+            let encryptedTimerData = try encryptBlob(blobData)
+            return encryptedTimerData
+        } catch {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
     }
 
     func decryptGroupName(_ ciphertext: Data?) -> String? {
@@ -197,32 +202,47 @@ public extension GroupV2Params {
     }
 
     func encryptGroupName(_ value: String) throws -> Data {
-        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
-        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.title(value))
-        let blobData = try blobBuilder.buildSerializedData()
-        let encryptedTimerData = try encryptBlob(blobData)
-        return encryptedTimerData
+        do {
+            var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+            blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.title(value))
+            let blobData = try blobBuilder.buildSerializedData()
+            let encryptedTimerData = try encryptBlob(blobData)
+            return encryptedTimerData
+        } catch {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
     }
 
     func decryptGroupAvatar(_ ciphertext: Data) throws -> Data? {
-        let blobProtoData = try decryptBlob(ciphertext)
-        let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
-        if let blobContent = blobProto.content {
-            switch blobContent {
-            case .avatar(let value):
-                return value
-            default:
-                owsFailDebug("Invalid group avatar value.")
+        do {
+            let blobProtoData = try decryptBlob(ciphertext)
+            let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
+            if let blobContent = blobProto.content {
+                switch blobContent {
+                case .avatar(let value):
+                    return value
+                default:
+                    owsFailDebug("Invalid group avatar value.")
+                }
             }
+            return nil
+        } catch {
+            owsFailDebug("Error: \(error)")
+            throw error
         }
-        return nil
-    }
+}
 
     func encryptGroupAvatar(_ value: Data) throws -> Data {
-        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
-        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.avatar(value))
-        let blobData = try blobBuilder.buildSerializedData()
-        let encryptedTimerData = try encryptBlob(blobData)
-        return encryptedTimerData
+        do {
+            var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+            blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.avatar(value))
+            let blobData = try blobBuilder.buildSerializedData()
+            let encryptedTimerData = try encryptBlob(blobData)
+            return encryptedTimerData
+        } catch {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
     }
 }
