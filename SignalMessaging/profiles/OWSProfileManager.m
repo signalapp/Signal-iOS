@@ -572,13 +572,15 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
                 [whitelistedGroupIds addObject:groupId];
 
-                // Note we don't add `group.recipientIds` to the `whitelistedRecipientIds`.
+                // Note: We don't add the group member's ids to whitelistedUUIDS
+                // and whitelistedPhoneNumbers.
                 //
                 // Whenever we message a contact, be it in a 1:1 thread or in a group thread,
-                // we add them to the contact whitelist, so there's no reason to redundnatly
+                // we add them to the contact whitelist, so there's no reason to redundantly
                 // add them here.
                 //
                 // Furthermore, doing so would cause the following problem:
+                //
                 // - Alice is in group Book Club
                 // - Add Book Club to your profile white list
                 // - Message Book Club, which also adds Alice to your profile whitelist.
@@ -587,28 +589,9 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 // Now, at this point we'd want to rotate our profile key once, since Alice has
                 // it via BookClub.
                 //
-                // However, after we did. The next time we check if we should rotate our profile
-                // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
+                // The next time we checked whether we should rotate our profile key, adding all
+                // group members to whitelistedUUIDS and whitelistedPhoneNumbers would
                 // include Alice, and we'd rotate our profile key every time this method is called.
-            }
-
-            // Treat all the members of every group that is whitelisted as if they were directly
-            // whitelisted, since they likely have access to our profile key. We don't explicitly
-            // whitelist group members because we don't want to automatically bypass message requests
-            // for 1:1 threads with every member of a group you've shared your profile in.
-            for (NSData *groupId in whitelistedGroupIds) {
-                TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-                if (!groupThread) {
-                    continue;
-                }
-                for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
-                    if (address.phoneNumber) {
-                        [whitelistedPhoneNumbers addObject:address.phoneNumber];
-                    }
-                    if (address.uuidString) {
-                        [whitelistedUUIDS addObject:address.uuidString];
-                    }
-                }
             }
         }];
 
