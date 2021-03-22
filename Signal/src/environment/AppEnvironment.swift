@@ -27,58 +27,58 @@ public class AppEnvironment: NSObject {
     }
 
     @objc
-    public var callMessageHandler: WebRTCCallMessageHandler
+    public var callMessageHandlerRef: WebRTCCallMessageHandler
 
     @objc
-    public var callService: CallService
+    public var callServiceRef: CallService
 
     @objc
-    public var outboundIndividualCallInitiator: OutboundIndividualCallInitiator
+    public var outboundIndividualCallInitiatorRef: OutboundIndividualCallInitiator
 
     @objc
-    public var accountManager: AccountManager
+    public var accountManagerRef: AccountManager
 
     @objc
-    public var notificationPresenter: NotificationPresenter
+    public var notificationPresenterRef: NotificationPresenter
 
     @objc
-    public var pushRegistrationManager: PushRegistrationManager
+    public var pushRegistrationManagerRef: PushRegistrationManager
 
     @objc
-    public var sessionResetJobQueue: SessionResetJobQueue
+    public var sessionResetJobQueueRef: SessionResetJobQueue
 
     @objc
-    public var backup: OWSBackup
+    public var backupRef: OWSBackup
 
     @objc
-    public var userNotificationActionHandler: UserNotificationActionHandler
+    public var userNotificationActionHandlerRef: UserNotificationActionHandler
 
     @objc
-    public var backupLazyRestore: BackupLazyRestore
+    public var backupLazyRestoreRef: BackupLazyRestore
 
     @objc
-    let deviceTransferService = DeviceTransferService()
+    let deviceTransferServiceRef = DeviceTransferService()
 
     @objc
-    let audioPlayer = CVAudioPlayer()
+    let cvAudioPlayerRef = CVAudioPlayer()
 
     private override init() {
-        self.callMessageHandler = WebRTCCallMessageHandler()
-        self.callService = CallService()
-        self.outboundIndividualCallInitiator = OutboundIndividualCallInitiator()
-        self.accountManager = AccountManager()
-        self.notificationPresenter = NotificationPresenter()
-        self.pushRegistrationManager = PushRegistrationManager()
-        self.sessionResetJobQueue = SessionResetJobQueue()
-        self.backup = OWSBackup()
-        self.backupLazyRestore = BackupLazyRestore()
-        self.userNotificationActionHandler = UserNotificationActionHandler()
+        self.callMessageHandlerRef = WebRTCCallMessageHandler()
+        self.callServiceRef = CallService()
+        self.outboundIndividualCallInitiatorRef = OutboundIndividualCallInitiator()
+        self.accountManagerRef = AccountManager()
+        self.notificationPresenterRef = NotificationPresenter()
+        self.pushRegistrationManagerRef = PushRegistrationManager()
+        self.sessionResetJobQueueRef = SessionResetJobQueue()
+        self.backupRef = OWSBackup()
+        self.backupLazyRestoreRef = BackupLazyRestore()
+        self.userNotificationActionHandlerRef = UserNotificationActionHandler()
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        YDBToGRDBMigration.add(keyStore: backup.keyValueStore, label: "backup")
+        YDBToGRDBMigration.add(keyStore: backupRef.keyValueStore, label: "backup")
         YDBToGRDBMigration.add(keyStore: AppUpdateNag.shared.keyValueStore, label: "AppUpdateNag")
     }
 
@@ -87,7 +87,7 @@ public class AppEnvironment: NSObject {
         callService.individualCallService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManager = notificationPresenter
-        SSKEnvironment.shared.callMessageHandler = callMessageHandler
+        SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef
+        SSKEnvironment.shared.callMessageHandlerRef = callMessageHandlerRef
     }
 }

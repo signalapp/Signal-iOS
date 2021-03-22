@@ -125,7 +125,7 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"applicationWillTerminate.");
 
-    [SignalApp.sharedApp applicationWillTerminate];
+    [SignalApp.shared applicationWillTerminate];
 
     [DDLog flushLog];
 }
@@ -218,7 +218,7 @@ void uncaughtExceptionHandler(NSException *exception)
     // (e.g. long database upgrades).
     //
     // This block will be cleared in storageIsReady.
-    [DeviceSleepManager.shared addBlockWithBlockObject:self];
+    [self.deviceSleepManager addBlockWithBlockObject:self];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
@@ -228,7 +228,7 @@ void uncaughtExceptionHandler(NSException *exception)
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
             [AppEnvironment.shared setup];
-            [SignalApp.sharedApp setup];
+            [SignalApp.shared setup];
         }
         migrationCompletion:^{
             OWSAssertIsOnMainThread();
@@ -456,7 +456,7 @@ void uncaughtExceptionHandler(NSException *exception)
                 OWSFailDebug(@"Ignoring URL; app is not ready.");
                 return NO;
             }
-            return [SignalApp.sharedApp receivedVerificationCode:[url.path substringFromIndex:1]];
+            return [SignalApp.shared receivedVerificationCode:[url.path substringFromIndex:1]];
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
             if (stickerPackInfo == nil) {
@@ -560,7 +560,7 @@ void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
-    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
+    [SignalApp.shared ensureRootViewController:launchStartedAt];
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self handleActivation]; });
 
@@ -635,7 +635,7 @@ void uncaughtExceptionHandler(NSException *exception)
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
-            [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+            [Environment.shared.contactsManagerImpl fetchSystemContactsOnceIfAlreadyAuthorized];
             [self.messageFetcherJob runObjc];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
@@ -644,8 +644,7 @@ void uncaughtExceptionHandler(NSException *exception)
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
                 // restart the app, so we check every activation for users who haven't yet registered.
-                [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                                preferences:Environment.shared.preferences];
+                [OWSSyncPushTokensJob run];
             }
         });
     }
@@ -710,7 +709,7 @@ void uncaughtExceptionHandler(NSException *exception)
             return;
         }
 
-        [SignalApp.sharedApp showNewConversationView];
+        [SignalApp.shared showNewConversationView];
 
         completionHandler(YES);
     });
@@ -761,8 +760,7 @@ void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            [SignalApp.sharedApp presentConversationAndScrollToFirstUnreadMessageForThreadId:threadUniqueId
-                                                                                    animated:NO];
+            [SignalApp.shared presentConversationAndScrollToFirstUnreadMessageForThreadId:threadUniqueId animated:NO];
         });
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
@@ -1142,8 +1140,7 @@ void uncaughtExceptionHandler(NSException *exception)
         [self.messageFetcherJob runObjc];
 
         // This should happen at any launch, background or foreground.
-        [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                        preferences:Environment.shared.preferences];
+        [OWSSyncPushTokensJob run];
     }
 
     [DeviceSleepManager.shared removeBlockWithBlockObject:self];
@@ -1179,7 +1176,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self.profileManager fetchLocalUsersProfile];
 
-    [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
+    [SignalApp.shared ensureRootViewController:launchStartedAt];
 
     [self.messageManager startObserving];
 

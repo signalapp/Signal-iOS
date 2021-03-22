@@ -11,15 +11,14 @@ static Environment *sharedEnvironment = nil;
 
 @interface Environment ()
 
-@property (nonatomic) OWSAudioSession *audioSession;
-@property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
-@property (nonatomic) OWSSounds *sounds;
-@property (nonatomic) OWSWindowManager *windowManager;
-@property (nonatomic) LaunchJobs *launchJobs;
-@property (nonatomic) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue;
+@property (nonatomic) OWSAudioSession *audioSessionRef;
+@property (nonatomic) OWSPreferences *preferencesRef;
+@property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
+@property (nonatomic) OWSSounds *soundsRef;
+@property (nonatomic) OWSWindowManager *windowManagerRef;
+@property (nonatomic) LaunchJobs *launchJobsRef;
+@property (nonatomic) ContactsViewHelper *contactsViewHelperRef;
+@property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 
 @end
 
@@ -78,25 +77,20 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(contactsViewHelper);
     OWSAssertDebug(broadcastMediaMessageJobQueue);
 
-    _audioSession = audioSession;
-    _incomingContactSyncJobQueue = incomingContactSyncJobQueue;
-    _incomingGroupSyncJobQueue = incomingGroupSyncJobQueue;
-    _launchJobs = launchJobs;
-    _preferences = preferences;
-    _proximityMonitoringManager = proximityMonitoringManager;
-    _sounds = sounds;
-    _windowManager = windowManager;
-    _contactsViewHelper = contactsViewHelper;
-    _broadcastMediaMessageJobQueue = broadcastMediaMessageJobQueue;
+    _audioSessionRef = audioSession;
+    _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
+    _incomingGroupSyncJobQueueRef = incomingGroupSyncJobQueue;
+    _launchJobsRef = launchJobs;
+    _preferencesRef = preferences;
+    _proximityMonitoringManagerRef = proximityMonitoringManager;
+    _soundsRef = sounds;
+    _windowManagerRef = windowManager;
+    _contactsViewHelperRef = contactsViewHelper;
+    _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
 
     OWSSingletonAssert();
 
     return self;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
 }
 
 @end

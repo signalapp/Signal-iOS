@@ -8,7 +8,6 @@
 @class ContactsViewHelper;
 @class LaunchJobs;
 @class OWSAudioSession;
-@class OWSContactsManager;
 @class OWSIncomingContactSyncJobQueue;
 @class OWSIncomingGroupSyncJobQueue;
 @class OWSPreferences;
@@ -41,17 +40,16 @@
                   contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
        broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue;
 
-@property (nonatomic, readonly) OWSAudioSession *audioSession;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue;
-@property (nonatomic, readonly) OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue;
-@property (nonatomic, readonly) LaunchJobs *launchJobs;
-@property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
-@property (nonatomic, readonly) OWSPreferences *preferences;
-@property (nonatomic, readonly) OWSSounds *sounds;
-@property (nonatomic, readonly) OWSWindowManager *windowManager;
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue;
+@property (nonatomic, readonly) OWSAudioSession *audioSessionRef;
+@property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueueRef;
+@property (nonatomic, readonly) OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueueRef;
+@property (nonatomic, readonly) LaunchJobs *launchJobsRef;
+@property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
+@property (nonatomic, readonly) OWSPreferences *preferencesRef;
+@property (nonatomic, readonly) OWSSounds *soundsRef;
+@property (nonatomic, readonly) OWSWindowManager *windowManagerRef;
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelperRef;
+@property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 
 @property (class, nonatomic) Environment *shared;
 
