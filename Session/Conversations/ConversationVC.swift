@@ -54,6 +54,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
+    var lastContentOffset: CGFloat? = nil
+    var initialKeyboardHeight: CGFloat = 0
+    
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
     
     lazy var mediaCache: NSCache<NSString, AnyObject> = {
@@ -217,6 +220,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let y = lastContentOffset {
+            messagesTableView.setContentOffset(CGPoint(x: 0, y: y), animated: false)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         didFinishInitialLayout = true
@@ -225,6 +235,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        lastContentOffset = messagesTableView.contentOffset.y
+        if (messagesTableView.keyboardHeight > initialKeyboardHeight) {
+            lastContentOffset! -= messagesTableView.keyboardHeight - initialKeyboardHeight
+        }
         let text = snInputView.text
         if !text.isEmpty {
             Storage.write { transaction in
@@ -284,24 +298,32 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        if (newHeight > initialKeyboardHeight && initialKeyboardHeight == 0) {
+            initialKeyboardHeight = newHeight
+            self.messagesTableView.keyboardHeight = newHeight
+        }
         if !didConstrainScrollButton {
             // HACK: Part of a workaround to get the scroll button to show up in the right place
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
         let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
+        print("Ryan: keyboardWillChangeFrame, new height: \(newHeight), old height: \(self.messagesTableView.keyboardHeight), contentOffsetY: \(self.messagesTableView.contentOffset.y)")
         UIView.animate(withDuration: 0.25) {
             if shouldScroll {
                 self.messagesTableView.contentOffset.y += (newHeight - self.messagesTableView.keyboardHeight)
+                self.messagesTableView.keyboardHeight = newHeight
             }
-            self.messagesTableView.keyboardHeight = newHeight
             self.scrollButton.alpha = 0
         }
+        print("Ryan: keyboardWillChangeFrame, contentOffsetY: \(self.messagesTableView.contentOffset.y)")
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
+        print("Ryan: handleKeyboardWillHide")
         UIView.animate(withDuration: 0.25) {
-            self.messagesTableView.keyboardHeight = 0
+            self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.initialKeyboardHeight)
+            self.messagesTableView.keyboardHeight = self.initialKeyboardHeight
             self.scrollButton.alpha = self.getScrollButtonOpacity()
             self.unreadCountView.alpha = self.scrollButton.alpha
         }
@@ -436,7 +458,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         view.layoutIfNeeded()
         let firstContentPageTop: CGFloat = 0
         let contentOffsetY = max(firstContentPageTop, lastPageTop)
+        lastContentOffset = contentOffsetY
         messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
+        print("Ryan: Scroll to bottom, contentOffSetY: \(self.messagesTableView.contentOffset.y)")
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
