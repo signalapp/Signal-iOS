@@ -6,9 +6,6 @@ import Foundation
 
 @objc
 public class SSKPreferences: NSObject {
-    private static var shared: SSKPreferences {
-        return SSKEnvironment.shared.sskPreferences
-    }
 
     public static let store = SDSKeyValueStore(collection: "SSKPreferences")
 
@@ -33,8 +30,8 @@ public class SSKPreferences: NSObject {
         store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
 
         if shouldSync {
-            SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
-            SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+            Self.syncManager.sendConfigurationSyncMessage()
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 
@@ -203,7 +200,7 @@ public class SSKPreferences: NSObject {
 
         if oldValue != value {
             if updateStorageService {
-                SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+                Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
             NotificationCenter.default.postNotificationNameAsync(Self.preferContactAvatarsPreferenceDidChange, object: nil)
         }

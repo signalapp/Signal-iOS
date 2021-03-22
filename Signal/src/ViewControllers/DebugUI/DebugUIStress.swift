@@ -10,18 +10,6 @@ import PromiseKit
 @objc
 public extension DebugUIStress {
 
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     private static func nameForClonedGroup(_ groupThread: TSGroupThread) -> String {
         guard let groupName = groupThread.groupModel.groupName else {
             return "Cloned Group"
@@ -329,8 +317,8 @@ class GroupThreadPicker: OWSTableViewController {
     }
 
     func rebuildTableContents() {
-        let contactsManager = SSKEnvironment.shared.contactsManager
-        let databaseStorage = SSKEnvironment.shared.databaseStorage
+        let contactsManager = Self.contactsManager
+        let databaseStorage = Self.databaseStorage
 
         let contents = OWSTableContents()
         let section = OWSTableSection()

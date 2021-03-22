@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -13,12 +13,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
     override func tearDown() {
         super.tearDown()
-    }
-
-    // MARK: Dependencies
-
-    private var messageSender: OWSFakeMessageSender {
-        return MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender
     }
 
     // MARK: 

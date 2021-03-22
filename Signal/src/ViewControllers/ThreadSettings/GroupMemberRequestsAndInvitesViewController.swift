@@ -120,8 +120,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         let groupMembership = groupModel.groupMembership
         let requestingMembersSorted = databaseStorage.uiRead { transaction in
-            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.requestingMembers),
-                                                            transaction: transaction)
+            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.requestingMembers),
+                                                                transaction: transaction)
         }
 
         let section = OWSTableSection()
@@ -149,7 +149,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     if address.isLocalAddress {
                         // Use a custom avatar to avoid using the "note to self" icon.
                         let customAvatar: UIImage?
-                        if let localProfileAvatarImage = OWSProfileManager.shared().localProfileAvatarImage() {
+                        if let localProfileAvatarImage = Self.profileManager.localProfileAvatarImage() {
                             customAvatar = localProfileAvatarImage
                         } else {
                             customAvatar = Self.databaseStorage.uiRead { transaction in
@@ -216,8 +216,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
-            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
-                                                            transaction: transaction)
+            self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
+                                                                transaction: transaction)
         }
 
         // Note that these collections retain their sorting from above.
@@ -249,14 +249,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
                 localSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else {
-                        owsFailDebug("Missing self")
-                        return OWSTableItem.newCell()
-                    }
-
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = canRevokeInvites ? .default : .none
-
                     cell.configureWithSneakyTransaction(recipientAddress: address)
                     return cell
                     }) { [weak self] in
@@ -281,8 +275,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         if membersInvitedByOtherUsers.count > 0 {
             let inviterAddresses = databaseStorage.uiRead { transaction in
-                self.contactsManager.sortSignalServiceAddresses(Array(membersInvitedByOtherUsers.keys),
-                                                                transaction: transaction)
+                self.contactsManagerImpl.sortSignalServiceAddresses(Array(membersInvitedByOtherUsers.keys),
+                                                                    transaction: transaction)
             }
             for inviterAddress in inviterAddresses {
                 guard let invitedAddresses = membersInvitedByOtherUsers[inviterAddress] else {

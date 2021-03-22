@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -238,9 +238,9 @@ public class PinConfirmationViewController: OWSViewController {
             return
         }
 
-        OWS2FAManager.shared().verifyPin(pin) { success in
+        OWS2FAManager.shared.verifyPin(pin) { success in
             guard success else {
-                guard OWS2FAManager.shared().needsLegacyPinMigration(), pin.count > kLegacyTruncated2FAv1PinLength else {
+                guard OWS2FAManager.shared.needsLegacyPinMigration(), pin.count > kLegacyTruncated2FAv1PinLength else {
                     self.validationState = .mismatch
                     return
                 }

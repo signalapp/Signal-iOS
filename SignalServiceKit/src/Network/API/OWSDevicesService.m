@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevicesService.h"
@@ -19,11 +19,6 @@ NSNotificationName const NSNotificationNameDeviceListUpdateModifiedDeviceList
     = @"NSNotificationNameDeviceListUpdateModifiedDeviceList";
 
 @implementation OWSDevicesService
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
 
 + (void)refreshDevices
 {

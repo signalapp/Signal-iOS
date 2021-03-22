@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,14 +7,6 @@ import PromiseKit
 
 @objc
 public class ProvisioningController: NSObject {
-
-    // MARK: - Dependencies
-
-    var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
-    }
-
-    // MARK: -
 
     let onboardingController: OnboardingController
     let provisioningCipher: ProvisioningCipher

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,7 @@ import WebRTC
 
 protocol CallUIAdaptee {
     var notificationPresenter: NotificationPresenter { get }
+    var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
     func startOutgoingCall(call: SignalCall)
@@ -33,9 +34,6 @@ protocol CallUIAdaptee {
 
 // Shared default implementations
 extension CallUIAdaptee {
-    var callService: CallService {
-        return AppEnvironment.shared.callService
-    }
 
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
@@ -78,22 +76,10 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-@objc public class CallUIAdapter: NSObject, CallServiceObserver {
+@objc
+public class CallUIAdapter: NSObject, CallServiceObserver {
 
-    var contactsManager: OWSContactsManager { Environment.shared.contactsManager }
-    var callService: CallService { AppEnvironment.shared.callService }
-
-    private var notificationPresenter: NotificationPresenter {
-        return AppEnvironment.shared.notificationPresenter
-    }
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee(
-        notificationPresenter: notificationPresenter
-    )
+    lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee()
 
     lazy var callKitAdaptee: CallKitCallUIAdaptee? = {
         if Platform.isSimulator {
@@ -149,12 +135,6 @@ extension CallUIAdaptee {
         //
         // For further reference: https://forums.developer.apple.com/thread/103083
         return regionCode == "CN"
-    }
-
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
     }
 
     // MARK: 

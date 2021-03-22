@@ -29,7 +29,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
                     self?.preferences.setNotificationPreviewType(type)
 
                     // rebuild callUIAdapter since notification configuration changed.
-                    AppEnvironment.shared.callService.individualCallService.createCallUIAdapter()
+                    Self.callService.individualCallService.createCallUIAdapter()
 
                     self?.updateTableContents()
                 },

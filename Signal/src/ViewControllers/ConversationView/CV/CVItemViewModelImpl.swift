@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -144,14 +144,6 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 // MARK: - Actions
 
 extension CVItemViewModelImpl {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
 
     var canCopyOrShareText: Bool {
         guard !isViewOnce else {

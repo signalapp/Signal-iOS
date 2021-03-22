@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWebSocket.h"
@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSRequest;
 
 @interface TSSocketManager : NSObject
-
-@property (class, readonly, nonatomic) TSSocketManager *shared;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

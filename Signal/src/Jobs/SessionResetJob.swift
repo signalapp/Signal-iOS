@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -89,20 +89,6 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
         self.contactThread = contactThread
         self.jobRecord = jobRecord
-    }
-
-    // MARK: Dependencies
-
-    var sessionStore: SSKSessionStore {
-        return SSKEnvironment.shared.sessionStore
-    }
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
     }
 
     // MARK: 

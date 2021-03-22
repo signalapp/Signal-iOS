@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -262,7 +262,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // world.
         let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
 
-        let threadIsWhitelisted = SSKEnvironment.shared.profileManager.isThread(
+        let threadIsWhitelisted = Self.profileManager.isThread(
             inProfileWhitelist: thread,
             transaction: transaction.asAnyRead
         )
@@ -285,7 +285,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
         // If this thread is blocked AND we're still in the thread, show the message
         // request view regardless of if we have sent messages or not.
-        if OWSBlockingManager.shared().isThreadBlocked(thread) { return true }
+        if blockingManager.isThreadBlocked(thread) { return true }
 
         let isGroupThread = thread is TSGroupThread
         let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
@@ -295,7 +295,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
         // If the thread is already whitelisted, do nothing. The user has already
         // accepted the request for this thread.
-        guard !SSKEnvironment.shared.profileManager.isThread(
+        guard !Self.profileManager.isThread(
             inProfileWhitelist: thread,
             transaction: transaction.asAnyRead
         ) else { return false }

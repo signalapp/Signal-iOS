@@ -15,13 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIDiskUsage
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name

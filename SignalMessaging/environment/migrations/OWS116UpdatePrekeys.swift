@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,14 +7,6 @@ import SignalServiceKit
 
 @objc
 public class OWS116UpdatePrekeys: YDBDatabaseMigration {
-
-    // MARK: - Dependencies
-
-    var preKeyStore: SSKPreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
-    }
-
-    // MARK: -
 
     // Increment a similar constant for each migration.
     @objc

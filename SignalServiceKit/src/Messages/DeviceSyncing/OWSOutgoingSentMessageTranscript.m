@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -43,15 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSOutgoingSentMessageTranscript
-
-#pragma mark - Dependencies
-
-- (id<GroupsV2>)groupsV2
-{
-    return SSKEnvironment.shared.groupsV2;
-}
-
-#pragma mark -
 
 - (instancetype)initWithLocalThread:(TSThread *)localThread
                       messageThread:(TSThread *)messageThread

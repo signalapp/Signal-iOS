@@ -7,18 +7,6 @@ import Foundation
 @objc
 public extension TSInfoMessage {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
-
     func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> String {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string

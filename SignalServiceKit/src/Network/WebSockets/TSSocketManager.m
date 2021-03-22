@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSSocketManager.h"
@@ -37,13 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-+ (instancetype)shared
-{
-    OWSAssert(SSKEnvironment.shared.socketManager);
-
-    return SSKEnvironment.shared.socketManager;
 }
 
 - (BOOL)canMakeRequests

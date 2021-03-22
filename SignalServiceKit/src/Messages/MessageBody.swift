@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -119,7 +119,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
                 continue
             }
 
-            let displayName = SSKEnvironment.shared.contactsManager.displayName(
+            let displayName = Self.contactsManager.displayName(
                 for: SignalServiceAddress(uuid: uuid),
                 transaction: transaction.asAnyRead
             )

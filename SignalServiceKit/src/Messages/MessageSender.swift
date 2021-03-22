@@ -21,50 +21,6 @@ public enum MessageSenderError: Int, Error {
 @objc
 public extension MessageSender {
 
-    // MARK: - Dependencies
-
-    fileprivate static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    fileprivate static var sessionStore: SSKSessionStore {
-        return SSKEnvironment.shared.sessionStore
-    }
-
-    fileprivate static var preKeyStore: SSKPreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
-    }
-
-    fileprivate static var signedPreKeyStore: SSKSignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
-    }
-
-    fileprivate static var identityManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
-    }
-
-    fileprivate static var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    fileprivate static var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    fileprivate static var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    fileprivate static var deviceManager: OWSDeviceManager {
-        return OWSDeviceManager.shared()
-    }
-
-    fileprivate static var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    // MARK: -
-
     class func isPrekeyRateLimitError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.prekeyRateLimit:

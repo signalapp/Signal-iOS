@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -65,15 +65,6 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
 #pragma mark -
 
 @implementation OWSPreferences
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (instancetype)init
 {

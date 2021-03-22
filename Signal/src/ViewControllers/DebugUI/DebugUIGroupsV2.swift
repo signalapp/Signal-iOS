@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,36 +10,6 @@ import PromiseKit
 #if DEBUG
 
 class DebugUIGroupsV2: DebugUIPage {
-
-    // MARK: Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
-    }
 
     // MARK: Overrides 
 
@@ -187,7 +157,7 @@ class DebugUIGroupsV2: DebugUIPage {
         // These will fail if you aren't registered or
         // don't have some Signal users in your contacts.
         let localAddress = tsAccountManager.localAddress!
-        var allAddresses = contactsManager.signalAccounts.map { $0.recipientAddress }
+        var allAddresses = contactsManagerImpl.signalAccounts.map { $0.recipientAddress }
         if groupsVersion == .V2 {
             // V2 group members must have a uuid.
             allAddresses = allAddresses.filter { $0.uuid != nil }

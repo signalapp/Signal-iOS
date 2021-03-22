@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedMessagesJob.h"
@@ -17,15 +17,6 @@ static NSString *const OWSFailedMessagesJobMessageStateColumn = @"message_state"
 static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_messages_on_message_state";
 
 @implementation OWSFailedMessagesJob
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (NSArray<NSString *> *)fetchAttemptingOutMessageIdsWithTransaction:(SDSAnyReadTransaction *)transaction
 {

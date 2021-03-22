@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,27 +22,6 @@ public class KeyBackupService: NSObject {
             let normalizedPin = KeyBackupService.normalizePin(pin)
             self = normalizedPin.digitsOnly() == normalizedPin ? .numeric : .alphanumeric
         }
-    }
-
-    // PRAGMA MARK: - Depdendencies
-    static var networkManager: TSNetworkManager {
-        return TSNetworkManager.shared()
-    }
-
-    static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    static var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    static var storageServiceManager: StorageServiceManagerProtocol {
-        return SSKEnvironment.shared.storageServiceManager
-    }
-
-    static var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
     }
 
     // PRAGMA MARK: - Pin Management
@@ -681,7 +660,7 @@ public class KeyBackupService: NSObject {
             state.masterKey != nil,
             tsAccountManager.isRegisteredAndReady else { return }
 
-        guard let pin = OWS2FAManager.shared().pinCode else {
+        guard let pin = OWS2FAManager.shared.pinCode else {
             return owsFailDebug("Can't migrate KBS enclave because local pin is missing")
         }
 
@@ -856,7 +835,7 @@ public class KeyBackupService: NSObject {
             transaction: transaction
         )
 
-        OWS2FAManager.shared().markDisabled(transaction: transaction)
+        OWS2FAManager.shared.markDisabled(transaction: transaction)
     }
 
     // PRAGMA MARK: - Requests

@@ -15,11 +15,6 @@ public protocol SDSDatabaseStorageDelegate {
 @objc
 public class SDSDatabaseStorage: SDSTransactable {
 
-    @objc
-    public static var shared: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
     private weak var delegate: SDSDatabaseStorageDelegate?
 
     static public var shouldLogDBQueries: Bool = DebugFlags.logSQLQueries
@@ -183,7 +178,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        let wasRegistered = TSAccountManager.shared().isRegistered
+        let wasRegistered = TSAccountManager.shared.isRegistered
 
         let grdbStorage = createGrdbStorage()
         _grdbStorage = grdbStorage
@@ -196,7 +191,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         SSKEnvironment.shared.warmCaches()
 
-        if wasRegistered != TSAccountManager.shared().isRegistered {
+        if wasRegistered != TSAccountManager.shared.isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
         }
     }

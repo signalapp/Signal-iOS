@@ -34,18 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIMisc
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-+ (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -178,10 +166,9 @@ NS_ASSUME_NONNULL_BEGIN
                                }
                            }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Fetch system contacts"
-                                     actionBlock:^() {
-                                         [Environment.shared.contactsManager requestSystemContactsOnce];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Fetch system contacts"
+                           actionBlock:^() { [Environment.shared.contactsManagerImpl requestSystemContactsOnce]; }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Cycle websockets"
                                      actionBlock:^() {
@@ -278,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [SignalApp.sharedApp showOnboardingView:[OnboardingController new]];
+    [SignalApp.shared showOnboardingView:[OnboardingController new]];
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled

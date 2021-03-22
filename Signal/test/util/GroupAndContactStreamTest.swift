@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,12 +7,6 @@ import XCTest
 import Contacts
 
 class GroupAndContactStreamTest: SignalBaseTest {
-
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        TSAccountManager.shared()
-    }
 
     // MARK: - Test Life Cycle
 

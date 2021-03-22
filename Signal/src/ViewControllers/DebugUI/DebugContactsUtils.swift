@@ -9,14 +9,6 @@ import Foundation
 @objc
 public extension DebugContactsUtils {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
-
     static func reindexAllContacts() {
         databaseStorage.write { transaction in
             SignalAccount.anyEnumerate(transaction: transaction, batched: true) { (account: SignalAccount, _) in

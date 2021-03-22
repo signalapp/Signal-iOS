@@ -82,41 +82,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 // Writes should happen off the main thread, wherever possible.
 @implementation OWSProfileManager
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (id<GroupsV2>)groupsV2
-{
-    return SSKEnvironment.shared.groupsV2;
-}
-
-- (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-- (id<VersionedProfiles>)versionedProfiles
-{
-    return SSKEnvironment.shared.versionedProfiles;
-}
-
-- (UserProfileReadCache *)userProfileReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
-}
-
-#pragma mark -
-
 @synthesize localUserProfile = _localUserProfile;
-
-+ (instancetype)shared
-{
-    return SSKEnvironment.shared.profileManager;
-}
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
 {
@@ -171,45 +137,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                              selector:@selector(blockListDidChange:)
                                                  name:kNSNotificationNameBlockListDidChange
                                                object:nil];
-}
-
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (OWSIdentityManager *)identityManager
-{
-    return SSKEnvironment.shared.identityManager;
-}
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return SSKEnvironment.shared.blockingManager;
-}
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    return SSKEnvironment.shared.syncManager;
-}
-
-- (id<OWSUDManager>)udManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.udManager);
-
-    return SSKEnvironment.shared.udManager;
 }
 
 #pragma mark - User Profile Accessor
@@ -1567,7 +1494,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         return [self getLocalUserProfileWithTransaction:transaction];
     }
 
-    return [self.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
+    return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
 - (NSString *)generateAvatarFilename

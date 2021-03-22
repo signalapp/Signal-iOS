@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,23 +21,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
         }
     }
 
-    // MARK: - Depenencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var grdbStorage: GRDBDatabaseStorageAdapter {
-        return SDSDatabaseStorage.shared.grdbStorage
-    }
-
-    var readReceiptsManager: OWSReadReceiptManager {
-        return SSKEnvironment.shared.readReceiptManager
-    }
-
-    var outgoingReceiptManager: OWSOutgoingReceiptManager {
-        return SSKEnvironment.shared.outgoingReceiptManager
-    }
+    // MARK: - 
 
     let finder = PendingReadReceiptFinder()
 
@@ -56,7 +40,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     @objc
     private func profileWhitelistDidChange(notification: Notification) {
         do {
-            try grdbStorage.read { transaction in
+            try grdbStorageAdapter.read { transaction in
                 guard let thread = notification.affectedThread(transaction: transaction) else {
                     return
                 }
@@ -75,7 +59,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
 
     private func auditPendingReceipts() {
         do {
-            try grdbStorage.read { transaction in
+            try grdbStorageAdapter.read { transaction in
                 let threads = try self.finder.threadsWithPendingReceipts(transaction: transaction)
                 try self.sendAnyReadyReceipts(threads: threads, transaction: transaction)
             }
@@ -133,7 +117,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     }
 
     private func enqueue(pendingReceipts: [PendingReadReceiptRecord], transaction: GRDBWriteTransaction) throws {
-        guard readReceiptsManager.areReadReceiptsEnabled() else {
+        guard readReceiptManager.areReadReceiptsEnabled() else {
             Logger.info("Deleting all pending read receipts - user has subsequently disabled read receipts.")
             try finder.deleteAllPendingReceipts(transaction: transaction)
             return

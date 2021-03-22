@@ -7,22 +7,6 @@ import PromiseKit
 
 public extension TSAccountManager {
 
-    // MARK: - Dependencies
-
-    class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
-    // MARK: -
-
     @objc
     private class func getLocalThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         guard let localAddress = self.localAddress(with: transaction) else {

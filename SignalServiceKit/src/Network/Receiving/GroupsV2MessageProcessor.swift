@@ -16,22 +16,6 @@ private struct IncomingGroupsV2MessageJobInfo {
 
 class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var pipelineSupervisor: MessagePipelineSupervisor {
-        return SSKEnvironment.shared.messagePipelineSupervisor
-    }
-
-    // MARK: -
-
     private let finder = GRDBGroupsV2MessageJobFinder()
 
     override init() {
@@ -68,7 +52,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                                                object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.pipelineSupervisor.register(pipelineStage: self)
+            self.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }
 
@@ -152,7 +136,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
             owsFailDebug("App is not ready.")
             return
         }
-        let canProcess = (pipelineSupervisor.isMessageProcessingPermitted &&
+        let canProcess = (messagePipelineSupervisor.isMessageProcessingPermitted &&
                             tsAccountManager.isRegisteredAndReady &&
                             !DebugFlags.suppressBackgroundActivity)
         guard canProcess else {
@@ -211,43 +195,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 //
 // It's promise is fulfilled when all jobs are processed _or_
 // we give up.
-private class GroupsMessageProcessor: MessageProcessingPipelineStage {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    private var pipelineSupervisor: MessagePipelineSupervisor {
-        return SSKEnvironment.shared.messagePipelineSupervisor
-    }
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private var blockingManager: OWSBlockingManager {
-        return SSKEnvironment.shared.blockingManager
-    }
-
-    private var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
-    }
-
-    private var messageManager: OWSMessageManager {
-        return SSKEnvironment.shared.messageManager
-    }
-
-    private var notificationsManager: NotificationsProtocol {
-        return SSKEnvironment.shared.notificationsManager
-    }
-
-    // MARK: -
+private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
     private let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
@@ -290,7 +238,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
                                                object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.pipelineSupervisor.register(pipelineStage: self)
+            self.messagePipelineSupervisor.register(pipelineStage: self)
         }
     }
 
@@ -343,7 +291,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
     private func processWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
         owsAssertDebug(isDrainingQueue.get())
 
-        let canProcess = (pipelineSupervisor.isMessageProcessingPermitted &&
+        let canProcess = (messagePipelineSupervisor.isMessageProcessingPermitted &&
                             tsAccountManager.isRegisteredAndReady &&
                             !DebugFlags.suppressBackgroundActivity)
         guard canProcess else {
@@ -440,7 +388,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
         }
         jobInfo.groupContext = groupContext
         do {
-            jobInfo.groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            jobInfo.groupContextInfo = try groupsV2Swift.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return jobInfo
@@ -606,7 +554,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
         let reportFailure = { (transaction: SDSAnyWriteTransaction) in
             // TODO: Add analytics.
             let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            self.notificationsManager.notifyUser(for: errorMessage, transaction: transaction)
+            self.notificationsManager?.notifyUser(for: errorMessage, transaction: transaction)
         }
 
         var processedJobs = [IncomingGroupsV2MessageJob]()
@@ -706,7 +654,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
                 return Promise.value(())
             }
             return firstly(on: .global()) { () -> Promise<Void> in
-                self.groupsV2.updateAlreadyMigratedGroupIfNecessary(v2GroupId: groupContextInfo.groupId)
+                self.groupsV2Swift.updateAlreadyMigratedGroupIfNecessary(v2GroupId: groupContextInfo.groupId)
             }.recover(on: .global()) {error -> Promise<Void> in
                 owsFailDebug("Error: \(error)")
                 throw GroupsV2Error.shouldRetry
@@ -794,16 +742,16 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
             DispatchQueue.global().async(.promise) {
                 // We need to verify the signatures because these protos came from
                 // another client, not the service.
-                return try self.groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
-                                                                          ignoreSignature: false)
+                return try self.groupsV2Swift.parseAndVerifyChangeActionsProto(changeActionsProtoData,
+                                                                               ignoreSignature: false)
             }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
                 guard changeActionsProto.revision == contextRevision else {
                     throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
                 }
-                return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
-                                                                      changeActionsProto: changeActionsProto,
-                                                                      ignoreSignature: false,
-                                                                      groupSecretParamsData: oldGroupModel.secretParamsData)
+                return try self.groupsV2Swift.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
+                                                                           changeActionsProto: changeActionsProto,
+                                                                           ignoreSignature: false,
+                                                                           groupSecretParamsData: oldGroupModel.secretParamsData)
             }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
                 guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
                     owsFailDebug("Invalid group model.")
@@ -897,18 +845,6 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
 @objc
 public class GroupsV2MessageProcessor: NSObject {
-
-    // MARK: - Dependencies
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private class var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    // MARK: - 
 
     @objc
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")

@@ -29,19 +29,7 @@ extension InteractionFinder {
 
 class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
     private let legacyDecryptJobLabel = "SSKMessageDecrypt"
-
-    // MARK: -
 
     override func setUp() {
         super.setUp()

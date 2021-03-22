@@ -45,13 +45,6 @@ void AssertIsOnDisappearingMessagesQueue()
 
 @implementation OWSDisappearingMessagesJob
 
-+ (instancetype)sharedJob
-{
-    OWSAssertDebug(SSKEnvironment.shared.disappearingMessagesJob);
-
-    return SSKEnvironment.shared.disappearingMessagesJob;
-}
-
 - (instancetype)init
 {
     self = [super init];
@@ -101,20 +94,6 @@ void AssertIsOnDisappearingMessagesQueue()
     });
     return queue;
 }
-
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (NSUInteger)deleteExpiredMessages
 {

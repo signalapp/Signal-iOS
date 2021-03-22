@@ -1,18 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
 extension OWS2FAManager {
-    var networkManager: TSNetworkManager {
-        return .shared()
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
 
     public static var isRegistrationLockV2EnabledKey = "isRegistrationLockV2Enabled"
 
@@ -81,7 +74,7 @@ extension OWS2FAManager {
                 )
             }
             firstly {
-                TSAccountManager.shared().updateAccountAttributes()
+                TSAccountManager.shared.updateAccountAttributes()
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
@@ -89,7 +82,7 @@ extension OWS2FAManager {
     }
 
     public func markRegistrationLockV2Enabled(transaction: SDSAnyWriteTransaction) {
-        guard !TSAccountManager.shared().isRegistered else {
+        guard !TSAccountManager.shared.isRegistered else {
             return owsFailDebug("Unexpectedly attempted to mark reglock as enabled after registration")
         }
 
@@ -118,7 +111,7 @@ extension OWS2FAManager {
                 )
             }
             firstly {
-                TSAccountManager.shared().updateAccountAttributes()
+                TSAccountManager.shared.updateAccountAttributes()
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
@@ -126,7 +119,7 @@ extension OWS2FAManager {
     }
 
     public func markRegistrationLockV2Disabled(transaction: SDSAnyWriteTransaction) {
-        guard !TSAccountManager.shared().isRegistered else {
+        guard !TSAccountManager.shared.isRegistered else {
             return owsFailDebug("Unexpectedly attempted to mark reglock as disabled after registration")
         }
 

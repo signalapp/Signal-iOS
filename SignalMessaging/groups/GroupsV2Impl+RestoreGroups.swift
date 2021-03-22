@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,28 +7,6 @@ import PromiseKit
 import SignalServiceKit
 
 public extension GroupsV2Impl {
-
-    // MARK: - Dependencies
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
-    }
-
-    private static var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private static var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
-    }
 
     // MARK: - Restore Groups
 

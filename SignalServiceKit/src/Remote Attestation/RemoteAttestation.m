@@ -135,15 +135,6 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
 
 @implementation RemoteAttestation
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark -
-
 - (instancetype)initWithCookies:(NSArray<NSHTTPCookie *> *)cookies
                            keys:(RemoteAttestationKeys *)keys
                       requestId:(NSData *)requestId

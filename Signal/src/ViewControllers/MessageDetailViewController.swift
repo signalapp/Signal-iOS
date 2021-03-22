@@ -216,7 +216,7 @@ class MessageDetailViewController: OWSViewController {
 
             let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
             let messageRecipientAddressesSorted = databaseStorage.read { transaction in
-                self.contactsManager.sortSignalServiceAddresses(messageRecipientAddressesUnsorted, transaction: transaction)
+                self.contactsManagerImpl.sortSignalServiceAddresses(messageRecipientAddressesUnsorted, transaction: transaction)
             }
 
             for recipientStatusGroup in recipientStatusGroups {

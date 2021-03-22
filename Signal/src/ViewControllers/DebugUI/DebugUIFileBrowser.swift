@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #if DEBUG
 
 @objc class DebugUIFileBrowser: OWSTableViewController {
 
-    // MARK: Dependencies
+    // MARK: - Dependencies
+
     var fileManager: FileManager {
         return FileManager.default
     }

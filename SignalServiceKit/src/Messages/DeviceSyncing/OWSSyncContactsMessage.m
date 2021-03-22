@@ -28,30 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncContactsMessage
 
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (OWSIdentityManager *)identityManager
-{
-    return SSKEnvironment.shared.identityManager;
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-#pragma mark -
-
 - (instancetype)initWithThread:(TSThread *)thread
                 signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {

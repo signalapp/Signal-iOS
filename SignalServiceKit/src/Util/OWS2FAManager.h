@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -30,8 +30,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 + (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-+ (instancetype)shared;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
 - (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;

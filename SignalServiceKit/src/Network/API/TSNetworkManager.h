@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,8 +31,6 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initDefault;
-
-+ (instancetype)shared;
 
 - (void)makeRequest:(TSRequest *)request
             success:(TSNetworkManagerSuccess)success

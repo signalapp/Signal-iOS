@@ -35,39 +35,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @implementation OWSBackupImportJob
 
-#pragma mark - Dependencies
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSBackup *)backup
-{
-    OWSAssertDebug(AppEnvironment.shared.backup);
-
-    return AppEnvironment.shared.backup;
-}
-
-- (OWSBackupLazyRestore *)backupLazyRestore
-{
-    return AppEnvironment.shared.backupLazyRestore;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (NSArray<OWSBackupFragment *> *)databaseItems
 {
     OWSAssertDebug(self.manifest);

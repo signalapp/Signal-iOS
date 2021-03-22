@@ -139,18 +139,6 @@ enum SendMessageApprovedContent {
 @objc
 class SendMessageFlow: NSObject {
 
-    // MARK: Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    // MARK: -
-
     private let flowType: SendMessageFlowType
 
     private let useConversationComposeForSingleRecipient: Bool

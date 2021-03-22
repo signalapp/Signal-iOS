@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -12,7 +12,6 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
-@class StorageCoordinator;
 @class YapDatabaseConnection;
 @class YapDatabaseReadWriteTransaction;
 
@@ -25,7 +24,6 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 + (SDSKeyValueStore *)keyValueStore;
 
-@property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 @property (class, nonatomic, readonly) NSString *migrationId;
 @property (nonatomic, readonly) NSString *migrationId;
 
@@ -57,8 +55,6 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // A base class for migrations run before the YDB-to-GRDB migration.
 // These migrations are run against the YDB store.
 @interface YDBDatabaseMigration : OWSDatabaseMigration
-
-@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
 // Subclasses should override this convenience method or runUpWithCompletion.
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;

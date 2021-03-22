@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,13 +60,12 @@ public protocol DurableOperationDelegate: class {
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction)
 }
 
-public protocol JobQueue: DurableOperationDelegate {
+public protocol JobQueue: DurableOperationDelegate, Dependencies {
     typealias DurableOperationDelegateType = Self
     typealias JobRecordType = DurableOperationType.JobRecordType
 
     // MARK: Dependencies
 
-    var databaseStorage: SDSDatabaseStorage { get }
     var finder: AnyJobRecordFinder<JobRecordType> { get }
 
     // MARK: Default Implementations
@@ -98,23 +97,17 @@ public protocol JobQueue: DurableOperationDelegate {
     static var maxRetries: UInt { get }
 }
 
+// MARK: -
+
 public extension JobQueue {
 
-    // MARK: Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
+    // MARK: - Dependencies
 
     var finder: AnyJobRecordFinder<JobRecordType> {
         return AnyJobRecordFinder<JobRecordType>()
     }
 
-    var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
-    }
-
-    // MARK: 
+    // MARK: -
 
     func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         assert(jobRecord.status == .ready)
@@ -489,7 +482,7 @@ public class YAPDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobReco
         setup.addColumn(JobRecordField.status.rawValue, with: .integer)
         setup.addColumn(JobRecordField.label.rawValue, with: .text)
 
-        let block: YapDatabaseSecondaryIndexWithObjectBlock = { transaction, dict, collection, key, object in
+        let block: YapDatabaseSecondaryIndexWithObjectBlock = { _, dict, _, _, object in
             guard let jobRecord = object as? SSKJobRecord else {
                 return
             }

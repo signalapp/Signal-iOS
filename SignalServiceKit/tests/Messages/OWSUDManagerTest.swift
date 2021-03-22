@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -11,20 +11,6 @@ import SignalClient
 @testable import SignalServiceKit
 
 class OWSUDManagerTest: SSKBaseTestSwift {
-
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var udManager: OWSUDManagerImpl {
-        return SSKEnvironment.shared.udManager as! OWSUDManagerImpl
-    }
-
-    private var profileManager: OWSFakeProfileManager {
-        return SSKEnvironment.shared.profileManager as! OWSFakeProfileManager
-    }
 
     // MARK: - Setup/Teardown
 

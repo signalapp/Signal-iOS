@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,15 +10,6 @@ import SignalMessaging
 
 class DebugUIProfile: DebugUIPage {
 
-    // MARK: - Dependencies
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-    var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
     // MARK: - Overrides
 
     override func name() -> String {
@@ -26,34 +17,33 @@ class DebugUIProfile: DebugUIPage {
     }
 
     override func section(thread aThread: TSThread?) -> OWSTableSection? {
-        let profileManager = self.profileManager
         let sectionItems = [
             OWSTableItem(title: "Clear Profile Whitelist") {
-                profileManager.clearProfileWhitelist()
+                Self.profileManagerImpl.clearProfileWhitelist()
             },
             { () -> OWSTableItem? in
                 guard let thread = aThread else {
                     owsFailDebug("thread was unexpectedly nil")
                     return nil
                 }
-                let name = Environment.shared.contactsManager.displayNameWithSneakyTransaction(thread: thread)
+                let name = Self.contactsManager.displayNameWithSneakyTransaction(thread: thread)
                 return OWSTableItem(title: "Remove “\(name)” from Profile Whitelist") {
-                    profileManager.removeThread(fromProfileWhitelist: thread)
+                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread)
                 }
             }(),
             OWSTableItem(title: "Log Profile Whitelist") {
-                profileManager.logProfileWhitelist()
+                Self.profileManagerImpl.logProfileWhitelist()
             },
             OWSTableItem(title: "Log User Profiles") {
-                profileManager.logUserProfiles()
+                Self.profileManagerImpl.logUserProfiles()
             },
             OWSTableItem(title: "Log Profile Key") {
-                let localProfileKey = profileManager.localProfileKey()
+                let localProfileKey = Self.profileManagerImpl.localProfileKey()
                 Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
-                profileManager.logUserProfiles()
+                Self.profileManagerImpl.logUserProfiles()
             },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
-                profileManager.debug_regenerateLocalProfileWithSneakyTransaction()
+                Self.profileManagerImpl.debug_regenerateLocalProfileWithSneakyTransaction()
             },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
                 guard let strongSelf = self else { return }

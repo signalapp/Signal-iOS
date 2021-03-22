@@ -40,7 +40,7 @@ public class ThreadViewModel: NSObject {
         self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
 
         self.isGroupThread = thread.isGroupThread
-        self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
+        self.name = Self.contactsManager.displayName(for: thread, transaction: transaction)
 
         self.isMuted = thread.isMuted
 
@@ -87,14 +87,6 @@ public class ThreadViewModel: NSObject {
 @objc
 public class ConversationListInfo: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var contactsManager: OWSContactsManager {
-        Environment.shared.contactsManager
-    }
-
-    // MARK: -
-
     @objc
     public let draftText: String?
     @objc
@@ -126,7 +118,7 @@ public class ConversationListInfo: NSObject {
         }
 
         if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {
-            self.addedToGroupByName = Environment.shared.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
+            self.addedToGroupByName = Self.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
         } else {
             self.addedToGroupByName = nil
         }
@@ -134,7 +126,7 @@ public class ConversationListInfo: NSObject {
         if !lastMessageText.isEmpty,
            let groupThread = thread as? TSGroupThread {
             if let incomingMessage = lastMessageForInbox as? TSIncomingMessage {
-                lastMessageSenderName = Self.contactsManager.shortestDisplayName(
+                lastMessageSenderName = Self.contactsManagerImpl.shortestDisplayName(
                     forGroupMember: incomingMessage.authorAddress,
                     inGroup: groupThread.groupModel,
                     transaction: transaction

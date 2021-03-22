@@ -34,10 +34,6 @@ public protocol StickerPackDataSource: class {
 // A base class for StickerPackDataSource.
 public class BaseStickerPackDataSource: NSObject {
 
-    fileprivate var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: Delegates
 
     private var delegates = [Weak<StickerPackDataSourceDelegate>]()

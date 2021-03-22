@@ -8,14 +8,6 @@ import LocalAuthentication
 @objc
 public class OWSScreenLock: NSObject {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     public enum OWSScreenLockOutcome {
         case success
         case cancel

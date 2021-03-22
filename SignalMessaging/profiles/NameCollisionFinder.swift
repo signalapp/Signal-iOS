@@ -5,7 +5,7 @@
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)
 /// Useful when reporting a profile spoofing attempt to the user.
 /// In cases where a colliding addresses' display name has recently changed, `oldName` and `latestUpdate` may be populated.
-public struct NameCollision {
+public struct NameCollision: Dependencies {
     public struct Element {
         public let address: SignalServiceAddress
         public let currentName: String
@@ -31,7 +31,7 @@ public protocol NameCollisionFinder {
 
 /// Finds all name collisions for a given contact thread
 /// Compares the contact thread recipient with all known
-public class ContactThreadNameCollisionFinder: NameCollisionFinder {
+public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies {
     var contactThread: TSContactThread
     public var thread: TSThread { contactThread }
 
@@ -47,7 +47,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
         contactThread = updatedThread
         guard contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else { return [] }
 
-        let collisionCandidates = Environment.shared.contactsViewHelper.signalAccounts(
+        let collisionCandidates = Self.contactsViewHelper.signalAccounts(
             matchingSearch: contactThread.contactAddress.displayName(transaction: transaction),
             transaction: transaction)
 
@@ -239,7 +239,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
 fileprivate extension SignalServiceAddress {
     func displayName(transaction readTx: SDSAnyReadTransaction) -> String {
-        Environment.shared.contactsManager.displayName(for: self, transaction: readTx)
+        Self.contactsManager.displayName(for: self, transaction: readTx)
     }
 }
 
@@ -272,10 +272,10 @@ public extension Array where Element == NameCollision {
                 // This is to try and maintain stable sorting as individual elements within the set are resolved
 
                 let smallestName1 = set1.elements
-                    .map { Environment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .map { SSKEnvironment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
                     .min()
                 let smallestName2 = set2.elements
-                    .map { Environment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
+                    .map { SSKEnvironment.shared.contactsManager.comparableName(for: $0.address, transaction: readTx )}
                     .min()
 
                 switch (smallestName1, smallestName2) {

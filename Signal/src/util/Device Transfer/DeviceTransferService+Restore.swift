@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -209,10 +209,7 @@ extension DeviceTransferService {
                 SignalApp.shared().showConversationSplitView()
 
                 // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run(
-                    accountManager: AppEnvironment.shared.accountManager,
-                    preferences: Environment.shared.preferences
-                )
+                SyncPushTokensJob.run()
             }
         }
 

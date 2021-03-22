@@ -50,13 +50,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 #pragma mark -
 
-+ (instancetype)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.ows2FAManager);
-
-    return SSKEnvironment.shared.ows2FAManager;
-}
-
 - (instancetype)init
 {
     self = [super init];
@@ -83,25 +76,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     return self;
 }
-
-#pragma mark - Dependencies
-
-- (TSNetworkManager *)networkManager {
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (TSAccountManager *)tsAccountManager {
-    return TSAccountManager.shared;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SSKEnvironment.shared.databaseStorage;
-}
-
-#pragma mark -
 
 - (nullable NSString *)pinCode
 {

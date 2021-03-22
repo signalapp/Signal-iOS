@@ -252,25 +252,6 @@ extension CVComponentBase: CVNode {
 // MARK: -
 
 extension CVComponentBase {
-
-    // MARK: - Dependencies
-
-    static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    static var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-}
-
-// MARK: -
-
-extension CVComponentBase {
     public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         let blurOverlay = UIView()

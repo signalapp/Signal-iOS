@@ -8,14 +8,6 @@ import GRDB
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
-    // MARK: - Dependencies
-
-    private var grdbStorage: GRDBDatabaseStorageAdapter {
-        return SDSDatabaseStorage.shared.grdbStorage
-    }
-
-    // MARK: -
-
     // Returns true IFF incremental migrations were performed.
     @objc
     public func runSchemaMigrations() -> Bool {
@@ -24,11 +16,11 @@ public class GRDBSchemaMigrator: NSObject {
         if hasCreatedInitialSchema {
             Logger.info("Using incrementalMigrator.")
             let appliedMigrations = self.appliedMigrations
-            try! incrementalMigrator.migrate(grdbStorage.pool)
+            try! incrementalMigrator.migrate(grdbStorageAdapter.pool)
             didPerformIncrementalMigrations = appliedMigrations != self.appliedMigrations
         } else {
             Logger.info("Using newUserMigrator.")
-            try! newUserMigrator.migrate(grdbStorage.pool)
+            try! newUserMigrator.migrate(grdbStorageAdapter.pool)
         }
         Logger.info("Migrations complete.")
 
@@ -47,11 +39,11 @@ public class GRDBSchemaMigrator: NSObject {
         // HACK: GRDB doesn't create the grdb_migrations table until running a migration.
         // So we can't cleanly check which migrations have run for new users until creating this
         // table ourselves.
-        try! grdbStorage.write { transaction in
+        try! grdbStorageAdapter.write { transaction in
             try! self.fixit_setupMigrations(transaction.database)
         }
 
-        return try! incrementalMigrator.appliedMigrations(in: grdbStorage.pool)
+        return try! incrementalMigrator.appliedMigrations(in: grdbStorageAdapter.pool)
     }
 
     private func fixit_setupMigrations(_ db: Database) throws {
@@ -962,9 +954,9 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            if TSAccountManager.shared().isRegistered(transaction: transaction.asAnyWrite) {
+            if TSAccountManager.shared.isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
-                TSAccountManager.shared().setIsOnboarded(true, transaction: transaction.asAnyWrite)
+                TSAccountManager.shared.setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
         }
 
@@ -985,7 +977,7 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
+            Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in

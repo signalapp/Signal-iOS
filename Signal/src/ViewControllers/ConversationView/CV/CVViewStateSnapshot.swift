@@ -7,15 +7,7 @@ import PromiseKit
 
 // This captures the CV view state that can affect the load.
 // It is used when building, measuring & configuring components and their views.
-struct CVViewStateSnapshot {
-
-    // MARK: - Dependencies
-
-    private static var callService: CallService {
-        return AppEnvironment.shared.callService
-    }
-
-    // MARK: -
+struct CVViewStateSnapshot: Dependencies {
 
     let textExpansion: CVTextExpansion
     let swipeToReplyState: CVSwipeToReplyState

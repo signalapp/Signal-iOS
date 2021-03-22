@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class CVComponentState: Equatable {
+public class CVComponentState: Equatable, Dependencies {
     let messageCellType: CVMessageCellType
 
     // TODO: Can/should we eliminate/populate this?
@@ -572,22 +572,6 @@ extension CVComponentState {
 // MARK: -
 
 fileprivate extension CVComponentState.Builder {
-
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
 
     mutating func populateAndBuild() throws -> CVComponentState {
 

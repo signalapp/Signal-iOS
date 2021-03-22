@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -109,7 +109,7 @@ extension SignalRecipient {
             return owsFailDebug("Failed to update SignalServiceAddress mapping due to missing UUID")
         }
 
-        SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: phoneNumber)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: phoneNumber)
 
         // Verify the mapping change worked as expected.
         owsAssertDebug(SignalServiceAddress(uuid: uuid).phoneNumber == phoneNumber)

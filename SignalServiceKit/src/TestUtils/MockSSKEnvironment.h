@@ -12,31 +12,31 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SSKEnvironment (MockSSKEnvironment)
 
 // Redeclare these properties as mutable so that tests can replace singletons.
-@property (nonatomic) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic) MessageSender *messageSender;
-@property (nonatomic) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic) TSNetworkManager *networkManager;
-@property (nonatomic) OWSMessageManager *messageManager;
-@property (nonatomic) OWSBlockingManager *blockingManager;
-@property (nonatomic) OWSIdentityManager *identityManager;
-@property (nonatomic) id<OWSUDManager> udManager;
-@property (nonatomic) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic) TSSocketManager *socketManager;
-@property (nonatomic) TSAccountManager *tsAccountManager;
-@property (nonatomic) OWS2FAManager *ows2FAManager;
-@property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
-@property (nonatomic) OWSReadReceiptManager *readReceiptManager;
-@property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
-@property (nonatomic) id<SyncManagerProtocol> syncManager;
-@property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
-@property (nonatomic) id<OWSTypingIndicators> typingIndicators;
-@property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
-@property (nonatomic) SignalServiceAddressCache *signalServiceAddressCache;
-@property (nonatomic) StickerManager *stickerManager;
-@property (nonatomic) SDSDatabaseStorage *databaseStorage;
-@property (nonatomic) AccountServiceClient *accountServiceClient;
-@property (nonatomic) id<GroupsV2> groupsV2;
+@property (nonatomic) id<ContactsManagerProtocol> contactsManagerRef;
+@property (nonatomic) MessageSender *messageSenderRef;
+@property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
+@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorageRef;
+@property (nonatomic) TSNetworkManager *networkManagerRef;
+@property (nonatomic) OWSMessageManager *messageManagerRef;
+@property (nonatomic) OWSBlockingManager *blockingManagerRef;
+@property (nonatomic) OWSIdentityManager *identityManagerRef;
+@property (nonatomic) id<OWSUDManager> udManagerRef;
+@property (nonatomic) OWSMessageDecrypter *messageDecrypterRef;
+@property (nonatomic) TSSocketManager *socketManagerRef;
+@property (nonatomic) TSAccountManager *tsAccountManagerRef;
+@property (nonatomic) OWS2FAManager *ows2FAManagerRef;
+@property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJobRef;
+@property (nonatomic) OWSReadReceiptManager *readReceiptManagerRef;
+@property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManagerRef;
+@property (nonatomic) id<SyncManagerProtocol> syncManagerRef;
+@property (nonatomic) id<SSKReachabilityManager> reachabilityManagerRef;
+@property (nonatomic) id<OWSTypingIndicators> typingIndicatorsRef;
+@property (nonatomic) OWSAttachmentDownloads *attachmentDownloadsRef;
+@property (nonatomic) SignalServiceAddressCache *signalServiceAddressCacheRef;
+@property (nonatomic) StickerManager *stickerManagerRef;
+@property (nonatomic) SDSDatabaseStorage *databaseStorageRef;
+@property (nonatomic) AccountServiceClient *accountServiceClientRef;
+@property (nonatomic) id<GroupsV2> groupsV2Ref;
 
 @end
 

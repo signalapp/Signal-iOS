@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-@property (class, nonatomic, readonly, nullable) OWSPrimaryStorage *shared;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;

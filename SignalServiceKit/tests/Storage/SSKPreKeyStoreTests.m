@@ -22,15 +22,6 @@
 
 @implementation SSKPreKeyStore (Tests)
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
 {
     __block PreKeyRecord *_Nullable result;

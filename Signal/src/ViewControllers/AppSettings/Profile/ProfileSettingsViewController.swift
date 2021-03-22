@@ -32,7 +32,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         avatarViewHelper.delegate = self
 
-        let snapshot = profileManager.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
         avatarData = snapshot.avatarData
         givenName = snapshot.givenName
         familyName = snapshot.familyName

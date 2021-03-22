@@ -78,7 +78,7 @@ public class ContactSearchResult: NSObject, Comparable {
 
     init(signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
         self.signalAccount = signalAccount
-        self.comparableName = Environment.shared.contactsManager.comparableName(for: signalAccount, transaction: transaction)
+        self.comparableName = Self.contactsManager.comparableName(for: signalAccount, transaction: transaction)
     }
 
     // MARK: Comparable
@@ -248,14 +248,6 @@ public class FullTextSearcher: NSObject {
 
     @objc
     public static let kDefaultMaxResults: UInt = 500
-
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: - 
 
     private let finder: FullTextSearchFinder
 

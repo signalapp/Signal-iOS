@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,14 +44,6 @@ public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
      * identity key. We detect that here and fix the situation
      */
     private class CompleteRegistrationFixerJob: NSObject {
-
-        // MARK: - Dependencies
-
-        private var tsAccountManager: TSAccountManager {
-            return TSAccountManager.shared()
-        }
-
-        // MARK: -
 
         // Duration between retries if update fails.
         let kRetryInterval: TimeInterval = 5

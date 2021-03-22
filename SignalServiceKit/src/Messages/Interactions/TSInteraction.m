@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -48,15 +48,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 // MARK: -
 
 @implementation TSInteraction
-
-#pragma mark - Dependencies
-
-- (InteractionReadCache *)interactionReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.interactionReadCache;
-}
-
-#pragma mark -
 
 + (BOOL)shouldBeIndexedForFTS
 {
@@ -355,7 +346,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
     [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 
-    [self.interactionReadCache didUpdateInteraction:self transaction:transaction];
+    [self.modelReadCaches.interactionReadCache didUpdateInteraction:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -367,7 +358,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         [fetchedThread updateWithRemovedMessage:self transaction:transaction];
     }
 
-    [self.interactionReadCache didRemoveInteraction:self transaction:transaction];
+    [self.modelReadCaches.interactionReadCache didRemoveInteraction:self transaction:transaction];
 }
 
 #pragma mark -

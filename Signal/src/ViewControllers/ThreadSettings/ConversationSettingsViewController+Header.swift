@@ -223,8 +223,8 @@ extension ConversationSettingsViewController {
                                     transaction: transaction)
 
         if !contactThread.contactAddress.isLocalAddress,
-            let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
-                                                             transaction: transaction) {
+            let bioText = profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
+                                                                  transaction: transaction) {
             let label = builder.addSubtitleLabel(text: bioText)
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -241,7 +241,7 @@ extension ConversationSettingsViewController {
             }
         }
 
-        if let username = profileManager.username(for: recipientAddress, transaction: transaction),
+        if let username = profileManagerImpl.username(for: recipientAddress, transaction: transaction),
             username.count > 0 {
             if let formattedUsername = CommonFormats.formatUsername(username),
                 threadName != formattedUsername {

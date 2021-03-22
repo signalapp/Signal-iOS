@@ -8,16 +8,6 @@ import Foundation
 
 public extension DebugUIMessages {
 
-    // MARK: - Dependencies
-
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    static var messageProcessor: MessageProcessor { .shared }
-
-    // MARK: -
-
     @objc
     class func deleteRandomMessages(count: UInt, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         Logger.info("deleteRandomMessages: \(count)")

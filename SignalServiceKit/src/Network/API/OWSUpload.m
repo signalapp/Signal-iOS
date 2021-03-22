@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUpload.h"
@@ -157,13 +157,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 #pragma mark -
 
 @implementation OWSAvatarUploadV2
-
-#pragma mark - Dependencies
-
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
 
 #pragma mark - Avatars
 

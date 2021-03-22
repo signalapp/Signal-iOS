@@ -1,18 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 public class CVMessageMapping: NSObject {
-
-    // MARK: - Dependencies
-
-    private var interactionReadCache: InteractionReadCache {
-        SSKEnvironment.shared.modelReadCaches.interactionReadCache
-    }
-
-    // MARK: -
 
     private let interactionFinder: InteractionFinder
 
@@ -518,7 +510,7 @@ public class CVMessageMapping: NSObject {
 
         // 3. Try to pull as many interactions as possible from the cache.
         if !unloadedInteractionIds.isEmpty {
-            let cachedInteractions = interactionReadCache.getInteractionsIfInCache(forUniqueIds: Array(unloadedInteractionIds),
+            let cachedInteractions = modelReadCaches.interactionReadCache.getInteractionsIfInCache(forUniqueIds: Array(unloadedInteractionIds),
                                                                                    transaction: transaction)
             for (interactionId, interaction) in cachedInteractions {
                 addLoadedInteraction(interaction: interaction, interactionId: interactionId)

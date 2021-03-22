@@ -16,27 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIBackup
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (OWSBackup *)backup
-{
-    OWSAssertDebug(AppEnvironment.shared.backup);
-
-    return AppEnvironment.shared.backup;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name

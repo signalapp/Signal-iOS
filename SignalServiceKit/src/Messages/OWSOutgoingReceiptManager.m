@@ -31,15 +31,6 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 @implementation OWSOutgoingReceiptManager
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 + (SDSKeyValueStore *)deliveryReceiptStore
 {
     return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingDeliveryReceiptManagerCollection"];
@@ -51,13 +42,6 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 }
 
 #pragma mark -
-
-+ (instancetype)shared
-{
-    OWSAssert(SSKEnvironment.shared.outgoingReceiptManager);
-
-    return SSKEnvironment.shared.outgoingReceiptManager;
-}
 
 - (instancetype)init
 {
@@ -84,22 +68,6 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#pragma mark - Dependencies
-
-- (MessageSender *)messageSender
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
-}
-
-- (id<SSKReachabilityManager>)reachabilityManager
-{
-    return SSKEnvironment.shared.reachabilityManager;
-}
-
-#pragma mark -
 
 - (dispatch_queue_t)serialQueue
 {

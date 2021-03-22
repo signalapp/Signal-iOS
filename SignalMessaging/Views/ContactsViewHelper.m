@@ -38,35 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ContactsViewHelper
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return OWSBlockingManager.shared;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (FullTextSearcher *)fullTextSearcher
-{
-    return FullTextSearcher.shared;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super init];
@@ -224,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasUpdatedContactsAtLeastOnce
 {
-    return self.contactsManager.hasLoadedContacts;
+    return self.contactsManagerImpl.hasLoadedContacts;
 }
 
 - (void)updateContacts
@@ -239,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        whitelistedAddresses = [self.profileManager allWhitelistedRegisteredAddressesWithTransaction:transaction];
+        whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
     }];
 
     for (SignalServiceAddress *address in whitelistedAddresses) {
@@ -270,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
-    self.signalAccounts = [self.contactsManager sortSignalAccountsWithSneakyTransaction:signalAccounts];
+    self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
     self.nonSignalContacts = nil;
 
     [self fireDidUpdateContacts];
@@ -359,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.databaseStorage
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
+            for (Contact *contact in self.contactsManagerImpl.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
                     [nonSignalContactSet addObject:contact];
@@ -370,9 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return [left.fullName compare:right.fullName];
                 }];
         }
-        completion:^{
-            self.nonSignalContacts = nonSignalContacts;
-        }];
+        completion:^{ self.nonSignalContacts = nonSignalContacts; }];
 }
 
 - (nullable NSArray<Contact *> *)nonSignalContacts
@@ -382,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
+            for (Contact *contact in self.contactsManagerImpl.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
                     [nonSignalContacts addObject:contact];
@@ -452,13 +421,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
 
-    if (!self.contactsManager.supportsContactEditing) {
+    if (!self.contactsManagerImpl.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
         OWSFailDebug(@"Contact editing not supported.");
         return nil;
     }
 
-    if (!self.contactsManager.isSystemContactsAuthorized) {
+    if (!self.contactsManagerImpl.isSystemContactsAuthorized) {
         [self presentMissingContactAccessAlertControllerFromViewController:CurrentAppContext().frontmostViewController];
         return nil;
     }
@@ -531,9 +500,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
-            newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
-            newContact.imageData = UIImagePNGRepresentation([self.profileManager profileAvatarForAddress:address transaction:transaction]);
+            newContact.givenName = [self.profileManagerImpl givenNameForAddress:address transaction:transaction];
+            newContact.familyName = [self.profileManagerImpl familyNameForAddress:address transaction:transaction];
+            newContact.imageData = UIImagePNGRepresentation(
+                [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction]);
         }];
 
         if (updatedNameComponents) {

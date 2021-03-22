@@ -421,7 +421,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)didLastLaunchNotTerminate
 {
-    return SignalApp.sharedApp.didLastLaunchNotTerminate;
+    return SignalApp.shared.didLastLaunchNotTerminate;
 }
 
 - (BOOL)hasActiveCall

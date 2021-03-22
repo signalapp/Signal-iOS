@@ -26,8 +26,6 @@ extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
 
 - (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
 
-+ (id<SyncManagerProtocol>)shared;
-
 @end
 
 NS_ASSUME_NONNULL_END

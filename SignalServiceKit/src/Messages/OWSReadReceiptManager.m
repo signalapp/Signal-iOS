@@ -48,13 +48,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return instance;
 }
 
-+ (instancetype)shared
-{
-    OWSAssert(SSKEnvironment.shared.readReceiptManager);
-
-    return SSKEnvironment.shared.readReceiptManager;
-}
-
 - (instancetype)init
 {
     self = [super init];
@@ -75,27 +68,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#pragma mark - Dependencies
-
-- (OWSOutgoingReceiptManager *)outgoingReceiptManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
-
-    return SSKEnvironment.shared.outgoingReceiptManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
-{
-    return SSKEnvironment.shared.pendingReadReceiptRecorder;
-}
-
-#pragma mark -
 
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing

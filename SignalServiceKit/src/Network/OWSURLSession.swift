@@ -98,14 +98,6 @@ public struct OWSUrlDownloadResponse {
 @objc
 public class OWSURLSession: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var appExpiry: AppExpiry {
-        return AppExpiry.shared
-    }
-
-    // MARK: -
-
     private static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.underlyingQueue = .global()

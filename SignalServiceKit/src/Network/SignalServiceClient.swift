@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,15 +44,7 @@ public enum RemoteConfigItem {
 @objc
 public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
-    // MARK: - Dependencies
-
-    var networkManager: TSNetworkManager {
-        return TSNetworkManager.shared()
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
+    public static let shared = SignalServiceRestClient()
 
     // MARK: - Public
 

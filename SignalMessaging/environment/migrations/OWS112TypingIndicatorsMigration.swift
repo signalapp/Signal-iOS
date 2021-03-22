@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,14 +7,6 @@ import SignalServiceKit
 
 @objc
 public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
-
-    // MARK: - Dependencies
-
-    private var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
-    // MARK: -
 
     // Increment a similar constant for each migration.
     @objc
@@ -36,7 +28,7 @@ public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
         DispatchQueue.main.async {
             // Typing indicators should be disabled by default for
             // legacy users.
-            self.typingIndicators.setTypingIndicatorsEnabledAndSendSyncMessage(value: false)
+            self.typingIndicatorsImpl.setTypingIndicatorsEnabledAndSendSyncMessage(value: false)
 
             DispatchQueue.global().async {
                 self.markAsCompleteWithSneakyTransaction()

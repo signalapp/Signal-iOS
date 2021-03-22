@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,14 +14,6 @@ public protocol ContactShareViewHelperDelegate: class {
 
 @objc
 public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
-
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: - 
 
     @objc
     weak var delegate: ContactShareViewHelperDelegate?
@@ -145,7 +137,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: -
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManager.supportsContactEditing else {
+        guard contactsManagerImpl.supportsContactEditing else {
             owsFailDebug("Contact editing not supported")
             return
         }
@@ -155,7 +147,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        guard contactsManager.isSystemContactsAuthorized else {
+        guard contactsManagerImpl.isSystemContactsAuthorized else {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
             return
         }
@@ -174,12 +166,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManager.supportsContactEditing else {
+        guard contactsManagerImpl.supportsContactEditing else {
             owsFailDebug("Contact editing not supported")
             return
         }
 
-        guard contactsManager.isSystemContactsAuthorized else {
+        guard contactsManagerImpl.isSystemContactsAuthorized else {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
             return
         }

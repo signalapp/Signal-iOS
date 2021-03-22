@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -76,13 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters
 {
     return [[TSRequest alloc] initWithURL:url method:method parameters:parameters];
-}
-
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark - Authorization

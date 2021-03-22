@@ -138,7 +138,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     }
 
     private func syncPushTokens() {
-        let job = SyncPushTokensJob(accountManager: accountManager, preferences: preferences)
+        let job = SyncPushTokensJob()
         job.uploadOnlyIfStale = false
         job.run().done {
             OWSActionSheets.showActionSheet(title: NSLocalizedString(

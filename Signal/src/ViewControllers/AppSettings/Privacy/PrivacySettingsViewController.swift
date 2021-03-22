@@ -102,7 +102,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_TYPING_INDICATORS",
                 comment: "Label for the 'typing indicators' setting."
             ),
-            isOn: { Self.typingIndicators.areTypingIndicatorsEnabled() },
+            isOn: { Self.typingIndicatorsImpl.areTypingIndicatorsEnabled() },
             target: self,
             selector: #selector(didToggleTypingIndicatorsSwitch)
         ))
@@ -200,7 +200,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     func didToggleTypingIndicatorsSwitch(_ sender: UISwitch) {
-        typingIndicators.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
+        typingIndicatorsImpl.setTypingIndicatorsEnabledAndSendSyncMessage(value: sender.isOn)
     }
 
     @objc
@@ -250,6 +250,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         preferences.setIsSystemCallLogEnabled(sender.isOn)
 
         // rebuild callUIAdapter since CallKit configuration changed.
-        AppEnvironment.shared.callService.individualCallService.createCallUIAdapter()
+        Self.callService.individualCallService.createCallUIAdapter()
     }
 }

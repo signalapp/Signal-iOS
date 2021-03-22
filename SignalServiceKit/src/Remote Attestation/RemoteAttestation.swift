@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,12 +13,6 @@ extension RemoteAttestation {
         let mrenclave: String
         let host: String
         let censorshipCircumventionPrefix: String
-    }
-
-    // MARK: - Dependencies
-
-    private static var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
     }
 
     // MARK: -

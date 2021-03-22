@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -251,7 +251,7 @@ private class BannerView: UIView {
             )
 
             if address.isLocalAddress {
-                avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+                avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
             } else {
                 avatarView.image = avatarBuilder.build()
             }

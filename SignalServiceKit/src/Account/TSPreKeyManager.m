@@ -45,30 +45,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 @implementation TSPreKeyManager
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (SSKSignedPreKeyStore *)signedPreKeyStore
-{
-    return SSKEnvironment.shared.signedPreKeyStore;
-}
-
-+ (SSKPreKeyStore *)preKeyStore
-{
-    return SSKEnvironment.shared.preKeyStore;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 + (instancetype)shared
 {
     static TSPreKeyManager *instance = nil;

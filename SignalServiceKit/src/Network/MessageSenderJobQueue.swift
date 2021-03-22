@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -216,16 +216,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         super.init()
 
         self.queuePriority = MessageSender.queuePriority(for: message)
-    }
-
-    // MARK: Dependencies
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
     }
 
     // MARK: OWSOperation

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,8 +50,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
             self.items = addresses.map {
                 return Item(
                     address: $0,
-                    displayName: Environment.shared.contactsManager.displayName(for: $0, transaction: transaction),
-                    verificationState: OWSIdentityManager.shared().verificationState(for: $0, transaction: transaction)
+                    displayName: Self.contactsManager.displayName(for: $0, transaction: transaction),
+                    verificationState: Self.identityManager.verificationState(for: $0, transaction: transaction)
                 )
             }
         }
@@ -93,7 +93,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     private class func untrustedIdentitiesForSending(addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        return addresses.filter { OWSIdentityManager.shared().untrustedIdentityForSending(to: $0) != nil }
+        return addresses.filter { Self.identityManager.untrustedIdentityForSending(to: $0) != nil }
     }
 
     // MARK: -

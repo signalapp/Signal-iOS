@@ -75,16 +75,6 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
         self.jobRecord = jobRecord
     }
 
-    // MARK: - Dependencies
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
     // MARK: -
 
     public override func run() {
@@ -127,15 +117,7 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     }
 }
 
-public enum BroadcastMediaUploader {
-
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
+public enum BroadcastMediaUploader: Dependencies {
 
     static func upload(attachmentIdMap: [String: [String]]) throws -> [TSOutgoingMessage] {
         let observer = NotificationCenter.default.addObserver(

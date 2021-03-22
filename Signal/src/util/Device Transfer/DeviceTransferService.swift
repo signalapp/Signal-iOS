@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -65,15 +65,6 @@ protocol DeviceTransferServiceObserver: class {
 ///
 @objc
 class DeviceTransferService: NSObject {
-    var tsAccountManager: TSAccountManager { .shared() }
-    var databaseStorage: SDSDatabaseStorage { .shared }
-    var sleepManager: DeviceSleepManager { .shared }
-    var modelReadCaches: ModelReadCaches { .shared }
-
-    @objc
-    static var shared: DeviceTransferService {
-        return AppEnvironment.shared.deviceTransferService
-    }
 
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let pendingTransferDirectory = URL(fileURLWithPath: "transfer", isDirectory: true, relativeTo: appSharedDataDirectory)
@@ -100,11 +91,11 @@ class DeviceTransferService: NSObject {
     private(set) var session: MCSession? {
         didSet {
             if let oldValue = oldValue {
-                sleepManager.removeBlock(blockObject: oldValue)
+                deviceSleepManager.removeBlock(blockObject: oldValue)
             }
 
             if let session = session {
-                sleepManager.addBlock(blockObject: session)
+                deviceSleepManager.addBlock(blockObject: session)
             }
         }
     }

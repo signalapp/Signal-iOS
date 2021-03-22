@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,16 +13,7 @@ import PromiseKit
 //       db transactions and updates.
 //       It might help ensure that CVComponentState equality
 //       works correctly.
-public class CVAvatarBuilder {
-
-    // MARK: - Dependencies
-
-    // TODO: Audit all usage of avatars, contactsManager, profileManager in CV classes.
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
+public class CVAvatarBuilder: Dependencies {
 
     private let transaction: SDSAnyReadTransaction
 

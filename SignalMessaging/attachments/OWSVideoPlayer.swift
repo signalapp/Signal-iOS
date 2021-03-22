@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,12 +42,6 @@ public class OWSVideoPlayer: NSObject {
 
     deinit {
         endAudioActivity()
-    }
-
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
     }
 
     // MARK: Playback Controls

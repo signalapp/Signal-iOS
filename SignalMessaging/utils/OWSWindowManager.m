@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWindowManager.h"
@@ -97,13 +97,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 #pragma mark -
 
 @implementation OWSWindowManager
-
-+ (instancetype)shared
-{
-    OWSAssertDebug(Environment.shared.windowManager);
-
-    return Environment.shared.windowManager;
-}
 
 - (instancetype)initDefault
 {

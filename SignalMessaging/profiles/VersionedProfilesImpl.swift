@@ -27,26 +27,6 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
 @objc
 public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
-    // MARK: - Dependencies
-
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
 
     // MARK: -

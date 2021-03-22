@@ -51,25 +51,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @implementation OWSContactsManager
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return OWSProfileManager.shared;
-}
-
-- (SignalAccountReadCache *)signalAccountReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.signalAccountReadCache;
-}
-
-#pragma mark -
-
 - (id)init
 {
     self = [super init];
@@ -743,7 +724,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     self.signalAccounts = [self sortSignalAccountsWithSneakyTransaction:signalAccounts];
 
-    [self.profileManager setContactAddresses:allAddresses];
+    [self.profileManagerImpl setContactAddresses:allAddresses];
 
     self.isSetup = YES;
 
@@ -1072,7 +1053,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // We don't need to filterStringForDisplay(); usernames are strictly filtered.
-    NSString *_Nullable username = [self.profileManager usernameForAddress:address transaction:transaction];
+    NSString *_Nullable username = [self.profileManagerImpl usernameForAddress:address transaction:transaction];
     if (username.length > 0) {
         username = [CommonFormats formatUsername:username];
         return username;
@@ -1145,7 +1126,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     __block NSPersonNameComponents *_Nullable profileNameComponents;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileNameComponents = [self.profileManager nameComponentsForAddress:address transaction:transaction];
+        profileNameComponents = [self.profileManagerImpl nameComponentsForAddress:address transaction:transaction];
     }];
     return profileNameComponents;
 }
@@ -1161,7 +1142,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return savedContactNameComponents;
     }
 
-    return [self.profileManager nameComponentsForAddress:address transaction:transaction];
+    return [self.profileManagerImpl nameComponentsForAddress:address transaction:transaction];
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -1170,7 +1151,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     __block SignalAccount *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
+        result = [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address
+                                                                              transaction:transaction];
     }];
     return result;
 }
@@ -1181,7 +1163,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    return [self.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
+    return [self.modelReadCaches.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
 }
 
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address
@@ -1251,7 +1233,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     __block UIImage *_Nullable image;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        image = [self.profileManager profileAvatarForAddress:address transaction:transaction];
+        image = [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
     }];
     return image;
 }
@@ -1296,10 +1278,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if ([SSKPreferences preferContactAvatarsWithTransaction:transaction]) {
         // Grab the system contact avatar if available. Otherwise, profile avatar.
         image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
-        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+        image = image ?: [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
     } else {
         // Grab the profile avatar if available. Otherwise, system contact avatar.
-        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+        image = image ?: [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
         image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
     }
     return image;

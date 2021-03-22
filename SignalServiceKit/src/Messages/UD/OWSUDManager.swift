@@ -277,24 +277,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return false
     }
 
-    // MARK: - Dependencies
-
-    private var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var bulkProfileFetch: BulkProfileFetch {
-        return SSKEnvironment.shared.bulkProfileFetch
-    }
-
     // MARK: - Recipient state
 
     @objc
@@ -499,7 +481,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         case .everybody:
             senderCertificate = senderCertificates.defaultCert
         case .contactsOnly:
-            if SSKEnvironment.shared.contactsManager.isSystemContact(address: address) {
+            if Self.contactsManager.isSystemContact(address: address) {
                 senderCertificate = senderCertificates.defaultCert
             } else {
                 senderCertificate = senderCertificates.uuidOnlyCert
@@ -753,7 +735,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         if updateStorageService {
             transaction.addSyncCompletion {
-                SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+                Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
     }

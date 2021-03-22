@@ -38,22 +38,6 @@ public class OWSUpload: NSObject {
 
 fileprivate extension OWSUpload {
 
-    // MARK: - Dependencies
-
-    static var socketManager: TSSocketManager {
-        return SSKEnvironment.shared.socketManager
-    }
-
-    static var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    static var signalService: OWSSignalService {
-        return OWSSignalService.shared()
-    }
-
-    // MARK: -
-
     static var cdn0SessionManager: AFHTTPSessionManager {
         signalService.sessionManagerForCdn(cdnNumber: 0)
     }
@@ -452,7 +436,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
 
             // Wrap the progress block.
-            let progressBlock = { (task: URLSessionTask, progress: Progress) in
+            let progressBlock = { (_: URLSessionTask, progress: Progress) in
                 // Total progress is (progress from previous attempts/slices +
                 // progress from this attempt/slice).
                 let totalCompleted: Int = bytesAlreadyUploaded + Int(progress.completedUnitCount)

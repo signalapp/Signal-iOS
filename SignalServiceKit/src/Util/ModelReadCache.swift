@@ -91,15 +91,7 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
 
 // MARK: -
 
-private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel>: UIDatabaseSnapshotDelegate {
-
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    // MARK: -
+private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel>: UIDatabaseSnapshotDelegate, Dependencies {
 
     enum Mode {
         // * .uiRead caches are only accessed on the main thread.
@@ -575,14 +567,6 @@ extension ModelReadCache: ModelCache {}
 // MARK: -
 
 private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
 
     private let uiReadCache: ModelReadCache<KeyType, ValueType>
     private let readCache: ModelReadCache<KeyType, ValueType>
@@ -1120,11 +1104,6 @@ public class InstalledStickerCache: NSObject {
 
 @objc
 public class ModelReadCaches: NSObject {
-    @objc
-    public static var shared: ModelReadCaches {
-        return SSKEnvironment.shared.modelReadCaches
-    }
-
     @objc
     public required override init() {
         super.init()

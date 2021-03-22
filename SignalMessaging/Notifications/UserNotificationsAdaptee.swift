@@ -84,14 +84,6 @@ class UserNotificationPresenterAdaptee: NSObject {
 
 extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
-    // MARK: - Dependencies
-
-    var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     func registerNotificationSettings() -> Promise<Void> {
         return Promise { resolver in
             notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in

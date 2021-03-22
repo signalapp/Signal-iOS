@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -11,23 +11,10 @@ class SyncPushTokensJob: NSObject {
     @objc
     public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
 
-    // MARK: Dependencies
-    let accountManager: AccountManager
-    let preferences: OWSPreferences
-    var pushRegistrationManager: PushRegistrationManager {
-        return PushRegistrationManager.shared
-    }
-
     @objc var uploadOnlyIfStale = true
 
-    @objc
-    required init(accountManager: AccountManager, preferences: OWSPreferences) {
-        self.accountManager = accountManager
-        self.preferences = preferences
-    }
-
-    private class func run(accountManager: AccountManager, preferences: OWSPreferences) -> Promise<Void> {
-        let job = self.init(accountManager: accountManager, preferences: preferences)
+    private class func run() -> Promise<Void> {
+        let job = SyncPushTokensJob()
         return job.run()
     }
 
@@ -72,9 +59,9 @@ class SyncPushTokensJob: NSObject {
     // MARK: - objc wrappers, since objc can't use swift parameterized types
 
     @objc
-    class func run(accountManager: AccountManager, preferences: OWSPreferences) {
+    class func run() {
         firstly {
-            self.run(accountManager: accountManager, preferences: preferences)
+            self.run()
         }.done {
             Logger.info("completed successfully.")
         }.catch { error in

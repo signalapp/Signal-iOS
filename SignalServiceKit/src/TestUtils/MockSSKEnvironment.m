@@ -153,8 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    self.callMessageHandler = [OWSFakeCallMessageHandler new];
-    self.notificationsManager = [NoopNotificationsManager new];
+    self.callMessageHandlerRef = [OWSFakeCallMessageHandler new];
+    self.notificationsManagerRef = [NoopNotificationsManager new];
 
     return self;
 }

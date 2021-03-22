@@ -87,32 +87,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         self.jobRecord = jobRecord
     }
 
-    // MARK: - Dependencies
-
-    var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
-    }
-
-    var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
     // MARK: - Durable Operation Overrides
 
     enum IncomingContactSyncError: Error {
@@ -281,7 +255,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             contactAvatarJpegData = nil
         }
 
-        if let existingAccount = self.contactsManager.fetchSignalAccount(for: contactDetails.address, transaction: transaction) {
+        if let existingAccount = self.contactsManagerImpl.fetchSignalAccount(for: contactDetails.address,
+                                                                             transaction: transaction) {
             if existingAccount.contact == nil {
                 owsFailDebug("Persisted account missing contact.")
             }

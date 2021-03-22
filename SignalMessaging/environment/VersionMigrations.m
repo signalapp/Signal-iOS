@@ -23,20 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation VersionMigrations
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark - Utility methods
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion

@@ -191,10 +191,6 @@ public struct LocalSignalClient: TestSignalClient {
 
     public init() { }
 
-    public var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     public var identityKeyPair: ECKeyPair {
         return SSKEnvironment.shared.identityManager.identityKeyPair()!
     }
@@ -204,7 +200,7 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var uuid: UUID {
-        return TSAccountManager.shared().localUuid!
+        return TSAccountManager.shared.localUuid!
     }
 
     public let deviceId: UInt32 = 1
@@ -227,17 +223,14 @@ public struct LocalSignalClient: TestSignalClient {
 }
 
 var envelopeId: UInt64 = 0
-public struct FakeService {
+
+public struct FakeService: Dependencies {
     public let localClient: LocalSignalClient
     public let runner: TestProtocolRunner
 
     public init(localClient: LocalSignalClient, runner: TestProtocolRunner) {
         self.localClient = localClient
         self.runner = runner
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
     }
 
     public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {

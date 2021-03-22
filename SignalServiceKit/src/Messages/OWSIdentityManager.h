@@ -38,8 +38,6 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
 
-+ (instancetype)shared;
-
 - (void)generateNewIdentityKey;
 - (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction;
 

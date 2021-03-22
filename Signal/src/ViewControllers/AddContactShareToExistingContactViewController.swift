@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -58,9 +58,8 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
     func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
         Logger.debug("")
 
-        let contactsManager = Environment.shared.contactsManager
         guard let cnContactId = oldContact.cnContactId,
-            let oldCNContact = contactsManager?.cnContact(withId: cnContactId) else {
+              let oldCNContact = Self.contactsManagerImpl.cnContact(withId: cnContactId) else {
             owsFailDebug("could not load old CNContact.")
             return
         }

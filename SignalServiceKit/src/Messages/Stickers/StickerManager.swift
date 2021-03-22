@@ -57,29 +57,6 @@ public class StickerManager: NSObject {
         }
     }
 
-    // MARK: - Dependencies
-
-    @objc
-    public class var shared: StickerManager {
-        return SSKEnvironment.shared.stickerManager
-    }
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
     // MARK: - Properties
 
     public static let store = SDSKeyValueStore(collection: "recentStickers")
@@ -108,7 +85,7 @@ public class StickerManager: NSObject {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             StickerManager.cleanupOrphans()
 
-            if TSAccountManager.shared().isRegisteredAndReady {
+            if TSAccountManager.shared.isRegisteredAndReady {
                 StickerManager.refreshContents()
             }
         }

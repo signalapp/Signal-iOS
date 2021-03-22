@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import Contacts
 
-public enum ExperienceUpgradeId: String, CaseIterable {
+public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     case introducingPins = "009"
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
@@ -25,10 +25,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .introducingPins:
             // The PIN setup flow requires an internet connection and you to not already have a PIN
             return RemoteConfig.kbs &&
-                SSKEnvironment.shared.reachabilityManager.isReachable &&
+                Self.reachabilityManager.isReachable &&
                 !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .pinReminder:
-            return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
+            return OWS2FAManager.shared.isDueForV2Reminder(transaction: transaction.asAnyRead)
         case .notificationPermissionReminder:
             let (promise, resolver) = Promise<Bool>.pending()
 
@@ -246,7 +246,7 @@ public class ExperienceUpgradeFinder: NSObject {
     /// yet to be completed. Sorted by priority from highest to lowest. For equal
     /// priority upgrades follows the order of the `ExperienceUpgradeId` enumeration
     private class func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
-        let isPrimaryDevice = SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice
+        let isPrimaryDevice = Self.tsAccountManager.isRegisteredPrimaryDevice
 
         let activeIds = ExperienceUpgradeId
             .allCases

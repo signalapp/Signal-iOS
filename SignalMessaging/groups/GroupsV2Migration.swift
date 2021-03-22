@@ -10,30 +10,6 @@ import SignalClient
 @objc
 public class GroupsV2Migration: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    private static var groupsV2: GroupsV2Impl {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Impl
-    }
-
-    private static var bulkProfileFetch: BulkProfileFetch {
-        return SSKEnvironment.shared.bulkProfileFetch
-    }
-
-    // MARK: -
-
     private override init() {}
 
     // MARK: - Mapping
@@ -511,7 +487,7 @@ fileprivate extension GroupsV2Migration {
 
         return firstly(on: .global()) { () -> Promise<GroupV2Snapshot> in
             let groupSecretParamsData = unmigratedState.migrationMetadata.v2GroupSecretParams
-            return self.groupsV2.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
         }.recover(on: .global()) { (error: Error) -> Promise<GroupV2Snapshot> in
             if case GroupsV2Error.groupDoesNotExistOnService = error {
                 // Convert error if the group is not already on the service.
@@ -592,7 +568,7 @@ fileprivate extension GroupsV2Migration {
             return firstly(on: .global()) { () -> Promise<Void> in
                 GroupManager.tryToEnableGroupsV2(for: Array(membersToMigrate), isBlocking: true, ignoreErrors: true)
             }.then(on: .global()) { () throws -> Promise<Void> in
-                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(membersToMigrate))
+                self.groupsV2Impl.tryToEnsureProfileKeyCredentials(for: Array(membersToMigrate))
             }.then(on: .global()) { () throws -> Promise<String?> in
                 guard let avatarData = unmigratedState.groupThread.groupModel.groupAvatarData else {
                     // No avatar to upload.
@@ -600,8 +576,8 @@ fileprivate extension GroupsV2Migration {
                 }
                 // Upload avatar.
                 return firstly(on: .global()) { () -> Promise<String> in
-                    return self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
-                                                           groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
+                    return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
+                                                               groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
                 }.map(on: .global()) { (avatarUrlPath: String) -> String? in
                     return avatarUrlPath
                 }
@@ -736,10 +712,10 @@ fileprivate extension GroupsV2Migration {
     static func migrateGroupOnService(proposedGroupModel: TSGroupModelV2,
                                       disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupModelV2> {
         return firstly {
-            self.groupsV2.createNewGroupOnService(groupModel: proposedGroupModel,
+            self.groupsV2Impl.createNewGroupOnService(groupModel: proposedGroupModel,
                                                   disappearingMessageToken: disappearingMessageToken)
         }.then(on: .global()) { _ in
-            self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
+            self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
         }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModelV2 in
             let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModelV2 in
                 let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
@@ -1102,7 +1078,7 @@ fileprivate extension GroupsV2Migration {
             throw OWSAssertionError("Invalid group id: \(v1GroupId.hexadecimalString).")
         }
         let masterKey = try gv2MasterKey(forV1GroupId: v1GroupId)
-        let v2GroupSecretParams = try groupsV2.groupSecretParamsData(forMasterKeyData: masterKey)
+        let v2GroupSecretParams = try groupsV2Impl.groupSecretParamsData(forMasterKeyData: masterKey)
         let v2GroupId = try groupsV2.groupId(forGroupSecretParamsData: v2GroupSecretParams)
         return MigrationMetadata(v1GroupId: v1GroupId,
                                  v2GroupId: v2GroupId,

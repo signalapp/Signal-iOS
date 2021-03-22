@@ -39,18 +39,6 @@ import ZKGroup
 @objc
 public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
 
-    // MARK: - Dependencies
-
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
-
     public let groupId: Data
     public let groupSecretParamsData: Data
 

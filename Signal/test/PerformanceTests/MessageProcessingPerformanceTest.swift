@@ -8,20 +8,6 @@ import GRDB
 
 class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
-    // MARK: - Dependencies
-
-    var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
-    }
-
-    var messageProcessor: MessageProcessor { .shared }
-
-    // MARK: -
-
     let localE164Identifier = "+13235551234"
     let localUUID = UUID()
     let localClient = LocalSignalClient()

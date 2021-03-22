@@ -12,18 +12,6 @@ class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var areVersionMigrationsComplete = false
 
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    var messageProcessor: MessageProcessor {
-        return .shared
-    }
-
-    var messageFetcherJob: MessageFetcherJob {
-        return SSKEnvironment.shared.messageFetcherJob
-    }
-
     func completeSilenty() {
         contentHandler?(.init())
     }
@@ -118,8 +106,8 @@ class NotificationService: UNNotificationServiceExtension {
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
                 // TODO: calls..
-                SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-                SSKEnvironment.shared.notificationsManager = NotificationPresenter()
+                SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
+                SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
             },
             migrationCompletion: { [weak self] in
                 self?.versionMigrationsDidComplete()

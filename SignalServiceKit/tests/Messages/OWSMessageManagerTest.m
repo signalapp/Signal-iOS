@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageManager.h"
@@ -49,25 +49,6 @@ NSString *const kAliceRecipientId = @"+13213214321";
 #pragma mark -
 
 @implementation OWSMessageManagerTest
-
-#pragma mark - Dependencies
-
-- (OWSMessageManager *)messagesManager
-{
-    return SSKEnvironment.shared.messageManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-#pragma mark -
 
 - (void)setUp
 {

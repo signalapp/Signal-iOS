@@ -8,18 +8,6 @@ import GRDB
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: -
-
     static func databaseDirUrl(baseDir: URL) -> URL {
         return baseDir.appendingPathComponent("grdb", isDirectory: true)
     }

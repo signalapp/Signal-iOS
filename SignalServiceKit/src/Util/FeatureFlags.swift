@@ -512,7 +512,7 @@ public class TestableFlag: NSObject {
 
     private func updateCapabilities() {
         firstly(on: .global()) { () -> Promise<Void> in
-            TSAccountManager.shared().updateAccountAttributes().asVoid()
+            TSAccountManager.shared.updateAccountAttributes().asVoid()
         }.done {
             Logger.info("")
         }.catch { error in

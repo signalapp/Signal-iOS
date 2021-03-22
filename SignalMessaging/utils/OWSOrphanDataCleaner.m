@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -54,15 +54,6 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
-
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
 {

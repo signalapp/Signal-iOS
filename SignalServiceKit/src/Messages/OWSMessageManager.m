@@ -78,106 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (id<OWSCallMessageHandler>)callMessageHandler
-{
-    OWSAssertDebug(SSKEnvironment.shared.callMessageHandler);
-
-    return SSKEnvironment.shared.callMessageHandler;
-}
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
-
-    return SSKEnvironment.shared.contactsManager;
-}
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
-
-    return SSKEnvironment.shared.blockingManager;
-}
-
-- (OWSIdentityManager *)identityManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.identityManager);
-
-    return SSKEnvironment.shared.identityManager;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (OWSOutgoingReceiptManager *)outgoingReceiptManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
-
-    return SSKEnvironment.shared.outgoingReceiptManager;
-}
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.syncManager);
-
-    return SSKEnvironment.shared.syncManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-- (id<GroupsV2>)groupsV2
-{
-    return SSKEnvironment.shared.groupsV2;
-}
-
-- (EarlyMessageManager *)earlyMessageManager
-{
-    return SSKEnvironment.shared.earlyMessageManager;
-}
-
-#pragma mark -
-
 - (void)startObserving
 {
     [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
@@ -1198,14 +1098,14 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
-                [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
-                                                                      address:envelope.sourceAddress
-                                                                     deviceId:envelope.sourceDevice];
+                [self.typingIndicatorsImpl didReceiveTypingStartedMessageInThread:thread
+                                                                          address:envelope.sourceAddress
+                                                                         deviceId:envelope.sourceDevice];
                 break;
             case SSKProtoTypingMessageActionStopped:
-                [self.typingIndicators didReceiveTypingStoppedMessageInThread:thread
-                                                                      address:envelope.sourceAddress
-                                                                     deviceId:envelope.sourceDevice];
+                [self.typingIndicatorsImpl didReceiveTypingStoppedMessageInThread:thread
+                                                                          address:envelope.sourceAddress
+                                                                         deviceId:envelope.sourceDevice];
                 break;
             default:
                 OWSFailDebug(@"Typing message has unexpected action.");
@@ -2261,9 +2161,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  transaction:transaction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                         address:envelope.sourceAddress
-                                                        deviceId:envelope.sourceDevice];
+        [self.typingIndicatorsImpl didReceiveIncomingMessageInThread:thread
+                                                             address:envelope.sourceAddress
+                                                            deviceId:envelope.sourceDevice];
     });
 
     return message;

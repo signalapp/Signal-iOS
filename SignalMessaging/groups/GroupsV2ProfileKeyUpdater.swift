@@ -15,43 +15,7 @@ import SignalServiceKit
 //
 // This class has responsibility for tracking which groups
 // need to be updated and for updating them.
-class GroupsV2ProfileKeyUpdater {
-
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        .shared()
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        .shared
-    }
-
-    private var profileManager: OWSProfileManager {
-        OWSProfileManager.shared()
-    }
-
-    private var groupsV2: GroupsV2Swift {
-        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private static var groupV2Updates: GroupV2UpdatesSwift {
-        SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
-    }
-
-    private var messageProcessor: MessageProcessor {
-        SSKEnvironment.shared.messageProcessor
-    }
-
-    private var reachabilityManager: SSKReachabilityManager {
-        SSKEnvironment.shared.reachabilityManager
-    }
-
-    private static var syncManager: SyncManagerProtocol {
-        SSKEnvironment.shared.syncManager
-    }
-
-    // MARK: -
+class GroupsV2ProfileKeyUpdater: Dependencies {
 
     public required init() {
         NotificationCenter.default.addObserver(self,
@@ -268,7 +232,7 @@ class GroupsV2ProfileKeyUpdater {
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
-                return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> (TSGroupThread, UInt32) in
                 guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
                     // We're not a full member, no need to update profile key.
@@ -331,8 +295,8 @@ class GroupsV2ProfileKeyUpdater {
                 changes.setShouldUpdateLocalProfileKey()
                 return changes
             }.then(on: DispatchQueue.global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-                return self.groupsV2.updateExistingGroupOnService(changes: changes,
-                                                                  requiredRevision: checkedRevision)
+                return self.groupsV2Impl.updateExistingGroupOnService(changes: changes,
+                                                                      requiredRevision: checkedRevision)
             }.asVoid()
         }
     }

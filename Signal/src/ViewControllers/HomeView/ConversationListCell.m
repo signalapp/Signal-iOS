@@ -611,7 +611,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowTypingIndicators
 {
-    return (!self.hasOverrideSnippet && [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil);
+    return (
+        !self.hasOverrideSnippet && [self.typingIndicatorsImpl typingAddressForThread:self.thread.threadRecord] != nil);
 }
 
 - (void)updatePreview

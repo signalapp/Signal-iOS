@@ -67,13 +67,6 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark -
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords

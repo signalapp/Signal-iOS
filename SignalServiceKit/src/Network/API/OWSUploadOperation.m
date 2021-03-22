@@ -38,13 +38,6 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
 
 @implementation OWSUploadOperation
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 + (NSOperationQueue *)uploadQueue
 {
     static NSOperationQueue *operationQueue;

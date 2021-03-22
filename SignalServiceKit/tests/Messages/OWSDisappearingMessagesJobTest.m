@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         [unExpiringMessage anyInsertWithTransaction:transaction];
     }];
 
-    OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob sharedJob];
+    OWSDisappearingMessagesJob *job = [OWSDisappearingMessagesJob shared];
 
     // Sanity Check.
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {

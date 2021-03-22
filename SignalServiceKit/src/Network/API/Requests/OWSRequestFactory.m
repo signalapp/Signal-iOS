@@ -26,35 +26,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 @implementation OWSRequestFactory
 
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-+ (OWS2FAManager *)ows2FAManager
-{
-    return OWS2FAManager.shared;
-}
-
-+ (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-+ (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
-+ (OWSIdentityManager *)identityManager
-{
-    return SSKEnvironment.shared.identityManager;
-}
-
-#pragma mark -
-
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin
 {
     OWSAssertDebug(pin.length > 0);

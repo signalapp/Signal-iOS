@@ -17,13 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIContacts
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -92,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)createUnregisteredContactThread
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:self.unregisteredRecipient];
-    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+    [SignalApp.shared presentConversationForThread:thread animated:YES];
 }
 
 + (void)createUnregisteredGroupThread
@@ -112,12 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
         avatarData:nil
         newGroupSeed:nil
         shouldSendMessage:YES
-        success:^(TSGroupThread *thread) {
-            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-        }
-        failure:^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-        }];
+        success:^(TSGroupThread *thread) { [SignalApp.shared presentConversationForThread:thread animated:YES]; }
+        failure:^(NSError *error) { OWSFailDebug(@"Error: %@", error); }];
 }
 
 @end

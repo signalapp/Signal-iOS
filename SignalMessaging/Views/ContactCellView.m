@@ -45,34 +45,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (OWSContactsManager *)contactsManager
-{
-    OWSAssertDebug(Environment.shared.contactsManager);
-
-    return Environment.shared.contactsManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-#pragma mark -
-
 - (void)configure
 {
     OWSAssertDebug(!self.nameLabel);

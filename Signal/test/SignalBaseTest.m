@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -22,15 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation SignalBaseTest
-
-#pragma mark - Dependencies
-
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-#pragma mark -
 
 - (void)setUp
 {

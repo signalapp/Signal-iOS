@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -48,7 +48,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 + (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-+ (instancetype)shared;
 
 #pragma mark - Sender/Recipient Read Receipts
 

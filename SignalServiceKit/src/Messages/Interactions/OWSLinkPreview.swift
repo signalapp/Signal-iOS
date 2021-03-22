@@ -272,22 +272,12 @@ public class OWSLinkPreview: MTLModel {
 // MARK: -
 
 @objc
-public class OWSLinkPreviewManager: NSObject {
+public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // Although link preview fetches are non-blocking, the user may still end up
     // waiting for the fetch to complete. Because of this, UserInitiated is likely
     // most appropriate QoS.
     static let workQueue: DispatchQueue = .sharedUserInitiated
-
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
 
     // MARK: - Public
 
@@ -607,17 +597,17 @@ public class OWSLinkPreviewManager: NSObject {
         }.then(on: Self.workQueue) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
             let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
             return firstly {
-                self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                                                          groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData,
-                                                          allowCached: false)
+                Self.groupsV2Swift.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                                                               groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData,
+                                                               allowCached: false)
             }.then(on: Self.workQueue) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
                 return firstly { () -> Promise<Data?> in
                     guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
                         return Promise.value(nil)
                     }
                     return firstly { () -> Promise<Data> in
-                        self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                                                 groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+                        self.groupsV2Swift.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
+                                                                      groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
                     }.map { (avatarData: Data) -> Data? in
                         return avatarData
                     }.recover { (error: Error) -> Promise<Data?> in

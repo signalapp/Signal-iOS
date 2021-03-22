@@ -178,7 +178,7 @@ const NSUInteger kMinimumSearchLength = 2;
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
 
-    [self.contactsManager userRequestedSystemContactsRefresh]
+    [self.contactsManagerImpl userRequestedSystemContactsRefresh]
         .then(^{
             if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
                 return [AnyPromise promiseWithValue:nil];
@@ -332,7 +332,7 @@ const NSUInteger kMinimumSearchLength = 2;
     // Make sure we have requested contact access at this point if, e.g.
     // the user has no messages in their inbox and they choose to compose
     // a message.
-    [self.contactsManager requestSystemContactsOnce];
+    [self.contactsManagerImpl requestSystemContactsOnce];
 
     [self showContactAppropriateViews];
 }
@@ -366,7 +366,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
-    if (self.contactsManager.isSystemContactsDenied) {
+    if (self.contactsManagerImpl.isSystemContactsDenied) {
         OWSTableItem *contactReminderItem = [OWSTableItem
             itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [OWSTableItem newCell];
@@ -428,7 +428,7 @@ const NSUInteger kMinimumSearchLength = 2;
                                     }]];
     }
 
-    if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites && !isSearching) {
+    if (self.contactsManagerImpl.isSystemContactsAuthorized && self.shouldShowInvites && !isSearching) {
         // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
@@ -533,7 +533,7 @@ const NSUInteger kMinimumSearchLength = 2;
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsManager.isSystemContactsAuthorized) {
+        if (self.contactsManagerImpl.isSystemContactsAuthorized) {
             if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
 
                 [contactsSection
@@ -664,8 +664,8 @@ const NSUInteger kMinimumSearchLength = 2;
                 [matchedAccountPhoneNumbers addObject:phoneNumber];
             }
 
-            NSString *_Nullable username = [self.profileManager usernameForAddress:signalAccount.recipientAddress
-                                                                       transaction:transaction];
+            NSString *_Nullable username = [self.profileManagerImpl usernameForAddress:signalAccount.recipientAddress
+                                                                           transaction:transaction];
             if (username) {
                 [matchedAccountUsernames addObject:username];
             }
@@ -858,7 +858,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 - (void)showContactAppropriateViews
 {
-    if (self.contactsManager.isSystemContactsAuthorized) {
+    if (self.contactsManagerImpl.isSystemContactsAuthorized) {
         if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.allSignalAccounts.count < 1
             && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
@@ -989,7 +989,7 @@ const NSUInteger kMinimumSearchLength = 2;
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.profileManager fetchProfileForUsername:username
+                      [self.profileManagerImpl fetchProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
                               if (modal.wasCancelled) {
                                   return;

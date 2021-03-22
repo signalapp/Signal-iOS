@@ -11,9 +11,6 @@ public class MessageProcessor: NSObject {
     public static let messageProcessorDidFlushQueue = Notification.Name("messageProcessorDidFlushQueue")
 
     @objc
-    public static var shared: MessageProcessor { SSKEnvironment.shared.messageProcessor }
-
-    @objc
     public var hasPendingEnvelopes: Bool {
         pendingEnvelopesLock.withLock { !pendingEnvelopes.isEmpty }
     }
@@ -40,7 +37,7 @@ public class MessageProcessor: NSObject {
                 once: Self.messageProcessorDidFlushQueue
             ).then { _ in self.processingCompletePromise() }.asVoid()
         } else if SDSDatabaseStorage.shared.read(
-            block: { SSKEnvironment.shared.groupsV2MessageProcessor.hasPendingJobs(transaction: $0) }
+            block: { Self.groupsV2MessageProcessor.hasPendingJobs(transaction: $0) }
         ) {
             if DebugFlags.isMessageProcessingVerbose {
                 Logger.verbose("hasPendingJobs")
@@ -64,7 +61,7 @@ public class MessageProcessor: NSObject {
 
     public func fetchingAndProcessingCompletePromise() -> Promise<Void> {
         return firstly { () -> Promise<Void> in
-            SSKEnvironment.shared.messageFetcherJob.fetchingCompletePromise()
+            Self.messageFetcherJob.fetchingCompletePromise()
         }.then { () -> Promise<Void> in
             self.processingCompletePromise()
         }
@@ -83,7 +80,7 @@ public class MessageProcessor: NSObject {
         )
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            SSKEnvironment.shared.messagePipelineSupervisor.register(pipelineStage: self)
+            Self.messagePipelineSupervisor.register(pipelineStage: self)
 
             SDSDatabaseStorage.shared.read { transaction in
                 // We may have legacy process jobs queued. We want to schedule them for
@@ -215,8 +212,8 @@ public class MessageProcessor: NSObject {
     }
 
     private func drainPendingEnvelopes() {
-        guard SSKEnvironment.shared.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
-        guard TSAccountManager.shared().isRegisteredAndReady else { return }
+        guard Self.messagePipelineSupervisor.isMessageProcessingPermitted else { return }
+        guard TSAccountManager.shared.isRegisteredAndReady else { return }
 
         guard CurrentAppContext().shouldProcessIncomingMessages else { return }
 
@@ -291,7 +288,7 @@ public class MessageProcessor: NSObject {
                 // If we can't process the message immediately, we enqueue it for
                 // for processing in the same transaction within which it was decrypted
                 // to prevent data loss.
-                SSKEnvironment.shared.groupsV2MessageProcessor.enqueue(
+                Self.groupsV2MessageProcessor.enqueue(
                     envelopeData: result.envelopeData,
                     plaintextData: result.plaintextData,
                     envelope: envelope,
@@ -313,7 +310,7 @@ public class MessageProcessor: NSObject {
                 // or was killed), we'll have to re-decrypt again before we process.
                 // This is safe, since the decrypt operation would also be rolled
                 // back (since the transaction didn't finalize) and should be rare.
-                SSKEnvironment.shared.messageManager.processEnvelope(
+                Self.messageManager.processEnvelope(
                     envelope,
                     plaintextData: result.plaintextData,
                     wasReceivedByUD: result.wasReceivedByUD,
@@ -350,7 +347,7 @@ private protocol PendingEnvelope {
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error>
 }
 
-private struct EncryptedEnvelope: PendingEnvelope {
+private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let encryptedEnvelopeData: Data
     let encryptedEnvelope: SSKProtoEnvelope
     let serverDeliveryTimestamp: UInt64
@@ -367,7 +364,7 @@ private struct EncryptedEnvelope: PendingEnvelope {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
-        let result = SSKEnvironment.shared.messageDecrypter.decryptEnvelope(
+        let result = Self.messageDecrypter.decryptEnvelope(
             encryptedEnvelope,
             envelopeData: encryptedEnvelopeData,
             transaction: transaction

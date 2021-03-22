@@ -4,15 +4,7 @@
 
 import Foundation
 
-public struct TSGroupModelBuilder {
-
-    // MARK: - Dependencies
-
-    private var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    // MARK: -
+public struct TSGroupModelBuilder: Dependencies {
 
     public var groupId: Data?
     public var name: String?

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSContactThread.h"
@@ -26,16 +26,10 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 #pragma mark - Dependencies
 
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 + (AnyContactThreadFinder *)threadFinder
 {
     return [AnyContactThreadFinder new];
 }
-
 
 #pragma mark -
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -115,7 +115,7 @@ class AccountManagerTest: SignalBaseTest {
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
         sskEnvironment.tsAccountManager = tsAccountManager
 
-        AppEnvironment.shared.pushRegistrationManager = VerifyingPushRegistrationManager()
+        Self.pushRegistrationManager = VerifyingPushRegistrationManager()
 
         let accountManager = AccountManager()
 

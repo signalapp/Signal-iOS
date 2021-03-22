@@ -65,22 +65,6 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 
 @implementation TSThread
 
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (ThreadReadCache *)threadReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.threadReadCache;
-}
-
-#pragma mark -
-
 + (NSString *)collection {
     return @"TSThread";
 }
@@ -220,7 +204,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
 
-    [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+    [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -231,7 +215,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
 
-    [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+    [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 
     [PinnedThreadManager handleUpdatedThread:self transaction:transaction];
 }
@@ -240,7 +224,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.threadReadCache didRemoveThread:self transaction:transaction];
+    [self.modelReadCaches.threadReadCache didRemoveThread:self transaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
