@@ -8,8 +8,8 @@
 #import "OWSMessageManager.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/PreKeyWhisperMessage.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,6 +23,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 @end
 
 #pragma mark -
+
+@interface TSInvalidIdentityKeyReceivingErrorMessage (ImplementedInSwift)
+- (nullable NSData *)identityKeyFromEncodedPreKeySignalMessage:(NSData *)pksmBytes error:(NSError **)error;
+@end
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
@@ -222,8 +226,12 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         return nil;
     }
 
-    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] init_throws_withData:pkwmData];
-    return [message.identityKey throws_removeKeyType];
+    NSError *_Nullable error;
+    NSData *_Nullable result = [[self class] identityKeyFromEncodedPreKeySignalMessage:pkwmData error:&error];
+    if (!result) {
+        OWSRaiseException(InvalidMessageException, @"%@", error.localizedDescription);
+    }
+    return result;
 }
 
 - (NSString *)theirSignalId

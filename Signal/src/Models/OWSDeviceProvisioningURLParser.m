@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioningURLParser.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

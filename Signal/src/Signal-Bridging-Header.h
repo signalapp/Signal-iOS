@@ -46,7 +46,6 @@
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -80,6 +79,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSData+Image.h>
+#import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAnalytics.h>

@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
+import SignalClient
 import SignalServiceKit
 
 class TestProtocolRunnerTest: SSKBaseTestSwift {
@@ -23,15 +24,15 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
             try! self.runner.initialize(senderClient: self.aliceClient, recipientClient: self.bobClient, transaction: transaction)
 
             let plaintext = "Those who stands for nothing will fall for anything"
-            let cipherMessage = try! self.runner.encrypt(plaintext: plaintext.data(using: .utf8)!,
+            let cipherMessage = try! self.runner.encrypt(plaintext.data(using: .utf8)!,
                                                          senderClient: self.aliceClient,
-                                                         recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                         protocolContext: nil)
+                                                         recipient: self.bobClient.protocolAddress,
+                                                         context: NullContext())
 
-            let decrypted = try! self.runner.decrypt(cipherMessage: cipherMessage,
+            let decrypted = try! self.runner.decrypt(cipherMessage,
                                                      recipientClient: self.bobClient,
-                                                     senderAccountId: self.aliceClient.accountId(transaction: transaction),
-                                                     protocolContext: nil)
+                                                     sender: self.aliceClient.protocolAddress,
+                                                     context: NullContext())
 
             let decryptedText = String(data: decrypted, encoding: .utf8)!
             XCTAssertEqual(plaintext, decryptedText)
@@ -44,27 +45,27 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
 
             // two encrypts
             let plaintext1 = "Those who stands for nothing will fall for anything"
-            let cipherMessage1 = try! self.runner.encrypt(plaintext: plaintext1.data(using: .utf8)!,
-                                                     senderClient: self.aliceClient,
-                                                     recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                     protocolContext: nil)
+            let cipherMessage1 = try! self.runner.encrypt(plaintext1.data(using: .utf8)!,
+                                                          senderClient: self.aliceClient,
+                                                          recipient: self.bobClient.protocolAddress,
+                                                          context: NullContext())
 
             let plaintext2 = "Do not despair when your enemy attacks you."
-            let cipherMessage2 = try! self.runner.encrypt(plaintext: plaintext2.data(using: .utf8)!,
-                                                     senderClient: self.aliceClient,
-                                                     recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                     protocolContext: nil)
+            let cipherMessage2 = try! self.runner.encrypt(plaintext2.data(using: .utf8)!,
+                                                          senderClient: self.aliceClient,
+                                                          recipient: self.bobClient.protocolAddress,
+                                                          context: NullContext())
 
             // two decrypts
-            let decrypted1 = try! self.runner.decrypt(cipherMessage: cipherMessage1,
-                                                 recipientClient: self.bobClient,
-                                                 senderAccountId: self.aliceClient.accountId(transaction: transaction),
-                                                 protocolContext: nil)
+            let decrypted1 = try! self.runner.decrypt(cipherMessage1,
+                                                      recipientClient: self.bobClient,
+                                                      sender: self.aliceClient.protocolAddress,
+                                                      context: NullContext())
 
-            let decrypted2 = try! self.runner.decrypt(cipherMessage: cipherMessage2,
-                                                 recipientClient: self.bobClient,
-                                                 senderAccountId: self.aliceClient.accountId(transaction: transaction),
-                                                 protocolContext: nil)
+            let decrypted2 = try! self.runner.decrypt(cipherMessage2,
+                                                      recipientClient: self.bobClient,
+                                                      sender: self.aliceClient.protocolAddress,
+                                                      context: NullContext())
 
             let decryptedText1 = String(data: decrypted1, encoding: .utf8)!
             XCTAssertEqual(plaintext1, decryptedText1)
@@ -80,27 +81,27 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
 
             // two encrypts
             let plaintext1 = "Those who stands for nothing will fall for anything"
-            let cipherMessage1 = try! self.runner.encrypt(plaintext: plaintext1.data(using: .utf8)!,
-                                                     senderClient: self.aliceClient,
-                                                     recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                     protocolContext: nil)
+            let cipherMessage1 = try! self.runner.encrypt(plaintext1.data(using: .utf8)!,
+                                                          senderClient: self.aliceClient,
+                                                          recipient: self.bobClient.protocolAddress,
+                                                          context: NullContext())
 
             let plaintext2 = "Do not despair when your enemy attacks you."
-            let cipherMessage2 = try! self.runner.encrypt(plaintext: plaintext2.data(using: .utf8)!,
-                                                     senderClient: self.aliceClient,
-                                                     recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                     protocolContext: nil)
+            let cipherMessage2 = try! self.runner.encrypt(plaintext2.data(using: .utf8)!,
+                                                          senderClient: self.aliceClient,
+                                                          recipient: self.bobClient.protocolAddress,
+                                                          context: NullContext())
 
             // decrypt second message first
-            let decrypted2 = try! self.runner.decrypt(cipherMessage: cipherMessage2,
-                                                 recipientClient: self.bobClient,
-                                                 senderAccountId: self.aliceClient.accountId(transaction: transaction),
-                                                 protocolContext: nil)
+            let decrypted2 = try! self.runner.decrypt(cipherMessage2,
+                                                      recipientClient: self.bobClient,
+                                                      sender: self.aliceClient.protocolAddress,
+                                                      context: NullContext())
 
-            let decrypted1 = try! self.runner.decrypt(cipherMessage: cipherMessage1,
-                                                 recipientClient: self.bobClient,
-                                                 senderAccountId: self.aliceClient.accountId(transaction: transaction),
-                                                 protocolContext: nil)
+            let decrypted1 = try! self.runner.decrypt(cipherMessage1,
+                                                      recipientClient: self.bobClient,
+                                                      sender: self.aliceClient.protocolAddress,
+                                                      context: NullContext())
 
             let decryptedText1 = String(data: decrypted1, encoding: .utf8)!
             XCTAssertEqual(plaintext1, decryptedText1)
@@ -122,15 +123,15 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
                                         transaction: transaction)
 
             let plaintext = "Those who stands for nothing will fall for anything"
-            let cipherMessage = try! self.runner.encrypt(plaintext: plaintext.data(using: .utf8)!,
+            let cipherMessage = try! self.runner.encrypt(plaintext.data(using: .utf8)!,
                                                          senderClient: self.bobClient,
-                                                         recipientAccountId: localClient.accountId(transaction: transaction),
-                                                         protocolContext: transaction)
+                                                         recipient: localClient.protocolAddress,
+                                                         context: transaction)
 
-            let decrypted = try! self.runner.decrypt(cipherMessage: cipherMessage,
+            let decrypted = try! self.runner.decrypt(cipherMessage,
                                                      recipientClient: localClient,
-                                                     senderAccountId: self.bobClient.accountId(transaction: transaction),
-                                                     protocolContext: transaction)
+                                                     sender: self.bobClient.protocolAddress,
+                                                     context: transaction)
 
             let decryptedText = String(data: decrypted, encoding: .utf8)!
             XCTAssertEqual(plaintext, decryptedText)
@@ -149,15 +150,15 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
                                         transaction: transaction)
 
             let plaintext = "Those who stands for nothing will fall for anything"
-            let cipherMessage = try! self.runner.encrypt(plaintext: plaintext.data(using: .utf8)!,
+            let cipherMessage = try! self.runner.encrypt(plaintext.data(using: .utf8)!,
                                                          senderClient: localClient,
-                                                         recipientAccountId: self.bobClient.accountId(transaction: transaction),
-                                                         protocolContext: transaction)
+                                                         recipient: self.bobClient.protocolAddress,
+                                                         context: transaction)
 
-            let decrypted = try! self.runner.decrypt(cipherMessage: cipherMessage,
+            let decrypted = try! self.runner.decrypt(cipherMessage,
                                                      recipientClient: self.bobClient,
-                                                     senderAccountId: localClient.accountId(transaction: transaction),
-                                                     protocolContext: transaction)
+                                                     sender: localClient.protocolAddress,
+                                                     context: transaction)
 
             let decryptedText = String(data: decrypted, encoding: .utf8)!
             XCTAssertEqual(plaintext, decryptedText)

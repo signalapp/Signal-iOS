@@ -3,7 +3,6 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import <AxolotlKit/IdentityKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +17,13 @@ extern const NSUInteger kIdentityKeyLength;
 extern const NSUInteger kStoredIdentityKeyLength;
 #endif
 
+typedef NS_ENUM(NSInteger, TSMessageDirection) {
+    TSMessageDirectionUnknown = 0,
+    TSMessageDirectionIncoming,
+    TSMessageDirectionOutgoing
+};
+
+@class ECKeyPair;
 @class OWSRecipientIdentity;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -26,7 +32,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 @class SignalServiceAddress;
 
 // This class can be safely accessed and used from any thread.
-@interface OWSIdentityManager : NSObject <IdentityKeyStore>
+@interface OWSIdentityManager : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -103,32 +109,6 @@ extern const NSUInteger kStoredIdentityKeyLength;
 #endif
 
 - (void)tryToSyncQueuedVerificationStates;
-
-#pragma mark - Deprecated IdentityStore methods
-
-- (nullable ECKeyPair *)identityKeyPair:(nullable id<SPKProtocolWriteContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (int)localRegistrationId:(nullable id<SPKProtocolWriteContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-               recipientId:(NSString *)accountId
-           protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
-                 recipientId:(NSString *)accountId
-                   direction:(TSMessageDirection)direction
-             protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)accountId
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)accountId
-                               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end
 

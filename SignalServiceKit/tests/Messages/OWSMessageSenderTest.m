@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MessageSender.h"
@@ -15,9 +15,8 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSRequest.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

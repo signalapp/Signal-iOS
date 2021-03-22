@@ -43,7 +43,6 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking/NSURLSession'
-  s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
   s.dependency 'Starscream'
