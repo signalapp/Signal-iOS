@@ -232,13 +232,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         Storage.write(with: { transaction in
             tsMessage.save(with: transaction)
-            // The new cell will be inserted here, but the TSOutgoingMessage now has no attachment.
+            // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
         }, completion: { [weak self] in
             Storage.write(with: { transaction in
                 MessageSender.send(message, with: attachments, in: thread, using: transaction)
             }, completion: { [weak self] in
-                // The TSOutgoingMessage has no attachment IDs until the `prep` finished.
-                // Scroll to bottom here so the tableview can calculate the cell's height with the attachments correctly.
+                // At this point the TSOutgoingMessage should have its attachments set, so we can scroll to the bottom knowing
+                // the height of the new message cell
                 self?.scrollToBottom(isAnimated: false)
             })
             self?.handleMessageSent()
