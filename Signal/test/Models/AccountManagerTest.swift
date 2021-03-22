@@ -62,7 +62,7 @@ class AccountManagerTest: SignalBaseTest {
 
         let tsAccountManager = FailingTSAccountManager()
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManager = tsAccountManager
+        sskEnvironment.tsAccountManagerRef = tsAccountManager
     }
 
     override func tearDown() {
@@ -113,9 +113,9 @@ class AccountManagerTest: SignalBaseTest {
     func testSuccessfulRegistration() {
         let tsAccountManager = TokenObtainingTSAccountManager()
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManager = tsAccountManager
+        sskEnvironment.tsAccountManagerRef = tsAccountManager
 
-        Self.pushRegistrationManager = VerifyingPushRegistrationManager()
+        AppEnvironment.shared.pushRegistrationManagerRef = VerifyingPushRegistrationManager()
 
         let accountManager = AccountManager()
 

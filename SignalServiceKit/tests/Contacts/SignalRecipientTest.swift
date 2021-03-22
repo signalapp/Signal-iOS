@@ -8,9 +8,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class SignalRecipientTest: SSKBaseTestSwift {
-    var tsAccountManager: TSAccountManager {
-         return Self.tsAccountManager
-     }
 
     lazy var localAddress = CommonGenerator.address()
 

@@ -152,7 +152,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let fakeContactsManager = GRDBFullTextSearcherContactsManager()
         fakeContactsManager.setMockDisplayName("Alice", for: aliceRecipient)
         fakeContactsManager.setMockDisplayName("Bob Barker", for: bobRecipient)
-        Self.contactsManager = fakeContactsManager
+        SSKEnvironment.shared.contactsManagerRef = fakeContactsManager
 
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
