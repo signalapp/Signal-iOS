@@ -265,4 +265,41 @@ public class SSKPreferences: NSObject {
     public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
     }
+
+    private static let hasGrdbDatabaseCorruptionKey = "hasGrdbDatabaseCorruption"
+    @objc
+    public static func hasGrdbDatabaseCorruption() -> Bool {
+        return true
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        guard let preference = appUserDefaults.object(forKey: hasGrdbDatabaseCorruptionKey) as? NSNumber else {
+            return false
+        }
+        return preference.boolValue
+    }
+
+    @objc
+    public static func setHasGrdbDatabaseCorruption(_ value: Bool) {
+        if value { Logger.warn("Flagging GRDB database as corrupted.") }
+
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.set(value, forKey: hasGrdbDatabaseCorruptionKey)
+        appUserDefaults.synchronize()
+    }
+
+    private static let hasGrdbEverRecoveredCorruptedDatabaseKey = "hasGrdbEverRecoveredCorruptedDatabase"
+    @objc
+    public static func hasGrdbEverRecoveredCorruptedDatabase() -> Bool {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        guard let preference = appUserDefaults.object(forKey: hasGrdbEverRecoveredCorruptedDatabaseKey) as? NSNumber else {
+            return false
+        }
+        return preference.boolValue
+    }
+
+    @objc
+    public static func setHasGrdbEverRecoveredCorruptedDatabase(_ value: Bool) {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.set(value, forKey: hasGrdbEverRecoveredCorruptedDatabaseKey)
+        appUserDefaults.synchronize()
+    }
 }

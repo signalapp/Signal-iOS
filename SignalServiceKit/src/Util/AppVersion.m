@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppVersion.h"
@@ -107,6 +107,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
     OWSLogInfo(@"currentAppVersion: %@ (%@)", self.currentAppVersion, longVersionString);
+    OWSLogInfo(@"hasGrdbEverRecoveredCorruptedDatabase: %@",
+        [SSKPreferences hasGrdbEverRecoveredCorruptedDatabase] ? @"YES" : @"NO");
 
     OWSLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
     OWSLogInfo(@"lastCompletedLaunchMainAppVersion: %@", self.lastCompletedLaunchMainAppVersion);

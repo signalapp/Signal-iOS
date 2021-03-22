@@ -11,12 +11,26 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // 256 bit key + 128 bit salt
     public static let kSQLCipherKeySpecLength: UInt = 48
 
-    static func databaseDirUrl(baseDir: URL) -> URL {
-        return baseDir.appendingPathComponent("grdb", isDirectory: true)
+    enum DirectoryMode {
+        case primary
+        case recovery
+        case backup
+
+        var folderName: String {
+            switch self {
+            case .primary: return "grdb"
+            case .recovery: return "grdb-recovery"
+            case .backup: return "grdb-backup"
+            }
+        }
     }
 
-    static func databaseFileUrl(baseDir: URL) -> URL {
-        let databaseDir = databaseDirUrl(baseDir: baseDir)
+    static func databaseDirUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        return baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
+    }
+
+    static func databaseFileUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
     }
@@ -234,6 +248,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         } catch {
             owsFailDebug("Could not clear keychain: \(error)")
         }
+    }
+
+    static func prepareDatabase(db: Database, keyspec: GRDBKeySpecSource, name: String? = nil) throws {
+        let prefix: String
+        if let name = name, !name.isEmpty {
+            prefix = name + "."
+        } else {
+            prefix = ""
+        }
+
+        let keyspec = try keyspec.fetchString()
+        try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
+        try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
     }
 }
 
@@ -511,10 +538,8 @@ private struct GRDBStorage {
                 return true
             }
         })
-        configuration.prepareDatabase = { (db: Database) in
-            let keyspec = try keyspec.fetchString()
-            try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
-            try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
+        configuration.prepareDatabase = { db in
+            try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true

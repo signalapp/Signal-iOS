@@ -644,7 +644,20 @@ public class SDSKeyValueStore: NSObject {
         }
         // TODO: We could use setArgumentsWithValidation for more safety.
         statement.unsafeSetArguments(statementArguments)
-        try statement.execute()
+
+        do {
+            try statement.execute()
+        } catch {
+            // If the attempt to write to GRDB flagged that the database was
+            // corrupt, in addition to crashing we flag this so that we can
+            // attempt to perform recovery.
+            if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+                SSKPreferences.setHasGrdbDatabaseCorruption(true)
+                owsFail("Error: \(error)")
+            } else {
+                throw error
+            }
+        }
     }
 
     private func allKeys(grdbTransaction: GRDBReadTransaction) -> [String] {

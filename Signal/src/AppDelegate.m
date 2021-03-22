@@ -189,6 +189,14 @@ void uncaughtExceptionHandler(NSException *exception)
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
+    } else if (StorageCoordinator.hasDatabaseCorruption) {
+        OWSLogInfo(@"Attempting to recover database corruption.");
+        NSError *error;
+        [StorageCoordinator attemptDatabaseRecoveryAndReturnError:&error];
+        if (error) {
+            OWSFailDebug(@"Failed to recovery corrupted database %@", error);
+            launchFailure = LaunchFailure_UnknownDatabaseVersion;
+        }
     }
     if (launchFailure != LaunchFailure_None) {
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");

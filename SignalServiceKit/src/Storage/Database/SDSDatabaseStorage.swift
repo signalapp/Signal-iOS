@@ -70,19 +70,22 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private class func baseDir() -> URL {
-        return URL(fileURLWithPath: CurrentAppContext().appDatabaseBaseDirectoryPath(),
-                   isDirectory: true)
+    @objc
+    public class var baseDir: URL {
+        return URL(
+            fileURLWithPath: CurrentAppContext().appDatabaseBaseDirectoryPath(),
+            isDirectory: true
+        )
     }
 
     @objc
     public static var grdbDatabaseDirUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseDirUrl(baseDir: baseDir())
+        return GRDBDatabaseStorageAdapter.databaseDirUrl(baseDir: baseDir)
     }
 
     @objc
     public static var grdbDatabaseFileUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
+        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
     }
 
     @objc
@@ -103,32 +106,36 @@ public class SDSDatabaseStorage: SDSTransactable {
         Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
         if didPerformIncrementalMigrations {
-            let benchSteps = BenchSteps()
-
-            // There seems to be a rare issue where at least one reader or writer
-            // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
-            // a schema migration and does not reflect the migrations.
-            grdbStorage.pool.releaseMemory()
-            weak var weakPool = grdbStorage.pool
-            weak var weakGrdbStorage = grdbStorage
-            owsAssertDebug(weakPool != nil)
-            owsAssertDebug(weakGrdbStorage != nil)
-            _grdbStorage = createGrdbStorage()
-
-            DispatchQueue.main.async {
-                // We want to make sure all db connections from the old adapter/pool are closed.
-                //
-                // We only reach this point by a predictable code path; the autoreleasepool
-                // should be drained by this point.
-                owsAssertDebug(weakPool == nil)
-                owsAssertDebug(weakGrdbStorage == nil)
-
-                benchSteps.step("New GRDB adapter.")
-
-                completion()
-            }
+            reopenGRDBStorage(completion: completion)
         } else {
             DispatchQueue.main.async(execute: completion)
+        }
+    }
+
+    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
+        let benchSteps = BenchSteps()
+
+        // There seems to be a rare issue where at least one reader or writer
+        // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
+        // a schema migration and does not reflect the migrations.
+        grdbStorage.pool.releaseMemory()
+        weak var weakPool = grdbStorage.pool
+        weak var weakGrdbStorage = grdbStorage
+        owsAssertDebug(weakPool != nil)
+        owsAssertDebug(weakGrdbStorage != nil)
+        _grdbStorage = createGrdbStorage()
+
+        DispatchQueue.main.async {
+            // We want to make sure all db connections from the old adapter/pool are closed.
+            //
+            // We only reach this point by a predictable code path; the autoreleasepool
+            // should be drained by this point.
+            owsAssertDebug(weakPool == nil)
+            owsAssertDebug(weakGrdbStorage == nil)
+
+            benchSteps.step("New GRDB adapter.")
+
+            completion()
         }
     }
 
@@ -140,16 +147,14 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
-        let grdbStorage = createGrdbStorage()
-        _grdbStorage = grdbStorage
+        reopenGRDBStorage {
+            _ = GRDBSchemaMigrator().runSchemaMigrations()
+            self.grdbStorage.forceUpdateSnapshot()
 
-        GRDBSchemaMigrator().runSchemaMigrations()
-        grdbStorage.forceUpdateSnapshot()
+            // We need to do this _before_ warmCaches().
+            NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
 
-        // We need to do this _before_ warmCaches().
-        NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
-
-        SSKEnvironment.shared.warmCaches()
+            SSKEnvironment.shared.warmCaches()
 
         if wasRegistered != TSAccountManager.shared.isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
@@ -158,19 +163,19 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
+            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir)
         }
     }
 
     @objc
     public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir())
+        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir)
     }
 
     @objc
     public func resetAllStorage() {
-        YDBStorage.deleteYDBStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir())
+        OWSStorage.resetAllStorage()
+        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
     }
 
     // MARK: - Observation
