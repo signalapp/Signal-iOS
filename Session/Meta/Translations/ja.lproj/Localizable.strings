@@ -78,7 +78,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "Sessionの新バージョンがあります！";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "アップデートする";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "更新する";
 
 /* Name of application */
 "APPLICATION_NAME" = "Session";
@@ -138,10 +138,10 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "添付ファイルが大きすぎます";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "添付ファイルが無効です。";
+"ATTACHMENT_ERROR_INVALID_DATA" = "添付ファイルが不正です。";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "添付ファイルのフォーマットが無効です。";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "添付ファイルのフォーマットが不正です。";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です";
@@ -177,7 +177,7 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "バックアップデータのエクスポートができませんでした。";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "無効なサービスレスポンス";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "不正なサービス応答";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "バックアップをクリーンアップ中";
@@ -456,7 +456,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "離脱してよろしいですか？";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "端末を追加します";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "新しい端末をリンクします";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@は端末の再設定・変更をした可能性があります。プライバシーを保証するためにこの相手に対する安全番号を確認してください。";
@@ -898,7 +898,7 @@
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "ネットワークへの要求が時間切れになりました";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "無効な応答がサービスから返ってきました";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "不正な応答がサービスから返ってきました";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "この端末はあなたの電話番号で登録されていません。Sessionを再インストールしてください。";
@@ -919,7 +919,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複したメッセージを受信しました。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "受取人のIDキーが無効です";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "受取人のIDキーが不正です";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "不正なメッセージを受信しました";
@@ -1048,7 +1048,7 @@
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
 
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "グループをアップデートしました";
+"GROUP_UPDATED" = "グループを更新しました";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "グループを離れました";
@@ -1159,16 +1159,16 @@
 "LEAVE_GROUP_ACTION" = "グループを離脱";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは無効です。リンクしたい端末のQRコードをスキャンしましたか？";
+"LINK_DEVICE_INVALID_CODE_BODY" = "このQRコードは不正です。リンクしたい端末のQRコードをスキャンしていることを確認してください。";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "端末の追加に失敗";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "端末のリンクに失敗";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "この端末は、あなたのグループと通話相手、会話、メッセージにアクセスできます。";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "この端末は、あなたのグループと通話相手、会話、メッセージにアクセスできるようになります。";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末を追加しますか？";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末をリンクしますか？";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "再試行";
@@ -1180,16 +1180,16 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "QRコードを読み取る";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "新しい端末を追加";
+"LINK_NEW_DEVICE_TITLE" = "新しい端末をリンク";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "追加される端末";
+"LINKED_DEVICES_TITLE" = "リンクされた端末";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "端末の追加に失敗";
+"LINKING_DEVICE_FAILED_TITLE" = "端末のリンクに失敗";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "メンバー";
@@ -1389,10 +1389,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "この機能を使うためには、Sessionに写真のアクセスを許可する必要があります。";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上の端末はリンクできません。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。デバイスを削除してください。";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。端末のリンクを解除してから再度試してください。";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
@@ -1539,7 +1539,7 @@
 "ONBOARDING_PROFILE_TITLE" = "プロフィールの設定";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約と個人情報保護";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約とプライバシーポリシー";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
@@ -1686,10 +1686,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "安全番号はSessionユーザーの組合せごとに異なります。%@が表示している安全番号があなたとの番号か確認してください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSessionを使っています。最新版にアップデートしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSessionを使っています。最新版に更新してください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSessionを使っています。最新版にアップデートするようお願いしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSessionを使っています。最新版に更新するよう相手先に頼んでください。";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "QRコードは安全番号ではありません。Sessionは最新バージョンですか？";
@@ -1851,7 +1851,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "認証の失敗";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "提出していただいた番号がこちらから送った番号とは異なります。確認をよろしくお願いします。";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "提出していただいた番号がこちらから送った番号とは異なります。番号をもう一度確認してください。";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "登録鍵の暗証番号が間違っています";
@@ -2034,7 +2034,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "検閲回避が登録番号のもとで有効になりました";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "検閲制限をマニュアルで無効にしました";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "検閲回避は手動で無効にされています";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "検閲回避はネットに接続されているときのみ有効となります";
@@ -2412,13 +2412,13 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "リンクがされていない場合、この端末はメッセージを送受信できません。";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」の追加を解除しますか？";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」のリンクを解除しますか？";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "端末の追加を解除できませんでした";
+"UNLINKING_FAILED_ALERT_TITLE" = "端末のリンクを解除できませんでした";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "無名のデバイス";
+"UNNAMED_DEVICE" = "無名の端末";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "登録解除に失敗しました";
@@ -2427,7 +2427,7 @@
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "このデバイスでは対応されていない機能です。";
+"UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "グループのメンバーは削除できません。本人が離脱するか，グループを新たに作成してください。";
@@ -2496,7 +2496,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "安全なビデオ電話にようこそ！";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Sessionは、まもなくiOS 10以上だけの対応になります。アップデートしてください。";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Sessionは、まもなくiOS 10以上だけの対応になります。「設定」アプリ >> 「一般」 >> 「ソフトウェア・アップデート」の手段で更新してください。";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOSを更新する";
@@ -2548,12 +2548,12 @@
 // MARK: - Session
 "continue_2" = "続行する";
 "copy" = "コピーする";
-"invalid_url" = "URL が無効です";
+"invalid_url" = "URL が不正です";
 "copied_to_clipboard" = "クリップボードにコピーされました";
-"device_linking_failed" = "デバイスをリンクできませんでした。";
+"device_linking_failed" = "端末をリンクできませんでした。";
 "next" = "次";
 "share" = "共有する";
-"invalid_session_id" = "Session ID が無効です";
+"invalid_session_id" = "Session ID が不正です";
 "cancel" = "取り消す";
 "your_session_id" = "あなたの Session ID";
 
@@ -2561,7 +2561,7 @@
 "vc_landing_register_button_title" = "Session ID を作成する";
 "vc_landing_restore_button_title" = "Session を続ける";
 "vc_landing_link_button_title" = "既存のアカウントにリンクする";
-"vc_landing_device_unlinked_modal_title" = "デバイスは正常にリンク解除されました";
+"vc_landing_device_unlinked_modal_title" = "端末は正常にリンク解除されました";
 
 "view_fake_chat_bubble_1" = "Session とは？";
 "view_fake_chat_bubble_2" = "分散型の暗号化されたメッセージングアプリです";
@@ -2577,20 +2577,20 @@
 "vc_restore_explanation" = "アカウントを復元するためにサインアップしたときに与えられたリカバリーフレーズを入力します。";
 "vc_restore_seed_text_field_hint" = "リカバリーフレーズを入力してください";
 
-"vc_link_device_title" = "デバイスをリンクする";
+"vc_link_device_title" = "端末をリンクする";
 "vc_link_device_enter_session_id_tab_title" = "Session ID を入力してください";
 "vc_link_device_scan_qr_code_tab_title" = "QR コードをスキャンする";
-"vc_link_device_scan_qr_code_explanation" = "他のデバイスで [設定] > [デバイス] > [デバイスのリンク] に移動し、表示される QR コードをスキャンして、リンクプロセスを開始します。";
+"vc_link_device_scan_qr_code_explanation" = "他の端末で「設定」 > 「端末」 > 「端末をリンクする」に移動し、表示される QR コードをスキャンして、リンクプロセスを開始します。";
 
-"vc_enter_session_id_title" = "デバイスをリンクする";
-"vc_enter_session_id_explanation" = "[設定] > [デバイス] > [他のデバイスのデバイスをリンク] に移動し、Session ID を入力して、リンクプロセスを開始します。";
+"vc_enter_session_id_title" = "端末をリンクする";
+"vc_enter_session_id_explanation" = "「設定」 > 「端末」 > 「端末をリンクする」に移動し、Session ID を入力して、リンクプロセスを開始します。";
 "vc_enter_session_id_text_field_hint" = "Session ID を入力してください";
 
 "vc_display_name_title_2" = "表示名を選択してください";
 "vc_display_name_explanation" = "これは、Session を使用するときの名前になります。あなたの本当の名前、エイリアス、またはあなたが好きな他のものに設定することができます。";
 "vc_display_name_text_field_hint" = "表示名を入力してください";
 "vc_display_name_display_name_missing_error" = "表示名を選択してください";
-"vc_display_name_display_name_invalid_error" = "AZ、AZ、0-9、_ の文字のみで構成される表示名を選択してください";
+"vc_display_name_display_name_invalid_error" = "a-z、A-Z、0-9、_ の文字のみで構成される表示名を選択してください";
 "vc_display_name_display_name_too_long_error" = "短い表示名を選択してください";
 
 "vc_pn_mode_recommended_option_tag" = "オススメ";
@@ -2605,7 +2605,7 @@
 
 "vc_seed_title" = "あなたのリカバリーフレーズ";
 "vc_seed_title_2" = "リカバリーフレーズに合致する";
-"vc_seed_explanation" = "リカバリーフレーズは、Session ID のマスターキーです。デバイスにアクセスできなくなった場合、これを使用して Session ID を復元できます。リカバリーフレーズを安全な場所に保管し、誰にも教えないでください。";
+"vc_seed_explanation" = "リカバリーフレーズは、Session ID のマスターキーです。端末にアクセスできなくなった場合、これを使用して Session ID を復元できます。リカバリーフレーズを安全な場所に保管し、誰にも教えないでください。";
 "vc_seed_reveal_button_title" = "明らかにする";
 
 "view_seed_reminder_subtitle_1" = "リカバリーフレーズを保存してアカウントを保護する";
@@ -2626,7 +2626,7 @@
 "vc_create_private_chat_scan_qr_code_explanation" = "ユーザーの QR コードをスキャンして、Session を開始します。QR コードは、アカウント設定の QR コードアイコンをタップすると見つかります。";
 
 "vc_enter_public_key_text_field_hint" = "受信者の Session ID を入力してください";
-"vc_enter_public_key_explanation" = "ユーザーは、アカウント設定に移動して [Session ID を共有] をタップするか、QR コードを共有することで、Session ID を共有できます。";
+"vc_enter_public_key_explanation" = "ユーザーは、アカウント設定に移動して「Session ID を共有」をタップするか、QR コードを共有することで、Session ID を共有できます。";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session で QR コードをスキャンするにはカメラへのアクセスが必要です";
 "vc_scan_qr_code_grant_camera_access_button_title" = "カメラへのアクセスを許可する";
@@ -2639,26 +2639,26 @@
 "vc_create_closed_group_group_name_missing_error" = "グループ名を入力してください";
 "vc_create_closed_group_group_name_too_long_error" = "短いグループ名を入力してください";
 "vc_create_closed_group_not_enough_group_members_error" = "グループメンバーを少なくとも 2 人選択してください";
-"vc_create_closed_group_too_many_group_members_error" = "閉じたグループは 100 人を超えるメンバーを抱えることはできません";
-"vc_create_closed_group_invalid_session_id_error" = "グループのメンバーの 1 人の Session ID が無効です";
+"vc_create_closed_group_too_many_group_members_error" = "非公開グループは 100 人を超えるメンバーを抱えることはできません";
+"vc_create_closed_group_invalid_session_id_error" = "グループのメンバーの 1 人の Session ID が不正です";
 
-"vc_join_public_chat_title" = "オープングループに参加する";
+"vc_join_public_chat_title" = "公開グループに参加する";
 "vc_join_public_chat_error" = "グループに参加できませんでした";
 "vc_join_public_chat_enter_group_url_tab_title" = "グループの URL を開く";
 "vc_join_public_chat_scan_qr_code_tab_title" = "QR コードをスキャンする";
-"vc_join_public_chat_scan_qr_code_explanation" = "参加したいオープングループの QR コードをスキャンする";
+"vc_join_public_chat_scan_qr_code_explanation" = "参加したい公開グループの QR コードをスキャンする";
 
-"vc_enter_chat_url_text_field_hint" = "オープングループの URL を入力する";
+"vc_enter_chat_url_text_field_hint" = "公開グループの URL を入力する";
 
 "vc_settings_title" = "設定";
 "vc_settings_display_name_text_field_hint" = "表示名を入力してください";
 "vc_settings_display_name_missing_error" = "表示名を選択してください";
-"vc_settings_invalid_display_name_error" = "AZ、AZ、0-9、_ の文字のみで構成される表示名を選択してください";
+"vc_settings_invalid_display_name_error" = "a-z、A-Z、0-9、_ の文字のみで構成される表示名を選択してください";
 "vc_settings_display_name_too_long_error" = "短い表示名を選択してください";
 "vc_settings_privacy_button_title" = "プライバシー";
 "vc_settings_notifications_button_title" = "お知らせ";
 "vc_settings_chats_button_title" = "チャット";
-"vc_settings_devices_button_title" = "デバイス";
+"vc_settings_devices_button_title" = "端末";
 "vc_settings_recovery_phrase_button_title" = "リカバリーフレーズ";
 "vc_settings_clear_all_data_button_title" = "データを消去する";
 
@@ -2670,37 +2670,37 @@
 
 "vc_chat_settings_title" = "チャット";
 
-"vc_linked_devices_title" = "デバイス";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "デバイス制限に達しました";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "現在、複数のデバイスをリンクすることはできません。";
-"vc_linked_devices_unlinking_failed_message" = "デバイスのリンクを解除できませんでした。";
-"vc_linked_devices_unlinking_successful_message" = "デバイスは正常にリンク解除されました";
-"vc_linked_devices_linking_failed_message" = "デバイスをリンクできませんでした。";
-"vc_linked_devices_empty_state_message" = "まだデバイスをリンクしていません";
-"vc_linked_devices_empty_state_button_title" = "デバイスをリンクする（ベータ）";
+"vc_linked_devices_title" = "端末";
+"vc_linked_devices_multi_device_limit_reached_modal_title" = "端末リンクの制限に達しました";
+"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "現在、複数の端末をリンクすることはできません。";
+"vc_linked_devices_unlinking_failed_message" = "端末のリンクを解除できませんでした。";
+"vc_linked_devices_unlinking_successful_message" = "端末は正常にリンク解除されました";
+"vc_linked_devices_linking_failed_message" = "端末をリンクできませんでした。";
+"vc_linked_devices_empty_state_message" = "まだ端末をリンクしていません";
+"vc_linked_devices_empty_state_button_title" = "端末をリンクする（ベータ）";
 
 "preferences_notifications_strategy_category_title" = "通知戦略";
 
 "modal_link_device_slave_mode_title_1" = "承認待ち";
-"modal_link_device_slave_mode_title_2" = "承認されたデバイスリンク";
-"modal_link_device_slave_mode_explanation_1" = "以下の単語が、他のデバイスに表示されている単語と一致することを確認してください。";
-"modal_link_device_slave_mode_explanation_2" = "デバイスが正常にリンクされました";
+"modal_link_device_slave_mode_title_2" = "承認された端末リンク";
+"modal_link_device_slave_mode_explanation_1" = "以下の単語が、他の端末に表示されている単語と一致することを確認してください。";
+"modal_link_device_slave_mode_explanation_2" = "端末が正常にリンクされました";
 
-"modal_link_device_master_mode_title_1" = "デバイス待ち";
+"modal_link_device_master_mode_title_1" = "端末待ち";
 "modal_link_device_master_mode_title_2" = "リンクリクエストを受け取りました";
-"modal_link_device_master_mode_title_3" = "デバイスリンクの認証";
-"modal_link_device_master_mode_explanation_1" = "他のデバイスでセッションをダウンロードし、ランディング画面の下部にある [既存のアカウントにリンク] をタップします。他のデバイスに既存のアカウントがある場合は、最初にそのアカウントを削除する必要があります。";
-"modal_link_device_master_mode_explanation_2" = "以下の単語が、他のデバイスに表示されている単語と一致することを確認してください。";
-"modal_link_device_master_mode_explanation_3" = "デバイスリンクが作成されるまでお待ちください。これには 1 分ほどかかる場合があります。";
+"modal_link_device_master_mode_title_3" = "端末リンクの認証";
+"modal_link_device_master_mode_explanation_1" = "他の端末でSessionをダウンロードし、ランディング画面の下部にある「既存のアカウントにリンクする」をタップします。他の端末に既存のアカウントがある場合は、最初にそのアカウントを削除する必要があります。";
+"modal_link_device_master_mode_explanation_2" = "以下の単語が、他の端末に表示されている単語と一致することを確認してください。";
+"modal_link_device_master_mode_explanation_3" = "端末リンクが作成されるまでお待ちください。これには 1 分ほどかかる場合があります。";
 "modal_link_device_master_mode_authorize_button_title" = "承認する";
 
 "vc_device_list_bottom_sheet_change_name_button_title" = "名前を変更する";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "デバイスのリンクを解除する";
+"vc_device_list_bottom_sheet_unlink_device_button_title" = "端末のリンクを解除する";
 
 "modal_edit_device_name_text_field_hint" = "名前を入力する";
 
 "modal_seed_title" = "あなたのリカバリーフレーズ";
-"modal_seed_explanation" = "これはあなたのリカバリーフレーズです。これにより、Session ID を新しいデバイスに復元または移行できます。";
+"modal_seed_explanation" = "これはあなたのリカバリーフレーズです。これにより、Session ID を新しい端末に復元または移行できます。";
 
 "modal_clear_all_data_title" = "すべてのデータを消去する";
 "modal_clear_all_data_explanation" = "これにより、メッセージ、Session、連絡先が完全に削除されます。";
@@ -2718,5 +2718,5 @@
 "session_reset_banner_restore_button_title" = "戻す";
 
 "vc_contact_selection_contacts_title" = "連絡先";
-"vc_contact_selection_closed_groups_title" = "閉じたグループ";
-"vc_contact_selection_open_groups_title" = "オープングループ";
+"vc_contact_selection_closed_groups_title" = "非公開グループ";
+"vc_contact_selection_open_groups_title" = "公開グループ";
