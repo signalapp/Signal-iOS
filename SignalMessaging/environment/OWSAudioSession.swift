@@ -49,16 +49,26 @@ public class AudioActivity: NSObject {
 @objc
 public class OWSAudioSession: NSObject {
 
-    @objc
-    public func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
-    }
-
     private let avAudioSession = AVAudioSession.sharedInstance()
 
     private let device = UIDevice.current
 
-    // MARK: 
+    @objc
+    public required override init() {
+        super.init()
+
+        if CurrentAppContext().isMainApp {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                self.setup()
+            }
+        }
+    }
+
+    private func setup() {
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
+    }
+
+    // MARK: -
 
     public private(set) var currentActivities: [Weak<AudioActivity>] = []
     var aggregateBehaviors: Set<OWSAudioBehavior> {

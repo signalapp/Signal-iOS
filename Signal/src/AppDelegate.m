@@ -214,12 +214,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self setupNSEInteroperation];
 
-    // Prevent the device from sleeping during database view async registration
-    // (e.g. long database upgrades).
-    //
-    // This block will be cleared in storageIsReady.
-    [self.deviceSleepManager addBlockWithBlockObject:self];
-
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
@@ -1143,11 +1137,7 @@ void uncaughtExceptionHandler(NSException *exception)
         [OWSSyncPushTokensJob run];
     }
 
-    [DeviceSleepManager.shared removeBlockWithBlockObject:self];
-
     [AppVersion.shared mainAppLaunchDidComplete];
-
-    [Environment.shared.audioSession setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.databaseStorage
@@ -1177,10 +1167,6 @@ void uncaughtExceptionHandler(NSException *exception)
     [self.profileManager fetchLocalUsersProfile];
 
     [SignalApp.shared ensureRootViewController:launchStartedAt];
-
-    [self.messageManager startObserving];
-
-    [ViewOnceMessages appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange

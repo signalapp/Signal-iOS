@@ -1040,8 +1040,12 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
-        dispatch_once(
-            &onceToken, ^{ AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self applyDesiredSocketState]; }); });
+        dispatch_once(&onceToken, ^{
+            AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                    ^{ [self applyDesiredSocketState]; });
+            });
+        });
         return;
     }
 

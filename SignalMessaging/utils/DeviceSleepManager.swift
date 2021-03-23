@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -45,6 +45,16 @@ public class DeviceSleepManager: NSObject {
                                                selector: #selector(didEnterBackground),
                                                name: .OWSApplicationDidEnterBackground,
                                                object: nil)
+
+        if CurrentAppContext().isMainApp {
+            // Prevent the device from sleeping during app startup,
+            // e.g. during long-running database migrations.
+            let launchBlockObject = self
+            addBlock(blockObject: launchBlockObject)
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                self.removeBlock(blockObject: launchBlockObject)
+            }
+        }
     }
 
     deinit {

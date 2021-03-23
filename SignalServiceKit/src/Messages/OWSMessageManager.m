@@ -75,6 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    if (CurrentAppContext().isMainApp) {
+        AppReadinessRunNowOrWhenAppWillBecomeReady(^{ [self startObserving]; });
+    }
+
     return self;
 }
 
