@@ -560,7 +560,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 modalActivityIndicator.dismiss {}
             }.catch { error in
                 AssertIsOnMainThread()
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessMCNetworkFailure(error)
 
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
 

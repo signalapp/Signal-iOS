@@ -380,7 +380,7 @@ class MobileCoinAPI {
         }
 
         static var signalTestNet: OWSAttestationConfig {
-            let mrEnclaveConsensus = Data.data(fromHex: "cad79d32f4339f650671ce74d072ae9c1c01d84edd059bd4314932a7a8b29f3f")!
+            let mrEnclaveConsensus = Data.data(fromHex: "9268c3220a5260e51e4b586f00e4677fed2b80380f1eeaf775af60f8e880fde8")!
             let mrEnclaveFogView = Data.data(fromHex: "4e598799faa4bb08a3bd55c0bcda7e1d22e41151d0c591f6c2a48b3562b0881e")!
             let mrEnclaveFogIngest = Data.data(fromHex: "185875464ccd67a879d58181055383505a719b364b12d56d9bef90a40bed07ca")!
             let mrEnclaveFogLedger = Data.data(fromHex: "7330c9987f21b91313b39dcdeaa7da8da5ca101c929f5740c207742c762e6dcd")!
