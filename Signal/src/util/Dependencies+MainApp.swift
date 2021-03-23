@@ -8,7 +8,7 @@ import Foundation
 
 @objc
 public extension NSObject {
-    var backup: OWSBackup {
+    final var backup: OWSBackup {
         AppEnvironment.shared.backupRef
     }
 
@@ -16,7 +16,7 @@ public extension NSObject {
         AppEnvironment.shared.backupRef
     }
 
-    var accountManager: AccountManager {
+    final var accountManager: AccountManager {
         AppEnvironment.shared.accountManagerRef
     }
 
@@ -24,7 +24,7 @@ public extension NSObject {
         AppEnvironment.shared.accountManagerRef
     }
 
-    var individualCallUIAdapter: CallUIAdapter {
+    final var individualCallUIAdapter: CallUIAdapter {
         AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
     }
 
@@ -32,7 +32,7 @@ public extension NSObject {
         AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
     }
 
-    var callService: CallService {
+    final var callService: CallService {
         AppEnvironment.shared.callServiceRef
     }
 
@@ -40,7 +40,7 @@ public extension NSObject {
         AppEnvironment.shared.callServiceRef
     }
 
-    var notificationPresenter: NotificationPresenter {
+    final var notificationPresenter: NotificationPresenter {
         AppEnvironment.shared.notificationPresenterRef
     }
 
@@ -48,7 +48,7 @@ public extension NSObject {
         AppEnvironment.shared.notificationPresenterRef
     }
 
-    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+    final var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
         AppEnvironment.shared.outboundIndividualCallInitiatorRef
     }
 
@@ -56,7 +56,7 @@ public extension NSObject {
         AppEnvironment.shared.outboundIndividualCallInitiatorRef
     }
 
-    var pushRegistrationManager: PushRegistrationManager {
+    final var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
 
@@ -64,7 +64,7 @@ public extension NSObject {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
 
-    var sessionResetJobQueue: SessionResetJobQueue {
+    final var sessionResetJobQueue: SessionResetJobQueue {
         AppEnvironment.shared.sessionResetJobQueueRef
     }
 
@@ -72,7 +72,7 @@ public extension NSObject {
         AppEnvironment.shared.sessionResetJobQueueRef
     }
 
-    var userNotificationActionHandler: UserNotificationActionHandler {
+    final var userNotificationActionHandler: UserNotificationActionHandler {
         AppEnvironment.shared.userNotificationActionHandlerRef
     }
 
@@ -80,7 +80,7 @@ public extension NSObject {
         AppEnvironment.shared.userNotificationActionHandlerRef
     }
 
-    var cvAudioPlayer: CVAudioPlayer {
+    final var cvAudioPlayer: CVAudioPlayer {
         AppEnvironment.shared.cvAudioPlayerRef
     }
 
@@ -88,7 +88,7 @@ public extension NSObject {
         AppEnvironment.shared.cvAudioPlayerRef
     }
 
-    var deviceSleepManager: DeviceSleepManager {
+    final var deviceSleepManager: DeviceSleepManager {
         .shared
     }
 
@@ -96,7 +96,7 @@ public extension NSObject {
         .shared
     }
 
-    var signalApp: SignalApp {
+    final var signalApp: SignalApp {
         .shared()
     }
 
@@ -104,7 +104,7 @@ public extension NSObject {
         .shared()
     }
 
-    var backupLazyRestore: BackupLazyRestore {
+    final var backupLazyRestore: BackupLazyRestore {
         AppEnvironment.shared.backupLazyRestoreRef
     }
 
@@ -226,11 +226,11 @@ public extension Dependencies {
 @objc
 extension NSObject {
 
-    var giphyAPI: GiphyAPI { .shared }
+    final var giphyAPI: GiphyAPI { .shared }
 
     static var giphyAPI: GiphyAPI { .shared }
 
-    var deviceTransferService: DeviceTransferService { .shared }
+    final var deviceTransferService: DeviceTransferService { .shared }
 
     static var deviceTransferService: DeviceTransferService { .shared }
 }

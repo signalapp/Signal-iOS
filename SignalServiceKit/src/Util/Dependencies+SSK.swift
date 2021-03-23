@@ -14,7 +14,7 @@ public protocol Dependencies {}
 
 @objc
 public extension NSObject {
-    var attachmentDownloads: OWSAttachmentDownloads {
+    final var attachmentDownloads: OWSAttachmentDownloads {
         SSKEnvironment.shared.attachmentDownloadsRef
     }
 
@@ -22,7 +22,7 @@ public extension NSObject {
         SSKEnvironment.shared.attachmentDownloadsRef
     }
 
-    var blockingManager: OWSBlockingManager {
+    final var blockingManager: OWSBlockingManager {
         .shared
     }
 
@@ -30,7 +30,7 @@ public extension NSObject {
         .shared
     }
 
-    var bulkProfileFetch: BulkProfileFetch {
+    final var bulkProfileFetch: BulkProfileFetch {
         SSKEnvironment.shared.bulkProfileFetchRef
     }
 
@@ -38,7 +38,7 @@ public extension NSObject {
         SSKEnvironment.shared.bulkProfileFetchRef
     }
 
-    var databaseStorage: SDSDatabaseStorage {
+    final var databaseStorage: SDSDatabaseStorage {
         SDSDatabaseStorage.shared
     }
 
@@ -46,7 +46,7 @@ public extension NSObject {
         SDSDatabaseStorage.shared
     }
 
-    var disappearingMessagesJob: OWSDisappearingMessagesJob {
+    final var disappearingMessagesJob: OWSDisappearingMessagesJob {
         SSKEnvironment.shared.disappearingMessagesJobRef
     }
 
@@ -54,7 +54,7 @@ public extension NSObject {
         SSKEnvironment.shared.disappearingMessagesJobRef
     }
 
-    var identityManager: OWSIdentityManager {
+    final var identityManager: OWSIdentityManager {
         SSKEnvironment.shared.identityManagerRef
     }
 
@@ -62,7 +62,7 @@ public extension NSObject {
         SSKEnvironment.shared.identityManagerRef
     }
 
-    var groupV2UpdatesObjc: GroupV2Updates {
+    final var groupV2UpdatesObjc: GroupV2Updates {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 
@@ -70,7 +70,7 @@ public extension NSObject {
         SSKEnvironment.shared.groupV2UpdatesRef
     }
 
-    var linkPreviewManager: OWSLinkPreviewManager {
+    final var linkPreviewManager: OWSLinkPreviewManager {
         SSKEnvironment.shared.linkPreviewManagerRef
     }
 
@@ -78,7 +78,7 @@ public extension NSObject {
         SSKEnvironment.shared.linkPreviewManagerRef
     }
 
-    var messageFetcherJob: MessageFetcherJob {
+    final var messageFetcherJob: MessageFetcherJob {
         SSKEnvironment.shared.messageFetcherJobRef
     }
 
@@ -86,7 +86,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageFetcherJobRef
     }
 
-    var messageManager: OWSMessageManager {
+    final var messageManager: OWSMessageManager {
         SSKEnvironment.shared.messageManagerRef
     }
 
@@ -94,7 +94,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageManagerRef
     }
 
-    var messageSender: MessageSender {
+    final var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
     }
 
@@ -102,7 +102,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageSenderRef
     }
 
-    var messageSenderJobQueue: MessageSenderJobQueue {
+    final var messageSenderJobQueue: MessageSenderJobQueue {
         SSKEnvironment.shared.messageSenderJobQueueRef
     }
 
@@ -110,7 +110,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageSenderJobQueueRef
     }
 
-    var messagePipelineSupervisor: MessagePipelineSupervisor {
+    final var messagePipelineSupervisor: MessagePipelineSupervisor {
         SSKEnvironment.shared.messagePipelineSupervisorRef
     }
 
@@ -118,7 +118,7 @@ public extension NSObject {
         SSKEnvironment.shared.messagePipelineSupervisorRef
     }
 
-    var networkManager: TSNetworkManager {
+    final var networkManager: TSNetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 
@@ -127,7 +127,7 @@ public extension NSObject {
     }
 
     // This singleton is configured after the environments are created.
-    var notificationsManager: NotificationsProtocol? {
+    final var notificationsManager: NotificationsProtocol? {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
@@ -136,7 +136,7 @@ public extension NSObject {
         SSKEnvironment.shared.notificationsManagerRef
     }
 
-    var ows2FAManager: OWS2FAManager {
+    final var ows2FAManager: OWS2FAManager {
         .shared
     }
 
@@ -144,7 +144,7 @@ public extension NSObject {
         .shared
     }
 
-    var readReceiptManager: OWSReadReceiptManager {
+    final var readReceiptManager: OWSReadReceiptManager {
         .shared
     }
 
@@ -152,7 +152,7 @@ public extension NSObject {
         .shared
     }
 
-    var primaryStorage: OWSPrimaryStorage? {
+    final var primaryStorage: OWSPrimaryStorage? {
         SSKEnvironment.shared.primaryStorageRef
     }
 
@@ -160,7 +160,7 @@ public extension NSObject {
         SSKEnvironment.shared.primaryStorageRef
     }
 
-    var profileManager: ProfileManagerProtocol {
+    final var profileManager: ProfileManagerProtocol {
         SSKEnvironment.shared.profileManagerRef
     }
 
@@ -168,7 +168,7 @@ public extension NSObject {
         SSKEnvironment.shared.profileManagerRef
     }
 
-    var reachabilityManager: SSKReachabilityManager {
+    final var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
@@ -176,7 +176,7 @@ public extension NSObject {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    var socketManager: TSSocketManager {
+    final var socketManager: TSSocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 
@@ -184,7 +184,7 @@ public extension NSObject {
         SSKEnvironment.shared.socketManagerRef
     }
 
-    var stickerManager: StickerManager {
+    final var stickerManager: StickerManager {
         SSKEnvironment.shared.stickerManagerRef
     }
 
@@ -192,7 +192,7 @@ public extension NSObject {
         SSKEnvironment.shared.stickerManagerRef
     }
 
-    var storageCoordinator: StorageCoordinator {
+    final var storageCoordinator: StorageCoordinator {
         SSKEnvironment.shared.storageCoordinatorRef
     }
 
@@ -200,7 +200,7 @@ public extension NSObject {
         SSKEnvironment.shared.storageCoordinatorRef
     }
 
-    var syncManager: SyncManagerProtocol {
+    final var syncManager: SyncManagerProtocol {
         SSKEnvironment.shared.syncManagerRef
     }
 
@@ -208,7 +208,7 @@ public extension NSObject {
         SSKEnvironment.shared.syncManagerRef
     }
 
-    var tsAccountManager: TSAccountManager {
+    final var tsAccountManager: TSAccountManager {
         .shared
     }
 
@@ -216,7 +216,7 @@ public extension NSObject {
         .shared
     }
 
-    var typingIndicatorsImpl: TypingIndicators {
+    final var typingIndicatorsImpl: TypingIndicators {
         SSKEnvironment.shared.typingIndicatorsRef
     }
 
@@ -224,7 +224,7 @@ public extension NSObject {
         SSKEnvironment.shared.typingIndicatorsRef
     }
 
-    var udManager: OWSUDManager {
+    final var udManager: OWSUDManager {
         SSKEnvironment.shared.udManagerRef
     }
 
@@ -232,7 +232,7 @@ public extension NSObject {
         SSKEnvironment.shared.udManagerRef
     }
 
-    var contactsManager: ContactsManagerProtocol {
+    final var contactsManager: ContactsManagerProtocol {
         SSKEnvironment.shared.contactsManagerRef
     }
 
@@ -240,7 +240,7 @@ public extension NSObject {
         SSKEnvironment.shared.contactsManagerRef
     }
 
-    var storageServiceManager: StorageServiceManagerProtocol {
+    final var storageServiceManager: StorageServiceManagerProtocol {
         SSKEnvironment.shared.storageServiceManagerRef
     }
 
@@ -248,7 +248,7 @@ public extension NSObject {
         SSKEnvironment.shared.storageServiceManagerRef
     }
 
-    var modelReadCaches: ModelReadCaches {
+    final var modelReadCaches: ModelReadCaches {
         SSKEnvironment.shared.modelReadCachesRef
     }
 
@@ -256,7 +256,7 @@ public extension NSObject {
         SSKEnvironment.shared.modelReadCachesRef
     }
 
-    var messageProcessor: MessageProcessor {
+    final var messageProcessor: MessageProcessor {
         SSKEnvironment.shared.messageProcessorRef
     }
 
@@ -264,7 +264,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageProcessorRef
     }
 
-    var remoteConfigManager: RemoteConfigManager {
+    final var remoteConfigManager: RemoteConfigManager {
         SSKEnvironment.shared.remoteConfigManagerRef
     }
 
@@ -272,7 +272,7 @@ public extension NSObject {
         SSKEnvironment.shared.remoteConfigManagerRef
     }
 
-    var groupsV2: GroupsV2 {
+    final var groupsV2: GroupsV2 {
         SSKEnvironment.shared.groupsV2Ref
     }
 
@@ -280,7 +280,7 @@ public extension NSObject {
         SSKEnvironment.shared.groupsV2Ref
     }
 
-    var signedPreKeyStore: SSKSignedPreKeyStore {
+    final var signedPreKeyStore: SSKSignedPreKeyStore {
         SSKEnvironment.shared.signedPreKeyStoreRef
     }
 
@@ -288,7 +288,7 @@ public extension NSObject {
         SSKEnvironment.shared.signedPreKeyStoreRef
     }
 
-    var preKeyStore: SSKPreKeyStore {
+    final var preKeyStore: SSKPreKeyStore {
         SSKEnvironment.shared.preKeyStoreRef
     }
 
@@ -296,7 +296,7 @@ public extension NSObject {
         SSKEnvironment.shared.preKeyStoreRef
     }
 
-    var sessionStore: SSKSessionStore {
+    final var sessionStore: SSKSessionStore {
         SSKEnvironment.shared.sessionStoreRef
     }
 
@@ -304,7 +304,7 @@ public extension NSObject {
         SSKEnvironment.shared.sessionStoreRef
     }
 
-    var identityKeyStore: OWSIdentityManager {
+    final var identityKeyStore: OWSIdentityManager {
         return SSKEnvironment.shared.identityManagerRef
     }
 
@@ -312,7 +312,7 @@ public extension NSObject {
         SSKEnvironment.shared.identityManagerRef
     }
 
-    var appExpiry: AppExpiry {
+    final var appExpiry: AppExpiry {
         SSKEnvironment.shared.appExpiryRef
     }
 
@@ -320,7 +320,7 @@ public extension NSObject {
         SSKEnvironment.shared.appExpiryRef
     }
 
-    var signalService: OWSSignalService {
+    final var signalService: OWSSignalService {
         .shared()
     }
 
@@ -328,7 +328,7 @@ public extension NSObject {
         .shared()
     }
 
-    var accountServiceClient: AccountServiceClient {
+    final var accountServiceClient: AccountServiceClient {
         SSKEnvironment.shared.accountServiceClientRef
     }
 
@@ -336,7 +336,7 @@ public extension NSObject {
         SSKEnvironment.shared.accountServiceClientRef
     }
 
-    var groupsV2MessageProcessor: GroupsV2MessageProcessor {
+    final var groupsV2MessageProcessor: GroupsV2MessageProcessor {
         SSKEnvironment.shared.groupsV2MessageProcessorRef
     }
 
@@ -344,7 +344,7 @@ public extension NSObject {
         SSKEnvironment.shared.groupsV2MessageProcessorRef
     }
 
-    var versionedProfiles: VersionedProfiles {
+    final var versionedProfiles: VersionedProfiles {
         SSKEnvironment.shared.versionedProfilesRef
     }
 
@@ -352,7 +352,7 @@ public extension NSObject {
         SSKEnvironment.shared.versionedProfilesRef
     }
 
-    var grdbStorageAdapter: GRDBDatabaseStorageAdapter {
+    final var grdbStorageAdapter: GRDBDatabaseStorageAdapter {
         databaseStorage.grdbStorage
     }
 
@@ -360,7 +360,7 @@ public extension NSObject {
         databaseStorage.grdbStorage
     }
 
-    var signalServiceAddressCache: SignalServiceAddressCache {
+    final var signalServiceAddressCache: SignalServiceAddressCache {
         SSKEnvironment.shared.signalServiceAddressCacheRef
     }
 
@@ -368,7 +368,7 @@ public extension NSObject {
         SSKEnvironment.shared.signalServiceAddressCacheRef
     }
 
-    var messageDecrypter: OWSMessageDecrypter {
+    final var messageDecrypter: OWSMessageDecrypter {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
@@ -376,7 +376,7 @@ public extension NSObject {
         SSKEnvironment.shared.messageDecrypterRef
     }
 
-    var deviceManager: OWSDeviceManager {
+    final var deviceManager: OWSDeviceManager {
         .shared()
     }
 
@@ -384,7 +384,7 @@ public extension NSObject {
         .shared()
     }
 
-    var bulkUUIDLookup: BulkUUIDLookup {
+    final var bulkUUIDLookup: BulkUUIDLookup {
         SSKEnvironment.shared.bulkUUIDLookupRef
     }
 
@@ -392,7 +392,7 @@ public extension NSObject {
         SSKEnvironment.shared.bulkUUIDLookupRef
     }
 
-    var outgoingReceiptManager: OWSOutgoingReceiptManager {
+    final var outgoingReceiptManager: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
 
@@ -400,7 +400,7 @@ public extension NSObject {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
 
-    var earlyMessageManager: EarlyMessageManager {
+    final var earlyMessageManager: EarlyMessageManager {
         SSKEnvironment.shared.earlyMessageManagerRef
     }
 
@@ -409,7 +409,7 @@ public extension NSObject {
     }
 
     // This singleton is configured after the environments are created.
-    var callMessageHandler: OWSCallMessageHandler? {
+    final var callMessageHandler: OWSCallMessageHandler? {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
@@ -418,7 +418,7 @@ public extension NSObject {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
-    var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
+    final var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
         SSKEnvironment.shared.pendingReadReceiptRecorderRef
     }
 
@@ -426,7 +426,7 @@ public extension NSObject {
         SSKEnvironment.shared.pendingReadReceiptRecorderRef
     }
 
-    var outageDetection: OutageDetection {
+    final var outageDetection: OutageDetection {
         .shared
     }
 
@@ -434,7 +434,7 @@ public extension NSObject {
         .shared
     }
 
-    var notificationPresenter: NotificationsProtocol? {
+    final var notificationPresenter: NotificationsProtocol? {
         SSKEnvironment.shared.notificationsManager
     }
 
@@ -880,7 +880,7 @@ public extension Dependencies {
 
 public extension NSObject {
 
-    var groupsV2Swift: GroupsV2Swift {
+    final var groupsV2Swift: GroupsV2Swift {
         SSKEnvironment.shared.groupsV2Ref as! GroupsV2Swift
     }
 
@@ -888,7 +888,7 @@ public extension NSObject {
         SSKEnvironment.shared.groupsV2Ref as! GroupsV2Swift
     }
 
-    var groupV2Updates: GroupV2UpdatesSwift {
+    final var groupV2Updates: GroupV2UpdatesSwift {
         SSKEnvironment.shared.groupV2UpdatesRef as! GroupV2UpdatesSwift
     }
 
@@ -896,7 +896,7 @@ public extension NSObject {
         SSKEnvironment.shared.groupV2UpdatesRef as! GroupV2UpdatesSwift
     }
 
-    var serviceClient: SignalServiceClient {
+    final var serviceClient: SignalServiceClient {
         SignalServiceRestClient.shared
     }
 

@@ -8,7 +8,7 @@ import Foundation
 
 @objc
 public extension NSObject {
-    var audioSession: OWSAudioSession {
+    final var audioSession: OWSAudioSession {
         Environment.shared.audioSessionRef
     }
 
@@ -16,7 +16,7 @@ public extension NSObject {
         Environment.shared.audioSessionRef
     }
 
-    var contactsViewHelper: ContactsViewHelper {
+    final var contactsViewHelper: ContactsViewHelper {
         Environment.shared.contactsViewHelperRef
     }
 
@@ -24,11 +24,11 @@ public extension NSObject {
         Environment.shared.contactsViewHelperRef
     }
 
-    var fullTextSearcher: FullTextSearcher { .shared }
+    final var fullTextSearcher: FullTextSearcher { .shared }
 
     static var fullTextSearcher: FullTextSearcher { .shared }
 
-    var launchJobs: LaunchJobs {
+    final var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }
 
@@ -36,7 +36,7 @@ public extension NSObject {
         Environment.shared.launchJobsRef
     }
 
-    var preferences: OWSPreferences {
+    final var preferences: OWSPreferences {
         Environment.shared.preferencesRef
     }
 
@@ -44,7 +44,7 @@ public extension NSObject {
         Environment.shared.preferencesRef
     }
 
-    var windowManager: OWSWindowManager {
+    final var windowManager: OWSWindowManager {
         Environment.shared.windowManagerRef
     }
 
@@ -52,7 +52,7 @@ public extension NSObject {
         Environment.shared.windowManagerRef
     }
 
-    var proximityMonitoringManager: OWSProximityMonitoringManager {
+    final var proximityMonitoringManager: OWSProximityMonitoringManager {
         Environment.shared.proximityMonitoringManagerRef
     }
 
@@ -60,7 +60,7 @@ public extension NSObject {
         Environment.shared.proximityMonitoringManagerRef
     }
 
-    var profileManagerImpl: OWSProfileManager {
+    final var profileManagerImpl: OWSProfileManager {
         profileManager as! OWSProfileManager
     }
 
@@ -68,7 +68,7 @@ public extension NSObject {
         profileManager as! OWSProfileManager
     }
 
-    var contactsManagerImpl: OWSContactsManager {
+    final var contactsManagerImpl: OWSContactsManager {
         contactsManager as! OWSContactsManager
     }
 
@@ -76,7 +76,7 @@ public extension NSObject {
         contactsManager as! OWSContactsManager
     }
 
-    var groupsV2Impl: GroupsV2Impl {
+    final var groupsV2Impl: GroupsV2Impl {
         groupsV2 as! GroupsV2Impl
     }
 
@@ -84,7 +84,7 @@ public extension NSObject {
         groupsV2 as! GroupsV2Impl
     }
 
-    var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+    final var groupV2UpdatesImpl: GroupV2UpdatesImpl {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
@@ -92,7 +92,7 @@ public extension NSObject {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    var versionedProfilesImpl: VersionedProfilesImpl {
+    final var versionedProfilesImpl: VersionedProfilesImpl {
         versionedProfiles as! VersionedProfilesImpl
     }
 
@@ -100,7 +100,7 @@ public extension NSObject {
         versionedProfiles as! VersionedProfilesImpl
     }
 
-    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+    final var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
         Environment.shared.broadcastMediaMessageJobQueueRef
     }
 
@@ -108,7 +108,7 @@ public extension NSObject {
         Environment.shared.broadcastMediaMessageJobQueueRef
     }
 
-    var sounds: OWSSounds {
+    final var sounds: OWSSounds {
         Environment.shared.soundsRef
     }
 
@@ -116,7 +116,7 @@ public extension NSObject {
         Environment.shared.soundsRef
     }
 
-    var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
+    final var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
         Environment.shared.incomingContactSyncJobQueueRef
     }
 
@@ -124,7 +124,7 @@ public extension NSObject {
         Environment.shared.incomingContactSyncJobQueueRef
     }
 
-    var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
+    final var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
         Environment.shared.incomingGroupSyncJobQueueRef
     }
 
