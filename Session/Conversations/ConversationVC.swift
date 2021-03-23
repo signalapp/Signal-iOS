@@ -54,7 +54,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
-    var lastContentOffset: CGFloat? = nil
+    var lastContentOffsetY: CGFloat? = nil
     var initialKeyboardHeight: CGFloat = 0
     
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
@@ -222,7 +222,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let y = lastContentOffset {
+        if let y = lastContentOffsetY {
             messagesTableView.setContentOffset(CGPoint(x: 0, y: y), animated: false)
         }
     }
@@ -235,9 +235,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        lastContentOffset = messagesTableView.contentOffset.y
+        lastContentOffsetY = messagesTableView.contentOffset.y
         if (messagesTableView.keyboardHeight > initialKeyboardHeight) {
-            lastContentOffset! -= messagesTableView.keyboardHeight - initialKeyboardHeight
+            lastContentOffsetY! -= messagesTableView.keyboardHeight - initialKeyboardHeight
         }
         let text = snInputView.text
         if !text.isEmpty {
@@ -458,7 +458,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         view.layoutIfNeeded()
         let firstContentPageTop: CGFloat = 0
         let contentOffsetY = max(firstContentPageTop, lastPageTop)
-        lastContentOffset = contentOffsetY
+        lastContentOffsetY = contentOffsetY
         messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
         print("Ryan: Scroll to bottom, contentOffSetY: \(self.messagesTableView.contentOffset.y)")
     }
