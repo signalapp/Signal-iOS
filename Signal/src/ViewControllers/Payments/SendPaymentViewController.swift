@@ -151,14 +151,31 @@ public class SendPaymentViewController: OWSViewController {
             return
         }
 
-        let hasProfileKeyForRecipient = databaseStorage.read { transaction in
-            nil != Self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
+        var hasProfileKeyForRecipient = false
+        var hasSentMessagesToRecipient = false
+        databaseStorage.read { transaction in
+            guard nil == Self.profileManager.profileKeyData(for: recipientAddress,
+                                                            transaction: transaction) else {
+                hasProfileKeyForRecipient = true
+                return
+            }
+            guard let thread = TSContactThread.getWithContactAddress(recipientAddress,
+                                                                     transaction: transaction) else {
+                hasSentMessagesToRecipient = false
+                return
+            }
+            let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+            hasSentMessagesToRecipient = 0 < interactionFinder.outgoingMessageCount(transaction: transaction)
         }
         guard hasProfileKeyForRecipient else {
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",
-                                                                     comment: "Title for error alert indicating that a given user cannot receive payments because of a pending message request."),
-                                            message: NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE",
-                                                                       comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request."))
+            let title = NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",
+                                          comment: "Title for error alert indicating that a given user cannot receive payments because of a pending message request.")
+            let message = (hasSentMessagesToRecipient
+                            ? NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES",
+                            comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to.")
+                            : NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES",
+                            comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to."))
+            OWSActionSheets.showActionSheet(title: title, message: message)
             return
         }
 

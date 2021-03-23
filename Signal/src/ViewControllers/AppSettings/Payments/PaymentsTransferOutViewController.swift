@@ -134,17 +134,19 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     @objc
     private func didTapNext() {
         guard let publicAddress = tryToParseAddress() else {
-            // TODO: Copy from design.
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS",
-                                                                      comment: "Error indicating that MobileCoin public address is not valid."))
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
+                                                                     comment: "Title for error alert indicating that MobileCoin public address is not valid."),
+                                            message: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS",
+                                                                       comment: "Error indicating that MobileCoin public address is not valid."))
             return
         }
         let recipientAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
         guard let localWalletAddressBase58 = payments.walletAddressBase58(),
               localWalletAddressBase58 != recipientAddressBase58 else {
-            // TODO: Copy from design.
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF",
-                                                                      comment: "Error indicating that it is not valid to send yourself a payment."))
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
+                                                                     comment: "Title for error alert indicating that MobileCoin public address is not valid."),
+                                            message: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF",
+                                                                       comment: "Error indicating that it is not valid to send yourself a payment."))
             return
         }
 
