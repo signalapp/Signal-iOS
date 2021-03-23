@@ -182,7 +182,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         addOrRemoveBlockedBanner()
         // Notifications
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
@@ -308,14 +308,31 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             didConstrainScrollButton = true
         }
         let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
-        print("Ryan: keyboardWillChangeFrame, new height: \(newHeight), old height: \(self.messagesTableView.keyboardHeight), contentOffsetY: \(self.messagesTableView.contentOffset.y)")
-        UIView.animate(withDuration: 0.25) {
-            if shouldScroll {
-                self.messagesTableView.contentOffset.y += (newHeight - self.messagesTableView.keyboardHeight)
-                self.messagesTableView.keyboardHeight = newHeight
-            }
-            self.scrollButton.alpha = 0
+        let newContentOffsetY = self.messagesTableView.contentOffset.y + newHeight - self.messagesTableView.keyboardHeight
+        print("Ryan: keyboardWillChangeFrame, new height: \(newHeight), old height: \(self.messagesTableView.keyboardHeight), contentOffsetY: \(self.messagesTableView.contentOffset.y) newContentOffsetY: \(newContentOffsetY)")
+        
+        if shouldScroll {
+            self.messagesTableView.contentOffset.y = newContentOffsetY
+            self.messagesTableView.keyboardHeight = newHeight
         }
+        self.scrollButton.alpha = 0
+//        UIView.animate(withDuration: 0.25, animations: {
+//            if shouldScroll {
+//                self.messagesTableView.contentOffset.y = newContentOffsetY
+//                self.messagesTableView.keyboardHeight = newHeight
+//            }
+//            self.scrollButton.alpha = 0
+//        }, completion: {_ in
+//            print("Ryan: keyboardWillChangeFrame ***End Animation***, contentOffsetY: \(self.messagesTableView.contentOffset.y)")
+//        })
+//        UIView.animate(withDuration: 0.25) {
+//            if shouldScroll {
+//                self.messagesTableView.contentOffset.y += (newHeight - self.messagesTableView.keyboardHeight)
+//                self.messagesTableView.keyboardHeight = newHeight
+//            }
+//            print("Ryan: keyboardWillChangeFrame ***In Animation***, contentOffsetY: \(self.messagesTableView.contentOffset.y)")
+//            self.scrollButton.alpha = 0
+//        }
         print("Ryan: keyboardWillChangeFrame, contentOffsetY: \(self.messagesTableView.contentOffset.y)")
     }
     
@@ -472,6 +489,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print("Ryan: scrollViewDidScroll contentOffsetY: \(scrollView.contentOffset.y)")
         scrollButton.alpha = getScrollButtonOpacity()
         unreadCountView.alpha = scrollButton.alpha
         autoLoadMoreIfNeeded()
