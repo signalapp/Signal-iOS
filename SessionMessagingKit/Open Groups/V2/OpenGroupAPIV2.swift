@@ -2,6 +2,7 @@ import PromiseKit
 import SessionSnodeKit
 
 // TODO: Message signature validation
+// TODO: Keeping track of moderators
 
 public enum OpenGroupAPIV2 {
     
@@ -186,7 +187,7 @@ public enum OpenGroupAPIV2 {
                 }
                 return message
             }
-            let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out above
+            let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out
             let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
             if serverID > lastMessageServerID {
                 let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()

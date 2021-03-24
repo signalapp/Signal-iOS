@@ -3,33 +3,33 @@ extension Storage {
     
     // MARK: - Open Groups
     
-    private static let openGroupCollection = "LokiPublicChatCollection"
+    private static let openGroupCollection = "SNOpenGroupCollection"
     
-    @objc public func getAllUserOpenGroups() -> [String:OpenGroup] {
-        var result = [String:OpenGroup]()
+    @objc public func getAllV2OpenGroups() -> [String:OpenGroupV2] {
+        var result = [String:OpenGroupV2]()
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: Storage.openGroupCollection) { threadID, object, _ in
-                guard let openGroup = object as? OpenGroup else { return }
+                guard let openGroup = object as? OpenGroupV2 else { return }
                 result[threadID] = openGroup
             }
         }
         return result
     }
 
-    @objc(getOpenGroupForThreadID:)
-    public func getOpenGroup(for threadID: String) -> OpenGroup? {
-        var result: OpenGroup?
+    @objc(getV2OpenGroupForThreadID:)
+    public func getV2OpenGroup(for threadID: String) -> OpenGroupV2? {
+        var result: OpenGroupV2?
         Storage.read { transaction in
-            result = transaction.object(forKey: threadID, inCollection: Storage.openGroupCollection) as? OpenGroup
+            result = transaction.object(forKey: threadID, inCollection: Storage.openGroupCollection) as? OpenGroupV2
         }
         return result
     }
     
-    public func getThreadID(for openGroupID: String) -> String? {
+    public func v2GetThreadID(for v2OpenGroupID: String) -> String? {
         var result: String?
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: Storage.openGroupCollection, using: { threadID, object, stop in
-                guard let openGroup = object as? OpenGroup, "\(openGroup.server).\(openGroup.channel)" == openGroupID else { return }
+                guard let openGroup = object as? OpenGroupV2, openGroup.id == v2OpenGroupID else { return }
                 result = threadID
                 stop.pointee = true
             })
@@ -37,13 +37,13 @@ extension Storage {
         return result
     }
 
-    @objc(setOpenGroup:forThreadWithID:using:)
-    public func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) {
+    @objc(setV2OpenGroup:forThreadWithID:using:)
+    public func setV2OpenGroup(_ openGroup: OpenGroupV2, for threadID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(openGroup, forKey: threadID, inCollection: Storage.openGroupCollection)
     }
 
-    @objc(removeOpenGroupForThreadID:using:)
-    public func removeOpenGroup(for threadID: String, using transaction: Any) {
+    @objc(removeV2OpenGroupForThreadID:using:)
+    public func removeV2OpenGroup(for threadID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: threadID, inCollection: Storage.openGroupCollection)
     }
     
@@ -229,6 +229,50 @@ extension Storage {
 
     
     // MARK: - Deprecated
+
+    private static let oldOpenGroupCollection = "LokiPublicChatCollection"
+
+    @objc public func getAllUserOpenGroups() -> [String:OpenGroup] {
+        var result = [String:OpenGroup]()
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: Storage.oldOpenGroupCollection) { threadID, object, _ in
+                guard let openGroup = object as? OpenGroup else { return }
+                result[threadID] = openGroup
+            }
+        }
+        return result
+    }
+
+    @objc(getOpenGroupForThreadID:)
+    public func getOpenGroup(for threadID: String) -> OpenGroup? {
+        var result: OpenGroup?
+        Storage.read { transaction in
+            result = transaction.object(forKey: threadID, inCollection: Storage.oldOpenGroupCollection) as? OpenGroup
+        }
+        return result
+    }
+
+    public func getThreadID(for openGroupID: String) -> String? {
+        var result: String?
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: Storage.oldOpenGroupCollection, using: { threadID, object, stop in
+                guard let openGroup = object as? OpenGroup, "\(openGroup.server).\(openGroup.channel)" == openGroupID else { return }
+                result = threadID
+                stop.pointee = true
+            })
+        }
+        return result
+    }
+
+    @objc(setOpenGroup:forThreadWithID:using:)
+    public func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(openGroup, forKey: threadID, inCollection: Storage.oldOpenGroupCollection)
+    }
+
+    @objc(removeOpenGroupForThreadID:using:)
+    public func removeOpenGroup(for threadID: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: threadID, inCollection: Storage.oldOpenGroupCollection)
+    }
 
     private static func getAuthTokenCollection(for server: String) -> String {
         return (server == FileServerAPI.server) ? "LokiStorageAuthTokenCollection" : "LokiGroupChatAuthTokenCollection"

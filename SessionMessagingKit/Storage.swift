@@ -43,8 +43,8 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Open Groups
 
-    func getAllUserOpenGroups() -> [String:OpenGroup]
-    func getOpenGroup(for threadID: String) -> OpenGroup?
+    func getAllV2OpenGroups() -> [String:OpenGroupV2]
+    func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
     func getThreadID(for openGroupID: String) -> String?
     func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
@@ -101,4 +101,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64?
     func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
     func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any)
+
+    func getAllUserOpenGroups() -> [String:OpenGroup]
+    func getOpenGroup(for threadID: String) -> OpenGroup?
 }
