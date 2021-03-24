@@ -29,7 +29,7 @@ public final class OpenGroupManagerV2 : NSObject {
     }
 
     // MARK: Adding & Removing
-    public func add(room: String, server: String, name: String, using transaction: Any) -> Promise<Void> {
+    public func add(room: String, server: String, name: String, using transaction: Any) {
         let storage = Storage.shared
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
@@ -46,7 +46,7 @@ public final class OpenGroupManagerV2 : NSObject {
             }
             let poller = OpenGroupPollerV2(for: openGroup)
             poller.startIfNeeded()
-            OpenGroupManager.shared.pollers[openGroup.id] = poller
+            OpenGroupManagerV2.shared.pollers[openGroup.id] = poller
         })
     }
 

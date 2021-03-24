@@ -3,6 +3,7 @@ import SessionSnodeKit
 
 // TODO: Message signature validation
 // TODO: Keeping track of moderators
+// TODO: Token expiration
 
 public enum OpenGroupAPIV2 {
     
@@ -35,19 +36,21 @@ public enum OpenGroupAPIV2 {
         let endpoint: String
         let queryParameters: [String:String]
         let parameters: JSON
+        let headers: [String:String]
         let isAuthRequired: Bool
         /// Always `true` under normal circumstances. You might want to disable
         /// this when running over Lokinet.
         let useOnionRouting: Bool
 
         init(verb: HTTP.Verb, room: String, server: String, endpoint: String, queryParameters: [String:String] = [:],
-            parameters: JSON = [:], isAuthRequired: Bool = true, useOnionRouting: Bool = true) {
+            parameters: JSON = [:], headers: [String:String] = [:], isAuthRequired: Bool = true, useOnionRouting: Bool = true) {
             self.verb = verb
             self.room = room
             self.server = server
             self.endpoint = endpoint
             self.queryParameters = queryParameters
             self.parameters = parameters
+            self.headers = headers
             self.isAuthRequired = isAuthRequired
             self.useOnionRouting = useOnionRouting
         }
@@ -70,12 +73,13 @@ public enum OpenGroupAPIV2 {
             guard let url = URL(string: rawURL) else { return Promise(error: Error.invalidURL) }
             tsRequest = TSRequest(url: url, method: request.verb.rawValue, parameters: request.parameters)
         }
-        tsRequest.setValue(request.room, forKey: "Room")
+        tsRequest.allHTTPHeaderFields = request.headers
+        tsRequest.setValue(request.room, forHTTPHeaderField: "Room")
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
             if request.isAuthRequired {
                 return getAuthToken(for: request.room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
-                    tsRequest.setValue(authToken, forKey: "Authorization")
+                    tsRequest.setValue(authToken, forHTTPHeaderField: "Authorization")
                     return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
                 }
             } else {
@@ -112,8 +116,9 @@ public enum OpenGroupAPIV2 {
         let queryParameters = [ "public_key" : getUserHexEncodedPublicKey() ]
         let request = Request(verb: .get, room: room, server: server, endpoint: "auth_token_challenge", queryParameters: queryParameters, isAuthRequired: false)
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let base64EncodedCiphertext = json["ciphertext"] as? String, let base64EncodedEphemeralPublicKey = json["ephemeral_public_key"] as? String,
-                let ciphertext = Data(base64Encoded: base64EncodedCiphertext), let ephemeralPublicKey = Data(base64Encoded: base64EncodedEphemeralPublicKey) else {
+            guard let challenge = json["challenge"] as? JSON, let base64EncodedCiphertext = challenge["ciphertext"] as? String,
+                let base64EncodedEphemeralPublicKey = challenge["ephemeral_public_key"] as? String, let ciphertext = Data(base64Encoded: base64EncodedCiphertext),
+                let ephemeralPublicKey = Data(base64Encoded: base64EncodedEphemeralPublicKey) else {
                 throw Error.parsingFailed
             }
             let symmetricKey = try AESGCM.generateSymmetricKey(x25519PublicKey: ephemeralPublicKey, x25519PrivateKey: userKeyPair.privateKey)
@@ -123,9 +128,10 @@ public enum OpenGroupAPIV2 {
     }
     
     public static func claimAuthToken(_ authToken: String, for room: String, on server: String) -> Promise<String> {
-        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
-        let parameters = [ "public_key" : userKeyPair.publicKey.toHexString() ]
-        let request = Request(verb: .post, room: room, server: server, endpoint: "claim_auth_token", parameters: parameters)
+        let parameters = [ "public_key" : getUserHexEncodedPublicKey() ]
+        let headers = [ "Authorization" : authToken ] // Set explicitly here because is isn't in the database yet at this point
+        let request = Request(verb: .post, room: room, server: server, endpoint: "claim_auth_token",
+            parameters: parameters, headers: headers, isAuthRequired: false)
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in authToken }
     }
     
