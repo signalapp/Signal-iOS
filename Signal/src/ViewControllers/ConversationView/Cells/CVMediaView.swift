@@ -213,7 +213,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         let playVideoButtonWidth: CGFloat = 44
         let playVideoIconWidth: CGFloat = 20
 
-        let playVideoButton = UIView()
+        let playVideoButton = UIView.transparentContainer()
         addSubviewToCenterOnSuperview(playVideoButton, size: CGSize(square: playVideoButtonWidth))
 
         let playVideoCircleView = OWSLayerView.circleView()

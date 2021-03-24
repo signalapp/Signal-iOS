@@ -71,6 +71,10 @@ public extension UINavigationController {
 public class SpacerView: UIView {
     private var preferredSize: CGSize
 
+    override open class var layerClass: AnyClass {
+        CATransformLayer.self
+    }
+
     convenience public init(preferredWidth: CGFloat = UIView.noIntrinsicMetric, preferredHeight: CGFloat = UIView.noIntrinsicMetric) {
         self.init(preferredSize: CGSize(width: preferredWidth, height: preferredHeight))
     }
@@ -110,25 +114,25 @@ public extension UIView {
     }
 
     class func spacer(withWidth width: CGFloat) -> UIView {
-        let view = UIView()
+        let view = TransparentView()
         view.autoSetDimension(.width, toSize: width)
         return view
     }
 
     class func spacer(withHeight height: CGFloat) -> UIView {
-        let view = UIView()
+        let view = TransparentView()
         view.autoSetDimension(.height, toSize: height)
         return view
     }
 
     class func spacer(matchingHeightOf matchView: UIView, withMultiplier multiplier: CGFloat) -> UIView {
-        let spacer = UIView()
+        let spacer = TransparentView()
         spacer.autoMatch(.height, to: .height, of: matchView, withMultiplier: multiplier)
         return spacer
     }
 
     class func hStretchingSpacer() -> UIView {
-        let view = UIView()
+        let view = TransparentView()
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         return view
@@ -136,7 +140,7 @@ public extension UIView {
 
     @nonobjc
     class func vStretchingSpacer(minHeight: CGFloat? = nil, maxHeight: CGFloat? = nil) -> UIView {
-        let view = UIView()
+        let view = TransparentView()
         view.setContentHuggingVerticalLow()
         view.setCompressionResistanceVerticalLow()
 
@@ -153,17 +157,26 @@ public extension UIView {
     }
 
     class func transparentSpacer() -> UIView {
-        let view = TransparentSpacer()
+        let view = TransparentView()
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         return view
     }
 
     @objc
-    class TransparentSpacer: UIView {
+    class TransparentView: UIView {
         override open class var layerClass: AnyClass {
             CATransformLayer.self
         }
+
+        #if TESTABLE_BUILD
+        @objc
+        public override var backgroundColor: UIColor? {
+            didSet {
+                owsFailDebug("This is a non-rendering view.")
+            }
+        }
+        #endif
     }
 
     func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
@@ -340,6 +353,21 @@ public extension UIView {
         for constraint in constraints {
             constraint.isActive = false
         }
+    }
+
+    @objc(containerView)
+    static func container() -> UIView {
+        let view = UIView()
+        view.layoutMargins = .zero
+        return view
+    }
+
+    // If the container doesn't need a background color, it's
+    // more efficient to use a non-rendering view.
+    static func transparentContainer() -> UIView {
+        let view = TransparentView()
+        view.layoutMargins = .zero
+        return view
     }
 }
 

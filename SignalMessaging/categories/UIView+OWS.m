@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIView+OWS.h"
@@ -438,35 +438,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:view],
         [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:view],
     ];
-}
-
-#pragma mark - Containers
-
-+ (UIView *)containerView
-{
-    UIView *view = [UIView new];
-    // Leading and trailing anchors honor layout margins.
-    // When using a UIView as a "div" to structure layout, we don't want it to have margins.
-    view.layoutMargins = UIEdgeInsetsZero;
-    return view;
-}
-
-+ (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing
-{
-    UIView *container = [UIView containerView];
-    UIView *_Nullable lastSubview = nil;
-    for (UIView *subview in subviews) {
-        [container addSubview:subview];
-        [subview autoPinWidthToSuperview];
-        if (lastSubview) {
-            [subview autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:spacing];
-        } else {
-            [subview autoPinEdgeToSuperviewEdge:ALEdgeTop];
-        }
-        lastSubview = subview;
-    }
-    [lastSubview autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    return container;
 }
 
 #pragma mark - Debugging
