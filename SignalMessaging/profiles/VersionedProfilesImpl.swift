@@ -224,6 +224,21 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 return
             }
 
+            if profile.address.isLocalAddress {
+                guard let profileKey = profileRequest.profileKey else {
+                    owsFailDebug("Missing profile key for local versioned profile fetch.")
+                    return
+                }
+                let currentLocalProfileKey = profileManager.localProfileKey()
+                guard profileKey.keyData == currentLocalProfileKey.keyData else {
+                    if DebugFlags.internalLogging {
+                        Logger.info("fetch profileKey: \(profileKey.keyData.hexadecimalString) != currentLocalProfileKey: \(currentLocalProfileKey.keyData.hexadecimalString)")
+                    }
+                    owsFailDebug("Profile key for local versioned profile fetch does not match current local profile key.")
+                    return
+                }
+            }
+
             Logger.verbose("Updating credential for: \(uuid)")
             databaseStorage.write { transaction in
                 Self.credentialStore.setData(credentialData, key: uuid.uuidString, transaction: transaction)
@@ -242,6 +257,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let uuid = address.uuid else {
                 throw OWSAssertionError("Invalid address: \(address)")
         }
+
         return Self.credentialStore.getData(uuid.uuidString, transaction: transaction)
     }
 

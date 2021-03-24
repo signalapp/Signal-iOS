@@ -220,7 +220,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         return firstly {
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.map(on: .global()) { () throws -> TSGroupThread in
-            return try self.databaseStorage.read { transaction in
+            try self.databaseStorage.read { transaction in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     throw GroupsV2Error.shouldDiscard
                 }
@@ -228,7 +228,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<(TSGroupThread, UInt32)> in
             // Get latest group state from service and verify that this update is still necessary.
-            return firstly { () throws -> Promise<GroupV2Snapshot> in
+            firstly { () throws -> Promise<GroupV2Snapshot> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
@@ -295,8 +295,37 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 changes.setShouldUpdateLocalProfileKey()
                 return changes
             }.then(on: DispatchQueue.global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-                return self.groupsV2Impl.updateExistingGroupOnService(changes: changes,
-                                                                      requiredRevision: checkedRevision)
+                self.groupsV2Impl.updateExistingGroupOnService(changes: changes,
+                                                               requiredRevision: checkedRevision)
+            }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+                // Confirm that the updated snapshot has the new profile key.
+                firstly(on: .global()) { () -> Promise<GroupV2Snapshot> in
+                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                        throw OWSAssertionError("Invalid group model.")
+                    }
+                    return self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
+                }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> Void in
+                    if DebugFlags.internalLogging {
+                        Logger.info("updated revision: \(groupV2Snapshot.revision)")
+                        for (uuid, profileKey) in groupV2Snapshot.profileKeys {
+                            Logger.info("Existing profile key: \(profileKey.hexadecimalString), for uuid: \(uuid), is local: \(uuid == localUuid)")
+                        }
+                    }
+                    guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
+                        owsFailDebug("Not a full member.")
+                        return
+                    }
+                    guard groupV2Snapshot.profileKeys.values.contains(profileKeyData) else {
+                        owsFailDebug("Update failed.")
+                        self.databaseStorage.write { transaction in
+                            self.versionedProfiles.clearProfileKeyCredential(for: localAddress,
+                                                                             transaction: transaction)
+                        }
+                        return
+                    }
+                }.map(on: .global()) { () -> TSGroupThread in
+                    groupThread
+                }
             }.asVoid()
         }
     }
