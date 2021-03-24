@@ -171,7 +171,7 @@ public enum OpenGroupAPIV2 {
         guard let json = signedMessage.toJSON() else { return Promise(error: Error.parsingFailed) }
         let request = Request(verb: .post, room: room, server: server, endpoint: "messages", parameters: json)
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let message = OpenGroupMessageV2.fromJSON(json) else { throw Error.parsingFailed }
+            guard let rawMessage = json["message"] as? JSON, let message = OpenGroupMessageV2.fromJSON(rawMessage) else { throw Error.parsingFailed }
             return message
         }
     }
@@ -187,7 +187,7 @@ public enum OpenGroupAPIV2 {
             guard let rawMessages = json["messages"] as? [[String:Any]] else { throw Error.parsingFailed }
             let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
                 // TODO: Signature validation
-                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil else {
+                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, message.sender != nil else {
                     SNLog("Couldn't parse open group message from JSON: \(json).")
                     return nil
                 }

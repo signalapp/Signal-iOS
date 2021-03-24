@@ -75,14 +75,18 @@ public final class OpenGroupPollerV2 : NSObject {
                 guard let data = Data(base64Encoded: message.base64EncodedData) else {
                     return SNLog("Ignoring open group message with invalid encoding.")
                 }
-                let job = MessageReceiveJob(data: data, openGroupMessageServerID: UInt64(message.serverID!), openGroupID: self.openGroup.id, isBackgroundPoll: isBackgroundPoll)
+                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: 0)
+                envelope.setContent(data)
+                envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
+                let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: UInt64(message.serverID!), openGroupID: self.openGroup.id, isBackgroundPoll: isBackgroundPoll)
                 SNMessagingKitConfiguration.shared.storage.write { transaction in
                     SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                 }
             }
+            seal.fulfill(())
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
             seal.fulfill(()) // The promise is just used to keep track of when we're done
-        }.retainUntilComplete()
+        }
         return promise
     }
 

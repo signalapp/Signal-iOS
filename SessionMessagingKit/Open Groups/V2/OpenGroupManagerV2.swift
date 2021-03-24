@@ -37,7 +37,10 @@ public final class OpenGroupManagerV2 : NSObject {
         let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
         let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
         storage.write(with: { transaction in
-            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction as! YapDatabaseReadWriteTransaction)
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
+            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+            thread.shouldThreadBeVisible = true
+            thread.save(with: transaction)
             storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
         }, completion: {
             if let poller = OpenGroupManagerV2.shared.pollers[openGroup.id] {
