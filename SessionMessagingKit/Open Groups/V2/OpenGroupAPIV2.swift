@@ -5,7 +5,9 @@ import SessionSnodeKit
 // TODO: Keeping track of moderators
 // TODO: Token expiration
 
-public enum OpenGroupAPIV2 {
+@objc(SNOpenGroupAPIV2)
+public final class OpenGroupAPIV2 : NSObject {
+    private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -258,6 +260,10 @@ public enum OpenGroupAPIV2 {
     public static func unban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "block_list/\(publicKey)")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+    }
+
+    public static func isUserModerator(_ publicKey: String, for room: String, on server: String) -> Bool {
+        return moderators[server]?[room]?.contains(publicKey) ?? false
     }
     
     // MARK: General

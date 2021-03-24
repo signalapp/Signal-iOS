@@ -177,19 +177,19 @@ extension Storage {
 
     // MARK: - Metadata
 
-    private static let openGroupUserCountCollection = "LokiPublicChatUserCountCollection"
+    private static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
     private static let openGroupMessageIDCollection = "LKMessageIDCollection"
     private static let openGroupProfilePictureURLCollection = "LokiPublicChatAvatarURLCollection"
 
-    public func getUserCount(forOpenGroupWithID openGroupID: String) -> Int? {
-        var result: Int?
+    public func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {
+        var result: UInt64?
         Storage.read { transaction in
-            result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection) as? Int
+            result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection) as? UInt64
         }
         return result
     }
     
-    public func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any) {
+    public func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection)
     }
 
@@ -229,6 +229,20 @@ extension Storage {
 
     
     // MARK: - Deprecated
+
+    private static let oldOpenGroupUserCountCollection = "LokiPublicChatUserCountCollection"
+
+    public func getUserCount(forOpenGroupWithID openGroupID: String) -> Int? {
+        var result: Int?
+        Storage.read { transaction in
+            result = transaction.object(forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection) as? Int
+        }
+        return result
+    }
+
+    public func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection)
+    }
 
     private static let oldOpenGroupCollection = "LokiPublicChatCollection"
 

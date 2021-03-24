@@ -1,8 +1,8 @@
 
 @objc(SNOpenGroupV2)
 public final class OpenGroupV2 : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
-    public let server: String
-    public let room: String
+    @objc public let server: String
+    @objc public let room: String
     public let id: String
     public let name: String
 
