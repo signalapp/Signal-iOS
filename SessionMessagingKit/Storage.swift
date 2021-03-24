@@ -55,15 +55,15 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Last Message Server ID
 
-    func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
-    func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
-    func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)
+    func getLastMessageServerID(for room: String, on server: String) -> Int64?
+    func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
+    func removeLastMessageServerID(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Last Deletion Server ID
 
-    func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64?
-    func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
-    func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any)
+    func getLastDeletionServerID(for room: String, on server: String) -> Int64?
+    func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
+    func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Open Group Metadata
 
@@ -93,4 +93,12 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAuthToken(for server: String) -> String?
     func setAuthToken(for server: String, to newValue: String, using transaction: Any)
     func removeAuthToken(for server: String, using transaction: Any)
+
+    func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
+    func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
+    func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)
+
+    func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64?
+    func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
+    func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any)
 }

@@ -1,6 +1,8 @@
 import PromiseKit
 import SessionSnodeKit
 
+// TODO: Message signature validation
+
 public enum OpenGroupAPIV2 {
     
     // MARK: Error
@@ -70,8 +72,12 @@ public enum OpenGroupAPIV2 {
         tsRequest.setValue(request.room, forKey: "Room")
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
-            return getAuthToken(for: request.room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
-                tsRequest.setValue(authToken, forKey: "Authorization")
+            if request.isAuthRequired {
+                return getAuthToken(for: request.room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
+                    tsRequest.setValue(authToken, forKey: "Authorization")
+                    return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
+                }
+            } else {
                 return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
             }
         } else {
@@ -125,7 +131,12 @@ public enum OpenGroupAPIV2 {
     /// Should be called when leaving a group.
     public static func deleteAuthToken(for room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "auth_token")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+            let storage = SNMessagingKitConfiguration.shared.storage
+            storage.write { transaction in
+                storage.removeAuthToken(for: room, on: server, using: transaction)
+            }
+        }
     }
     
     // MARK: File Storage
@@ -159,20 +170,35 @@ public enum OpenGroupAPIV2 {
     }
     
     public static func getMessages(for room: String, on server: String) -> Promise<[OpenGroupMessageV2]> {
-        // TODO: From server ID & limit
-        let queryParameters: [String:String] = [:]
+        let storage = SNMessagingKitConfiguration.shared.storage
+        var queryParameters: [String:String] = [:]
+        if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
+            queryParameters["from_server_id"] = String(lastMessageServerID)
+        }
         let request = Request(verb: .get, room: room, server: server, endpoint: "messages", queryParameters: queryParameters)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[OpenGroupMessageV2]> in
             guard let rawMessages = json["messages"] as? [[String:Any]] else { throw Error.parsingFailed }
             let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
                 // TODO: Signature validation
-                guard let message = OpenGroupMessageV2.fromJSON(json) else {
+                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil else {
                     SNLog("Couldn't parse open group message from JSON: \(json).")
                     return nil
                 }
                 return message
             }
-            return messages
+            let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out above
+            let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
+            if serverID > lastMessageServerID {
+                let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()
+                storage.write(with: { transaction in
+                    storage.setLastMessageServerID(for: room, on: server, to: serverID, using: transaction)
+                }, completion: {
+                    seal.fulfill(messages)
+                })
+                return promise
+            } else {
+                return Promise.value(messages)
+            }
         }
     }
     
@@ -183,12 +209,27 @@ public enum OpenGroupAPIV2 {
     }
     
     public static func getDeletedMessages(for room: String, on server: String) -> Promise<[Int64]> {
-        // TODO: From server ID & limit
-        let queryParameters: [String:String] = [:]
+        let storage = SNMessagingKitConfiguration.shared.storage
+        var queryParameters: [String:String] = [:]
+        if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
+            queryParameters["from_server_id"] = String(lastDeletionServerID)
+        }
         let request = Request(verb: .get, room: room, server: server, endpoint: "deleted_messages", queryParameters: queryParameters)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let ids = json["ids"] as? [Int64] else { throw Error.parsingFailed }
-            return ids
+        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Int64]> in
+            guard let serverIDs = json["ids"] as? [Int64] else { throw Error.parsingFailed }
+            let serverID = serverIDs.max() ?? 0
+            let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) ?? 0
+            if serverID > lastDeletionServerID {
+                let (promise, seal) = Promise<[Int64]>.pending()
+                storage.write(with: { transaction in
+                    storage.setLastDeletionServerID(for: room, on: server, to: serverID, using: transaction)
+                }, completion: {
+                    seal.fulfill(serverIDs)
+                })
+                return promise
+            } else {
+                return Promise.value(serverIDs)
+            }
         }
     }
     

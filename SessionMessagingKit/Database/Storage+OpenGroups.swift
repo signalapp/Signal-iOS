@@ -121,44 +121,56 @@ extension Storage {
 
     // MARK: - Last Message Server ID
 
-    public static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
+    public static let lastMessageServerIDCollection = "SNLastMessageServerIDCollection"
 
-    public func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64? {
-        var result: UInt64? = nil
+    public func getLastMessageServerID(for room: String, on server: String) -> Int64? {
+        let collection = Storage.lastMessageServerIDCollection
+        let key = "\(server).\(room)"
+        var result: Int64? = nil
         Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.lastMessageServerIDCollection) as? UInt64
+            result = transaction.object(forKey: key, inCollection: collection) as? Int64
         }
         return result
     }
 
-    public func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.lastMessageServerIDCollection)
+    public func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
+        let collection = Storage.lastMessageServerIDCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
     }
 
-    public func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.lastMessageServerIDCollection)
+    public func removeLastMessageServerID(for room: String, on server: String, using transaction: Any) {
+        let collection = Storage.lastMessageServerIDCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
 
 
 
     // MARK: - Last Deletion Server ID
 
-    public static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
+    public static let lastDeletionServerIDCollection = "SNLastDeletionServerIDCollection"
 
-    public func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64? {
-        var result: UInt64? = nil
+    public func getLastDeletionServerID(for room: String, on server: String) -> Int64? {
+        let collection = Storage.lastDeletionServerIDCollection
+        let key = "\(server).\(room)"
+        var result: Int64? = nil
         Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.lastDeletionServerIDCollection) as? UInt64
+            result = transaction.object(forKey: key, inCollection: collection) as? Int64
         }
         return result
     }
 
-    public func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.lastDeletionServerIDCollection)
+    public func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
+        let collection = Storage.lastDeletionServerIDCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
     }
 
-    public func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.lastDeletionServerIDCollection)
+    public func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any) {
+        let collection = Storage.lastDeletionServerIDCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
 
 
@@ -239,5 +251,41 @@ extension Storage {
     public func removeAuthToken(for server: String, using transaction: Any) {
         let collection = Storage.getAuthTokenCollection(for: server)
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
+    }
+
+    public static let oldLastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
+
+    public func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64? {
+        var result: UInt64? = nil
+        Storage.read { transaction in
+            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection) as? UInt64
+        }
+        return result
+    }
+
+    public func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection)
+    }
+
+    public func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection)
+    }
+
+    public static let oldLastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
+
+    public func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64? {
+        var result: UInt64? = nil
+        Storage.read { transaction in
+            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection) as? UInt64
+        }
+        return result
+    }
+
+    public func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection)
+    }
+
+    public func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection)
     }
 }
