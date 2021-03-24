@@ -207,7 +207,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 owsFailDebug("Invalid credential response.")
                 return
             }
-            guard let uuid = profile.address.uuid else {
+            let address = profile.address
+            guard let uuid = address.uuid else {
                 owsFailDebug("Missing uuid.")
                 return
             }
@@ -224,23 +225,26 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 return
             }
 
-            if profile.address.isLocalAddress {
-                guard let profileKey = profileRequest.profileKey else {
-                    owsFailDebug("Missing profile key for local versioned profile fetch.")
-                    return
-                }
-                let currentLocalProfileKey = profileManager.localProfileKey()
-                guard profileKey.keyData == currentLocalProfileKey.keyData else {
-                    if DebugFlags.internalLogging {
-                        Logger.info("fetch profileKey: \(profileKey.keyData.hexadecimalString) != currentLocalProfileKey: \(currentLocalProfileKey.keyData.hexadecimalString)")
-                    }
-                    owsFailDebug("Profile key for local versioned profile fetch does not match current local profile key.")
-                    return
-                }
+            guard let requestProfileKey = profileRequest.profileKey else {
+                owsFailDebug("Missing profile key for credential from versioned profile fetch.")
+                return
             }
 
-            Logger.verbose("Updating credential for: \(uuid)")
             databaseStorage.write { transaction in
+                guard let currentProfileKey = profileManager.profileKey(for: address, transaction: transaction) else {
+                    owsFailDebug("Missing profile key in database.")
+                    return
+                }
+                guard requestProfileKey.keyData == currentProfileKey.keyData else {
+                    if DebugFlags.internalLogging {
+                        Logger.info("requestProfileKey: \(requestProfileKey.keyData.hexadecimalString) != currentProfileKey: \(currentProfileKey.keyData.hexadecimalString)")
+                    }
+                    owsFailDebug("Profile key for versioned profile fetch does not match current profile key.")
+                    return
+                }
+
+                Logger.verbose("Updating credential for: \(uuid)")
+
                 Self.credentialStore.setData(credentialData, key: uuid.uuidString, transaction: transaction)
             }
         } catch {
