@@ -100,7 +100,9 @@ final class ConversationTitleView : UIView {
             switch thread.groupModel.groupType {
             case .closedGroup: userCount = thread.groupModel.groupMemberIds.count
             case .openGroup:
-                if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
+                if let openGroupV2 = Storage.shared.getV2OpenGroup(for: self.thread.uniqueId!) {
+                    userCount = Storage.shared.getUserCount(forV2OpenGroupWithID: openGroup.id)
+                } else if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
                     userCount = Storage.shared.getUserCount(forOpenGroupWithID: openGroup.id)
                 }
             default: break

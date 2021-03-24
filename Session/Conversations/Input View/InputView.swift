@@ -309,7 +309,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     func showMentionsUI(for candidates: [Mention], in thread: TSThread) {
-        if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
+        if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+            mentionsView.openGroupServer = openGroupV2.server
+            mentionsView.openGroupRoom = openGroupV2.room
+        } else if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
             mentionsView.openGroupServer = openGroup.server
             mentionsView.openGroupChannel = openGroup.channel
         }

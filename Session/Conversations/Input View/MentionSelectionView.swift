@@ -8,6 +8,7 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
     }
     var openGroupServer: String?
     var openGroupChannel: UInt64?
+    var openGroupRoom: String?
     var delegate: MentionSelectionViewDelegate?
 
     // MARK: Components
@@ -66,6 +67,7 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
         cell.mentionCandidate = mentionCandidate
         cell.openGroupServer = openGroupServer
         cell.openGroupChannel = openGroupChannel
+        cell.openGroupRoom = openGroupRoom
         cell.separator.isHidden = (indexPath.row == (candidates.count - 1))
         return cell
     }
@@ -85,6 +87,7 @@ private extension MentionSelectionView {
         var mentionCandidate = Mention(publicKey: "", displayName: "") { didSet { update() } }
         var openGroupServer: String?
         var openGroupChannel: UInt64?
+        var openGroupRoom: String?
 
         // MARK: Components
         private lazy var profilePictureView = ProfilePictureView()
@@ -159,7 +162,10 @@ private extension MentionSelectionView {
             displayNameLabel.text = mentionCandidate.displayName
             profilePictureView.publicKey = mentionCandidate.publicKey
             profilePictureView.update()
-            if let server = openGroupServer, let channel = openGroupChannel {
+            if let server = openGroupServer, let room = openGroupRoom {
+                let isUserModerator = OpenGroupAPIV2.isUserModerator(mentionCandidate.publicKey, for: room, on: server)
+                moderatorIconImageView.isHidden = !isUserModerator
+            } else if let server = openGroupServer, let channel = openGroupChannel {
                 let isUserModerator = OpenGroupAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {

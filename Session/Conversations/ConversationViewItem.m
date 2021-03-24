@@ -994,20 +994,32 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
         // Get the open group
         SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
-        if (openGroup == nil) return;
+        SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+        if (openGroup == nil && openGroupV2 == nil) return;
 
         // If it's an incoming message the user must have moderator status
         if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
             NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
-            if (![SNOpenGroupAPI isUserModerator:userPublicKey forChannel:openGroup.channel onServer:openGroup.server]) { return; }
+            if (openGroupV2 != nil) {
+                if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
+            } else if (openGroup != nil) {
+                if (![SNOpenGroupAPI isUserModerator:userPublicKey forChannel:openGroup.channel onServer:openGroup.server]) { return; }
+            }
         }
         
         // Delete the message
         BOOL wasSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:openGroup.channel onServer:openGroup.server isSentByUser:wasSentByUser].catch(^(NSError *error) {
-            // Roll back
-            [self.interaction save];
-        }) retainUntilComplete];
+        if (openGroupV2 != nil) {
+            [[SNOpenGroupAPIV2 deleteMessageWithID:message.openGroupServerMessageID forRoom:openGroupV2.room onServer:openGroupV2.server isSentByUser:wasSentByUser].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        } else if (openGroup != nil) {
+            [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:openGroup.channel onServer:openGroup.server isSentByUser:wasSentByUser].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        }
     }
 }
 
@@ -1064,11 +1076,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Ensure we have the details needed to contact the server
     SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
-    if (openGroup == nil) return true;
+    SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+    if (openGroup == nil && openGroupV2 == nil) return true;
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
-        return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
+        if (openGroupV2 != nil) {
+            return [SNOpenGroupAPIV2 isUserModerator:[SNGeneralUtilities getUserPublicKey] forRoom:openGroupV2.room onServer:openGroupV2.server];
+        } else {
+            return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
+        }
     } else {
         return YES;
     }
@@ -1085,10 +1102,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Ensure we have the details needed to contact the server
     SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
-    if (openGroup == nil) return false;
+    SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+    if (openGroup == nil && openGroupV2 == nil) return false;
     
     // Check that we're a moderator
-    return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
+    if (openGroupV2 != nil) {
+        return [SNOpenGroupAPIV2 isUserModerator:[SNGeneralUtilities getUserPublicKey] forRoom:openGroupV2.room onServer:openGroupV2.server];
+    } else {
+        return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
+    }
 }
 
 @end

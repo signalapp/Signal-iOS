@@ -27,6 +27,7 @@ extension ConfigurationMessage {
                 case .openGroup:
                     guard let openGroup = storage.getOpenGroup(for: thread.uniqueId!) else { return }
                     openGroups.insert(openGroup.server)
+                    // TODO: V2 open groups
                 default: break
                 }
             }

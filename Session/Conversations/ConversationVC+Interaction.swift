@@ -495,9 +495,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let alert = UIAlertController(title: "Ban This User?", message: nil, preferredStyle: .alert)
         let threadID = thread.uniqueId!
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
             let publicKey = message.authorId
-            OpenGroupAPI.ban(publicKey, from: openGroup.server).retainUntilComplete()
+            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) {
+                OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            } else if let openGroup = Storage.shared.getOpenGroup(for: threadID) {
+                OpenGroupAPI.ban(publicKey, from: openGroup.server).retainUntilComplete()
+            }
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
