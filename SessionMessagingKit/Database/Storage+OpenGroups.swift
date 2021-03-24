@@ -71,27 +71,28 @@ extension Storage {
     
     // MARK: - Authorization
 
-    private static func getAuthTokenCollection(for server: String) -> String {
-        return (server == FileServerAPI.server) ? "LokiStorageAuthTokenCollection" : "LokiGroupChatAuthTokenCollection"
-    }
+    private static let authTokenCollection = "SNAuthTokenCollection"
 
-    public func getAuthToken(for server: String) -> String? {
-        let collection = Storage.getAuthTokenCollection(for: server)
+    public func getAuthToken(for room: String, on server: String) -> String? {
+        let collection = Storage.authTokenCollection
+        let key = "\(server).\(room)"
         var result: String? = nil
         Storage.read { transaction in
-            result = transaction.object(forKey: server, inCollection: collection) as? String
+            result = transaction.object(forKey: key, inCollection: collection) as? String
         }
         return result
     }
 
-    public func setAuthToken(for server: String, to newValue: String, using transaction: Any) {
-        let collection = Storage.getAuthTokenCollection(for: server)
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: collection)
+    public func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any) {
+        let collection = Storage.authTokenCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
     }
 
-    public func removeAuthToken(for server: String, using transaction: Any) {
-        let collection = Storage.getAuthTokenCollection(for: server)
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
+    public func removeAuthToken(for room: String, on server: String, using transaction: Any) {
+        let collection = Storage.authTokenCollection
+        let key = "\(server).\(room)"
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
 
 
@@ -211,5 +212,32 @@ extension Storage {
     
     public func setProfilePictureURL(to profilePictureURL: String?, forOpenGroupWithID openGroupID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(profilePictureURL, forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection)
+    }
+
+
+    
+    // MARK: - Deprecated
+
+    private static func getAuthTokenCollection(for server: String) -> String {
+        return (server == FileServerAPI.server) ? "LokiStorageAuthTokenCollection" : "LokiGroupChatAuthTokenCollection"
+    }
+
+    public func getAuthToken(for server: String) -> String? {
+        let collection = Storage.getAuthTokenCollection(for: server)
+        var result: String? = nil
+        Storage.read { transaction in
+            result = transaction.object(forKey: server, inCollection: collection) as? String
+        }
+        return result
+    }
+
+    public func setAuthToken(for server: String, to newValue: String, using transaction: Any) {
+        let collection = Storage.getAuthTokenCollection(for: server)
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: collection)
+    }
+
+    public func removeAuthToken(for server: String, using transaction: Any) {
+        let collection = Storage.getAuthTokenCollection(for: server)
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
     }
 }

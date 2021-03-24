@@ -1,8 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
 
-// TODO: Auth token & public key storage
-
 public enum OpenGroupAPIV2 {
     
     // MARK: Error
@@ -72,7 +70,7 @@ public enum OpenGroupAPIV2 {
         tsRequest.setValue(request.room, forKey: "Room")
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
-            return getAuthToken(for: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
+            return getAuthToken(for: request.room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
                 tsRequest.setValue(authToken, forKey: "Authorization")
                 return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
             }
@@ -82,8 +80,23 @@ public enum OpenGroupAPIV2 {
     }
     
     // MARK: Authorization
-    private static func getAuthToken(for server: String) -> Promise<String> {
-        return Promise.value("") // TODO: Implement
+    private static func getAuthToken(for room: String, on server: String) -> Promise<String> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        if let authToken = storage.getAuthToken(for: room, on: server) {
+            return Promise.value(authToken)
+        } else {
+            return requestNewAuthToken(for: room, on: server)
+            .then(on: DispatchQueue.global(qos: .userInitiated)) { claimAuthToken($0, for: room, on: server) }
+            .then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<String> in
+                let (promise, seal) = Promise<String>.pending()
+                storage.write(with: { transaction in
+                    storage.setAuthToken(for: room, on: server, to: authToken, using: transaction)
+                }, completion: {
+                    seal.fulfill(authToken)
+                })
+                return promise
+            }
+        }
     }
 
     public static func requestNewAuthToken(for room: String, on server: String) -> Promise<String> {
@@ -102,11 +115,11 @@ public enum OpenGroupAPIV2 {
         }
     }
     
-    public static func claimAuthToken(for room: String, on server: String) -> Promise<Void> {
+    public static func claimAuthToken(_ authToken: String, for room: String, on server: String) -> Promise<String> {
         guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         let parameters = [ "public_key" : userKeyPair.publicKey.toHexString() ]
         let request = Request(verb: .post, room: room, server: server, endpoint: "claim_auth_token", parameters: parameters)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in authToken }
     }
     
     /// Should be called when leaving a group.

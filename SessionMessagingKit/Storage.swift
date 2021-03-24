@@ -37,9 +37,9 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Authorization
 
-    func getAuthToken(for server: String) -> String?
-    func setAuthToken(for server: String, to newValue: String, using transaction: Any)
-    func removeAuthToken(for server: String, using transaction: Any)
+    func getAuthToken(for room: String, on server: String) -> String?
+    func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any)
+    func removeAuthToken(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Open Groups
 
@@ -87,4 +87,10 @@ public protocol SessionMessagingKitStorageProtocol {
     func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any)
     /// Also touches the associated message.
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
+
+    // MARK: - Deprecated
+
+    func getAuthToken(for server: String) -> String?
+    func setAuthToken(for server: String, to newValue: String, using transaction: Any)
+    func removeAuthToken(for server: String, using transaction: Any)
 }
