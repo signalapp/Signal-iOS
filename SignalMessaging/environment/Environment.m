@@ -19,6 +19,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) LaunchJobs *launchJobsRef;
 @property (nonatomic) ContactsViewHelper *contactsViewHelperRef;
 @property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
+@property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
 
 @end
 
@@ -60,6 +61,7 @@ static Environment *sharedEnvironment = nil;
                        windowManager:(OWSWindowManager *)windowManager
                   contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
        broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
+                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
 {
     self = [super init];
     if (!self) {
@@ -76,6 +78,7 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(windowManager);
     OWSAssertDebug(contactsViewHelper);
     OWSAssertDebug(broadcastMediaMessageJobQueue);
+    OWSAssertDebug(orphanDataCleaner);
 
     _audioSessionRef = audioSession;
     _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
@@ -87,6 +90,7 @@ static Environment *sharedEnvironment = nil;
     _windowManagerRef = windowManager;
     _contactsViewHelperRef = contactsViewHelper;
     _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
+    _orphanDataCleanerRef = orphanDataCleaner;
 
     OWSSingletonAssert();
 

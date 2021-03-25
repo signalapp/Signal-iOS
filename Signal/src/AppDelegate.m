@@ -1128,11 +1128,6 @@ void uncaughtExceptionHandler(NSException *exception)
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
 
-        // Fetch messages as soon as possible after launching. In particular, when
-        // launching from the background, without this, we end up waiting some extra
-        // seconds before receiving an actionable push notification.
-        [self.messageFetcherJob runObjc];
-
         // This should happen at any launch, background or foreground.
         [OWSSyncPushTokensJob run];
     }
@@ -1152,19 +1147,6 @@ void uncaughtExceptionHandler(NSException *exception)
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }
-
-#ifdef DEBUG
-    // A bug in orphan cleanup could be disastrous so let's only
-    // run it in DEBUG builds for a few releases.
-    //
-    // TODO: Release to production once we have analytics.
-    // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
-    //       of disk access.  We might want to only run it "once per version"
-    //       or something like that in production.
-    [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
-#endif
-
-    [self.profileManager fetchLocalUsersProfile];
 
     [SignalApp.shared ensureRootViewController:launchStartedAt];
 }

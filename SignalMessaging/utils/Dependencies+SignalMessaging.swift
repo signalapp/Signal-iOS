@@ -131,6 +131,14 @@ public extension NSObject {
     static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
         Environment.shared.incomingGroupSyncJobQueueRef
     }
+
+    final var orphanDataCleaner: OWSOrphanDataCleaner {
+        Environment.shared.orphanDataCleanerRef
+    }
+
+    static var orphanDataCleaner: OWSOrphanDataCleaner {
+        Environment.shared.orphanDataCleanerRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -258,6 +266,14 @@ public extension Dependencies {
 
     static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
         Environment.shared.incomingGroupSyncJobQueueRef
+    }
+
+    var orphanDataCleaner: OWSOrphanDataCleaner {
+        Environment.shared.orphanDataCleanerRef
+    }
+
+    static var orphanDataCleaner: OWSOrphanDataCleaner {
+        Environment.shared.orphanDataCleanerRef
     }
 }
 

@@ -10,6 +10,7 @@
 @class OWSAudioSession;
 @class OWSIncomingContactSyncJobQueue;
 @class OWSIncomingGroupSyncJobQueue;
+@class OWSOrphanDataCleaner;
 @class OWSPreferences;
 @class OWSSounds;
 @class OWSWindowManager;
@@ -38,7 +39,8 @@
                               sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
                   contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
-       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue;
+       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
+                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSessionRef;
 @property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueueRef;
@@ -50,6 +52,7 @@
 @property (nonatomic, readonly) OWSWindowManager *windowManagerRef;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelperRef;
 @property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
+@property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
 
 @property (class, nonatomic) Environment *shared;
 

@@ -106,6 +106,13 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     OWSSingletonAssert();
 
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests
+            && TSAccountManager.shared.isRegistered) {
+            [self fetchLocalUsersProfile];
+        }
+    });
+
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
