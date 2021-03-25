@@ -236,12 +236,3 @@ extension OWSSyncManager {
         SSKEnvironment.shared.syncManagerRef as! OWSSyncManager
     }
 }
-
-// MARK: -
-
-@objc
-extension OWSBackup {
-    static var shared: OWSBackup {
-        AppEnvironment.shared.backupRef
-    }
-}
