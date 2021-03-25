@@ -1239,22 +1239,22 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     // profile key credential for them.
     [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
 
-    [userProfile clearWithProfileKey:profileKey
-                 wasLocallyInitiated:wasLocallyInitiated
-                         transaction:transaction
-                          completion:^{
-                              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                  // If this is the profile for the local user, we always want to defer to local state
-                                  // so skip the update profile for address call.
-                                  if ([OWSUserProfile isLocalProfileAddress:address]) {
-                                      return;
-                                  }
+    [userProfile updateWithProfileKey:profileKey
+                  wasLocallyInitiated:wasLocallyInitiated
+                          transaction:transaction
+                           completion:^{
+                               dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                   // If this is the profile for the local user, we always want to defer to local state
+                                   // so skip the update profile for address call.
+                                   if ([OWSUserProfile isLocalProfileAddress:address]) {
+                                       return;
+                                   }
 
-                                  [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                                                    address:address];
-                                  [self fetchProfileForAddress:address];
-                              });
-                          }];
+                                   [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                                                     address:address];
+                                   [self fetchProfileForAddress:address];
+                               });
+                           }];
 }
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
