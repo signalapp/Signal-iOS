@@ -10,30 +10,6 @@ import ZKGroup
 @objc
 public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
-    }
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    // MARK: -
-
     @objc
     public required override init() {
         super.init()
@@ -144,8 +120,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
         }
 
-        let operation = GroupV2UpdateOperation(groupV2Updates: self,
-                                               groupId: groupId,
+        let operation = GroupV2UpdateOperation(groupId: groupId,
                                                groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode,
                                                groupModelOptions: groupModelOptions)
@@ -187,23 +162,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private class GroupV2UpdateOperation: OWSOperation {
 
-        // MARK: - Dependencies
-
-        private var databaseStorage: SDSDatabaseStorage {
-            return SDSDatabaseStorage.shared
-        }
-
-        private var tsAccountManager: TSAccountManager {
-            return TSAccountManager.shared()
-        }
-
-        private var messageProcessor: MessageProcessor {
-            return SSKEnvironment.shared.messageProcessor
-        }
-
-        // MARK: -
-
-        let groupV2Updates: GroupV2UpdatesImpl
         let groupId: Data
         let groupSecretParamsData: Data
         let groupUpdateMode: GroupUpdateMode
@@ -214,12 +172,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         // MARK: -
 
-        required init(groupV2Updates: GroupV2UpdatesImpl,
-                      groupId: Data,
+        required init(groupId: Data,
                       groupSecretParamsData: Data,
                       groupUpdateMode: GroupUpdateMode,
                       groupModelOptions: TSGroupModelOptions) {
-            self.groupV2Updates = groupV2Updates
             self.groupId = groupId
             self.groupSecretParamsData = groupSecretParamsData
             self.groupUpdateMode = groupUpdateMode
@@ -244,9 +200,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     return Promise.value(())
                 }
             }.then(on: .global()) { _ in
-                self.groupV2Updates.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
-                                                            groupUpdateMode: self.groupUpdateMode,
-                                                            groupModelOptions: self.groupModelOptions)
+                self.groupV2UpdatesImpl.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
+                                                                groupUpdateMode: self.groupUpdateMode,
+                                                                groupModelOptions: self.groupModelOptions)
             }.done(on: .global()) { (groupThread: TSGroupThread) in
                 Logger.verbose("Group refresh succeeded.")
 
@@ -546,9 +502,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 return Promise.value(groupChanges)
             }
             return firstly {
-                return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
-                                                             includeCurrentRevision: includeCurrentRevision,
-                                                             firstKnownRevision: upToRevision)
+                return self.groupsV2Impl.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
+                                                                 includeCurrentRevision: includeCurrentRevision,
+                                                                 firstKnownRevision: upToRevision)
             }.map(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
                 self.addGroupChangesToCache(groupChanges: groupChanges, cacheKey: cacheKey)
 
@@ -879,7 +835,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                 groupUpdateMode: GroupUpdateMode,
                                                                 groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
         return firstly {
-            self.groupsV2.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+            self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode,

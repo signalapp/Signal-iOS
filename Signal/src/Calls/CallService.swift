@@ -21,22 +21,6 @@ public final class CallService: NSObject {
 
     public let callManager = CallManagerType()
 
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private var databaseStorage: SDSDatabaseStorage { .shared }
-
-    private static var databaseStorage: SDSDatabaseStorage { .shared }
-
     @objc
     public let individualCallService = IndividualCallService()
     let groupCallMessageHandler = GroupCallUpdateMessageHandler()
@@ -361,7 +345,7 @@ public final class CallService: NSObject {
         let highBandwidthInterfaces = databaseStorage.read { readTx in
             Self.highBandwidthNetworkInterfaces(readTx: readTx)
         }
-        return !SSKEnvironment.shared.reachabilityManager.isReachable(with: highBandwidthInterfaces)
+        return !Self.reachabilityManager.isReachable(with: highBandwidthInterfaces)
     }
 
     // MARK: -
@@ -610,7 +594,7 @@ public final class CallService: NSObject {
         }
 
         return firstly {
-            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
+            try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
         }.map(on: .main) { (credential) -> Data in
             guard let tokenData = credential.token?.data(using: .utf8) else {
                 throw OWSAssertionError("Invalid credential")
@@ -826,7 +810,7 @@ extension CallService {
             owsFailDebug("Unknown thread")
             return
         }
-        AppEnvironment.shared.notificationPresenter.notifyUser(for: message, thread: thread, wantsSound: true, transaction: transaction)
+        Self.notificationPresenter.notifyUser(for: message, thread: thread, wantsSound: true, transaction: transaction)
     }
 }
 

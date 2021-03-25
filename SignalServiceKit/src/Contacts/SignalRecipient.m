@@ -25,59 +25,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 @implementation SignalRecipient
 
-#pragma mark - Dependencies
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (TSSocketManager *)socketManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.socketManager);
-    
-    return SSKEnvironment.shared.socketManager;
-}
-
-- (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-+ (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-+ (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-+ (SignalRecipientReadCache *)signalRecipientReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache;
-}
-
-- (SignalRecipientReadCache *)signalRecipientReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache;
-}
-
-#pragma mark -
-
 - (instancetype)initWithUUIDString:(NSString *)uuidString
 {
     self = [super init];
@@ -210,7 +157,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(transaction);
     OWSAssertDebug(address.isValid);
     SignalRecipient *_Nullable signalRecipient =
-        [self.signalRecipientReadCache getSignalRecipientForAddress:address transaction:transaction];
+        [self.modelReadCaches.signalRecipientReadCache getSignalRecipientForAddress:address transaction:transaction];
     if (mustHaveDevices && signalRecipient.devices.count < 1) {
         return nil;
     }
@@ -649,21 +596,21 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
+    [self.modelReadCaches.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
+    [self.modelReadCaches.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
+    [self.modelReadCaches.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
     [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ self.accountId ]];
 }
 

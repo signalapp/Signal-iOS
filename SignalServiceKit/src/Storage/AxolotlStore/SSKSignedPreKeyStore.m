@@ -85,13 +85,6 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark -
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord

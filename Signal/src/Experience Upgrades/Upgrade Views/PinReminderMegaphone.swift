@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,7 +32,7 @@ class PinReminderMegaphone: MegaphoneView {
 
     func presentToastForNewRepetitionInterval(fromViewController: UIViewController) {
         let toastText: String
-        switch OWS2FAManager.shared().repetitionInterval {
+        switch OWS2FAManager.shared.repetitionInterval {
         case (1 * kDayInterval):
             toastText = NSLocalizedString("PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST",
                                           comment: "Toast indicating that we'll ask you for your PIN again tomorrow.")

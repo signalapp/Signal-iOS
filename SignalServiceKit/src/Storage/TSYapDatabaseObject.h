@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
@@ -29,9 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This property should only ever be accesssed within a GRDB write transaction.
 @property (atomic, readonly, nullable) NSNumber *grdbId;
-
-@property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
-@property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

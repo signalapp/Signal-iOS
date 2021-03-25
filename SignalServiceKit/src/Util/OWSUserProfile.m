@@ -58,45 +58,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 @implementation OWSUserProfile
 
-#pragma mark - Dependencies
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-+ (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-- (UserProfileReadCache *)userProfileReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    return SSKEnvironment.shared.syncManager;
-}
-
-#pragma mark -
-
 @synthesize avatarUrlPath = _avatarUrlPath;
 @synthesize avatarFileName = _avatarFileName;
 @synthesize profileName = _profileName;
@@ -975,7 +936,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     [self reindexAssociatedModels:transaction];
 
-    [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+    [self.modelReadCaches.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -984,14 +945,14 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     [self reindexAssociatedModels:transaction];
 
-    [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+    [self.modelReadCaches.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
+    [self.modelReadCaches.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
 }
 
 - (void)reindexAssociatedModels:(SDSAnyWriteTransaction *)transaction

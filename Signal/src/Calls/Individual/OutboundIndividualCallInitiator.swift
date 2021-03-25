@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,18 +16,6 @@ import SignalMessaging
 
         SwiftSingletons.register(self)
     }
-
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
 
     /**
      * |address| is a SignalServiceAddress
@@ -55,7 +43,7 @@ import SignalMessaging
             return false
         }
 
-        guard let callUIAdapter = AppEnvironment.shared.callService.individualCallService.callUIAdapter else {
+        guard let callUIAdapter = Self.callService.individualCallService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
         }

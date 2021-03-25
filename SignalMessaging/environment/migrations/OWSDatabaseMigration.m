@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,13 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     return [super initWithUniqueId:[self.class migrationId]];
-}
-
-#pragma mark - Dependencies
-
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
 }
 
 #pragma mark -
@@ -117,17 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation YDBDatabaseMigration
-
-#pragma mark - Dependencies
-
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-#pragma mark -
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {

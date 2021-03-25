@@ -1,19 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
 public class ContactShareViewModel: NSObject {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
 
     @objc
     public let dbRecord: OWSContact

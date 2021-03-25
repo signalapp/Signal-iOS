@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -76,7 +76,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         postDismissNavigationController = navigationController
         navigationController.isNavigationBarHidden = true
 
-        contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
+        contactsManagerImpl.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateMode()
         })

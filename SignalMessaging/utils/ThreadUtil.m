@@ -25,33 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ThreadUtil
 
-#pragma mark - Dependencies
-
-+ (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SSKEnvironment.shared.databaseStorage;
-}
-
-+ (OWSProfileManager *)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (MessageSender *)messageSender
-{
-    return SSKEnvironment.shared.messageSender;
-}
-
 #pragma mark - Durable Message Enqueue
 
 + (TSOutgoingMessage *)enqueueMessageWithBody:(MessageBody *)messageBody

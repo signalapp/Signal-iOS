@@ -217,9 +217,9 @@ class UsernameViewController: OWSTableViewController2 {
                 usernameRequest = OWSRequestFactory.usernameDeleteRequest()
             }
 
-            SSKEnvironment.shared.networkManager.makePromise(request: usernameRequest).done { _ in
+            Self.networkManager.makePromise(request: usernameRequest).done { _ in
                 self.databaseStorage.write { transaction in
-                    OWSProfileManager.shared().updateLocalUsername(usernameToUse, transaction: transaction)
+                    Self.profileManagerImpl.updateLocalUsername(usernameToUse, transaction: transaction)
                 }
                 modalView.dismiss {
                     self.usernameSavedOrCanceled()

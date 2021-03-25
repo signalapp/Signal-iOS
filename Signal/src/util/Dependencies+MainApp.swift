@@ -1,114 +1,278 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-// Exposes singleton accessors for all UIViews, UIViewControllers, etc.
+// MARK: - NSObject
+
 @objc
-public extension UIResponder {
-
-    // MARK: - Dependencies
-
-    var backup: OWSBackup {
-        AppEnvironment.shared.backup
+public extension NSObject {
+    final var backup: OWSBackup {
+        AppEnvironment.shared.backupRef
     }
 
     static var backup: OWSBackup {
-        AppEnvironment.shared.backup
+        AppEnvironment.shared.backupRef
     }
 
-    var accountManager: AccountManager {
-        AppEnvironment.shared.accountManager
+    final var accountManager: AccountManager {
+        AppEnvironment.shared.accountManagerRef
     }
 
     static var accountManager: AccountManager {
-        AppEnvironment.shared.accountManager
+        AppEnvironment.shared.accountManagerRef
     }
 
-    var tsAccountManager: TSAccountManager {
-        SSKEnvironment.shared.tsAccountManager
+    final var individualCallUIAdapter: CallUIAdapter {
+        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
     }
 
-    static var tsAccountManager: TSAccountManager {
-        SSKEnvironment.shared.tsAccountManager
+    static var individualCallUIAdapter: CallUIAdapter {
+        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
     }
 
-    var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.individualCallService.callUIAdapter
-    }
-
-    static var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.individualCallService.callUIAdapter
-    }
-
-    var callService: CallService {
-        return AppEnvironment.shared.callService
+    final var callService: CallService {
+        AppEnvironment.shared.callServiceRef
     }
 
     static var callService: CallService {
-        return AppEnvironment.shared.callService
+        AppEnvironment.shared.callServiceRef
     }
 
-    var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenter
+    final var notificationPresenter: NotificationPresenter {
+        AppEnvironment.shared.notificationPresenterRef
     }
 
     static var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenter
+        AppEnvironment.shared.notificationPresenterRef
     }
 
-    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiator
+    final var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+        AppEnvironment.shared.outboundIndividualCallInitiatorRef
     }
 
     static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiator
+        AppEnvironment.shared.outboundIndividualCallInitiatorRef
     }
 
-    var pushRegistrationManager: PushRegistrationManager {
-        AppEnvironment.shared.pushRegistrationManager
+    final var pushRegistrationManager: PushRegistrationManager {
+        AppEnvironment.shared.pushRegistrationManagerRef
     }
 
     static var pushRegistrationManager: PushRegistrationManager {
-        AppEnvironment.shared.pushRegistrationManager
+        AppEnvironment.shared.pushRegistrationManagerRef
     }
 
-    var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueue
+    final var sessionResetJobQueue: SessionResetJobQueue {
+        AppEnvironment.shared.sessionResetJobQueueRef
     }
 
     static var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueue
+        AppEnvironment.shared.sessionResetJobQueueRef
     }
 
-    var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandler
+    final var userNotificationActionHandler: UserNotificationActionHandler {
+        AppEnvironment.shared.userNotificationActionHandlerRef
     }
 
     static var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandler
+        AppEnvironment.shared.userNotificationActionHandlerRef
     }
 
-    var audioPlayer: CVAudioPlayer {
-        return AppEnvironment.shared.audioPlayer
+    final var cvAudioPlayer: CVAudioPlayer {
+        AppEnvironment.shared.cvAudioPlayerRef
     }
 
-    static var audioPlayer: CVAudioPlayer {
-        return AppEnvironment.shared.audioPlayer
+    static var cvAudioPlayer: CVAudioPlayer {
+        AppEnvironment.shared.cvAudioPlayerRef
+    }
+
+    final var deviceSleepManager: DeviceSleepManager {
+        .shared
+    }
+
+    static var deviceSleepManager: DeviceSleepManager {
+        .shared
+    }
+
+    final var signalApp: SignalApp {
+        .shared()
+    }
+
+    static var signalApp: SignalApp {
+        .shared()
+    }
+
+    final var backupLazyRestore: BackupLazyRestore {
+        AppEnvironment.shared.backupLazyRestoreRef
+    }
+
+    static var backupLazyRestore: BackupLazyRestore {
+        AppEnvironment.shared.backupLazyRestoreRef
+    }
+}
+
+// MARK: - Obj-C Dependencies
+
+public extension Dependencies {
+    var backup: OWSBackup {
+        AppEnvironment.shared.backupRef
+    }
+
+    static var backup: OWSBackup {
+        AppEnvironment.shared.backupRef
+    }
+
+    var accountManager: AccountManager {
+        AppEnvironment.shared.accountManagerRef
+    }
+
+    static var accountManager: AccountManager {
+        AppEnvironment.shared.accountManagerRef
+    }
+
+    var individualCallUIAdapter: CallUIAdapter {
+        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
+    }
+
+    static var individualCallUIAdapter: CallUIAdapter {
+        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
+    }
+
+    var callService: CallService {
+        AppEnvironment.shared.callServiceRef
+    }
+
+    static var callService: CallService {
+        AppEnvironment.shared.callServiceRef
+    }
+
+    var notificationPresenter: NotificationPresenter {
+        AppEnvironment.shared.notificationPresenterRef
+    }
+
+    static var notificationPresenter: NotificationPresenter {
+        AppEnvironment.shared.notificationPresenterRef
+    }
+
+    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+        AppEnvironment.shared.outboundIndividualCallInitiatorRef
+    }
+
+    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+        AppEnvironment.shared.outboundIndividualCallInitiatorRef
+    }
+
+    var pushRegistrationManager: PushRegistrationManager {
+        AppEnvironment.shared.pushRegistrationManagerRef
+    }
+
+    static var pushRegistrationManager: PushRegistrationManager {
+        AppEnvironment.shared.pushRegistrationManagerRef
+    }
+
+    var sessionResetJobQueue: SessionResetJobQueue {
+        AppEnvironment.shared.sessionResetJobQueueRef
+    }
+
+    static var sessionResetJobQueue: SessionResetJobQueue {
+        AppEnvironment.shared.sessionResetJobQueueRef
+    }
+
+    var userNotificationActionHandler: UserNotificationActionHandler {
+        AppEnvironment.shared.userNotificationActionHandlerRef
+    }
+
+    static var userNotificationActionHandler: UserNotificationActionHandler {
+        AppEnvironment.shared.userNotificationActionHandlerRef
+    }
+
+    var cvAudioPlayer: CVAudioPlayer {
+        AppEnvironment.shared.cvAudioPlayerRef
+    }
+
+    static var cvAudioPlayer: CVAudioPlayer {
+        AppEnvironment.shared.cvAudioPlayerRef
+    }
+
+    var deviceSleepManager: DeviceSleepManager {
+        .shared
+    }
+
+    static var deviceSleepManager: DeviceSleepManager {
+        .shared
+    }
+
+    var signalApp: SignalApp {
+        .shared()
+    }
+
+    static var signalApp: SignalApp {
+        .shared()
+    }
+
+    var backupLazyRestore: BackupLazyRestore {
+        AppEnvironment.shared.backupLazyRestoreRef
+    }
+
+    static var backupLazyRestore: BackupLazyRestore {
+        AppEnvironment.shared.backupLazyRestoreRef
+    }
+}
+
+// MARK: - Swift-only Dependencies
+
+@objc
+extension NSObject {
+
+    final var giphyAPI: GiphyAPI { .shared }
+
+    static var giphyAPI: GiphyAPI { .shared }
+
+    final var deviceTransferService: DeviceTransferService { .shared }
+
+    static var deviceTransferService: DeviceTransferService { .shared }
+}
+
+// MARK: - Swift-only Dependencies
+
+public extension Dependencies {
+
+}
+
+// MARK: -
+
+@objc
+extension DeviceTransferService {
+    static var shared: DeviceTransferService {
+        AppEnvironment.shared.deviceTransferServiceRef
     }
 }
 
 // MARK: -
 
 @objc
-extension UIResponder {
+extension PushRegistrationManager {
+    static var shared: PushRegistrationManager {
+        AppEnvironment.shared.pushRegistrationManagerRef
+    }
+}
 
-    var giphyAPI: GiphyAPI { .shared }
+// MARK: -
 
-    static var giphyAPI: GiphyAPI { .shared }
+@objc
+extension OWSSyncManager {
+    static var shared: OWSSyncManager {
+        SSKEnvironment.shared.syncManagerRef as! OWSSyncManager
+    }
+}
 
-    var deviceTransferService: DeviceTransferService { .shared }
+// MARK: -
 
-    static var deviceTransferService: DeviceTransferService { .shared }
+@objc
+extension OWSBackup {
+    static var shared: OWSBackup {
+        AppEnvironment.shared.backupRef
+    }
 }

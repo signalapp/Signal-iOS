@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -108,7 +108,7 @@ class MessageRequestView: UIStackView {
                                           transaction: SDSAnyReadTransaction) -> MessageRequestType {
         let isGroupV1Thread = thread.isGroupV1Thread
         let isGroupV2Thread = thread.isGroupV2Thread
-        let isThreadBlocked = OWSBlockingManager.shared().isThreadBlocked(thread)
+        let isThreadBlocked = blockingManager.isThreadBlocked(thread)
         let hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
         return MessageRequestType(isGroupV1Thread: isGroupV1Thread,
                                   isGroupV2Thread: isGroupV2Thread,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,11 +31,8 @@ import Foundation
 ///     messageFactory.threadCreator = { _ in return existingThread }
 ///     messageFactory.create(count: 100)
 ///
-public protocol Factory {
+public protocol Factory: Dependencies {
     associatedtype ObjectType: TSYapDatabaseObject
-
-    static var databaseStorage: SDSDatabaseStorage { get }
-    var databaseStorage: SDSDatabaseStorage { get }
 
     static func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
@@ -49,14 +46,6 @@ public protocol Factory {
 }
 
 public extension Factory {
-
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
 
     static func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         databaseStorage.write(block: block)
@@ -454,10 +443,6 @@ public class GroupThreadFactory: NSObject, Factory {
 
 @objc
 public class ConversationFactory: NSObject {
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
 
     @objc
     public var attachmentCount: Int = 0

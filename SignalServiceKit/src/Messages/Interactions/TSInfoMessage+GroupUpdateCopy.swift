@@ -75,23 +75,9 @@ public enum GroupUpdateType: Int {
     }
 }
 
-struct GroupUpdateCopy {
+// MARK: -
 
-    // MARK: - Dependencies
-
-    private static var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
-
-    private var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
+struct GroupUpdateCopy: Dependencies {
 
     struct UpdateItem: Hashable {
         let type: GroupUpdateType

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -26,25 +26,15 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
     let localClient = LocalSignalClient()
     let runner = TestProtocolRunner()
 
-    // MARK: - Dependencies
-
-    var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
-    }
-
     // MARK: - Hooks
 
     override func setUp() {
         super.setUp()
-        MockSSKEnvironment.shared.networkManager = self.stubbableNetworkManager
+        MockSelf.networkManager = self.stubbableNetworkManager
 
         // use the *real* message sender to measure it's perf
-        MockSSKEnvironment.shared.messageSender = MessageSender()
-        MockSSKEnvironment.shared.messageSenderJobQueue.setup()
+        MockSelf.messageSender = MessageSender()
+        MockSelf.messageSenderJobQueue.setup()
 
         try! databaseStorage.grdbStorage.setup()
 
@@ -217,7 +207,7 @@ private class BlockObserver: UIDatabaseSnapshotDelegate {
 }
 
 class StubbableNetworkManager: TSNetworkManager {
-    var block: (TSRequest, TSNetworkManagerSuccess, TSNetworkManagerFailure) -> Void = { request, success, failure in
+    var block: (TSRequest, TSNetworkManagerSuccess, TSNetworkManagerFailure) -> Void = { request, success, _ in
         let fakeTask = URLSessionDataTask()
         Logger.info("faking success for request: \(request)")
         success(fakeTask, nil)

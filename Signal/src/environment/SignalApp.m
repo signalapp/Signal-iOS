@@ -28,7 +28,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
 @implementation SignalApp
 
-+ (instancetype)sharedApp
++ (instancetype)shared
 {
     static SignalApp *sharedApp = nil;
     static dispatch_once_t onceToken;
@@ -87,30 +87,6 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     OWSLogInfo(@"");
     NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
     [userDefaults removeObjectForKey:kNSUserDefaults_DidTerminateKey];
-}
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSBackup *)backup
-{
-    return AppEnvironment.shared.backup;
 }
 
 #pragma mark -

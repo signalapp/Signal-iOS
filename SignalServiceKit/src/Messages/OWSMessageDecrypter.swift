@@ -19,9 +19,6 @@ public class OWSMessageDecryptResult: NSObject {
     public let sourceDevice: UInt32
     public let isUDMessage: Bool
 
-    private static var tsAccountManager: TSAccountManager { .shared() }
-    private static var blockingManager: OWSBlockingManager { .shared() }
-
     fileprivate init(
         envelopeData: Data,
         plaintextData: Data?,
@@ -64,9 +61,6 @@ public class OWSMessageDecryptResult: NSObject {
 
 @objc
 public class OWSMessageDecrypter: OWSMessageHandler {
-
-    private var tsAccountManager: TSAccountManager { .shared() }
-    private var blockingManager: OWSBlockingManager { .shared() }
 
     private var senderIdsResetDuringCurrentBatch = NSMutableSet()
 
@@ -173,7 +167,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         // We don't want to send additional resets until we
         // have received the "empty" response from the WebSocket
         // or finished at least one REST fetch.
-        guard SSKEnvironment.shared.messageFetcherJob.hasCompletedInitialFetch else { return }
+        guard Self.messageFetcherJob.hasCompletedInitialFetch else { return }
 
         // We clear all recently reset sender ids any time the
         // decryption queue has drained, so that any new messages
@@ -226,7 +220,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         transaction.addAsyncCompletion {
             let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
-            SSKEnvironment.shared.messageSender.sendMessage(nullMessage.asPreparer, success: {
+            Self.messageSender.sendMessage(nullMessage.asPreparer, success: {
                 Logger.info("Successfully sent null message after session reset " +
                                 "for undecryptable message from \(senderId)")
             }, failure: { error in
@@ -268,7 +262,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
             let threadlessMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            SSKEnvironment.shared.notificationsManager.notifyUser(for: threadlessMessage, transaction: transaction)
+            self.notificationsManager?.notifyUser(for: threadlessMessage, transaction: transaction)
             return wrappedError
         }
 
@@ -298,7 +292,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 senderIdsResetDuringCurrentBatch.add(senderId)
 
                 Logger.warn("Archiving session for undecryptable message from \(senderId)")
-                SSKEnvironment.shared.sessionStore.archiveSession(for: sourceAddress,
+                Self.sessionStore.archiveSession(for: sourceAddress,
                                                                   deviceId: Int32(envelope.sourceDevice),
                                                                   transaction: transaction)
 
@@ -338,9 +332,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         if let errorMessage = errorMessage {
             errorMessage.anyInsert(transaction: transaction)
-            SSKEnvironment.shared.notificationsManager.notifyUser(for: errorMessage,
-                                                                  thread: contactThread,
-                                                                  transaction: transaction)
+            self.notificationsManager?.notifyUser(for: errorMessage,
+                                                 thread: contactThread,
+                                                 transaction: transaction)
         }
 
         return wrappedError
@@ -390,18 +384,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 let message = try SignalMessage(bytes: encryptedData)
                 plaintext = try signalDecrypt(message: message,
                                               from: protocolAddress,
-                                              sessionStore: SSKEnvironment.shared.sessionStore,
-                                              identityStore: SSKEnvironment.shared.identityManager,
+                                              sessionStore: Self.sessionStore,
+                                              identityStore: Self.identityManager,
                                               context: transaction)
 
             case .preKey:
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(message: message,
                                                     from: protocolAddress,
-                                                    sessionStore: SSKEnvironment.shared.sessionStore,
-                                                    identityStore: SSKEnvironment.shared.identityManager,
-                                                    preKeyStore: SSKEnvironment.shared.preKeyStore,
-                                                    signedPreKeyStore: SSKEnvironment.shared.signedPreKeyStore,
+                                                    sessionStore: Self.sessionStore,
+                                                    identityStore: Self.identityManager,
+                                                    preKeyStore: Self.preKeyStore,
+                                                    signedPreKeyStore: Self.signedPreKeyStore,
                                                     context: transaction)
 
             // FIXME: return this to @unknown default once SenderKey messages are handled.
@@ -453,15 +447,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let localDeviceId = tsAccountManager.storedDeviceId()
 
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: SSKEnvironment.shared.udManager.trustRoot())
+        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: Self.udManager.trustRoot())
 
         let cipher: SMKSecretSessionCipher
         do {
             cipher = try SMKSecretSessionCipher(
-                sessionStore: SSKEnvironment.shared.sessionStore,
-                preKeyStore: SSKEnvironment.shared.preKeyStore,
-                signedPreKeyStore: SSKEnvironment.shared.signedPreKeyStore,
-                identityStore: SSKEnvironment.shared.identityManager
+                sessionStore: Self.sessionStore,
+                preKeyStore: Self.preKeyStore,
+                signedPreKeyStore: Self.signedPreKeyStore,
+                identityStore: Self.identityManager
             )
         } catch {
             owsFailDebug("Could not create secret session cipher \(error)")

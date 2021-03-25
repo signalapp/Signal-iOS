@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -161,7 +161,8 @@ public class UUIDBackfillTask: NSObject {
     }
 }
 
-// MARK: - Dependencies
+// MARK: -
+
 extension UUIDBackfillTask {
 
     // This extension encapsulates some of UUIDBackfillTask's cross-class dependencies

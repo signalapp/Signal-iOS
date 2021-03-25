@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,7 +9,7 @@ import XCTest
 class SignalServiceAddressTest: SSKBaseTestSwift {
 
     var cache: SignalServiceAddressCache {
-        return SSKEnvironment.shared.signalServiceAddressCache
+        return Self.signalServiceAddressCache
     }
 
     override func setUp() {
@@ -103,7 +103,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2b.unresolvedUuid, uuid2)
             XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
-            SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
 
             XCTAssertEqual(address1a.unresolvedUuid, uuid1)
             XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber1)
@@ -116,7 +116,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2b.unresolvedUuid, uuid2)
             XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
-            SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3)
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3)
 
             XCTAssertEqual(address1a.unresolvedUuid, uuid1)
             XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber3)

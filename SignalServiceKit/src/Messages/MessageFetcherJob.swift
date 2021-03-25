@@ -36,20 +36,6 @@ public class MessageFetcherJob: NSObject {
         SwiftSingletons.register(self)
     }
 
-    // MARK: Singletons
-
-    private class var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    private class var signalService: OWSSignalService {
-        return OWSSignalService.shared()
-    }
-
-    private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
     // MARK: -
 
     // This operation queue ensures that only one fetch operation is
@@ -244,7 +230,7 @@ public class MessageFetcherJob: NSObject {
             fetchBatchViaRest()
         }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
 
-            SSKEnvironment.shared.messageProcessor.processEncryptedEnvelopes(
+            Self.messageProcessor.processEncryptedEnvelopes(
                 envelopes: envelopes.compactMap { envelope in
                     do {
                         let envelopeData = try envelope.serializedData()

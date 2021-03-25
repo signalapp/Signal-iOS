@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationUtils.h"
@@ -14,22 +14,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation RegistrationUtils
-
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-+ (AccountManager *)accountManager
-{
-    return AppEnvironment.shared.accountManager;
-}
-
-#pragma mark -
 
 + (void)showRelinkingUI
 {

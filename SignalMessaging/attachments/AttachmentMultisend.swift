@@ -5,19 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class AttachmentMultisend {
-
-    // MARK: Dependencies
-
-    class var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    class var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        return Environment.shared.broadcastMediaMessageJobQueue
-    }
-
-    // MARK: -
+public class AttachmentMultisend: Dependencies {
 
     public class func sendApprovedMedia(conversations: [ConversationItem],
                                         approvalMessageBody: MessageBody?,

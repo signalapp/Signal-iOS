@@ -86,14 +86,6 @@ public class ThreadMappingDiff: NSObject {
 @objc
 class ThreadMapping: NSObject {
 
-    // MARK: - Dependencies
-
-    private var threadReadCache: ThreadReadCache {
-        SSKEnvironment.shared.modelReadCaches.threadReadCache
-    }
-
-    // MARK: -
-
     private var pinnedThreads = OrderedDictionary<String, TSThread>()
     private var unpinnedThreads: [TSThread] = []
 
@@ -263,8 +255,8 @@ class ThreadMapping: NSObject {
         guard !threadIds.isEmpty else { return }
 
         // 2. Try to pull as many threads as possible from the cache.
-        var threadIdToModelMap: [String: TSThread] = threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
-                                                                                         transaction: transaction)
+        var threadIdToModelMap: [String: TSThread] = modelReadCaches.threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
+                                                                                                         transaction: transaction)
         var threadsToLoad = Set(threadIds)
         threadsToLoad.subtract(threadIdToModelMap.keys)
 

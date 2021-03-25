@@ -31,15 +31,6 @@
 
 @implementation SSKSignedPreKeyStore (Tests)
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId
 {
     __block SignedPreKeyRecord *_Nullable result;
@@ -55,26 +46,12 @@
 
 @implementation SignedPreKeyDeletionTests
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (void)setUp {
     [super setUp];
 }
 
 - (void)tearDown {
     [super tearDown];
-}
-
-- (SSKSignedPreKeyStore *)signedPreKeyStore
-{
-    return SSKEnvironment.shared.signedPreKeyStore;
 }
 
 - (NSUInteger)signedPreKeyCount

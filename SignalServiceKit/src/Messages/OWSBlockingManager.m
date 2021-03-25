@@ -43,38 +43,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 @implementation OWSBlockingManager
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-- (id<GroupsV2>)groupsV2
-{
-    return SSKEnvironment.shared.groupsV2;
-}
-
-#pragma mark -
-
 + (SDSKeyValueStore *)keyValueStore
 {
     NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
     return [[SDSKeyValueStore alloc] initWithCollection:kOWSBlockingManager_BlockListCollection];
-}
-
-#pragma mark -
-
-+ (instancetype)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
-
-    return SSKEnvironment.shared.blockingManager;
 }
 
 - (instancetype)init

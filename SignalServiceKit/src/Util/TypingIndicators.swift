@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,14 +55,6 @@ public protocol TypingIndicators: class {
 @objc(OWSTypingIndicatorsImpl)
 public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     @objc
     public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 
@@ -86,14 +78,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         _areTypingIndicatorsEnabled.set(enabled)
     }
 
-    // MARK: - Dependencies
-
-    private var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
-    // MARK: -
-
     @objc
     public func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool) {
         Logger.info("\(_areTypingIndicatorsEnabled.get()) -> \(value)")
@@ -107,7 +91,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         syncManager.sendConfigurationSyncMessage()
 
-        SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+        Self.storageServiceManager.recordPendingLocalAccountUpdates()
 
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
@@ -251,14 +235,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             self.delegate = delegate
             self.thread = thread
         }
-
-        // MARK: - Dependencies
-
-        private var messageSender: MessageSender {
-            return SSKEnvironment.shared.messageSender
-        }
-
-        // MARK: -
 
         func didStartTypingOutgoingInput() {
             AssertIsOnMainThread()

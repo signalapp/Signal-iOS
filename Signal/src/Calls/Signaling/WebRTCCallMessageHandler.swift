@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,20 +16,6 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         super.init()
 
         SwiftSingletons.register(self)
-    }
-
-    // MARK: - Dependencies
-
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
-    }
-
-    private var callService: CallService {
-        return AppEnvironment.shared.callService
     }
 
     // MARK: - Call Handlers
@@ -159,7 +145,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         self.callService.callManager.receivedCallMessage(
             senderUuid: senderUuid,
             senderDeviceId: sourceDevice,
-            localDeviceId: TSAccountManager.shared().storedDeviceId(),
+            localDeviceId: TSAccountManager.shared.storedDeviceId(),
             message: message,
             messageAgeSec: messageAgeSec
         )

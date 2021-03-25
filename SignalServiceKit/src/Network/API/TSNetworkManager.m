@@ -102,15 +102,6 @@ dispatch_queue_t NetworkManagerQueue()
 
 @implementation OWSSessionManager
 
-#pragma mark - Dependencies
-
-- (OWSSignalService *)signalService
-{
-    return [OWSSignalService shared];
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     AssertOnDispatchQueue(NetworkManagerQueue());
@@ -328,22 +319,6 @@ dispatch_queue_t NetworkManagerQueue()
 #pragma mark -
 
 @implementation TSNetworkManager
-
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-#pragma mark - Singleton
-
-+ (instancetype)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-
-    return SSKEnvironment.shared.networkManager;
-}
 
 - (instancetype)initDefault
 {

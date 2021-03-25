@@ -11,41 +11,9 @@ import ZKGroup
 @objc
 public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var socketManager: TSSocketManager {
-        return TSSocketManager.shared
-    }
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
     private var urlSession: OWSURLSession {
         return OWSSignalService.shared().urlSessionForStorageService()
     }
-
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    private var groupV2Updates: GroupV2UpdatesImpl {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesImpl
-    }
-
-    private var versionedProfiles: VersionedProfilesImpl {
-        return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesImpl
-    }
-
-    // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
 
@@ -1085,6 +1053,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
 
+        let versionedProfiles = self.versionedProfiles as! VersionedProfilesImpl
+
         // 1. Use known credentials, where possible.
         var credentialMap = ProfileKeyCredentialMap()
 
@@ -1094,8 +1064,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             for uuid in Set(uuids) {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
-                    if let credential = try self.versionedProfiles.profileKeyCredential(for: address,
-                                                                                        transaction: transaction) {
+                    if let credential = try versionedProfiles.profileKeyCredential(for: address,
+                                                                                   transaction: transaction) {
                         credentialMap[uuid] = credential
                         continue
                     }
@@ -1138,8 +1108,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 try self.databaseStorage.read { transaction in
                     for uuid in uuids {
                         let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
-                                                                                               transaction: transaction) else {
+                        guard let credential = try versionedProfiles.profileKeyCredential(for: address,
+                                                                                          transaction: transaction) else {
                             throw OWSAssertionError("Could not load credential.")
                         }
                         credentialMap[uuid] = credential
@@ -1153,8 +1123,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
                                         transaction: SDSAnyReadTransaction) -> Bool {
         do {
-            return try self.versionedProfiles.profileKeyCredential(for: address,
-                                                                   transaction: transaction) != nil
+            let versionedProfiles = self.versionedProfiles as! VersionedProfilesImpl
+            return try versionedProfiles.profileKeyCredential(for: address,
+                                                              transaction: transaction) != nil
         } catch {
             owsFailDebug("Error: \(error)")
             return false
@@ -1355,7 +1326,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {
-        profileManager.reuploadLocalProfilePromise()
+        OWSProfileManager.shared.reuploadLocalProfilePromise()
     }
 
     // MARK: - Restore Groups
@@ -1709,9 +1680,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             //
             // Download and update database with the group state.
             return firstly {
-                self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                                                                                      groupSecretParamsData: groupV2Params.groupSecretParamsData,
-                                                                                      groupModelOptions: .didJustAddSelfViaGroupLink)
+                self.groupV2UpdatesImpl.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
+                                                                                          groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                                                                                          groupModelOptions: .didJustAddSelfViaGroupLink)
             }.recover(on: .global()) { (_: Error) -> Promise<TSGroupThread> in
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
             }.then(on: .global()) { _ -> Promise<TSGroupThread> in

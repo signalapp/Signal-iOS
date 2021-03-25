@@ -25,15 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation Contact
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
 @synthesize comparableNameLastFirst = _comparableNameLastFirst;
 @synthesize uniqueId = _uniqueId;

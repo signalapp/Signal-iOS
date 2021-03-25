@@ -201,7 +201,7 @@ public class EarlyMessageManager: NSObject {
                     transaction: transaction
                 )
             case .messageReadOnLinkedDevice(let timestamp):
-                OWSReadReceiptManager.shared().markAsRead(
+                OWSReadReceiptManager.shared.markAsRead(
                     onLinkedDevice: message,
                     thread: message.thread(transaction: transaction),
                     readTimestamp: timestamp,
@@ -212,7 +212,7 @@ public class EarlyMessageManager: NSObject {
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
-            SSKEnvironment.shared.messageManager.processEnvelope(
+            Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,
                 plaintextData: earlyEnvelope.plainTextData,
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,

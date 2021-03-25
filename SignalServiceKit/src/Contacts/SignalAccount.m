@@ -37,20 +37,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 @implementation SignalAccount
 
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
-- (SignalAccountReadCache *)signalAccountReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.signalAccountReadCache;
-}
-
-#pragma mark -
-
 + (BOOL)shouldBeIndexedForFTS
 {
     return YES;
@@ -326,21 +312,21 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
+    [self.modelReadCaches.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
+    [self.modelReadCaches.signalAccountReadCache didInsertOrUpdateSignalAccount:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.signalAccountReadCache didRemoveSignalAccount:self transaction:transaction];
+    [self.modelReadCaches.signalAccountReadCache didRemoveSignalAccount:self transaction:transaction];
 }
 
 - (void)updateWithContact:(nullable Contact *)contact transaction:(SDSAnyWriteTransaction *)transaction

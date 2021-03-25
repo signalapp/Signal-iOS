@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,14 +8,6 @@ import PromiseKit
 
 @objc
 public class OWS111UDAttributesMigration: YDBDatabaseMigration {
-
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
 
     // increment a similar constant for each migration.
     @objc

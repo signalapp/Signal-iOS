@@ -99,11 +99,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 @implementation OWSBackup
 
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 - (SDSKeyValueStore *)keyValueStore
 {
     static SDSKeyValueStore *keyValueStore = nil;
@@ -115,13 +110,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 }
 
 #pragma mark -
-
-+ (instancetype)shared
-{
-    OWSAssertDebug(AppEnvironment.shared.backup);
-
-    return AppEnvironment.shared.backup;
-}
 
 - (instancetype)init
 {
@@ -175,15 +163,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self ensureBackupExportState];
     });
-}
-
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
 }
 
 + (BOOL)isFeatureEnabled

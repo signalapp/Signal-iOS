@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 
 class ExpirationNagView: ReminderView {
-    private var appExpiry: AppExpiry { .shared }
     private static let updateLink = URL(string: "itms-apps://itunes.apple.com/app/id874139669")!
 
     @objc convenience init() {

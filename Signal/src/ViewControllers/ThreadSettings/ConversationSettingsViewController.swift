@@ -166,7 +166,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             return
         }
 
-        if isGroupThread || contactsManager.isSystemContactsAuthorized {
+        if isGroupThread || contactsManagerImpl.isSystemContactsAuthorized {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
                 title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT",
                                          comment: "Label for the 'edit' button in conversation settings view."),
@@ -318,16 +318,16 @@ class ConversationSettingsViewController: OWSTableViewController2 {
                 showGroupAttributesView(editAction: .avatar)
             } else if isGroupThread {
                 showGroupAttributesView(editAction: .name)
-            } else if contactsManager.supportsContactEditing {
+            } else if contactsManagerImpl.supportsContactEditing {
                 presentContactViewController()
             }
         }
     }
 
     func showShareProfileAlert() {
-        profileManager.presentAddThread(toProfileWhitelist: thread,
-                                        from: self) {
-                                            self.updateTableContents()
+        profileManagerImpl.presentAddThread(toProfileWhitelist: thread,
+                                            from: self) {
+            self.updateTableContents()
         }
     }
 
@@ -582,7 +582,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     func presentContactViewController() {
-        if !contactsManager.supportsContactEditing {
+        if !contactsManagerImpl.supportsContactEditing {
             owsFailDebug("Contact editing not supported")
             return
         }
@@ -614,13 +614,13 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {
 
-        if !contactsManager.supportsContactEditing {
+        if !contactsManagerImpl.supportsContactEditing {
             // Should not expose UI that lets the user get here.
             owsFailDebug("Contact editing not supported.")
             return
         }
 
-        if !contactsManager.isSystemContactsAuthorized {
+        if !contactsManagerImpl.isSystemContactsAuthorized {
             contactsViewHelper.presentMissingContactAccessAlertController(from: self)
             return
         }
@@ -1009,8 +1009,8 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
             self.thread.updateConversationColorName(conversationColor.name, transaction: transaction)
         }
 
-        contactsManager.removeAllFromAvatarCache()
-        contactsManager.clearColorNameCache()
+        contactsManagerImpl.removeAllFromAvatarCache()
+        contactsManagerImpl.clearColorNameCache()
         updateTableContents()
         conversationSettingsViewDelegate?.conversationColorWasUpdated()
 

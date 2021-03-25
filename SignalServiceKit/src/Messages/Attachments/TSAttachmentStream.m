@@ -53,25 +53,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 @implementation TSAttachmentStream
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
-#pragma mark -
-
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename

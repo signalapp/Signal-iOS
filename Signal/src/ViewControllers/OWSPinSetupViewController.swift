@@ -205,10 +205,10 @@ public class PinSetupViewController: OWSViewController {
         mode: Mode,
         initialMode: Mode? = nil,
         pinType: KeyBackupService.PinType = .numeric,
-        enableRegistrationLock: Bool = OWS2FAManager.shared().isRegistrationLockEnabled,
+        enableRegistrationLock: Bool = OWS2FAManager.shared.isRegistrationLockEnabled,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
-        assert(TSAccountManager.shared().isRegisteredPrimaryDevice)
+        assert(TSAccountManager.shared.isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
         self.pinType = pinType
@@ -608,9 +608,9 @@ public class PinSetupViewController: OWSViewController {
             self.recommendationLabel.alpha = 0
         }
 
-        OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
+        OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
             if self.enableRegistrationLock {
-                return OWS2FAManager.shared().enableRegistrationLockV2()
+                return OWS2FAManager.shared.enableRegistrationLockV2()
             } else {
                 return Promise.value(())
             }
@@ -633,7 +633,7 @@ public class PinSetupViewController: OWSViewController {
             // The client may have fallen out of sync with the service.
             // Try to get back to a known good state by disabling 2FA
             // whenever enabling it fails.
-            OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
+            OWS2FAManager.shared.disable2FA(success: nil, failure: nil)
 
             progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
@@ -689,7 +689,7 @@ extension PinSetupViewController: UITextFieldDelegate {
 
 extension PinSetupViewController {
     public class func disablePinWithConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
-        guard !OWS2FAManager.shared().isRegistrationLockV2Enabled else {
+        guard !OWS2FAManager.shared.isRegistrationLockV2Enabled else {
             return showRegistrationLockConfirmation(fromViewController: fromViewController)
         }
 
@@ -756,7 +756,7 @@ extension PinSetupViewController {
                 fromViewController: fromViewController,
                 canCancel: false
             ) { modal in
-                OWS2FAManager.shared().disableRegistrationLockV2().then {
+                OWS2FAManager.shared.disableRegistrationLockV2().then {
                     Promise { resolver in
                         modal.dismiss { resolver.fulfill(()) }
                     }

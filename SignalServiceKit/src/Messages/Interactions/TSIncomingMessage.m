@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSIncomingMessage.h"
@@ -206,9 +206,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                             }];
 
     // readTimestamp may be earlier than now, so backdate the expiration if necessary.
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
+    [[OWSDisappearingMessagesJob shared] startAnyExpirationForMessage:self
+                                                  expirationStartedAt:readTimestamp
+                                                          transaction:transaction];
 
     [OWSReadReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 

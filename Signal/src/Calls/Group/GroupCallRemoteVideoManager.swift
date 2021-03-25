@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalRingRTC
 
-class GroupCallRemoteVideoManager {
+class GroupCallRemoteVideoManager: Dependencies {
     private var currentGroupCall: GroupCall? {
-        guard let call = AppEnvironment.shared.callService.currentCall, call.isGroupCall else { return nil }
+        guard let call = Self.callService.currentCall, call.isGroupCall else { return nil }
         return call.groupCall
     }
 

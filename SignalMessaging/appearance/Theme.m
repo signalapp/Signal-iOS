@@ -28,15 +28,6 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 @implementation Theme
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 + (SDSKeyValueStore *)keyValueStore
 {
     return [[SDSKeyValueStore alloc] initWithCollection:@"ThemeCollection"];

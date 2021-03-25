@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -447,17 +447,7 @@ class SearchIndexer<T> {
 
 // MARK: -
 
-class AnySearchIndexer {
-
-    // MARK: - Dependencies
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private class var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
+class AnySearchIndexer: Dependencies {
 
     // MARK: - Index Building
 

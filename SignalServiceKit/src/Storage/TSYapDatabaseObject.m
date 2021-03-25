@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -118,26 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
-+ (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
 }
 
 + (NSString *)collection

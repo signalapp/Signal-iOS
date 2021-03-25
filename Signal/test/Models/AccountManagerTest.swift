@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -62,7 +62,7 @@ class AccountManagerTest: SignalBaseTest {
 
         let tsAccountManager = FailingTSAccountManager()
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManager = tsAccountManager
+        sskEnvironment.tsAccountManagerRef = tsAccountManager
     }
 
     override func tearDown() {
@@ -113,9 +113,9 @@ class AccountManagerTest: SignalBaseTest {
     func testSuccessfulRegistration() {
         let tsAccountManager = TokenObtainingTSAccountManager()
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.tsAccountManager = tsAccountManager
+        sskEnvironment.tsAccountManagerRef = tsAccountManager
 
-        AppEnvironment.shared.pushRegistrationManager = VerifyingPushRegistrationManager()
+        AppEnvironment.shared.pushRegistrationManagerRef = VerifyingPushRegistrationManager()
 
         let accountManager = AccountManager()
 

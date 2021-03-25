@@ -45,7 +45,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
         let section = OWSTableSection()
 
         let sortedCandidates = databaseStorage.uiRead { transaction in
-            self.contactsManager.sortSignalServiceAddresses(Array(self.candidates), transaction: transaction)
+            self.contactsManagerImpl.sortSignalServiceAddresses(Array(self.candidates), transaction: transaction)
         }
         for address in sortedCandidates {
             section.add(OWSTableItem(customCellBlock: {

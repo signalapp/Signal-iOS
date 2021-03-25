@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,7 @@ protocol CallAudioServiceDelegate: class {
 @objc class CallAudioService: NSObject, CallObserver {
 
     private var vibrateTimer: Timer?
-    private let audioPlayer = AVAudioPlayer()
+
     var handleRinging = false
     weak var delegate: CallAudioServiceDelegate? {
         willSet {
@@ -31,10 +31,6 @@ protocol CallAudioServiceDelegate: class {
     // Our ring buzz is a pair of vibrations.
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
 
     var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
@@ -55,7 +51,7 @@ protocol CallAudioServiceDelegate: class {
             self.audioRouteDidChange()
         }
 
-        AppEnvironment.shared.callService.addObserverAndSyncState(observer: self)
+        Self.callService.addObserverAndSyncState(observer: self)
     }
 
     deinit {

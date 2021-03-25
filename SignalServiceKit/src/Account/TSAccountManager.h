@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -38,8 +38,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 @property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
 
 #pragma mark - Initializers
-
-+ (TSAccountManager *)shared;
 
 - (void)warmCaches;
 

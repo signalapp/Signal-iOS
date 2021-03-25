@@ -194,7 +194,7 @@ extension ConversationViewController {
         // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
         // we want to scroll to the bottom to also show any active typing indicators.
         if lastVisibleInteraction.sortId == lastSortIdInLoadedWindow,
-           SSKEnvironment.shared.typingIndicators.typingAddress(forThread: thread) != nil {
+           typingIndicatorsImpl.typingAddress(forThread: thread) != nil {
             return scrollToBottomOfConversation(animated: animated)
         }
 
@@ -354,7 +354,7 @@ extension ConversationViewController {
             // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
             // we want to scroll to the bottom to also show any active typing indicators.
             if lastVisibleInteraction.sortId == lastSortIdInLoadedWindow,
-               SSKEnvironment.shared.typingIndicators.typingAddress(forThread: thread) != nil {
+               typingIndicatorsImpl.typingAddress(forThread: thread) != nil {
                 return CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
             }
             if let lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom,

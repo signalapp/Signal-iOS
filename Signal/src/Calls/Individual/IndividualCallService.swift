@@ -13,6 +13,11 @@ import SignalMessaging
 
 // This class' state should only be accessed on the main queue.
 @objc final public class IndividualCallService: NSObject {
+
+    private var callManager: CallService.CallManagerType {
+        return callService.callManager
+    }
+
     // MARK: - Properties
 
     // Exposed by environment.m
@@ -27,48 +32,6 @@ import SignalMessaging
         super.init()
 
         SwiftSingletons.register(self)
-    }
-
-    // MARK: - Dependencies
-
-    private var callService: CallService {
-        return AppEnvironment.shared.callService
-    }
-
-    private var callManager: CallService.CallManagerType {
-        return callService.callManager
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var notificationPresenter: NotificationPresenter {
-        return AppEnvironment.shared.notificationPresenter
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    private var identityManager: OWSIdentityManager {
-        return .shared()
     }
 
     /**
@@ -539,13 +502,13 @@ import SignalMessaging
 
             var isUnknownCaller = false
             if call.individualCall.direction == .incoming {
-                isUnknownCaller = !self.contactsManager.hasSignalAccount(for: call.individualCall.thread.contactAddress)
+                isUnknownCaller = !self.contactsManagerImpl.hasSignalAccount(for: call.individualCall.thread.contactAddress)
                 if isUnknownCaller {
                     Logger.warn("Using relay server because remote user is an unknown caller")
                 }
             }
 
-            let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
+            let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress()
 
             let useLowBandwidth = CallService.useLowBandwidthWithSneakyTransaction()
             Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")

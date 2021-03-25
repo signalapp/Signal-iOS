@@ -35,58 +35,6 @@ public class UpsertGroupResult: NSObject {
 @objc
 public class GroupManager: NSObject {
 
-    // MARK: - Dependencies
-
-    private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    private class var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private class var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private class var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
-
-    private class var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private class var storageServiceManager: StorageServiceManagerProtocol {
-        return SSKEnvironment.shared.storageServiceManager
-    }
-
-    fileprivate class var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
-    }
-
-    private class var bulkProfileFetch: BulkProfileFetch {
-        return SSKEnvironment.shared.bulkProfileFetch
-    }
-
-    private class var bulkUUIDLookup: BulkUUIDLookup {
-        return SSKEnvironment.shared.bulkUUIDLookup
-    }
-
-    private class var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     // Never instantiate this class.
     private override init() {}
 
@@ -328,7 +276,7 @@ public class GroupManager: NSObject {
             // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
             firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind))
+                self.groupsV2Swift.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
             }
@@ -376,7 +324,7 @@ public class GroupManager: NSObject {
             }
             // Upload avatar.
             return firstly {
-                self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
+                self.groupsV2Swift.uploadGroupAvatar(avatarData: avatarData,
                                                 groupSecretParamsData: proposedGroupModelV2.secretParamsData)
             }.map(on: DispatchQueue.global()) { (avatarUrlPath: String) -> TSGroupModel in
                 // Fill in the avatarUrl on the group model.
@@ -392,10 +340,10 @@ public class GroupManager: NSObject {
                 return Promise.value(proposedGroupModel)
             }
             return firstly {
-                self.groupsV2.createNewGroupOnService(groupModel: proposedGroupModelV2,
+                self.groupsV2Swift.createNewGroupOnService(groupModel: proposedGroupModelV2,
                                                       disappearingMessageToken: disappearingMessageToken)
             }.then(on: .global()) { _ in
-                self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
+                self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModel in
                     var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
@@ -520,7 +468,7 @@ public class GroupManager: NSObject {
 
             // We must call this _after_ we try to fetch profile key credentials for
             // all members.
-            let isPending = !groupsV2.hasProfileKeyCredential(for: address,
+            let isPending = !groupsV2Swift.hasProfileKeyCredential(for: address,
                                                               transaction: transaction)
             guard let role = newGroupMembership.role(for: address) else {
                 owsFailDebug("Missing role: \(address)")
@@ -870,7 +818,7 @@ public class GroupManager: NSObject {
             }
             return firstly {
                 // Upload avatar.
-                return self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
+                return self.groupsV2Swift.uploadGroupAvatar(avatarData: avatarData,
                                                        groupSecretParamsData: oldGroupModel.secretParamsData)
             }.map(on: .global()) { (avatarUrlPath: String) throws -> String? in
                 // Convert Promise<String> to Promise<String?>
@@ -909,7 +857,7 @@ public class GroupManager: NSObject {
                 // avatar.  Alice updates the group first.  When Bob's
                 // client tries to update, it should only reflect Bob's
                 // intent - to change the group avatar.
-                let changes = try self.groupsV2.buildChangeSet(oldGroupModel: oldGroupModel,
+                let changes = try self.groupsV2Swift.buildChangeSet(oldGroupModel: oldGroupModel,
                                                                newGroupModel: newGroupModel,
                                                                oldDMConfiguration: updateInfo.oldDMConfiguration,
                                                                newDMConfiguration: updateInfo.newDMConfiguration,
@@ -917,7 +865,7 @@ public class GroupManager: NSObject {
                 return (updateInfo, changes)
             }
         }.then(on: .global()) { (_: UpdateInfo, changes: GroupsV2OutgoingChanges) throws -> Promise<TSGroupThread> in
-            return self.groupsV2.updateExistingGroupOnService(changes: changes,
+            return self.groupsV2Swift.updateExistingGroupOnService(changes: changes,
                                                               requiredRevision: nil)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update existing group") {
@@ -1339,7 +1287,7 @@ public class GroupManager: NSObject {
     }
 
     public static func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        try groupsV2.groupInviteLink(forGroupModelV2: groupModelV2)
+        try groupsV2Swift.groupInviteLink(forGroupModelV2: groupModelV2)
     }
 
     @objc
@@ -1347,7 +1295,7 @@ public class GroupManager: NSObject {
         guard RemoteConfig.groupsV2InviteLinks else {
             return false
         }
-        return groupsV2.isPossibleGroupInviteLink(url)
+        return groupsV2Swift.isPossibleGroupInviteLink(url)
     }
 
     @objc
@@ -1355,12 +1303,12 @@ public class GroupManager: NSObject {
         guard RemoteConfig.groupsV2InviteLinks else {
             return nil
         }
-        return groupsV2.parseGroupInviteLink(url)
+        return groupsV2Swift.parseGroupInviteLink(url)
     }
 
     @objc
     public static func isGroupInviteLink(_ url: URL) -> Bool {
-        nil != groupsV2.parseGroupInviteLink(url)
+        nil != groupsV2Swift.parseGroupInviteLink(url)
     }
 
     public static func joinGroupViaInviteLink(groupId: Data,
@@ -1373,7 +1321,7 @@ public class GroupManager: NSObject {
         return firstly(on: .global()) {
             self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            self.groupsV2.joinGroupViaInviteLink(groupId: groupId,
+            self.groupsV2Swift.joinGroupViaInviteLink(groupId: groupId,
                                                  groupSecretParamsData: groupSecretParamsData,
                                                  inviteLinkPassword: inviteLinkPassword,
                                                  groupInviteLinkPreview: groupInviteLinkPreview,
@@ -1413,21 +1361,21 @@ public class GroupManager: NSObject {
         let description = "Cancel Member Request"
 
         return firstly(on: .global()) {
-            self.groupsV2.cancelMemberRequests(groupModel: groupModel)
+            self.groupsV2Swift.cancelMemberRequests(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             GroupsV2Error.timeout
         }
     }
 
     private static func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
-        groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModel)
+        groupsV2Swift.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModel)
     }
 
     @objc
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
-            let groupContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
+            let groupContextInfo = try self.groupsV2Swift.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            return groupsV2Swift.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -1442,7 +1390,7 @@ public class GroupManager: NSObject {
         return firstly {
             self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            self.groupsV2.updateGroupV2(groupModel: groupModel, changesBlock: changesBlock)
+            self.groupsV2Swift.updateGroupV2(groupModel: groupModel, changesBlock: changesBlock)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
             GroupsV2Error.timeout
@@ -2215,7 +2163,7 @@ public class GroupManager: NSObject {
             // We only need to notify the storage service about v2 groups.
             return
         }
-        guard !groupsV2.isGroupKnownToStorageService(groupModel: groupModel,
+        guard !groupsV2Swift.isGroupKnownToStorageService(groupModel: groupModel,
                                                      transaction: transaction) else {
             // To avoid redundant storage service writes,
             // don't bother notifying the storage service
@@ -2270,7 +2218,7 @@ public class GroupManager: NSObject {
                                    transaction: transaction)
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
-            SSKEnvironment.shared.notificationsManager.notifyUser(
+            self.notificationsManager?.notifyUser(
                 for: infoMessage,
                 thread: groupThread,
                 wantsSound: true,
@@ -2449,7 +2397,7 @@ public class GroupManager: NSObject {
         }
 
         return databaseStorage.read(.promise) { transaction -> Bool in
-            return self.groupsV2.hasProfileKeyCredential(for: localAddress,
+            return self.groupsV2Swift.hasProfileKeyCredential(for: localAddress,
                                                          transaction: transaction)
         }.then(on: .global()) { hasLocalCredential -> Promise<Void> in
             guard !hasLocalCredential else {
@@ -2473,7 +2421,7 @@ public class GroupManager: NSObject {
             // for the local user (which should last forever) we'll abort above.
             // Group v2 actions will use tryToEnsureProfileKeyCredentials()
             // and we want to set them up to succeed.
-            return self.groupsV2.reuploadLocalProfilePromise()
+            return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
 

@@ -36,14 +36,14 @@ class AudioMessageView: OWSStackView {
     private let waveformProgress = AudioWaveformProgressView()
 
     private var audioPlaybackState: AudioPlaybackState {
-        audioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
+        cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
     }
 
     private var elapsedSeconds: TimeInterval {
         guard let attachmentStream = self.attachmentStream else {
             return 0
         }
-        return audioPlayer.playbackProgress(forAttachmentStream: attachmentStream)
+        return cvAudioPlayer.playbackProgress(forAttachmentStream: attachmentStream)
     }
 
     @objc
@@ -120,7 +120,7 @@ class AudioMessageView: OWSStackView {
 
         updateContents(animated: false)
 
-        audioPlayer.addListener(self)
+        cvAudioPlayer.addListener(self)
     }
 
     @available(swift, obsoleted: 1.0)

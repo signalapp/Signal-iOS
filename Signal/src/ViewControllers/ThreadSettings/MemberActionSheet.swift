@@ -8,18 +8,6 @@ import ContactsUI
 @objc
 class MemberActionSheet: NSObject {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
-    // MARK: -
-
     @objc
     let address: SignalServiceAddress
 
@@ -95,7 +83,7 @@ class MemberActionSheet: NSObject {
         blockAction.leadingIcon = .settingsBlock
         actionSheet.addAction(blockAction)
 
-        if contactsManager.supportsContactEditing && !contactsManager.isSystemContact(address: address) {
+        if contactsManagerImpl.supportsContactEditing && !contactsManager.isSystemContact(address: address) {
             let addToContactsAction = ActionSheetAction(
                 title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                                          comment: "button in conversation settings view."),
@@ -209,8 +197,8 @@ private class MemberHeader: UIStackView {
         databaseStorage.read { transaction in
             fetchedThread = TSContactThread.getWithContactAddress(address, transaction: transaction)
             fetchedDisplayName = self.contactsManager.displayName(for: address, transaction: transaction)
-            username = self.profileManager.username(for: address, transaction: transaction)
-            bioForDisplay = self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
+            username = self.profileManagerImpl.username(for: address, transaction: transaction)
+            bioForDisplay = self.profileManagerImpl.profileBioForDisplay(for: address, transaction: transaction)
         }
 
         // Only open a write transaction if we need to create a new thread record.
@@ -244,7 +232,7 @@ private class MemberHeader: UIStackView {
         )
 
         if address.isLocalAddress {
-            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             avatarView.image = avatarBuilder.build()
         }

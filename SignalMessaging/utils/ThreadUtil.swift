@@ -8,22 +8,6 @@ import PromiseKit
 @objc
 public extension ThreadUtil {
 
-    private class var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    // MARK: -
-
     @discardableResult
     class func enqueueMessage(withContactShare contactShare: OWSContact,
                               thread: TSThread) -> TSOutgoingMessage {
@@ -183,9 +167,6 @@ public extension ThreadUtil {
 import Intents
 
 extension TSThread {
-    var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
 
     @objc
     public func donateSendMessageIntentWithSneakyTransaction() {

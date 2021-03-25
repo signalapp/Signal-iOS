@@ -88,15 +88,7 @@ public class GroupMigrationActionSheet: UIView {
         stackView.setContentHuggingHorizontalLow()
     }
 
-    private struct Builder {
-
-        // MARK: - Dependencies
-
-        private static var contactsManager: OWSContactsManager {
-            return Environment.shared.contactsManager
-        }
-
-        // MARK: -
+    private struct Builder: Dependencies {
 
         var subviews = [UIView]()
 
@@ -187,7 +179,7 @@ public class GroupMigrationActionSheet: UIView {
 
             let label = buildLabel()
             label.font = .ows_dynamicTypeBody
-            label.text = Self.contactsManager.displayName(for: address, transaction: transaction)
+            label.text = Self.contactsManagerImpl.displayName(for: address, transaction: transaction)
             label.setContentHuggingHorizontalLow()
 
             let row = UIStackView(arrangedSubviews: [avatarView, label])

@@ -8,30 +8,6 @@ import PromiseKit
 @objc
 public class OWSAttachmentDownloads: NSObject {
 
-    // MARK: - Dependencies
-
-    private class var signalService: OWSSignalService {
-        return .shared()
-    }
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private class var reachabilityManager: SSKReachabilityManager {
-        SSKEnvironment.shared.reachabilityManager
-    }
-
-    private class var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    // MARK: -
-
     public typealias AttachmentId = String
 
     private enum JobType {

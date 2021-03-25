@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncompleteCallsJob.h"
@@ -20,15 +20,6 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
 #pragma mark -
 
 @implementation OWSIncompleteCallsJob
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (NSArray<NSString *> *)fetchIncompleteCallIdsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {

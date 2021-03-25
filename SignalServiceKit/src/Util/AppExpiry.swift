@@ -1,18 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 public class AppExpiry: NSObject {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
 
     @objc
     public static let appExpiredStatusCode: UInt = 499
@@ -139,11 +131,6 @@ public class AppExpiry: NSObject {
 
     @objc
     public static let AppExpiryDidChange = Notification.Name("AppExpiryDidChange")
-
-    @objc
-    public class var shared: AppExpiry {
-        SSKEnvironment.shared.appExpiry
-    }
 
     // By default, we expire 90 days after the app was compiled.
     private let defaultExpirationDate = CurrentAppContext().buildTime.addingTimeInterval(90 * kDayInterval)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesAction.h"
@@ -24,15 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation DebugUIMessagesAction
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (DebugUIMessagesSingleAction *)nextActionToPerform
 {

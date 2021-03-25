@@ -13,15 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (instancetype)initWithThread:(TSThread *)thread
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];

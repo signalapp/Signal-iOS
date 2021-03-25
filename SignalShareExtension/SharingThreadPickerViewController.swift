@@ -101,7 +101,7 @@ extension SharingThreadPickerViewController {
             if avatarImageData == nil {
                 let contact = Contact(systemContact: cnContact)
                 for address in contact.registeredAddresses() {
-                    guard let data = contactsManager.profileImageDataForAddress(
+                    guard let data = contactsManagerImpl.profileImageDataForAddress(
                         withSneakyTransaction: address
                     ) else { continue }
                     avatarImageData = data

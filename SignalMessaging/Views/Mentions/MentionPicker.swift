@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ class MentionPicker: UIView {
 
     required init(mentionableAddresses: [SignalServiceAddress], style: Mention.Style, selectedAddressCallback: @escaping (SignalServiceAddress) -> Void) {
         mentionableUsers = Self.databaseStorage.uiRead { transaction in
-            let sortedAddresses = Self.contactsManager.sortSignalServiceAddresses(
+            let sortedAddresses = Self.contactsManagerImpl.sortSignalServiceAddresses(
                 mentionableAddresses,
                 transaction: transaction
             )
@@ -38,7 +38,7 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    username: Self.profileManager.username(for: address, transaction: transaction),
+                    username: Self.profileManagerImpl.username(for: address, transaction: transaction),
                     displayName: Self.contactsManager.displayName(for: address, transaction: transaction),
                     conversationColorName: TSContactThread.conversationColorName(forContactAddress: address,
                                                                                  transaction: transaction)

@@ -9,14 +9,6 @@ import CocoaLumberjack
 @objc
 public class SSKBaseTestSwift: XCTestCase {
 
-    // MARK: - Dependencies
-
-    var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    // MARK: -
-
     @objc
     public override func setUp() {
         super.setUp()
@@ -43,11 +35,6 @@ public class SSKBaseTestSwift: XCTestCase {
         }
 
         super.tearDown()
-    }
-
-    @objc
-    public var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
     }
 
     @objc

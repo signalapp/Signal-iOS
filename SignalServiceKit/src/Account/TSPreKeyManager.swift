@@ -7,14 +7,6 @@ import Foundation
 @objc
 public class MessageProcessingOperation: OWSOperation {
 
-    // MARK: - Dependencies
-
-    private var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
-    }
-
-    // MARK: - 
-
     public override func run() {
         Logger.debug("")
 

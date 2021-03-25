@@ -25,7 +25,7 @@ struct NameCollisionCellModel {
 
 extension NameCollision {
     private func avatar(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> UIImage? {
-        if address.isLocalAddress, let localProfileAvatar = OWSProfileManager.shared().localProfileAvatarImage() {
+        if address.isLocalAddress, let localProfileAvatar = profileManager.localProfileAvatarImage() {
             return localProfileAvatar
         } else {
             return OWSContactAvatarBuilder.buildImage(
@@ -79,8 +79,8 @@ extension NameCollision {
                 updateTimestamp: $0.latestUpdateTimestamp,
                 commonGroupsString: commonGroupsString(for: $0.address, thread: thread, transaction: transaction),
                 avatar: avatar(for: $0.address, transaction: transaction),
-                isBlocked: OWSBlockingManager.shared().isAddressBlocked($0.address),
-                isSystemContact: Environment.shared.contactsManager.isSystemContact(address: $0.address)
+                isBlocked: blockingManager.isAddressBlocked($0.address),
+                isSystemContact: Self.contactsManager.isSystemContact(address: $0.address)
             )
         }
     }

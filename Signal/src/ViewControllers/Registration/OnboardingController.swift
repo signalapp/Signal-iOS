@@ -82,42 +82,6 @@ public class OnboardingNavigationController: OWSNavigationController {
 @objc
 public class OnboardingController: NSObject {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var backup: OWSBackup {
-        return AppEnvironment.shared.backup
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private var ows2FAManager: OWS2FAManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public enum OnboardingMode {
         case provisioning
         case registering
@@ -362,7 +326,7 @@ public class OnboardingController: NSObject {
         Logger.info("")
 
         // TODO: Once notification work is complete, uncomment this.
-        // AppEnvironment.shared.notificationPresenter.cancelIncompleteRegistrationNotification()
+        // Self.notificationPresenter.cancelIncompleteRegistrationNotification()
 
         let view = OnboardingVerificationViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
@@ -404,7 +368,7 @@ public class OnboardingController: NSObject {
         // We start the contact fetch/intersection now so that by the time
         // they get to conversation list we can show meaningful contact in
         // the suggested contact bubble.
-        contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+        contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         if tsAccountManager.isReregistering {
             showNextMilestone(navigationController: navigationController)
@@ -908,10 +872,10 @@ public class OnboardingController: NSObject {
             // Re-enable 2FA and RegLock with the registered pin, if any
             if let pin = twoFAPin {
                 self.databaseStorage.write { transaction in
-                    OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
+                    OWS2FAManager.shared.markEnabled(pin: pin, transaction: transaction)
                 }
-                if OWS2FAManager.shared().mode == .V2 {
-                    return OWS2FAManager.shared().enableRegistrationLockV2()
+                if OWS2FAManager.shared.mode == .V2 {
+                    return OWS2FAManager.shared.enableRegistrationLockV2()
                 }
             }
             return Promise.value(())

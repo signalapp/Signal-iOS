@@ -7,35 +7,7 @@ import SwiftProtobuf
 
 // MARK: - Contact Record
 
-extension StorageServiceProtoContactRecord {
-
-    // MARK: - Dependencies
-
-    static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    static var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    static var identityManager: OWSIdentityManager {
-        return .shared()
-    }
-
-    var identityManager: OWSIdentityManager {
-        return .shared()
-    }
-
-    // MARK: -
+extension StorageServiceProtoContactRecord: Dependencies {
 
     static func build(
         for accountId: AccountId,
@@ -58,8 +30,8 @@ extension StorageServiceProtoContactRecord {
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-        let profileGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
-        let profileFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
+        let profileGivenName = profileManagerImpl.unfilteredGivenName(for: address, transaction: transaction)
+        let profileFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
         builder.setWhitelisted(isInWhitelist)
@@ -132,8 +104,8 @@ extension StorageServiceProtoContactRecord {
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
-        let localGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
-        let localFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
+        let localGivenName = profileManagerImpl.unfilteredGivenName(for: address, transaction: transaction)
+        let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
         let localIsBlocked = blockingManager.isAddressBlocked(address)
@@ -161,7 +133,7 @@ extension StorageServiceProtoContactRecord {
             // we'll just kick off a fetch of that user's profile
             // to make sure everything is up-to-date.
             if localGivenName != nil {
-                SSKEnvironment.shared.bulkProfileFetch.fetchProfile(address: address)
+                Self.bulkProfileFetch.fetchProfile(address: address)
             } else {
                 profileManager.setProfileGivenName(
                     givenName,
@@ -264,27 +236,7 @@ extension StorageServiceProtoContactRecordIdentityState {
 
 // MARK: - Group V1 Record
 
-extension StorageServiceProtoGroupV1Record {
-
-    // MARK: - Dependencies
-
-    static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    static var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    // MARK: -
+extension StorageServiceProtoGroupV1Record: Dependencies {
 
     static func build(
         for groupId: Data,
@@ -381,35 +333,7 @@ extension StorageServiceProtoGroupV1Record {
 
 // MARK: - Group V2 Record
 
-extension StorageServiceProtoGroupV2Record {
-
-    // MARK: - Dependencies
-
-    static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    static var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    static var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    var groupsV2: GroupsV2 {
-        return SSKEnvironment.shared.groupsV2
-    }
-
-    // MARK: -
+extension StorageServiceProtoGroupV2Record: Dependencies {
 
     static func build(
         for masterKeyData: Data,
@@ -550,59 +474,7 @@ extension StorageServiceProtoGroupV2Record {
 
 // MARK: - Account Record
 
-extension StorageServiceProtoAccountRecord {
-
-    // MARK: - Dependencies
-
-    static var readReceiptManager: OWSReadReceiptManager {
-        return .shared()
-    }
-
-    var readReceiptManager: OWSReadReceiptManager {
-        return .shared()
-    }
-
-    static var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    static var typingIndicatorsManager: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
-    var typingIndicatorsManager: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
-    static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    static var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    static var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    // MARK: -
+extension StorageServiceProtoAccountRecord: Dependencies {
 
     static func build(
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
@@ -618,10 +490,10 @@ extension StorageServiceProtoAccountRecord {
             builder.setProfileKey(profileKey)
         }
 
-        if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
+        if let profileGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction) {
             builder.setGivenName(profileGivenName)
         }
-        if let profileFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction) {
+        if let profileFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction) {
             builder.setFamilyName(profileFamilyName)
         }
 
@@ -640,7 +512,7 @@ extension StorageServiceProtoAccountRecord {
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
         builder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
 
-        let typingIndicatorsEnabled = typingIndicatorsManager.areTypingIndicatorsEnabled()
+        let typingIndicatorsEnabled = typingIndicatorsImpl.areTypingIndicatorsEnabled()
         builder.setTypingIndicators(typingIndicatorsEnabled)
 
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
@@ -683,8 +555,8 @@ extension StorageServiceProtoAccountRecord {
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
-        let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
-        let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
+        let localGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction)
+        let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
 
         // On the primary device, we only ever want to
@@ -760,9 +632,9 @@ extension StorageServiceProtoAccountRecord {
             preferences.setShouldShowUnidentifiedDeliveryIndicators(sealedSenderIndicators, transaction: transaction)
         }
 
-        let typingIndicatorsEnabled = typingIndicatorsManager.areTypingIndicatorsEnabled()
+        let typingIndicatorsEnabled = typingIndicatorsImpl.areTypingIndicatorsEnabled()
         if typingIndicators != typingIndicatorsEnabled {
-            typingIndicatorsManager.setTypingIndicatorsEnabled(value: typingIndicators, transaction: transaction)
+            typingIndicatorsImpl.setTypingIndicatorsEnabled(value: typingIndicators, transaction: transaction)
         }
 
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
@@ -857,10 +729,6 @@ extension Data {
 // MARK: -
 
 extension PinnedThreadManager {
-    static var groupsV2: GroupsV2 {
-        SSKEnvironment.shared.groupsV2
-    }
-
     public class func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
         transaction: SDSAnyWriteTransaction

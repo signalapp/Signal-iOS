@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -8,18 +8,6 @@ import XCTest
 @testable import SignalMessaging
 
 class GRDBFinderTest: SignalBaseTest {
-
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    // MARK: -
 
     override func setUp() {
         super.setUp()

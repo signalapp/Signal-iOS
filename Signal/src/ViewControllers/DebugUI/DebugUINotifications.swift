@@ -11,24 +11,6 @@ import PromiseKit
 
 class DebugUINotifications: DebugUIPage {
 
-    // MARK: Dependencies
-
-    var notificationPresenter: NotificationPresenter {
-        return AppEnvironment.shared.notificationPresenter
-    }
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
     // MARK: Overrides
 
     override func name() -> String {

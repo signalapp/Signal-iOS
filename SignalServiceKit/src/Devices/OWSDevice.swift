@@ -1,19 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
 public extension OWSDevice {
-
-    // MARK: - Dependencies
-
-    private class var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    // MARK: -
 
     // Updates the list of devices in the database.
     //

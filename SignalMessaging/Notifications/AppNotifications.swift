@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,20 +192,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             NotificationCenter.default.addObserver(self, selector: #selector(self.handleMessageRead), name: .incomingMessageMarkedAsRead, object: nil)
         }
         SwiftSingletons.register(self)
-    }
-
-    // MARK: - Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var identityManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
-    }
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
     }
 
     var previewType: NotificationType {

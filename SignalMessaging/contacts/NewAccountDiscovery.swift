@@ -10,20 +10,6 @@ public class NewAccountDiscovery: NSObject {
     @objc
     public static let shared = NewAccountDiscovery()
 
-    // MARK: - Dependencies
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var notificationPresenter: NotificationsProtocol {
-        return SSKEnvironment.shared.notificationsManager
-    }
-
     // MARK: -
 
     @objc(discoveredNewRecipients:)
@@ -63,11 +49,16 @@ public class NewAccountDiscovery: NSObject {
                                             messageType: .userJoinedSignal)
                 message.anyInsert(transaction: transaction)
 
+                guard let notificationPresenter = Self.notificationPresenter else {
+                    owsFailDebug("Missing notificationPresenter.")
+                    continue
+                }
+
                 // Keep these notifications less obtrusive by making them silent.
-                self.notificationPresenter.notifyUser(for: message,
-                                                      thread: thread,
-                                                      wantsSound: false,
-                                                      transaction: transaction)
+                notificationPresenter.notifyUser(for: message,
+                                                 thread: thread,
+                                                 wantsSound: false,
+                                                 transaction: transaction)
             }
         }
     }

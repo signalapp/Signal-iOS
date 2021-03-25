@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,10 +8,6 @@ import PromiseKit
 open class CDNDownloadOperation: OWSOperation {
 
     // MARK: - Dependencies
-
-    private var signalService: OWSSignalService {
-        OWSSignalService.shared()
-    }
 
     private var cdn0urlSession: OWSURLSession {
         signalService.urlSessionForCdn(cdnNumber: 0)

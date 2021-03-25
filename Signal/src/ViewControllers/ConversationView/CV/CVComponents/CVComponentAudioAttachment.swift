@@ -7,14 +7,6 @@ import Foundation
 @objc
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
-    // MARK: - Dependencies
-
-    private var audioPlayer: CVAudioPlayer {
-        return AppEnvironment.shared.audioPlayer
-    }
-
-    // MARK: -
-
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
@@ -67,7 +59,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         guard let attachmentStream = attachmentStream else {
             return false
         }
-        audioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
+        cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
         return true
     }
 
@@ -143,10 +135,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             // we still call `scrubToLocation` above in order to update the slider.
             audioMessageView.clearOverrideProgress(animated: false)
             let scrubbedTime = audioMessageView.scrubToLocation(location)
-            audioPlayer.setPlaybackProgress(progress: scrubbedTime,
+            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime,
                                             forAttachmentStream: attachmentStream)
-            if audioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) != .playing {
-                audioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
+            if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) != .playing {
+                cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
             }
         case .possible, .began, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)

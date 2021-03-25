@@ -362,7 +362,7 @@ public class SignalAccountCursor: NSObject {
             return nil
         }
         let value = try SignalAccount.fromRecord(record)
-        SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
+        Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -623,7 +623,7 @@ public extension SignalAccount {
             }
 
             let value = try SignalAccount.fromRecord(record)
-            SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
+            Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

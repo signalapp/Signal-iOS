@@ -799,7 +799,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     ComposeViewController *viewController = [ComposeViewController new];
 
-    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+    [self.contactsManagerImpl requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
             OWSLogError(@"Error when requesting contacts: %@", error);
         }
@@ -824,7 +824,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     UIViewController *newGroupViewController = [NewGroupMembersViewController new];
 
-    [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+    [self.contactsManagerImpl requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
             OWSLogError(@"Error when requesting contacts: %@", error);
         }

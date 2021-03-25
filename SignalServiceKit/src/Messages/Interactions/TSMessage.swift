@@ -130,7 +130,7 @@ public extension TSMessage {
         databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
 
         DispatchQueue.main.async {
-            SSKEnvironment.shared.notificationsManager.cancelNotifications(reactionId: reaction.uniqueId)
+            Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
         }
     }
 
@@ -196,7 +196,7 @@ public extension TSMessage {
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
         DispatchQueue.main.async {
-            SSKEnvironment.shared.notificationsManager.cancelNotifications(messageId: self.uniqueId)
+            Self.notificationsManager?.cancelNotifications(messageId: self.uniqueId)
         }
     }
 }

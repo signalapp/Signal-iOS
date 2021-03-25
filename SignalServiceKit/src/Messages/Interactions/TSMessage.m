@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -627,9 +627,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return;
     }
     uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:nowMs
-                                                             transaction:transaction];
+    [[OWSDisappearingMessagesJob shared] startAnyExpirationForMessage:self
+                                                  expirationStartedAt:nowMs
+                                                          transaction:transaction];
 }
 
 - (void)updateStoredShouldStartExpireTimer

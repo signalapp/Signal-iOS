@@ -29,15 +29,7 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
-public class GroupsV2IncomingChanges {
-
-    // MARK: - Dependencies
-
-    private static var tsAccountManager: TSAccountManager {
-        .shared()
-    }
-
-    // MARK: -
+public class GroupsV2IncomingChanges: Dependencies {
 
     // GroupsV2IncomingChanges has one responsibility: applying incremental
     // changes to group models. It should exactly mimic the behavior

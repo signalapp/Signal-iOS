@@ -60,19 +60,7 @@ public struct CVItemViewState: Equatable {
 
 // MARK: -
 
-struct CVItemModelBuilder: CVItemBuilding {
-
-    // MARK: - Dependencies
-
-    private static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    // MARK: -
+struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
     let itemBuildingContext: CVItemBuildingContext
     let messageMapping: CVMessageMapping

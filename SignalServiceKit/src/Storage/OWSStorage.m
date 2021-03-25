@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -105,20 +105,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 #pragma mark -
 
 @implementation OWSDatabaseConnection
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
-#pragma mark -
 
 - (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
 {
@@ -374,20 +360,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 #pragma mark -
 
 @implementation OWSStorage
-
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SSKEnvironment.shared.databaseStorage;
-}
-
-+ (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-#pragma mark -
 
 - (instancetype)init
 {

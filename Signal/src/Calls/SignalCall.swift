@@ -52,10 +52,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public let audioActivity: AudioActivity
 
-    private var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     @objc
     var isGroupCall: Bool {
         switch mode {
@@ -146,7 +142,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         let videoCaptureController = VideoCaptureController()
 
-        guard let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
+        guard let groupCall = Self.callService.callManager.createGroupCall(
             groupId: thread.groupModel.groupId,
             sfuUrl: TSConstants.sfuURL,
             videoCaptureController: videoCaptureController

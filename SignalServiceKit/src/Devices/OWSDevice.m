@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
@@ -26,15 +26,6 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 #pragma mark -
 
 @implementation OWSDeviceManager
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
 {
@@ -119,22 +110,6 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 #pragma mark -
 
 @implementation OWSDevice
-
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (OWSIdentityManager *)identityManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.identityManager);
-
-    return SSKEnvironment.shared.identityManager;
-}
-
-#pragma mark -
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {

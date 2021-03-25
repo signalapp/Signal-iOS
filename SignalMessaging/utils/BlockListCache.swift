@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -43,10 +43,6 @@ public class BlockListCache: NSObject {
     private var blockedGroupIds: Set<Data> = Set()
     private let serialQueue: DispatchQueue = DispatchQueue(label: "BlockListCache")
     weak var delegate: BlockListCacheDelegate?
-
-    private var blockingManager: OWSBlockingManager {
-        return OWSBlockingManager.shared()
-    }
 
     /// Generally something which wants to use this cache wants to do 3 things
     ///   1. get the cache on the latest state

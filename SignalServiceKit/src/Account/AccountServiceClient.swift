@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,12 +15,6 @@ public enum AccountServiceClientError: Error {
 /// based on libsignal-service-java's AccountManager class
 @objc
 public class AccountServiceClient: NSObject {
-
-    private let serviceClient: SignalServiceClient
-
-    override init() {
-        self.serviceClient = SignalServiceRestClient()
-    }
 
     // MARK: - Public
 

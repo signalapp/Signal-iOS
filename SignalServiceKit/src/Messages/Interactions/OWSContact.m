@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContact.h"
@@ -398,15 +398,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 #pragma mark -
 
 @implementation OWSContact
-
-#pragma mark - Dependencies
-
-+ (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
-#pragma mark -
 
 - (instancetype)init
 {

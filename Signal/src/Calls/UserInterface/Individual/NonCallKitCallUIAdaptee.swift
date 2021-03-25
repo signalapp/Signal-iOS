@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,23 +11,13 @@ import SignalMessaging
  */
 class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
-    let notificationPresenter: NotificationPresenter
-
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
 
-    required init(notificationPresenter: NotificationPresenter) {
+    required override init() {
         AssertIsOnMainThread()
 
-        self.notificationPresenter = notificationPresenter
-
         super.init()
-    }
-
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
     }
 
     // MARK: 

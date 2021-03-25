@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,22 +7,6 @@ import PromiseKit
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
-
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private static var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    // MARK: -
 
     public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
@@ -38,7 +22,7 @@ public class ReactionManager: NSObject {
             return
         }
         let messagePreparer = outgoingMessage.asPreparer
-        SSKEnvironment.shared.messageSenderJobQueue.add(message: messagePreparer, transaction: transaction)
+        Self.messageSenderJobQueue.add(message: messagePreparer, transaction: transaction)
     }
 
     public class func localUserReactedWithNonDurableSend(to message: TSMessage,
@@ -191,7 +175,7 @@ public class ReactionManager: NSObject {
                     return .success
                 }
 
-                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, on: message, thread: thread, transaction: transaction)
+                self.notificationsManager?.notifyUser(for: reaction, on: message, thread: thread, transaction: transaction)
             }
         }
 

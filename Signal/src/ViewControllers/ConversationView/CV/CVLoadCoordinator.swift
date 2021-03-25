@@ -37,26 +37,6 @@ struct CVUpdateToken {
 @objc
 public class CVLoadCoordinator: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private static var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    private var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
-    private var callService: CallService {
-        return AppEnvironment.shared.callService
-    }
-
-    // MARK: -
-
     private weak var delegate: CVLoadCoordinatorDelegate?
     private weak var componentDelegate: CVComponentDelegate?
 
@@ -456,7 +436,7 @@ public class CVLoadCoordinator: NSObject {
             lastLoadNewerDate = Date()
         }
 
-        let typingIndicatorsSender = typingIndicators.typingAddress(forThread: thread)
+        let typingIndicatorsSender = typingIndicatorsImpl.typingAddress(forThread: thread)
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
                                                              typingIndicatorsSender: typingIndicatorsSender,
                                                              hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator)
@@ -708,9 +688,9 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
         //            cellName = [NSString stringWithFormat:@"message.sticker.%@", [viewItem.stickerInfo asKey]];
         //        }
         //        cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
-        //#endif
+        // #endif
         //
-        //return cell;
+        // return cell;
     }
 
     public func collectionView(_ collectionView: UICollectionView,

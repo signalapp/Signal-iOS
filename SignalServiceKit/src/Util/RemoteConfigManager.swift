@@ -164,7 +164,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var researchMegaphone: Bool {
-        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else { return false }
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
         return remoteConfig.researchMegaphone
     }
 
@@ -192,7 +192,7 @@ public class RemoteConfig: BaseFlags {
 
         guard !countEnabledPerCountryCode.isEmpty else { return false }
 
-        guard let localE164 = TSAccountManager.shared().localNumber,
+        guard let localE164 = TSAccountManager.shared.localNumber,
             let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
                 owsFailDebug("Missing local number")
                 return false
@@ -211,7 +211,7 @@ public class RemoteConfig: BaseFlags {
     // MARK: -
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
-        guard let uuid = TSAccountManager.shared().localUuid else {
+        guard let uuid = TSAccountManager.shared.localUuid else {
             owsFailDebug("Missing local UUID")
             return false
         }
@@ -250,14 +250,14 @@ public class RemoteConfig: BaseFlags {
     }
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
-        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
             return defaultValue
         }
         return remoteConfig.isEnabledFlags[flag.rawFlag] ?? defaultValue
     }
 
     private static func value<T>(_ flag: Flags.SupportedValuesFlags) -> T? {
-        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
             return nil
         }
         guard let remoteObject = remoteConfig.valueFlags[flag.rawFlag] else {
@@ -272,7 +272,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static func logFlags() {
-        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else {
             Logger.info("No cached config.")
             return
         }
@@ -414,18 +414,6 @@ public class StubbableRemoteConfigManager: NSObject, RemoteConfigManager {
 
 @objc
 public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    private let serviceClient: SignalServiceClient = SignalServiceRestClient()
 
     let keyValueStore: SDSKeyValueStore = SDSKeyValueStore(collection: "RemoteConfigManager")
 

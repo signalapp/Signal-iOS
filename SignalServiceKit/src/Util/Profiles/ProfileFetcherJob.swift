@@ -201,51 +201,6 @@ public class ProfileFetcherJob: NSObject {
         self.options = options
     }
 
-    // MARK: - Dependencies
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    private var socketManager: TSSocketManager {
-        return TSSocketManager.shared
-    }
-
-    private var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    private var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
-    }
-
-    private var signalServiceClient: SignalServiceClient {
-        // TODO hang on SSKEnvironment
-        return SignalServiceRestClient()
-    }
-
-    private class var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    private var sessionStore: SSKSessionStore {
-        return SSKSessionStore()
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var versionedProfiles: VersionedProfiles {
-        return SSKEnvironment.shared.versionedProfiles
-    }
-
-    // MARK: -
-
     private func runAsPromise() -> Promise<SignalServiceProfile> {
         return DispatchQueue.main.async(.promise) {
             self.addBackgroundTask()

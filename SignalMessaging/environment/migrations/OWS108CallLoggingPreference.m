@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS108CallLoggingPreference.h"
 #import "Environment.h"
 #import "OWSPreferences.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +24,7 @@ static NSString *const OWS108CallLoggingPreferenceId = @"108";
 {
     OWSAssertDebug(transaction);
 
-    [Environment.shared.preferences applyCallLoggingSettingsForLegacyUsersWithTransaction:transaction];
+    [self.preferences applyCallLoggingSettingsForLegacyUsersWithTransaction:transaction];
 }
 
 @end

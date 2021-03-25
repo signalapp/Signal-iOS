@@ -272,7 +272,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 
     private func presentContactUpdateSheet(for address: SignalServiceAddress) {
         owsAssertDebug(navigationController != nil)
-        guard contactsManager.supportsContactEditing else {
+        guard contactsManagerImpl.supportsContactEditing else {
             return owsFailDebug("Contact editing unsupported")
         }
         guard let contactVC = contactsViewHelper.contactViewController(for: address, editImmediately: true) else {
@@ -301,7 +301,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 extension NameCollisionResolutionViewController: CNContactViewControllerDelegate, ContactsViewHelperObserver {
 
     func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
-        return contactsManager.isSystemContact(address: address) && contactsManager.supportsContactEditing
+        return contactsManager.isSystemContact(address: address) && contactsManagerImpl.supportsContactEditing
     }
 
     func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {

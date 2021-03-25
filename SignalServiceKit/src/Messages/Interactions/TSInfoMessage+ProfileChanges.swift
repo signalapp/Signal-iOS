@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -88,10 +88,6 @@ public class ProfileChanges: MTLModel {
 
     required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
-    }
-
-    var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
     }
 
     func descriptionForUpdate(transaction: SDSAnyReadTransaction) -> String? {

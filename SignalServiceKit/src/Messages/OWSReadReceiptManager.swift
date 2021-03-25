@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,18 +18,6 @@ struct ReadReceiptForLinkedDevice: Codable {
 
 @objc
 public extension OWSReadReceiptManager {
-
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    // MARK: -
 
     private var toLinkedDevicesReadReceiptMapStore: SDSKeyValueStore {
         return SDSKeyValueStore(collection: "OWSReadReceiptManager.toLinkedDevicesReadReceiptMapStore")

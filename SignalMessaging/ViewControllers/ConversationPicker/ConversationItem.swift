@@ -62,7 +62,7 @@ extension RecentConversationItem: ConversationItem {
     }
 }
 
-struct ContactConversationItem {
+struct ContactConversationItem: Dependencies {
     let address: SignalServiceAddress
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
@@ -71,28 +71,12 @@ struct ContactConversationItem {
 }
 
 extension ContactConversationItem: Comparable {
-    static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     public static func < (lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
         return lhs.comparableName < rhs.comparableName
     }
 }
 
 extension ContactConversationItem: ConversationItem {
-
-    // MARK: - Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
 
     var messageRecipient: MessageRecipient {
         return .contact(address)
@@ -108,7 +92,7 @@ extension ContactConversationItem: ConversationItem {
 
     var image: UIImage? {
         return databaseStorage.uiRead { transaction in
-            return self.contactsManager.image(for: self.address, transaction: transaction)
+            return self.contactsManagerImpl.image(for: self.address, transaction: transaction)
         }
     }
 
@@ -117,12 +101,10 @@ extension ContactConversationItem: ConversationItem {
     }
 }
 
-struct GroupConversationItem {
+struct GroupConversationItem: Dependencies {
     let groupThreadId: String
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
-
-    var databaseStorage: SDSDatabaseStorage { .shared }
 
     func thread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)

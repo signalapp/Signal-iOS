@@ -7,18 +7,6 @@ import PromiseKit
 
 fileprivate extension CVComponentState {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private static var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    // MARK: -
-
     private static let unfairLock = UnfairLock()
     private static var groupInviteLinkAvatarCache = [String: GroupInviteLinkCachedAvatar]()
     private static var groupInviteLinkAvatarsInFlight = Set<String>()
@@ -61,8 +49,8 @@ fileprivate extension CVComponentState {
 
         return firstly(on: .global()) { () -> Promise<Data> in
             let groupV2ContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-            return self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                                            groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+            return self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
+                                                                groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
         }.map(on: .global()) { (avatarData: Data) -> Void in
             let imageMetadata = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil)
             let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension,
@@ -116,9 +104,9 @@ extension CVComponentState {
             // in order to trigger reload of the view.
             firstly(on: .global()) { () -> Promise<GroupInviteLinkPreview> in
                 let groupContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
-                return Self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                                                                 groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                 allowCached: false)
+                return Self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                                                                     groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                     allowCached: false)
             }.done(on: .global()) { (_: GroupInviteLinkPreview) in
                 Self.markGroupInviteLinkAsExpired(url: url, isExpired: false)
                 touchMessage()

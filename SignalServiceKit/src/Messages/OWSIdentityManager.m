@@ -56,13 +56,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 @implementation OWSIdentityManager
 
-+ (instancetype)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.identityManager);
-
-    return SSKEnvironment.shared.identityManager;
-}
-
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage
 {
     self = [super init];
@@ -88,37 +81,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#pragma mark - Dependencies
-
-- (MessageSender *)messageSender
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
-}
-
-- (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (id<StorageServiceManagerProtocol>)storageServiceManager
-{
-    return SSKEnvironment.shared.storageServiceManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (void)writeWithUnfairLock:(void(^ _Nonnull)(SDSAnyWriteTransaction *transaction))block
 {

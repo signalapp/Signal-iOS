@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -587,7 +587,7 @@ private class GroupCallMemberCell: UITableViewCell {
 
         if item.address.isLocalAddress {
             nameLabel.text = item.displayName
-            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             nameLabel.text = item.displayName
             avatarView.image = avatarBuilder.build()

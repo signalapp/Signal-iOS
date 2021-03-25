@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -312,7 +312,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
-                self.contactsManager.image(for: device.address, transaction: transaction),
+                self.contactsManagerImpl.image(for: device.address, transaction: transaction),
                 self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
             )
         }
@@ -326,7 +326,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         )
 
         if device.address.isLocalAddress {
-            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             avatarView.image = avatarBuilder.build()
         }
@@ -343,7 +343,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         ).themeColor
 
         configureRemoteVideo(device: device)
-        let isRemoteDeviceBlocked = OWSBlockingManager.shared().isAddressBlocked(device.address)
+        let isRemoteDeviceBlocked = blockingManager.isAddressBlocked(device.address)
         let errorDeferralInterval: TimeInterval = 5.0
         let addedDate = Date(millisecondsSince1970: device.addedTime)
         let connectionDuration = -addedDate.timeIntervalSinceNow

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupExportJob.h"
@@ -322,27 +322,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSBackupExportJob
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSBackup *)backup
-{
-    OWSAssertDebug(AppEnvironment.shared.backup);
-
-    return AppEnvironment.shared.backup;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-#pragma mark -
 
 - (void)start
 {

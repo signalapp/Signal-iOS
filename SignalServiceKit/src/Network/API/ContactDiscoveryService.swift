@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
-public struct ContactDiscoveryService {
+public struct ContactDiscoveryService: Dependencies {
 
     public struct IntersectionQuery: Codable {
         public let addressCount: UInt
@@ -28,10 +28,6 @@ public struct ContactDiscoveryService {
         let data: Data
         let iv: Data
         let mac: Data
-    }
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
     }
 
     // MARK: -

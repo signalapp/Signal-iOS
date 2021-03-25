@@ -53,12 +53,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 #pragma mark -
 
-+ (instancetype)shared {
-    OWSAssertDebug(SSKEnvironment.shared.syncManager);
-
-    return SSKEnvironment.shared.syncManager;
-}
-
 - (instancetype)initDefault {
     self = [super init];
 
@@ -72,7 +66,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         [self addObservers];
         
         if ([self.tsAccountManager isRegisteredAndReady]) {
-            OWSAssertDebug(self.contactsManager.isSetup);
+            OWSAssertDebug(self.contactsManagerImpl.isSetup);
 
             if (self.tsAccountManager.isPrimaryDevice) {
                 // Flush any pending changes.
@@ -110,65 +104,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                object:nil];
 }
 
-#pragma mark - Dependencies
-
-- (OWSContactsManager *)contactsManager {
-    OWSAssertDebug(Environment.shared.contactsManager);
-
-    return Environment.shared.contactsManager;
-}
-
-- (OWSIdentityManager *)identityManager {
-    OWSAssertDebug(SSKEnvironment.shared.identityManager);
-
-    return SSKEnvironment.shared.identityManager;
-}
-
-- (MessageSender *)messageSender
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
-}
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSenderJobQueue);
-
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-- (OWSProfileManager *)profileManager {
-    OWSAssertDebug(SSKEnvironment.shared.profileManager);
-
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
-{
-    return Environment.shared.incomingContactSyncJobQueue;
-}
-
-- (OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
-{
-    return Environment.shared.incomingGroupSyncJobQueue;
-}
-
 #pragma mark - Notifications
 
 - (void)signalAccountsDidChange:(id)notification {
@@ -199,7 +134,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         // Don't bother if app hasn't finished setup.
         return;
     }
-    if (!self.contactsManager.isSetup) {
+    if (!self.contactsManagerImpl.isSetup) {
         // Don't bother if the contacts manager hasn't finished setup.
         return;
     }
@@ -229,7 +164,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
-    BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
+    BOOL showTypingIndicators = self.typingIndicatorsImpl.areTypingIndicatorsEnabled;
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
@@ -263,8 +198,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                                         transaction:transaction];
     }
     if (syncMessage.hasTypingIndicators) {
-        [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators
-                                                       transaction:transaction];
+        [self.typingIndicatorsImpl setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators
+                                                           transaction:transaction];
     }
     if (syncMessage.hasLinkPreviews) {
         [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews
@@ -390,7 +325,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSLogInfo(@"Skipping contact sync message.");
         return [AnyPromise promiseWithValue:@(YES)];
     }
-    if (!self.contactsManager.isSetup) {
+    if (!self.contactsManagerImpl.isSetup) {
         return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
     }
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {

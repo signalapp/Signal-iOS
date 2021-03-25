@@ -54,8 +54,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)shared;
-
 #pragma mark - Local Profile
 
 // These two methods should only be called from the main thread.

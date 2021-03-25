@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,14 +7,6 @@ import PromiseKit
 
 @objc
 public extension GroupManager {
-
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
 
     static func leaveGroupOrDeclineInviteAsyncWithUI(groupThread: TSGroupThread,
                                                      fromViewController: UIViewController,

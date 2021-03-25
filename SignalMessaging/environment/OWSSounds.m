@@ -71,27 +71,6 @@ const NSUInteger OWSCustomSoundShift = 16;
 
 @implementation OWSSounds
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
-+ (instancetype)shared
-{
-    OWSAssertDebug(Environment.shared.sounds);
-
-    return Environment.shared.sounds;
-}
-
 - (instancetype)init
 {
     self = [super init];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ public class Mention: NSObject {
     }
 
     public convenience init(address: SignalServiceAddress, style: Style, transaction: GRDBReadTransaction) {
-        let displayName = Environment.shared.contactsManager.displayName(
+        let displayName = Self.contactsManager.displayName(
             for: address,
             transaction: transaction.asAnyRead
         )

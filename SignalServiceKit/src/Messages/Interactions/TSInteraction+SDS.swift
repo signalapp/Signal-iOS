@@ -3576,7 +3576,7 @@ public class TSInteractionCursor: NSObject {
             return nil
         }
         let value = try TSInteraction.fromRecord(record)
-        SSKEnvironment.shared.modelReadCaches.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
+        Self.modelReadCaches.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -3630,7 +3630,7 @@ public extension TSInteraction {
         assert(uniqueId.count > 0)
 
         if !ignoreCache,
-            let cachedCopy = SSKEnvironment.shared.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction) {
+            let cachedCopy = Self.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction) {
             return cachedCopy
         }
 
@@ -3851,7 +3851,7 @@ public extension TSInteraction {
             }
 
             let value = try TSInteraction.fromRecord(record)
-            SSKEnvironment.shared.modelReadCaches.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
+            Self.modelReadCaches.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

@@ -6,9 +6,6 @@ import Foundation
 
 @objc
 class ExperienceUpgradeManager: NSObject {
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
 
     private static weak var lastPresented: ExperienceUpgradeView?
 
@@ -195,16 +192,13 @@ class ExperienceUpgradeManager: NSObject {
 
 // MARK: -
 
-protocol ExperienceUpgradeView: class {
+protocol ExperienceUpgradeView: class, Dependencies {
     var experienceUpgrade: ExperienceUpgrade { get }
     var isPresented: Bool { get }
     func dismiss(animated: Bool, completion: (() -> Void)?)
 }
 
 extension ExperienceUpgradeView {
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
 
     func presentToast(text: String, fromViewController: UIViewController) {
         let toastController = ToastController(text: text)

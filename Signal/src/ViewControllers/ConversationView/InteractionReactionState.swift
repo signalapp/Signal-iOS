@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ public class InteractionReactionState: NSObject {
         // No reactions on non-message interactions
         guard let message = interaction as? TSMessage else { return nil }
 
-        guard let localAddress = TSAccountManager.shared().localAddress else {
+        guard let localAddress = TSAccountManager.shared.localAddress else {
             owsFailDebug("missing local address")
             return nil
         }

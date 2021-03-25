@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,10 +7,6 @@ import SignalServiceKit
 
 @objc
 public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
-
-    // MARK: - Dependencies
-
-    // MARK: -
 
     // Increment a similar constant for each migration.
     @objc

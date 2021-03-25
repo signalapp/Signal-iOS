@@ -1,41 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
-class NotificationActionHandler {
+class NotificationActionHandler: Dependencies {
 
     static let shared: NotificationActionHandler = NotificationActionHandler()
-
-    // MARK: - Dependencies
-
-    private var signalApp: SignalApp {
-        SignalApp.shared()
-    }
-
-    private var messageSender: MessageSender {
-        SSKEnvironment.shared.messageSender
-    }
-
-    private var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.individualCallService.callUIAdapter
-    }
-
-    private var notificationPresenter: NotificationPresenter {
-        AppEnvironment.shared.notificationPresenter
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
-    }
-
-    private var readReceiptManager: OWSReadReceiptManager {
-        OWSReadReceiptManager.shared()
-    }
-
-    // MARK: -
 
     func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
@@ -46,7 +18,7 @@ class NotificationActionHandler {
             throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        callUIAdapter.answerCall(localId: localCallId)
+        individualCallUIAdapter.answerCall(localId: localCallId)
         return Promise.value(())
     }
 
@@ -58,7 +30,7 @@ class NotificationActionHandler {
             throw OWSAssertionError("Missing or invalid address.")
         }
 
-        callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
+        individualCallUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
         return Promise.value(())
     }
 
@@ -71,7 +43,7 @@ class NotificationActionHandler {
             throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        callUIAdapter.localHangupCall(localId: localCallId)
+        individualCallUIAdapter.localHangupCall(localId: localCallId)
         return Promise.value(())
     }
 
@@ -156,7 +128,7 @@ class NotificationActionHandler {
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
             let thread = notificationMessage.thread
-            let currentCall = AppEnvironment.shared.callService.currentCall
+            let currentCall = Self.callService.currentCall
 
             if currentCall?.thread.uniqueId == thread.uniqueId {
                 OWSWindowManager.shared.returnToCallView()

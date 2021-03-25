@@ -44,20 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SelectThreadViewController
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (ContactsViewHelper *)contactsViewHelper
-{
-    return Environment.shared.contactsViewHelper;
-}
-
-#pragma mark -
-
 - (void)loadView
 {
     [super loadView];

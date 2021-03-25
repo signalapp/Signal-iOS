@@ -17,15 +17,6 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
 @implementation OWSFailedAttachmentDownloadsJob
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 + (NSArray<NSString *> *)unfailedAttachmentPointerIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);

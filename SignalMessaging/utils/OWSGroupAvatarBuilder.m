@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupAvatarBuilder.h"
@@ -33,13 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Dependencies
-
-+ (OWSContactsManager *)contactsManager
-{
-    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
-}
-
 #pragma mark -
 
 - (nullable UIImage *)buildSavedImage
@@ -67,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
         stringWithFormat:@"%@-%d-%lu", groupId.hexadecimalString, Theme.isDarkThemeEnabled, (unsigned long)diameter];
 
     UIImage *_Nullable cachedAvatar =
-        [OWSGroupAvatarBuilder.contactsManager getImageFromAvatarCacheWithKey:cacheKey diameter:(CGFloat)diameter];
+        [OWSGroupAvatarBuilder.contactsManagerImpl getImageFromAvatarCacheWithKey:cacheKey diameter:(CGFloat)diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -85,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [OWSGroupAvatarBuilder.contactsManager setImageForAvatarCache:image forKey:cacheKey diameter:diameter];
+    [OWSGroupAvatarBuilder.contactsManagerImpl setImageForAvatarCache:image forKey:cacheKey diameter:diameter];
     return image;
 }
 

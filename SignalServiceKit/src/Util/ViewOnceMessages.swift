@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,20 +7,6 @@ import SignalCoreKit
 
 @objc
 public class ViewOnceMessages: NSObject {
-
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
 
     // MARK: - Events
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupJob.h"
@@ -47,15 +47,6 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 #pragma mark -
 
 @implementation OWSBackupJob
-
-#pragma mark - Dependencies
-
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
-#pragma mark -
 
 - (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId
 {

@@ -1,23 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 
 @objc
 public class RegistrationController: NSObject {
-
-    // MARK: - Dependencies
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private static var backup: OWSBackup {
-        return AppEnvironment.shared.backup
-    }
-
-    // MARK: -
 
     private override init() {}
 

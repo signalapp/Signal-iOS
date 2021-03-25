@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS109OutgoingMessageState.h"
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -23,7 +24,6 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
     OWSAssertDebug(completion);
-
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
 

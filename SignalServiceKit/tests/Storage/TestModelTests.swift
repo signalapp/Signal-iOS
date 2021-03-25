@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,14 +7,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class TestModelTests: SSKBaseTestSwift {
-
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: 
 
     func testTestModel() {
 

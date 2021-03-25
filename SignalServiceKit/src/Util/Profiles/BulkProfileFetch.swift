@@ -7,26 +7,6 @@ import PromiseKit
 @objc
 public class BulkProfileFetch: NSObject {
 
-    // MARK: - Dependencies
-
-    private var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
-
     private let serialQueue = DispatchQueue(label: "BulkProfileFetch")
 
     // This property should only be accessed on serialQueue.

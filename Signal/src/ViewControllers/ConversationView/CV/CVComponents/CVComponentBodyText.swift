@@ -595,14 +595,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
 extension CVComponentBodyText.CVComponentViewBodyText: UITextViewDelegate {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         shouldInteractWithUrl(url)
     }

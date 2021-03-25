@@ -187,7 +187,7 @@ extension ConversationViewController {
     }
 
     func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
-        guard !Environment.shared.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
+        guard !Self.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
 
         OWSActionSheets.showConfirmationAlert(
             title: NSLocalizedString(
@@ -199,7 +199,7 @@ extension ConversationViewController {
                 comment: "The title for the action that deletes a message for all users in the conversation."
             ),
             proceedStyle: .destructive) { _ in
-            Environment.shared.preferences.setWasDeleteForEveryoneConfirmationShown()
+            Self.preferences.setWasDeleteForEveryoneConfirmationShown()
             completion()
         }
     }

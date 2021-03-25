@@ -4,17 +4,6 @@
 
 import Foundation
 
-extension TSGroupThread {
-
-    // MARK: - Dependencies
-
-    private static var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-}
-
-// MARK: -
-
 @objc
 public extension TSGroupThread {
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -191,10 +191,6 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         // If there are more than one, take the first.
         Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol",
                extractsLink: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
-    }
-
-    var linkPreviewManager: OWSLinkPreviewManager {
-        return SSKEnvironment.shared.linkPreviewManager
     }
 
     private func Assert(bodyText: String, extractsLink link: URL?, file: StaticString = #file, line: UInt = #line) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,9 +8,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class SignalRecipientTest: SSKBaseTestSwift {
-    var tsAccountManager: TSAccountManager {
-         return SSKEnvironment.shared.tsAccountManager
-     }
 
     lazy var localAddress = CommonGenerator.address()
 

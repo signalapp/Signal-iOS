@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,7 +55,7 @@ public class ReturnToCallViewController: UIViewController {
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
-                self.profileManager.profileAvatar(for: callViewController.remoteVideoAddress, transaction: transaction),
+                self.profileManagerImpl.profileAvatar(for: callViewController.remoteVideoAddress, transaction: transaction),
                 self.contactsManager.conversationColorName(for: callViewController.remoteVideoAddress, transaction: transaction)
             )
         }

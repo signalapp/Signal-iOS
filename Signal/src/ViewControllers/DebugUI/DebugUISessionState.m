@@ -20,28 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Session State";
 }
 
-#pragma mark -  Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-- (OWSSessionResetJobQueue *)sessionResetJobQueue
-{
-    return AppEnvironment.shared.sessionResetJobQueue;
-}
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
 #pragma mark -
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter

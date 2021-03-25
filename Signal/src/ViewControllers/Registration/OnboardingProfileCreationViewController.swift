@@ -315,13 +315,13 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
             return
         }
 
-        if profileManager.isProfileNameTooLong(normalizedGivenName) {
+        if profileManagerImpl.isProfileNameTooLong(normalizedGivenName) {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                                                                       comment: "Error message shown when user tries to update profile with a given name that is too long."))
             return
         }
 
-        if profileManager.isProfileNameTooLong(normalizedFamilyName) {
+        if profileManagerImpl.isProfileNameTooLong(normalizedFamilyName) {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                                                                       comment: "Error message shown when user tries to update profile with a family name that is too long."))
             return

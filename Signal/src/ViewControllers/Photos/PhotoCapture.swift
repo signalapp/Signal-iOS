@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,12 +81,6 @@ class PhotoCapture: NSObject {
         DispatchQueue.main.async {
             self.delegate?.photoCapture(self, didCompleteFocusingAtPoint: focusPoint)
         }
-    }
-
-    // MARK: - Dependencies
-
-    private var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
     }
 
     private var audioDeviceInput: AVCaptureDeviceInput?

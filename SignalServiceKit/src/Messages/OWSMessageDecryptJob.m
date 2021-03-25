@@ -105,15 +105,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation OWSMessageDecryptJobFinder
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super init];

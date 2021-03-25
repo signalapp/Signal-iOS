@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -72,26 +72,6 @@ public class RequestMaker: NSObject {
         self.udAccess = udAccess
         self.canFailoverUDAuth = canFailoverUDAuth
     }
-
-    // MARK: - Dependencies
-
-    private var socketManager: TSSocketManager {
-        return SSKEnvironment.shared.socketManager
-    }
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    private var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    private var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    // MARK: -
 
     @objc
     public func makeRequestObjc() -> AnyPromise {

@@ -53,13 +53,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 @implementation OWSPrimaryStorage
 
-+ (nullable instancetype)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
-
 - (instancetype)init
 {
     self = [super init];

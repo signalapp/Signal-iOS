@@ -1,283 +1,310 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-// Exposes singleton accessors for all UIViews, UIViewControllers, etc.
-@objc
-public extension UIResponder {
+// MARK: - NSObject
 
-    var audioSession: OWSAudioSession {
-        Environment.shared.audioSession
+@objc
+public extension NSObject {
+    final var audioSession: OWSAudioSession {
+        Environment.shared.audioSessionRef
     }
 
     static var audioSession: OWSAudioSession {
-        Environment.shared.audioSession
+        Environment.shared.audioSessionRef
     }
 
-    var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloads
-    }
-
-    static var attachmentDownloads: OWSAttachmentDownloads {
-        SSKEnvironment.shared.attachmentDownloads
-    }
-
-    var blockingManager: OWSBlockingManager {
-        .shared()
-    }
-
-    static var blockingManager: OWSBlockingManager {
-        .shared()
-    }
-
-    var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetch
-    }
-
-    static var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetch
-    }
-
-    var contactsManager: OWSContactsManager {
-        Environment.shared.contactsManager
-    }
-
-    static var contactsManager: OWSContactsManager {
-        Environment.shared.contactsManager
-    }
-
-    var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelper
+    final var contactsViewHelper: ContactsViewHelper {
+        Environment.shared.contactsViewHelperRef
     }
 
     static var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelper
+        Environment.shared.contactsViewHelperRef
     }
 
-    var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+    final var fullTextSearcher: FullTextSearcher { .shared }
+
+    static var fullTextSearcher: FullTextSearcher { .shared }
+
+    final var launchJobs: LaunchJobs {
+        Environment.shared.launchJobsRef
     }
 
-    static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
+    static var launchJobs: LaunchJobs {
+        Environment.shared.launchJobsRef
     }
 
-    var disappearingMessagesJob: OWSDisappearingMessagesJob {
-        SSKEnvironment.shared.disappearingMessagesJob
+    final var preferences: OWSPreferences {
+        Environment.shared.preferencesRef
     }
 
-    static var disappearingMessagesJob: OWSDisappearingMessagesJob {
-        SSKEnvironment.shared.disappearingMessagesJob
+    static var preferences: OWSPreferences {
+        Environment.shared.preferencesRef
+    }
+
+    final var windowManager: OWSWindowManager {
+        Environment.shared.windowManagerRef
+    }
+
+    static var windowManager: OWSWindowManager {
+        Environment.shared.windowManagerRef
+    }
+
+    final var proximityMonitoringManager: OWSProximityMonitoringManager {
+        Environment.shared.proximityMonitoringManagerRef
+    }
+
+    static var proximityMonitoringManager: OWSProximityMonitoringManager {
+        Environment.shared.proximityMonitoringManagerRef
+    }
+
+    final var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    static var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    final var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    static var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    final var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    static var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    final var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
+    static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
+    final var versionedProfilesImpl: VersionedProfilesImpl {
+        versionedProfiles as! VersionedProfilesImpl
+    }
+
+    static var versionedProfilesImpl: VersionedProfilesImpl {
+        versionedProfiles as! VersionedProfilesImpl
+    }
+
+    final var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+        Environment.shared.broadcastMediaMessageJobQueueRef
+    }
+
+    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+        Environment.shared.broadcastMediaMessageJobQueueRef
+    }
+
+    final var sounds: OWSSounds {
+        Environment.shared.soundsRef
+    }
+
+    static var sounds: OWSSounds {
+        Environment.shared.soundsRef
+    }
+
+    final var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
+        Environment.shared.incomingContactSyncJobQueueRef
+    }
+
+    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
+        Environment.shared.incomingContactSyncJobQueueRef
+    }
+
+    final var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
+        Environment.shared.incomingGroupSyncJobQueueRef
+    }
+
+    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
+        Environment.shared.incomingGroupSyncJobQueueRef
+    }
+}
+
+// MARK: - Obj-C Dependencies
+
+public extension Dependencies {
+    var audioSession: OWSAudioSession {
+        Environment.shared.audioSessionRef
+    }
+
+    static var audioSession: OWSAudioSession {
+        Environment.shared.audioSessionRef
+    }
+
+    var contactsViewHelper: ContactsViewHelper {
+        Environment.shared.contactsViewHelperRef
+    }
+
+    static var contactsViewHelper: ContactsViewHelper {
+        Environment.shared.contactsViewHelperRef
     }
 
     var fullTextSearcher: FullTextSearcher { .shared }
 
     static var fullTextSearcher: FullTextSearcher { .shared }
 
-    var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManager
-    }
-
-    static var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManager
-    }
-
-    var groupV2UpdatesObjc: GroupV2Updates {
-        SSKEnvironment.shared.groupV2Updates
-    }
-
-    static var groupV2UpdatesObjc: GroupV2Updates {
-        SSKEnvironment.shared.groupV2Updates
-    }
-
     var launchJobs: LaunchJobs {
-        Environment.shared.launchJobs
+        Environment.shared.launchJobsRef
     }
 
     static var launchJobs: LaunchJobs {
-        Environment.shared.launchJobs
-    }
-
-    var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManager
-    }
-
-    static var linkPreviewManager: OWSLinkPreviewManager {
-        SSKEnvironment.shared.linkPreviewManager
-    }
-
-    var messageFetcherJob: MessageFetcherJob {
-        SSKEnvironment.shared.messageFetcherJob
-    }
-
-    static var messageFetcherJob: MessageFetcherJob {
-        SSKEnvironment.shared.messageFetcherJob
-    }
-
-    var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManager
-    }
-
-    static var messageManager: OWSMessageManager {
-        SSKEnvironment.shared.messageManager
-    }
-
-    var messageSender: MessageSender {
-        SSKEnvironment.shared.messageSender
-    }
-
-    static var messageSender: MessageSender {
-        SSKEnvironment.shared.messageSender
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    var networkManager: TSNetworkManager {
-        SSKEnvironment.shared.networkManager
-    }
-
-    static var networkManager: TSNetworkManager {
-        SSKEnvironment.shared.networkManager
-    }
-
-    var ows2FAManager: OWS2FAManager {
-        .shared()
-    }
-
-    static var ows2FAManager: OWS2FAManager {
-        .shared()
-    }
-
-    var readReceiptManager: OWSReadReceiptManager {
-        OWSReadReceiptManager.shared()
-    }
-
-    static var readReceiptManager: OWSReadReceiptManager {
-        OWSReadReceiptManager.shared()
+        Environment.shared.launchJobsRef
     }
 
     var preferences: OWSPreferences {
-        Environment.shared.preferences
+        Environment.shared.preferencesRef
     }
 
     static var preferences: OWSPreferences {
-        Environment.shared.preferences
-    }
-
-    var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorage
-    }
-
-    static var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorage
-    }
-
-    var profileManager: OWSProfileManager {
-        OWSProfileManager.shared()
-    }
-
-    static var profileManager: OWSProfileManager {
-        OWSProfileManager.shared()
-    }
-
-    var reachabilityManager: SSKReachabilityManager {
-        SSKEnvironment.shared.reachabilityManager
-    }
-
-    static var reachabilityManager: SSKReachabilityManager {
-        SSKEnvironment.shared.reachabilityManager
-    }
-
-    var socketManager: TSSocketManager {
-        SSKEnvironment.shared.socketManager
-    }
-
-    static var socketManager: TSSocketManager {
-        SSKEnvironment.shared.socketManager
-    }
-
-    var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManager
-    }
-
-    static var stickerManager: StickerManager {
-        SSKEnvironment.shared.stickerManager
-    }
-
-    var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinator
-    }
-
-    static var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinator
-    }
-
-    var syncManager: SyncManagerProtocol {
-        SSKEnvironment.shared.syncManager
-    }
-
-    static var syncManager: SyncManagerProtocol {
-        SSKEnvironment.shared.syncManager
-    }
-
-    var tsAccountManager: TSAccountManager {
-        .shared()
-    }
-
-    static var tsAccountManager: TSAccountManager {
-        .shared()
-    }
-
-    var typingIndicators: TypingIndicators {
-        SSKEnvironment.shared.typingIndicators
-    }
-
-    static var typingIndicators: TypingIndicators {
-        SSKEnvironment.shared.typingIndicators
-    }
-
-    var udManager: OWSUDManager {
-        SSKEnvironment.shared.udManager
-    }
-
-    static var udManager: OWSUDManager {
-        SSKEnvironment.shared.udManager
+        Environment.shared.preferencesRef
     }
 
     var windowManager: OWSWindowManager {
-        Environment.shared.windowManager
+        Environment.shared.windowManagerRef
     }
 
     static var windowManager: OWSWindowManager {
-        Environment.shared.windowManager
+        Environment.shared.windowManagerRef
+    }
+
+    var proximityMonitoringManager: OWSProximityMonitoringManager {
+        Environment.shared.proximityMonitoringManagerRef
+    }
+
+    static var proximityMonitoringManager: OWSProximityMonitoringManager {
+        Environment.shared.proximityMonitoringManagerRef
+    }
+
+    var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    static var profileManagerImpl: OWSProfileManager {
+        profileManager as! OWSProfileManager
+    }
+
+    var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    static var contactsManagerImpl: OWSContactsManager {
+        contactsManager as! OWSContactsManager
+    }
+
+    var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    static var groupsV2Impl: GroupsV2Impl {
+        groupsV2 as! GroupsV2Impl
+    }
+
+    var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
+    static var groupV2UpdatesImpl: GroupV2UpdatesImpl {
+        groupV2Updates as! GroupV2UpdatesImpl
+    }
+
+    var versionedProfilesImpl: VersionedProfilesImpl {
+        versionedProfiles as! VersionedProfilesImpl
+    }
+
+    static var versionedProfilesImpl: VersionedProfilesImpl {
+        versionedProfiles as! VersionedProfilesImpl
+    }
+
+    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+        Environment.shared.broadcastMediaMessageJobQueueRef
+    }
+
+    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
+        Environment.shared.broadcastMediaMessageJobQueueRef
+    }
+
+    var sounds: OWSSounds {
+        Environment.shared.soundsRef
+    }
+
+    static var sounds: OWSSounds {
+        Environment.shared.soundsRef
+    }
+
+    var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
+        Environment.shared.incomingContactSyncJobQueueRef
+    }
+
+    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
+        Environment.shared.incomingContactSyncJobQueueRef
+    }
+
+    var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
+        Environment.shared.incomingGroupSyncJobQueueRef
+    }
+
+    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
+        Environment.shared.incomingGroupSyncJobQueueRef
     }
 }
 
 // MARK: - Swift-only Dependencies
 
-public extension UIResponder {
+public extension NSObject {
 
-    var groupsV2: GroupsV2Swift {
-        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+}
+
+// MARK: - Swift-only Dependencies
+
+public extension Dependencies {
+
+}
+
+// MARK: -
+
+@objc
+public extension OWSProfileManager {
+    static var shared: OWSProfileManager {
+        SSKEnvironment.shared.profileManagerRef as! OWSProfileManager
     }
+}
 
-    static var groupsV2: GroupsV2Swift {
-        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+// MARK: -
+
+@objc
+public extension OWSSounds {
+    static var shared: OWSSounds {
+        Environment.shared.soundsRef
     }
+}
 
-    var groupV2Updates: GroupV2UpdatesSwift {
-        SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+// MARK: -
+
+@objc
+public extension OWSWindowManager {
+    static var shared: OWSWindowManager {
+        Environment.shared.windowManagerRef
     }
+}
 
-    static var groupV2Updates: GroupV2UpdatesSwift {
-        SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+// MARK: -
+
+@objc
+public extension OWSSyncManager {
+    static var shared: SyncManagerProtocol {
+        SSKEnvironment.shared.syncManagerRef
     }
 }

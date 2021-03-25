@@ -192,15 +192,7 @@ protocol MediaGalleryDelegate: class {
 /// know their number of items. Items are also loaded on demand, potentially non-contiguously.
 ///
 /// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
-class MediaGallery {
-
-    // MARK: - Dependencies
-
-    private var audioPlayer: CVAudioPlayer {
-        return AppEnvironment.shared.audioPlayer
-    }
-
-    // MARK: -
+class MediaGallery: Dependencies {
 
     private var deletedAttachmentIds: Set<String> = Set() {
         didSet {
@@ -213,10 +205,6 @@ class MediaGallery {
         }
     }
     private var isCurrentlyProcessingExternalDeletion = false
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
 
     private let mediaGalleryFinder: MediaGalleryFinder
 

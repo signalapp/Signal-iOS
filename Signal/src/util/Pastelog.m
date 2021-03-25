@@ -285,20 +285,6 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SSKEnvironment.shared.databaseStorage;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
 #pragma mark -
 
 + (void)submitLogs

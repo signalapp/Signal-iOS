@@ -160,15 +160,6 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 @implementation OWSSendMessageOperation
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(MessageSender *)messageSender
                         success:(void (^)(void))successHandler
@@ -328,78 +319,6 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     return self;
 }
-
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
-
-    return SSKEnvironment.shared.contactsManager;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
-
-    return SSKEnvironment.shared.blockingManager;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (id<OWSUDManager>)udManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.udManager);
-
-    return SSKEnvironment.shared.udManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (OWSIdentityManager *)identityManager
-{
-    return SSKEnvironment.shared.identityManager;
-}
-
-- (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-- (SSKPreKeyStore *)preKeyStore
-{
-    return SSKEnvironment.shared.preKeyStore;
-}
-
-- (SSKSignedPreKeyStore *)signedPreKeyStore
-{
-    return SSKEnvironment.shared.signedPreKeyStore;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-#pragma mark -
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
 {

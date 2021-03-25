@@ -9,14 +9,6 @@ import PromiseKit
 @objc
 public class CVLoader: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    // MARK: -
-
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot

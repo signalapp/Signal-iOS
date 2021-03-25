@@ -8,19 +8,6 @@ import SignalServiceKit
 
 public extension OWSProfileManager {
 
-    // MARK: - Dependencies
-
-    private class var versionedProfiles: VersionedProfilesSwift {
-        return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesSwift
-    }
-
-    private var databaseStorage: SDSDatabaseStorage { .shared }
-    private var tsAccountManager: TSAccountManager { .shared() }
-    private var versionedProfiles: VersionedProfiles { SSKEnvironment.shared.versionedProfiles }
-    private var groupsV2: GroupsV2Swift { SSKEnvironment.shared.groupsV2 as! GroupsV2Swift }
-
-    // MARK: -
-
     // The main entry point for updating the local profile. It will:
     //
     // * Update local state optimistically.
@@ -53,7 +40,7 @@ public extension OWSProfileManager {
                 return Promise.value(())
             }
 
-            guard let localAddress = TSAccountManager.shared().localAddress else {
+            guard let localAddress = TSAccountManager.shared.localAddress else {
                 throw OWSAssertionError("missing local address")
             }
             return ProfileFetcherJob.fetchProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
@@ -234,30 +221,9 @@ public extension OWSProfileManager {
 
 extension OWSProfileManager {
 
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private class var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
     private class var avatarUrlSession: OWSURLSession {
         return OWSSignalService.shared().urlSessionForCdn(cdnNumber: 0)
     }
-
-    // MARK: -
-
     @objc
     static let settingsStore = SDSKeyValueStore(collection: "kOWSProfileManager_SettingsStore")
 
@@ -272,7 +238,7 @@ extension OWSProfileManager {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard !profileManager.isUpdatingProfileOnService else {
+        guard !profileManagerImpl.isUpdatingProfileOnService else {
             // Avoid having two redundant updates in flight at the same time.
             return
         }
@@ -306,11 +272,11 @@ extension OWSProfileManager {
             Logger.info("Setting empty avatar.")
         }
 
-        self.profileManager.isUpdatingProfileOnService = true
+        profileManagerImpl.isUpdatingProfileOnService = true
 
         // We capture the local user profile early to eliminate the
         // risk of opening a transaction within a transaction.
-        let userProfile = self.profileManager.localUserProfile()
+        let userProfile = profileManagerImpl.localUserProfile()
 
         let attempt = ProfileUpdateAttempt(update: update,
                                            userProfile: userProfile)
@@ -391,7 +357,7 @@ extension OWSProfileManager {
 
         DispatchQueue.main.async {
             // Clear this flag immediately.
-            self.profileManager.isUpdatingProfileOnService = false
+            self.profileManagerImpl.isUpdatingProfileOnService = false
 
             // There may be another update enqueued that we should kick off.
             // Or we may need to retry.
@@ -413,7 +379,7 @@ extension OWSProfileManager {
         }
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
-            self.profileManager.writeAvatarToDisk(with: profileAvatarData,
+            self.profileManagerImpl.writeAvatarToDisk(with: profileAvatarData,
                                                   success: { avatarFilename in
                                                     attempt.avatarFilename = avatarFilename
                                                     resolver.fulfill(())
@@ -431,12 +397,12 @@ extension OWSProfileManager {
                         "profileBio?: \(attempt.update.profileBio != nil), " +
                         "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil).")
         return firstly(on: .global()) {
-            versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
-                                                   profileFamilyName: attempt.update.profileFamilyName,
-                                                   profileBio: attempt.update.profileBio,
-                                                   profileBioEmoji: attempt.update.profileBioEmoji,
-                                                   profileAvatarData: attempt.update.profileAvatarData,
-                                                   unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
+            Self.versionedProfilesImpl.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
+                                                            profileFamilyName: attempt.update.profileFamilyName,
+                                                            profileBio: attempt.update.profileBio,
+                                                            profileBioEmoji: attempt.update.profileBioEmoji,
+                                                            profileAvatarData: attempt.update.profileAvatarData,
+                                                            unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
         }.map(on: .global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }

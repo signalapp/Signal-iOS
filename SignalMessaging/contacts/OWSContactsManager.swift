@@ -7,12 +7,6 @@ import Foundation
 @objc
 public extension OWSContactsManager {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: - Avatar Cache
 
     private static let unfairLock = UnfairLock()

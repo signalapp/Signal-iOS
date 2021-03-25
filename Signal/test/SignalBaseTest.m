@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -23,15 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalBaseTest
 
-#pragma mark - Dependencies
-
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-#pragma mark -
-
 - (void)setUp
 {
     OWSLogInfo(@"");
@@ -46,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 
-    ((MockSSKEnvironment *)SSKEnvironment.shared).groupsV2 = [GroupsV2Impl new];
+    ((MockSSKEnvironment *)SSKEnvironment.shared).groupsV2Ref = [GroupsV2Impl new];
 
     self.ydbConnection = [SSKEnvironment.shared.primaryStorage newDatabaseConnection];
 }

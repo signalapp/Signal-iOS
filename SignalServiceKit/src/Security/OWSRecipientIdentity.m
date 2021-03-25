@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -84,18 +84,6 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
  *       which makes some special accomodations to enforce consistency.
  */
 @implementation OWSRecipientIdentity
-
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
 
 #pragma mark - Table Contents
 

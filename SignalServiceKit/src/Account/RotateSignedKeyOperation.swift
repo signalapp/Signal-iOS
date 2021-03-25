@@ -8,30 +8,6 @@ import PromiseKit
 @objc(SSKRotateSignedPreKeyOperation)
 public class RotateSignedPreKeyOperation: OWSOperation {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private var accountServiceClient: AccountServiceClient {
-        return SSKEnvironment.shared.accountServiceClient
-    }
-
-    private var signedPreKeyStore: SSKSignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
-    }
-
-    // MARK: -
-
     public override func run() {
         Logger.debug("")
 

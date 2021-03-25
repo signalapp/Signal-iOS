@@ -577,8 +577,8 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
                 guard !address.isLocalAddress else {
                     return nil
                 }
-                guard let bioForDisplay = Self.profileManager.profileBioForDisplay(for: address,
-                                                                                   transaction: transaction) else {
+                guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+                                                                                       transaction: transaction) else {
                     return nil
                 }
                 return NSAttributedString(string: bioForDisplay)

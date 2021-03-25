@@ -8,45 +8,13 @@ import PromiseKit
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {
 
-    // MARK: - Dependencies
-
-    private var accountServiceClient: AccountServiceClient {
-        return SSKEnvironment.shared.accountServiceClient
-    }
-
-    private var preKeyStore: SSKPreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
-    }
-
-    private var signedPreKeyStore: SSKSignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
-    }
-
-    private var identityKeyManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var messageProcessor: MessageProcessor {
-        return SSKEnvironment.shared.messageProcessor
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public override func run() {
         Logger.debug("")
 
-        if self.identityKeyManager.identityKeyPair() == nil {
-            self.identityKeyManager.generateNewIdentityKey()
+        if self.identityManager.identityKeyPair() == nil {
+            self.identityManager.generateNewIdentityKey()
         }
-        let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
+        let identityKey: Data = self.identityManager.identityKeyPair()!.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
 

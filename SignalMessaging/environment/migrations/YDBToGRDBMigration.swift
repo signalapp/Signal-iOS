@@ -59,66 +59,6 @@ public class GRDBMigratorGroup: NSObject {
 
 extension YDBToGRDBMigration {
 
-    // MARK: - Dependencies
-
-    var storage: GRDBDatabaseStorageAdapter {
-        return SDSDatabaseStorage.shared.grdbStorage
-    }
-
-    var tsAccountManager: TSAccountManager {
-        return SSKEnvironment.shared.tsAccountManager
-    }
-
-    var identityManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
-    }
-
-    var sessionStore: SSKSessionStore {
-        return SSKEnvironment.shared.sessionStore
-    }
-
-    var preKeyStore: SSKPreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
-    }
-
-    var signedPreKeyStore: SSKSignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
-    }
-
-    var environment: Environment {
-        return Environment.shared
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
-    var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    var signalService: OWSSignalService {
-        return OWSSignalService.shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    private var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    // MARK: -
-
     func run() throws {
         Logger.info("")
 
@@ -159,7 +99,7 @@ extension YDBToGRDBMigration {
 
         try self.migrate(migratorGroups: migratorGroups)
 
-        try storage.write { transaction in
+        try grdbStorageAdapter.write { transaction in
             do {
                 try createInitialGalleryRecords(transaction: transaction)
             } catch {
@@ -253,7 +193,7 @@ extension YDBToGRDBMigration {
             // Migrate migrators.
             for migrator in migrators {
                 try autoreleasepool {
-                    try self.storage.write { grdbTransaction in
+                    try self.grdbStorageAdapter.write { grdbTransaction in
                         try! migrator.migrate(grdbTransaction: grdbTransaction)
                     }
                 }
@@ -288,15 +228,15 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: Self.preferences.keyValueStore, ydbTransaction: ydbTransaction),
 
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManagerImpl.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSDeviceManager", keyStore: OWSDeviceManager.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicatorsImpl.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, ydbTransaction: ydbTransaction),
@@ -306,9 +246,9 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSStorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction),
 
             GRDBKeyValueStoreMigrator<Any>(label: "OWSDatabaseMigration", keyStore: OWSDatabaseMigration.keyValueStore(), ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManager.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManager.whitelistedUUIDsStore, ydbTransaction: ydbTransaction),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManager.whitelistedGroupsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedPhoneNumbersStore", keyStore: profileManagerImpl.whitelistedPhoneNumbersStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedUUIDsStore", keyStore: profileManagerImpl.whitelistedUUIDsStore, ydbTransaction: ydbTransaction),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.whitelistedGroupsStore", keyStore: profileManagerImpl.whitelistedGroupsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSProfileManager.settingsStore", keyStore: OWSProfileManager.settingsStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSScreenLock.keyValueStore", keyStore: OWSScreenLock.shared.keyValueStore, ydbTransaction: ydbTransaction),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSSounds", keyStore: OWSSounds.keyValueStore(), ydbTransaction: ydbTransaction),

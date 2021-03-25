@@ -237,43 +237,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (TSAccountManager *)shared
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark - Dependencies
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-    
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (id<ProfileManagerProtocol>)profileManager {
-    OWSAssertDebug(SSKEnvironment.shared.profileManager);
-
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (SSKSessionStore *)sessionStore
-{
-    return SSKEnvironment.shared.sessionStore;
-}
-
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
 #pragma mark -
 
 - (void)warmCaches

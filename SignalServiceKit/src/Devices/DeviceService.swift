@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,6 @@ import PromiseKit
 
 @objc
 public class DeviceService: NSObject {
-    private let serviceClient: SignalServiceClient = SignalServiceRestClient()
 
     @objc
     public static let shared = DeviceService()

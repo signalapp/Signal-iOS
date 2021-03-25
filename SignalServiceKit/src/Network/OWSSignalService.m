@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -34,15 +34,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 #pragma mark -
 
 @implementation OWSSignalService
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 - (SDSKeyValueStore *)keyValueStore
 {

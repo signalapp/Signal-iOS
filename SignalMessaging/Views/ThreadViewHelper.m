@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadViewHelper.h"
@@ -24,21 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ThreadViewHelper
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-#pragma mark -
 
 - (instancetype)init
 {

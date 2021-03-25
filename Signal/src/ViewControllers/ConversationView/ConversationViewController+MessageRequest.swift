@@ -167,7 +167,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
                 // Send our profile key to the sender
                 let profileKeyMessage = OWSProfileKeyMessage(thread: thread)
-                SSKEnvironment.shared.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+                Self.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
             }
         }
 

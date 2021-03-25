@@ -30,15 +30,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 @synthesize contentType = _contentType;
 
-#pragma mark - Dependencies
-
-- (AttachmentReadCache *)attachmentReadCache
-{
-    return SSKEnvironment.shared.modelReadCaches.attachmentReadCache;
-}
-
-#pragma mark -
-
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
@@ -455,7 +446,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
+    [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -469,14 +460,14 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
+    [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.attachmentReadCache didRemoveAttachment:self transaction:transaction];
+    [self.modelReadCaches.attachmentReadCache didRemoveAttachment:self transaction:transaction];
 }
 
 - (void)setDefaultContentType:(NSString *)contentType

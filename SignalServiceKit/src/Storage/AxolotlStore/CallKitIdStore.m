@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "CallKitIdStore.h"
@@ -8,15 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation CallKitIdStore
-
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
 
 + (SDSKeyValueStore *)phoneNumberStore
 {

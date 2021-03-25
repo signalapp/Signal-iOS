@@ -32,7 +32,7 @@ public protocol StorageServiceManagerProtocol {
 
 // MARK: -
 
-public struct StorageService {
+public struct StorageService: Dependencies {
     public enum StorageError: OperationError {
         case assertion
         case retryableAssertion
@@ -357,10 +357,6 @@ public struct StorageService {
         return OWSSignalService.shared().urlSessionForStorageService()
     }
 
-    private static var signalServiceClient: SignalServiceClient {
-        return SignalServiceRestClient()
-    }
-
     // MARK: - Storage Requests
 
     private struct StorageResponse {
@@ -393,7 +389,7 @@ public struct StorageService {
     }
 
     private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
-        return signalServiceClient.requestStorageAuth().map { username, password in
+        return serviceClient.requestStorageAuth().map { username, password in
             Auth(username: username, password: password)
         }.then(on: .global()) { (auth: Auth) -> Promise<OWSHTTPResponse> in
             if method == .get { assert(body == nil) }
