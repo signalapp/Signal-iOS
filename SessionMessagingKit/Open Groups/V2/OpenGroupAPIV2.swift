@@ -33,7 +33,7 @@ public final class OpenGroupAPIV2 : NSObject {
     // MARK: Request
     private struct Request {
         let verb: HTTP.Verb
-        let room: String
+        let room: String?
         let server: String
         let endpoint: String
         let queryParameters: [String:String]
@@ -44,7 +44,7 @@ public final class OpenGroupAPIV2 : NSObject {
         /// this when running over Lokinet.
         let useOnionRouting: Bool
 
-        init(verb: HTTP.Verb, room: String, server: String, endpoint: String, queryParameters: [String:String] = [:],
+        init(verb: HTTP.Verb, room: String?, server: String, endpoint: String, queryParameters: [String:String] = [:],
             parameters: JSON = [:], headers: [String:String] = [:], isAuthRequired: Bool = true, useOnionRouting: Bool = true) {
             self.verb = verb
             self.room = room
@@ -61,7 +61,12 @@ public final class OpenGroupAPIV2 : NSObject {
     // MARK: Info
     public struct Info {
         public let name: String
-        public let imageID: String
+        public let imageID: String?
+        
+        public init(name: String, imageID: String?) {
+            self.name = name
+            self.imageID = imageID
+        }
     }
 
     // MARK: Convenience
@@ -85,8 +90,8 @@ public final class OpenGroupAPIV2 : NSObject {
         tsRequest.setValue(request.room, forHTTPHeaderField: "Room")
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
-            if request.isAuthRequired {
-                return getAuthToken(for: request.room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
+            if request.isAuthRequired, let room = request.room { // Because auth happens on a per-room basis, we need both to make an authenticated request
+                return getAuthToken(for: room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
                     tsRequest.setValue(authToken, forHTTPHeaderField: "Authorization")
                     return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
                 }
@@ -276,8 +281,25 @@ public final class OpenGroupAPIV2 : NSObject {
     public static func getInfo(for room: String, on server: String) -> Promise<Info> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let name = json["name"] as? String, let imageID = json["image_id"] as? String else { throw Error.parsingFailed }
+            guard let name = json["name"] as? String else { throw Error.parsingFailed }
+            let imageID = json["image_id"] as? String
             return Info(name: name, imageID: imageID)
+        }
+    }
+    
+    public static func getAllRooms(from server: String) -> Promise<[Info]> {
+        let request = Request(verb: .get, room: nil, server: server, endpoint: "rooms")
+        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            guard let rawRooms = json["rooms"] as? [JSON] else { throw Error.parsingFailed }
+            let rooms: [Info] = rawRooms.compactMap { json in
+                guard let name = json["name"] as? String else {
+                    SNLog("Couldn't parse room from JSON: \(json).")
+                    return nil
+                }
+                let imageID = json["image_id"] as? String
+                return Info(name: name, imageID: imageID)
+            }
+            return rooms
         }
     }
     
