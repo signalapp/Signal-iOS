@@ -289,7 +289,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                         bottomText: value))
         }
 
-        let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
+        let footerLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
                                     comment: "Footer string for the status section of the payment details view in the app settings."),
             font: .ows_dynamicTypeCaption1Clamped,

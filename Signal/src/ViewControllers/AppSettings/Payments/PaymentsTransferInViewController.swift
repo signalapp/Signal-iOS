@@ -51,7 +51,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         infoSection.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
-            let label = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
+            let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
                 text: NSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
                                         comment: "Explanation of the process for adding money in the 'add money' settings view."),
                 font: .ows_dynamicTypeBody2Clamped,

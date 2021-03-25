@@ -36,7 +36,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     private func createContents() {
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
+        view.backgroundColor = Theme.tableView2BackgroundColor
 
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 
@@ -47,7 +47,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
+        let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
                                     comment: "Explanation of the 'restore payments wallet' process payments settings."),
             font: .ows_dynamicTypeBody2Clamped,

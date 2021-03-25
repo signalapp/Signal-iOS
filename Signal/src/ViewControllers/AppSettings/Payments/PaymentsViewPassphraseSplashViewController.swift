@@ -66,7 +66,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     private func updateContents() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
+        view.backgroundColor = Theme.tableView2BackgroundColor
 
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 
@@ -77,7 +77,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkLabel(
+        let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
                                     comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings."),
             font: .ows_dynamicTypeBody2Clamped,

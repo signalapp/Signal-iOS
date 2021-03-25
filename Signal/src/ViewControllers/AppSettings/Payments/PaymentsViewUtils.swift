@@ -181,52 +181,33 @@ public class PaymentsViewUtils: NSObject {
         return stack
     }
 
-    static func buildTextWithLearnMoreLinkLabel(text: String,
-                                                font: UIFont,
-                                                learnMoreUrl: String) -> UILabel {
-        let label = LinkLabel(linkUrl: URL(string: learnMoreUrl)!)
-        label.attributedText = NSAttributedString.composed(of: [
+    static func buildTextWithLearnMoreLinkTextView(text: String,
+                                                   font: UIFont,
+                                                   learnMoreUrl: String) -> UITextView {
+        let textView = LinkingTextView()
+        textView.backgroundColor = Theme.tableView2BackgroundColor
+        textView.textColor = (Theme.isDarkThemeEnabled
+                                ? UIColor.ows_gray05
+                                : UIColor.ows_gray90)
+        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.textContainerInset = .zero
+
+        textView.attributedText = NSAttributedString.composed(of: [
             text,
             " ",
-            CommonStrings.learnMore.styled(with: .color(Theme.primaryTextColor)
+            CommonStrings.learnMore.styled(
+                with: .link(URL(string: learnMoreUrl)!)
             )
         ]).styled(
             with: .font(font),
             .color(Theme.secondaryTextAndIconColor)
         )
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        return label
-    }
-}
-
-// MARK: -
-
-@objc
-public class LinkLabel: UILabel {
-    private let linkUrl: URL
-
-    @objc
-    public required init(linkUrl: URL) {
-        self.linkUrl = linkUrl
-
-        super.init(frame: .zero)
-
-        isUserInteractionEnabled = true
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    @objc
-    private func didTap() {
-        UIApplication.shared.open(
-            linkUrl,
-            options: [:],
-            completionHandler: nil
-        )
+        textView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+            NSAttributedString.Key.underlineColor: UIColor.clear,
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        return textView
     }
 }
 
