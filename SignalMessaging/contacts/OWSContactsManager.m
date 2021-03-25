@@ -1059,6 +1059,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return username;
     }
 
+    [self.bulkProfileFetch fetchProfileWithAddress:address];
+
     return self.unknownUserLabel;
 }
 
