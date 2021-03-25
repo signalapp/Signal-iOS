@@ -10,7 +10,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Insert Messages
 
-    func testGRDBPerf_insertMessages() {
+    func testPerf_insertMessages() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             insertMessages()
         }
@@ -53,7 +53,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Fetch Messages
 
-    func testGRDBPerf_fetchMessages() {
+    func testPerf_fetchMessages() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             fetchMessages()
         }
@@ -91,13 +91,13 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Enumerate Messages
 
-    func testGRDBPerf_enumerateMessagesUnbatched() {
+    func testPerf_enumerateMessagesUnbatched() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateMessages(batched: false)
         }
     }
 
-    func testGRDBPerf_enumerateMessagesBatched() {
+    func testPerf_enumerateMessagesBatched() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateMessages(batched: true)
         }

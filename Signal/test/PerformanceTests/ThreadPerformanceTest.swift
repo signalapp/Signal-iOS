@@ -13,7 +13,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
     // MARK: - writeThreadAndInteractions
 
-    func testGRDBPerf_writeThreadAndInteractions() {
+    func testPerf_writeThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeThreadAndInteractions()
         }
@@ -41,7 +41,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
     // MARK: - writeAndDeleteThreadAndInteractions
 
-    func testGRDBPerf_writeAndDeleteThreadAndInteractions() {
+    func testPerf_writeAndDeleteThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndDeleteThreadAndInteractions()
         }
@@ -66,7 +66,7 @@ class ThreadPerformanceTest: PerformanceBaseTest {
 
     // MARK: - writeAndUpdateAndDeleteThreadAndInteractions
 
-    func testGRDBPerf_writeAndUpdateAndDeleteThreadAndInteractions() {
+    func testPerf_writeAndUpdateAndDeleteThreadAndInteractions() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndUpdateAndDeleteThreadAndInteractions()
         }

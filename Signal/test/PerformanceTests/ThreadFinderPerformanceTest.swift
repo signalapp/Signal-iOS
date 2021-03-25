@@ -8,13 +8,13 @@ import SignalServiceKit
 
 class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
-    func testGRDBPerf_enumerateVisibleThreads() {
+    func testPerf_enumerateVisibleThreads() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateVisibleThreads(isArchived: false)
         }
     }
 
-    func testGRDBPerf_enumerateVisibleThreads_isArchived() {
+    func testPerf_enumerateVisibleThreads_isArchived() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateVisibleThreads(isArchived: true)
         }

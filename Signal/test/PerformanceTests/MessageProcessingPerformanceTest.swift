@@ -43,7 +43,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     // MARK: - Tests
 
-    func testGRDBPerf_messageProcessing() {
+    func testPerf_messageProcessing() {
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             processIncomingMessages()
         }
