@@ -5,6 +5,7 @@ public final class OpenGroupV2 : NSObject, NSCoding { // NSObject/NSCoding confo
     @objc public let room: String
     public let id: String
     public let name: String
+    /// The ID with which the image can be retrieved from the server.
     public let imageID: String?
 
     public init(server: String, room: String, name: String, imageID: String?) {

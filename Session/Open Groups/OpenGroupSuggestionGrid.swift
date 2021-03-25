@@ -7,15 +7,15 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     // MARK: UI Components
     private lazy var layout: UICollectionViewFlowLayout = {
         let result = UICollectionViewFlowLayout()
-        result.minimumLineSpacing = OpenGroupSuggestionGrid.separatorWidth
-        result.minimumInteritemSpacing = OpenGroupSuggestionGrid.separatorWidth
+        result.minimumLineSpacing = 0
+        result.minimumInteritemSpacing = 0
         return result
     }()
     
     private lazy var collectionView: UICollectionView = {
         let result = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         result.register(Cell.self, forCellWithReuseIdentifier: Cell.identifier)
-        result.backgroundColor = Colors.unimportant
+        result.backgroundColor = .clear
         result.isScrollEnabled = false
         result.dataSource = self
         result.delegate = self
@@ -61,7 +61,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     
     // MARK: Layout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: (maxWidth - (2 * OpenGroupSuggestionGrid.separatorWidth)) / 3, height: OpenGroupSuggestionGrid.cellHeight)
+        return CGSize(width: maxWidth / 3, height: OpenGroupSuggestionGrid.cellHeight)
     }
     
     // MARK: Data Source
@@ -88,6 +88,7 @@ extension OpenGroupSuggestionGrid {
             let result = UILabel()
             result.textColor = Colors.text
             result.font = .systemFont(ofSize: Values.smallFontSize)
+            result.lineBreakMode = .byTruncatingTail
             return result
         }()
         
@@ -102,7 +103,6 @@ extension OpenGroupSuggestionGrid {
         }
         
         private func setUpViewHierarchy() {
-            backgroundColor = .white
             addSubview(label)
             label.center(in: self)
             label.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Values.smallSpacing).isActive = true

@@ -60,10 +60,12 @@ public final class OpenGroupAPIV2 : NSObject {
     
     // MARK: Info
     public struct Info {
+        public let id: String
         public let name: String
         public let imageID: String?
         
-        public init(name: String, imageID: String?) {
+        public init(id: String, name: String, imageID: String?) {
+            self.id = id
             self.name = name
             self.imageID = imageID
         }
@@ -279,25 +281,26 @@ public final class OpenGroupAPIV2 : NSObject {
     
     // MARK: General
     public static func getInfo(for room: String, on server: String) -> Promise<Info> {
-        let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let name = json["name"] as? String else { throw Error.parsingFailed }
-            let imageID = json["image_id"] as? String
-            return Info(name: name, imageID: imageID)
+        let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)", isAuthRequired: false)
+        let promise: Promise<Info> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            guard let rawRoom = json["room"] as? JSON, let id = rawRoom["id"] as? String, let name = rawRoom["name"] as? String else { throw Error.parsingFailed }
+            let imageID = rawRoom["image_id"] as? String
+            return Info(id: id, name: name, imageID: imageID)
         }
+        return promise
     }
     
     public static func getAllRooms(from server: String) -> Promise<[Info]> {
-        let request = Request(verb: .get, room: nil, server: server, endpoint: "rooms")
+        let request = Request(verb: .get, room: nil, server: server, endpoint: "rooms", isAuthRequired: false)
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
             guard let rawRooms = json["rooms"] as? [JSON] else { throw Error.parsingFailed }
             let rooms: [Info] = rawRooms.compactMap { json in
-                guard let name = json["name"] as? String else {
+                guard let id = json["id"] as? String, let name = json["name"] as? String else {
                     SNLog("Couldn't parse room from JSON: \(json).")
                     return nil
                 }
                 let imageID = json["image_id"] as? String
-                return Info(name: name, imageID: imageID)
+                return Info(id: id, name: name, imageID: imageID)
             }
             return rooms
         }

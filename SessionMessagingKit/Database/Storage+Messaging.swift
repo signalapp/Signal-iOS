@@ -7,7 +7,8 @@ extension Storage {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let openGroupID = openGroupID {
-            if let threadID = Storage.shared.getThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) {
+            if let threadID = Storage.shared.v2GetThreadID(for: openGroupID) ?? Storage.shared.getThreadID(for: openGroupID),
+                let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) {
                 threadOrNil = thread
             }
         } else if let groupPublicKey = groupPublicKey {

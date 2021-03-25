@@ -57,8 +57,8 @@ public enum MessageReceiver {
         // If the message failed to process the first time around we retry it later (if the error is retryable). In this case the timestamp
         // will already be in the database but we don't want to treat the message as a duplicate. The isRetry flag is a simple workaround
         // for this issue.
-        guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
-        storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
+//        guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
+//        storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
         // Decrypt the contents
         guard let ciphertext = envelope.content else { throw Error.noData }
         var plaintext: Data!

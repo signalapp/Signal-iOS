@@ -335,7 +335,8 @@ public final class MessageSender : NSObject {
                 return promise
             }
             // Send the result
-            let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
+            let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
+                base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
             OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
                 message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
                 storage.write(with: { transaction in

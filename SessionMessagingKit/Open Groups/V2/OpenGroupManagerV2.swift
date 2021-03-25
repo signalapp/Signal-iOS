@@ -33,6 +33,7 @@ public final class OpenGroupManagerV2 : NSObject {
         let storage = Storage.shared
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
+        storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
         let (promise, seal) = Promise<Void>.pending()
         OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .default)) { info in
             let openGroup = OpenGroupV2(server: server, room: room, name: info.name, imageID: info.imageID)
