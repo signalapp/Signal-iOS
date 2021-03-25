@@ -1390,6 +1390,10 @@ NS_ASSUME_NONNULL_BEGIN
                     envelope.timestamp,
                     error);
 
+                if (CurrentAppContext().isRunningTests) {
+                    return;
+                }
+
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     // Eagerly clean up the attachment.
                     TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId

@@ -30,11 +30,13 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     override func setUp() {
         super.setUp()
-        MockSelf.networkManager = self.stubbableNetworkManager
+
+        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
+        sskEnvironment.networkManagerRef = self.stubbableNetworkManager
 
         // use the *real* message sender to measure it's perf
-        MockSelf.messageSender = MessageSender()
-        MockSelf.messageSenderJobQueue.setup()
+        sskEnvironment.messageSenderRef = MessageSender()
+        Self.messageSenderJobQueue.setup()
 
         try! databaseStorage.grdbStorage.setup()
 

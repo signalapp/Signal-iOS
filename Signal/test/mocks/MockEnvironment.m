@@ -3,7 +3,7 @@
 //
 
 #import "MockEnvironment.h"
-#import "OWSBackup.h"
+#import "OWSOrphanDataCleaner.h"
 #import "OWSWindowManager.h"
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/OWSPreferences.h>
@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
     ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
     BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
+    OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
 
     self = [super initWithAudioSession:audioSession
            incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -44,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 sounds:sounds
                          windowManager:windowManager
                     contactsViewHelper:contactsViewHelper
-         broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue];
+         broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
+                     orphanDataCleaner:orphanDataCleaner];
 
     OWSAssertDebug(self);
     return self;
