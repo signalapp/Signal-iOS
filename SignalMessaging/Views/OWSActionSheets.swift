@@ -73,7 +73,7 @@ import Foundation
     @objc
     public class var okayAction: ActionSheetAction {
         let action = ActionSheetAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             accessibilityIdentifier: "OWSActionSheets.okay",
             style: .cancel
         ) { _ in
