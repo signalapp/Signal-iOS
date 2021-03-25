@@ -48,13 +48,7 @@ public class AppEnvironment: NSObject {
     public var sessionResetJobQueueRef: SessionResetJobQueue
 
     @objc
-    public var backupRef: OWSBackup
-
-    @objc
     public var userNotificationActionHandlerRef: UserNotificationActionHandler
-
-    @objc
-    public var backupLazyRestoreRef: BackupLazyRestore
 
     @objc
     let deviceTransferServiceRef = DeviceTransferService()
@@ -70,15 +64,12 @@ public class AppEnvironment: NSObject {
         self.notificationPresenterRef = NotificationPresenter()
         self.pushRegistrationManagerRef = PushRegistrationManager()
         self.sessionResetJobQueueRef = SessionResetJobQueue()
-        self.backupRef = OWSBackup()
-        self.backupLazyRestoreRef = BackupLazyRestore()
         self.userNotificationActionHandlerRef = UserNotificationActionHandler()
 
         super.init()
 
         SwiftSingletons.register(self)
 
-        YDBToGRDBMigration.add(keyStore: backupRef.keyValueStore, label: "backup")
         YDBToGRDBMigration.add(keyStore: AppUpdateNag.shared.keyValueStore, label: "AppUpdateNag")
     }
 

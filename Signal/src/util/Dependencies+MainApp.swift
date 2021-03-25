@@ -8,13 +8,6 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var backup: OWSBackup {
-        AppEnvironment.shared.backupRef
-    }
-
-    static var backup: OWSBackup {
-        AppEnvironment.shared.backupRef
-    }
 
     final var accountManager: AccountManager {
         AppEnvironment.shared.accountManagerRef
@@ -103,27 +96,11 @@ public extension NSObject {
     static var signalApp: SignalApp {
         .shared()
     }
-
-    final var backupLazyRestore: BackupLazyRestore {
-        AppEnvironment.shared.backupLazyRestoreRef
-    }
-
-    static var backupLazyRestore: BackupLazyRestore {
-        AppEnvironment.shared.backupLazyRestoreRef
-    }
 }
 
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var backup: OWSBackup {
-        AppEnvironment.shared.backupRef
-    }
-
-    static var backup: OWSBackup {
-        AppEnvironment.shared.backupRef
-    }
-
     var accountManager: AccountManager {
         AppEnvironment.shared.accountManagerRef
     }
@@ -211,14 +188,6 @@ public extension Dependencies {
     static var signalApp: SignalApp {
         .shared()
     }
-
-    var backupLazyRestore: BackupLazyRestore {
-        AppEnvironment.shared.backupLazyRestoreRef
-    }
-
-    static var backupLazyRestore: BackupLazyRestore {
-        AppEnvironment.shared.backupLazyRestoreRef
-    }
 }
 
 // MARK: - Swift-only Dependencies
@@ -265,14 +234,5 @@ extension PushRegistrationManager {
 extension OWSSyncManager {
     static var shared: OWSSyncManager {
         SSKEnvironment.shared.syncManagerRef as! OWSSyncManager
-    }
-}
-
-// MARK: -
-
-@objc
-extension OWSBackup {
-    static var shared: OWSBackup {
-        AppEnvironment.shared.backupRef
     }
 }

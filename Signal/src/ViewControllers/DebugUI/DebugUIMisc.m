@@ -4,7 +4,6 @@
 
 #import "DebugUIMisc.h"
 #import "DebugUIMessagesAssetLoader.h"
-#import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"

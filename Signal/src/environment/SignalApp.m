@@ -283,18 +283,6 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     self.conversationSplitViewController = nil;
 }
 
-- (void)showBackupRestoreView
-{
-    BackupRestoreViewController *backupRestoreVC = [BackupRestoreViewController new];
-    OWSNavigationController *navController =
-        [[OWSNavigationController alloc] initWithRootViewController:backupRestoreVC];
-
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    appDelegate.window.rootViewController = navController;
-
-    self.conversationSplitViewController = nil;
-}
-
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt
 {
     OWSAssertIsOnMainThread();
@@ -313,11 +301,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     if (onboarding.isComplete) {
         [onboarding markAsOnboarded];
 
-        if (self.backup.hasPendingRestoreDecision) {
-            [self showBackupRestoreView];
-        } else {
-            [self showConversationSplitView];
-        }
+        [self showConversationSplitView];
     } else {
         [self showOnboardingView:onboarding];
     }

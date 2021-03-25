@@ -370,11 +370,7 @@ public class OnboardingController: NSObject {
         // the suggested contact bubble.
         contactsManagerImpl.fetchSystemContactsOnceIfAlreadyAuthorized()
 
-        if tsAccountManager.isReregistering {
-            showNextMilestone(navigationController: navigationController)
-        } else {
-            checkCanImportBackup(fromView: view)
-        }
+        showNextMilestone(navigationController: navigationController)
     }
 
     public func linkingDidComplete(from viewController: UIViewController) {
@@ -397,70 +393,6 @@ public class OnboardingController: NSObject {
 
             self.showNextMilestone(navigationController: navigationController)
         }
-    }
-
-    private func showBackupRestoreView(fromView view: UIViewController) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        guard let navigationController = view.navigationController else {
-            owsFailDebug("Missing navigationController")
-            return
-        }
-
-        let restoreView = BackupRestoreViewController()
-        navigationController.setViewControllers([restoreView], animated: true)
-    }
-
-    private func checkCanImportBackup(fromView view: UIViewController) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        guard let navigationController = view.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        backup.checkCanImport({ (canImport) in
-            Logger.info("canImport: \(canImport)")
-
-            if canImport {
-                self.backup.setHasPendingRestoreDecision(true)
-
-                self.showBackupRestoreView(fromView: view)
-            } else {
-                self.showNextMilestone(navigationController: navigationController)
-            }
-        }, failure: { (_) in
-            self.showBackupCheckFailedAlert(fromView: view)
-        })
-    }
-
-    private func showBackupCheckFailedAlert(fromView view: UIViewController) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        guard let navigationController = view.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        let alert = ActionSheetController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
-                                                               comment: "Title for alert shown when the app failed to check for an existing backup."),
-                                      message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."))
-        alert.addAction(ActionSheetAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
-                                      style: .default) { (_) in
-                                        self.checkCanImportBackup(fromView: view)
-        })
-        alert.addAction(ActionSheetAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
-                                      style: .destructive) { (_) in
-                                        self.showNextMilestone(navigationController: navigationController)
-        })
-        view.presentActionSheet(alert)
     }
 
     public func onboardingDidRequire2FAPin(viewController: UIViewController) {
