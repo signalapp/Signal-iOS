@@ -29,28 +29,35 @@ public final class OpenGroupManagerV2 : NSObject {
     }
 
     // MARK: Adding & Removing
-    public func add(room: String, server: String, name: String, using transaction: Any) {
+    public func add(room: String, server: String, publicKey: String, using transaction: Any) -> Promise<Void> {
         let storage = Storage.shared
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
-        let openGroup = OpenGroupV2(server: server, room: room, name: name)
-        let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
-        let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
-        storage.write(with: { transaction in
-            let transaction = transaction as! YapDatabaseReadWriteTransaction
-            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-            thread.shouldThreadBeVisible = true
-            thread.save(with: transaction)
-            storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
-        }, completion: {
-            if let poller = OpenGroupManagerV2.shared.pollers[openGroup.id] {
-                poller.stop()
-                OpenGroupManagerV2.shared.pollers[openGroup.id] = nil
-            }
-            let poller = OpenGroupPollerV2(for: openGroup)
-            poller.startIfNeeded()
-            OpenGroupManagerV2.shared.pollers[openGroup.id] = poller
-        })
+        let (promise, seal) = Promise<Void>.pending()
+        OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .default)) { info in
+            let openGroup = OpenGroupV2(server: server, room: room, name: info.name, imageID: info.imageID)
+            let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
+            let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
+            storage.write(with: { transaction in
+                let transaction = transaction as! YapDatabaseReadWriteTransaction
+                let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+                thread.shouldThreadBeVisible = true
+                thread.save(with: transaction)
+                storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+            }, completion: {
+                if let poller = OpenGroupManagerV2.shared.pollers[openGroup.id] {
+                    poller.stop()
+                    OpenGroupManagerV2.shared.pollers[openGroup.id] = nil
+                }
+                let poller = OpenGroupPollerV2(for: openGroup)
+                poller.startIfNeeded()
+                OpenGroupManagerV2.shared.pollers[openGroup.id] = poller
+                seal.fulfill(())
+            })
+        }.catch(on: DispatchQueue.global(qos: .default)) { error in
+            seal.reject(error)
+        }
+        return promise
     }
 
     public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {

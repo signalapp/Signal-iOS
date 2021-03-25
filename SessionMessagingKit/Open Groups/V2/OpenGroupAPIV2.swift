@@ -57,6 +57,12 @@ public final class OpenGroupAPIV2 : NSObject {
             self.useOnionRouting = useOnionRouting
         }
     }
+    
+    // MARK: Info
+    public struct Info {
+        public let name: String
+        public let imageID: String
+    }
 
     // MARK: Convenience
     private static func send(_ request: Request) -> Promise<JSON> {
@@ -267,6 +273,14 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     // MARK: General
+    public static func getInfo(for room: String, on server: String) -> Promise<Info> {
+        let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)")
+        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            guard let name = json["name"] as? String, let imageID = json["image_id"] as? String else { throw Error.parsingFailed }
+            return Info(name: name, imageID: imageID)
+        }
+    }
+    
     public static func getMemberCount(for room: String, on server: String) -> Promise<UInt> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "member_count")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
