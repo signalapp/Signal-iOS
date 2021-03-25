@@ -10,7 +10,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,7 +43,6 @@ NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
 NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesKeyShouldNotifyOfNewAccountKey";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
-NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
 NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
@@ -174,20 +172,8 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
 
 + (BOOL)isReadyForAppExtensions
 {
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb && !self.isGrdbReadyForAppExtensions) {
-        return NO;
-    }
-    return self.isYdbReadyForAppExtensions;
-}
-
-+ (BOOL)isYdbReadyForAppExtensions
-{
-    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
-}
-
-+ (void)setIsYdbReadyForAppExtensions
-{
-    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
+    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    return self.isGrdbReadyForAppExtensions;
 }
 
 + (BOOL)isGrdbReadyForAppExtensions
@@ -350,52 +336,6 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
 - (void)setIsSystemCallLogEnabled:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeySystemCallLogEnabled];
-}
-
-// In iOS 10.2.1, Apple fixed a bug wherein call history was backed up to iCloud.
-//
-// See: https://support.apple.com/en-us/HT207482
-//
-// In iOS 11, Apple introduced a property CXProviderConfiguration.includesCallsInRecents
-// that allows us to prevent Signal calls made with CallKit from showing up in the device's
-// call history.
-//
-// Therefore in versions of iOS after 11, we have no need of call privacy.
-#pragma mark Legacy CallKit
-
-// Be a little conservative with system call logging with legacy users, even though it's
-// not synced to iCloud, users could be concerned to suddenly see caller names in their
-// recent calls list.
-- (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    BOOL wasUsingCallKit =
-        [self.keyValueStore getBool:OWSPreferencesKeyCallKitEnabled defaultValue:YES transaction:transaction.asAnyRead];
-    BOOL wasUsingCallKitPrivacy = [self.keyValueStore getBool:OWSPreferencesKeyCallKitPrivacyEnabled
-                                                 defaultValue:YES
-                                                  transaction:transaction.asAnyRead];
-
-    BOOL shouldLogCallsInRecents = ^{
-        if (wasUsingCallKit && !wasUsingCallKitPrivacy) {
-            // User was using CallKit and explicitly opted in to showing names/numbers,
-            // so it's OK to continue to show names/numbers in the system recents list.
-            return YES;
-        } else {
-            // User was not previously showing names/numbers in the system
-            // recents list, so don't opt them in.
-            return NO;
-        }
-    }();
-
-    OWSLogInfo(@"Migrating setting - System Call Log Enabled: %d", shouldLogCallsInRecents);
-
-    [self.keyValueStore setBool:shouldLogCallsInRecents
-                            key:OWSPreferencesKeySystemCallLogEnabled
-                    transaction:transaction.asAnyWrite];
-
-    // We need to reload the callService.callUIAdapter here, but SignalMessaging doesn't know about CallService, so we use
-    // notifications to decouple the code. This is admittedly awkward, but it only happens once, and the alternative would
-    // be importing all the call related classes into SignalMessaging.
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSPreferencesCallLoggingDidChangeNotification object:nil];
 }
 
 - (BOOL)wasViewOnceTooltipShown

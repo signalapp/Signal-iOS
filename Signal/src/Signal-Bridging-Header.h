@@ -28,7 +28,6 @@
 #import "OWSBezierPathView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
-#import "OWSDatabaseMigration.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSMessageTextView.h"

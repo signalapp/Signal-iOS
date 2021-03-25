@@ -4,20 +4,11 @@
 
 #import "OWSIncompleteCallsJob.h"
 #import "AppContext.h"
-#import "OWSPrimaryStorage.h"
 #import "TSCall.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseQuery.h>
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-static NSString *const OWSIncompleteCallsJobCallTypeColumn = @"call_type";
-static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_call_type";
-
-#pragma mark -
 
 @implementation OWSIncompleteCallsJob
 
@@ -26,27 +17,6 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     OWSAssertDebug(transaction);
 
     return [InteractionFinder incompleteCallIdsWithTransaction:transaction];
-}
-
-+ (NSArray<NSString *> *)ydb_incompleteCallIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
-
-    NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ == %d OR  %@ == %d",
-                                          OWSIncompleteCallsJobCallTypeColumn,
-                                          (int)RPRecentCallTypeOutgoingIncomplete,
-                                          OWSIncompleteCallsJobCallTypeColumn,
-                                          (int)RPRecentCallTypeIncomingIncomplete];
-    YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
-    [[transaction ext:OWSIncompleteCallsJobCallTypeIndex]
-        enumerateKeysMatchingQuery:query
-                        usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
-                            [messageIds addObject:key];
-                        }];
-
-    return [messageIds copy];
 }
 
 - (void)enumerateIncompleteCallsWithBlock:(void (^)(TSCall *call))block
@@ -99,40 +69,6 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     });
 
     OWSLogInfo(@"Marked %u calls as missed", count);
-}
-
-#pragma mark - YapDatabaseExtension
-
-+ (YapDatabaseSecondaryIndex *)indexDatabaseExtension
-{
-    YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
-    [setup addColumn:OWSIncompleteCallsJobCallTypeColumn withType:YapDatabaseSecondaryIndexTypeInteger];
-
-    YapDatabaseSecondaryIndexHandler *handler =
-        [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction,
-            NSMutableDictionary *dict,
-            NSString *collection,
-            NSString *key,
-            id object) {
-            if (![object isKindOfClass:[TSCall class]]) {
-                return;
-            }
-            TSCall *call = (TSCall *)object;
-
-            dict[OWSIncompleteCallsJobCallTypeColumn] = @(call.callType);
-        }];
-
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
-}
-
-+ (NSString *)databaseExtensionName
-{
-    return OWSIncompleteCallsJobCallTypeIndex;
-}
-
-+ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
-{
-    [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSIncompleteCallsJobCallTypeIndex];
 }
 
 @end

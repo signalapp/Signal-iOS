@@ -20,14 +20,11 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
     public typealias ReadTransaction = SDSAnyReadTransaction
 
     let grdbAdapter: GRDBThreadFinder = GRDBThreadFinder()
-    let yapAdapter: YAPDBThreadFinder = YAPDBThreadFinder()
 
     public func visibleThreadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return try grdbAdapter.visibleThreadCount(isArchived: isArchived, transaction: grdb)
-        case .yapRead(let yap):
-            return yapAdapter.visibleThreadCount(isArchived: isArchived, transaction: yap)
         }
     }
 
@@ -36,8 +33,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             try grdbAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: grdb, block: block)
-        case .yapRead(let yap):
-            yapAdapter.enumerateVisibleThreads(isArchived: isArchived, transaction: yap, block: block)
         }
     }
 
@@ -46,8 +41,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return try grdbAdapter.visibleThreadIds(isArchived: isArchived, transaction: grdb)
-        case .yapRead(let yap):
-            return try yapAdapter.visibleThreadIds(isArchived: isArchived, transaction: yap)
         }
     }
 
@@ -68,8 +61,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return try grdbAdapter.sortIndex(thread: thread, transaction: grdb)
-        case .yapRead(let yap):
-            return yapAdapter.sortIndex(thread: thread, transaction: yap)
         }
     }
 
@@ -77,87 +68,11 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return try grdbAdapter.threads(withThreadIds: threadIds, transaction: grdb)
-        case .yapRead(let yap):
-            return try yapAdapter.threads(withThreadIds: threadIds, transaction: yap)
         }
     }
 }
 
-struct YAPDBThreadFinder: ThreadFinder {
-    typealias ReadTransaction = YapDatabaseReadTransaction
-
-    func visibleThreadCount(isArchived: Bool, transaction: YapDatabaseReadTransaction) -> UInt {
-        guard let view = ext(transaction) else {
-            return 0
-        }
-        return view.numberOfItems(inGroup: group(isArchived: isArchived))
-    }
-
-    func enumerateVisibleThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
-        guard let view = ext(transaction) else {
-            return
-        }
-        view.safe_enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
-                                          extensionName: type(of: self).extensionName,
-                                          with: NSEnumerationOptions.reverse) { _, _, object, _, _ in
-                                            guard let thread = object as? TSThread else {
-                                                owsFailDebug("unexpected object: \(type(of: object))")
-                                                return
-                                            }
-                                            block(thread)
-        }
-    }
-
-    func visibleThreadIds(isArchived: Bool, transaction: YapDatabaseReadTransaction) throws -> [String] {
-        throw OWSAssertionError("Not implemented.")
-    }
-
-    func sortIndex(thread: TSThread, transaction: YapDatabaseReadTransaction) -> UInt? {
-        guard let view = ext(transaction) else {
-            owsFailDebug("view was unexpectedly nil")
-            return nil
-        }
-
-        var index: UInt = 0
-        var group: NSString?
-        let wasFound = view.getGroup(&group,
-                                     index: &index,
-                                     forKey: thread.uniqueId,
-                                     inCollection: TSThread.collection())
-        if wasFound, let group = group {
-            let numberOfItems = view.numberOfItems(inGroup: group as String)
-            guard numberOfItems > 0 else {
-                owsFailDebug("numberOfItems <= 0")
-                return nil
-            }
-            // since in yap our Inbox uses reversed sorting, our index must be reversed
-            let reverseIndex = (Int(numberOfItems) - 1) - Int(index)
-            guard reverseIndex >= 0 else {
-                owsFailDebug("reverseIndex was < 0")
-                return nil
-            }
-            return UInt(reverseIndex)
-        } else {
-            return nil
-        }
-    }
-
-    func threads(withThreadIds threadIds: Set<String>, transaction: YapDatabaseReadTransaction) throws -> Set<TSThread> {
-        throw OWSAssertionError("Not implemented.")
-    }
-
-    // MARK: -
-
-    private static let extensionName: String = TSThreadDatabaseViewExtensionName
-
-    private func group(isArchived: Bool) -> String {
-        return isArchived ? TSArchiveGroup : TSInboxGroup
-    }
-
-    private func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
-        return transaction.safeViewTransaction(type(of: self).extensionName)
-    }
-}
+// MARK: -
 
 @objc
 public class GRDBThreadFinder: NSObject, ThreadFinder {

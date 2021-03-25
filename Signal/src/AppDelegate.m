@@ -12,7 +12,6 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
-#import "YDBLegacyMigration.h"
 #import <Intents/Intents.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -174,22 +173,20 @@ void uncaughtExceptionHandler(NSException *exception)
                                deviceTransferRestoreFailed = ![DeviceTransferService.shared launchCleanup];
                            }];
 
-    // XXX - careful when moving this. It must happen before we load YDB and/or GRDB.
+    // XXX - careful when moving this. It must happen before we load GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
-    // but before we access YapDatabase, files on disk, or NSUserDefaults
+    // but before we access the database, files on disk, or NSUserDefaults.
     NSError *_Nullable launchError = nil;
     LaunchFailure launchFailure = LaunchFailure_None;
 
-    BOOL isYdbNotReady = ![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&launchError];
     if (deviceTransferRestoreFailed) {
         launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
-    } else if (isYdbNotReady || launchError != nil) {
+    } else if (launchError != nil) {
         launchFailure = LaunchFailure_CouldNotLoadDatabase;
     } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
         // Prevent:
-        // * Users who have used GRDB revert to using YDB.
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
     }
@@ -287,20 +284,7 @@ void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
-    // someone currently using yap
-    if (StorageCoordinator.hasYdbFile && !SSKPreferences.isYdbMigrated
-        && OWSPrimaryStorage.isDatabasePasswordAccessible) {
-        return;
-    }
-
-    // someone who migrated from yap to grdb needs the GRDB spec
-    if (SSKPreferences.isYdbMigrated && GRDBDatabaseStorageAdapter.isKeyAccessible) {
-        return;
-    }
-
-    // someone who never used yap needs the GRDB spec
-    if (!StorageCoordinator.hasYdbFile && StorageCoordinator.hasGrdbFile
-        && GRDBDatabaseStorageAdapter.isKeyAccessible) {
+    if (StorageCoordinator.hasGrdbFile && GRDBDatabaseStorageAdapter.isKeyAccessible) {
         return;
     }
 

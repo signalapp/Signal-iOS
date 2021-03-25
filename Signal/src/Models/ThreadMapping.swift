@@ -635,54 +635,6 @@ class ThreadMapping: NSObject {
 
         return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
     }
-
-    // For performance reasons, the database modification notifications are used
-    // to determine which items were modified.  If YapDatabase ever changes the
-    // structure or semantics of these notifications, we'll need to update this
-    // code to reflect that.
-    @objc
-    public func updatedYapItemIds(forNotifications notifications: [NSNotification]) -> Set<String> {
-        // We'll move this into the Yap adapter when addressing updates/observation
-        let viewName: String = TSThreadDatabaseViewExtensionName
-
-        var updatedItemIds = Set<String>()
-        for notification in notifications {
-            // Unpack the YDB notification, looking for row changes.
-            guard let userInfo =
-                notification.userInfo else {
-                    owsFailDebug("Missing userInfo.")
-                    continue
-            }
-            guard let viewChangesets =
-                userInfo[YapDatabaseExtensionsKey] as? NSDictionary else {
-                    // No changes for any views, skip.
-                    continue
-            }
-            guard let changeset =
-                viewChangesets[viewName] as? NSDictionary else {
-                    // No changes for this view, skip.
-                    continue
-            }
-            // This constant matches a private constant in YDB.
-            let changeset_key_changes: String = "changes"
-            guard let changesetChanges = changeset[changeset_key_changes] as? [Any] else {
-                owsFailDebug("Missing changeset changes.")
-                continue
-            }
-            for change in changesetChanges {
-                if change as? YapDatabaseViewSectionChange != nil {
-                    // Ignore.
-                } else if let rowChange = change as? YapDatabaseViewRowChange {
-                    updatedItemIds.insert(rowChange.collectionKey.key)
-                } else {
-                    owsFailDebug("Invalid change: \(type(of: change)).")
-                    continue
-                }
-            }
-        }
-
-        return updatedItemIds
-    }
 }
 
 extension Collection where Element: Equatable {

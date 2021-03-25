@@ -9,7 +9,6 @@
 #import "OWSReadReceiptManager.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
-#import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

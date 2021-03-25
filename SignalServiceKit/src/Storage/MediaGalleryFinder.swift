@@ -85,8 +85,6 @@ public final class MediaGalleryManager: NSObject {
     @objc(didInsertAttachmentStream:transaction:)
     public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite:
-            break
         case .grdbWrite(let grdbWrite):
             do {
                 try insertGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
@@ -99,8 +97,6 @@ public final class MediaGalleryManager: NSObject {
     @objc(didRemoveAttachmentStream:transaction:)
     public class func didRemove(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite:
-            break
         case .grdbWrite(let grdbWrite):
             do {
                 try removeAnyGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
@@ -113,8 +109,6 @@ public final class MediaGalleryManager: NSObject {
     @objc
     public class func didRemoveAllContent(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite:
-            break
         case .grdbWrite(let grdbWrite):
             do {
                 try removeAllGalleryRecords(transaction: grdbWrite)

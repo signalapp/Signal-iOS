@@ -10,9 +10,6 @@ extension TSInteraction {
     @objc
     public func fillInMissingSortIdForJustInsertedInteraction(transaction: SDSAnyReadTransaction) {
         switch transaction.readTransaction {
-        case .yapRead:
-            owsFailDebug("Unexpected transaction.")
-            return
         case .grdbRead(let grdbRead):
             fillInMissingSortIdForJustInsertedInteraction(transaction: grdbRead)
         }

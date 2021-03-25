@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,8 +36,6 @@ public extension SDSModel {
         }
 
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -72,8 +70,6 @@ public extension SDSModel {
         anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             // Don't use a record to delete the record;
             // asRecord() is expensive.

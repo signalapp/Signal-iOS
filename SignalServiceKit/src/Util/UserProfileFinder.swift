@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,8 +8,6 @@ import GRDB
 @objc
 class AnyUserProfileFinder: NSObject {
     let grdbAdapter = GRDBUserProfileFinder()
-    let yapdbAdapter = YAPDBSignalServiceAddressIndex()
-    let yapdbUsernameAdapter = YAPDBUserProfileFinder()
 }
 
 extension AnyUserProfileFinder {
@@ -18,8 +16,6 @@ extension AnyUserProfileFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.userProfile(for: address, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOne(for: address, transaction: transaction)
         }
     }
 
@@ -28,9 +24,6 @@ extension AnyUserProfileFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.userProfileForUUID(uuid, transaction: transaction)
-        case .yapRead:
-            owsFailDebug("Invalid transaction.")
-            return nil
         }
     }
 
@@ -39,9 +32,6 @@ extension AnyUserProfileFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.userProfileForPhoneNumber(phoneNumber, transaction: transaction)
-        case .yapRead:
-            owsFailDebug("Invalid transaction.")
-            return nil
         }
     }
 
@@ -50,8 +40,6 @@ extension AnyUserProfileFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbUsernameAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
         }
     }
 
@@ -60,8 +48,6 @@ extension AnyUserProfileFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             grdbAdapter.enumerateMissingAndStaleUserProfiles(transaction: transaction, block: block)
-        case .yapRead:
-            owsFail("Invalid database.")
         }
     }
 }
@@ -142,53 +128,5 @@ class GRDBUserProfileFinder: NSObject {
         } catch {
             owsFailDebug("unexpected error \(error)")
         }
-    }
-}
-
-// MARK: -
-
-@objc
-public class YAPDBUserProfileFinder: NSObject {
-    public static let extensionName = "index_on_username"
-    private static let usernameKey = "usernameKey"
-
-    @objc
-    public static func asyncRegisterDatabaseExtensions(_ storage: OWSStorage) {
-        storage.asyncRegister(extensionConfig(), withName: extensionName)
-    }
-
-    static func extensionConfig() -> YapDatabaseSecondaryIndex {
-        let setup = YapDatabaseSecondaryIndexSetup()
-        setup.addColumn(usernameKey, with: .text)
-
-        let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, dict, _, _, object in
-            guard let userProfile = object as? OWSUserProfile else { return }
-            dict[usernameKey] = userProfile.username
-        }
-
-        return YapDatabaseSecondaryIndex.init(setup: setup, handler: handler, versionTag: "1")
-    }
-
-    func userProfile(forUsername username: String, transaction: YapDatabaseReadTransaction) -> OWSUserProfile? {
-        guard let ext = transaction.safeSecondaryIndexTransaction(YAPDBUserProfileFinder.extensionName) else {
-            owsFailDebug("missing extension")
-            return nil
-        }
-
-        let queryFormat = String(format: "WHERE %@ = \"%@\"", YAPDBUserProfileFinder.usernameKey, username)
-        let query = YapDatabaseQuery(string: queryFormat, parameters: [])
-
-        var matchedProfile: OWSUserProfile?
-
-        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stop in
-            guard let userProfile = object as? OWSUserProfile else {
-                owsFailDebug("Unexpected object type")
-                return
-            }
-            matchedProfile = userProfile
-            stop.pointee = true
-        }
-
-        return matchedProfile
     }
 }

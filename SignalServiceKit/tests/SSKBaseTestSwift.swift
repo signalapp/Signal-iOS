@@ -50,31 +50,4 @@ public class SSKBaseTestSwift: XCTestCase {
     public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         return databaseStorage.asyncWrite(block: block)
     }
-
-    @objc
-    public func yapRead(_ block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        guard let primaryStorage = primaryStorage else {
-            XCTFail("Missing primaryStorage.")
-            return
-        }
-        return primaryStorage.dbReadConnection.read(block)
-    }
-
-    @objc
-    public func yapWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        guard let primaryStorage = primaryStorage else {
-            XCTFail("Missing primaryStorage.")
-            return
-        }
-        return primaryStorage.dbReadWriteConnection.readWrite(block)
-    }
-
-    @objc
-    public func yapAsyncWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        guard let primaryStorage = primaryStorage else {
-            XCTFail("Missing primaryStorage.")
-            return
-        }
-        return primaryStorage.dbReadWriteConnection.asyncReadWrite(block)
-    }
 }

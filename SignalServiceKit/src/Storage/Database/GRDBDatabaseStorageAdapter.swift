@@ -8,6 +8,9 @@ import GRDB
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
+    // 256 bit key + 128 bit salt
+    public static let kSQLCipherKeySpecLength: UInt = 48
+
     static func databaseDirUrl(baseDir: URL) -> URL {
         return baseDir.appendingPathComponent("grdb", isDirectory: true)
     }
@@ -199,7 +202,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         //
         // * This is a new install so there's no existing password to retrieve.
         // * The keychain has become corrupt.
-        // * We are about to do a ydb-to-grdb migration.
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
@@ -257,28 +259,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
     #endif
 
-    private func assertCanRead() {
-        if !databaseStorage.canReadFromGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
-            Logger.error(
-                "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
-            Logger.error(
-                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
-
-            switch FeatureFlags.storageModeStrictness {
-            case .fail:
-                owsFail("Unexpected GRDB read.")
-            case .failDebug:
-                owsFailDebug("Unexpected GRDB read.")
-            case .log:
-                Logger.error("Unexpected GRDB read.")
-            }
-        }
-    }
-
     // TODO readThrows/writeThrows flavors
     public func uiReadThrows(block: (GRDBReadTransaction) throws -> Void) rethrows {
-        assertCanRead()
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -304,7 +286,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @discardableResult
     public func read<T>(block: (GRDBReadTransaction) throws -> T) throws -> T {
-        assertCanRead()
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -347,7 +328,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @objc
     public func uiRead(block: (GRDBReadTransaction) -> Void) throws {
-        assertCanRead()
         AssertIsOnMainThread()
 
         #if TESTABLE_BUILD
@@ -378,7 +358,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @objc
     public func read(block: (GRDBReadTransaction) -> Void) throws {
-        assertCanRead()
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -400,28 +379,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    private func assertCanWrite() {
-        if !databaseStorage.canWriteToGrdb {
-            Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
-            Logger.error(
-                "StorageCoordinatorState: \(NSStringFromStorageCoordinatorState(storageCoordinator.state)).")
-            Logger.error(
-                "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI)).")
-
-            switch FeatureFlags.storageModeStrictness {
-            case .fail:
-                owsFail("Unexpected GRDB write.")
-            case .failDebug:
-                owsFailDebug("Unexpected GRDB write.")
-            case .log:
-                Logger.error("Unexpected GRDB write.")
-            }
-        }
-    }
-
     @objc
     public func write(block: (GRDBWriteTransaction) -> Void) throws {
-        assertCanWrite()
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -566,8 +525,10 @@ private struct GRDBStorage {
 // MARK: -
 
 public struct GRDBKeySpecSource {
-    // 256 bit key + 128 bit salt
-    private let kSQLCipherKeySpecLength: UInt = 48
+
+    private var kSQLCipherKeySpecLength: UInt {
+        GRDBDatabaseStorageAdapter.kSQLCipherKeySpecLength
+    }
 
     let keyServiceName: String
     let keyName: String

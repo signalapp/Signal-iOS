@@ -408,8 +408,6 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             return false
         }
         switch transaction.readTransaction {
-        case .yapRead:
-            return false
         case .grdbRead:
             return true
         }

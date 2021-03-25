@@ -506,7 +506,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (BOOL)canAsyncUpdate
 {
-    return (!CurrentAppContext().isRunningTests && !self.storageCoordinator.isMigrating);
+    return !CurrentAppContext().isRunningTests;
 }
 
 - (BOOL)isValidVideo

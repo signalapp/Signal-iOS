@@ -1,20 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSStorage;
-@class YapDatabaseReadTransaction;
-
 @interface OWSFailedAttachmentDownloadsJob : NSObject
 
 - (void)runSync;
-
-+ (NSArray<NSString *> *)unfailedAttachmentPointerIdsWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
-+ (NSString *)databaseExtensionName;
-+ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
 @end
 

@@ -8,8 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
 @class SDSDatabaseStorage;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol SDSRecordDelegate
 
@@ -19,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-
+// TODO: Rename and/or merge with BaseModel.
 @interface TSYapDatabaseObject : MTLModel <SDSRecordDelegate>
 
 /**
@@ -74,20 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-#pragma mark - YDB Deprecation
-
-// These ydb_ methods should only be used before
-// and during the ydb-to-grdb migration.
-+ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                           usingBlock:(void (^)(id object, BOOL *stop))block;
-+ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
-                                         transaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(ydb_fetch(uniqueId:transaction:));
-- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
-- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

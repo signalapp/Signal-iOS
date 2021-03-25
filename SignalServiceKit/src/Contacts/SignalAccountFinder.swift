@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,6 @@ import Foundation
 @objc
 public class AnySignalAccountFinder: NSObject {
     let grdbAdapter = GRDBSignalAccountFinder()
-    let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
 
 extension AnySignalAccountFinder {
@@ -16,8 +15,6 @@ extension AnySignalAccountFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalAccount(for: address, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOne(for: address, transaction: transaction)
         }
     }
 }

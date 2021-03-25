@@ -5,18 +5,15 @@
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ThreadViewHelper () <UIDatabaseSnapshotDelegate>
 
-@property (nonatomic, nullable) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 
 @end

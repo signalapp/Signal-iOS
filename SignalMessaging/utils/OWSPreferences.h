@@ -23,7 +23,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSPreferences : NSObject
 
@@ -36,9 +35,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 #pragma mark - Specific Preferences
 
 + (BOOL)isReadyForAppExtensions;
-
-+ (BOOL)isYdbReadyForAppExtensions;
-+ (void)setIsYdbReadyForAppExtensions;
 
 + (BOOL)isGrdbReadyForAppExtensions;
 + (void)setIsGrdbReadyForAppExtensions;
@@ -98,10 +94,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 - (BOOL)isSystemCallLogEnabled;
 - (void)setIsSystemCallLogEnabled:(BOOL)value;
-
-#pragma mark - Legacy CallKit settings
-
-- (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark direct call connectivity (non-TURN)
 

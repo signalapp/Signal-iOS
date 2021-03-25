@@ -44,7 +44,6 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'CocoaLumberjack'
   s.dependency 'AFNetworking/NSURLSession'
   s.dependency 'Mantle'
-  s.dependency 'YapDatabase/SQLCipher'
   s.dependency 'Starscream'
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'GRKOpenSSLFramework'

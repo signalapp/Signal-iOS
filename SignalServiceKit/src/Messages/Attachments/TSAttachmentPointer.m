@@ -350,13 +350,6 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                                               }];
 }
 
-- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self checkForStreamOverwrite:transaction.asAnyRead];
-
-    [super ydb_saveWithTransaction:transaction];
-}
-
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];

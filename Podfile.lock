@@ -113,7 +113,6 @@ PODS:
     - SignalMetadataKit
     - Starscream
     - SwiftProtobuf
-    - YapDatabase/SQLCipher
     - YYImage/WebP
   - SignalServiceKit/Tests (0.9.0):
     - AFNetworking/NSURLSession
@@ -134,7 +133,6 @@ PODS:
     - SignalMetadataKit
     - Starscream
     - SwiftProtobuf
-    - YapDatabase/SQLCipher
     - YYImage/WebP
   - SQLCipher (4.3.0):
     - SQLCipher/standard (= 4.3.0)
@@ -144,68 +142,6 @@ PODS:
   - SSZipArchive (2.1.4)
   - Starscream (3.0.6)
   - SwiftProtobuf (1.7.0)
-  - YapDatabase/SQLCipher (3.1.1):
-    - YapDatabase/SQLCipher/Core (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions (= 3.1.1)
-  - YapDatabase/SQLCipher/Core (3.1.1):
-    - CocoaLumberjack
-    - SQLCipher (>= 3.4.0)
-  - YapDatabase/SQLCipher/Extensions (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/ActionManager (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/AutoView (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/CloudCore (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/CloudKit (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/ConnectionPool (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/ConnectionProxy (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/FilteredView (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/FullTextSearch (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/Hooks (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/ManualView (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/Relationships (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/RTreeIndex (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/SearchResultsView (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/SecondaryIndex (= 3.1.1)
-    - YapDatabase/SQLCipher/Extensions/View (= 3.1.1)
-  - YapDatabase/SQLCipher/Extensions/ActionManager (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/AutoView
-  - YapDatabase/SQLCipher/Extensions/AutoView (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/View
-  - YapDatabase/SQLCipher/Extensions/CloudCore (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/CloudKit (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/ConnectionPool (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/ConnectionProxy (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/CrossProcessNotification (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/FilteredView (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/View
-  - YapDatabase/SQLCipher/Extensions/FullTextSearch (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/Hooks (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/ManualView (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/View
-  - YapDatabase/SQLCipher/Extensions/Relationships (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/RTreeIndex (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/SearchResultsView (3.1.1):
-    - YapDatabase/SQLCipher/Core
-    - YapDatabase/SQLCipher/Extensions/AutoView
-    - YapDatabase/SQLCipher/Extensions/FullTextSearch
-  - YapDatabase/SQLCipher/Extensions/SecondaryIndex (3.1.1):
-    - YapDatabase/SQLCipher/Core
-  - YapDatabase/SQLCipher/Extensions/View (3.1.1):
-    - YapDatabase/SQLCipher/Core
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -246,7 +182,6 @@ DEPENDENCIES:
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (= 1.7.0)
-  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZKGroup (from `https://github.com/signalapp/signal-zkgroup-swift`)
   - ZKGroup/Tests (from `https://github.com/signalapp/signal-zkgroup-swift`)
@@ -301,9 +236,6 @@ EXTERNAL SOURCES:
   Starscream:
     :branch: signal-release
     :git: https://github.com/signalapp/Starscream.git
-  YapDatabase:
-    :branch: signal-release
-    :git: https://github.com/signalapp/YapDatabase.git
   YYImage:
     :git: https://github.com/signalapp/YYImage
   ZKGroup:
@@ -343,9 +275,6 @@ CHECKOUT OPTIONS:
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
-  YapDatabase:
-    :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
-    :git: https://github.com/signalapp/YapDatabase.git
   YYImage:
     :commit: d91910e6f313a255febbf69795198e74259bd51c
     :git: https://github.com/signalapp/YYImage
@@ -377,16 +306,15 @@ SPEC CHECKSUMS:
   SignalCoreKit: 43daa8f15d6125d54705f35628ac35051bb205c6
   SignalMetadataKit: eb928ec98376ab5a6ef2108a7fcd3b2d792b8c65
   SignalRingRTC: 1769d40e1a155a2d6ddd95c404e7822bedd97076
-  SignalServiceKit: b3337d511fc32129c8b8819a9ac2700490ecdd6f
+  SignalServiceKit: 998e9bce294e9e4eb88b13ccd58f7016bb0c8021
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
-  YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 8470f6214af1e5e4c437a903764cb001011d8167
+PODFILE CHECKSUM: 6fcda6d7001d5be6e25668298eb82fe1325dba06
 
 COCOAPODS: 1.9.2

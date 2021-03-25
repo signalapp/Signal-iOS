@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -495,7 +495,6 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
 
     @objc(didUpdateKeyValueStore:)
     func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
-        // YDB: keyValueStore.collection
         // GRDB: SDSKeyValueStore.dataStoreCollection
         return (didUpdate(collection: keyValueStore.collection) ||
             didUpdate(collection: SDSKeyValueStore.dataStoreCollection))

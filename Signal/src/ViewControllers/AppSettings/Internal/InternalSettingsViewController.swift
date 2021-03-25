@@ -113,9 +113,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.label(withText: "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI))"))
 
-        infoSection.add(.label(withText: "hasYdbFile: \(StorageCoordinator.hasYdbFile)"))
         infoSection.add(.label(withText: "hasGrdbFile: \(StorageCoordinator.hasGrdbFile)"))
-        infoSection.add(.label(withText: "hasUnmigratedYdbFile: \(StorageCoordinator.hasUnmigratedYdbFile)"))
         infoSection.add(.label(withText: "didEverUseYdb: \(SSKPreferences.didEverUseYdb())"))
 
         infoSection.add(.actionItem(

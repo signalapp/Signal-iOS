@@ -3,7 +3,6 @@
 //
 
 #import "TSInteraction.h"
-#import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -52,43 +51,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 + (BOOL)shouldBeIndexedForFTS
 {
     return YES;
-}
-
-+ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
-                                                    ofClass:(Class)clazz
-                                            withTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(timestamp > 0);
-
-    // Accept any interaction.
-    return [self ydb_interactionsWithTimestamp:timestamp
-                                        filter:^(TSInteraction *interaction) {
-                                            return [interaction isKindOfClass:clazz];
-                                        }
-                               withTransaction:transaction];
-}
-
-+ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
-                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                            withTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(timestamp > 0);
-
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-
-    [TSDatabaseSecondaryIndexes enumerateMessagesWithTimestamp:timestamp
-                                                     withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                                         TSInteraction *interaction =
-                                                             [TSInteraction anyFetchWithUniqueId:key
-                                                                                     transaction:transaction.asAnyRead];
-                                                         if (!filter(interaction)) {
-                                                             return;
-                                                         }
-                                                         [interactions addObject:interaction];
-                                                     }
-                                              usingTransaction:transaction];
-
-    return [interactions copy];
 }
 
 + (NSString *)collection {
@@ -298,29 +260,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark - Any Transaction Hooks
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyWillInsertWithTransaction:transaction];
-
-    if (transaction.transitional_yapWriteTransaction != nil) {
-        [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
-    }
-}
-
-- (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (self.uniqueId.length < 1) {
-        OWSFailDebug(@"Missing uniqueId.");
-        return;
-    }
-
-    if (self.sortId == 0) {
-        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
-    }
-}
-
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
@@ -370,19 +309,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark - sorting migration
 
-- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (self.sortId != 0) {
-        // This could happen if something else in our startup process saved the interaction
-        // e.g. another migration ran.
-        // During the migration, since we're enumerating the interactions in the proper order,
-        // we want to ignore any previously assigned sortId
-        self.sortId = 0;
-    }
-    [self ydb_saveWithTransaction:transaction];
-}
-
-// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
 - (void)replaceSortId:(uint64_t)sortId {
     _sortId = sortId;
 }

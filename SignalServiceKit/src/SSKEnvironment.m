@@ -5,7 +5,6 @@
 #import "SSKEnvironment.h"
 #import "AppContext.h"
 #import "OWSBlockingManager.h"
-#import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -19,7 +18,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic) MessageSender *messageSenderRef;
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
-@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorageRef;
 @property (nonatomic) TSNetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
 @property (nonatomic) OWSBlockingManager *blockingManagerRef;
@@ -61,7 +59,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @synthesize callMessageHandlerRef = _callMessageHandlerRef;
 @synthesize notificationsManagerRef = _notificationsManagerRef;
-@synthesize migrationDBConnection = _migrationDBConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
@@ -69,7 +66,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -121,7 +117,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageSenderJobQueueRef = messageSenderJobQueue;
     _pendingReadReceiptRecorderRef = pendingReadReceiptRecorder;
     _profileManagerRef = profileManager;
-    _primaryStorageRef = primaryStorage;
     _networkManagerRef = networkManager;
     _messageManagerRef = messageManager;
     _blockingManagerRef = blockingManager;
@@ -235,25 +230,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     return (self.callMessageHandler != nil && self.notificationsManager != nil);
 }
 
-- (YapDatabaseConnection *)migrationDBConnection
-{
-    OWSAssert(self.primaryStorage);
-
-    @synchronized(self) {
-        if (!_migrationDBConnection) {
-            _migrationDBConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _migrationDBConnection;
-    }
-}
-
 - (void)warmCaches
 {
-    // Pre-heat caches to avoid sneaky transactions during the YDB->GRDB migrations.
-    // We need to warm these caches _before_ the migrations run.
-    //
-    // We need to do as few writes as possible here, to avoid conflicts
-    // with the migrations which haven't run yet.
     [self.tsAccountManager warmCaches];
     [self.signalServiceAddressCache warmCaches];
     [self.remoteConfigManager warmCaches];

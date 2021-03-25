@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSUserDefaults+OWS.h"
@@ -13,20 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSUserDefaults *)appUserDefaults
 {
     return CurrentAppContext().appUserDefaults;
-}
-
-+ (void)migrateToSharedUserDefaults
-{
-    OWSLogInfo(@"");
-
-    NSUserDefaults *appUserDefaults = self.appUserDefaults;
-
-    NSDictionary<NSString *, id> *dictionary = [NSUserDefaults standardUserDefaults].dictionaryRepresentation;
-    for (NSString *key in dictionary) {
-        id value = dictionary[key];
-        OWSAssertDebug(value);
-        [appUserDefaults setObject:value forKey:key];
-    }
 }
 
 + (void)removeAll

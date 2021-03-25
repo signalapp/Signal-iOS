@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -92,17 +92,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 #pragma mark Utility Method
 
-// POST GRDB TODO: Remove this method.
-+ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
-                                                    ofClass:(Class)clazz
-                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
-
-
-// POST GRDB TODO: Remove this method.
-+ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
-                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
-
 - (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
@@ -114,11 +103,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // unseen message indicators, etc.
 - (BOOL)isDynamicInteraction;
 
-// NOTE: This is only for use by a legacy migration.
-- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-    NS_SWIFT_NAME(ydb_saveNextSortId(transaction:));
-
-// NOTE: This is only for use by the YDB-to-GRDB legacy migration.
 - (void)replaceSortId:(uint64_t)sortId;
 
 #if TESTABLE_BUILD

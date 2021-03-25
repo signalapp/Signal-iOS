@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,14 +14,12 @@ class ThreadPerformanceTest: PerformanceBaseTest {
     // MARK: - writeThreadAndInteractions
 
     func testYDBPerf_writeThreadAndInteractions() {
-        storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeThreadAndInteractions()
         }
     }
 
     func testGRDBPerf_writeThreadAndInteractions() {
-        storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeThreadAndInteractions()
         }
@@ -50,14 +48,12 @@ class ThreadPerformanceTest: PerformanceBaseTest {
     // MARK: - writeAndDeleteThreadAndInteractions
 
     func testYDBPerf_writeAndDeleteThreadAndInteractions() {
-        storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndDeleteThreadAndInteractions()
         }
     }
 
     func testGRDBPerf_writeAndDeleteThreadAndInteractions() {
-        storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndDeleteThreadAndInteractions()
         }
@@ -83,14 +79,12 @@ class ThreadPerformanceTest: PerformanceBaseTest {
     // MARK: - writeAndUpdateAndDeleteThreadAndInteractions
 
     func testYDBPerf_writeAndUpdateAndDeleteThreadAndInteractions() {
-        storageCoordinator.useYDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndUpdateAndDeleteThreadAndInteractions()
         }
     }
 
     func testGRDBPerf_writeAndUpdateAndDeleteThreadAndInteractions() {
-        storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             writeAndUpdateAndDeleteThreadAndInteractions()
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,6 @@ import Foundation
 @objc
 public class AnySignalRecipientFinder: NSObject {
     let grdbAdapter = GRDBSignalRecipientFinder()
-    let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
 
 extension AnySignalRecipientFinder {
@@ -16,8 +15,6 @@ extension AnySignalRecipientFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalRecipientForUUID(uuid, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOneForUUID(uuid, transaction: transaction)
         }
     }
 
@@ -26,8 +23,6 @@ extension AnySignalRecipientFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalRecipientForPhoneNumber(phoneNumber, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOneForPhoneNumber(phoneNumber, transaction: transaction)
         }
     }
 
@@ -36,8 +31,6 @@ extension AnySignalRecipientFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalRecipient(for: address, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOne(for: address, transaction: transaction)
         }
     }
 
@@ -45,8 +38,6 @@ extension AnySignalRecipientFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalRecipients(for: addresses, transaction: transaction)
-        case .yapRead:
-            fatalError("yap not supported")
         }
     }
 
@@ -58,8 +49,6 @@ extension AnySignalRecipientFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.registeredRecipientsWithoutUUID(transaction: transaction)
-        case .yapRead:
-            fatalError("yap not supported")
         }
     }
 }

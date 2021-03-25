@@ -20,14 +20,11 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
     typealias ReadTransaction = SDSAnyReadTransaction
     typealias WriteTransaction = SDSAnyWriteTransaction
 
-    let yapAdapter = YAPDBMessageContentJobFinder()
     let grdbAdapter = GRDBMessageContentJobFinder()
 
     @objc
     public func addJob(envelopeData: Data, plaintextData: Data?, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let yapWrite):
-            yapAdapter.addJob(withEnvelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, serverDeliveryTimestamp: serverDeliveryTimestamp, transaction: yapWrite)
         case .grdbWrite(let grdbWrite):
             grdbAdapter.addJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, serverDeliveryTimestamp: serverDeliveryTimestamp, transaction: grdbWrite)
         }
@@ -36,8 +33,6 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
     @objc
     public func nextJobs(batchSize: UInt, transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
         switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return yapAdapter.nextJobs(forBatchSize: batchSize, transaction: yapRead)
         case .grdbRead(let grdbRead):
             return grdbAdapter.nextJobs(batchSize: batchSize, transaction: grdbRead)
         }
@@ -45,8 +40,6 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
 
     @objc func allJobs(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
         switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            owsFail("YAP not supported")
         case .grdbRead(let grdbRead):
             return grdbAdapter.allJobs(transaction: grdbRead)
         }
@@ -55,8 +48,6 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
     @objc
     public func removeJobs(withUniqueIds uniqueIds: [String], transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let yapWrite):
-            yapAdapter.removeJobs(withIds: uniqueIds, transaction: yapWrite)
         case .grdbWrite(let grdbWrite):
             grdbAdapter.removeJobs(withUniqueIds: uniqueIds, transaction: grdbWrite)
         }

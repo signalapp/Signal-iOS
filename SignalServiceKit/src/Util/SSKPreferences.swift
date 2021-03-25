@@ -92,26 +92,6 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let isYdbMigratedKey = "isYdbMigrated1"
-
-    @objc
-    public static func isYdbMigrated() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: isYdbMigratedKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
-
-    @objc
-    public static func setIsYdbMigrated(_ value: Bool) {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(value, forKey: isYdbMigratedKey)
-        appUserDefaults.synchronize()
-    }
-
-    // MARK: -
-
     private static let didEverUseYdbKey = "didEverUseYdb"
 
     @objc
@@ -127,6 +107,24 @@ public class SSKPreferences: NSObject {
     public static func setDidEverUseYdb(_ value: Bool) {
         let appUserDefaults = CurrentAppContext().appUserDefaults()
         appUserDefaults.set(value, forKey: didEverUseYdbKey)
+        appUserDefaults.synchronize()
+    }
+
+    private static let didDropYdbKey = "didDropYdb"
+
+    @objc
+    public static func didDropYdb() -> Bool {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        guard let preference = appUserDefaults.object(forKey: didDropYdbKey) as? NSNumber else {
+            return false
+        }
+        return preference.boolValue
+    }
+
+    @objc
+    public static func setDidDropYdb(_ value: Bool) {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.set(value, forKey: didDropYdbKey)
         appUserDefaults.synchronize()
     }
 

@@ -3,18 +3,11 @@
 //
 
 #import "OWSFailedMessagesJob.h"
-#import "OWSStorage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseQuery.h>
-#import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-static NSString *const OWSFailedMessagesJobMessageStateColumn = @"message_state";
-static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_messages_on_message_state";
 
 @implementation OWSFailedMessagesJob
 
@@ -23,24 +16,6 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     OWSAssertDebug(transaction);
 
     return [InteractionFinder attemptingOutInteractionIdsWithTransaction:transaction];
-}
-
-+ (NSArray<NSString *> *)attemptingOutMessageIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
-
-    NSString *formattedString = [NSString
-        stringWithFormat:@"WHERE %@ == %d", OWSFailedMessagesJobMessageStateColumn, (int)TSOutgoingMessageStateSending];
-    YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
-    [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
-        enumerateKeysMatchingQuery:query
-                        usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
-                            [messageIds addObject:key];
-                        }];
-
-    return [messageIds copy];
 }
 
 - (void)enumerateAttemptingOutMessagesWithBlock:(void (^_Nonnull)(TSOutgoingMessage *message))block
@@ -85,40 +60,6 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         });
 
     OWSLogDebug(@"Marked %u messages as unsent", count);
-}
-
-#pragma mark - YapDatabaseExtension
-
-+ (YapDatabaseSecondaryIndex *)indexDatabaseExtension
-{
-    YapDatabaseSecondaryIndexSetup *setup = [YapDatabaseSecondaryIndexSetup new];
-    [setup addColumn:OWSFailedMessagesJobMessageStateColumn withType:YapDatabaseSecondaryIndexTypeInteger];
-
-    YapDatabaseSecondaryIndexHandler *handler =
-        [YapDatabaseSecondaryIndexHandler withObjectBlock:^(YapDatabaseReadTransaction *transaction,
-            NSMutableDictionary *dict,
-            NSString *collection,
-            NSString *key,
-            id object) {
-            if (![object isKindOfClass:[TSOutgoingMessage class]]) {
-                return;
-            }
-            TSOutgoingMessage *message = (TSOutgoingMessage *)object;
-
-            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.messageState);
-        }];
-
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
-}
-
-+ (NSString *)databaseExtensionName
-{
-    return OWSFailedMessagesJobMessageStateIndex;
-}
-
-+ (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
-{
-    [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSFailedMessagesJobMessageStateIndex];
 }
 
 @end

@@ -255,7 +255,6 @@ extension ViewOnceMessageFinder {
 
 public class AnyViewOnceMessageFinder {
     lazy var grdbAdapter = GRDBViewOnceMessageFinder()
-    lazy var yapAdapter = YAPDBViewOnceMessageFinder()
 }
 
 // MARK: -
@@ -265,8 +264,6 @@ extension AnyViewOnceMessageFinder: ViewOnceMessageFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             grdbAdapter.enumerateAllIncompleteViewOnceMessages(transaction: grdbRead, block: block)
-        case .yapRead(let yapRead):
-            yapAdapter.enumerateAllIncompleteViewOnceMessages(transaction: yapRead, block: block)
         }
     }
 }
@@ -302,30 +299,6 @@ class GRDBViewOnceMessageFinder: ViewOnceMessageFinder {
             if stop.boolValue {
                 return
             }
-        }
-    }
-}
-
-// MARK: -
-
-class YAPDBViewOnceMessageFinder: ViewOnceMessageFinder {
-    public func enumerateAllIncompleteViewOnceMessages(transaction: YapDatabaseReadTransaction, block: @escaping EnumerateTSMessageBlock) {
-        guard let dbView = TSDatabaseView.incompleteViewOnceMessagesDatabaseView(transaction) as? YapDatabaseViewTransaction else {
-            owsFailDebug("Couldn't load db view.")
-            return
-        }
-
-        dbView.safe_enumerateKeysAndObjects(inGroup: TSIncompleteViewOnceMessagesGroup, extensionName: TSIncompleteViewOnceMessagesDatabaseViewExtensionName) { (_: String, _: String, object: Any, _: UInt, stopPointer: UnsafeMutablePointer<ObjCBool>) in
-            guard let message = object as? TSMessage else {
-                owsFailDebug("Invalid database entity: \(type(of: object)).")
-                return
-            }
-            guard message.isViewOnceMessage,
-                !message.isViewOnceComplete else {
-                    owsFailDebug("expecting incomplete view-once message but found: \(message)")
-                return
-            }
-            block(message, stopPointer)
         }
     }
 }

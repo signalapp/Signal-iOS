@@ -18,9 +18,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
 
-// POST GRDB TODO: Remove this
-@property (nonatomic) NSUUID *disposableDatabaseUUID;
-
 @property (nonatomic, readonly) UIApplicationState mainApplicationStateOnLaunch;
 
 @end
@@ -45,7 +42,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     self.reportedApplicationState = UIApplicationStateInactive;
 
     _appLaunchTime = [NSDate new];
-    _disposableDatabaseUUID = [NSUUID UUID];
     _mainApplicationStateOnLaunch = [UIApplication sharedApplication].applicationState;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -392,11 +388,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (NSString *)appDatabaseBaseDirectoryPath
 {
-    if (SDSDatabaseStorage.shouldUseDisposableGrdb) {
-        return [self.appSharedDataDirectoryPath stringByAppendingPathComponent:self.disposableDatabaseUUID.UUIDString];
-    } else {
-        return self.appSharedDataDirectoryPath;
-    }
+    return self.appSharedDataDirectoryPath;
 }
 
 - (NSUserDefaults *)appUserDefaults

@@ -13,7 +13,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSignedPreKeyStore.h"
@@ -28,15 +27,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #ifdef TESTABLE_BUILD
-
-@interface OWSPrimaryStorage (Tests)
-
-@property (atomic) BOOL areAsyncRegistrationsComplete;
-@property (atomic) BOOL areSyncRegistrationsComplete;
-
-@end
-
-#pragma mark -
 
 @implementation MockSSKEnvironment
 
@@ -56,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
-    // Unlike AppSetup, we always load YDB in the tests.
-    OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
@@ -108,7 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
                     messageSenderJobQueue:messageSenderJobQueue
                pendingReadReceiptRecorder:[NoopPendingReadReceiptRecorder new]
                            profileManager:[OWSFakeProfileManager new]
-                           primaryStorage:primaryStorage
                            networkManager:networkManager
                            messageManager:messageManager
                           blockingManager:blockingManager
@@ -162,17 +149,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configure
 {
     __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [self configureYdb]
-        .then(^{
-            OWSAssertIsOnMainThread();
+    [self configureGrdb].then(^{
+        OWSAssertIsOnMainThread();
 
-            return [self configureGrdb];
-        })
-        .then(^{
-            OWSAssertIsOnMainThread();
-
-            dispatch_semaphore_signal(semaphore);
-        });
+        dispatch_semaphore_signal(semaphore);
+    });
 
     // Registering extensions is a complicated process than can move
     // on and off the main thread.  While we wait for it to complete,
@@ -189,22 +170,6 @@ NS_ASSUME_NONNULL_BEGIN
         // Process a single "source" (e.g. item) on the default run loop.
         CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, false);
     }
-}
-
-- (AnyPromise *)configureYdb
-{
-    if (!self.databaseStorage.canLoadYdb) {
-        return [AnyPromise promiseWithValue:@(1)];
-    }
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [OWSStorage registerExtensionsWithCompletionBlock:^() {
-            [self.storageCoordinator markStorageSetupAsComplete];
-
-            // The value doesn't matter, we just need any non-NSError value.
-            resolve(@(1));
-        }];
-    }];
-    return promise;
 }
 
 - (AnyPromise *)configureGrdb

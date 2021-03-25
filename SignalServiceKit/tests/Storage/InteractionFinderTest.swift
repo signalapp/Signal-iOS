@@ -10,8 +10,6 @@ class InteractionFinderTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-
-        storageCoordinator.useGRDBForTests()
     }
 
     func testInteractions() {

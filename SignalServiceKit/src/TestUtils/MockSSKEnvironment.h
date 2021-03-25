@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic) MessageSender *messageSenderRef;
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
-@property (nonatomic, nullable) OWSPrimaryStorage *primaryStorageRef;
 @property (nonatomic) TSNetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
 @property (nonatomic) OWSBlockingManager *blockingManagerRef;

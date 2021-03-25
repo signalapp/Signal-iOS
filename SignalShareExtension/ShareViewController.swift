@@ -64,11 +64,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        // If we haven't migrated the database file to the shared data
-        // directory we can't load it, and therefore can't init TSSPrimaryStorage,
-        // and therefore don't want to setup most of our machinery (Environment,
-        // most of the singletons, etc.).  We just want to show an error view and
-        // abort.
+        // There may be database migrations that only the main app can perform.
+        // If so, we just want to show an error view and abort.
         isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
         guard isReadyForAppExtensions else {
             showNotReadyView()

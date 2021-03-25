@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "Theme.h"
 #import "VersionMigrations.h"
-#import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
@@ -18,7 +17,6 @@
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -48,10 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         StorageCoordinator *storageCoordinator = [StorageCoordinator new];
         SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
-        OWSPrimaryStorage *_Nullable primaryStorage;
-        if (databaseStorage.canLoadYdb) {
-            primaryStorage = databaseStorage.yapPrimaryStorage;
-        }
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory
@@ -136,7 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                             messageSenderJobQueue:messageSenderJobQueue
                                                        pendingReadReceiptRecorder:pendingReadReceiptRecorder
                                                                    profileManager:profileManager
-                                                                   primaryStorage:primaryStorage
                                                                    networkManager:networkManager
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
@@ -183,7 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
-        [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
         [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
         [NSKeyedUnarchiver setClass:[OWSGroupInfoRequestMessage class] forClassName:@"OWSSyncGroupsRequestMessage"];
@@ -230,11 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         };
 
-        if (databaseStorage.canLoadYdb) {
-            [OWSStorage registerExtensionsWithCompletionBlock:completionBlock];
-        } else {
-            completionBlock();
-        }
+        completionBlock();
     });
 }
 

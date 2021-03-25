@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToProfileWhitelistOfferMessage.h"
@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Cull?
 // This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
 // TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
 #pragma clang diagnostic push

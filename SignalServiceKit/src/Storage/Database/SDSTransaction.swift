@@ -138,24 +138,15 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
 
 // MARK: -
 
-// Type erased transactions are generated at the top level (by DatabaseStorage) and can then be
-// passed through an adapter which will be backed by either YapDB or GRDB
-//
-// To faciliate a gradual migration to GRDB features without breaking existing Yap functionality
-// there are backdoors like `transitional_yapReadTransaction` which will unwrap
-// the underlying YapDatabaseRead/WriteTransaction.
 @objc
 public class SDSAnyReadTransaction: NSObject {
     public enum ReadTransactionType {
-        case yapRead(_ transaction: YapDatabaseReadTransaction)
         case grdbRead(_ transaction: GRDBReadTransaction)
     }
 
     public let readTransaction: ReadTransactionType
     public var startDate: Date {
         switch readTransaction {
-        case .yapRead:
-            owsFail("Invalid transaction.")
         case .grdbRead(let grdbRead):
             return grdbRead.startDate
         }
@@ -165,31 +156,8 @@ public class SDSAnyReadTransaction: NSObject {
         self.readTransaction = readTransaction
     }
 
-    // MARK: Transitional Methods
-
-    // Useful to delineate where we're using SDSAnyReadTransaction if a specific
-    // feature hasn't been migrated and still requires a YapDatabaseReadTransaction
-
-    @objc
-    public init(transitional_yapReadTransaction: YapDatabaseReadTransaction) {
-        self.readTransaction = .yapRead(transitional_yapReadTransaction)
-    }
-
-    @objc
-    public var transitional_yapReadTransaction: YapDatabaseReadTransaction? {
-        switch readTransaction {
-        case .yapRead(let yapRead):
-            return yapRead
-        case .grdbRead:
-            return nil
-        }
-    }
-
-    @objc
     public var isUIRead: Bool {
         switch readTransaction {
-        case .yapRead:
-            return false
         case .grdbRead(let grdbRead):
             return grdbRead.isUIRead
         }
@@ -199,7 +167,6 @@ public class SDSAnyReadTransaction: NSObject {
 @objc
 public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
     public enum WriteTransactionType {
-        case yapWrite(_ transaction: YapDatabaseReadWriteTransaction)
         case grdbWrite(_ transaction: GRDBWriteTransaction)
     }
 
@@ -210,8 +177,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
 
         let readTransaction: ReadTransactionType
         switch writeTransaction {
-        case .yapWrite(let yapWrite):
-            readTransaction = ReadTransactionType.yapRead(yapWrite)
         case .grdbWrite(let grdbWrite):
             readTransaction = ReadTransactionType.grdbRead(grdbWrite)
         }
@@ -219,36 +184,11 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         super.init(readTransaction)
     }
 
-    // MARK: Transitional Methods
-
-    // Useful to delineate where we're using SDSAnyReadTransaction if a specific
-    // feature hasn't been migrated and still requires a YapDatabaseReadTransaction
-
-    @objc
-    public init(transitional_yapWriteTransaction: YapDatabaseReadWriteTransaction) {
-        self.writeTransaction = .yapWrite(transitional_yapWriteTransaction)
-
-        super.init(transitional_yapReadTransaction: transitional_yapWriteTransaction)
-    }
-
-    // GRDB TODO: Remove this method.
-    @objc
-    public var transitional_yapWriteTransaction: YapDatabaseReadWriteTransaction? {
-        switch writeTransaction {
-        case .yapWrite(let yapWrite):
-            return yapWrite
-        case .grdbWrite:
-            return nil
-        }
-    }
-
     // NOTE: These completions are performed _after_ the write
     //       transaction has completed.
     @objc
     public func addSyncCompletion(_ block: @escaping () -> Void) {
         switch writeTransaction {
-        case .yapWrite:
-            owsFailDebug("YDB transactions don't support sync completions.")
         case .grdbWrite(let grdbWrite):
             grdbWrite.addSyncCompletion(block: block)
         }
@@ -269,8 +209,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
     @objc
     public func addAsyncCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {
-        case .yapWrite(let yapWrite):
-            yapWrite.addCompletionQueue(queue, completionBlock: block)
         case .grdbWrite(let grdbWrite):
             grdbWrite.addAsyncCompletion(queue: queue, block: block)
         }
@@ -294,9 +232,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
     public func addTransactionFinalizationBlock(forKey key: String,
                                                 block: @escaping TransactionFinalizationBlock) {
         switch writeTransaction {
-        case .yapWrite:
-            // YDB transactions don't support deferred transaction finalizations.
-            block(self)
         case .grdbWrite(let grdbWrite):
             grdbWrite.addTransactionFinalizationBlock(forKey: key) { (transaction: GRDBWriteTransaction) in
                 block(SDSAnyWriteTransaction(.grdbWrite(transaction)))
@@ -307,36 +242,17 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
     @objc
     public func addRemovedFinalizationKey(_ key: String) {
         switch writeTransaction {
-        case .yapWrite:
-            // YDB transactions don't support deferred transaction finalizations.
-            break
         case .grdbWrite(let grdbWrite):
             grdbWrite.addRemovedFinalizationKey(key)
         }
     }
 }
 
+// MARK: -
+
 public extension StoreContext {
     var asTransaction: SDSAnyWriteTransaction {
         return self as! SDSAnyWriteTransaction
-    }
-}
-
-// MARK: -
-
-@objc
-public extension YapDatabaseReadTransaction {
-    var asAnyRead: SDSAnyReadTransaction {
-        return SDSAnyReadTransaction(transitional_yapReadTransaction: self)
-    }
-}
-
-// MARK: -
-
-@objc
-public extension YapDatabaseReadWriteTransaction {
-    var asAnyWrite: SDSAnyWriteTransaction {
-        return SDSAnyWriteTransaction(transitional_yapWriteTransaction: self)
     }
 }
 
@@ -375,8 +291,6 @@ public extension GRDBWriteTransaction {
 public extension SDSAnyReadTransaction {
     var unwrapGrdbRead: GRDBReadTransaction {
         switch readTransaction {
-        case .yapRead:
-            owsFail("Invalid transaction type.")
         case .grdbRead(let grdbRead):
             return grdbRead
         }
@@ -389,38 +303,8 @@ public extension SDSAnyReadTransaction {
 public extension SDSAnyWriteTransaction {
     var unwrapGrdbWrite: GRDBWriteTransaction {
         switch writeTransaction {
-        case .yapWrite:
-            owsFail("Invalid transaction type.")
         case .grdbWrite(let grdbWrite):
             return grdbWrite
-        }
-    }
-}
-
-// MARK: -
-
-@objc
-public extension SDSAnyReadTransaction {
-    var isYapRead: Bool {
-        switch readTransaction {
-        case .yapRead:
-            return true
-        case .grdbRead:
-            return false
-        }
-    }
-}
-
-// MARK: -
-
-@objc
-public extension SDSAnyWriteTransaction {
-    var isYapWrite: Bool {
-        switch writeTransaction {
-        case .yapWrite:
-            return true
-        case .grdbWrite:
-            return false
         }
     }
 }

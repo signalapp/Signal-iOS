@@ -369,7 +369,6 @@ public class JobRecordFinderObjC: NSObject {
 
 public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
     lazy var grdbAdapter = GRDBJobRecordFinder<JobRecordType>()
-    lazy var yapAdapter = YAPDBJobRecordFinder<JobRecordType>()
 
     public init() {}
 }
@@ -379,8 +378,6 @@ extension AnyJobRecordFinder: JobRecordFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             grdbAdapter.enumerateJobRecords(label: label, transaction: grdbRead, block: block)
-        case .yapRead(let yapRead):
-            yapAdapter.enumerateJobRecords(label: label, transaction: yapRead, block: block)
         }
     }
 
@@ -388,8 +385,6 @@ extension AnyJobRecordFinder: JobRecordFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             grdbAdapter.enumerateJobRecords(label: label, status: status, transaction: grdbRead, block: block)
-        case .yapRead(let yapRead):
-            yapAdapter.enumerateJobRecords(label: label, status: status, transaction: yapRead, block: block)
         }
     }
 }
@@ -447,91 +442,6 @@ extension GRDBJobRecordFinder: JobRecordFinder {
             if stop.boolValue {
                 return
             }
-        }
-    }
-}
-
-@objc
-public class YAPDBJobRecordFinderSetup: NSObject {
-    @objc
-    public class func asyncRegisterDatabaseExtensionObjC(storage: OWSStorage) {
-        YAPDBJobRecordFinder.asyncRegisterDatabaseExtension(storage: storage)
-    }
-}
-
-public class YAPDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
-    public static var dbExtensionName: String {
-        return "SecondaryIndexJobRecord"
-    }
-
-    func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseSecondaryIndexTransaction? {
-        return transaction.safeSecondaryIndexTransaction(type(of: self).dbExtensionName)
-    }
-
-    static func asyncRegisterDatabaseExtension(storage: OWSStorage) {
-        storage.asyncRegister(dbExtensionConfig, withName: dbExtensionName)
-    }
-
-    enum JobRecordField: String {
-        case status, label, sortId
-    }
-
-    static var dbExtensionConfig: YapDatabaseSecondaryIndex {
-        let setup = YapDatabaseSecondaryIndexSetup()
-        setup.addColumn(JobRecordField.sortId.rawValue, with: .integer)
-        setup.addColumn(JobRecordField.status.rawValue, with: .integer)
-        setup.addColumn(JobRecordField.label.rawValue, with: .text)
-
-        let block: YapDatabaseSecondaryIndexWithObjectBlock = { _, dict, _, _, object in
-            guard let jobRecord = object as? SSKJobRecord else {
-                return
-            }
-
-            dict[JobRecordField.sortId.rawValue] = jobRecord.sortId
-            dict[JobRecordField.status.rawValue] = jobRecord.status.rawValue
-            dict[JobRecordField.label.rawValue] = jobRecord.label
-        }
-
-        let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock(block)
-
-        let options = YapDatabaseSecondaryIndexOptions()
-        let whitelist = YapWhitelistBlacklist(whitelist: Set([SSKJobRecord.collection()]))
-        options.allowedCollections = whitelist
-
-        return YapDatabaseSecondaryIndex.init(setup: setup, handler: handler, versionTag: "2", options: options)
-    }
-}
-
-extension YAPDBJobRecordFinder: JobRecordFinder {
-    public func enumerateJobRecords(label: String, transaction: YapDatabaseReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let queryFormat = String(format: "WHERE %@ = ? ORDER BY %@", JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
-        let query = YapDatabaseQuery(string: queryFormat, parameters: [label])
-
-        guard let ext = self.ext(transaction: transaction) else {
-            return
-        }
-        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
-            guard let jobRecord = object as? JobRecordType else {
-                owsFailDebug("expecting jobRecord but found: \(object)")
-                return
-            }
-            block(jobRecord, stopPointer)
-        }
-    }
-
-    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: YapDatabaseReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let queryFormat = String(format: "WHERE %@ = ? AND %@ = ? ORDER BY %@", JobRecordField.status.rawValue, JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
-        let query = YapDatabaseQuery(string: queryFormat, parameters: [status.rawValue, label])
-
-        guard let ext = self.ext(transaction: transaction) else {
-            return
-        }
-        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
-            guard let jobRecord = object as? JobRecordType else {
-                owsFailDebug("expecting jobRecord but found: \(object)")
-                return
-            }
-            block(jobRecord, stopPointer)
         }
     }
 }

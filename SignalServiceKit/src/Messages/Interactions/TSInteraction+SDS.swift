@@ -3635,8 +3635,6 @@ public extension TSInteraction {
         }
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return TSInteraction.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -3667,14 +3665,6 @@ public extension TSInteraction {
                             batchSize: UInt,
                             block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            TSInteraction.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? TSInteraction else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = TSInteraction.grdbFetchCursor(transaction: grdbTransaction)
@@ -3716,10 +3706,6 @@ public extension TSInteraction {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: TSInteraction.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -3751,8 +3737,6 @@ public extension TSInteraction {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: TSInteraction.collection())
         case .grdbRead(let grdbTransaction):
             return InteractionRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -3762,8 +3746,6 @@ public extension TSInteraction {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: TSInteraction.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try InteractionRecord.deleteAll(grdbTransaction.database)
@@ -3812,8 +3794,6 @@ public extension TSInteraction {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

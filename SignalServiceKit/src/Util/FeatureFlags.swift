@@ -25,30 +25,13 @@ let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 @objc
 public enum StorageMode: Int {
-    // Only use YDB.  This should be used in production until we ship
-    // the YDB-to-GRDB migration.
-    case ydbForAll
-    // Use GRDB, migrating if possible on every launch.
-    // If no YDB database exists, a throwaway db is not used.
-    //
-    // Supercedes grdbMigratesFreshDBEveryLaunch.
-    //
-    // TODO: Remove.
-    case grdbThrowawayIfMigrating
-    // Use GRDB under certain conditions.
-    //
-    // TODO: Remove.
-    case grdbForAlreadyMigrated
-    case grdbForLegacyUsersOnly
-    case grdbForNewUsersOnly
-    // Use GRDB, migrating once if necessary.
+    // Use GRDB.
     case grdbForAll
     // These modes can be used while running tests.
     // They are more permissive than the release modes.
     //
     // The build shepherd should be running the test
-    // suites in .ydbTests and .grdbTests modes before each release.
-    case ydbTests
+    // suites in .grdbTests mode before each release.
     case grdbTests
 }
 
@@ -57,36 +40,12 @@ public enum StorageMode: Int {
 extension StorageMode: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .ydbForAll:
-            return ".ydbForAll"
-        case .grdbThrowawayIfMigrating:
-            return ".grdbThrowawayIfMigrating"
-        case .grdbForAlreadyMigrated:
-            return ".grdbForAlreadyMigrated"
-        case .grdbForLegacyUsersOnly:
-            return ".grdbForLegacyUsersOnly"
-        case .grdbForNewUsersOnly:
-            return ".grdbForNewUsersOnly"
         case .grdbForAll:
             return ".grdbForAll"
-        case .ydbTests:
-            return ".ydbTests"
         case .grdbTests:
             return ".grdbTests"
         }
     }
-}
-
-// MARK: -
-
-@objc
-public enum StorageModeStrictness: Int {
-    // For DEBUG, QA and beta builds only.
-    case fail
-    // For production
-    case failDebug
-    // Temporary value to be used until existing issues are resolved.
-    case log
 }
 
 // MARK: -
@@ -99,18 +58,10 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
-            // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
         } else {
             return .grdbForAll
         }
-    }
-
-    // Don't enable this flag in production.
-    // At least, not yet.
-    @objc
-    public static var storageModeStrictness: StorageModeStrictness {
-        return build.includes(.beta) ? .fail : .failDebug
     }
 
     @objc
@@ -127,10 +78,6 @@ public class FeatureFlags: BaseFlags {
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
     public static let strictSyncTranscriptTimestamps = false
-
-    // Don't enable this flag in production.
-    @objc
-    public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
     public static let phoneNumberSharing = build.includes(.qa)
