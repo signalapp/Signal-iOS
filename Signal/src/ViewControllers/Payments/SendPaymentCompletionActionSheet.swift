@@ -27,6 +27,16 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         case payment(paymentInfo: PaymentInfo)
         // TODO: Add support for requests.
         // case request(requestInfo: RequestInfo)
+
+        var paymentInfo: PaymentInfo? {
+            switch self {
+            case .payment(let paymentInfo):
+                return paymentInfo
+            @unknown default:
+                owsFail("Unknown mode.")
+                return nil
+            }
+        }
     }
 
     private let mode: Mode
@@ -92,6 +102,15 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         createSubviews()
 
         helper?.refreshObservedValues()
+
+        // Try to optimistically prepare a payment before
+        // user approves it to reduce perceived latency
+        // when sending outgoing payments.
+        if let paymentInfo = mode.paymentInfo {
+            tryToPreparePayment(paymentInfo: paymentInfo)
+        } else {
+            owsFailDebug("Missing paymentInfo.")
+        }
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -521,6 +540,30 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper.updateBalanceLabel(balanceLabel)
     }
 
+    private let preparedPaymentCache = AtomicOptional<PreparedPayment>(nil)
+
+    private func tryToPreparePayment(paymentInfo: PaymentInfo) {
+        firstly(on: .global()) { () -> Promise<PreparedPayment> in
+            // NOTE: We should not pre-prepare a payment if defragmentation
+            // is required.
+            Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
+                                                             paymentAmount: paymentInfo.paymentAmount,
+                                                             memoMessage: paymentInfo.memoMessage,
+                                                             paymentRequestModel: paymentInfo.paymentRequestModel,
+                                                             isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                                                             canDefragment: false)
+        }.done(on: .global()) { (preparedPayment: PreparedPayment) in
+            self.preparedPaymentCache.set(preparedPayment)
+            Logger.info("Pre-prepared payment ready.")
+        }.catch(on: .global()) { error in
+            if case PaymentsError.defragmentationRequired = error {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebugUnlessMCNetworkFailure(error)
+            }
+        }
+    }
+
     private func tryToSendPayment(paymentInfo: PaymentInfo) {
 
         self.currentStep = .progressPay(paymentInfo: paymentInfo)
@@ -528,12 +571,22 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            firstly(on: .global()) {
-                self.paymentsSwift.createNewOutgoingPayment(recipient: paymentInfo.recipient,
-                                                            paymentAmount: paymentInfo.paymentAmount,
-                                                            memoMessage: paymentInfo.memoMessage,
-                                                            paymentRequestModel: paymentInfo.paymentRequestModel,
-                                                            isOutgoingTransfer: paymentInfo.isOutgoingTransfer)
+            firstly(on: .global()) { () -> Promise<PreparedPayment> in
+                if let preparedPayment = self.preparedPaymentCache.get() {
+                    Logger.info("Using pre-prepared payment.")
+                    return Promise.value(preparedPayment)
+                }
+                // NOTE: We will always follow this code path if defragmentation
+                // is required.
+                Logger.info("No pre-prepared payment.")
+                return Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
+                                                                 paymentAmount: paymentInfo.paymentAmount,
+                                                                 memoMessage: paymentInfo.memoMessage,
+                                                                 paymentRequestModel: paymentInfo.paymentRequestModel,
+                                                                 isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                                                                 canDefragment: true)
+            }.then(on: .global()) { (preparedPayment: PreparedPayment) in
+                Self.paymentsSwift.initiateOutgoingPayment(preparedPayment: preparedPayment)
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
                 // Try to wait (with a timeout) for submission and verification to complete.
                 //

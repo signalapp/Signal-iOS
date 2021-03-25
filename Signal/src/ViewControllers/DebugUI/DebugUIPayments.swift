@@ -303,13 +303,16 @@ class DebugUIPayments: DebugUIPage {
     private static func sendTinyPayments(contactThread: TSContactThread, count: UInt) {
         let picoMob = PaymentsConstants.picoMobPerMob + UInt64(arc4random_uniform(1000))
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
-        firstly(on: .global()) { () -> Promise<TSPaymentModel> in
-            let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
-            return Self.payments.createNewOutgoingPayment(recipient: recipient,
-                                                          paymentAmount: paymentAmount,
-                                                          memoMessage: "Tiny: \(count)",
-                                                          paymentRequestModel: nil,
-                                                          isOutgoingTransfer: false)
+        let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
+        firstly(on: .global()) { () -> Promise<PreparedPayment> in
+            Self.payments.prepareOutgoingPayment(recipient: recipient,
+                                                 paymentAmount: paymentAmount,
+                                                 memoMessage: "Tiny: \(count)",
+                                                 paymentRequestModel: nil,
+                                                 isOutgoingTransfer: false,
+                                                 canDefragment: false)
+        }.then(on: .global()) { (preparedPayment: PreparedPayment) in
+            Self.payments.initiateOutgoingPayment(preparedPayment: preparedPayment)
         }.then(on: .global()) { (paymentModel: TSPaymentModel) in
             Self.payments.blockOnOutgoingVerification(paymentModel: paymentModel)
         }.done(on: .global()) { _ in

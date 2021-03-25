@@ -136,11 +136,14 @@ public protocol PaymentsSwift: Payments {
 
     func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) -> Promise<TSPaymentAmount>
 
-    func createNewOutgoingPayment(recipient: SendPaymentRecipient,
-                                  paymentAmount: TSPaymentAmount,
-                                  memoMessage: String?,
-                                  paymentRequestModel: TSPaymentRequestModel?,
-                                  isOutgoingTransfer: Bool) -> Promise<TSPaymentModel>
+    func prepareOutgoingPayment(recipient: SendPaymentRecipient,
+                                paymentAmount: TSPaymentAmount,
+                                memoMessage: String?,
+                                paymentRequestModel: TSPaymentRequestModel?,
+                                isOutgoingTransfer: Bool,
+                                canDefragment: Bool) -> Promise<PreparedPayment>
+
+    func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel>
 
     func maximumPaymentAmount() -> Promise<TSPaymentAmount>
 
@@ -160,6 +163,11 @@ public protocol PaymentsSwift: Payments {
 public protocol SendPaymentRecipient {
     var address: SignalServiceAddress? { get }
     var isIdentifiedPayment: Bool { get }
+}
+
+// MARK: -
+
+public protocol PreparedPayment {
 }
 
 // MARK: -
@@ -393,11 +401,16 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func createNewOutgoingPayment(recipient: SendPaymentRecipient,
-                                         paymentAmount: TSPaymentAmount,
-                                         memoMessage: String?,
-                                         paymentRequestModel: TSPaymentRequestModel?,
-                                         isOutgoingTransfer: Bool) -> Promise<TSPaymentModel> {
+    public func prepareOutgoingPayment(recipient: SendPaymentRecipient,
+                                paymentAmount: TSPaymentAmount,
+                                memoMessage: String?,
+                                paymentRequestModel: TSPaymentRequestModel?,
+                                isOutgoingTransfer: Bool,
+                                canDefragment: Bool) -> Promise<PreparedPayment> {
+        owsFail("Not implemented.")
+    }
+
+    public func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel> {
         owsFail("Not implemented.")
     }
 
