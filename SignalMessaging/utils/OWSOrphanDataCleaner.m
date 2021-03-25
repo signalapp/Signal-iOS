@@ -311,7 +311,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
     // This should be redundant, but this will future-proof us against
-    // ever accidentally removing the YDB or GRDB databases during
+    // ever accidentally removing the GRDB databases during
     // orphan clean up.
     NSString *grdbDirectoryPath = [SDSDatabaseStorage grdbDatabaseDirUrl].path;
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
