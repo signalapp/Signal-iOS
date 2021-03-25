@@ -282,7 +282,7 @@ CHECKOUT OPTIONS:
     :commit: 0ea29d4a20f90464023d4e1fd38551c1b478da2a
     :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
-    :commit: fce3786177fd7032c62b230df8beeb206722d38e
+    :commit: e75eeff2089d66fc94514b43db3678a8812a9bbe
     :git: https://github.com/zxingify/zxingify-objc.git
 
 SPEC CHECKSUMS:
@@ -317,4 +317,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6fcda6d7001d5be6e25668298eb82fe1325dba06
 
-COCOAPODS: 1.9.2
+COCOAPODS: 1.10.1
