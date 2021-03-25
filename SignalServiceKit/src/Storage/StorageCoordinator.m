@@ -119,7 +119,7 @@ NSString *NSStringForDataStore(DataStore value)
 
 + (BOOL)isReadyForShareExtension
 {
-    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdbForAll);
+    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdb);
 
     return true;
 }
@@ -157,7 +157,7 @@ NSString *NSStringForDataStore(DataStore value)
     OWSLogInfo(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);
 
     switch (SSKFeatureFlags.storageMode) {
-        case StorageModeGrdbForAll:
+        case StorageModeGrdb:
             self.state = StorageCoordinatorStateGRDB;
 
             if (hasYdbFile) {

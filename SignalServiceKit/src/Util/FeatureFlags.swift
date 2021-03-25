@@ -26,7 +26,7 @@ let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 @objc
 public enum StorageMode: Int {
     // Use GRDB.
-    case grdbForAll
+    case grdb
     // These modes can be used while running tests.
     // They are more permissive than the release modes.
     //
@@ -40,8 +40,8 @@ public enum StorageMode: Int {
 extension StorageMode: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .grdbForAll:
-            return ".grdbForAll"
+        case .grdb:
+            return ".grdb"
         case .grdbTests:
             return ".grdbTests"
         }
@@ -60,7 +60,7 @@ public class FeatureFlags: BaseFlags {
         if CurrentAppContext().isRunningTests {
             return .grdbTests
         } else {
-            return .grdbForAll
+            return .grdb
         }
     }
 

@@ -15,7 +15,7 @@ public class OnboardingDroppedYdbViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let heroImageView = UIImageView.withTemplateImageName("logo_blue",
+        let heroImageView = UIImageView.withTemplateImageName("signal-logo-128",
                                                               tintColor: .ows_accentBlue)
         heroImageView.autoSetDimensions(to: .square(100))
         heroImageView.setContentHuggingHigh()
