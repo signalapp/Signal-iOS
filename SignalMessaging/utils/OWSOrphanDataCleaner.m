@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSMention.h>
@@ -54,6 +55,21 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
+
+- (instancetype)init
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    OWSSingletonAssert();
+
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [OWSOrphanDataCleaner auditOnLaunchIfNecessary]; });
+
+    return self;
+}
 
 + (SDSKeyValueStore *)keyValueStore
 {
@@ -579,6 +595,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertIsOnMainThread();
 
+    if (!CurrentAppContext().isMainApp || CurrentAppContext().isRunningTests || !TSAccountManager.shared.isRegistered) {
+        return NO;
+    }
     if (!SSKFeatureFlags.useOrphanDataCleaner) {
         return NO;
     }
@@ -775,6 +794,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
        shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
 {
     OWSAssertDebug(orphanData);
+
+    if (!self.isMainAppAndActive) {
+        return NO;
+    }
 
     __block BOOL shouldAbort = NO;
 

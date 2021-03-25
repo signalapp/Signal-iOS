@@ -116,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
         AppExpiry *appExpiry = [AppExpiry new];
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
+        OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -126,7 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   sounds:sounds
                                                            windowManager:windowManager
                                                       contactsViewHelper:contactsViewHelper
-                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue]];
+                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
+                                                       orphanDataCleaner:orphanDataCleaner]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager

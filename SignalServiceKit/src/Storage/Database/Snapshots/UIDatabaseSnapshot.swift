@@ -167,7 +167,9 @@ public class UIDatabaseObserver: NSObject {
                                                object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.ensureDisplayLink()
+            DispatchQueue.main.async {
+                self.ensureDisplayLink()
+            }
         }
     }
 

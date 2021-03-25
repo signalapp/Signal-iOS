@@ -8,14 +8,24 @@ import SignalCoreKit
 @objc
 public class ViewOnceMessages: NSObject {
 
+    @objc
+    public required override init() {
+        super.init()
+
+        if CurrentAppContext().isMainApp {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                Self.appDidBecomeReady()
+            }
+        }
+    }
+
     // MARK: - Events
 
     private class func nowMs() -> UInt64 {
         return NSDate.ows_millisecondTimeStamp()
     }
 
-    @objc
-    public class func appDidBecomeReady() {
+    private class func appDidBecomeReady() {
         AssertIsOnMainThread()
 
         DispatchQueue.global().async {

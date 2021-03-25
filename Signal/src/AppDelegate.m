@@ -214,12 +214,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self setupNSEInteroperation];
 
-    // Prevent the device from sleeping during database view async registration
-    // (e.g. long database upgrades).
-    //
-    // This block will be cleared in storageIsReady.
-    [self.deviceSleepManager addBlockWithBlockObject:self];
-
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
@@ -1134,20 +1128,11 @@ void uncaughtExceptionHandler(NSException *exception)
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
 
-        // Fetch messages as soon as possible after launching. In particular, when
-        // launching from the background, without this, we end up waiting some extra
-        // seconds before receiving an actionable push notification.
-        [self.messageFetcherJob runObjc];
-
         // This should happen at any launch, background or foreground.
         [OWSSyncPushTokensJob run];
     }
 
-    [DeviceSleepManager.shared removeBlockWithBlockObject:self];
-
     [AppVersion.shared mainAppLaunchDidComplete];
-
-    [Environment.shared.audioSession setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.databaseStorage
@@ -1163,24 +1148,7 @@ void uncaughtExceptionHandler(NSException *exception)
             }];
     }
 
-#ifdef DEBUG
-    // A bug in orphan cleanup could be disastrous so let's only
-    // run it in DEBUG builds for a few releases.
-    //
-    // TODO: Release to production once we have analytics.
-    // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
-    //       of disk access.  We might want to only run it "once per version"
-    //       or something like that in production.
-    [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
-#endif
-
-    [self.profileManager fetchLocalUsersProfile];
-
     [SignalApp.shared ensureRootViewController:launchStartedAt];
-
-    [self.messageManager startObserving];
-
-    [ViewOnceMessages appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange
