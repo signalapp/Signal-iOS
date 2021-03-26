@@ -43,7 +43,6 @@ NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
 NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesKeyShouldNotifyOfNewAccountKey";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
-NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
 NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
@@ -169,22 +168,6 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
 }
 
 #pragma mark - Specific Preferences
-
-+ (BOOL)isReadyForAppExtensions
-{
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    return self.isGrdbReadyForAppExtensions;
-}
-
-+ (BOOL)isGrdbReadyForAppExtensions
-{
-    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
-}
-
-+ (void)setIsGrdbReadyForAppExtensions
-{
-    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
-}
 
 + (BOOL)isAudibleErrorLoggingEnabled
 {

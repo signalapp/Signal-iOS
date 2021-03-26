@@ -197,15 +197,6 @@ void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-#if RELEASE
-    // ensureIsYDBReadyForAppExtensions may change the state of the logging
-    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
-    // that change if necessary.
-    if (isLoggingEnabled && !OWSPreferences.isLoggingEnabled) {
-        [DebugLogger.sharedLogger disableFileLogging];
-    }
-#endif
-
     [AppVersion shared];
 
     [self setupNSEInteroperation];
