@@ -209,6 +209,14 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let paymentItem = self.paymentItem
         let paymentModel = paymentItem.paymentModel
 
+        // Block
+        if paymentModel.isUnidentified,
+           paymentModel.mcLedgerBlockIndex > 0 {
+            section.add(buildStatusItem(topText: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX",
+                                                                   comment: "Label for the 'MobileCoin block index' in the payment details view in the app settings."),
+                                        bottomText: OWSFormat.formatUInt64(paymentModel.mcLedgerBlockIndex)))
+        }
+
         // Type/Amount
         if let paymentAmount = paymentItem.paymentAmount,
            !paymentAmount.isZero {

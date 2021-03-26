@@ -175,7 +175,24 @@ public class SendPaymentViewController: OWSViewController {
                             comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to.")
                             : NSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES",
                             comment: "Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to."))
-            OWSActionSheets.showActionSheet(title: title, message: message)
+
+            let actionSheet = ActionSheetController(title: title, message: message)
+
+            if !hasSentMessagesToRecipient,
+               mode != .fromConversationView {
+                actionSheet.addAction(ActionSheetAction(title: CommonStrings.sendMessage,
+                                                        accessibilityIdentifier: "payments.settings.send_message",
+                                                        style: .default) { _ in
+                    fromViewController.dismiss(animated: true) {
+                        SignalApp.shared().presentConversation(for: recipientAddress, action: .compose, animated: true)
+                    }
+                })
+            }
+
+            actionSheet.addAction(OWSActionSheets.okayAction)
+
+            fromViewController.presentActionSheet(actionSheet)
+
             return
         }
 

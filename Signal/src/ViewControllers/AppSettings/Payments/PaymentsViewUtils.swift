@@ -66,14 +66,12 @@ public class PaymentsViewUtils: NSObject {
     }
 
     static func buildUnidentifiedTransactionString(paymentModel: TSPaymentModel) -> String {
-        // TODO: Pending design.
         owsAssertDebug(paymentModel.isUnidentified)
-        if paymentModel.mcLedgerBlockIndex > 0 {
-            return OWSFormat.formatUInt64(paymentModel.mcLedgerBlockIndex)
-        } else {
-            owsFailDebug("Missing mcLedgerBlockIndex.")
-            return paymentModel.uniqueId
-        }
+        return (paymentModel.isIncoming
+                    ? NSLocalizedString("PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING",
+                                        comment: "Indicator for unidentified incoming payments.")
+                    : NSLocalizedString("PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING",
+                                        comment: "Indicator for unidentified outgoing payments."))
     }
 
     // MARK: -
