@@ -570,7 +570,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
                                               paymentAmount: nil,
                                               createdDate: Date(),
                                               addressUuidString: senderAddress.uuidString,
-                                              memoMessage: paymentNotification.memoMessage,
+                                              memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
                                               requestUuidString: nil,
                                               isUnread: true,
                                               mobileCoin: mobileCoin)
@@ -693,7 +693,7 @@ public extension PaymentsImpl {
                                               paymentAmount: paymentAmount,
                                               createdDate: Date(),
                                               addressUuidString: addressUuidString,
-                                              memoMessage: memoMessage,
+                                              memoMessage: memoMessage?.nilIfEmpty,
                                               requestUuidString: paymentRequestModel?.requestUuidString,
                                               isUnread: false,
                                               mobileCoin: mobileCoin)
@@ -1367,7 +1367,7 @@ public extension PaymentsImpl {
                                                    feePicoMob: feeAmount.picoMob,
                                                    blockIndex: mcLedgerBlockIndex ?? 0,
                                                    blockTimestamp: mcLedgerBlockTimestamp ?? 0,
-                                                   memoMessage: memoMessage,
+                                                   memoMessage: memoMessage?.nilIfEmpty,
                                                    spentKeyImages: mcSpentKeyImages,
                                                    outputPublicKeys: mcOutputPublicKeys,
                                                    isDefragmentation: isDefragmentation)
@@ -1462,42 +1462,72 @@ public extension PaymentsImpl {
         Logger.verbose("")
         do {
             guard let mobileCoinProto = paymentProto.mobileCoin else {
-                Logger.warn("Missing mobileCoinProto.")
-                return
+                throw OWSAssertionError("Invalid payment sync message: Missing mobileCoinProto.")
             }
             var recipientUuid: UUID?
             if let recipientUuidString = paymentProto.recipientUuid {
                 guard let uuid = UUID(uuidString: recipientUuidString) else {
-                    throw OWSAssertionError("Missing recipientUuid.")
+                    throw OWSAssertionError("Invalid payment sync message: Missing recipientUuid.")
                 }
                 recipientUuid = uuid
             }
             let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mobileCoinProto.amountPicoMob)
             guard paymentAmount.isValidAmount(canBeEmpty: true) else {
-                throw OWSAssertionError("Invalid paymentAmount.")
+                throw OWSAssertionError("Invalid payment sync message: invalid paymentAmount.")
             }
             let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mobileCoinProto.feePicoMob)
             guard feeAmount.isValidAmount(canBeEmpty: false) else {
-                throw OWSAssertionError("Invalid feeAmount.")
+                throw OWSAssertionError("Invalid payment sync message: invalid feeAmount.")
             }
-            // TODO: Require this?
             let recipientPublicAddressData = mobileCoinProto.recipientAddress
-            let memoMessage = paymentProto.note
+            let memoMessage = paymentProto.note?.nilIfEmpty
             let spentKeyImages = mobileCoinProto.spentKeyImages
             guard !spentKeyImages.isEmpty else {
-                throw OWSAssertionError("Missing spentKeyImages.")
+                throw OWSAssertionError("Invalid payment sync message: Missing spentKeyImages.")
             }
             let outputPublicKeys = mobileCoinProto.outputPublicKeys
             guard !outputPublicKeys.isEmpty else {
-                throw OWSAssertionError("Missing outputPublicKeys.")
+                throw OWSAssertionError("Invalid payment sync message: Missing outputPublicKeys.")
             }
             let ledgerBlockIndex = mobileCoinProto.ledgerBlockIndex
             guard ledgerBlockIndex > 0 else {
-                throw OWSAssertionError("Missing ledgerBlockIndex.")
+                throw OWSAssertionError("Invalid payment sync message: Invalid ledgerBlockIndex.")
             }
             let ledgerBlockTimestamp = mobileCoinProto.ledgerBlockTimestamp
             // TODO: Support requests.
             let requestUuidString: String? = nil
+            // We use .outgoingComplete. We can safely assume that the device which
+            // sent the payment has verified and notified.
+            let paymentState: TSPaymentState = .outgoingComplete
+
+            let paymentType: TSPaymentType
+            if recipientPublicAddressData == nil {
+                // Possible defragmentation.
+                guard recipientUuid == nil else {
+                    throw OWSAssertionError("Invalid payment sync message: unexpected recipientUuid.")
+                }
+                guard recipientPublicAddressData == nil else {
+                    throw OWSAssertionError("Invalid payment sync message: unexpected recipientPublicAddressData.")
+                }
+                guard paymentAmount.isValidAmount(canBeEmpty: true),
+                      paymentAmount.picoMob == 0 else {
+                    throw OWSAssertionError("Invalid payment sync message: invalid paymentAmount.")
+                }
+                guard memoMessage == nil else {
+                    throw OWSAssertionError("Invalid payment sync message: unexpected memoMessage.")
+                }
+                paymentType = .outgoingDefragmentationFromLinkedDevice
+            } else {
+                // Possible outgoing payment.
+                guard recipientUuid != nil else {
+                    throw OWSAssertionError("Invalid payment sync message: missing recipientUuid.")
+                }
+                guard paymentAmount.isValidAmount(canBeEmpty: false) else {
+                    throw OWSAssertionError("Invalid payment sync message: invalid paymentAmount.")
+                }
+                paymentType = .outgoingPaymentFromLinkedDevice
+            }
+
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
                                                transactionData: nil,
                                                receiptData: nil,
@@ -1507,30 +1537,6 @@ public extension PaymentsImpl {
                                                ledgerBlockTimestamp: ledgerBlockTimestamp,
                                                ledgerBlockIndex: ledgerBlockIndex,
                                                feeAmount: feeAmount)
-            let paymentState: TSPaymentState = .outgoingComplete
-
-            let paymentType: TSPaymentType
-            if recipientPublicAddressData == nil {
-                // Possible defragmentation.
-                guard recipientUuid == nil,
-                      recipientPublicAddressData == nil,
-                      paymentAmount.isValidAmount(canBeEmpty: true),
-                      paymentAmount.picoMob == 0,
-                      memoMessage == nil else {
-                    throw OWSAssertionError("Invalid payment sync message.")
-                }
-                paymentType = .outgoingDefragmentationFromLinkedDevice
-            } else {
-                // Possible outgoing payment.
-                guard recipientUuid != nil,
-                      paymentAmount.isValidAmount(canBeEmpty: false) else {
-                    throw OWSAssertionError("Invalid payment sync message.")
-                }
-                paymentType = .outgoingPaymentFromLinkedDevice
-            }
-
-            // We use .outgoingSent, we're assuming that the linked device which
-            // sent the payment has verified and notified.
             let paymentModel = TSPaymentModel(paymentType: paymentType,
                                               paymentState: paymentState,
                                               paymentAmount: paymentAmount,

@@ -1020,7 +1020,7 @@ public class SendPaymentViewController: OWSViewController {
 
 extension SendPaymentViewController: SendPaymentMemoViewDelegate {
     public func didChangeMemo(memoMessage: String?) {
-        self.memoMessage = memoMessage
+        self.memoMessage = memoMessage?.nilIfEmpty
 
         updateContents()
     }
