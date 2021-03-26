@@ -27,8 +27,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     
     private lazy var spinner: NVActivityIndicatorView = {
         let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
-        result.set(.width, to: 64)
-        result.set(.height, to: 64)
+        result.set(.width, to: 40)
+        result.set(.height, to: 40)
         return result
     }()
     
@@ -57,8 +57,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         addSubview(spinner)
         spinner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top ], to: self)
         spinner.startAnimating()
-        heightConstraint = set(.height, to: 64)
-        widthAnchor.constraint(greaterThanOrEqualToConstant: 64).isActive = true
+        heightConstraint = set(.height, to: 40)
+        widthAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
         let _ = OpenGroupAPIV2.getDefaultRoomsPromise?.done { [weak self] rooms in
             self?.rooms = rooms
         }

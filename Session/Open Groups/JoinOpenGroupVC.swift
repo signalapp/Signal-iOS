@@ -121,10 +121,10 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        joinOpenGroupIfPossible(with: string)
+        joinOpenGroup(with: string)
     }
     
-    fileprivate func joinOpenGroupIfPossible(with urlAsString: String) {
+    fileprivate func joinOpenGroup(with url: String) {
         
         // TODO: V1 open groups
         
@@ -179,7 +179,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
 }
 
-private final class EnterURLVC : UIViewController, OpenGroupSuggestionGridDelegate {
+private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC!
     
     // MARK: Components
@@ -211,7 +211,7 @@ private final class EnterURLVC : UIViewController, OpenGroupSuggestionGridDelega
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(joinOpenGroupIfPossible), for: UIControl.Event.touchUpInside)
+        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
         nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
@@ -231,6 +231,7 @@ private final class EnterURLVC : UIViewController, OpenGroupSuggestionGridDelega
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
     }
     
@@ -244,13 +245,18 @@ private final class EnterURLVC : UIViewController, OpenGroupSuggestionGridDelega
     }
     
     // MARK: Interaction
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let location = gestureRecognizer.location(in: view)
+        return !suggestionGrid.frame.contains(location)
+    }
+    
     func join(_ room: OpenGroupAPIV2.Info) {
         joinOpenGroupVC.join(room.id, on: OpenGroupAPIV2.defaultServer, with: OpenGroupAPIV2.defaultServerPublicKey)
     }
     
-    @objc private func joinOpenGroupIfPossible() {
+    @objc private func joinOpenGroup() {
         let url = urlTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        joinOpenGroupVC.joinOpenGroupIfPossible(with: url)
+        joinOpenGroupVC.joinOpenGroup(with: url)
     }
 }
 
