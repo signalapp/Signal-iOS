@@ -407,7 +407,8 @@ public class PaymentsReconciliation {
                                                                           allBlockActivities: blockActivities)
             let createdDate = NSDate.ows_date(withMillisecondsSince1970: createdTimestamp)
 
-            let spentKeyImages: [Data]? = unaccountedForSpentItems.map { $0.keyImage }.nilIfEmpty
+            let unaccountedForSpentKeyImages: [Data] = unaccountedForSpentItems.map { $0.keyImage }
+            let spentKeyImages: [Data]? = Array(Set(unaccountedForSpentKeyImages)).nilIfEmpty
             let incomingTransactionPublicKeys: [Data]? = unaccountedForReceivedItems.map { $0.txoPublicKey }.nilIfEmpty
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
@@ -614,23 +615,39 @@ public class PaymentsReconciliation {
             return
         }
 
-        oldPaymentModel.anyRemove(transaction: transaction)
-
         let paymentType: TSPaymentType
         let paymentState: TSPaymentState
-        if oldPaymentModel.isIncoming {
+        switch oldPaymentModel.paymentType {
+        case .outgoingUnidentified,
+             .incomingUnidentified:
+            owsFailDebug("Unexpected payment: \(oldPaymentModel.descriptionForLogs)")
+            return
+        case .incomingPayment:
             paymentType = .incomingUnidentified
             paymentState = .incomingComplete
-        } else {
+        case .outgoingPayment,
+             .outgoingPaymentFromLinkedDevice,
+             .outgoingTransfer,
+             .outgoingDefragmentation,
+             .outgoingDefragmentationFromLinkedDevice:
             paymentType = .outgoingUnidentified
             paymentState = .outgoingComplete
+        @unknown default:
+            owsFailDebug("Invalid value: \(oldPaymentModel.paymentType.formatted)")
+            return
         }
+
+        oldPaymentModel.anyRemove(transaction: transaction)
+
+        let spentKeyImages: [Data]? = Array(Set(oldPaymentModel.mobileCoin?.spentKeyImages ?? [])).nilIfEmpty
+        let outputPublicKeys: [Data]? = Array(Set(oldPaymentModel.mobileCoin?.outputPublicKeys ?? [])).nilIfEmpty
+
         let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                            transactionData: nil,
                                            receiptData: nil,
                                            incomingTransactionPublicKeys: oldPaymentModel.mobileCoin?.incomingTransactionPublicKeys,
-                                           spentKeyImages: oldPaymentModel.mobileCoin?.spentKeyImages,
-                                           outputPublicKeys: oldPaymentModel.mobileCoin?.outputPublicKeys,
+                                           spentKeyImages: spentKeyImages,
+                                           outputPublicKeys: outputPublicKeys,
                                            ledgerBlockTimestamp: oldPaymentModel.mobileCoin?.ledgerBlockTimestamp ?? 0,
                                            ledgerBlockIndex: oldPaymentModel.mobileCoin?.ledgerBlockIndex ?? 0,
                                            feeAmount: nil)

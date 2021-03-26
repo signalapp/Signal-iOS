@@ -677,13 +677,17 @@ public extension PaymentsImpl {
             let mcTransactionData = transaction.serializedData
             let mcReceiptData = receipt.serializedData
             let paymentType: TSPaymentType = isOutgoingTransfer ? .outgoingTransfer : .outgoingPayment
+            let inputKeyImages = Array(Set(transaction.inputKeyImages))
+            owsAssertDebug(inputKeyImages.count == transaction.inputKeyImages.count)
+            let outputPublicKeys = Array(Set(transaction.outputPublicKeys))
+            owsAssertDebug(outputPublicKeys.count == transaction.outputPublicKeys.count)
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
                                                transactionData: mcTransactionData,
                                                receiptData: mcReceiptData,
                                                incomingTransactionPublicKeys: nil,
-                                               spentKeyImages: Array(transaction.inputKeyImages),
-                                               outputPublicKeys: Array(transaction.outputPublicKeys),
+                                               spentKeyImages: inputKeyImages,
+                                               outputPublicKeys: outputPublicKeys,
                                                ledgerBlockTimestamp: 0,
                                                ledgerBlockIndex: 0,
                                                feeAmount: feeAmount)
@@ -937,12 +941,16 @@ public extension PaymentsImpl {
                     let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
                     let feeAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: mcTransaction.fee)
                     let mcTransactionData = mcTransaction.serializedData
+                    let inputKeyImages = Array(Set(mcTransaction.inputKeyImages))
+                    owsAssertDebug(inputKeyImages.count == mcTransaction.inputKeyImages.count)
+                    let outputPublicKeys = Array(Set(mcTransaction.outputPublicKeys))
+                    owsAssertDebug(outputPublicKeys.count == mcTransaction.outputPublicKeys.count)
                     let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                                        transactionData: mcTransactionData,
                                                        receiptData: nil,
                                                        incomingTransactionPublicKeys: nil,
-                                                       spentKeyImages: Array(mcTransaction.inputKeyImages),
-                                                       outputPublicKeys: Array(mcTransaction.outputPublicKeys),
+                                                       spentKeyImages: inputKeyImages,
+                                                       outputPublicKeys: outputPublicKeys,
                                                        ledgerBlockTimestamp: 0,
                                                        ledgerBlockIndex: 0,
                                                        feeAmount: feeAmount)
@@ -1481,11 +1489,13 @@ public extension PaymentsImpl {
             }
             let recipientPublicAddressData = mobileCoinProto.recipientAddress
             let memoMessage = paymentProto.note?.nilIfEmpty
-            let spentKeyImages = mobileCoinProto.spentKeyImages
+            let spentKeyImages = Array(Set(mobileCoinProto.spentKeyImages))
+            owsAssertDebug(spentKeyImages.count == mobileCoinProto.spentKeyImages.count)
             guard !spentKeyImages.isEmpty else {
                 throw OWSAssertionError("Invalid payment sync message: Missing spentKeyImages.")
             }
-            let outputPublicKeys = mobileCoinProto.outputPublicKeys
+            let outputPublicKeys = Array(Set(mobileCoinProto.outputPublicKeys))
+            owsAssertDebug(outputPublicKeys.count == mobileCoinProto.outputPublicKeys.count)
             guard !outputPublicKeys.isEmpty else {
                 throw OWSAssertionError("Invalid payment sync message: Missing outputPublicKeys.")
             }
@@ -1557,6 +1567,8 @@ public extension PaymentsImpl {
     // This method enforces invariants around TSPaymentModel.
     func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
                                  transaction: SDSAnyWriteTransaction) throws {
+
+        Logger.info("Trying to insert: \(paymentModel.descriptionForLogs)")
 
         guard paymentModel.isValid else {
             throw OWSAssertionError("Invalid paymentModel.")

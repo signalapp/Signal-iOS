@@ -514,10 +514,10 @@ public class ProfileFetcherJob: NSObject {
         var bioEmoji: String?
         var paymentAddress: TSPaymentAddress?
         if let decryptedProfile = fetchedProfile.decryptedProfile {
-            givenName = decryptedProfile.givenName
-            familyName = decryptedProfile.familyName
-            bio = decryptedProfile.bio
-            bioEmoji = decryptedProfile.bioEmoji
+            givenName = decryptedProfile.givenName?.nilIfEmpty
+            familyName = decryptedProfile.familyName?.nilIfEmpty
+            bio = decryptedProfile.bio?.nilIfEmpty
+            bioEmoji = decryptedProfile.bioEmoji?.nilIfEmpty
             paymentAddress = decryptedProfile.paymentAddress
         }
         let username = profile.username
@@ -749,6 +749,9 @@ public extension DecryptedProfile {
         do {
             let byteParser = ByteParser(data: paymentAddressDataWithLength, littleEndian: true)
             let length = byteParser.nextUInt32()
+            guard length > 0 else {
+                return nil
+            }
             guard let paymentAddressDataWithoutLength = byteParser.readBytes(UInt(length)) else {
                 owsFailDebug("Invalid payment address.")
                 return nil

@@ -404,7 +404,8 @@ extension TSPaymentModel: TSPaymentBaseModel {
         }
 
         if let paymentAmount = paymentAmount {
-            let canBeEmpty = self.isDefragmentation
+            // This might be a scrubbed defragmentation.
+            let canBeEmpty = self.isDefragmentation || self.isUnidentified
             if !paymentAmount.isValidAmount(canBeEmpty: canBeEmpty) {
                 owsFailDebug("Invalid paymentAmount: \(formattedState).")
                 isValid = false
@@ -707,6 +708,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             if let memoMessage = memoMessage {
                 components.append("memoMessage: '\(memoMessage)'")
             }
+            components.append("uniqueId: '\(uniqueId)'")
         }
         return "[" + components.joined(separator: ", ") + "]"
     }
