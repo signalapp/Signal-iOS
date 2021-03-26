@@ -396,7 +396,7 @@ static NSTimeInterval launchStartedAt;
             [self startClosedGroupPollerIfNeeded];
             [self startOpenGroupPollersIfNeeded];
 
-            // Loki: Update profile picture if needed
+            // Update profile picture if needed
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
             NSDate *now = [NSDate new];
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
@@ -409,6 +409,10 @@ static NSTimeInterval launchStartedAt;
                 } failure:^(NSError *error) {
                     // Do nothing
                 } requiresSync:YES];
+            }
+            
+            if (CurrentAppContext().isMainApp) {
+                [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {

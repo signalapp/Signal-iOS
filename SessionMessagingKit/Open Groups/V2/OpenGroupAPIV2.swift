@@ -8,6 +8,9 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
+    public static let defaultServer = "https://sessionopengroup.com"
+    public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
+    public static var getDefaultRoomsPromise: Promise<[Info]>?
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -280,6 +283,16 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     // MARK: General
+    public static func getDefaultRoomsIfNeeded() {
+        Storage.shared.write(with: { transaction in
+            Storage.shared.setOpenGroupPublicKey(for: defaultServer, to: defaultServerPublicKey, using: transaction)
+        }, completion: {
+            getDefaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+                OpenGroupAPIV2.getAllRooms(from: defaultServer)
+            }
+        })
+    }
+    
     public static func getInfo(for room: String, on server: String) -> Promise<Info> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)", isAuthRequired: false)
         let promise: Promise<Info> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in

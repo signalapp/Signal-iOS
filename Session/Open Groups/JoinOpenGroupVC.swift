@@ -149,6 +149,28 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         }
     }
     
+    fileprivate func join(_ room: String, on server: String, with publicKey: String) {
+        guard !isJoining else { return }
+        isJoining = true
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            Storage.shared.write { transaction in
+                OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
+                .done(on: DispatchQueue.main) { [weak self] _ in
+                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                }
+                .catch(on: DispatchQueue.main) { [weak self] error in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    let title = "Couldn't Join"
+                    let message = error.localizedDescription
+                    self?.isJoining = false
+                    self?.showError(title: title, message: message)
+                }
+            }
+        }
+    }
+    
     // MARK: Convenience
     private func showError(title: String, message: String = "") {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -157,7 +179,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
 }
 
-private final class EnterURLVC : UIViewController {
+private final class EnterURLVC : UIViewController, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC!
     
     // MARK: Components
@@ -170,13 +192,22 @@ private final class EnterURLVC : UIViewController {
     
     private lazy var suggestionGrid: OpenGroupSuggestionGrid = {
         let maxWidth = UIScreen.main.bounds.width - Values.largeSpacing * 2
-        return OpenGroupSuggestionGrid(maxWidth: maxWidth)
+        let result = OpenGroupSuggestionGrid(maxWidth: maxWidth)
+        result.delegate = self
+        return result
     }()
     
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        // Suggestion grid title label
+        let suggestionGridTitleLabel = UILabel()
+        suggestionGridTitleLabel.textColor = Colors.text
+        suggestionGridTitleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        suggestionGridTitleLabel.text = "Or join one of these..."
+        suggestionGridTitleLabel.numberOfLines = 0
+        suggestionGridTitleLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
@@ -187,11 +218,9 @@ private final class EnterURLVC : UIViewController {
         nextButton.pin(.top, to: .top, of: nextButtonContainer)
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
-        // Spacers
-        let spacer1 = UIView.vStretchingSpacer()
-        let spacer2 = UIView.vStretchingSpacer()
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextField, spacer1, suggestionGrid, spacer2, nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
+            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
@@ -200,7 +229,6 @@ private final class EnterURLVC : UIViewController {
         stackView.pin(to: view)
         // Constraints
         view.set(.width, to: UIScreen.main.bounds.width)
-        spacer1.heightAnchor.constraint(equalTo: spacer2.heightAnchor).isActive = true
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
@@ -216,6 +244,10 @@ private final class EnterURLVC : UIViewController {
     }
     
     // MARK: Interaction
+    func join(_ room: OpenGroupAPIV2.Info) {
+        joinOpenGroupVC.join(room.id, on: OpenGroupAPIV2.defaultServer, with: OpenGroupAPIV2.defaultServerPublicKey)
+    }
+    
     @objc private func joinOpenGroupIfPossible() {
         let url = urlTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
         joinOpenGroupVC.joinOpenGroupIfPossible(with: url)

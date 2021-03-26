@@ -153,6 +153,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
+        // Get default open group rooms if needed
+        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
     }
     
     override func viewDidAppear(_ animated: Bool) {

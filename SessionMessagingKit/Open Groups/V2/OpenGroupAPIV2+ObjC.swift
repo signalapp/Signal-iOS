@@ -11,4 +11,9 @@ extension OpenGroupAPIV2 {
     public static func objc_isUserModerator(_ publicKey: String, for room: String, on server: String) -> Bool {
         return isUserModerator(publicKey, for: room, on: server)
     }
+    
+    @objc(getDefaultRoomsIfNeeded)
+    public static func objc_getDefaultRoomsIfNeeded() {
+        return getDefaultRoomsIfNeeded()
+    }
 }
