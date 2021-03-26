@@ -224,7 +224,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+                 updateStorageService:(BOOL)updateStorageService
+                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                               transaction:(SDSAnyWriteTransaction *)transaction

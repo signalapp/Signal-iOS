@@ -132,6 +132,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
         case dataMigration_removeOversizedGroupAvatars
+        case dataMigration_scheduleStorageServiceUpdateForMutedThreads
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1116,6 +1117,26 @@ public class GRDBSchemaMigrator: NSObject {
                     groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
                 } catch {
                     owsFail("Failed to remove invalid group avatar during migration: \(error)")
+                }
+            }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_scheduleStorageServiceUpdateForMutedThreads.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            let cursor = TSThread.grdbFetchCursor(
+                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
+                transaction: transaction
+            )
+
+            while let thread = try cursor.next() {
+                if let thread = thread as? TSContactThread {
+                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
+                } else if let thread = thread as? TSGroupThread {
+                    Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                } else {
+                    owsFail("Unexpected thread type \(thread)")
                 }
             }
         }

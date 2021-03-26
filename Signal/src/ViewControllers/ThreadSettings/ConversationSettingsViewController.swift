@@ -853,7 +853,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     private func setThreadMutedUntilTimestamp(_ value: UInt64) {
         databaseStorage.write { transaction in
-            self.thread.updateWithMuted(untilTimestamp: value, transaction: transaction)
+            self.thread.updateWithMuted(untilTimestamp: value, updateStorageService: true, transaction: transaction)
         }
 
         updateTableContents()

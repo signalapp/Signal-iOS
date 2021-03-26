@@ -62,6 +62,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
         }
 
         if let unknownFields = unknownFields {
@@ -199,6 +200,10 @@ extension StorageServiceProtoContactRecord: Dependencies {
                     localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
                 }
             }
+
+            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
+                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+            }
         }
 
         return mergeState
@@ -252,6 +257,7 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
         }
 
         if let unknownFields = unknownFields {
@@ -325,6 +331,10 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
                     localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
                 }
             }
+
+            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
+                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+            }
         }
 
         return .resolved(id)
@@ -356,6 +366,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
         }
 
         if let unknownFields = unknownFields {
@@ -465,6 +476,10 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
                 } else {
                     localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
                 }
+            }
+
+            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
+                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
             }
         }
 

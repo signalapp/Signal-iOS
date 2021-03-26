@@ -749,10 +749,16 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return LLONG_MAX;
 }
 
-- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+                 updateStorageService:(BOOL)updateStorageService
+                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) { thread.mutedUntilTimestamp = mutedUntilTimestamp; }];
+
+    if (updateStorageService) {
+        [self recordPendingStorageServiceUpdates];
+    }
 }
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
