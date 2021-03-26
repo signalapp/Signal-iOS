@@ -1,8 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
 
-// TODO: Message signature validation
-
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
@@ -214,9 +212,16 @@ public final class OpenGroupAPIV2 : NSObject {
         return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[OpenGroupMessageV2]> in
             guard let rawMessages = json["messages"] as? [[String:Any]] else { throw Error.parsingFailed }
             let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
-                // TODO: Signature validation
-                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, message.sender != nil else {
+                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, let sender = message.sender, let data = Data(base64Encoded: message.base64EncodedData),
+                    let base64EncodedSignature = message.base64EncodedSignature, let signature = Data(base64Encoded: base64EncodedSignature) else {
                     SNLog("Couldn't parse open group message from JSON: \(json).")
+                    return nil
+                }
+                // Validate the message signature
+                let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
+                let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
+                guard isValid else {
+                    SNLog("Ignoring message with invalid signature.")
                     return nil
                 }
                 return message
