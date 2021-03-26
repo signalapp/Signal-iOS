@@ -215,6 +215,7 @@
 		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
+		3474C4DE260E0B1D006723D2 /* MobileCoinAPI+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C4DD260E0B1C006723D2 /* MobileCoinAPI+Configuration.swift */; };
 		3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -1235,6 +1236,7 @@
 		3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliationTest.swift; sourceTree = "<group>"; };
 		347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AvatarDownloadOperation.swift; sourceTree = "<group>"; };
 		347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BottomBar.swift"; sourceTree = "<group>"; };
+		3474C4DD260E0B1C006723D2 /* MobileCoinAPI+Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MobileCoinAPI+Configuration.swift"; sourceTree = "<group>"; };
 		3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+SignalMessaging.swift"; sourceTree = "<group>"; };
 		34784592237C4813000D1CAA /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2750,6 +2752,7 @@
 			isa = PBXGroup;
 			children = (
 				3498AC9A2518E9A600B1F315 /* MobileCoinAPI.swift */,
+				3474C4DD260E0B1C006723D2 /* MobileCoinAPI+Configuration.swift */,
 				3414896A25C9B8B00098E3ED /* PaymentsCurrenciesImpl.swift */,
 				346EFC3325FD328100F493C7 /* PaymentsFormat.swift */,
 				3498AC9B2518E9A600B1F315 /* PaymentsImpl.swift */,
@@ -5101,6 +5104,7 @@
 			files = (
 				45F59A0A2029140500E8D2B0 /* OWSVideoPlayer.swift in Sources */,
 				8861DED02445349C00BB4145 /* LinkingTextView.swift in Sources */,
+				3474C4DE260E0B1D006723D2 /* MobileCoinAPI+Configuration.swift in Sources */,
 				88F15F9925AD4A9B008ABD47 /* AttachmentMultisend.swift in Sources */,
 				340872C82239563500CB25B0 /* ApprovalRailCellView.swift in Sources */,
 				32A3325025E0856300E93B7A /* NameCollisionFinder.swift in Sources */,
