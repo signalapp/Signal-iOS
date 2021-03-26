@@ -56,7 +56,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
         super.setUp()
 
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.payments = PaymentsImpl()
+        sskEnvironment.paymentsRef = PaymentsImpl()
     }
 
     override func tearDown() {

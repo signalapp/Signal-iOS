@@ -18,12 +18,14 @@ public extension OutgoingPaymentSyncMessage {
             var ledgerBlockIndex = mobileCoin.blockIndex
             var spentKeyImages = mobileCoin.spentKeyImages
             var outputPublicKeys = mobileCoin.outputPublicKeys
+            var receiptData = mobileCoin.receiptData
             if DebugFlags.paymentsMalformedMessages.get() {
                 amountPicoMob = 0
                 feePicoMob = 0
                 ledgerBlockIndex = 0
                 spentKeyImages = []
                 outputPublicKeys = []
+                receiptData = Randomness.generateRandomBytes(Int32(receiptData.count))
             }
             let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: amountPicoMob,
                                                                                          feePicoMob: feePicoMob,
@@ -36,6 +38,7 @@ public extension OutgoingPaymentSyncMessage {
             if mobileCoin.blockTimestamp > 0 {
                 mobileCoinBuilder.setLedgerBlockTimestamp(mobileCoin.blockTimestamp)
             }
+            mobileCoinBuilder.setReceipt(receiptData)
 
             let outgoingPaymentBuilder = SSKProtoSyncMessageOutgoingPayment.builder()
             if let recipientUuidString = mobileCoin.recipientUuidString {

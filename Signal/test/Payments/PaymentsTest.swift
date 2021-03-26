@@ -15,7 +15,7 @@ class PaymentsTest: SignalBaseTest {
         super.setUp()
 
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.payments = PaymentsImpl()
+        sskEnvironment.paymentsRef = PaymentsImpl()
     }
 
     override func tearDown() {
@@ -44,11 +44,11 @@ class PaymentsTest: SignalBaseTest {
 
     func test_passphraseRoundtrip() {
         let paymentsEntropy = Randomness.generateRandomBytes(Int32(PaymentsConstants.paymentsEntropyLength))
-        guard let passphrase = self.payments.passphrase(forPaymentsEntropy: paymentsEntropy) else {
+        guard let passphrase = self.paymentsSwift.passphrase(forPaymentsEntropy: paymentsEntropy) else {
             XCTFail("Missing passphrase.")
             return
         }
-        XCTAssertEqual(paymentsEntropy, self.payments.paymentsEntropy(forPassphrase: passphrase))
+        XCTAssertEqual(paymentsEntropy, self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase))
         guard let mcRootEntropy = self.payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
             XCTFail("Missing mcRootEntropy.")
             return

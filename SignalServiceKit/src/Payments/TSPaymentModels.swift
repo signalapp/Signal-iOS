@@ -434,12 +434,6 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCReceiptData = isIncoming && isIdentifiedPayment && !isFailed
-        if shouldHaveMCReceiptData, mcReceiptData == nil {
-            owsFailDebug("Missing mcReceiptData: \(formattedState).")
-            isValid = false
-        }
-
         let shouldHaveMCRecipientPublicAddressData = isOutgoing && (isIdentifiedPayment || isOutgoingTransfer) && !isFailed
         if shouldHaveMCRecipientPublicAddressData, mcRecipientPublicAddressData == nil {
             owsFailDebug("Missing mcRecipientPublicAddressData: \(formattedState).")

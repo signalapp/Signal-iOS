@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 memoMessage:(nullable NSString *)memoMessage
                              spentKeyImages:(NSArray<NSData *> *)spentKeyImages
                            outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
+                                receiptData:(NSData *)receiptData
                           isDefragmentation:(BOOL)isDefragmentation
 {
     self = [super init];
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     _memoMessage = memoMessage;
     _spentKeyImages = spentKeyImages;
     _outputPublicKeys = outputPublicKeys;
+    _receiptData = receiptData;
     _isDefragmentation = isDefragmentation;
 
     return self;

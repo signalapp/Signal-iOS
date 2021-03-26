@@ -1065,6 +1065,16 @@ public extension PaymentsImpl {
             }
             return
         }
+        guard let mcReceiptData = paymentModel.mcReceiptData,
+              !mcReceiptData.isEmpty,
+              let mcReceipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
+            if DebugFlags.paymentsIgnoreBadData.get() {
+                Logger.warn("Missing or invalid mcReceiptData.")
+            } else {
+                owsFailDebug("Missing or invalid mcReceiptData.")
+            }
+            return
+        }
         let mcSpentKeyImages = Array(mcTransaction.inputKeyImages)
         guard !mcSpentKeyImages.isEmpty else {
             if DebugFlags.paymentsIgnoreBadData.get() {
@@ -1093,6 +1103,7 @@ public extension PaymentsImpl {
                                            memoMessage: nil,
                                            mcSpentKeyImages: mcSpentKeyImages,
                                            mcOutputPublicKeys: mcOutputPublicKeys,
+                                           mcReceiptData: mcReceiptData,
                                            isDefragmentation: true,
                                            transaction: transaction)
     }
@@ -1183,7 +1194,8 @@ public extension PaymentsImpl {
             return
         }
         guard let mcReceiptData = paymentModel.mcReceiptData,
-              !mcReceiptData.isEmpty else {
+              !mcReceiptData.isEmpty,
+              nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
             if DebugFlags.paymentsIgnoreBadData.get() {
                 Logger.warn("Missing mcReceiptData.")
             } else {
@@ -1228,6 +1240,7 @@ public extension PaymentsImpl {
                                            memoMessage: paymentModel.memoMessage,
                                            mcSpentKeyImages: mcSpentKeyImages,
                                            mcOutputPublicKeys: mcOutputPublicKeys,
+                                           mcReceiptData: mcReceiptData,
                                            isDefragmentation: false,
                                            transaction: transaction)
 
@@ -1332,6 +1345,7 @@ public extension PaymentsImpl {
                                               memoMessage: String?,
                                               mcSpentKeyImages: [Data],
                                               mcOutputPublicKeys: [Data],
+                                              mcReceiptData: Data,
                                               isDefragmentation: Bool,
                                               transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage? {
 
@@ -1348,6 +1362,7 @@ public extension PaymentsImpl {
                                                    memoMessage: memoMessage?.nilIfEmpty,
                                                    spentKeyImages: mcSpentKeyImages,
                                                    outputPublicKeys: mcOutputPublicKeys,
+                                                   receiptData: mcReceiptData,
                                                    isDefragmentation: isDefragmentation)
         let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
@@ -1469,6 +1484,11 @@ public extension PaymentsImpl {
             guard !outputPublicKeys.isEmpty else {
                 throw OWSAssertionError("Invalid payment sync message: Missing outputPublicKeys.")
             }
+            guard let mcReceiptData = mobileCoinProto.receipt,
+                  !mcReceiptData.isEmpty,
+                  nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
+                throw OWSAssertionError("Invalid payment sync message: Missing or invalid receipt.")
+            }
             let ledgerBlockIndex = mobileCoinProto.ledgerBlockIndex
             guard ledgerBlockIndex > 0 else {
                 throw OWSAssertionError("Invalid payment sync message: Invalid ledgerBlockIndex.")
@@ -1510,7 +1530,7 @@ public extension PaymentsImpl {
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: recipientPublicAddressData,
                                                transactionData: nil,
-                                               receiptData: nil,
+                                               receiptData: mcReceiptData,
                                                incomingTransactionPublicKeys: nil,
                                                spentKeyImages: spentKeyImages,
                                                outputPublicKeys: outputPublicKeys,

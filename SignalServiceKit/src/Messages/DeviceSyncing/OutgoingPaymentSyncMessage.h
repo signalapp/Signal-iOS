@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *memoMessage;
 @property (nonatomic, readonly) NSArray<NSData *> *spentKeyImages;
 @property (nonatomic, readonly) NSArray<NSData *> *outputPublicKeys;
+@property (nonatomic, readonly) NSData *receiptData;
 @property (nonatomic, readonly) BOOL isDefragmentation;
 
 - (instancetype)initWithRecipientUuidString:(nullable NSString *)recipientUuidString
@@ -29,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 memoMessage:(nullable NSString *)memoMessage
                              spentKeyImages:(NSArray<NSData *> *)spentKeyImages
                            outputPublicKeys:(NSArray<NSData *> *)outputPublicKeys
+                                receiptData:(NSData *)receiptData
                           isDefragmentation:(BOOL)isDefragmentation;
 
 @end
