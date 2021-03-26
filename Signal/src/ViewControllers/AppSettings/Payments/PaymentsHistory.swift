@@ -172,7 +172,6 @@ class PaymentsHistoryDataSource {
                     displayName = NSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
                                                     comment: "Label for 'transfer out' payments.")
                 } else if paymentModel.isDefragmentation {
-                    // TODO: Copy.
                     displayName = NSLocalizedString("PAYMENTS_DEFRAGMENTATION_PAYMENT",
                                                     comment: "Label for 'defragmentation' payments.")
                 } else {
