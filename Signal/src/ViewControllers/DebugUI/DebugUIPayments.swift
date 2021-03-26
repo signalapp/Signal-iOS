@@ -11,28 +11,6 @@ import PromiseKit
 
 class DebugUIPayments: DebugUIPage {
 
-    // MARK: Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private static var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
     // MARK: Overrides 
 
     override func name() -> String {
@@ -305,16 +283,16 @@ class DebugUIPayments: DebugUIPage {
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
         firstly(on: .global()) { () -> Promise<PreparedPayment> in
-            Self.payments.prepareOutgoingPayment(recipient: recipient,
-                                                 paymentAmount: paymentAmount,
-                                                 memoMessage: "Tiny: \(count)",
-                                                 paymentRequestModel: nil,
-                                                 isOutgoingTransfer: false,
-                                                 canDefragment: false)
+            Self.paymentsImpl.prepareOutgoingPayment(recipient: recipient,
+                                                     paymentAmount: paymentAmount,
+                                                     memoMessage: "Tiny: \(count)",
+                                                     paymentRequestModel: nil,
+                                                     isOutgoingTransfer: false,
+                                                     canDefragment: false)
         }.then(on: .global()) { (preparedPayment: PreparedPayment) in
-            Self.payments.initiateOutgoingPayment(preparedPayment: preparedPayment)
+            Self.paymentsImpl.initiateOutgoingPayment(preparedPayment: preparedPayment)
         }.then(on: .global()) { (paymentModel: TSPaymentModel) in
-            Self.payments.blockOnOutgoingVerification(paymentModel: paymentModel)
+            Self.paymentsImpl.blockOnOutgoingVerification(paymentModel: paymentModel)
         }.done(on: .global()) { _ in
             if count > 1 {
                 Self.sendTinyPayments(contactThread: contactThread, count: count - 1)

@@ -37,19 +37,7 @@ protocol SendPaymentHelperDelegate: class {
 
 // MARK: -
 
-class SendPaymentHelper {
-
-    // MARK: - Dependencies
-
-    private static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    private var paymentsCurrencies: PaymentsCurrenciesSwift {
-        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
-    }
-
-    // MARK: -
+class SendPaymentHelper: Dependencies {
 
     private weak var delegate: SendPaymentHelperDelegate?
 
@@ -190,7 +178,7 @@ class SendPaymentHelper {
 
     private func updateCurrentCurrencyConversion() {
         let localCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let currentCurrencyConversion = paymentsCurrencies.conversionInfo(forCurrencyCode: localCurrencyCode)
+        let currentCurrencyConversion = paymentsCurrenciesSwift.conversionInfo(forCurrencyCode: localCurrencyCode)
         guard !CurrencyConversionInfo.areEqual(currentCurrencyConversion,
                                                self.currentCurrencyConversion) else {
             // Did not change.

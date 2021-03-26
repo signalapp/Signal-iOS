@@ -7,14 +7,6 @@ import Foundation
 @objc
 public class SignalServiceProfile: NSObject {
 
-    // MARK: - Dependencies
-
-    private class var payments: Payments {
-        return SSKEnvironment.shared.payments
-    }
-
-    // MARK: -
-
     public enum ValidationError: Error {
         case invalid(description: String)
         case invalidIdentityKey(description: String)

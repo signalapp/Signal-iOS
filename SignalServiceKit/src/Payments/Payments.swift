@@ -184,15 +184,7 @@ public struct PaymentBalance {
 
 // MARK: -
 
-public enum PaymentsState: Equatable {
-
-    // MARK: - Dependencies
-
-    private static var payments: Payments {
-        SSKEnvironment.shared.payments
-    }
-
-    // MARK: -
+public enum PaymentsState: Equatable, Dependencies {
 
     case disabled
     case disabledWithPaymentsEntropy(paymentsEntropy: Data)
@@ -277,15 +269,7 @@ public enum PaymentsState: Equatable {
 
 // MARK: -
 
-public struct PaymentsPassphrase: Equatable {
-
-    // MARK: - Dependencies
-
-    private static var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
+public struct PaymentsPassphrase: Equatable, Dependencies {
 
     public let words: [String]
 
@@ -313,7 +297,7 @@ public struct PaymentsPassphrase: Equatable {
         }
         if validateWords {
             for word in words {
-                guard Self.payments.isValidPassphraseWord(word) else {
+                guard Self.paymentsSwift.isValidPassphraseWord(word) else {
                     Logger.verbose("Invalid passphrase word: \(word).")
                     Logger.warn("Invalid passphrase word.")
                     throw PaymentsError.invalidPassphrase

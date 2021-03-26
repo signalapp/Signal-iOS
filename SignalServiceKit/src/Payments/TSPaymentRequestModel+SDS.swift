@@ -395,8 +395,6 @@ public extension TSPaymentRequestModel {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return TSPaymentRequestModel.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(PaymentRequestModelRecord.databaseTableName) WHERE \(paymentRequestModelColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -427,14 +425,6 @@ public extension TSPaymentRequestModel {
                             batchSize: UInt,
                             block: @escaping (TSPaymentRequestModel, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            TSPaymentRequestModel.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? TSPaymentRequestModel else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = TSPaymentRequestModel.grdbFetchCursor(transaction: grdbTransaction)
@@ -476,10 +466,6 @@ public extension TSPaymentRequestModel {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: TSPaymentRequestModel.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -511,8 +497,6 @@ public extension TSPaymentRequestModel {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: TSPaymentRequestModel.collection())
         case .grdbRead(let grdbTransaction):
             return PaymentRequestModelRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -522,8 +506,6 @@ public extension TSPaymentRequestModel {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: TSPaymentRequestModel.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try PaymentRequestModelRecord.deleteAll(grdbTransaction.database)
@@ -572,8 +554,6 @@ public extension TSPaymentRequestModel {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: TSPaymentRequestModel.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(PaymentRequestModelRecord.databaseTableName) WHERE \(paymentRequestModelColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

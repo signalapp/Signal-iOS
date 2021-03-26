@@ -11,14 +11,6 @@ import PromiseKit
 
 class PaymentsTest: SignalBaseTest {
 
-    // MARK: - Dependencies
-
-    private var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
-
     override func setUp() {
         super.setUp()
 

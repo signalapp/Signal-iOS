@@ -7,24 +7,6 @@ import PromiseKit
 
 @objc
 public class PaymentsUI: NSObject {
-
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var payments: PaymentsImpl {
-        return SSKEnvironment.shared.payments as! PaymentsImpl
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    private static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 }
 
 // MARK: -

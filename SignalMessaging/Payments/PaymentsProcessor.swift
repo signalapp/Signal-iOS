@@ -9,22 +9,6 @@ import MobileCoin
 @objc
 public class PaymentsProcessor: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        TSAccountManager.shared()
-    }
-
-    private static var payments: PaymentsImpl {
-        SSKEnvironment.shared.payments as! PaymentsImpl
-    }
-
-    // MARK: -
-
     @objc
     public required override init() {
         super.init()
@@ -197,14 +181,6 @@ public class PaymentsProcessor: NSObject {
     // but this should short-circuit if reachability becomes available.
     @objc
     fileprivate class RetryScheduler: NSObject {
-
-        // MARK: - Dependencies
-
-        private var reachabilityManager: SSKReachabilityManager {
-            SSKEnvironment.shared.reachabilityManager
-        }
-
-        // MARK: -
 
         private let paymentModel: TSPaymentModel
         private let nextRetryDelayInteral: TimeInterval
@@ -396,18 +372,6 @@ private protocol PaymentProcessingOperationDelegate: class {
 
 // See comments on PaymentsProcessor.process().
 private class PaymentProcessingOperation: OWSOperation {
-
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var payments: PaymentsImpl {
-        SSKEnvironment.shared.payments as! PaymentsImpl
-    }
-
-    // MARK: -
 
     private weak var delegate: PaymentProcessingOperationDelegate?
     private let paymentId: String
@@ -751,7 +715,7 @@ private class PaymentProcessingOperation: OWSOperation {
         }
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
+            Self.paymentsImpl.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             return mobileCoinAPI.submitTransaction(transaction: transaction)
         }.then(on: .global()) { _ in
@@ -790,7 +754,7 @@ private class PaymentProcessingOperation: OWSOperation {
         }
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
+            Self.paymentsImpl.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<Void> in
             firstly { () -> Promise<MCOutgoingTransactionStatus> in
                 guard let mcTransactionData = paymentModel.mcTransactionData,
@@ -824,7 +788,7 @@ private class PaymentProcessingOperation: OWSOperation {
                                                                  transaction: transaction)
 
                         // If we've verified a payment, our balance may have changed.
-                        Self.payments.updateCurrentPaymentBalance()
+                        Self.paymentsImpl.updateCurrentPaymentBalance()
                     case .failed:
                         Self.markAsFailed(paymentModel: paymentModel,
                                           paymentFailure: .validationFailed,
@@ -928,7 +892,7 @@ private class PaymentProcessingOperation: OWSOperation {
         Logger.verbose("")
 
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
+            Self.paymentsImpl.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MCIncomingReceiptStatus> in
 
             guard let mcReceiptData = paymentModel.mcReceiptData,
@@ -963,7 +927,7 @@ private class PaymentProcessingOperation: OWSOperation {
                                                              transaction: transaction)
 
                     // If we've verified a payment, our balance may have changed.
-                    Self.payments.updateCurrentPaymentBalance()
+                    Self.paymentsImpl.updateCurrentPaymentBalance()
                 case .failed:
                     Self.markAsFailed(paymentModel: paymentModel,
                                       paymentFailure: .validationFailed,

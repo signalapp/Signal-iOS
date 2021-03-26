@@ -66,19 +66,7 @@ protocol PaymentsHistoryDataSourceDelegate: class {
 
 // MARK: -
 
-class PaymentsHistoryDataSource {
-
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
+class PaymentsHistoryDataSource: Dependencies {
 
     public enum RecordType: Int, CustomStringConvertible {
         case all = 0

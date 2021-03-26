@@ -8,26 +8,6 @@ import PromiseKit
 @objc
 public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        .shared
-    }
-
-    private static var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        .shared()
-    }
-
-    private static var networkManager: TSNetworkManager {
-        SSKEnvironment.shared.networkManager
-    }
-
-    // MARK: -
-
     private var refreshEvent: RefreshEvent?
 
     public override init() {

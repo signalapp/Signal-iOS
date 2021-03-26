@@ -60,8 +60,8 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let currentCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let preferredCurrencyInfos = paymentsCurrencies.preferredCurrencyInfos
-        let supportedCurrencyInfos = paymentsCurrencies.supportedCurrencyInfosWithCurrencyConversions
+        let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
+        let supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
 
         let preferredSection = OWSTableSection()
         preferredSection.customHeaderHeight = 12
@@ -110,8 +110,8 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let currentCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let preferredCurrencyInfos = paymentsCurrencies.preferredCurrencyInfos
-        let supportedCurrencyInfos = paymentsCurrencies.supportedCurrencyInfosWithCurrencyConversions
+        let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
+        let supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
 
         let currencyInfosToSearch = supportedCurrencyInfos.isEmpty ? preferredCurrencyInfos : supportedCurrencyInfos
         let matchingCurrencyInfos = currencyInfosToSearch.filter { currencyInfo in

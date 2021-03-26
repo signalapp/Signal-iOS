@@ -7,18 +7,6 @@ import Foundation
 @objc
 public class PaymentsViewUtils: NSObject {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    private static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
-
     @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
 

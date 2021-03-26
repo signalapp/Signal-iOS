@@ -1240,15 +1240,7 @@ private protocol AmountsDelegate: class {
 
 // MARK: -
 
-private class Amounts {
-
-    // MARK: - Dependencies
-
-    private static var paymentsCurrencies: PaymentsCurrenciesSwift {
-        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
-    }
-
-    // MARK: -
+private class Amounts: Dependencies {
 
     weak var delegate: AmountsDelegate?
 
@@ -1259,7 +1251,7 @@ private class Amounts {
 
     public static var defaultFiatAmount: Amount? {
         let currentCurrencyCode = Self.paymentsCurrencies.currentCurrencyCode
-        guard let currencyConversion = Self.paymentsCurrencies.conversionInfo(forCurrencyCode: currentCurrencyCode) else {
+        guard let currencyConversion = Self.paymentsCurrenciesSwift.conversionInfo(forCurrencyCode: currentCurrencyCode) else {
             return nil
         }
         return .fiatCurrency(inputString: InputString.defaultString(isFiat: true),

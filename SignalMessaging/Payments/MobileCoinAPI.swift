@@ -6,17 +6,7 @@ import Foundation
 import PromiseKit
 import MobileCoin
 
-class MobileCoinAPI {
-
-    // MARK: - Dependencies
-
-    private static var networkManager: TSNetworkManager {
-        SSKEnvironment.shared.networkManager
-    }
-
-    private static var payments: PaymentsImpl {
-        SSKEnvironment.shared.payments as! PaymentsImpl
-    }
+class MobileCoinAPI: Dependencies {
 
     // MARK: - Passphrases & Entropy
 

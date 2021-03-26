@@ -325,7 +325,7 @@ public class SignalRecipientCursor: NSObject {
             return nil
         }
         let value = try SignalRecipient.fromRecord(record)
-        Self.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -566,7 +566,7 @@ public extension SignalRecipient {
             }
 
             let value = try SignalRecipient.fromRecord(record)
-            Self.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

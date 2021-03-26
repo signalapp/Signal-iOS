@@ -267,14 +267,6 @@ extension TSPaymentCancellation: TSPaymentBaseModel {
 @objc
 public class TSPaymentModels: NSObject {
 
-    // MARK: - Dependencies
-
-    private class var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
-
     @objc
     public var request: TSPaymentRequest?
 

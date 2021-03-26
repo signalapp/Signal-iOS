@@ -71,21 +71,13 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 }
 
-enum AttachmentType: String, CaseIterable {
+enum AttachmentType: String, CaseIterable, Dependencies {
     case camera
     case gif
     case file
     case payment
     case contact
     case location
-
-    // MARK: - Dependencies
-
-    private static var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
 
     static var contactCases: [AttachmentType] {
         if payments.shouldShowPaymentsUI {

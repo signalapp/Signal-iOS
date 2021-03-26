@@ -661,7 +661,7 @@ public class ProfileFetcherJob: NSObject {
 
 // MARK: -
 
-public struct DecryptedProfile {
+public struct DecryptedProfile: Dependencies {
     public let givenName: String?
     public let familyName: String?
     public let bio: String?
@@ -729,14 +729,6 @@ public struct FetchedProfile {
 // MARK: -
 
 public extension DecryptedProfile {
-
-    // MARK: - Dependencies
-
-    private var payments: PaymentsSwift {
-        SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    // MARK: -
 
     var paymentAddress: TSPaymentAddress? {
         guard payments.arePaymentsEnabled else {

@@ -147,7 +147,7 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_AnimatedWebp = true
 
     @objc
-    public static let payments = build.includes(.openPreview)
+    public static let paymentsEnabled = build.includes(.openPreview)
 
     @objc
     public static let paymentsRequests = false

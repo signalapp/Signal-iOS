@@ -181,14 +181,6 @@ public extension Dependencies {
         .shared
     }
 
-    var audioPlayer: CVAudioPlayer {
-        AppEnvironment.shared.audioPlayerRef
-    }
-
-    static var audioPlayer: CVAudioPlayer {
-        AppEnvironment.shared.audioPlayerRef
-    }
-
     var signalApp: SignalApp {
         .shared()
     }

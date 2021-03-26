@@ -139,6 +139,14 @@ public extension NSObject {
     static var orphanDataCleaner: OWSOrphanDataCleaner {
         Environment.shared.orphanDataCleanerRef
     }
+
+    final var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -170,14 +178,6 @@ public extension Dependencies {
 
     static var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
-    }
-
-    var payments: Payments {
-       SSKEnvironment.shared.payments
-    }
-
-    static var payments: Payments {
-       SSKEnvironment.shared.payments
     }
 
     var preferences: OWSPreferences {
@@ -283,18 +283,24 @@ public extension Dependencies {
     static var orphanDataCleaner: OWSOrphanDataCleaner {
         Environment.shared.orphanDataCleanerRef
     }
+
+    var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension NSObject {
-
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
-
 }
 
 // MARK: -
@@ -330,21 +336,5 @@ public extension OWSWindowManager {
 public extension OWSSyncManager {
     static var shared: SyncManagerProtocol {
         SSKEnvironment.shared.syncManagerRef
-    }
-
-    var paymentsSwift: PaymentsSwift {
-       SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    static var paymentsSwift: PaymentsSwift {
-       SSKEnvironment.shared.payments as! PaymentsSwift
-    }
-
-    var paymentsCurrencies: PaymentsCurrenciesSwift {
-        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
-    }
-
-    static var paymentsCurrencies: PaymentsCurrenciesSwift {
-        SSKEnvironment.shared.paymentsCurrencies as! PaymentsCurrenciesSwift
     }
 }

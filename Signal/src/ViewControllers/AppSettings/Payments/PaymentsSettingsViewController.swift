@@ -73,10 +73,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             helpCards.append(.viewRecoveryPhrase)
 
             let hasShortOrMissingPin: Bool = {
-                guard OWS2FAManager.shared().is2FAEnabled() else {
+                guard OWS2FAManager.shared.is2FAEnabled() else {
                     return true
                 }
-                guard let pinCode = OWS2FAManager.shared().pinCode else {
+                guard let pinCode = OWS2FAManager.shared.pinCode else {
                     return true
                 }
                 let shortPinLength: UInt = 4
@@ -379,7 +379,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private static func buildBalanceConversionText(paymentBalance: PaymentBalance) -> String? {
         let localCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        guard let currencyConversionInfo = paymentsCurrencies.conversionInfo(forCurrencyCode: localCurrencyCode)  else {
+        guard let currencyConversionInfo = paymentsCurrenciesSwift.conversionInfo(forCurrencyCode: localCurrencyCode)  else {
             return nil
         }
         guard let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentBalance.amount,

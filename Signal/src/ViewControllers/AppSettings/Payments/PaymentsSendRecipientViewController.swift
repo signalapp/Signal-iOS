@@ -159,7 +159,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
                 return nil
             }
             if let bioForDisplay = (Self.databaseStorage.read { transaction in
-                Self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
+                Self.profileManagerImpl.profileBioForDisplay(for: address, transaction: transaction)
                }) {
                 return NSAttributedString(string: bioForDisplay)
             }

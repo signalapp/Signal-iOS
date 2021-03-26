@@ -6,23 +6,7 @@ import Foundation
 import PromiseKit
 import MobileCoin
 
-public class PaymentsReconciliation {
-
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        TSAccountManager.shared()
-    }
-
-    private static var payments: PaymentsImpl {
-        SSKEnvironment.shared.payments as! PaymentsImpl
-    }
-
-    // MARK: -
+public class PaymentsReconciliation: Dependencies {
 
     private var refreshEvent: RefreshEvent?
 
@@ -93,7 +77,7 @@ public class PaymentsReconciliation {
             return Promise.value(())
         }
         return firstly { () -> Promise<MobileCoinAPI> in
-            Self.payments.getMobileCoinAPI()
+            Self.paymentsImpl.getMobileCoinAPI()
         }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoin.AccountActivity> in
             mobileCoinAPI.getAccountActivity()
         }.map(on: .global()) { (accountActivity: MobileCoin.AccountActivity) -> Void in

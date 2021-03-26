@@ -13,8 +13,6 @@ public class PaymentFinder: NSObject {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
             return paymentModels(paymentStates: paymentStates, grdbTransaction: grdbTransaction)
-        case .yapRead:
-            owsFail("Invalid transaction.")
         }
     }
 

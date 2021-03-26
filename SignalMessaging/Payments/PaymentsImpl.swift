@@ -9,36 +9,6 @@ import MobileCoin
 @objc
 public class PaymentsImpl: NSObject, PaymentsSwift {
 
-    // MARK: - Dependencies
-
-    private static var identityManager: OWSIdentityManager {
-        SSKEnvironment.shared.identityManager
-    }
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        SDSDatabaseStorage.shared
-    }
-
-    private static var profileManager: OWSProfileManager {
-        .shared()
-    }
-
-    private static var tsAccountManager: TSAccountManager {
-        TSAccountManager.shared()
-    }
-
-    private static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    private static var storageCoordinator: StorageCoordinator {
-        SSKEnvironment.shared.storageCoordinator
-    }
-
-    private static var storageServiceManager: StorageServiceManagerProtocol {
-        SSKEnvironment.shared.storageServiceManager
-    }
-
     // MARK: - KV Store
 
     fileprivate static let keyValueStore = SDSKeyValueStore(collection: "Payments")
@@ -133,7 +103,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // build since we need to obtain authentication from
     // the service, so we cache and reuse instances.
     func getMobileCoinAPI() -> Promise<MobileCoinAPI> {
-        guard FeatureFlags.payments else {
+        guard FeatureFlags.paymentsEnabled else {
             return Promise(error: PaymentsError.notEnabled)
         }
         switch paymentsState {
@@ -145,7 +115,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public var canEnablePayments: Bool {
-        guard FeatureFlags.payments else {
+        guard FeatureFlags.paymentsEnabled else {
             return false
         }
         guard Self.tsAccountManager.isRegisteredAndReady else {
@@ -335,7 +305,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard FeatureFlags.payments else {
+        guard FeatureFlags.paymentsEnabled else {
             return .disabled
         }
         func loadPaymentsEntropy() -> Data? {
@@ -431,7 +401,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // * After making or receiving payments.
     // * When user navigates into a view that displays the balance.
     public func updateCurrentPaymentBalance() {
-        guard FeatureFlags.payments,
+        guard FeatureFlags.paymentsEnabled,
               arePaymentsEnabled else {
             return
         }

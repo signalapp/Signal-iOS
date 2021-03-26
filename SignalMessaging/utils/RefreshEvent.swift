@@ -9,14 +9,6 @@ import Foundation
 @objc
 public class RefreshEvent: NSObject {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public typealias Block = () -> Void
 
     private let block: Block
