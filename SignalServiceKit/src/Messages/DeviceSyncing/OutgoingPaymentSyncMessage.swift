@@ -13,11 +13,23 @@ public extension OutgoingPaymentSyncMessage {
         // TODO: Support requests.
 
         do {
-            let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: mobileCoin.amountPicoMob,
-                                                                                         feePicoMob: mobileCoin.feePicoMob,
-                                                                                         ledgerBlockIndex: mobileCoin.blockIndex)
-            mobileCoinBuilder.setSpentKeyImages(mobileCoin.spentKeyImages)
-            mobileCoinBuilder.setOutputPublicKeys(mobileCoin.outputPublicKeys)
+            var amountPicoMob = mobileCoin.amountPicoMob
+            var feePicoMob = mobileCoin.feePicoMob
+            var ledgerBlockIndex = mobileCoin.blockIndex
+            var spentKeyImages = mobileCoin.spentKeyImages
+            var outputPublicKeys = mobileCoin.outputPublicKeys
+            if DebugFlags.paymentsMalformedMessages.get() {
+                amountPicoMob = 0
+                feePicoMob = 0
+                ledgerBlockIndex = 0
+                spentKeyImages = []
+                outputPublicKeys = []
+            }
+            let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: amountPicoMob,
+                                                                                         feePicoMob: feePicoMob,
+                                                                                         ledgerBlockIndex: ledgerBlockIndex)
+            mobileCoinBuilder.setSpentKeyImages(spentKeyImages)
+            mobileCoinBuilder.setOutputPublicKeys(outputPublicKeys)
             if let recipientAddress = mobileCoin.recipientAddress {
                 mobileCoinBuilder.setRecipientAddress(recipientAddress)
             }

@@ -460,6 +460,16 @@ public class DebugFlags: BaseFlags {
                                                                 details: LocalizationNotNeeded("MC SDK network activity never completes"))
 
     @objc
+    public static let paymentsMalformedMessages = TestableFlag(false,
+                                                               title: LocalizationNotNeeded("Payments: Malformed messages"),
+                                                               details: LocalizationNotNeeded("Payment notifications and sync messages are malformed."))
+
+    @objc
+    public static let paymentsSkipSubmissionAndOutgoingVerification = TestableFlag(false,
+                                                                                   title: LocalizationNotNeeded("Payments: Skip Submission And Verification"),
+                                                                                   details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified."))
+
+    @objc
     public static let paymentsAllowAllCountries = paymentsInternalBeta
 
     public static func buildFlagMap() -> [String: Any] {

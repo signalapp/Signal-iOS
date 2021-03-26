@@ -710,6 +710,12 @@ private class PaymentProcessingOperation: OWSOperation {
 
         Logger.verbose("")
 
+        if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
+            return Self.updatePaymentStatePromise(paymentModel: paymentModel,
+                                                  fromState: .outgoingUnsubmitted,
+                                                  toState: .outgoingUnverified)
+        }
+
         // Only try to submit transactions within the first N minutes of them
         // being initiated.  If the app is terminated right after a transaction
         // is initiated (before transaction it can be submitted), we don't want
@@ -769,6 +775,19 @@ private class PaymentProcessingOperation: OWSOperation {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnverified)
 
         Logger.verbose("")
+
+        if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
+            return firstly(on: .global()) { () -> Void in
+                try Self.databaseStorage.write { transaction in
+                    guard let paymentModel = TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
+                                                                     transaction: transaction) else {
+                        throw OWSAssertionError("Missing TSPaymentModel.")
+                    }
+                    paymentModel.update(mcLedgerBlockIndex: 111, transaction: transaction)
+                    paymentModel.update(paymentState: .outgoingVerified, transaction: transaction)
+                }
+            }
+        }
 
         return firstly { () -> Promise<MobileCoinAPI> in
             Self.payments.getMobileCoinAPI()

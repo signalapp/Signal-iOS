@@ -643,8 +643,11 @@ public class SendPaymentViewController: OWSViewController {
         let isZero = amount.inputString.isZero
 
         func disableSmallLabel() {
-            smallAmountLabel.text = NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
-                                                      comment: "Label for the 'invalid amount' button.")
+            let isInvalid = (!isZero && currentCurrencyConversion != nil)
+            smallAmountLabel.text = (isInvalid
+                                        ? NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
+                                                            comment: "Label for the 'invalid amount' button.")
+                                        : " ")
             smallAmountLabel.textColor = UIColor.ows_accentRed
             currencyConversionInfoView.tintColor = .clear
         }
