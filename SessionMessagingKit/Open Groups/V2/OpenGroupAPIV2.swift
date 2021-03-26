@@ -2,7 +2,6 @@ import PromiseKit
 import SessionSnodeKit
 
 // TODO: Message signature validation
-// TODO: Keeping track of moderators
 // TODO: Token expiration
 
 @objc(SNOpenGroupAPIV2)
@@ -263,6 +262,12 @@ public final class OpenGroupAPIV2 : NSObject {
         let request = Request(verb: .get, room: room, server: server, endpoint: "moderators")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
             guard let moderators = json["moderators"] as? [String] else { throw Error.parsingFailed }
+            if var x = self.moderators[server] {
+                x[room] = Set(moderators)
+                self.moderators[server] = x
+            } else {
+                self.moderators[server] = [room:Set(moderators)]
+            }
             return moderators
         }
     }
