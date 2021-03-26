@@ -92,14 +92,34 @@ extension TSPaymentAddress: TSPaymentBaseModel {
             throw PaymentsError.invalidModel
         }
 
-        let mobileCoinBuilder = SSKProtoPaymentAddressMobileCoin.builder(publicAddress: mobileCoinPublicAddressData)
+        // Sign the MC public address.
+        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair() else {
+            throw OWSAssertionError("Missing identityKeyPair")
+        }
+        let signatureData = try Ed25519.sign(mobileCoinPublicAddressData, with: identityKeyPair)
+
+        let mobileCoinBuilder = SSKProtoPaymentAddressMobileCoin.builder(publicAddress: mobileCoinPublicAddressData,
+                                                                         signature: signatureData)
         let builder = SSKProtoPaymentAddress.builder()
         builder.setMobileCoin(try mobileCoinBuilder.build())
         return try builder.build()
     }
 
-    public class func fromProto(_ proto: SSKProtoPaymentAddress) throws -> TSPaymentAddress {
+    public class func fromProto(_ proto: SSKProtoPaymentAddress,
+                                publicIdentityKey: Data) throws -> TSPaymentAddress {
         guard let mobileCoin = proto.mobileCoin else {
+            throw PaymentsError.invalidModel
+        }
+        let mobileCoinPublicAddressData = mobileCoin.publicAddress
+        let signatureData = mobileCoin.signature
+        guard !mobileCoinPublicAddressData.isEmpty,
+              !signatureData.isEmpty else {
+            throw PaymentsError.invalidModel
+        }
+        guard try Ed25519.verifySignature(signatureData,
+                                          publicKey: publicIdentityKey,
+                                          data: mobileCoinPublicAddressData) else {
+            owsFailDebug("Signature verification failed.")
             throw PaymentsError.invalidModel
         }
         let instance = TSPaymentAddress(currency: .mobileCoin,

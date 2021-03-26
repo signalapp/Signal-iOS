@@ -14371,14 +14371,14 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
     // MARK: - SSKProtoPaymentAddressMobileCoinBuilder
 
     @objc
-    public static func builder(publicAddress: Data) -> SSKProtoPaymentAddressMobileCoinBuilder {
-        return SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress)
+    public static func builder(publicAddress: Data, signature: Data) -> SSKProtoPaymentAddressMobileCoinBuilder {
+        return SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress, signature: signature)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoPaymentAddressMobileCoinBuilder {
-        let builder = SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress)
+        let builder = SSKProtoPaymentAddressMobileCoinBuilder(publicAddress: publicAddress, signature: signature)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -14394,10 +14394,11 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(publicAddress: Data) {
+        fileprivate init(publicAddress: Data, signature: Data) {
             super.init()
 
             setPublicAddress(publicAddress)
+            setSignature(signature)
         }
 
         @objc
@@ -14409,6 +14410,17 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
 
         public func setPublicAddress(_ valueParam: Data) {
             proto.publicAddress = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSignature(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.signature = valueParam
+        }
+
+        public func setSignature(_ valueParam: Data) {
+            proto.signature = valueParam
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -14431,6 +14443,9 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
     @objc
     public let publicAddress: Data
 
+    @objc
+    public let signature: Data
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -14440,9 +14455,11 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
     }
 
     private init(proto: SignalServiceProtos_PaymentAddress.MobileCoin,
-                 publicAddress: Data) {
+                 publicAddress: Data,
+                 signature: Data) {
         self.proto = proto
         self.publicAddress = publicAddress
+        self.signature = signature
     }
 
     @objc
@@ -14462,12 +14479,18 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
         }
         let publicAddress = proto.publicAddress
 
+        guard proto.hasSignature else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: signature")
+        }
+        let signature = proto.signature
+
         // MARK: - Begin Validation Logic for SSKProtoPaymentAddressMobileCoin -
 
         // MARK: - End Validation Logic for SSKProtoPaymentAddressMobileCoin -
 
         self.init(proto: proto,
-                  publicAddress: publicAddress)
+                  publicAddress: publicAddress,
+                  signature: signature)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

@@ -671,6 +671,8 @@ message PaymentAddress {
   message MobileCoin {
     // @required
     optional bytes publicAddress = 1;
+    // @required
+    optional bytes signature     = 2;
   }
   
   // oneof commented out

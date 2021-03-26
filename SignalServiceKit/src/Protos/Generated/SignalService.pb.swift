@@ -3962,11 +3962,22 @@ struct SignalServiceProtos_PaymentAddress {
     /// Clears the value of `publicAddress`. Subsequent reads from it will return its default value.
     mutating func clearPublicAddress() {self._publicAddress = nil}
 
+    /// @required
+    var signature: Data {
+      get {return _signature ?? Data()}
+      set {_signature = newValue}
+    }
+    /// Returns true if `signature` has been explicitly set.
+    var hasSignature: Bool {return self._signature != nil}
+    /// Clears the value of `signature`. Subsequent reads from it will return its default value.
+    mutating func clearSignature() {self._signature = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _publicAddress: Data?
+    fileprivate var _signature: Data?
   }
 
   init() {}
@@ -7795,7 +7806,8 @@ extension SignalServiceProtos_PaymentAddress: SwiftProtobuf.Message, SwiftProtob
 extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_PaymentAddress.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicAddress")
+    1: .same(proto: "publicAddress"),
+    2: .same(proto: "signature")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7805,6 +7817,7 @@ extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, 
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self._publicAddress) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._signature) }()
       default: break
       }
     }
@@ -7814,11 +7827,15 @@ extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, 
     if let v = self._publicAddress {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     }
+    if let v = self._signature {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_PaymentAddress.MobileCoin, rhs: SignalServiceProtos_PaymentAddress.MobileCoin) -> Bool {
     if lhs._publicAddress != rhs._publicAddress {return false}
+    if lhs._signature != rhs._signature {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

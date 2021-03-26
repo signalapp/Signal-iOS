@@ -667,6 +667,7 @@ public struct DecryptedProfile: Dependencies {
     public let bio: String?
     public let bioEmoji: String?
     public let paymentAddressData: Data?
+    public let publicIdentityKey: Data
 }
 
 // MARK: -
@@ -717,12 +718,13 @@ public struct FetchedProfile {
             paymentAddressData = OWSUserProfile.decrypt(profileData: paymentAddressEncrypted,
                                                         profileKey: profileKey)
         }
-
+        let publicIdentityKey = profile.identityKey
         return DecryptedProfile(givenName: givenName,
                                 familyName: familyName,
                                 bio: bio,
                                 bioEmoji: bioEmoji,
-                                paymentAddressData: paymentAddressData)
+                                paymentAddressData: paymentAddressData,
+                                publicIdentityKey: publicIdentityKey)
     }
 }
 
@@ -748,9 +750,8 @@ public extension DecryptedProfile {
                 owsFailDebug("Invalid payment address.")
                 return nil
             }
-
             let proto = try SSKProtoPaymentAddress(serializedData: paymentAddressDataWithoutLength)
-            let paymentAddress = try TSPaymentAddress.fromProto(proto)
+            let paymentAddress = try TSPaymentAddress.fromProto(proto, publicIdentityKey: publicIdentityKey)
             return paymentAddress
         } catch {
             owsFailDebug("Error: \(error)")
