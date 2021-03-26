@@ -343,10 +343,14 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
-    public static func getMemberCount(for room: String, on server: String) -> Promise<UInt> {
+    public static func getMemberCount(for room: String, on server: String) -> Promise<UInt64> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "member_count")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let memberCount = json["member_count"] as? UInt else { throw Error.parsingFailed }
+            guard let memberCount = json["member_count"] as? UInt64 else { throw Error.parsingFailed }
+            let storage = SNMessagingKitConfiguration.shared.storage
+            storage.write { transaction in
+                storage.setUserCount(to: memberCount, forV2OpenGroupWithID: "\(server).\(room)", using: transaction)
+            }
             return memberCount
         }
     }

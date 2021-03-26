@@ -241,7 +241,11 @@ extension Storage {
     }
 
     public func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection)
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.setObject(newValue, forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection)
+        transaction.addCompletionQueue(.main) {
+            NotificationCenter.default.post(name: .groupThreadUpdated, object: nil)
+        }
     }
 
     private static let oldOpenGroupCollection = "LokiPublicChatCollection"

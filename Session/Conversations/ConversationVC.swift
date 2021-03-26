@@ -195,6 +195,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if !draft.isEmpty {
             snInputView.text = draft
         }
+        // Update member count if this is a V2 open group
+        if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+            OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
+        }
     }
     
     override func viewDidLayoutSubviews() {

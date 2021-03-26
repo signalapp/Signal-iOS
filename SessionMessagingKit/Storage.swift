@@ -67,7 +67,7 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Open Group Metadata
 
-    func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any)
+    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
     func getIDForMessage(withServerID serverID: UInt64) -> String?
     func setIDForMessage(withServerID serverID: UInt64, to messageID: String, using transaction: Any)
     func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any)
@@ -104,4 +104,6 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func getAllUserOpenGroups() -> [String:OpenGroup]
     func getOpenGroup(for threadID: String) -> OpenGroup?
+    
+    func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any)
 }
