@@ -61,18 +61,45 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
             return handleFailure(error: Error.noAttachment)
         }
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
-        let openGroup = SNMessagingKitConfiguration.shared.storage.getOpenGroup(for: threadID)
-        let server = openGroup?.server ?? FileServerAPI.server
-        // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
-        FileServerAPI.uploadAttachment(stream, with: attachmentID, to: server).done(on: DispatchQueue.global(qos: .userInitiated)) { // Intentionally capture self
-            self.handleSuccess()
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            if let error = error as? Error, case .noAttachment = error {
-                self.handlePermanentFailure(error: error)
-            } else if let error = error as? DotNetAPI.Error, !error.isRetryable {
-                self.handlePermanentFailure(error: error)
-            } else {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
+            // Get the attachment
+            guard let data = try? stream.readDataFromFile() else {
+                SNLog("Couldn't read attachment from disk.")
+                return handleFailure(error: Error.noAttachment)
+            }
+            // Check the file size
+            SNLog("File size: \(data.count) bytes.")
+            if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
+                return handleFailure(error: FileServerAPI.Error.maxFileSizeExceeded)
+            }
+            // Send the request
+            stream.isUploaded = false
+            stream.save()
+            OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { fileID in
+                let downloadURL = "\(v2OpenGroup.server)/files/\(fileID)"
+                stream.serverId = fileID
+                stream.isUploaded = true
+                stream.downloadURL = downloadURL
+                stream.save()
+                self.handleSuccess()
+            }.catch { error in
                 self.handleFailure(error: error)
+            }
+        } else {
+            let openGroup = storage.getOpenGroup(for: threadID)
+            let server = openGroup?.server ?? FileServerAPI.server
+            // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
+            FileServerAPI.uploadAttachment(stream, with: attachmentID, to: server).done(on: DispatchQueue.global(qos: .userInitiated)) { // Intentionally capture self
+                self.handleSuccess()
+            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                if let error = error as? Error, case .noAttachment = error {
+                    self.handlePermanentFailure(error: error)
+                } else if let error = error as? DotNetAPI.Error, !error.isRetryable {
+                    self.handlePermanentFailure(error: error)
+                } else {
+                    self.handleFailure(error: error)
+                }
             }
         }
     }

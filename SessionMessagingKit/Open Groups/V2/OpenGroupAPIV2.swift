@@ -1,7 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
 
-// TODO: Update AttachmentDownloadJob & AttachmentUploadJob for the new API
 // TODO: Show images w/ room suggestions
 // TODO: Distinguish between V1 and V2 open groups in the join open group screen
 
@@ -177,17 +176,17 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     // MARK: File Storage
-    public static func upload(_ file: Data, to room: String, on server: String) -> Promise<String> {
+    public static func upload(_ file: Data, to room: String, on server: String) -> Promise<UInt64> {
         let base64EncodedFile = file.base64EncodedString()
         let parameters = [ "file" : base64EncodedFile ]
         let request = Request(verb: .post, room: room, server: server, endpoint: "files", parameters: parameters)
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-            guard let fileID = json["result"] as? String else { throw Error.parsingFailed }
+            guard let fileID = json["result"] as? UInt64 else { throw Error.parsingFailed }
             return fileID
         }
     }
     
-    public static func download(_ file: String, from room: String, on server: String) -> Promise<Data> {
+    public static func download(_ file: UInt64, from room: String, on server: String) -> Promise<Data> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "files/\(file)")
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
             guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }

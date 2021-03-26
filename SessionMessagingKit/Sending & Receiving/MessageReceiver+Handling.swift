@@ -277,7 +277,7 @@ extension MessageReceiver {
         message.threadID = threadID
         // Start attachment downloads if needed
         attachmentsToDownload.forEach { attachmentID in
-            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID)
+            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID, openGroupID: openGroupID)
             if isMainAppAndActive {
                 JobQueue.shared.add(downloadJob, using: transaction)
             } else {

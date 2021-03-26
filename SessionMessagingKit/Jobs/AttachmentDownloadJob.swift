@@ -5,16 +5,19 @@ import SignalCoreKit
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let attachmentID: String
     public let tsMessageID: String
+    public let openGroupID: String?
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
 
     public enum Error : LocalizedError {
         case noAttachment
+        case invalidURL
 
         public var errorDescription: String? {
             switch self {
             case .noAttachment: return "No such attachment."
+            case .invalidURL: return "Invalid file URL."
             }
         }
     }
@@ -24,9 +27,10 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
-    public init(attachmentID: String, tsMessageID: String) {
+    public init(attachmentID: String, tsMessageID: String, openGroupID: String?) {
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
+        self.openGroupID = openGroupID
     }
 
     // MARK: Coding
@@ -36,6 +40,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
+        self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
@@ -43,6 +48,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
         coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
+        coder.encode(openGroupID, forKey: "openGroupID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
@@ -80,34 +86,59 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 self.handleFailure(error: error)
             }
         }
-        FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            do {
-                try data.write(to: temporaryFilePath, options: .atomic)
-            } catch {
-                return handleFailure(error)
+        if let openGroupID = openGroupID, let v2OpenGroup = storage.getV2OpenGroup(for: LKGroupUtilities.getEncodedOpenGroupID(openGroupID)) {
+            guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
+                return handleFailure(Error.invalidURL)
             }
-            let plaintext: Data
-            if let key = pointer.encryptionKey, let digest = pointer.digest {
+            OpenGroupAPIV2.download(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 do {
-                    plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
+                    try data.write(to: temporaryFilePath, options: .atomic)
                 } catch {
                     return handleFailure(error)
                 }
-            } else {
-                plaintext = data // Open group attachments are unencrypted
+                let stream = TSAttachmentStream(pointer: pointer)
+                do {
+                    try stream.write(data)
+                } catch {
+                    return handleFailure(error)
+                }
+                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+                storage.write { transaction in
+                    storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
+                }
+            }.catch(on: DispatchQueue.global()) { error in
+                handleFailure(error)
             }
-            let stream = TSAttachmentStream(pointer: pointer)
-            do {
-                try stream.write(plaintext)
-            } catch {
-                return handleFailure(error)
+        } else {
+            FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+                do {
+                    try data.write(to: temporaryFilePath, options: .atomic)
+                } catch {
+                    return handleFailure(error)
+                }
+                let plaintext: Data
+                if let key = pointer.encryptionKey, let digest = pointer.digest {
+                    do {
+                        plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
+                    } catch {
+                        return handleFailure(error)
+                    }
+                } else {
+                    plaintext = data // Open group attachments are unencrypted
+                }
+                let stream = TSAttachmentStream(pointer: pointer)
+                do {
+                    try stream.write(plaintext)
+                } catch {
+                    return handleFailure(error)
+                }
+                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+                storage.write { transaction in
+                    storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
+                }
+            }.catch(on: DispatchQueue.global()) { error in
+                handleFailure(error)
             }
-            OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-            storage.write { transaction in
-                storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-            }
-        }.catch(on: DispatchQueue.global()) { error in
-            handleFailure(error)
         }
     }
 
