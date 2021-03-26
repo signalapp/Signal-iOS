@@ -286,6 +286,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
+        print("Ryan: handleKeyboardWillShowNotification")
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if (newHeight > initialKeyboardHeight && initialKeyboardHeight == 0) {
             initialKeyboardHeight = newHeight
@@ -296,12 +297,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
+        // let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
         let newContentOffsetY = self.messagesTableView.contentOffset.y + newHeight - self.messagesTableView.keyboardHeight
-        if shouldScroll {
-            self.messagesTableView.contentOffset.y = newContentOffsetY
-            self.messagesTableView.keyboardHeight = newHeight
-        }
+        self.messagesTableView.contentOffset.y = newContentOffsetY
+        self.messagesTableView.keyboardHeight = newHeight
         self.scrollButton.alpha = 0
     }
     
