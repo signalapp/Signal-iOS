@@ -928,6 +928,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapAddMoneyButton(sender: UIGestureRecognizer) {
+        guard !RemoteConfig.paymentsResetKillSwitch else {
+            // TODO: Need copy.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH",
+                                                                      comment: "Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available."))
+            return
+        }
         let view = PaymentsTransferInViewController()
         let navigationController = OWSNavigationController(rootViewController: view)
         present(navigationController, animated: true, completion: nil)
