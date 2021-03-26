@@ -51,9 +51,10 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
 
-@property (atomic, nullable) NSDate *mutedUntilDate;
+@property (atomic) uint64_t mutedUntilTimestamp;
 @property (nonatomic) int64_t lastInteractionRowId;
 
+@property (nonatomic, nullable) NSDate *mutedUntilDateObsolete;
 @property (nonatomic) uint64_t lastVisibleSortIdObsolete;
 @property (nonatomic) double lastVisibleSortIdOnScreenPercentageObsolete;
 
@@ -114,7 +115,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
-                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+          mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
+             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
     self = [super initWithGrdbId:grdbId
@@ -134,7 +136,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _mentionNotificationMode = mentionNotificationMode;
     _messageDraft = messageDraft;
     _messageDraftBodyRanges = messageDraftBodyRanges;
-    _mutedUntilDate = mutedUntilDate;
+    _mutedUntilDateObsolete = mutedUntilDateObsolete;
+    _mutedUntilTimestamp = mutedUntilTimestamp;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
@@ -733,47 +736,23 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (BOOL)isMuted
 {
-    NSDate *mutedUntilDate = self.mutedUntilDate;
-    NSDate *now = [NSDate date];
-    return (mutedUntilDate != nil &&
-            [mutedUntilDate timeIntervalSinceDate:now] > 0);
+    return self.mutedUntilTimestamp > [NSDate ows_millisecondTimeStamp];
 }
 
-- (UInt64)mutedUntilMilliseconds
+- (nullable NSDate *)mutedUntilDate
 {
-    if (self.mutedUntilDate == nil) {
-        return 0;
-    }
-
-    // The muted until time should never exceed the always muted time.
-    // Note there can be a loss of precision when converting between
-    // milliseconds and NSDate's Double backing. Since we store the
-    // mute time in our database as a Double, this can result in,
-    // for example, LLONG_MAX becoming LLONG_MAX + 1 after a round trip.
-    return MIN(TSThread.alwaysMutedMilliseconds, self.mutedUntilDate.ows_millisecondsSince1970);
+    return self.isMuted ? [NSDate ows_dateWithMillisecondsSince1970:self.mutedUntilTimestamp] : nil;
 }
 
-- (BOOL)isAlwaysMuted
-{
-    return self.mutedUntilMilliseconds == TSThread.alwaysMutedMilliseconds;
-}
-
-+ (UInt64)alwaysMutedMilliseconds
++ (UInt64)alwaysMutedTimestamp
 {
     return LLONG_MAX;
 }
 
-+ (NSDate *)alwaysMutedDate
-{
-    return [NSDate ows_dateWithMillisecondsSince1970:self.alwaysMutedMilliseconds];
-}
-
-- (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 [thread setMutedUntilDate:mutedUntilDate];
-                             }];
+                             block:^(TSThread *thread) { thread.mutedUntilTimestamp = mutedUntilTimestamp; }];
 }
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode

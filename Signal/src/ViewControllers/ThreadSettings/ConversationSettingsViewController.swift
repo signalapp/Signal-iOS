@@ -774,7 +774,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
                 ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_UNMUTE_ACTION",
                                                            comment: "Label for button to unmute a thread."),
                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "unmute")) { [weak self] _ in
-                                    self?.setThreadMutedUntilDate(nil)
+                                    self?.setThreadMutedUntilTimestamp(0)
             }
             actionSheet.addAction(action)
         } else {
@@ -828,7 +828,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION",
                                                                              comment: "Label for button to mute a thread forever."),
                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "mute_always")) { [weak self] _ in
-                self?.setThreadMutedUntilDate(TSThread.alwaysMutedDate)
+                self?.setThreadMutedUntilTimestamp(TSThread.alwaysMutedTimestamp)
             })
         }
 
@@ -848,12 +848,12 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Couldn't modify date.")
             return
         }
-        self.setThreadMutedUntilDate(mutedUntilDate)
+        self.setThreadMutedUntilTimestamp(mutedUntilDate.ows_millisecondsSince1970)
     }
 
-    private func setThreadMutedUntilDate(_ value: Date?) {
+    private func setThreadMutedUntilTimestamp(_ value: UInt64) {
         databaseStorage.write { transaction in
-            self.thread.updateWithMuted(until: value, transaction: transaction)
+            self.thread.updateWithMuted(untilTimestamp: value, transaction: transaction)
         }
 
         updateTableContents()

@@ -34,6 +34,7 @@ CREATE
             ,"lastVisibleSortId" INTEGER NOT NULL DEFAULT 0
             ,"messageDraftBodyRanges" BLOB
             ,"mentionNotificationMode" INTEGER NOT NULL DEFAULT 0
+            ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

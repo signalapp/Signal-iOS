@@ -338,7 +338,7 @@ extension ConversationSettingsViewController {
 
             let now = Date()
 
-            if self.thread.isAlwaysMuted {
+            if self.thread.mutedUntilTimestamp == TSThread.alwaysMutedTimestamp {
                 muteStatus = NSLocalizedString("CONVERSATION_SETTINGS_MUTED_ALWAYS",
                                                comment: "Indicates that this thread is muted forever.")
             } else if let mutedUntilDate = self.thread.mutedUntilDate, mutedUntilDate > now {

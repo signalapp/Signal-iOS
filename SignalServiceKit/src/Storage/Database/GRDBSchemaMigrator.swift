@@ -97,6 +97,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addGroupCallEraIdIndex
         case addProfileBio
         case addWasIdentityVerified
+        case storeMutedUntilDateAsMillisecondTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -134,7 +135,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 19
+    public static let grdbSchemaVersionLatest: UInt = 20
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -926,6 +927,20 @@ public class GRDBSchemaMigrator: NSObject {
                 }
 
                 try db.execute(sql: "UPDATE model_TSInteraction SET wasIdentityVerified = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.storeMutedUntilDateAsMillisecondTimestamp.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSThread") { table in
+                    table.add(column: "mutedUntilTimestamp", .integer).notNull().defaults(to: 0)
+                }
+
+                // Convert any existing mutedUntilDate (seconds) into mutedUntilTimestamp (milliseconds)
+                try db.execute(sql: "UPDATE model_TSThread SET mutedUntilTimestamp = CAST(mutedUntilDate * 1000 AS INT) WHERE mutedUntilDate IS NOT NULL")
+                try db.execute(sql: "UPDATE model_TSThread SET mutedUntilDate = NULL")
             } catch {
                 owsFail("Error: \(error)")
             }

@@ -43,19 +43,19 @@
 		"SSKJobRecord.sortId": "id"
 	},
 	"class_cache_get_code": {
-		"InstalledSticker": "SSKEnvironment.shared.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
-		"TSThread": "SSKEnvironment.shared.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
-		"TSInteraction": "SSKEnvironment.shared.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
-		"TSAttachment": "SSKEnvironment.shared.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
+		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
+		"TSThread": "Self.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
+		"TSInteraction": "Self.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
+		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
 	},
 	"class_cache_set_code": {
-		"InstalledSticker": "SSKEnvironment.shared.modelReadCaches.installedStickerCache.didReadInstalledSticker",
-		"TSThread": "SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread",
-		"TSInteraction": "SSKEnvironment.shared.modelReadCaches.interactionReadCache.didReadInteraction",
-		"TSAttachment": "SSKEnvironment.shared.modelReadCaches.attachmentReadCache.didReadAttachment",
-		"SignalRecipient": "SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient",
-		"SignalAccount": "SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.didReadSignalAccount",
-		"OWSUserProfile": "SSKEnvironment.shared.modelReadCaches.userProfileReadCache.didReadUserProfile"
+		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.didReadInstalledSticker",
+		"TSThread": "Self.modelReadCaches.threadReadCache.didReadThread",
+		"TSInteraction": "Self.modelReadCaches.interactionReadCache.didReadInteraction",
+		"TSAttachment": "Self.modelReadCaches.attachmentReadCache.didReadAttachment",
+		"SignalRecipient": "Self.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient",
+		"SignalAccount": "Self.modelReadCaches.signalAccountReadCache.didReadSignalAccount",
+		"OWSUserProfile": "Self.modelReadCaches.userProfileReadCache.didReadUserProfile"
 	},
 	"class_to_skip_serialization": [
 		"OWSContactOffersInteraction",
@@ -117,10 +117,12 @@
 	"custom_column_names": {
 		"TSInteraction.uniqueThreadId": "threadUniqueId",
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",
-		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage"
+		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage",
+		"TSThread.mutedUntilDateObsolete": "mutedUntilDate"
 	},
 	"renamed_column_names": {
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",
-		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage"
+		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage",
+		"TSThread.mutedUntilDateObsolete": "mutedUntilDate"
 	}
 }
