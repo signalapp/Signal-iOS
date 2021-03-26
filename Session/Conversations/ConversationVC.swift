@@ -286,7 +286,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
-        print("Ryan: handleKeyboardWillShowNotification")
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if (newHeight > initialKeyboardHeight && initialKeyboardHeight == 0) {
             initialKeyboardHeight = newHeight
