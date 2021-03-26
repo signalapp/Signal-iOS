@@ -5,7 +5,6 @@ import SignalCoreKit
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let attachmentID: String
     public let tsMessageID: String
-    public let openGroupID: String?
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
@@ -27,10 +26,9 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
-    public init(attachmentID: String, tsMessageID: String, openGroupID: String?) {
+    public init(attachmentID: String, tsMessageID: String) {
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
-        self.openGroupID = openGroupID
     }
 
     // MARK: Coding
@@ -40,7 +38,6 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
-        self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
@@ -48,7 +45,6 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
         coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
-        coder.encode(openGroupID, forKey: "openGroupID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
@@ -86,7 +82,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 self.handleFailure(error: error)
             }
         }
-        if let openGroupID = openGroupID, let v2OpenGroup = storage.getV2OpenGroup(for: LKGroupUtilities.getEncodedOpenGroupID(openGroupID)) {
+        if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID), let v2OpenGroup = storage.getV2OpenGroup(for: tsMessage.uniqueThreadId) {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
