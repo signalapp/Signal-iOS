@@ -214,6 +214,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
+@property (atomic, readonly) UInt64 mutedUntilMilliseconds;
+
+@property (atomic, readonly) BOOL isAlwaysMuted;
+@property (class, nonatomic, readonly) UInt64 alwaysMutedMilliseconds;
+@property (class, nonatomic, readonly) NSDate *alwaysMutedDate;
 
 @property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
 

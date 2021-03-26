@@ -739,6 +739,35 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             [mutedUntilDate timeIntervalSinceDate:now] > 0);
 }
 
+- (UInt64)mutedUntilMilliseconds
+{
+    if (self.mutedUntilDate == nil) {
+        return 0;
+    }
+
+    // The muted until time should never exceed the always muted time.
+    // Note there can be a loss of precision when converting between
+    // milliseconds and NSDate's Double backing. Since we store the
+    // mute time in our database as a Double, this can result in,
+    // for example, LLONG_MAX becoming LLONG_MAX + 1 after a round trip.
+    return MIN(TSThread.alwaysMutedMilliseconds, self.mutedUntilDate.ows_millisecondsSince1970);
+}
+
+- (BOOL)isAlwaysMuted
+{
+    return self.mutedUntilMilliseconds == TSThread.alwaysMutedMilliseconds;
+}
+
++ (UInt64)alwaysMutedMilliseconds
+{
+    return LLONG_MAX;
+}
+
++ (NSDate *)alwaysMutedDate
+{
+    return [NSDate ows_dateWithMillisecondsSince1970:self.alwaysMutedMilliseconds];
+}
+
 - (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
