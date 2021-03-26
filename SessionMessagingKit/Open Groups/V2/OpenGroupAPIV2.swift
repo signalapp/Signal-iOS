@@ -1,6 +1,10 @@
 import PromiseKit
 import SessionSnodeKit
 
+// TODO: Update AttachmentDownloadJob & AttachmentUploadJob for the new API
+// TODO: Show images w/ room suggestions
+// TODO: Distinguish between V1 and V2 open groups in the join open group screen
+
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
