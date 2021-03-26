@@ -4966,6 +4966,9 @@
 /* Footer string for the status section of the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
 
+/* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
 
