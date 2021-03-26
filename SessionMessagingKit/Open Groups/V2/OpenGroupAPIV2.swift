@@ -2,7 +2,6 @@ import PromiseKit
 import SessionSnodeKit
 
 // TODO: Message signature validation
-// TODO: Token expiration
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
@@ -97,7 +96,19 @@ public final class OpenGroupAPIV2 : NSObject {
             if request.isAuthRequired, let room = request.room { // Because auth happens on a per-room basis, we need both to make an authenticated request
                 return getAuthToken(for: room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
                     tsRequest.setValue(authToken, forHTTPHeaderField: "Authorization")
-                    return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
+                    let promise = OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
+                    promise.catch(on: DispatchQueue.global(qos: .default)) { error in
+                        // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
+                        // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
+                        // we provided a valid token but it doesn't have a high enough permission level for the route in question.
+                        if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 {
+                            let storage = SNMessagingKitConfiguration.shared.storage
+                            storage.write { transaction in
+                                storage.removeAuthToken(for: room, on: request.server, using: transaction)
+                            }
+                        }
+                    }
+                    return promise
                 }
             } else {
                 return OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
