@@ -39,20 +39,6 @@ extension String {
     }
 }
 
-extension CGImage {
-    fileprivate var hasAlpha: Bool {
-        switch self.alphaInfo {
-        case .none, .noneSkipFirst, .noneSkipLast:
-            return false
-        case .first, .last, .premultipliedFirst, .premultipliedLast, .alphaOnly:
-            return true
-        @unknown default:
-            // better safe than sorry
-            return true
-        }
-    }
-}
-
 extension SignalAttachmentError: LocalizedError {
     public var errorDescription: String? {
         switch self {
@@ -900,7 +886,13 @@ public class SignalAttachment: NSObject {
             let dataUTI: CFString
             let dataMIMEType: String
             let imageProperties: CFDictionary?
-            if cgImage.hasAlpha {
+
+            // We convert everything that's not sticker-like to jpg, because
+            // often images with alpha channels don't actually have any
+            // transparent pixels (all screenshots fall into this bucket)
+            // and there is not a simple, performant way, to check if there
+            // are any transparent pixels in an image.
+            if dataSource.hasStickerLikeProperties {
                 dataFileExtension = "png"
                 dataUTI = kUTTypePNG
                 dataMIMEType = OWSMimeTypeImagePng
