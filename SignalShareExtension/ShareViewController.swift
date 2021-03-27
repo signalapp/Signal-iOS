@@ -58,20 +58,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        // If we need to migrate YDB-to-GRDB, show an error view and abort.
-        guard StorageCoordinator.isReadyForShareExtension else {
-            showNotReadyView()
-            return
-        }
-
-        // There may be database migrations that only the main app can perform.
-        // If so, we just want to show an error view and abort.
-        isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
-        guard isReadyForAppExtensions else {
-            showNotReadyView()
-            return
-        }
-
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
             SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()

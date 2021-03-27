@@ -337,8 +337,11 @@ extension ConversationSettingsViewController {
                                                comment: "Indicates that the current thread is not muted.")
 
             let now = Date()
-            if let mutedUntilDate = self.thread.mutedUntilDate,
-                mutedUntilDate > now {
+
+            if self.thread.mutedUntilTimestamp == TSThread.alwaysMutedTimestamp {
+                muteStatus = NSLocalizedString("CONVERSATION_SETTINGS_MUTED_ALWAYS",
+                                               comment: "Indicates that this thread is muted forever.")
+            } else if let mutedUntilDate = self.thread.mutedUntilDate, mutedUntilDate > now {
                 let calendar = Calendar.current
                 let muteUntilComponents = calendar.dateComponents([.year, .month, .day], from: mutedUntilDate)
                 let nowComponents = calendar.dateComponents([.year, .month, .day], from: now)

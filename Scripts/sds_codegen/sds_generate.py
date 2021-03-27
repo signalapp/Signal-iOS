@@ -444,7 +444,6 @@ class TypeInfo:
         elif self._objc_type == 'NSDate *':
             # Persist dates as NSTimeInterval timeIntervalSince1970.
 
-            value_expr = 'record.%s' % ( property.column_source(), )
             interval_name = '%sInterval' % ( str(value_name), )
             if did_force_optional:
                 serialized_statements = [

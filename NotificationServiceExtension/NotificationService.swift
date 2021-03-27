@@ -96,13 +96,6 @@ class NotificationService: UNNotificationServiceExtension {
 
         Cryptography.seedRandom()
 
-        // We should never receive a non-voip notification on an app that doesn't support
-        // app extensions since we have to inform the service we wanted these, so in theory
-        // this path should never occur. However, the service does have our push token
-        // so it is possible that could change in the future. If it does, do nothing
-        // and don't disturb the user. Messages will be processed when they open the app.
-        guard OWSPreferences.isReadyForAppExtensions() else { return completeSilenty() }
-
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
                 // TODO: calls..

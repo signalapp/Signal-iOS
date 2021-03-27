@@ -89,9 +89,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
-                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+          mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
+             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestamp:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -213,13 +214,19 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL isMuted;
+@property (atomic, readonly) uint64_t mutedUntilTimestamp;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
+@property (nonatomic, readonly, nullable) NSDate *mutedUntilDateObsolete;
+
+@property (class, nonatomic, readonly) UInt64 alwaysMutedTimestamp;
 
 @property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+                 updateStorageService:(BOOL)updateStorageService
+                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                               transaction:(SDSAnyWriteTransaction *)transaction

@@ -66,7 +66,7 @@ class TSContactThreadSerializer: SDSSerializer {
         let isArchived: Bool = model.isArchived
         let lastInteractionRowId: Int64 = model.lastInteractionRowId
         let messageDraft: String? = model.messageDraft
-        let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDate)
+        let mutedUntilDate: Double? = archiveOptionalDate(model.mutedUntilDateObsolete)
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
         let contactPhoneNumber: String? = model.contactPhoneNumber
         let contactUUID: String? = model.contactUUID
@@ -77,7 +77,8 @@ class TSContactThreadSerializer: SDSSerializer {
         let lastVisibleSortId: UInt64 = model.lastVisibleSortIdObsolete
         let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
         let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
+        let mutedUntilTimestamp: UInt64 = model.mutedUntilTimestamp
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp)
     }
 }

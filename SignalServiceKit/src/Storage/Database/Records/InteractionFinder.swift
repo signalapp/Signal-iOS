@@ -549,8 +549,8 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         INNER JOIN \(ThreadRecord.databaseTableName) AS thread
         ON \(interactionColumn: .threadUniqueId) = thread.\(threadColumn: .uniqueId)
         AND (
-            thread.\(threadColumn: .mutedUntilDate) <= strftime('%s','now')
-            OR thread.\(threadColumn: .mutedUntilDate) IS NULL
+            thread.\(threadColumn: .mutedUntilTimestamp) <= strftime('%s','now') * 1000
+            OR thread.\(threadColumn: .mutedUntilTimestamp) = 0
         )
         """
     }()

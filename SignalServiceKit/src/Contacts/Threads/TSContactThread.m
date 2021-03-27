@@ -51,7 +51,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
-                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+          mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
+             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
                      contactUUID:(nullable NSString *)contactUUID
@@ -69,7 +70,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
            mentionNotificationMode:mentionNotificationMode
                       messageDraft:messageDraft
             messageDraftBodyRanges:messageDraftBodyRanges
-                    mutedUntilDate:mutedUntilDate
+            mutedUntilDateObsolete:mutedUntilDateObsolete
+               mutedUntilTimestamp:mutedUntilTimestamp
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {

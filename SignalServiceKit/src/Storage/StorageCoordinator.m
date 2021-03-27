@@ -117,13 +117,6 @@ NSString *NSStringForDataStore(DataStore value)
     return DataStoreGrdb;
 }
 
-+ (BOOL)isReadyForShareExtension
-{
-    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdb);
-
-    return true;
-}
-
 + (void)showGRDBMigrationNotification
 {
     static dispatch_once_t onceToken;

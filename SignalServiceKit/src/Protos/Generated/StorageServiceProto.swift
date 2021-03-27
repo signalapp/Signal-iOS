@@ -1267,6 +1267,9 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if hasMutedUntilTimestamp {
+            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1367,6 +1370,10 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
 
         public mutating func setMarkedUnread(_ valueParam: Bool) {
             proto.markedUnread = valueParam
+        }
+
+        public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
+            proto.mutedUntilTimestamp = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -1497,6 +1504,13 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return proto.markedUnread
     }
     public var hasMarkedUnread: Bool {
+        return true
+    }
+
+    public var mutedUntilTimestamp: UInt64 {
+        return proto.mutedUntilTimestamp
+    }
+    public var hasMutedUntilTimestamp: Bool {
         return true
     }
 
@@ -1635,6 +1649,9 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if hasMutedUntilTimestamp {
+            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1676,6 +1693,10 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
 
         public mutating func setMarkedUnread(_ valueParam: Bool) {
             proto.markedUnread = valueParam
+        }
+
+        public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
+            proto.mutedUntilTimestamp = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -1720,6 +1741,13 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
         return proto.markedUnread
     }
     public var hasMarkedUnread: Bool {
+        return true
+    }
+
+    public var mutedUntilTimestamp: UInt64 {
+        return proto.mutedUntilTimestamp
+    }
+    public var hasMutedUntilTimestamp: Bool {
         return true
     }
 
@@ -1813,6 +1841,9 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if hasMutedUntilTimestamp {
+            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1854,6 +1885,10 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
 
         public mutating func setMarkedUnread(_ valueParam: Bool) {
             proto.markedUnread = valueParam
+        }
+
+        public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
+            proto.mutedUntilTimestamp = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -1898,6 +1933,13 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return proto.markedUnread
     }
     public var hasMarkedUnread: Bool {
+        return true
+    }
+
+    public var mutedUntilTimestamp: UInt64 {
+        return proto.mutedUntilTimestamp
+    }
+    public var hasMutedUntilTimestamp: Bool {
         return true
     }
 
