@@ -35,15 +35,17 @@ public class MessageFetcherJob: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            // Fetch messages as soon as possible after launching. In particular, when
-            // launching from the background, without this, we end up waiting some extra
-            // seconds before receiving an actionable push notification.
-            if Self.tsAccountManager.isRegistered {
-                firstly(on: .global()) {
-                    self.run()
-                }.catch(on: .global()) { error in
-                    owsFailDebugUnlessNetworkFailure(error)
+        if CurrentAppContext().shouldProcessIncomingMessages {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                // Fetch messages as soon as possible after launching. In particular, when
+                // launching from the background, without this, we end up waiting some extra
+                // seconds before receiving an actionable push notification.
+                if Self.tsAccountManager.isRegistered {
+                    firstly(on: .global()) {
+                        self.run()
+                    }.catch(on: .global()) { error in
+                        owsFailDebugUnlessNetworkFailure(error)
+                    }
                 }
             }
         }
