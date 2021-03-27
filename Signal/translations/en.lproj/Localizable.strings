@@ -832,11 +832,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
 
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Mute always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "Mute for eight hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
@@ -845,16 +848,16 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 day";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 hour";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 minute";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 week";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";

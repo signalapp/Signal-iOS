@@ -767,7 +767,12 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     func showMuteUnmuteActionSheet() {
-        let actionSheet = ActionSheetController()
+        let actionSheet = ActionSheetController(
+            message: thread.isMuted ? nil : NSLocalizedString(
+                "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
+                comment: "Title for the mute action sheet"
+            )
+        )
 
         if thread.isMuted {
             let action =
