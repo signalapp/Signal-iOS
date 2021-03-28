@@ -211,8 +211,15 @@
 		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
-		3474C4DE260E0B1D006723D2 /* MobileCoinAPI+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C4DD260E0B1C006723D2 /* MobileCoinAPI+Configuration.swift */; };
-		3474C54B260E4D06006723D2 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C543260E4D06006723D2 /* PaymentsFormat.swift */; };
+		3474C56126111588006723D2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56626111605006723D2 /* PaymentsReconciliation.swift */; };
+		3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56726111605006723D2 /* PaymentsProcessor.swift */; };
+		3474C57026111605006723D2 /* PaymentsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56826111605006723D2 /* PaymentsUI.swift */; };
+		3474C57126111605006723D2 /* MobileCoinAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56926111605006723D2 /* MobileCoinAPI.swift */; };
+		3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56A26111605006723D2 /* PaymentsFormat.swift */; };
+		3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56B26111605006723D2 /* PaymentsImpl.swift */; };
+		3474C57426111605006723D2 /* MobileCoinAPI+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */; };
+		3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -1226,8 +1233,14 @@
 		3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliationTest.swift; sourceTree = "<group>"; };
 		347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AvatarDownloadOperation.swift; sourceTree = "<group>"; };
 		347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BottomBar.swift"; sourceTree = "<group>"; };
-		3474C4DD260E0B1C006723D2 /* MobileCoinAPI+Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MobileCoinAPI+Configuration.swift"; sourceTree = "<group>"; };
-		3474C543260E4D06006723D2 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
+		3474C56626111605006723D2 /* PaymentsReconciliation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliation.swift; sourceTree = "<group>"; };
+		3474C56726111605006723D2 /* PaymentsProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsProcessor.swift; sourceTree = "<group>"; };
+		3474C56826111605006723D2 /* PaymentsUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsUI.swift; sourceTree = "<group>"; };
+		3474C56926111605006723D2 /* MobileCoinAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinAPI.swift; sourceTree = "<group>"; };
+		3474C56A26111605006723D2 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
+		3474C56B26111605006723D2 /* PaymentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsImpl.swift; sourceTree = "<group>"; };
+		3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MobileCoinAPI+Configuration.swift"; sourceTree = "<group>"; };
+		3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsCurrenciesImpl.swift; sourceTree = "<group>"; };
 		3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+SignalMessaging.swift"; sourceTree = "<group>"; };
 		34784592237C4813000D1CAA /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2607,17 +2620,17 @@
 			path = Payments;
 			sourceTree = "<group>";
 		};
-		3474C53E260E4D06006723D2 /* Payments */ = {
+		3474C56526111605006723D2 /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				3474C542260E4D06006723D2 /* MobileCoinAPI.swift */,
-				3474C545260E4D06006723D2 /* MobileCoinAPI+Configuration.swift */,
-				3474C546260E4D06006723D2 /* PaymentsCurrenciesImpl.swift */,
-				3474C543260E4D06006723D2 /* PaymentsFormat.swift */,
-				3474C544260E4D06006723D2 /* PaymentsImpl.swift */,
-				3474C540260E4D06006723D2 /* PaymentsProcessor.swift */,
-				3474C53F260E4D06006723D2 /* PaymentsReconciliation.swift */,
-				3474C541260E4D06006723D2 /* PaymentsUI.swift */,
+				3474C56926111605006723D2 /* MobileCoinAPI.swift */,
+				3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */,
+				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
+				3474C56A26111605006723D2 /* PaymentsFormat.swift */,
+				3474C56B26111605006723D2 /* PaymentsImpl.swift */,
+				3474C56726111605006723D2 /* PaymentsProcessor.swift */,
+				3474C56626111605006723D2 /* PaymentsReconciliation.swift */,
+				3474C56826111605006723D2 /* PaymentsUI.swift */,
 			);
 			path = Payments;
 			sourceTree = "<group>";
@@ -3107,7 +3120,7 @@
 				34BB3C5723C6644B001651FC /* groups */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
-				3498AC992518E9A600B1F315 /* Payments */,
+				3474C56526111605006723D2 /* Payments */,
 				346129B01FD1F7E800532771 /* profiles */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -5094,9 +5107,7 @@
 				8861DED02445349C00BB4145 /* LinkingTextView.swift in Sources */,
 				88F15F9925AD4A9B008ABD47 /* AttachmentMultisend.swift in Sources */,
 				340872C82239563500CB25B0 /* ApprovalRailCellView.swift in Sources */,
-				3474C548260E4D06006723D2 /* PaymentsProcessor.swift in Sources */,
 				32A3325025E0856300E93B7A /* NameCollisionFinder.swift in Sources */,
-				3474C549260E4D06006723D2 /* PaymentsUI.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */,
@@ -5132,6 +5143,7 @@
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
+				3474C57026111605006723D2 /* PaymentsUI.swift in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
 				34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */,
 				346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */,
@@ -5149,14 +5161,13 @@
 				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */,
+				3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				4C0387532339B3220062D293 /* UIColor+OWS.swift in Sources */,
 				88D5887824846A7F00DC9AB6 /* InputAccessoryViewPlaceholder.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsAdaptee.swift in Sources */,
 				886BB3D825BA871B00079781 /* Wallpaper+SolidColor.swift in Sources */,
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
-				3474C547260E4D06006723D2 /* PaymentsReconciliation.swift in Sources */,
-				3474C54D260E4D06006723D2 /* MobileCoinAPI+Configuration.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34123C5E239AA3E900782788 /* TooltipView.swift in Sources */,
 				888B6D5225B25D2800E2A662 /* Wallpaper+Gradient.swift in Sources */,
@@ -5188,11 +5199,11 @@
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */,
 				3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */,
-				3474C54B260E4D06006723D2 /* PaymentsFormat.swift in Sources */,
 				8860CC1925084AD500A4D18E /* LinkPreviewView.swift in Sources */,
 				34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */,
 				451F8A341FD710C3005CB9DA /* FullTextSearcher.swift in Sources */,
 				34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */,
+				3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */,
 				34AC0A10211B39EA00997B47 /* TappableView.swift in Sources */,
 				3426A372256320420036407F /* CVText.swift in Sources */,
 				34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */,
@@ -5213,6 +5224,7 @@
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
 				8860CC212508507F00A4D18E /* GroupLinkPreview.swift in Sources */,
 				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
+				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				34BBC851220B8EEF00857249 /* ImageEditorCanvasView.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */,
@@ -5224,6 +5236,7 @@
 				4C295880233AE23000AAB2AA /* Theme+OWS.swift in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,
 				34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
+				3474C57426111605006723D2 /* MobileCoinAPI+Configuration.swift in Sources */,
 				340872BF22393CFA00CB25B0 /* UIGestureRecognizer+OWS.swift in Sources */,
 				88139CD6236290090003B264 /* ActionSheetController.swift in Sources */,
 				34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */,
@@ -5238,19 +5251,21 @@
 				34AC0A19211B39EA00997B47 /* OWSActionSheets.swift in Sources */,
 				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
+				3474C57126111605006723D2 /* MobileCoinAPI.swift in Sources */,
 				34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */,
 				889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
+				3474C56126111588006723D2 /* (null) in Sources */,
+				3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */,
 				34AC0A18211B39EA00997B47 /* TappableStackView.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				349C3637233D198300D52012 /* LaunchJobs.swift in Sources */,
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				8827004C232071C500F01C46 /* OWSWindow.swift in Sources */,
 				8809CE8122F534B200D38867 /* CustomKeyboard.swift in Sources */,
-				3474C54A260E4D06006723D2 /* MobileCoinAPI.swift in Sources */,
 				4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */,
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
 				4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */,
@@ -5265,9 +5280,9 @@
 				88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */,
 				34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
+				3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */,
 				8860CC1A25084AFB00A4D18E /* OWSBubbleView.m in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
-				3474C54C260E4D06006723D2 /* PaymentsImpl.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
 				4C9C50FE22F36FA50054A33F /* OutboundMessage+OWS.swift in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
@@ -5284,7 +5299,6 @@
 				886BB3D725BA871B00079781 /* Wallpaper.swift in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
 				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
-				3474C54E260E4D06006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				3464451122B7F97100A957B1 /* DateUtil.m in Sources */,
 				4C38E501230374D700E464B9 /* UIViewController+Permissions.m in Sources */,
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
