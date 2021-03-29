@@ -85,8 +85,9 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        cell.showRightSeparator = (indexPath.row % 2 != 0) || (indexPath.row % 2 == 0 && indexPath.row == rooms.count - 1)
-        cell.showBottomSeparator = (indexPath.row >= rooms.count - 2)
+        let roomCount = min(rooms.count, 8)
+        cell.showRightSeparator = (indexPath.row % 2 != 0) || (indexPath.row % 2 == 0 && indexPath.row == roomCount - 1)
+        cell.showBottomSeparator = (indexPath.row >= roomCount - 2)
         cell.room = rooms[indexPath.item]
         return cell
     }
@@ -143,8 +144,8 @@ extension OpenGroupSuggestionGrid {
             stackView.axis = .horizontal
             stackView.spacing = Values.smallSpacing
             addSubview(stackView)
-            stackView.center(in: self)
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Values.smallSpacing).isActive = true
+            stackView.center(.vertical, in: self)
+            stackView.pin(.leading, to: .leading, of: self, withInset: Values.smallSpacing)
             trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: Values.smallSpacing).isActive = true
             setUpSeparators()
         }
