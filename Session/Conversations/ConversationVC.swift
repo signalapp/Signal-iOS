@@ -28,6 +28,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var didFinishInitialLayout = false
     var isLoadingMore = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
+    var baselineKeyboardHeight: CGFloat = 0
 
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
@@ -53,9 +54,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var lastPageTop: CGFloat {
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
-    
-    var lastContentOffsetY: CGFloat? = nil
-    var initialKeyboardHeight: CGFloat = 0
     
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
     
@@ -291,8 +289,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        if (newHeight > initialKeyboardHeight && initialKeyboardHeight == 0) {
-            initialKeyboardHeight = newHeight
+        if (newHeight > 0 && baselineKeyboardHeight == 0) {
+            baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
         if !didConstrainScrollButton {
@@ -300,7 +298,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        // let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
         let newContentOffsetY = self.messagesTableView.contentOffset.y + newHeight - self.messagesTableView.keyboardHeight
         self.messagesTableView.contentOffset.y = newContentOffsetY
         self.messagesTableView.keyboardHeight = newHeight
@@ -308,8 +305,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.initialKeyboardHeight)
-        self.messagesTableView.keyboardHeight = self.initialKeyboardHeight
+        self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.baselineKeyboardHeight)
+        self.messagesTableView.keyboardHeight = self.baselineKeyboardHeight
         self.scrollButton.alpha = self.getScrollButtonOpacity()
         self.unreadCountView.alpha = self.scrollButton.alpha
     }
@@ -349,10 +346,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: true)
             } else {
-                // This is a dummy solution for the problem that after an attachment is sent without the keyboard showing before,
-                // once the keyboard shows, the tableview's contentOffset can be wrong and the latest message won't completely show.
-                // This is caused by the main run loop calls some tableview update method and set the contentOffset back to the previous
-                // value when the keyboard is showing.
+                // This is a workaround for an issue where after an attachment is sent without the keyboard showing before,
+                // once the keyboard shows, the table view's content offset can be wrong and the last message won't completely show.
+                // This is caused by the main run loop calling some table view update method that sets the content offset back to
+                // the previous value when the keyboard is shown.
                 self.messagesTableView.reloadData()
             }
         }
@@ -461,9 +458,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if (scrollView == self.messagesTableView) {
-            lastContentOffsetY = scrollView.contentOffset.y
-        }
         scrollButton.alpha = getScrollButtonOpacity()
         unreadCountView.alpha = scrollButton.alpha
         autoLoadMoreIfNeeded()
