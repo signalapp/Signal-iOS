@@ -298,8 +298,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        let newContentOffsetY = self.messagesTableView.contentOffset.y + newHeight - self.messagesTableView.keyboardHeight
-        self.messagesTableView.contentOffset.y = newContentOffsetY
+        let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
+        self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
         self.messagesTableView.keyboardHeight = newHeight
         self.scrollButton.alpha = 0
     }
