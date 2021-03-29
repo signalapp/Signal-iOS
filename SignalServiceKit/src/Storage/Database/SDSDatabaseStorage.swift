@@ -112,7 +112,10 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
+    public func reopenGRDBStorage(
+        directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary,
+        completion: @escaping () -> Void = {}
+    ) {
         let benchSteps = BenchSteps()
 
         // There seems to be a rare issue where at least one reader or writer
@@ -123,7 +126,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = createGrdbStorage()
+        _grdbStorage = createGrdbStorage(directoryMode: directoryMode)
 
         DispatchQueue.main.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
@@ -139,7 +142,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reload() {
+    public func reload(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -147,7 +150,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
-        reopenGRDBStorage {
+        reopenGRDBStorage(directoryMode: directoryMode) {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
             self.grdbStorage.forceUpdateSnapshot()
 
@@ -162,9 +165,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
+    func createGrdbStorage(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir)
+            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir, directoryMode: directoryMode)
         }
     }
 

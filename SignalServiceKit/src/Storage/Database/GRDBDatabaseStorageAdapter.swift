@@ -16,12 +16,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         case primary
         case recovery
         case backup
+        case hotswap
 
         var folderName: String {
             switch self {
             case .primary: return "grdb"
             case .recovery: return "grdb-recovery"
             case .backup: return "grdb-backup"
+            case .hotswap: return "grdb-hotswap"
             }
         }
     }
@@ -31,10 +33,16 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
-    static func databaseFileUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+    public static func databaseFileUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
         let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
+    }
+
+    public static func databaseWalUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
+        OWSFileSystem.ensureDirectoryExists(databaseDir.path)
+        return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
     }
 
     private let databaseUrl: URL
@@ -45,8 +53,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(baseDir: URL) {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+    init(baseDir: URL, directoryMode: DirectoryMode = .primary) {
+        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir, directoryMode: directoryMode)
 
         do {
             // Crash if keychain is inaccessible.
