@@ -129,7 +129,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
         if let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }) {
-            if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string) {
+            if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string), OpenGroupManagerV2.useV2OpenGroups {
                 joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
             } else {
                 // Inputs that should work:
@@ -242,8 +242,13 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
-            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView: UIStackView
+        if OpenGroupManagerV2.useV2OpenGroups {
+            stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
+                UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        } else {
+            stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.vStretchingSpacer(), nextButtonContainer ])
+        }
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)

@@ -4,6 +4,8 @@ import PromiseKit
 public final class OpenGroupManagerV2 : NSObject {
     private var pollers: [String:OpenGroupPollerV2] = [:]
     private var isPolling = false
+    
+    public static var useV2OpenGroups = false
 
     // MARK: Initialization
     @objc public static let shared = OpenGroupManagerV2()
