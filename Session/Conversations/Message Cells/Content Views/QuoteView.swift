@@ -207,6 +207,7 @@ final class QuoteView : UIView {
             let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
             labelStackView.axis = .vertical
             labelStackView.spacing = labelStackViewSpacing
+            labelStackView.distribution = .equalCentering
             labelStackView.set(.width, to: max(bodyLabelSize.width, authorLabelSize.width))
             labelStackView.isLayoutMarginsRelativeArrangement = true
             labelStackView.layoutMargins = UIEdgeInsets(top: labelStackViewVMargin, left: 0, bottom: labelStackViewVMargin, right: 0)
@@ -231,6 +232,7 @@ final class QuoteView : UIView {
         let contentViewHeight: CGFloat
         if hasAttachments {
             contentViewHeight = thumbnailSize + 8 // Add a small amount of spacing above and below the thumbnail
+            bodyLabel.set(.height, to: 18) // Experimentally determined
         } else {
             if let authorLabelHeight = authorLabelHeight { // Group thread
                 contentViewHeight = bodyLabelHeight + (authorLabelHeight + labelStackViewSpacing) + 2 * labelStackViewVMargin
