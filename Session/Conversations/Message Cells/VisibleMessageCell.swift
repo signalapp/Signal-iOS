@@ -561,7 +561,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         switch viewItem.interaction.interactionType() {
         case .outgoingMessage: return screen.width - contactThreadHSpacing - gutterSize
         case .incomingMessage:
-            let leftGutterSize = shouldShowProfilePicture(for: viewItem) ? gutterSize : contactThreadHSpacing
+            let isGroupThread = viewItem.interaction.thread.isGroupThread()
+            let leftGutterSize = isGroupThread ? gutterSize : contactThreadHSpacing
             return screen.width - leftGutterSize - gutterSize
         default: preconditionFailure()
         }
