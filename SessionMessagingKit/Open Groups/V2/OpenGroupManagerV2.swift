@@ -33,17 +33,22 @@ public final class OpenGroupManagerV2 : NSObject {
     // MARK: Adding & Removing
     public func add(room: String, server: String, publicKey: String, using transaction: Any) -> Promise<Void> {
         let storage = Storage.shared
+        // Clear any existing data if needed
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
         storage.removeAuthToken(for: room, on: server, using: transaction)
+        // Store the public key
         storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
         let (promise, seal) = Promise<Void>.pending()
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        transaction.addCompletionQueue(DispatchQueue.global(qos: .default)) {
-            OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .default)) { info in
+        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
+            // Get the group info
+            OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in
+                // Create the open group model and the thread
                 let openGroup = OpenGroupV2(server: server, room: room, name: info.name, publicKey: publicKey, imageID: info.imageID)
                 let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
                 let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
+                // Store everything
                 storage.write(with: { transaction in
                     let transaction = transaction as! YapDatabaseReadWriteTransaction
                     let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
@@ -51,16 +56,29 @@ public final class OpenGroupManagerV2 : NSObject {
                     thread.save(with: transaction)
                     storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
                 }, completion: {
+                    // Stop any existing poller if needed
                     if let poller = OpenGroupManagerV2.shared.pollers[openGroup.id] {
                         poller.stop()
                         OpenGroupManagerV2.shared.pollers[openGroup.id] = nil
                     }
+                    // Start the poller
                     let poller = OpenGroupPollerV2(for: openGroup)
                     poller.startIfNeeded()
                     OpenGroupManagerV2.shared.pollers[openGroup.id] = poller
+                    // Fetch the group image
+                    OpenGroupAPIV2.getGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+                        storage.write { transaction in
+                            // Update the thread
+                            let transaction = transaction as! YapDatabaseReadWriteTransaction
+                            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+                            thread.groupModel.groupImage = UIImage(data: data)
+                            thread.save(with: transaction)
+                        }
+                    }.retainUntilComplete()
+                    // Finish
                     seal.fulfill(())
                 })
-            }.catch(on: DispatchQueue.global(qos: .default)) { error in
+            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                 seal.reject(error)
             }
         }
@@ -68,10 +86,12 @@ public final class OpenGroupManagerV2 : NSObject {
     }
 
     public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+        // Stop the poller if needed
         if let poller = pollers[openGroup.id] {
             poller.stop()
             pollers[openGroup.id] = nil
         }
+        // Remove all data
         var messageIDs: Set<String> = []
         var messageTimestamps: Set<UInt64> = []
         thread.enumerateInteractions(with: transaction) { interaction, _ in
