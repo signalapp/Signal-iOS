@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalClient
 
 @objc
 public protocol TSPaymentBaseModel: AnyObject {
@@ -96,8 +97,8 @@ extension TSPaymentAddress: TSPaymentBaseModel {
         guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair() else {
             throw OWSAssertionError("Missing identityKeyPair")
         }
-        let signatureData = try Ed25519.sign(mobileCoinPublicAddressData, with: identityKeyPair)
-
+        let signatureData = try Self.sign(identityKeyPair: identityKeyPair,
+                                          publicAddressData: mobileCoinPublicAddressData)
         let mobileCoinBuilder = SSKProtoPaymentAddressMobileCoin.builder(publicAddress: mobileCoinPublicAddressData,
                                                                          signature: signatureData)
         let builder = SSKProtoPaymentAddress.builder()
@@ -116,9 +117,9 @@ extension TSPaymentAddress: TSPaymentBaseModel {
               !signatureData.isEmpty else {
             throw PaymentsError.invalidModel
         }
-        guard try Ed25519.verifySignature(signatureData,
-                                          publicKey: publicIdentityKey,
-                                          data: mobileCoinPublicAddressData) else {
+        guard Self.verifySignature(publicIdentityKeyData: publicIdentityKey,
+                                   publicAddressData: mobileCoinPublicAddressData,
+                                   signatureData: signatureData) else {
             owsFailDebug("Signature verification failed.")
             throw PaymentsError.invalidModel
         }
@@ -128,6 +129,24 @@ extension TSPaymentAddress: TSPaymentBaseModel {
             throw PaymentsError.invalidModel
         }
         return instance
+    }
+
+    static func sign(identityKeyPair: ECKeyPair, publicAddressData: Data) throws -> Data {
+        let privateKey: SignalClient.PrivateKey = identityKeyPair.identityKeyPair.privateKey
+        return Data(privateKey.generateSignature(message: publicAddressData))
+    }
+
+    static func verifySignature(publicIdentityKeyData: Data,
+                                publicAddressData: Data,
+                                signatureData: Data) -> Bool {
+        do {
+            let privateKey = try ECPublicKey(keyData: publicIdentityKeyData).key
+            return try privateKey.verifySignature(message: publicAddressData,
+                                                  signature: signatureData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return false
+        }
     }
 }
 

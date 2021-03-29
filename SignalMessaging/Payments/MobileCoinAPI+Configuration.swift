@@ -52,7 +52,7 @@ extension MobileCoinAPI {
         let fogUrl: String
 
         static var signalMainNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.prod.mobilecoinww.com:443"
+            let consensusUrl = "mc://node1.prod.mobilecoinww.com"
             let fogUrl = "fog://service.fog.mob.production.namda.net"
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }

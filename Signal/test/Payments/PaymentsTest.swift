@@ -55,4 +55,18 @@ class PaymentsTest: SignalBaseTest {
         }
         XCTAssertEqual(mcRootEntropy.count, Int(PaymentsConstants.mcRootEntropyLength))
     }
+
+    func test_paymentAddressSigning() {
+        let identityKeyPair = Curve25519.generateKeyPair()
+        let publicAddressData = Randomness.generateRandomBytes(256)
+        let signatureData = try! TSPaymentAddress.sign(identityKeyPair: identityKeyPair,
+                                                       publicAddressData: publicAddressData)
+        XCTAssertTrue(TSPaymentAddress.verifySignature(publicIdentityKeyData: identityKeyPair.publicKey,
+                                                       publicAddressData: publicAddressData,
+                                                       signatureData: signatureData))
+        let fakeSignatureData = Randomness.generateRandomBytes(Int32(signatureData.count))
+        XCTAssertFalse(TSPaymentAddress.verifySignature(publicIdentityKeyData: identityKeyPair.publicKey,
+                                                        publicAddressData: publicAddressData,
+                                                        signatureData: fakeSignatureData))
+    }
 }
