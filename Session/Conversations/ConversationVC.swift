@@ -301,7 +301,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
         self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
         self.messagesTableView.keyboardHeight = newHeight
-        self.scrollButton.alpha = 0
+        if (newHeight > 200) {
+            self.scrollButton.alpha = 0
+        }
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
