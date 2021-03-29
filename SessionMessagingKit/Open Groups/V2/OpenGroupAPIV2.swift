@@ -6,6 +6,7 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
+    private static var requestNewAuthTokenPromise: Promise<String>?
     public static let defaultServer = "https://sessionopengroup.com"
     public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
     public static var getDefaultRoomsPromise: Promise<[Info]>?
@@ -124,15 +125,26 @@ public final class OpenGroupAPIV2 : NSObject {
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
         } else {
-            return requestNewAuthToken(for: room, on: server)
-            .then(on: DispatchQueue.global(qos: .userInitiated)) { claimAuthToken($0, for: room, on: server) }
-            .then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<String> in
-                let (promise, seal) = Promise<String>.pending()
-                storage.write(with: { transaction in
-                    storage.setAuthToken(for: room, on: server, to: authToken, using: transaction)
-                }, completion: {
-                    seal.fulfill(authToken)
-                })
+            if let requestNewAuthTokenPromise = requestNewAuthTokenPromise {
+                return requestNewAuthTokenPromise
+            } else {
+                let promise = requestNewAuthToken(for: room, on: server)
+                .then(on: DispatchQueue.global(qos: .userInitiated)) { claimAuthToken($0, for: room, on: server) }
+                .then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<String> in
+                    let (promise, seal) = Promise<String>.pending()
+                    storage.write(with: { transaction in
+                        storage.setAuthToken(for: room, on: server, to: authToken, using: transaction)
+                    }, completion: {
+                        seal.fulfill(authToken)
+                    })
+                    return promise
+                }
+                promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                    requestNewAuthTokenPromise = nil
+                }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                    requestNewAuthTokenPromise = nil
+                }
+                requestNewAuthTokenPromise = promise
                 return promise
             }
         }
