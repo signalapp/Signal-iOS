@@ -231,17 +231,24 @@ class MobileCoinAPI: Dependencies {
     }
 
     func prepareTransaction(paymentAmount: TSPaymentAmount,
-                            recipientPublicAddress: MobileCoin.PublicAddress) -> Promise<PreparedTransaction> {
+                            recipientPublicAddress: MobileCoin.PublicAddress,
+                            shouldUpdateBalance: Bool) -> Promise<PreparedTransaction> {
         Logger.verbose("")
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
-            // prepareTransaction() will fail if local balance is not yet known.
-            self.getLocalBalance()
-        }.map(on: .global()) { (balance: TSPaymentAmount) -> TSPaymentAmount in
-            Logger.verbose("balance: \(balance.picoMob)")
-            return try self.getEstimatedFee(forPaymentAmount: paymentAmount)
+        return firstly(on: .global()) { () throws -> Promise<Void> in
+            guard shouldUpdateBalance else {
+                return Promise.value(())
+            }
+            return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+                // prepareTransaction() will fail if local balance is not yet known.
+                self.getLocalBalance()
+            }.done(on: .global()) { (balance: TSPaymentAmount) in
+                Logger.verbose("balance: \(balance.picoMob)")
+            }
+        }.map(on: .global()) { () -> TSPaymentAmount in
+            try self.getEstimatedFee(forPaymentAmount: paymentAmount)
         }.then(on: .global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")

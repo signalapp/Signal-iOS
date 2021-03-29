@@ -540,20 +540,25 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper.updateBalanceLabel(balanceLabel)
     }
 
-    private let preparedPaymentCache = AtomicOptional<PreparedPayment>(nil)
+    private let preparedPaymentPromise = AtomicOptional<Promise<PreparedPayment>>(nil)
 
     private func tryToPreparePayment(paymentInfo: PaymentInfo) {
-        firstly(on: .global()) { () -> Promise<PreparedPayment> in
+        let promise: Promise<PreparedPayment> = firstly(on: .global()) { () -> Promise<PreparedPayment> in
             // NOTE: We should not pre-prepare a payment if defragmentation
             // is required.
             Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
-                                                             paymentAmount: paymentInfo.paymentAmount,
-                                                             memoMessage: paymentInfo.memoMessage,
-                                                             paymentRequestModel: paymentInfo.paymentRequestModel,
-                                                             isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                                                             canDefragment: false)
-        }.done(on: .global()) { (preparedPayment: PreparedPayment) in
-            self.preparedPaymentCache.set(preparedPayment)
+                                                      paymentAmount: paymentInfo.paymentAmount,
+                                                      memoMessage: paymentInfo.memoMessage,
+                                                      paymentRequestModel: paymentInfo.paymentRequestModel,
+                                                      isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                                                      canDefragment: false)
+        }
+
+        preparedPaymentPromise.set(promise)
+
+        firstly {
+            promise
+        }.done(on: .global()) { (_: PreparedPayment) in
             Logger.info("Pre-prepared payment ready.")
         }.catch(on: .global()) { error in
             if case PaymentsError.defragmentationRequired = error {
@@ -572,19 +577,27 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             guard let self = self else { return }
 
             firstly(on: .global()) { () -> Promise<PreparedPayment> in
-                if let preparedPayment = self.preparedPaymentCache.get() {
-                    Logger.info("Using pre-prepared payment.")
-                    return Promise.value(preparedPayment)
+                guard let promise = self.preparedPaymentPromise.get() else {
+                    throw OWSAssertionError("Missing preparedPaymentPromise.")
                 }
-                // NOTE: We will always follow this code path if defragmentation
-                // is required.
-                Logger.info("No pre-prepared payment.")
-                return Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
-                                                                 paymentAmount: paymentInfo.paymentAmount,
-                                                                 memoMessage: paymentInfo.memoMessage,
-                                                                 paymentRequestModel: paymentInfo.paymentRequestModel,
-                                                                 isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                                                                 canDefragment: true)
+                return firstly(on: .global()) { () -> Promise<PreparedPayment> in
+                    return promise
+                }.recover(on: .global()) { (error: Error) -> Promise<PreparedPayment> in
+                    if case PaymentsError.defragmentationRequired = error {
+                        // NOTE: We will always follow this code path if defragmentation
+                        // is required.
+                        Logger.info("Defragmentation required.")
+                        return Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
+                                                                         paymentAmount: paymentInfo.paymentAmount,
+                                                                         memoMessage: paymentInfo.memoMessage,
+                                                                         paymentRequestModel: paymentInfo.paymentRequestModel,
+                                                                         isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
+                                                                         canDefragment: true)
+
+                    } else {
+                        throw error
+                    }
+                }
             }.then(on: .global()) { (preparedPayment: PreparedPayment) in
                 Self.paymentsSwift.initiateOutgoingPayment(preparedPayment: preparedPayment)
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in

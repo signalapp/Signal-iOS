@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) MobileCoinPayment *mobileCoin;
 @property (nonatomic) uint64_t mcLedgerBlockIndex;
+@property (nonatomic, nullable) NSData *mcTransactionData;
+@property (nonatomic, nullable) NSData *mcReceiptData;
 
 @end
 
@@ -258,6 +260,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  // Scrub any MC state associated with the failure payment.
                                  paymentModel.mobileCoin = nil;
                                  paymentModel.mcLedgerBlockIndex = 0;
+                                 paymentModel.mcTransactionData = nil;
+                                 paymentModel.mcReceiptData = nil;
                              }];
 }
 

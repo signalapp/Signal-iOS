@@ -853,8 +853,11 @@ public extension PaymentsImpl {
                                                   mobileCoinAPI: mobileCoinAPI,
                                                   canDefragment: canDefragment)
             }.then(on: .global()) { () -> Promise<MobileCoinAPI.PreparedTransaction> in
-                mobileCoinAPI.prepareTransaction(paymentAmount: paymentAmount,
-                                                 recipientPublicAddress: recipientPublicAddress)
+                // prepareTransaction() will fail if local balance is not yet known.
+                let shouldUpdateBalance = self.currentPaymentBalance == nil
+                return mobileCoinAPI.prepareTransaction(paymentAmount: paymentAmount,
+                                                        recipientPublicAddress: recipientPublicAddress,
+                                                        shouldUpdateBalance: shouldUpdateBalance)
             }.map(on: .global()) { (preparedTransaction: MobileCoinAPI.PreparedTransaction) -> PreparedPayment in
                 PreparedPaymentImpl(
                     recipientAddress: recipientAddress,
