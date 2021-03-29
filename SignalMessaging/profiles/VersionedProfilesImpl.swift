@@ -131,7 +131,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                           validBase64Lengths: [80])
 
             let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData,
-                                                              paddedLengths: [553],
+                                                              paddedLengths: [554],
                                                               validBase64Lengths: [776])
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: zkgUuid)

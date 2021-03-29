@@ -418,13 +418,25 @@ extension MobileCoinAPI {
             ]
         }
 
-        static func loadTrustRootCerts() -> [Data] {
-            anchorCertificates_mobileCoin()
+        static func anchorCertificates_signalMainNet() -> [Data] {
+            [
+                Certificates.certificateData(forService: "signal-mainnet", type: "der", certificateBundle: .ssk, verifyDer: true)
+            ]
         }
 
         static func pinConfig(_ config: MobileCoinClient.Config,
                               environment: Environment) throws -> MobileCoinClient.Config {
-            let trustRootCertDatas = loadTrustRootCerts()
+            let trustRootCertDatas: [Data]
+            switch environment {
+            case .signalMainNet:
+                trustRootCertDatas = anchorCertificates_signalMainNet()
+            case .signalTestNet,
+                .mobileCoinAlphaNet,
+                .mobileCoinMobileDev,
+                .mobileCoinTestNet,
+                .mobileCoinMainNet:
+                trustRootCertDatas = anchorCertificates_mobileCoin()
+            }
             guard !trustRootCertDatas.isEmpty else {
                 return config
             }
@@ -509,7 +521,6 @@ extension MobileCoinAPI {
         case .mobileCoinTestNet:
             return Certificates.certificateData(forService: "authority-mobilecoin-testnet", type: "pem", certificateBundle: .ssk)
         case .signalTestNet:
-//            return Certificates.certificateData(forService: "authority-signal-testnet", type: "pem", certificateBundle: .ssk)
             return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoCMq8nnjTq5EEQ4EI7yr" +
                             "ABL9P4y4h1P/h0DepWgXx+w/fywcfRSZINxbaMpvcV3uSJayExrpV1KmaS2wfASe" +
                             "YhSj+rEzAm0XUOw3Q94NOx5A/dOQag/d1SS6/QpF3PQYZTULnRFetmM4yzEnXsXc" +
@@ -522,11 +533,10 @@ extension MobileCoinAPI {
                             "toIFaP+u473Z0hmZdCgAivuiBMMYMqt2V2EIw4IXLASE3roLOYp0p7h0IQHb+lVI" +
                             "uEl0ZmwAI30ZmzgcWc7RBeWD1/zNt55zzhfPRLx/DfDY5Kdp6oFHWMvI2r1/oZkd" +
                             "hjFp7pV6qrl7vOyR5QqmuRkCAwEAAQ==")!
-
         case .mobileCoinMainNet:
             owsFail("TODO: Set this value.")
         case .signalMainNet:
-            owsFail("TODO: Set this value.")
+            return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxaNIOgcoQtq0S64dFVha6rn0hDv/ec+W0cKRdFKygiyp5xuWdW3YKVAkK1PPgSDD2dwmMN/1xcGWrPMqezx1h1xCzbr7HL7XvLyFyoiMB2JYd7aoIuGIbHpCOlpm8ulVnkOX7BNuo0Hi2F0AAHyTPwmtVMt6RZmae1Z/Pl2I06+GgWN6vufV7jcjiLT3yQPsn1kVSj+DYCf3zq+1sCknKIvoRPMdQh9Vi3I/fqNXz00DSB7lt3v5/FQ6sPbjljqdGD/qUl4xKRW+EoDLlAUfzahomQOLXVAlxcws3Ua5cZUhaJi6U5jVfw5Ng2N7FwX/D5oX82r9o3xcFqhWpGnfSxSrAudv1X7WskXomKhUzMl/0exWpcJbdrQWB/qshzi9Et7HEDNY+xEDiwGiikj5f0Lb+QA4mBMlAhY/cmWec8NKi1gf3Dmubh6c3sNteb9OpZ/irA3AfE8jI37K1rvezDI8kbNtmYgvyhfz0lZzRT2WAfffiTe565rJglvKa8rh8eszKk2HC9DyxUb/TcyL/OjGhe2fDYO2t6brAXCqjPZAEkVJq3I30NmnPdE19SQeP7wuaUIb3U7MGxoZC/NuJoxZh8svvZ8cyqVjG+dOQ6/UfrFY0jiswT8AsrfqBis/ZV5EFukZr+zbPtg2MH0H3tSJ14BCLduvc7FY6lAZmOcCAwEAAQ==")!
         }
     }
 
