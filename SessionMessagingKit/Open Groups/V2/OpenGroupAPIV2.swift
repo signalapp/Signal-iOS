@@ -1,15 +1,15 @@
 import PromiseKit
 import SessionSnodeKit
 
-// TODO: Show images w/ room suggestions
-
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    private static var requestNewAuthTokenPromise: Promise<String>?
+    private static var authTokenPromise: Promise<String>?
+    
     public static let defaultServer = "https://sessionopengroup.com"
     public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
-    public static var getDefaultRoomsPromise: Promise<[Info]>?
+    public static var defaultRoomsPromise: Promise<[Info]>?
+    public static var groupImagePromises: [String:Promise<Data>] = [:]
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -125,8 +125,8 @@ public final class OpenGroupAPIV2 : NSObject {
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
         } else {
-            if let requestNewAuthTokenPromise = requestNewAuthTokenPromise {
-                return requestNewAuthTokenPromise
+            if let authTokenPromise = authTokenPromise {
+                return authTokenPromise
             } else {
                 let promise = requestNewAuthToken(for: room, on: server)
                 .then(on: DispatchQueue.global(qos: .userInitiated)) { claimAuthToken($0, for: room, on: server) }
@@ -140,11 +140,11 @@ public final class OpenGroupAPIV2 : NSObject {
                     return promise
                 }
                 promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    requestNewAuthTokenPromise = nil
+                    authTokenPromise = nil
                 }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    requestNewAuthTokenPromise = nil
+                    authTokenPromise = nil
                 }
-                requestNewAuthTokenPromise = promise
+                authTokenPromise = promise
                 return promise
             }
         }
@@ -322,7 +322,7 @@ public final class OpenGroupAPIV2 : NSObject {
         Storage.shared.write(with: { transaction in
             Storage.shared.setOpenGroupPublicKey(for: defaultServer, to: defaultServerPublicKey, using: transaction)
         }, completion: {
-            getDefaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+            defaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
                 OpenGroupAPIV2.getAllRooms(from: defaultServer)
             }
         })
@@ -363,6 +363,20 @@ public final class OpenGroupAPIV2 : NSObject {
                 storage.setUserCount(to: memberCount, forV2OpenGroupWithID: "\(server).\(room)", using: transaction)
             }
             return memberCount
+        }
+    }
+    
+    public static func getGroupImage(for room: String, on server: String) -> Promise<Data> {
+        if let promise = groupImagePromises["\(server).\(room)"] {
+            return promise
+        } else {
+            let request = Request(verb: .get, room: room, server: server, endpoint: "image")
+            let promise: Promise<Data> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+                guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
+                return file
+            }
+            groupImagePromises["\(server).\(room)"] = promise
+            return promise
         }
     }
 }

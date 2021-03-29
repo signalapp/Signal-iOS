@@ -59,7 +59,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         spinner.startAnimating()
         heightConstraint = set(.height, to: 40)
         widthAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
-        let _ = OpenGroupAPIV2.getDefaultRoomsPromise?.done { [weak self] rooms in
+        let _ = OpenGroupAPIV2.defaultRoomsPromise?.done { [weak self] rooms in
             self?.rooms = rooms
         }
     }
