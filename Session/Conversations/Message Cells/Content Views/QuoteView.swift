@@ -191,11 +191,6 @@ final class QuoteView : UIView {
         bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: threadID, attributes: [:]) }
             ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
         bodyLabel.textColor = textColor
-        /*
-        if hasAttachments {
-            bodyLabel.numberOfLines = 1
-        }
-        */
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         // Label stack view
         var authorLabelHeight: CGFloat?

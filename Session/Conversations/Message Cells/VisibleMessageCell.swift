@@ -561,7 +561,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         switch viewItem.interaction.interactionType() {
         case .outgoingMessage: return screen.width - contactThreadHSpacing - gutterSize
         case .incomingMessage:
-            let isGroupThread = viewItem.interaction.thread.isGroupThread()
+            let isGroupThread = viewItem.isGroupThread
             let leftGutterSize = isGroupThread ? gutterSize : contactThreadHSpacing
             return screen.width - leftGutterSize - gutterSize
         default: preconditionFailure()
