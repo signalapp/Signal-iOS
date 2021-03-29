@@ -179,8 +179,8 @@ extension Storage {
 
     private static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
     private static let openGroupMessageIDCollection = "LKMessageIDCollection"
-    private static let openGroupProfilePictureURLCollection = "LokiPublicChatAvatarURLCollection"
-
+    private static let openGroupImageCollection = "SNOpenGroupImageCollection"
+    
     public func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {
         var result: UInt64?
         Storage.read { transaction in
@@ -205,25 +205,20 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(messageID, forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection)
     }
     
-    public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any) {
-        let collection = openGroupID
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(displayName, forKey: publicKey, inCollection: collection)
-    }
-    
     public func setLastProfilePictureUploadDate(_ date: Date)  {
         UserDefaults.standard[.lastProfilePictureUpload] = date
     }
     
-    public func getProfilePictureURL(forOpenGroupWithID openGroupID: String) -> String? {
-        var result: String?
+    public func getOpenGroupImage(for room: String, on server: String) -> Data? {
+        var result: Data?
         Storage.read { transaction in
-            result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection) as? String
+            result = transaction.object(forKey: "\(server).\(room)", inCollection: Storage.openGroupImageCollection) as? Data
         }
         return result
     }
     
-    public func setProfilePictureURL(to profilePictureURL: String?, forOpenGroupWithID openGroupID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(profilePictureURL, forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection)
+    public func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(data, forKey: "\(server).\(room)", inCollection: Storage.openGroupImageCollection)
     }
 
 
@@ -349,5 +344,24 @@ extension Storage {
 
     public func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection)
+    }
+    
+    public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any) {
+        let collection = openGroupID
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(displayName, forKey: publicKey, inCollection: collection)
+    }
+    
+    private static let openGroupProfilePictureURLCollection = "LokiPublicChatAvatarURLCollection"
+    
+    public func getProfilePictureURL(forOpenGroupWithID openGroupID: String) -> String? {
+        var result: String?
+        Storage.read { transaction in
+            result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection) as? String
+        }
+        return result
+    }
+    
+    public func setProfilePictureURL(to profilePictureURL: String?, forOpenGroupWithID openGroupID: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(profilePictureURL, forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection)
     }
 }

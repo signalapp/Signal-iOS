@@ -1,8 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
 
-// TODO: Cache group images
-
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
@@ -97,10 +95,10 @@ public final class OpenGroupAPIV2 : NSObject {
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
             if request.isAuthRequired, let room = request.room { // Because auth happens on a per-room basis, we need both to make an authenticated request
-                return getAuthToken(for: room, on: request.server).then(on: DispatchQueue.global(qos: .default)) { authToken -> Promise<JSON> in
+                return getAuthToken(for: room, on: request.server).then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<JSON> in
                     tsRequest.setValue(authToken, forHTTPHeaderField: "Authorization")
                     let promise = OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
-                    promise.catch(on: DispatchQueue.global(qos: .default)) { error in
+                    promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                         // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
                         // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
                         // we provided a valid token but it doesn't have a high enough permission level for the route in question.
@@ -373,12 +371,33 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     public static func getGroupImage(for room: String, on server: String) -> Promise<Data> {
-        if let promise = groupImagePromises["\(server).\(room)"] {
+        // Normally the image for a given group is stored with the group thread, so it's only
+        // fetched once. However, on the join open group screen we show images for groups the
+        // user * hasn't * joined yet. We don't want to re-fetch these images every time the
+        // user opens the app because that could slow the app down or be data-intensive. So
+        // instead we assume that these images don't change that often and just fetch them once
+        // a week. We also assume that they're all fetched at the same time as well, so that
+        // we only need to maintain one date in user defaults. On top of all of this we also
+        // don't double up on fetch requests by storing the existing request as a promise if
+        // there is one.
+        let lastOpenGroupImageUpdate = UserDefaults.standard[.lastOpenGroupImageUpdate]
+        let now = Date()
+        let timeSinceLastUpdate = given(lastOpenGroupImageUpdate) { now.timeIntervalSince($0) } ?? .greatestFiniteMagnitude
+        let updateInterval: TimeInterval = 7 * 24 * 60 * 60
+        if let data = Storage.shared.getOpenGroupImage(for: room, on: server), server == defaultServer, timeSinceLastUpdate < updateInterval {
+            return Promise.value(data)
+        } else if let promise = groupImagePromises["\(server).\(room)"] {
             return promise
         } else {
             let request = Request(verb: .get, room: room, server: server, endpoint: "group_image")
             let promise: Promise<Data> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
                 guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
+                if server == defaultServer {
+                    Storage.shared.write { transaction in
+                        Storage.shared.setOpenGroupImage(to: file, for: room, on: server, using: transaction)
+                    }
+                    UserDefaults.standard[.lastOpenGroupImageUpdate] = now
+                }
                 return file
             }
             groupImagePromises["\(server).\(room)"] = promise
