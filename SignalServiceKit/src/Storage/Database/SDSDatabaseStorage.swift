@@ -156,8 +156,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
             SSKEnvironment.shared.warmCaches()
 
-        if wasRegistered != TSAccountManager.shared.isRegistered {
-            NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
+            if wasRegistered != TSAccountManager.shared.isRegistered {
+                NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
+            }
         }
     }
 
@@ -174,7 +175,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public func resetAllStorage() {
-        OWSStorage.resetAllStorage()
+        YDBStorage.deleteYDBStorage()
         GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
     }
 

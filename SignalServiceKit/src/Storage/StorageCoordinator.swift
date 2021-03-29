@@ -114,6 +114,8 @@ extension StorageCoordinator {
         // Move the recovery database into place.
         try FileManager.default.moveItem(at: recoveryDatabaseDirURL, to: primaryDatabaseDirURL)
 
+        databaseStorage.reopenGRDBStorage()
+
         Logger.info("Database recovery complete, attempting to continue with recovered database.")
 
         // Mark DB as no longer corrupted

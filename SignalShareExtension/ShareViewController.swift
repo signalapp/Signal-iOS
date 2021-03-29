@@ -62,15 +62,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
             SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
             SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
-            },
-            migrationCompletion: { [weak self] in
-                                    AssertIsOnMainThread()
+        },
+        migrationCompletion: { [weak self] error in
+            AssertIsOnMainThread()
 
-                                    guard let strongSelf = self else { return }
+            guard let strongSelf = self else { return }
 
-                                    // performUpdateCheck must be invoked after Environment has been initialized because
-                                    // upgrade process may depend on Environment.
-                                    strongSelf.versionMigrationsDidComplete()
+            if let error = error {
+                owsFailDebug("Error \(error)")
+                strongSelf.showNotReadyView()
+                return
+            }
+
+            // performUpdateCheck must be invoked after Environment has been initialized because
+            // upgrade process may depend on Environment.
+            strongSelf.versionMigrationsDidComplete()
         })
 
         let shareViewNavigationController = OWSNavigationController()

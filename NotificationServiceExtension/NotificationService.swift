@@ -102,7 +102,12 @@ class NotificationService: UNNotificationServiceExtension {
                 SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
             },
-            migrationCompletion: { [weak self] in
+            migrationCompletion: { [weak self] error in
+                if let error = error {
+                    // TODO: Maybe notify that you should open the main app.
+                    owsFailDebug("Error \(error)")
+                    return
+                }
                 self?.versionMigrationsDidComplete()
             }
         )

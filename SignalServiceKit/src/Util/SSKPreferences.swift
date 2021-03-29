@@ -269,7 +269,6 @@ public class SSKPreferences: NSObject {
     private static let hasGrdbDatabaseCorruptionKey = "hasGrdbDatabaseCorruption"
     @objc
     public static func hasGrdbDatabaseCorruption() -> Bool {
-        return true
         let appUserDefaults = CurrentAppContext().appUserDefaults()
         guard let preference = appUserDefaults.object(forKey: hasGrdbDatabaseCorruptionKey) as? NSNumber else {
             return false
