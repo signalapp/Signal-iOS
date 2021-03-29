@@ -313,17 +313,34 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // This should be redundant, but this will future-proof us against
     // ever accidentally removing the GRDB databases during
     // orphan clean up.
-    NSString *grdbDirectoryPath = [SDSDatabaseStorage grdbDatabaseDirUrl].path;
+    NSString *grdbPrimaryDirectoryPath =
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
+                                                directoryMode:DirectoryModePrimary]
+            .path;
+    NSString *grdbRecoveryDirectoryPath =
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
+                                                directoryMode:DirectoryModeRecovery]
+            .path;
+    NSString *grdbBackupDirectoryPath = [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
+                                                                                directoryMode:DirectoryModeBackup]
+                                            .path;
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
     for (NSString *filePath in allOnDiskFilePaths) {
-        if ([filePath hasPrefix:grdbDirectoryPath]) {
+        if ([filePath hasPrefix:grdbPrimaryDirectoryPath]) {
             OWSLogInfo(@"Protecting database file: %@", filePath);
+            [databaseFilePaths addObject:filePath];
+        } else if ([filePath hasPrefix:grdbRecoveryDirectoryPath]) {
+            OWSLogInfo(@"Protecting database recovery file: %@", filePath);
+            [databaseFilePaths addObject:filePath];
+        } else if ([filePath hasPrefix:grdbBackupDirectoryPath]) {
+            OWSLogInfo(@"Protecting database backup file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         }
     }
     [allOnDiskFilePaths minusSet:databaseFilePaths];
-    OWSLogVerbose(
-        @"grdbDirectoryPath: %@ (%d)", grdbDirectoryPath, [OWSFileSystem fileOrFolderExistsAtPath:grdbDirectoryPath]);
+    OWSLogVerbose(@"grdbDirectoryPath: %@ (%d)",
+        grdbPrimaryDirectoryPath,
+        [OWSFileSystem fileOrFolderExistsAtPath:grdbPrimaryDirectoryPath]);
     OWSLogVerbose(@"databaseFilePaths: %lu", (unsigned long)databaseFilePaths.count);
 
     OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);

@@ -11,7 +11,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // 256 bit key + 128 bit salt
     public static let kSQLCipherKeySpecLength: UInt = 48
 
-    enum DirectoryMode {
+    @objc
+    public enum DirectoryMode: Int {
         case primary
         case recovery
         case backup
@@ -25,7 +26,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    static func databaseDirUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+    @objc
+    public static func databaseDirUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
         return baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
