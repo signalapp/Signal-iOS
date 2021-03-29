@@ -213,10 +213,12 @@ extension MessageReceiver {
                     members: [String](closedGroup.members), admins: [String](closedGroup.admins), messageSentTimestamp: message.sentTimestamp!, using: transaction)
             }
             // Open groups
-            let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
             for openGroupURL in message.openGroups {
-                guard !allOpenGroups.contains(openGroupURL) else { continue }
-                OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
+                if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: openGroupURL) {
+                    OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction).retainUntilComplete()
+                } else {
+                    OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
+                }
             }
         }
     }

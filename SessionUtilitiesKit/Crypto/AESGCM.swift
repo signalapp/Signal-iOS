@@ -20,6 +20,20 @@ public enum AESGCM {
     }
 
     /// - Note: Sync. Don't call from the main thread.
+    public static func generateSymmetricKey(x25519PublicKey: Data, x25519PrivateKey: Data) throws -> Data {
+        if Thread.isMainThread {
+            #if DEBUG
+            preconditionFailure("It's illegal to call encrypt(_:forSnode:) from the main thread.")
+            #endif
+        }
+        guard let sharedSecret = try? Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, privateKey: x25519PrivateKey) else {
+            throw Error.sharedSecretGenerationFailed
+        }
+        let salt = "LOKI"
+        return try Data(HMAC(key: salt.bytes, variant: .sha256).authenticate(sharedSecret.bytes))
+    }
+    
+    /// - Note: Sync. Don't call from the main thread.
     public static func decrypt(_ ivAndCiphertext: Data, with symmetricKey: Data) throws -> Data {
         if Thread.isMainThread {
             #if DEBUG
@@ -56,11 +70,7 @@ public enum AESGCM {
         }
         let x25519PublicKey = Data(hex: hexEncodedX25519PublicKey)
         let ephemeralKeyPair = Curve25519.generateKeyPair()
-        guard let ephemeralSharedSecret = try? Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, privateKey: ephemeralKeyPair.privateKey) else {
-            throw Error.sharedSecretGenerationFailed
-        }
-        let salt = "LOKI"
-        let symmetricKey = try HMAC(key: salt.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
+        let symmetricKey = try generateSymmetricKey(x25519PublicKey: x25519PublicKey, x25519PrivateKey: ephemeralKeyPair.privateKey)
         let ciphertext = try encrypt(plaintext, with: Data(symmetricKey))
         return EncryptionResult(ciphertext: ciphertext, symmetricKey: Data(symmetricKey), ephemeralPublicKey: ephemeralKeyPair.publicKey)
     }

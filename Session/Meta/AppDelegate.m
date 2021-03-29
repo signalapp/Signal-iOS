@@ -396,7 +396,7 @@ static NSTimeInterval launchStartedAt;
             [self startClosedGroupPollerIfNeeded];
             [self startOpenGroupPollersIfNeeded];
 
-            // Loki: Update profile picture if needed
+            // Update profile picture if needed
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
             NSDate *now = [NSDate new];
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
@@ -409,6 +409,10 @@ static NSTimeInterval launchStartedAt;
                 } failure:^(NSError *error) {
                     // Do nothing
                 } requiresSync:YES];
+            }
+            
+            if (CurrentAppContext().isMainApp) {
+                [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
@@ -737,9 +741,13 @@ static NSTimeInterval launchStartedAt;
 - (void)startOpenGroupPollersIfNeeded
 {
     [SNOpenGroupManager.shared startPolling];
+    [SNOpenGroupManagerV2.shared startPolling];
 }
 
-- (void)stopOpenGroupPollers { [SNOpenGroupManager.shared stopPolling]; }
+- (void)stopOpenGroupPollers {
+    [SNOpenGroupManager.shared stopPolling];
+    [SNOpenGroupManagerV2.shared stopPolling];
+}
 
 # pragma mark - App Mode
 
@@ -789,7 +797,6 @@ static NSTimeInterval launchStartedAt;
     [self stopPoller];
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
-    [SNOpenGroupManager.shared stopPolling];
     BOOL wasUnlinked = [NSUserDefaults.standardUserDefaults boolForKey:@"wasUnlinked"];
     [SignalApp resetAppData:^{
         // Resetting the data clears the old user defaults. We need to restore the unlink default.

@@ -25,8 +25,11 @@ extension ConfigurationMessage {
                         members: Set(thread.groupModel.groupMemberIds), admins: Set(thread.groupModel.groupAdminIds))
                     closedGroups.insert(closedGroup)
                 case .openGroup:
-                    guard let openGroup = storage.getOpenGroup(for: thread.uniqueId!) else { return }
-                    openGroups.insert(openGroup.server)
+                    if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
+                        openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
+                    } else if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
+                        openGroups.insert(openGroup.server)
+                    }
                 default: break
                 }
             }

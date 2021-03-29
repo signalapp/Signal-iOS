@@ -96,12 +96,14 @@ final class ConversationTitleView : UIView {
             result.append(NSAttributedString(string: "Muted until " + formatter.string(from: muteEndDate)))
             return result
         } else if let thread = self.thread as? TSGroupThread {
-            var userCount: Int?
+            var userCount: UInt64?
             switch thread.groupModel.groupType {
-            case .closedGroup: userCount = thread.groupModel.groupMemberIds.count
+            case .closedGroup: userCount = UInt64(thread.groupModel.groupMemberIds.count)
             case .openGroup:
-                if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
-                    userCount = Storage.shared.getUserCount(forOpenGroupWithID: openGroup.id)
+                if let openGroupV2 = Storage.shared.getV2OpenGroup(for: self.thread.uniqueId!) {
+                    userCount = Storage.shared.getUserCount(forV2OpenGroupWithID: openGroupV2.id)
+                } else if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
+                    userCount = given(Storage.shared.getUserCount(forOpenGroupWithID: openGroup.id)) { UInt64($0) }
                 }
             default: break
             }

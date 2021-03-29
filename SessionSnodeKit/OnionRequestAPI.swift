@@ -374,12 +374,16 @@ public enum OnionRequestAPI {
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= AESGCM.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     do {
                         let data = try AESGCM.decrypt(ivAndCiphertext, with: destinationSymmetricKey)
+                        // The old open group server and file server implementations put the status code in the JSON under the "status"
+                        // key, whereas the new implementations put it under the "status_code" key
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
-                            let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                            let statusCode = json["status_code"] as? Int ?? json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
                         if statusCode == 406 { // Clock out of sync
                             SNLog("The user's clock is out of sync with the service node network.")
                             seal.reject(SnodeAPI.Error.clockOutOfSync)
                         } else if let bodyAsString = json["body"] as? String {
+                            // This clause is only used by the old open group and file server implementations. The new implementations will
+                            // always go to the next clause.
                             let body: JSON
                             if !isJSONRequired {
                                 body = [ "result" : bodyAsString ]

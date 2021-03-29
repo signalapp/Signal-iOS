@@ -20,15 +20,15 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         return TabBar(tabs: tabs)
     }()
     
-    private lazy var enterChatURLVC: EnterChatURLVC = {
-        let result = EnterChatURLVC()
-        result.joinPublicChatVC = self
+    private lazy var enterURLVC: EnterURLVC = {
+        let result = EnterURLVC()
+        result.joinOpenGroupVC = self
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
-        result.joinPublicChatVC = self
+        result.joinOpenGroupVC = self
         return result
     }()
     
@@ -46,17 +46,17 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_join_public_chat_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
-        // Set up navigation bar buttons
+        // Navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
-        // Set up page VC
+        // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
-        pages = [ enterChatURLVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
+        pages = [ enterURLVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
-        pageVC.setViewControllers([ enterChatURLVC ], direction: .forward, animated: false, completion: nil)
-        // Set up tab bar
+        pageVC.setViewControllers([ enterURLVC ], direction: .forward, animated: false, completion: nil)
+        // Tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
         let tabBarInset: CGFloat
@@ -67,7 +67,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         }
         tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
-        // Set up page VC constraints
+        // Page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
         pageVCView.pin(.leading, to: .leading, of: view)
@@ -84,7 +84,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
             height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
         }
         pageVCView.set(.height, to: height)
-        enterChatURLVC.constrainHeight(to: height)
+        enterURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
     
@@ -121,19 +121,36 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
     
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        let chatURL = string
-        joinPublicChatIfPossible(with: chatURL)
+        joinOpenGroup(with: string)
     }
     
-    fileprivate func joinPublicChatIfPossible(with urlAsString: String) {
-        guard !isJoining else { return }
-        guard let url = URL(string: urlAsString), let scheme = url.scheme, scheme == "https", url.host != nil else {
-            return showError(title: NSLocalizedString("invalid_url", comment: ""), message: "Please check the URL you entered and try again")
+    fileprivate func joinOpenGroup(with string: String) {
+        // A V1 open group URL will look like: https:// + <host>
+        // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
+        // The host doesn't parse if no explicit scheme is provided
+        if let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }) {
+            if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string) {
+                joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
+            } else {
+                // Inputs that should work:
+                // loki.opensession.id
+                // https://loki.opensession.id
+                // http://loki.opensession.id (still goes to HTTPS)
+                joinV1OpenGroup("https://" + host)
+            }
+        } else {
+            let title = NSLocalizedString("invalid_url", comment: "")
+            let message = "Please check the URL you entered and try again."
+            showError(title: title, message: message)
         }
+    }
+    
+    private func joinV1OpenGroup(_ string: String) {
+        guard !isJoining else { return }
         isJoining = true
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.shared.write { transaction in
-                OpenGroupManager.shared.add(with: urlAsString, using: transaction)
+                OpenGroupManager.shared.add(with: string, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
                     self?.presentingViewController!.dismiss(animated: true, completion: nil)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -154,6 +171,28 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         }
     }
     
+    fileprivate func joinV2OpenGroup(room: String, server: String, publicKey: String) {
+        guard !isJoining else { return }
+        isJoining = true
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            Storage.shared.write { transaction in
+                OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
+                .done(on: DispatchQueue.main) { [weak self] _ in
+                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                }
+                .catch(on: DispatchQueue.main) { [weak self] error in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    let title = "Couldn't Join"
+                    let message = error.localizedDescription
+                    self?.isJoining = false
+                    self?.showError(title: title, message: message)
+                }
+            }
+        }
+    }
+    
     // MARK: Convenience
     private func showError(title: String, message: String = "") {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -162,15 +201,22 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
 }
 
-private final class EnterChatURLVC : UIViewController {
-    weak var joinPublicChatVC: JoinOpenGroupVC!
-    private var bottomConstraint: NSLayoutConstraint!
+private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
+    weak var joinOpenGroupVC: JoinOpenGroupVC!
     
     // MARK: Components
-    private lazy var chatURLTextField: TextField = {
+    private lazy var urlTextField: TextField = {
         let result = TextField(placeholder: NSLocalizedString("vc_enter_chat_url_text_field_hint", comment: ""))
         result.keyboardType = .URL
         result.autocapitalizationType = .none
+        result.autocorrectionType = .no
+        return result
+    }()
+    
+    private lazy var suggestionGrid: OpenGroupSuggestionGrid = {
+        let maxWidth = UIScreen.main.bounds.width - Values.largeSpacing * 2
+        let result = OpenGroupSuggestionGrid(maxWidth: maxWidth)
+        result.delegate = self
         return result
     }()
     
@@ -178,40 +224,38 @@ private final class EnterChatURLVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        // Suggestion grid title label
+        let suggestionGridTitleLabel = UILabel()
+        suggestionGridTitleLabel.textColor = Colors.text
+        suggestionGridTitleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        suggestionGridTitleLabel.text = "Or join one of these..."
+        suggestionGridTitleLabel.numberOfLines = 0
+        suggestionGridTitleLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(joinPublicChatIfPossible), for: UIControl.Event.touchUpInside)
+        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
         nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
         nextButton.pin(.top, to: .top, of: nextButtonContainer)
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
-        // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.vStretchingSpacer(), nextButtonContainer ])
+        // Stack view
+        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
+            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.pin(.leading, to: .leading, of: view)
-        stackView.pin(.top, to: .top, of: view)
-        view.pin(.trailing, to: .trailing, of: stackView)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView)
-        // Set up width constraint
+        stackView.pin(to: view)
+        // Constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
-        // Listen to keyboard notifications
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: General
@@ -220,42 +264,32 @@ private final class EnterChatURLVC : UIViewController {
     }
     
     @objc private func dismissKeyboard() {
-        chatURLTextField.resignFirstResponder()
-    }
-    
-    // MARK: Updating
-    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
-        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        bottomConstraint.constant = newHeight
-        UIView.animate(withDuration: 0.25) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
-        bottomConstraint.constant = 0
-        UIView.animate(withDuration: 0.25) {
-            self.view.layoutIfNeeded()
-        }
+        urlTextField.resignFirstResponder()
     }
     
     // MARK: Interaction
-    @objc private func joinPublicChatIfPossible() {
-        var chatURL = chatURLTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        if !chatURL.lowercased().starts(with: "http") {
-            chatURL = "https://" + chatURL
-        }
-        joinPublicChatVC.joinPublicChatIfPossible(with: chatURL)
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let location = gestureRecognizer.location(in: view)
+        return !suggestionGrid.frame.contains(location)
+    }
+    
+    func join(_ room: OpenGroupAPIV2.Info) {
+        joinOpenGroupVC.joinV2OpenGroup(room: room.id, server: OpenGroupAPIV2.defaultServer, publicKey: OpenGroupAPIV2.defaultServerPublicKey)
+    }
+    
+    @objc private func joinOpenGroup() {
+        let url = urlTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        joinOpenGroupVC.joinOpenGroup(with: url)
     }
 }
 
 private final class ScanQRCodePlaceholderVC : UIViewController {
-    weak var joinPublicChatVC: JoinOpenGroupVC!
+    weak var joinOpenGroupVC: JoinOpenGroupVC!
     
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Set up explanation label
+        // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
@@ -263,18 +297,18 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Set up call to action button
+        // Call to action button
         let callToActionButton = UIButton()
         callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
         callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
-        // Set up stack view
+        // Stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
         stackView.axis = .vertical
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
-        // Set up constraints
+        // Constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
@@ -290,7 +324,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
     @objc private func requestCameraAccess() {
         ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
             if hasCameraAccess {
-                self?.joinPublicChatVC.handleCameraAccessGranted()
+                self?.joinOpenGroupVC.handleCameraAccessGranted()
             } else {
                 // Do nothing
             }
