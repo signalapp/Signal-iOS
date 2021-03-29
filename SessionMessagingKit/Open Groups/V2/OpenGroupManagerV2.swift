@@ -34,10 +34,10 @@ public final class OpenGroupManagerV2 : NSObject {
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
         storage.removeAuthToken(for: room, on: server, using: transaction)
+        storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
         let (promise, seal) = Promise<Void>.pending()
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.addCompletionQueue(DispatchQueue.global(qos: .default)) {
-            storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
             OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .default)) { info in
                 let openGroup = OpenGroupV2(server: server, room: room, name: info.name, imageID: info.imageID)
                 let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)

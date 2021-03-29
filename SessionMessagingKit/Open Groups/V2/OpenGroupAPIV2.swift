@@ -2,7 +2,6 @@ import PromiseKit
 import SessionSnodeKit
 
 // TODO: Show images w/ room suggestions
-// TODO: Distinguish between V1 and V2 open groups in the join open group screen
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
