@@ -13,8 +13,78 @@ import SafariServices
     static let supportEmail = "support@signal.org"
 }
 
+enum ContactSupportFilter: String, CaseIterable {
+    case feature_request = "Feature Request"
+    case question = "Question"
+    case feedback = "Feedback"
+    case something_not_working = "Something Not Working"
+    case other = "Other"
+
+    var localizedString: String {
+        switch self {
+        case .feature_request:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST",
+                comment: "The localized representation of the 'feature request' support filter."
+            )
+        case .question:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_QUESTION",
+                comment: "The localized representation of the 'question' support filter."
+            )
+        case .feedback:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_FEEDBACK",
+                comment: "The localized representation of the 'feedback' support filter."
+            )
+        case .something_not_working:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING",
+                comment: "The localized representation of the 'something not working' support filter."
+            )
+        case .other:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_OTHER",
+                comment: "The localized representation of the 'other' support filter."
+            )
+        }
+    }
+
+    var localizedShortString: String {
+        switch self {
+        case .feature_request:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT",
+                comment: "A brief localized representation of the 'feature request' support filter."
+            )
+        case .question:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_QUESTION_SHORT",
+                comment: "A brief localized representation of the 'question' support filter."
+            )
+        case .feedback:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT",
+                comment: "A brief localized representation of the 'feedback' support filter."
+            )
+        case .something_not_working:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT",
+                comment: "A brief localized representation of the 'something not working' support filter."
+            )
+        case .other:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_OTHER_SHORT",
+                comment: "A brief localized representation of the 'other' support filter."
+            )
+        }
+    }
+}
+
 @objc(OWSContactSupportViewController)
 final class ContactSupportViewController: OWSTableViewController2 {
+
+    var selectedFilter: ContactSupportFilter?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +136,10 @@ final class ContactSupportViewController: OWSTableViewController2 {
             action: #selector(didTapNext)
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
+    }
+
+    func updateRightBarButton() {
+        navigationItem.rightBarButtonItem?.isEnabled = (descriptionField.text.count > 10) && selectedFilter != nil
     }
 
     override func applyTheme() {
@@ -143,6 +217,9 @@ final class ContactSupportViewController: OWSTableViewController2 {
         emailRequest.userDescription = descriptionField.text
         emailRequest.emojiMood = emojiPicker.selectedMood
         emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload : .none
+        if let selectedFilter = selectedFilter {
+            emailRequest.supportFilter = "iOS \(selectedFilter.rawValue)"
+        }
         let operation = ComposeSupportEmailOperation(model: emailRequest)
         currentEmailComposeOperation = operation
         showSpinnerOnNextButton = true
@@ -176,7 +253,7 @@ extension ContactSupportViewController: SupportRequestTextViewDelegate {
     }
 
     func textViewDidUpdateText(_ textView: SupportRequestTextView) {
-        self.navigationItem.rightBarButtonItem?.isEnabled = (textView.text.count > 10)
+        updateRightBarButton()
 
         // Disable interactive presentation if the user has entered text
         if #available(iOS 13, *) {
@@ -237,6 +314,23 @@ extension ContactSupportViewController {
         return OWSTableContents(title: titleText, sections: [
 
             OWSTableSection(title: contactHeaderText, items: [
+
+                // Filter selection
+                OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                    return OWSTableItem.buildIconNameCell(
+                        itemName: NSLocalizedString(
+                            "CONTACT_SUPPORT_FILTER_PROMPT",
+                            comment: "Prompt telling the user to select a filter for their support request."
+                        ),
+                        accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
+                            "CONTACT_SUPPORT_SELECT_A_FILTER",
+                            comment: "Placeholder telling user they must select a filter."
+                        ),
+                        accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
+                    )
+                }, actionBlock: { [weak self] in
+                    self?.showFilterPicker()
+                }),
 
                 // Description field
                 OWSTableItem(customCellBlock: {
@@ -320,5 +414,25 @@ extension ContactSupportViewController {
         containerView.addSubview(emojiPicker)
         emojiPicker.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
         return containerView
+    }
+
+    func showFilterPicker() {
+        let actionSheet = ActionSheetController(title: NSLocalizedString(
+            "CONTACT_SUPPORT_FILTER_PROMPT",
+            comment: "Prompt telling the user to select a filter for their support request."
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        for filter in ContactSupportFilter.allCases {
+            let action = ActionSheetAction(title: filter.localizedString) { [weak self] _ in
+                self?.selectedFilter = filter
+                self?.updateRightBarButton()
+                self?.rebuildTableContents()
+            }
+            if selectedFilter == filter { action.trailingIcon = .checkCircle }
+            actionSheet.addAction(action)
+        }
+
+        presentActionSheet(actionSheet)
     }
 }
