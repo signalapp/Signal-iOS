@@ -39,7 +39,7 @@ public final class OpenGroupManagerV2 : NSObject {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.addCompletionQueue(DispatchQueue.global(qos: .default)) {
             OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .default)) { info in
-                let openGroup = OpenGroupV2(server: server, room: room, name: info.name, imageID: info.imageID)
+                let openGroup = OpenGroupV2(server: server, room: room, name: info.name, publicKey: publicKey, imageID: info.imageID)
                 let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
                 let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
                 storage.write(with: { transaction in
@@ -85,5 +85,25 @@ public final class OpenGroupManagerV2 : NSObject {
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
         Storage.shared.removeV2OpenGroup(for: thread.uniqueId!, using: transaction)
+    }
+    
+    // MARK: Convenience
+    public static func parseV2OpenGroup(from string: String) -> (room: String, server: String, publicKey: String)? {
+        guard let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }), let query = url.query else { return nil }
+        // Inputs that should work:
+        // https://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        // http://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        // sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c (does NOT go to HTTPS)
+        // https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        let useTLS = (url.scheme == "https")
+        let room = String(url.path.dropFirst()) // Drop the leading slash
+        let queryParts = query.split(separator: "=")
+        guard !room.isEmpty && !room.contains("/"), queryParts.count == 2, queryParts[0] == "public_key" else { return nil }
+        let publicKey = String(queryParts[1])
+        guard publicKey.count == 64 && Hex.isValid(publicKey) else { return nil }
+        var server = (useTLS ? "https://" : "http://") + host
+        if let port = url.port { server += ":\(port)" }
+        return (room: room, server: server, publicKey: publicKey)
     }
 }

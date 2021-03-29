@@ -129,29 +129,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
         if let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }) {
-            if let query = url.query {
-                // Inputs that should work:
-                // https://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
-                // http://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
-                // sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c (does NOT go to HTTPS)
-                // https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
-                // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
-                let useTLS = (url.scheme == "https")
-                let room = String(url.path.dropFirst()) // Drop the leading slash
-                let queryParts = query.split(separator: "=")
-                guard !room.isEmpty && !room.contains("/"), queryParts.count == 2, queryParts[0] == "public_key" else {
-                    let title = NSLocalizedString("invalid_url", comment: "")
-                    let message = "Please check the URL you entered and try again."
-                    return showError(title: title, message: message)
-                }
-                let publicKey = String(queryParts[1])
-                guard publicKey.count == 64 && Hex.isValid(publicKey) else {
-                    let title = NSLocalizedString("invalid_url", comment: "")
-                    let message = "Please check the URL you entered and try again."
-                    return showError(title: title, message: message)
-                }
-                var server = (useTLS ? "https://" : "http://") + host
-                if let port = url.port { server += ":\(port)" }
+            if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string) {
                 joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
             } else {
                 // Inputs that should work:
