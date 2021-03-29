@@ -110,6 +110,16 @@ extension OpenGroupSuggestionGrid {
         
         static let identifier = "OpenGroupSuggestionGridCell"
         
+        private lazy var imageView: UIImageView = {
+            let result = UIImageView()
+            let size: CGFloat = 24
+            result.set(.width, to: size)
+            result.set(.height, to: size)
+            result.layer.cornerRadius = size / 2
+            result.clipsToBounds = true
+            return result
+        }()
+        
         private lazy var label: UILabel = {
             let result = UILabel()
             result.textColor = Colors.text
@@ -129,10 +139,13 @@ extension OpenGroupSuggestionGrid {
         }
         
         private func setUpViewHierarchy() {
-            addSubview(label)
-            label.center(in: self)
-            label.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Values.smallSpacing).isActive = true
-            trailingAnchor.constraint(greaterThanOrEqualTo: label.trailingAnchor, constant: Values.smallSpacing).isActive = true
+            let stackView = UIStackView(arrangedSubviews: [ imageView, label ])
+            stackView.axis = .horizontal
+            stackView.spacing = Values.smallSpacing
+            addSubview(stackView)
+            stackView.center(in: self)
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Values.smallSpacing).isActive = true
+            trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: Values.smallSpacing).isActive = true
             setUpSeparators()
         }
         
@@ -165,6 +178,9 @@ extension OpenGroupSuggestionGrid {
         
         private func update() {
             guard let room = room else { return }
+            let promise = OpenGroupAPIV2.getGroupImage(for: room.id, on: OpenGroupAPIV2.defaultServer)
+            imageView.image = given(promise.value) { UIImage(data: $0)! }
+            imageView.isHidden = (imageView.image == nil)
             label.text = room.name
             rightSeparator.alpha = showRightSeparator ? 1 :0
             bottomSeparator.alpha = showBottomSeparator ? 1 :0

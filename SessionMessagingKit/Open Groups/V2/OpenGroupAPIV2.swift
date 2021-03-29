@@ -1,6 +1,8 @@
 import PromiseKit
 import SessionSnodeKit
 
+// TODO: Cache group images
+
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
@@ -322,9 +324,13 @@ public final class OpenGroupAPIV2 : NSObject {
         Storage.shared.write(with: { transaction in
             Storage.shared.setOpenGroupPublicKey(for: defaultServer, to: defaultServerPublicKey, using: transaction)
         }, completion: {
-            defaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+            let promise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
                 OpenGroupAPIV2.getAllRooms(from: defaultServer)
             }
+            let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { items in
+                items.forEach { getGroupImage(for: $0.id, on: defaultServer).retainUntilComplete() }
+            }
+            defaultRoomsPromise = promise
         })
     }
     
@@ -370,7 +376,7 @@ public final class OpenGroupAPIV2 : NSObject {
         if let promise = groupImagePromises["\(server).\(room)"] {
             return promise
         } else {
-            let request = Request(verb: .get, room: room, server: server, endpoint: "image")
+            let request = Request(verb: .get, room: room, server: server, endpoint: "group_image")
             let promise: Promise<Data> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
                 guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
                 return file
