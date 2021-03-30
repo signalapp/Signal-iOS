@@ -213,11 +213,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             DispatchQueue.main.async {
                 if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
-                    self.scrollButton.alpha = self.getScrollButtonOpacity()
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
                     self.scrollToBottom(isAnimated: false)
                 }
+                self.scrollButton.alpha = self.getScrollButtonOpacity()
             }
         }
     }
@@ -301,9 +301,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
         self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
         self.messagesTableView.keyboardHeight = newHeight
-        if (newHeight > 200) {
-            self.scrollButton.alpha = 0
-        }
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
