@@ -27,8 +27,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     
     private lazy var spinner: NVActivityIndicatorView = {
         let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
-        result.set(.width, to: 40)
-        result.set(.height, to: 40)
+        result.set(.width, to: OpenGroupSuggestionGrid.cellHeight)
+        result.set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         return result
     }()
     
@@ -57,8 +57,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         addSubview(spinner)
         spinner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top ], to: self)
         spinner.startAnimating()
-        heightConstraint = set(.height, to: 40)
-        widthAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
+        heightConstraint = set(.height, to: OpenGroupSuggestionGrid.cellHeight)
+        widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
         let _ = OpenGroupAPIV2.defaultRoomsPromise?.done { [weak self] rooms in
             self?.rooms = rooms
         }
@@ -85,9 +85,6 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        let roomCount = min(rooms.count, 8)
-        cell.showRightSeparator = (indexPath.row % 2 != 0) || (indexPath.row % 2 == 0 && indexPath.row == roomCount - 1)
-        cell.showBottomSeparator = (indexPath.row >= roomCount - 2)
         cell.room = rooms[indexPath.item]
         return cell
     }
@@ -103,13 +100,17 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
 extension OpenGroupSuggestionGrid {
     
     fileprivate final class Cell : UICollectionViewCell {
-        var showRightSeparator = false
-        var showBottomSeparator = false
         var room: OpenGroupAPIV2.Info? { didSet { update() } }
-        private var rightSeparator: UIView!
-        private var bottomSeparator: UIView!
         
         static let identifier = "OpenGroupSuggestionGridCell"
+        
+        private lazy var snContentView: UIView = {
+            let result = UIView()
+            result.backgroundColor = Colors.navigationBarBackground
+            result.set(.height, to: Cell.contentViewHeight)
+            result.layer.cornerRadius = Cell.contentViewCornerRadius
+            return result
+        }()
         
         private lazy var imageView: UIImageView = {
             let result = UIImageView()
@@ -129,6 +130,10 @@ extension OpenGroupSuggestionGrid {
             return result
         }()
         
+        private static let contentViewInset: CGFloat = 4
+        private static var contentViewHeight: CGFloat { OpenGroupSuggestionGrid.cellHeight - 2 * contentViewInset }
+        private static var contentViewCornerRadius: CGFloat { contentViewHeight / 2 }
+        
         override init(frame: CGRect) {
             super.init(frame: frame)
             setUpViewHierarchy()
@@ -140,41 +145,25 @@ extension OpenGroupSuggestionGrid {
         }
         
         private func setUpViewHierarchy() {
+            addSubview(snContentView)
             let stackView = UIStackView(arrangedSubviews: [ imageView, label ])
             stackView.axis = .horizontal
             stackView.spacing = Values.smallSpacing
-            addSubview(stackView)
-            stackView.center(.vertical, in: self)
-            stackView.pin(.leading, to: .leading, of: self, withInset: Values.smallSpacing)
-            trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: Values.smallSpacing).isActive = true
-            setUpSeparators()
+            snContentView.addSubview(stackView)
+            stackView.center(.vertical, in: snContentView)
+            stackView.pin(.leading, to: .leading, of: snContentView, withInset: Values.smallSpacing)
+            snContentView.trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: Values.smallSpacing).isActive = true
+            snContentView.pin(to: self, withInset: Cell.contentViewInset)
         }
         
-        private func setUpSeparators() {
-            func getVSeparator() -> UIView {
-                let separator = UIView()
-                separator.backgroundColor = Colors.separator
-                separator.set(.height, to: 1 / UIScreen.main.scale)
-                return separator
-            }
-            func getHSeparator() -> UIView {
-                let separator = UIView()
-                separator.backgroundColor = Colors.separator
-                separator.set(.width, to: 1 / UIScreen.main.scale)
-                return separator
-            }
-            let leftSeparator = getHSeparator()
-            addSubview(leftSeparator)
-            leftSeparator.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: self)
-            let topSeparator = getVSeparator()
-            addSubview(topSeparator)
-            topSeparator.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: self)
-            rightSeparator = getHSeparator()
-            addSubview(rightSeparator)
-            rightSeparator.pin([ UIView.VerticalEdge.top, UIView.HorizontalEdge.right, UIView.VerticalEdge.bottom ], to: self)
-            bottomSeparator = getVSeparator()
-            addSubview(bottomSeparator)
-            bottomSeparator.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            let newPath = UIBezierPath(roundedRect: snContentView.bounds, cornerRadius: Cell.contentViewCornerRadius).cgPath
+            snContentView.layer.shadowPath = newPath
+            snContentView.layer.shadowColor = UIColor.black.cgColor
+            snContentView.layer.shadowOffset = CGSize.zero
+            snContentView.layer.shadowOpacity = 0.2
+            snContentView.layer.shadowRadius = 2
         }
         
         private func update() {
@@ -183,8 +172,6 @@ extension OpenGroupSuggestionGrid {
             imageView.image = given(promise.value) { UIImage(data: $0)! }
             imageView.isHidden = (imageView.image == nil)
             label.text = room.name
-            rightSeparator.alpha = showRightSeparator ? 1 :0
-            bottomSeparator.alpha = showBottomSeparator ? 1 :0
         }
     }
 }
