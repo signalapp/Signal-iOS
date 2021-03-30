@@ -236,6 +236,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 self.thread.setDraft(text, transaction: transaction)
             }
         }
+        inputAccessoryView?.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
