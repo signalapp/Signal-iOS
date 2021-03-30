@@ -883,7 +883,6 @@ public class SendPaymentViewController: OWSViewController {
         }
         let totalAmount = paymentAmount.plus(estimatedFeeAmount)
         guard let paymentBalance = paymentsSwift.currentPaymentBalance else {
-            // TODO: Need copy.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE",
                                                                       comment: "Error message indicating that a payment could not be sent because the current balance is unavailable."))
             return

@@ -148,7 +148,6 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     @objc
     func didTapDoneButton() {
-        // TODO: Actually restore.
         guard payments.paymentsEntropy == nil else {
             owsFailDebug("paymentsEntropy already set.")
             dismiss(animated: true, completion: nil)

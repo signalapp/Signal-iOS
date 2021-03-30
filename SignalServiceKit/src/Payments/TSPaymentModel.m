@@ -298,12 +298,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.isValid);
 
     [super anyDidInsertWithTransaction:transaction];
-
-    // TODO: Remove.
-#ifdef DEBUG
-    TSPaymentModel *_Nullable latest = [TSPaymentModel anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-    OWSAssertDebug([NSObject isNullableObject:self.dictionaryValue equalTo:latest.dictionaryValue]);
-#endif
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -320,12 +314,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.isValid);
 
     [super anyDidUpdateWithTransaction:transaction];
-
-    // TODO: Remove.
-#ifdef DEBUG
-    TSPaymentModel *_Nullable latest = [TSPaymentModel anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-    OWSAssertDebug([NSObject isNullableObject:self.dictionaryValue equalTo:latest.dictionaryValue]);
-#endif
 }
 
 @end

@@ -469,14 +469,11 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     }
 
     public static func formatPaymentFailure(_ error: Error, withErrorPrefix: Bool) -> String {
-
-        // PAYMENTS TODO: Revisit which errors we surface and how.
         let errorDescription: String = {
             switch error {
             case let paymentsError as PaymentsError:
                 switch paymentsError {
                 case .insufficientFunds:
-                    // PAYMENTS TODO: We need copy from design.
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
                                              comment: "Indicates that a payment failed due to insufficient funds.")
                 case .timeout,
@@ -485,11 +482,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                      .authorizationFailure,
                      .invalidServerResponse,
                      .attestationVerificationFailed:
-                    // PAYMENTS TODO: We need copy from design.
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
                                              comment: "Indicates that a payment failed due to a connectivity failure.")
                 case .outdatedClient:
-                    // PAYMENTS TODO: We need copy from design.
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
                                              comment: "Indicates that a payment failed due to an outdated client.")
                 case .userHasNoPublicAddress,
@@ -501,12 +496,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
                                              comment: "Indicates that a payment failed due to being invalid.")
                 default:
-                    // PAYMENTS TODO: We need copy from design.
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                              comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
                 }
             default:
-                // PAYMENTS TODO: We need copy from design.
                 return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                                      comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
             }
@@ -516,7 +509,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             return errorDescription
         }
 
-        // PAYMENTS TODO: We need copy from design.
         let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_FORMAT",
                                        comment: "Format for message indicating that error occurred while sending a payment or payment request. Embeds: {{ a description of the error that occurred }}.")
         return String(format: format, errorDescription)
@@ -602,9 +594,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 Self.paymentsSwift.initiateOutgoingPayment(preparedPayment: preparedPayment)
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
                 // Try to wait (with a timeout) for submission and verification to complete.
-                //
-                // TODO: Finalize this timeout duration with design.
-                let blockInterval: TimeInterval = kSecondInterval * 30
+                let blockInterval: TimeInterval = kSecondInterval * 60
                 return firstly(on: .global()) { () -> Promise<Void> in
                     Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel).asVoid()
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {

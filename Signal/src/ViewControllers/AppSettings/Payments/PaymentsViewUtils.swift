@@ -222,7 +222,6 @@ public extension TSPaymentModel {
     }()
 
     func statusDescription(isLongForm: Bool) -> String {
-        // PAYMENTS TODO: What's the correct copy here? What are all of the possible states?
 
         var result: String
 
@@ -315,7 +314,6 @@ public extension TSPaymentModel {
     private static func description(forFailure failure: TSPaymentFailure,
                                     isIncoming: Bool,
                                     isLongForm: Bool) -> String {
-        // PAYMENTS TODO: What's the correct copy here? What are all of the possible states?
 
         let defaultDescription = (isIncoming
                                     ? NSLocalizedString("PAYMENTS_FAILURE_INCOMING_FAILED",

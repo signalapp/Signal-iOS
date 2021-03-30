@@ -74,8 +74,6 @@ typedef NS_ENUM(NSUInteger, TSPaymentState) {
 
 #pragma mark -
 
-// PAYMENTS TODO: This won't be finalized until
-// the SDK finalizes its error set.
 typedef NS_ENUM(NSUInteger, TSPaymentFailure) {
     TSPaymentFailureNone = 0,
     TSPaymentFailureUnknown,

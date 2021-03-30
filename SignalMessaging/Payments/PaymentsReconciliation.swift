@@ -112,7 +112,6 @@ public class PaymentsReconciliation: Dependencies {
         }
     }
 
-    // TODO: Per conversation with Kyle, we need to rework this.
     private static func shouldReconcile(transaction: SDSAnyReadTransaction,
                                         transactionHistory: MCTransactionHistory) -> Bool {
 
@@ -273,7 +272,7 @@ public class PaymentsReconciliation: Dependencies {
     // * But we can't meaningfully group "unaccounted for" outgoing TXOs, so
     //   group all "unaccounted for" outgoing TXOs into a single payment.
     //
-    // TODO: Identifying defrag transactions.
+    // NOTE: There's no reliable way to identify defrag transactions.
     internal static func reconcile(transactionHistory: MCTransactionHistory,
                                    databaseState: PaymentsDatabaseState,
                                    transaction: SDSAnyReadTransaction) throws {
@@ -668,7 +667,6 @@ public class PaymentsReconciliation: Dependencies {
 
     // MARK: -
 
-    // TODO: In the insert and update cases, we need to cull collisions around incomingTransactionPublicKeys.
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         // Cull unidentified payment models which might be replaced by this identified model,
         // then schedule reconciliation pass to create new unidentified payment models if necessary.

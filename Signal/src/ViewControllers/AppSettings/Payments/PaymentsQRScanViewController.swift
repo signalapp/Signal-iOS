@@ -79,7 +79,6 @@ public class PaymentsQRScanViewController: OWSViewController {
         footer.autoPinEdge(.top, to: .bottom, of: qrView)
 
         let instructionsLabel = UILabel()
-        // TODO: Need copy.
         instructionsLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS",
                                                         comment: "Instructions in the 'scan payment address QR code' view in the payment settings.")
         instructionsLabel.font = .ows_dynamicTypeBody
@@ -111,7 +110,6 @@ extension PaymentsQRScanViewController: OWSQRScannerDelegate {
     public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
         guard let publicAddressUrl = URL(string: string),
               let publicAddress = PaymentsImpl.parseAsPublicAddress(url: publicAddressUrl) else {
-            // TODO: Copy from design.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL",
                                                                       comment: "Error indicating that a QR code does not contain a valid MobileCoin public address URL."))
             return

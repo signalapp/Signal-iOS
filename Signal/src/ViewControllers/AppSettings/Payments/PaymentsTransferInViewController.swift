@@ -162,7 +162,6 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
     private func didTapCopyAddress() {
         AssertIsOnMainThread()
 
-        // TODO: Should this be the address b58 or the address url?
         guard let walletAddressBase58 = payments.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return
@@ -180,11 +179,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
     @objc
     func didTapShare() {
-        // TODO: Should this be walletAddressBase58 or walletAddressQRUrl?
-        guard let walletAddressQRUrl = payments.walletAddressQRUrl() else {
+        guard let walletAddressBase58 = payments.walletAddressBase58() else {
             owsFailDebug("Missing walletAddressBase58.")
             return
         }
-        AttachmentSharing.showShareUI(forText: walletAddressQRUrl.absoluteString, sender: self)
+        AttachmentSharing.showShareUI(forText: walletAddressBase58, sender: self)
     }
 }

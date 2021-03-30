@@ -16,8 +16,6 @@ public extension DebugLogger {
     }
 
     // A LogHandler that forwards to CocoaLumberjack.
-    //
-    // TODO: Verify the logging behavior in release builds.
     private struct CLForwardingLogHandler: LogHandler {
         public init() {}
 

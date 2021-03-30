@@ -156,7 +156,6 @@ class PaymentsHistoryDataSource: Dependencies {
                     conversationColorName = getConversationColorName(address)
                     displayName = Self.contactsManager.displayName(for: address, transaction: transaction)
                 } else if paymentModel.isOutgoingTransfer {
-                    // TODO: Copy.
                     displayName = NSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
                                                     comment: "Label for 'transfer out' payments.")
                 } else if paymentModel.isDefragmentation {
