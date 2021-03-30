@@ -269,13 +269,22 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         conversionLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         conversionLabel.textColor = Theme.secondaryTextAndIconColor
 
+        let conversionInfoView = UIImageView()
+        conversionInfoView.setTemplateImageName("info-outline-24",
+                                                        tintColor: Theme.secondaryTextAndIconColor)
+        conversionInfoView.autoSetDimensions(to: .square(16))
+        conversionInfoView.setCompressionResistanceHigh()
+
         let conversionStack1 = UIStackView(arrangedSubviews: [
             conversionRefreshIcon,
-            conversionLabel
+            conversionLabel,
+            conversionInfoView
         ])
         conversionStack1.axis = .horizontal
         conversionStack1.alignment = .center
         conversionStack1.spacing = 12
+        conversionStack1.isUserInteractionEnabled = true
+        conversionStack1.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
 
         let conversionStack2 = UIStackView(arrangedSubviews: [ conversionStack1 ])
         conversionStack2.axis = .vertical
@@ -284,6 +293,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         func hideConversions() {
             conversionRefreshIcon.tintColor = .clear
             conversionLabel.text = " "
+            conversionInfoView.tintColor = .clear
         }
 
         if let paymentBalance = Self.paymentsSwift.currentPaymentBalance {
@@ -527,8 +537,11 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
 
-        let buttonTitle = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
-                                            comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
+        let buttonTitle = (Self.payments.paymentsEntropy != nil
+                            ? NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON",
+                                                comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings.")
+                            : NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON",
+                                                comment: "Label for 'activate' button in the 'payments opt-in' view in the app settings."))
         let activateButton = OWSFlatButton.button(title: buttonTitle,
                                                   font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                   titleColor: .white,
@@ -774,6 +787,30 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
+    }
+
+    @objc
+    private func didTapCurrencyConversionInfo() {
+        PaymentsSettingsViewController.showCurrencyConversionInfoAlert(fromViewController: self)
+    }
+
+    public static func showCurrencyConversionInfoAlert(fromViewController: UIViewController) {
+        let message = NSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE",
+                                        comment: "Message for the 'currency conversions info' alert.")
+        let actionSheet = ActionSheetController(title: nil, message: message)
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.learnMore,
+            style: .default,
+            handler: { _ in
+                UIApplication.shared.open(
+                    URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_currency_conversion")!,
+                    options: [:],
+                    completionHandler: nil
+                )
+            }
+        ))
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     // MARK: - Events

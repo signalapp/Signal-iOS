@@ -711,7 +711,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     @objc
     private func didTapCurrencyConversionInfo() {
-        SendPaymentViewController.showCurrencyConversionInfoAlert(fromViewController: self)
+        PaymentsSettingsViewController.showCurrencyConversionInfoAlert(fromViewController: self)
     }
 }
 

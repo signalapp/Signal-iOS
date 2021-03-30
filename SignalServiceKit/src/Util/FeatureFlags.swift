@@ -114,7 +114,18 @@ public class FeatureFlags: BaseFlags {
     public static let linkedPhones = build.includes(.qa)
 
     @objc
-    public static let isUsingProductionService = false
+    public static var isUsingProductionService: Bool {
+        if DebugFlags.paymentsInternalBeta {
+            owsAssertDebug(!DebugFlags.paymentsExternalBeta)
+            return false
+        } else if DebugFlags.paymentsExternalBeta {
+            owsAssertDebug(!DebugFlags.paymentsInternalBeta)
+            return true
+        } else {
+            owsFailDebug("Unexpected state.")
+            return true
+        }
+    }
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -218,7 +229,8 @@ public class DebugFlags: BaseFlags {
     public static let reduceLogChatter = build.includes(.dev) && false
 
     @objc
-    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
+//    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
+    public static let logSQLQueries = false
 
     @objc
     public static let groupsV2IgnoreCapability = false
@@ -413,6 +425,12 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let paymentsInternalBeta = build.includes(.openPreview)
+
+    @objc
+    public static let paymentsExternalBeta = false
+
+    @objc
+    public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
 
     @objc
     public static let paymentsIgnoreBlockTimestamps = TestableFlag(false,

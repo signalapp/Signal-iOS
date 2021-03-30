@@ -38,7 +38,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         MobileCoinAPI.configureSDKLogging()
 
         // TODO: Remove
-        if DebugFlags.paymentsInternalBeta,
+        if DebugFlags.paymentsBeta,
            CurrentAppContext().isMainApp,
            !CurrentAppContext().isRunningTests {
             AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {

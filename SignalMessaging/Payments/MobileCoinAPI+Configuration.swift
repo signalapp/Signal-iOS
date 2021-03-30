@@ -18,7 +18,10 @@ extension MobileCoinAPI {
         case mobileCoinMainNet
 
         static var current: Environment {
-            if DebugFlags.paymentsInternalBeta {
+            if FeatureFlags.isUsingProductionService {
+                owsAssertDebug(DebugFlags.paymentsExternalBeta)
+                return .signalMainNet
+            } else if DebugFlags.paymentsInternalBeta {
                 // TODO: Revisit.
                 #if TESTABLE_BUILD
                 return .mobileCoinAlphaNet
@@ -26,7 +29,7 @@ extension MobileCoinAPI {
                 return .signalTestNet
                 #endif
             } else {
-                return .signalMainNet
+                return .mobileCoinAlphaNet
             }
         }
     }
@@ -418,25 +421,9 @@ extension MobileCoinAPI {
             ]
         }
 
-        static func anchorCertificates_signalMainNet() -> [Data] {
-            [
-                Certificates.certificateData(forService: "signal-mainnet", type: "der", certificateBundle: .ssk, verifyDer: true)
-            ]
-        }
-
         static func pinConfig(_ config: MobileCoinClient.Config,
                               environment: Environment) throws -> MobileCoinClient.Config {
-            let trustRootCertDatas: [Data]
-            switch environment {
-            case .signalMainNet:
-                trustRootCertDatas = anchorCertificates_signalMainNet()
-            case .signalTestNet,
-                .mobileCoinAlphaNet,
-                .mobileCoinMobileDev,
-                .mobileCoinTestNet,
-                .mobileCoinMainNet:
-                trustRootCertDatas = anchorCertificates_mobileCoin()
-            }
+            let trustRootCertDatas: [Data] = anchorCertificates_mobileCoin()
             guard !trustRootCertDatas.isEmpty else {
                 return config
             }

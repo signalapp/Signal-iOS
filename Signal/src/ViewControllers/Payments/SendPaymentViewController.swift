@@ -1013,26 +1013,7 @@ public class SendPaymentViewController: OWSViewController {
 
     @objc
     private func didTapCurrencyConversionInfo() {
-        Self.showCurrencyConversionInfoAlert(fromViewController: self)
-    }
-
-    public static func showCurrencyConversionInfoAlert(fromViewController: UIViewController) {
-        let message = NSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE",
-                                        comment: "Message for the 'currency conversions info' alert.")
-        let actionSheet = ActionSheetController(title: nil, message: message)
-        actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.learnMore,
-            style: .default,
-            handler: { _ in
-                UIApplication.shared.open(
-                    URL(string: "https://support.signal.org/hc/en-us/articles/360057625692#payments_currency_conversion")!,
-                    options: [:],
-                    completionHandler: nil
-                )
-            }
-        ))
-        actionSheet.addAction(OWSActionSheets.okayAction)
-        fromViewController.presentActionSheet(actionSheet)
+        PaymentsSettingsViewController.showCurrencyConversionInfoAlert(fromViewController: self)
     }
 }
 
