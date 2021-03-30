@@ -1571,7 +1571,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 }
                 UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
                 if (image == nil) {
-                    OWSFailDebug(@"Could not read avatar image.");
+                    OWSLogError(@"Could not read avatar image.");
                     return;
                 }
 

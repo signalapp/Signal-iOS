@@ -4468,7 +4468,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - System Cell
 
-- (void)cvc_didTapNonBlockingIdentityChange:(SignalServiceAddress *)address
+- (void)cvc_didTapPreviouslyVerifiedIdentityChange:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
@@ -4487,6 +4487,50 @@ typedef enum : NSUInteger {
     }
 
     [self showFingerprintWithAddress:address];
+}
+
+- (void)cvc_didTapUnverifiedIdentityChange:(SignalServiceAddress *)address
+{
+    OWSAssertIsOnMainThread();
+
+    OWSAssertDebug(address.isValid);
+
+    [self dismissKeyBoard];
+
+    UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"safety-number-change"]];
+
+    UIView *headerView = [UIView new];
+    [headerView addSubview:headerImageView];
+    [headerImageView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:22];
+    [headerImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [headerImageView autoHCenterInSuperview];
+    [headerImageView autoSetDimension:ALDimensionWidth toSize:200];
+    [headerImageView autoSetDimension:ALDimensionHeight toSize:110];
+
+    NSString *displayName = [self.contactsManager displayNameForAddress:address];
+    NSString *messageFormat = NSLocalizedString(@"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT",
+        @"Description for the unverified safety number change. Embeds {name of contact with identity change}");
+
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:nil
+                                             message:[NSString stringWithFormat:messageFormat, displayName]];
+    actionSheet.customHeader = headerView;
+
+    __weak ConversationViewController *weakSelf = self;
+
+    ActionSheetAction *verifyAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION",
+                          @"Action to verify a safety number after it has changed")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) { [weakSelf showFingerprintWithAddress:address]; }];
+    [actionSheet addAction:verifyAction];
+
+    ActionSheetAction *notNowAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.notNowButton
+                                                                         style:ActionSheetActionStyleCancel
+                                                                       handler:^(ActionSheetAction *action) {}];
+    [actionSheet addAction:notNowAction];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)cvc_didTapInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage

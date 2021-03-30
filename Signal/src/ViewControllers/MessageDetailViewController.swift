@@ -901,7 +901,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     // MARK: - System Cell
 
     // TODO:
-    func cvc_didTapNonBlockingIdentityChange(_ address: SignalServiceAddress) {}
+    func cvc_didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {}
+
+    // TODO:
+    func cvc_didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {}
 
     // TODO:
     func cvc_didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}

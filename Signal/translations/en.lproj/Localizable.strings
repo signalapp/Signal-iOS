@@ -5035,6 +5035,12 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Your device doesn't support this feature.";
 
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verify";
+
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Update Contact";
 

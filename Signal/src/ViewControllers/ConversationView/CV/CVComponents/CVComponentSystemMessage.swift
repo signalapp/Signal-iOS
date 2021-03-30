@@ -683,11 +683,11 @@ extension CVComponentSystemMessage {
                 return CVMessageAction(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
                                                                 comment: "Label for button to verify a user's safety number."),
                                        accessibilityIdentifier: "verify_safety_number",
-                                       action: .cvc_didTapNonBlockingIdentityChange(address: address))
+                                       action: .cvc_didTapPreviouslyVerifiedIdentityChange(address: address))
             } else {
                 return CVMessageAction(title: CommonStrings.learnMore,
                                        accessibilityIdentifier: "learn_more",
-                                       action: .cvc_didTapNonBlockingIdentityChange(address: address))
+                                       action: .cvc_didTapUnverifiedIdentityChange(address: address))
             }
         case .wrongTrustedIdentityKey:
             guard let message = message as? TSInvalidIdentityKeyErrorMessage else {
