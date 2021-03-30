@@ -389,7 +389,7 @@ public final class OpenGroupAPIV2 : NSObject {
         } else if let promise = groupImagePromises["\(server).\(room)"] {
             return promise
         } else {
-            let request = Request(verb: .get, room: room, server: server, endpoint: "group_image")
+            let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)/image", isAuthRequired: false)
             let promise: Promise<Data> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
                 guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
                 if server == defaultServer {
