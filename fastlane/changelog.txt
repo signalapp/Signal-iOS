@@ -1,4 +1,3 @@
-• We fixed a crash that prevented some users from sharing more than a few pictures at once. Now you can once again send photo albums instead of photo EPs.
-• The bug where large stickers wouldn't automatically download is no longer creating sticky situations. Stickers were meant to get stuck, but not like this.
+• Give notifications in any conversation a rest (while you rest) with the new 8-hour mute setting. Or choose "Always" instead of one year, and say goodbye to the annual tradition of renewing a moment of silence.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
