@@ -14,15 +14,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public enum DirectoryMode: Int {
         case primary
-        case recovery
-        case backup
         case hotswap
 
         var folderName: String {
             switch self {
             case .primary: return "grdb"
-            case .recovery: return "grdb-recovery"
-            case .backup: return "grdb-backup"
             case .hotswap: return "grdb-hotswap"
             }
         }

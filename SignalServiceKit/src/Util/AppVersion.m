@@ -107,8 +107,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
     OWSLogInfo(@"currentAppVersion: %@ (%@)", self.currentAppVersion, longVersionString);
-    OWSLogInfo(@"hasGrdbEverRecoveredCorruptedDatabase: %@",
-        [SSKPreferences hasGrdbEverRecoveredCorruptedDatabase] ? @"YES" : @"NO");
 
     OWSLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
     OWSLogInfo(@"lastCompletedLaunchMainAppVersion: %@", self.lastCompletedLaunchMainAppVersion);

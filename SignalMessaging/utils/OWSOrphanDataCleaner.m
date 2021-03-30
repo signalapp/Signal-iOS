@@ -321,13 +321,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
                                                 directoryMode:DirectoryModeHotswap]
             .path;
-    NSString *grdbRecoveryDirectoryPath =
-        [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
-                                                directoryMode:DirectoryModeRecovery]
-            .path;
-    NSString *grdbBackupDirectoryPath = [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
-                                                                                directoryMode:DirectoryModeBackup]
-                                            .path;
+
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
     for (NSString *filePath in allOnDiskFilePaths) {
         if ([filePath hasPrefix:grdbPrimaryDirectoryPath]) {
@@ -335,12 +329,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [databaseFilePaths addObject:filePath];
         } else if ([filePath hasPrefix:grdbHotswapDirectoryPath]) {
             OWSLogInfo(@"Protecting database hotswap file: %@", filePath);
-            [databaseFilePaths addObject:filePath];
-        } else if ([filePath hasPrefix:grdbRecoveryDirectoryPath]) {
-            OWSLogInfo(@"Protecting database recovery file: %@", filePath);
-            [databaseFilePaths addObject:filePath];
-        } else if ([filePath hasPrefix:grdbBackupDirectoryPath]) {
-            OWSLogInfo(@"Protecting database backup file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         }
     }

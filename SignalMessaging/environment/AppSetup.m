@@ -191,17 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         dispatch_block_t completionBlock = ^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (StorageCoordinator.hasDatabaseCorruption) {
-                    OWSLogInfo(@"Attempting to recover database corruption.");
-                    NSError *error;
-                    [StorageCoordinator attemptDatabaseRecoveryAndReturnError:&error];
-                    if (error != nil) {
-                        OWSFailDebug(@"Failed to recovery corrupted database %@", error);
-
-                        dispatch_async(dispatch_get_main_queue(), ^{ migrationCompletion(error); });
-                    }
-                }
-
                 if (AppSetup.shouldTruncateGrdbWal) {
                     // Try to truncate GRDB WAL before any readers or writers are
                     // active.

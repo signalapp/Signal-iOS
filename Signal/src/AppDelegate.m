@@ -192,6 +192,8 @@ void uncaughtExceptionHandler(NSException *exception)
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
+    } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
+        launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
     }
     if (launchFailure != LaunchFailure_None) {
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");

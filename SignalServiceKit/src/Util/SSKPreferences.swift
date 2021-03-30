@@ -284,21 +284,4 @@ public class SSKPreferences: NSObject {
         appUserDefaults.set(value, forKey: hasGrdbDatabaseCorruptionKey)
         appUserDefaults.synchronize()
     }
-
-    private static let hasGrdbEverRecoveredCorruptedDatabaseKey = "hasGrdbEverRecoveredCorruptedDatabase"
-    @objc
-    public static func hasGrdbEverRecoveredCorruptedDatabase() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: hasGrdbEverRecoveredCorruptedDatabaseKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
-
-    @objc
-    public static func setHasGrdbEverRecoveredCorruptedDatabase(_ value: Bool) {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(value, forKey: hasGrdbEverRecoveredCorruptedDatabaseKey)
-        appUserDefaults.synchronize()
-    }
 }
