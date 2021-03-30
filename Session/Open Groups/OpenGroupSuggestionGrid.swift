@@ -68,7 +68,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     private func update() {
         spinner.stopAnimating()
         spinner.isHidden = true
-        let height = OpenGroupSuggestionGrid.cellHeight * ceil(CGFloat(rooms.count) / 2)
+        let roomCount = min(rooms.count, 8) // Cap to a maximum of 8 (4 rows of 2)
+        let height = OpenGroupSuggestionGrid.cellHeight * ceil(CGFloat(roomCount) / 2)
         heightConstraint.constant = height
         collectionView.reloadData()
     }
