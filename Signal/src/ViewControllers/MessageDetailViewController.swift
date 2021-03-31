@@ -30,6 +30,13 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
 
+    private struct MessageRecipientModel {
+        let address: SignalServiceAddress
+        let accessoryText: String
+        let displayUDIndicator: Bool
+    }
+    private let messageRecipients = AtomicOptional<[MessageReceiptStatus: [MessageRecipientModel]]>(nil)
+
     private let cellView = CVCellView()
 
     private var attachments: [TSAttachment]?
@@ -273,46 +280,8 @@ class MessageDetailViewController: OWSTableViewController2 {
             .skipped
         ]
 
-        let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
-        let messageRecipientAddressesSorted = databaseStorage.read { transaction in
-            contactsManagerImpl.sortSignalServiceAddresses(
-                messageRecipientAddressesUnsorted,
-                transaction: transaction
-            )
-        }
-        let messageRecipientAddressesGrouped = messageRecipientAddressesSorted.reduce(
-            into: [MessageReceiptStatus: [(address: SignalServiceAddress, accessoryText: String, displayUDIndicator: Bool)]]()
-        ) { result, address in
-            guard let recipientState = outgoingMessage.recipientState(for: address) else {
-                return owsFailDebug("no message status for recipient: \(address).")
-            }
-
-            let (status, statusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(
-                outgoingMessage: outgoingMessage,
-                recipientState: recipientState
-            )
-            var bucket = result[status] ?? []
-
-            switch status {
-            case .delivered, .read, .sent:
-                bucket.append((
-                    address: address,
-                    accessoryText: statusMessage,
-                    displayUDIndicator: recipientState.wasSentByUD
-                ))
-            case .sending, .failed, .skipped, .uploading:
-                bucket.append((
-                    address: address,
-                    accessoryText: "",
-                    displayUDIndicator: false
-                ))
-            }
-
-            result[status] = bucket
-        }
-
         for recipientStatusGroup in recipientStatusGroups {
-            guard let recipients = messageRecipientAddressesGrouped[recipientStatusGroup], !recipients.isEmpty else { continue }
+            guard let recipients = messageRecipients.get()?[recipientStatusGroup], !recipients.isEmpty else { continue }
 
             let section = OWSTableSection()
             sections.append(section)
@@ -664,7 +633,11 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
             }
             self.renderItem = renderItem
 
-            updateTableContents()
+            if isIncoming {
+                updateTableContents()
+            } else {
+                refreshMessageRecipientsAsync()
+            }
         } catch DetailViewError.messageWasDeleted {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
@@ -672,6 +645,57 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
             }
         } catch {
             owsFailDebug("unexpected error: \(error)")
+        }
+    }
+
+    private func refreshMessageRecipientsAsync() {
+        guard let outgoingMessage = message as? TSOutgoingMessage else {
+            return owsFailDebug("Unexpected message type")
+        }
+
+        DispatchQueue.sharedUserInitiated.async { [weak self] in
+            guard let self = self else { return }
+
+            let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
+            let messageRecipientAddressesSorted = self.databaseStorage.read { transaction in
+                self.contactsManagerImpl.sortSignalServiceAddresses(
+                    messageRecipientAddressesUnsorted,
+                    transaction: transaction
+                )
+            }
+            let messageRecipientAddressesGrouped = messageRecipientAddressesSorted.reduce(
+                into: [MessageReceiptStatus: [MessageRecipientModel]]()
+            ) { result, address in
+                guard let recipientState = outgoingMessage.recipientState(for: address) else {
+                    return owsFailDebug("no message status for recipient: \(address).")
+                }
+
+                let (status, statusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(
+                    outgoingMessage: outgoingMessage,
+                    recipientState: recipientState
+                )
+                var bucket = result[status] ?? []
+
+                switch status {
+                case .delivered, .read, .sent:
+                    bucket.append(MessageRecipientModel(
+                        address: address,
+                        accessoryText: statusMessage,
+                        displayUDIndicator: recipientState.wasSentByUD
+                    ))
+                case .sending, .failed, .skipped, .uploading:
+                    bucket.append(MessageRecipientModel(
+                        address: address,
+                        accessoryText: "",
+                        displayUDIndicator: false
+                    ))
+                }
+
+                result[status] = bucket
+            }
+
+            self.messageRecipients.set(messageRecipientAddressesGrouped)
+            DispatchQueue.main.async { self.updateTableContents() }
         }
     }
 }
