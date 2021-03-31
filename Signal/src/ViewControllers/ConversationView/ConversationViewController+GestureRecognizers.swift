@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -176,6 +176,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
                 return
             }
             self.panHandler = panHandler
+            startPanHandler(sender: sender)
         case .changed:
             updatePanGesture()
         case .ended, .failed, .cancelled, .possible:
@@ -196,10 +197,13 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
                                                    swipeToReplyState: swipeToReplyState) else {
             return nil
         }
-        panHandler.startGesture(sender: sender,
-                                cell: cell,
-                                swipeToReplyState: swipeToReplyState)
         return panHandler
+    }
+
+    private func startPanHandler(sender: UIPanGestureRecognizer) {
+        guard let panHandler = panHandler else { return }
+        guard let cell = findCell(forGesture: sender) else { return }
+        panHandler.startGesture(sender: sender, cell: cell, swipeToReplyState: viewState.swipeToReplyState)
     }
 }
 
@@ -291,6 +295,7 @@ public class CVPanHandler {
     public enum PanType {
         case swipeToReply
         case scrubAudio
+        case messageDetails
     }
     public let panType: PanType
 
@@ -300,7 +305,9 @@ public class CVPanHandler {
     public var interactionId: String { renderItem.interactionUniqueId }
 
     // If the gesture ended now, would we perform a reply?
-    public var isReplyActive = false
+    public var isActive = false
+
+    public var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
     required init(delegate: CVComponentDelegate, panType: PanType, renderItem: CVRenderItem) {
         self.delegate = delegate

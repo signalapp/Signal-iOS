@@ -7,11 +7,6 @@ import QuickLook
 import SignalServiceKit
 import SignalMessaging
 
-enum MessageMetadataViewMode: UInt {
-    case focusOnMessage
-    case focusOnMetadata
-}
-
 protocol MessageDetailViewDelegate: AnyObject {
     func detailViewMessageWasDeleted(_ messageDetailViewController: MessageDetailViewController)
 }
@@ -22,9 +17,10 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: Properties
 
+    let percentDrivenTransition: UIPercentDrivenInteractiveTransition?
+
     var bubbleView: UIView?
 
-    let mode: MessageMetadataViewMode
     var message: TSMessage
     var wasDeleted: Bool = false
 
@@ -51,9 +47,9 @@ class MessageDetailViewController: OWSViewController {
 
     required init(message: TSMessage,
                   thread: TSThread,
-                  mode: MessageMetadataViewMode) {
+                  percentDrivenTransition: UIPercentDrivenInteractiveTransition?) {
         self.message = message
-        self.mode = mode
+        self.percentDrivenTransition = percentDrivenTransition
 
         super.init()
     }
@@ -87,35 +83,6 @@ class MessageDetailViewController: OWSViewController {
         completion: { [weak self] _ in
             self?.refreshContent()
         })
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if mode == .focusOnMetadata {
-            if let bubbleView = self.bubbleView {
-                // Force layout.
-                view.setNeedsLayout()
-                view.layoutIfNeeded()
-
-                let contentHeight = scrollView.contentSize.height
-                let scrollViewHeight = scrollView.frame.size.height
-                guard contentHeight >=  scrollViewHeight else {
-                    // All content is visible within the scroll view. No need to offset.
-                    return
-                }
-
-                // We want to include at least a little portion of the message, but scroll no farther than necessary.
-                let showAtLeast: CGFloat = 50
-                let bubbleViewBottom = bubbleView.superview!.convert(bubbleView.frame, to: scrollView).maxY
-                let maxOffset =  bubbleViewBottom - showAtLeast
-                let lastPage = contentHeight - scrollViewHeight
-
-                let offset = CGPoint(x: 0, y: min(maxOffset, lastPage))
-
-                scrollView.setContentOffset(offset, animated: false)
-            }
-        }
     }
 
     // MARK: - Create Views
@@ -884,6 +851,8 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didTapMention(_ mention: Mention) {}
 
+    func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
+
     // MARK: - Selection
 
     // TODO:
@@ -963,4 +932,63 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}
+}
+
+extension MessageDetailViewController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return percentDrivenTransition
+    }
+
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard percentDrivenTransition != nil, operation == .push else { return nil }
+        return AnimationController()
+    }
+}
+
+private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        0.35
+    }
+
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        guard let fromView = transitionContext.view(forKey: .from),
+              let toView = transitionContext.view(forKey: .to) else {
+            owsFailDebug("Missing view controllers.")
+            return transitionContext.completeTransition(false)
+        }
+
+        // Do our best to replicate the default nav controller push animation.
+
+        let containerView = transitionContext.containerView
+        let directionMultiplier: CGFloat = CurrentAppContext().isRTL ? -1 : 1
+
+        containerView.addSubview(fromView)
+        containerView.addSubview(toView)
+
+        let fromViewOverlay = UIView()
+        fromViewOverlay.backgroundColor = .ows_blackAlpha10
+        fromViewOverlay.alpha = 0
+
+        fromView.addSubview(fromViewOverlay)
+        fromViewOverlay.frame = fromView.bounds
+
+        toView.transform = CGAffineTransform(translationX: fromView.width * directionMultiplier, y: 0)
+
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: .curveLinear) {
+            toView.transform = .identity
+            fromViewOverlay.alpha = 1
+            fromView.transform = CGAffineTransform(translationX: -(fromView.width / 3) * directionMultiplier, y: 0)
+        } completion: { _ in
+            fromView.transform = .identity
+            fromViewOverlay.removeFromSuperview()
+
+            if transitionContext.transitionWasCancelled {
+                toView.removeFromSuperview()
+            } else {
+                fromView.removeFromSuperview()
+            }
+
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+        }
+    }
 }

@@ -7,6 +7,7 @@ extension ConversationViewController: MessageActionsDelegate {
         showDetailView(itemViewModel)
     }
 
+    @objc
     func showDetailView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -15,10 +16,13 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
 
-        let detailVC = MessageDetailViewController(message: message,
-                                                   thread: thread,
-                                                   mode: .focusOnMetadata)
+        let detailVC = MessageDetailViewController(
+            message: message,
+            thread: thread,
+            percentDrivenTransition: viewState.panHandler?.percentDrivenTransition
+        )
         detailVC.delegate = self
+        conversationSplitViewController?.navigationTransitionDelegate = detailVC
         navigationController?.pushViewController(detailVC, animated: true)
     }
 

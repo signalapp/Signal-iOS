@@ -4446,6 +4446,11 @@ typedef enum : NSUInteger {
     [actionSheet presentFromViewController:self];
 }
 
+- (void)cvc_didTapShowMessageDetail:(CVItemViewModelImpl *)itemViewModel
+{
+    [self showDetailView:itemViewModel];
+}
+
 #pragma mark - Selection
 
 // TODO: Move these methods to +Selection.swift

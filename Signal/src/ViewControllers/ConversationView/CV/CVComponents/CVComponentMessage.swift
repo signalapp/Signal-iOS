@@ -1331,21 +1331,27 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return panHandler
         }
 
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
-            return nil
-        }
-        tryToUpdateSwipeToReplyReference(componentView: componentView,
-                                         renderItem: renderItem,
-                                         swipeToReplyState: swipeToReplyState)
-        guard swipeToReplyReference != nil else {
-            owsFailDebug("Missing reference[\(renderItem.interactionUniqueId)].")
-            return nil
-        }
+        if isSwipingTowardsMessageDetails(sender: sender, componentDelegate: componentDelegate) {
+            // We're swiping left, present message details
+            return CVPanHandler(delegate: componentDelegate, panType: .messageDetails, renderItem: renderItem)
+        } else {
+            // We're doing a swipe-to-reply
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
+                return nil
+            }
+            tryToUpdateSwipeToReplyReference(componentView: componentView,
+                                             renderItem: renderItem,
+                                             swipeToReplyState: swipeToReplyState)
+            guard swipeToReplyReference != nil else {
+                owsFailDebug("Missing reference[\(renderItem.interactionUniqueId)].")
+                return nil
+            }
 
-        return CVPanHandler(delegate: componentDelegate,
-                            panType: .swipeToReply,
-                            renderItem: renderItem)
+            return CVPanHandler(delegate: componentDelegate,
+                                panType: .swipeToReply,
+                                renderItem: renderItem)
+        }
     }
 
     public override func startPanGesture(sender: UIPanGestureRecognizer,
@@ -1387,6 +1393,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                        swipeToReplyState: swipeToReplyState,
                                        hasFinished: false)
             tryToApplySwipeToReply(componentView: componentView, isAnimated: false)
+        case .messageDetails:
+            panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            componentDelegate.cvc_didTapShowMessageDetail(itemViewModel)
         }
     }
 
@@ -1446,6 +1456,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                   swipeToReplyState: swipeToReplyState,
                                   isAnimated: true)
             }
+        case .messageDetails:
+            updateMessageDetailsPresentationProgress(
+                sender: sender,
+                panHandler: panHandler,
+                componentDelegate: componentDelegate
+            )
         }
     }
 
@@ -1540,22 +1556,22 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let swipeToReplyIconView = componentView.swipeToReplyIconView
 
-        let isReplyActive = xOffset >= swipeToReplyThreshold
+        let isActive = xOffset >= swipeToReplyThreshold
 
         // If we're transitioning to the active state, play haptic feedback.
-        if isReplyActive, !panHandler.isReplyActive {
+        if isActive, !panHandler.isActive {
             ImpactHapticFeedback.impactOccured(style: .light)
         }
 
         // Update the reply image styling to reflect active state
         let isStarting = sender.state == .began
-        let didChange = isReplyActive != panHandler.isReplyActive
+        let didChange = isActive != panHandler.isActive
         let shouldUpdateViews = isStarting || didChange
         if shouldUpdateViews {
             let shouldAnimate = didChange
             let transform: CGAffineTransform
             let tintColor: UIColor
-            if isReplyActive {
+            if isActive {
                 transform = CGAffineTransform(scaleX: 1.16, y: 1.16)
                 tintColor = isDarkThemeEnabled ? .ows_gray25 : .ows_gray75
             } else {
@@ -1579,9 +1595,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        panHandler.isReplyActive = isReplyActive
+        panHandler.isActive = isActive
 
-        if panHandler.isReplyActive && hasFinished {
+        if isActive && hasFinished {
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             componentDelegate.cvc_didTapReplyToItem(itemViewModel)
         }
@@ -1683,6 +1699,70 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         self.swipeToReplyProgress = nil
+    }
+
+    func isSwipingTowardsMessageDetails(sender: UIPanGestureRecognizer, componentDelegate: CVComponentDelegate) -> Bool {
+        if CurrentAppContext().isRTL {
+            return sender.velocity(in: componentDelegate.view).x > 0
+        } else {
+            return sender.velocity(in: componentDelegate.view).x < 0
+        }
+    }
+
+    func updateMessageDetailsPresentationProgress(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate
+    ) {
+        guard let percentDrivenTransition = panHandler.percentDrivenTransition else {
+            return owsFailDebug("Missing transition.")
+        }
+
+        let hasEnded = [.ended, .cancelled, .failed].contains(sender.state)
+        let percentThreshold: CGFloat = 0.2
+        let velocityThreshold: CGFloat = 500
+
+        let isSwipingTowardsMessagesDetails = self.isSwipingTowardsMessageDetails(
+            sender: sender,
+            componentDelegate: componentDelegate
+        )
+
+        let translationX = abs(sender.translation(in: componentDelegate.view).x)
+        let percent = translationX / componentDelegate.view.width
+        percentDrivenTransition.update(percent)
+
+        var isActive = percent >= percentThreshold && isSwipingTowardsMessagesDetails
+
+        if hasEnded {
+            // If the pan has ended, and we're moving quickly
+            // in the correct direction, assume we are active
+            // regardless of the percent threshold.
+
+            let velocityX = sender.velocity(in: componentDelegate.view).x
+            let isMovingQuicklyTowardsMessageDetails: Bool
+            if CurrentAppContext().isRTL {
+                isMovingQuicklyTowardsMessageDetails = velocityX >= velocityThreshold
+            } else {
+                isMovingQuicklyTowardsMessageDetails = velocityX <= -velocityThreshold
+            }
+
+            isActive = isActive || isMovingQuicklyTowardsMessageDetails
+        }
+
+        // If we're transitioning to the active state, play haptic feedback.
+        if isActive, !panHandler.isActive {
+            ImpactHapticFeedback.impactOccured(style: .light)
+        }
+
+        panHandler.isActive = isActive
+
+        if hasEnded {
+            if isActive {
+                percentDrivenTransition.finish()
+            } else {
+                percentDrivenTransition.cancel()
+            }
+        }
     }
 }
 
