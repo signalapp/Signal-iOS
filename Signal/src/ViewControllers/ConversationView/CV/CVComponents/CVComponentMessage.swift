@@ -42,7 +42,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var hasSenderAvatarLayout: Bool {
         // Return true if space for a sender avatar appears in the layout.
         // Avatar itself might not appear due to de-duplication.
-        isIncoming && isGroupThread && senderAvatar != nil
+        isIncoming && isGroupThread && senderAvatar != nil && conversationStyle.type != .messageDetails
     }
     private var hasSenderAvatar: Bool {
         // Return true if a sender avatar appears.

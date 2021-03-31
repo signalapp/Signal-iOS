@@ -21,7 +21,7 @@ extension ConversationViewController: MessageActionsDelegate {
             thread: thread,
             percentDrivenTransition: viewState.panHandler?.percentDrivenTransition
         )
-        detailVC.delegate = self
+        detailVC.detailDelegate = self
         conversationSplitViewController?.navigationTransitionDelegate = detailVC
         navigationController?.pushViewController(detailVC, animated: true)
     }

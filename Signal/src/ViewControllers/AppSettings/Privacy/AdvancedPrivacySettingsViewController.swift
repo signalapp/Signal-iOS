@@ -196,7 +196,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
                 let imageView = UIImageView()
                 imageView.contentMode = .center
-                imageView.setTemplateImageName("ic_secret_sender_indicator", tintColor: Theme.primaryTextColor)
+                imageView.setTemplateImageName(Theme.iconName(.sealedSenderIndicator), tintColor: Theme.primaryTextColor)
                 imageView.autoSetDimension(.width, toSize: 20)
                 stackView.addArrangedSubview(imageView)
 
