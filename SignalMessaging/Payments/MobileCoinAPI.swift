@@ -705,6 +705,44 @@ public extension PaymentsError {
             return true
         }
     }
+
+    var isExpected: Bool {
+        switch self {
+        case .notEnabled,
+             .userNotRegisteredOrAppNotReady,
+             .userHasNoPublicAddress,
+             .invalidCurrency,
+             .invalidWalletKey,
+             .invalidAmount,
+             .invalidFee,
+             .insufficientFunds,
+             .invalidModel,
+             .indeterminateState,
+             .unknownSDKError,
+             .invalidInput,
+             .authorizationFailure,
+             .invalidServerResponse,
+             .attestationVerificationFailed,
+             .outdatedClient,
+             .serverRateLimited,
+             .serializationError,
+             .verificationStatusUnknown,
+             .ledgerBlockTimestampUnknown,
+             .missingModel,
+             .defragmentationRequired,
+             .invalidTransaction,
+             .inputsAlreadySpent,
+             .defragmentationFailed,
+             .invalidPassphrase,
+             .invalidEntropy,
+             .killSwitch,
+             .connectionFailure,
+             .timeout:
+            return false
+        case .tooOldToSubmit:
+            return true
+        }
+    }
 }
 
 // MARK: -
@@ -719,6 +757,8 @@ public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
     if let paymentsError = error as? PaymentsError {
         if paymentsError.isPaymentsNetworkFailure {
             // Log but otherwise ignore network failures.
+            Logger.warn("Error: \(error)", file: file, function: function, line: line)
+        } else if paymentsError.isExpected {
             Logger.warn("Error: \(error)", file: file, function: function, line: line)
         } else {
             owsFailDebug("Error: \(error)", file: file, function: function, line: line)

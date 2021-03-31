@@ -174,6 +174,7 @@ extension MobileCoinAPI {
     private enum AttestationType {
         case mrSigner(mrSignerData: Data)
         case mrEnclave(mrEnclaveData: Data)
+        case mrSignerAndMrEnclave(mrSignerData: Data, mrEnclaveData: Data)
     }
 
     // MARK: - OWSAttestationConfig
@@ -226,6 +227,12 @@ extension MobileCoinAPI {
                 let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
                                                    attestationInfo: attestationInfo)
                 return MobileCoin.Attestation(mrEnclaves: [mrEnclave])
+            case .mrSignerAndMrEnclave(let mrSignerData, let mrEnclaveData):
+                let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
+                                                 attestationInfo: attestationInfo)
+                let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
+                                                   attestationInfo: attestationInfo)
+                return MobileCoin.Attestation(mrEnclaves: [mrEnclave], mrSigners: [mrSigner])
             }
         }
 
@@ -269,22 +276,53 @@ extension MobileCoinAPI {
             }
         }
 
+        private static func buildAttestationConfig(mrEnclaveConsensus: Data,
+                                                   mrEnclaveFogView: Data,
+                                                   mrEnclaveFogKeyImage: Data,
+                                                   mrEnclaveFogMerkleProof: Data,
+                                                   mrEnclaveFogReport: Data,
+                                                   mrSigner: Data) -> OWSAttestationConfig {
+            do {
+                return OWSAttestationConfig(
+                    consensus: try buildAttestation(attestationType: .mrSignerAndMrEnclave(mrSignerData: mrSigner,
+                                                                                           mrEnclaveData: mrEnclaveConsensus),
+                                                    attestationInfo: .consensus),
+                    fogView: try buildAttestation(attestationType: .mrSignerAndMrEnclave(mrSignerData: mrSigner,
+                                                                                         mrEnclaveData: mrEnclaveFogView),
+                                                  attestationInfo: .fogView),
+                    fogKeyImage: try buildAttestation(attestationType: .mrSignerAndMrEnclave(mrSignerData: mrSigner,
+                                                                                             mrEnclaveData: mrEnclaveFogKeyImage),
+                                                      attestationInfo: .fogKeyImage),
+                    fogMerkleProof: try buildAttestation(attestationType: .mrSignerAndMrEnclave(mrSignerData: mrSigner,
+                                                                                                mrEnclaveData: mrEnclaveFogMerkleProof),
+                                                         attestationInfo: .fogMerkleProof),
+                    fogReport: try buildAttestation(attestationType: .mrSignerAndMrEnclave(mrSignerData: mrSigner,
+                                                                                           mrEnclaveData: mrEnclaveFogReport),
+                                                    attestationInfo: .fogReport)
+                )
+            } catch {
+                owsFail("Invalid attestationConfig: \(error)")
+            }
+        }
+
         static var mobileCoinMainNet: OWSAttestationConfig {
             // These networks currently share the same attestation config.
             signalMainNet
         }
 
         static var signalMainNet: OWSAttestationConfig {
-            // TODO: These values might not be correct.
+            // TODO: This consensus value is not be correct.
             let mrEnclaveConsensus = Data.data(fromHex: "b9a91cbda7a7b952fa66d00407eb18bac283191e46ddef7e37102dd94fe23fe2")!
             let mrEnclaveFogView = Data.data(fromHex: "ddd59da874fdf3239d5edb1ef251df07a8728c9ef63057dd0b50ade5a9ddb041")!
-            let mrEnclaveFogIngest = Data.data(fromHex: "709ab90621e3a8d9eb26ed9e2830e091beceebd55fb01c5d7c31d27e83b9b0d1")!
+            let mrEnclaveFogReport = Data.data(fromHex: "709ab90621e3a8d9eb26ed9e2830e091beceebd55fb01c5d7c31d27e83b9b0d1")!
             let mrEnclaveFogLedger = Data.data(fromHex: "511eab36de691ded50eb08b173304194da8b9d86bfdd7102001fe6bb279c3666")!
+            let mrSigner = Data.data(fromHex: "2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e")!
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
                                           mrEnclaveFogKeyImage: mrEnclaveFogLedger,
                                           mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
-                                          mrEnclaveFogReport: mrEnclaveFogIngest)
+                                          mrEnclaveFogReport: mrEnclaveFogReport,
+                                          mrSigner: mrSigner)
         }
 
         static var mobileCoinTestNet: OWSAttestationConfig {
@@ -295,13 +333,13 @@ extension MobileCoinAPI {
         static var signalTestNet: OWSAttestationConfig {
             let mrEnclaveConsensus = Data.data(fromHex: "9268c3220a5260e51e4b586f00e4677fed2b80380f1eeaf775af60f8e880fde8")!
             let mrEnclaveFogView = Data.data(fromHex: "4e598799faa4bb08a3bd55c0bcda7e1d22e41151d0c591f6c2a48b3562b0881e")!
-            let mrEnclaveFogIngest = Data.data(fromHex: "185875464ccd67a879d58181055383505a719b364b12d56d9bef90a40bed07ca")!
+            let mrEnclaveFogReport = Data.data(fromHex: "185875464ccd67a879d58181055383505a719b364b12d56d9bef90a40bed07ca")!
             let mrEnclaveFogLedger = Data.data(fromHex: "7330c9987f21b91313b39dcdeaa7da8da5ca101c929f5740c207742c762e6dcd")!
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
                                           mrEnclaveFogKeyImage: mrEnclaveFogLedger,
                                           mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
-                                          mrEnclaveFogReport: mrEnclaveFogIngest)
+                                          mrEnclaveFogReport: mrEnclaveFogReport)
         }
 
         static var mobileCoinAlphaNet: OWSAttestationConfig {

@@ -235,7 +235,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin (= 1.0.1-pre1)
+  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`)
   - PromiseKit
   - PureLayout
   - Reachability
@@ -277,7 +277,6 @@ SPEC REPOS:
     - libwebp
     - Logging
     - lottie-ios
-    - MobileCoin
     - PromiseKit
     - PureLayout
     - Reachability
@@ -315,6 +314,8 @@ EXTERNAL SOURCES:
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
+  MobileCoin:
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
@@ -358,6 +359,9 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
+  MobileCoin:
+    :commit: 68288252a9e56c3df0dcac9f74bf990cff0a8461
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
     :git: https://github.com/signalapp/Argon2.git
@@ -436,6 +440,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: c0832fabbfd3aa1a1a98479acb225dd6987f03f9
+PODFILE CHECKSUM: b3c1cb15ebfc9269e06b8c0d40106d6361587c6d
 
 COCOAPODS: 1.9.2
