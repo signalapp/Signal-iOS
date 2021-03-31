@@ -21,7 +21,8 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     // MARK: Properties
 
-    private let percentDrivenTransition: UIPercentDrivenInteractiveTransition?
+    private weak var pushPercentDrivenTransition: UIPercentDrivenInteractiveTransition?
+    private var popPercentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
     private var renderItem: CVRenderItem?
     private var thread: TSThread? { renderItem?.itemModel.thread }
@@ -72,7 +73,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         percentDrivenTransition: UIPercentDrivenInteractiveTransition?
     ) {
         self.message = message
-        self.percentDrivenTransition = percentDrivenTransition
+        self.pushPercentDrivenTransition = percentDrivenTransition
 
         super.init()
     }
@@ -94,6 +95,19 @@ class MessageDetailViewController: OWSTableViewController2 {
         )
 
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+
+        // Use our own swipe back animation, since the message
+        // details are presented as a "drawer" type view.
+        let panGesture = DirectionalPanGestureRecognizer(direction: .horizontal, target: self, action: #selector(handlePan))
+
+        // Allow panning with trackpad
+        if #available(iOS 13.4, *) { panGesture.allowedScrollTypesMask = .continuous }
+
+        view.addGestureRecognizer(panGesture)
+
+        if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
+            interactivePopGestureRecognizer.require(toFail: panGesture)
+        }
 
         refreshContent()
     }
@@ -425,6 +439,48 @@ class MessageDetailViewController: OWSTableViewController2 {
         case .skipped:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
                                      comment: "Status label for messages which were skipped.")
+        }
+    }
+
+    private var isPanning = false
+
+    @objc
+    func handlePan(_ sender: UIPanGestureRecognizer) {
+        var xOffset = sender.translation(in: view).x
+        var xVelocity = sender.velocity(in: view).x
+
+        if CurrentAppContext().isRTL {
+            xOffset = -xOffset
+            xVelocity = -xVelocity
+        }
+
+        if xOffset < 0 { xOffset = 0 }
+
+        let percentage = xOffset / view.width
+
+        switch sender.state {
+        case .began:
+            popPercentDrivenTransition = UIPercentDrivenInteractiveTransition()
+            navigationController?.popViewController(animated: true)
+        case .changed:
+            popPercentDrivenTransition?.update(percentage)
+        case .ended:
+            let percentageThreshold: CGFloat = 0.5
+            let velocityThreshold: CGFloat = 500
+
+            let shouldFinish = (percentage >= percentageThreshold && xVelocity >= 0) || (xVelocity >= velocityThreshold)
+            if shouldFinish {
+                popPercentDrivenTransition?.finish()
+            } else {
+                popPercentDrivenTransition?.cancel()
+            }
+        case .cancelled, .failed:
+            popPercentDrivenTransition?.cancel()
+            popPercentDrivenTransition = nil
+        case .possible:
+            break
+        @unknown default:
+            break
         }
     }
 }
@@ -923,16 +979,26 @@ extension MessageDetailViewController: CVComponentDelegate {
 
 extension MessageDetailViewController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return percentDrivenTransition
+        return (animationController as? AnimationController)?.percentDrivenTransition
     }
 
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard percentDrivenTransition != nil, operation == .push else { return nil }
-        return AnimationController()
+        let animationController = AnimationController(operation: operation)
+        if operation == .push { animationController.percentDrivenTransition = pushPercentDrivenTransition }
+        if operation == .pop { animationController.percentDrivenTransition = popPercentDrivenTransition }
+        return animationController
     }
 }
 
 private class AnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+    weak var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
+
+    let operation: UINavigationController.Operation
+    required init(operation: UINavigationController.Operation) {
+        self.operation = operation
+        super.init()
+    }
+
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.35
     }
@@ -944,30 +1010,60 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
             return transitionContext.completeTransition(false)
         }
 
-        // Do our best to replicate the default nav controller push animation.
-
         let containerView = transitionContext.containerView
         let directionMultiplier: CGFloat = CurrentAppContext().isRTL ? -1 : 1
 
-        containerView.addSubview(fromView)
-        containerView.addSubview(toView)
+        let bottomViewHiddenTransform = CGAffineTransform(translationX: (fromView.width / 3) * directionMultiplier, y: 0)
+        let topViewHiddenTransform = CGAffineTransform(translationX: -fromView.width * directionMultiplier, y: 0)
 
-        let fromViewOverlay = UIView()
-        fromViewOverlay.backgroundColor = .ows_blackAlpha10
-        fromViewOverlay.alpha = 0
+        let bottomViewOverlay = UIView()
+        bottomViewOverlay.backgroundColor = .ows_blackAlpha10
 
-        fromView.addSubview(fromViewOverlay)
-        fromViewOverlay.frame = fromView.bounds
+        let topView: UIView
+        let bottomView: UIView
 
-        toView.transform = CGAffineTransform(translationX: fromView.width * directionMultiplier, y: 0)
+        let isPushing = operation == .push
+        let isInteractive = percentDrivenTransition != nil
 
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: .curveLinear) {
-            toView.transform = .identity
-            fromViewOverlay.alpha = 1
-            fromView.transform = CGAffineTransform(translationX: -(fromView.width / 3) * directionMultiplier, y: 0)
+        if isPushing {
+            topView = fromView
+            bottomView = toView
+            bottomView.transform = bottomViewHiddenTransform
+            bottomViewOverlay.alpha = 1
+        } else {
+            topView = toView
+            bottomView = fromView
+            topView.transform = topViewHiddenTransform
+            bottomViewOverlay.alpha = 0
+        }
+
+        containerView.addSubview(bottomView)
+        containerView.addSubview(topView)
+
+        bottomView.addSubview(bottomViewOverlay)
+        bottomViewOverlay.frame = bottomView.bounds
+
+        let animationOptions: UIView.AnimationOptions
+        if percentDrivenTransition != nil {
+            animationOptions = .curveLinear
+        } else {
+            animationOptions = .curveEaseInOut
+        }
+
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: animationOptions) {
+            if isPushing {
+                topView.transform = topViewHiddenTransform
+                bottomView.transform = .identity
+                bottomViewOverlay.alpha = 0
+            } else {
+                topView.transform = .identity
+                bottomView.transform = bottomViewHiddenTransform
+                bottomViewOverlay.alpha = 1
+            }
         } completion: { _ in
-            fromView.transform = .identity
-            fromViewOverlay.removeFromSuperview()
+            bottomView.transform = .identity
+            topView.transform = .identity
+            bottomViewOverlay.removeFromSuperview()
 
             if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()

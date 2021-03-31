@@ -163,10 +163,10 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
                 resetPan()
                 return
             }
-            let swipeToReplyState = self.viewState.swipeToReplyState
+            let messageSwipeActionState = self.viewState.messageSwipeActionState
             panHandler.handlePan(sender: sender,
                                  cell: cell,
-                                 swipeToReplyState: swipeToReplyState)
+                                 messageSwipeActionState: messageSwipeActionState)
         }
 
         switch sender.state {
@@ -191,10 +191,10 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         guard let cell = findCell(forGesture: sender) else {
             return nil
         }
-        let swipeToReplyState = viewState.swipeToReplyState
+        let messageSwipeActionState = viewState.messageSwipeActionState
         guard let panHandler = cell.findPanHandler(sender: sender,
                                                    componentDelegate: componentDelegate,
-                                                   swipeToReplyState: swipeToReplyState) else {
+                                                   messageSwipeActionState: messageSwipeActionState) else {
             return nil
         }
         return panHandler
@@ -203,7 +203,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
     private func startPanHandler(sender: UIPanGestureRecognizer) {
         guard let panHandler = panHandler else { return }
         guard let cell = findCell(forGesture: sender) else { return }
-        panHandler.startGesture(sender: sender, cell: cell, swipeToReplyState: viewState.swipeToReplyState)
+        panHandler.startGesture(sender: sender, cell: cell, messageSwipeActionState: viewState.messageSwipeActionState)
     }
 }
 
@@ -293,9 +293,8 @@ public struct CVLongPressHandler {
 
 public class CVPanHandler {
     public enum PanType {
-        case swipeToReply
+        case messageSwipeAction
         case scrubAudio
-        case messageDetails
     }
     public let panType: PanType
 
@@ -305,7 +304,12 @@ public class CVPanHandler {
     public var interactionId: String { renderItem.interactionUniqueId }
 
     // If the gesture ended now, would we perform a reply?
-    public var isActive = false
+    public enum ActiveDirection {
+        case left
+        case right
+        case none
+    }
+    public var activeDirection: ActiveDirection = .none
 
     public var percentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
@@ -317,7 +321,7 @@ public class CVPanHandler {
 
     func startGesture(sender: UIPanGestureRecognizer,
                       cell: CVCell,
-                      swipeToReplyState: CVSwipeToReplyState) {
+                      messageSwipeActionState: CVMessageSwipeActionState) {
         guard let delegate = self.delegate else {
             owsFailDebug("Missing delegate.")
             return
@@ -326,32 +330,32 @@ public class CVPanHandler {
         // When the gesture starts, the "reference" of the initial
         // view positions should already be set, but the progress
         // should not yet be set.
-        owsAssertDebug(swipeToReplyState.getProgress(interactionId: interactionId) == nil)
+        owsAssertDebug(messageSwipeActionState.getProgress(interactionId: interactionId) == nil)
 
         cell.startPanGesture(sender: sender,
                              panHandler: self,
                              componentDelegate: delegate,
-                             swipeToReplyState: swipeToReplyState)
+                             messageSwipeActionState: messageSwipeActionState)
 
-        if panType == .swipeToReply {
-            owsAssertDebug(swipeToReplyState.getProgress(interactionId: interactionId) != nil)
+        if panType == .messageSwipeAction {
+            owsAssertDebug(messageSwipeActionState.getProgress(interactionId: interactionId) != nil)
         }
     }
 
     func handlePan(sender: UIPanGestureRecognizer,
                    cell: CVCell,
-                   swipeToReplyState: CVSwipeToReplyState) {
+                   messageSwipeActionState: CVMessageSwipeActionState) {
         guard let delegate = self.delegate else {
             owsFailDebug("Missing delegate.")
             return
         }
 
-        if panType == .swipeToReply {
-            owsAssertDebug(swipeToReplyState.getProgress(interactionId: interactionId) != nil)
+        if panType == .messageSwipeAction {
+            owsAssertDebug(messageSwipeActionState.getProgress(interactionId: interactionId) != nil)
         }
         cell.handlePanGesture(sender: sender,
                               panHandler: self,
                               componentDelegate: delegate,
-                              swipeToReplyState: swipeToReplyState)
+                              messageSwipeActionState: messageSwipeActionState)
     }
 }

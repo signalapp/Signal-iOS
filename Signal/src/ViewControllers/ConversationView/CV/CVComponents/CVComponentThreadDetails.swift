@@ -31,7 +31,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                           cellMeasurement: CVCellMeasurement,
                           componentDelegate: CVComponentDelegate,
                           cellSelection: CVCellSelection,
-                          swipeToReplyState: CVSwipeToReplyState,
+                          messageSwipeActionState: CVMessageSwipeActionState,
                           componentView: CVComponentView) {
         owsAssertDebug(cellView.layoutMargins == .zero)
         owsAssertDebug(cellView.subviews.isEmpty)

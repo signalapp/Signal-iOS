@@ -69,7 +69,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                         componentDelegate: CVComponentDelegate,
                                         componentView: CVComponentView,
                                         renderItem: CVRenderItem,
-                                        swipeToReplyState: CVSwipeToReplyState) -> CVPanHandler? {
+                                        messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewAudioAttachment else {
@@ -102,7 +102,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                          componentDelegate: CVComponentDelegate,
                                          componentView: CVComponentView,
                                          renderItem: CVRenderItem,
-                                         swipeToReplyState: CVSwipeToReplyState) {
+                                         messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
     }
 
@@ -111,7 +111,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                           componentDelegate: CVComponentDelegate,
                                           componentView: CVComponentView,
                                           renderItem: CVRenderItem,
-                                          swipeToReplyState: CVSwipeToReplyState) {
+                                          messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewAudioAttachment else {

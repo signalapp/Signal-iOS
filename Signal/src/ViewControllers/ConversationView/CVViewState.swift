@@ -90,7 +90,7 @@ public class CVViewState: NSObject {
 
     public let cellSelection = CVCellSelection()
     public let textExpansion = CVTextExpansion()
-    public let swipeToReplyState = CVSwipeToReplyState()
+    public let messageSwipeActionState = CVMessageSwipeActionState()
 
     public var isDarkThemeEnabled: Bool = Theme.isDarkThemeEnabled
 
@@ -428,7 +428,7 @@ public class CVTextExpansion {
 
 // MARK: -
 
-public class CVSwipeToReplyState {
+public class CVMessageSwipeActionState {
     public struct Reference {
         let contentViewCenter: CGPoint
         let reactionsViewCenter: CGPoint?
@@ -460,8 +460,8 @@ public class CVSwipeToReplyState {
         progressMap[interactionId] = nil
     }
 
-    func copy() -> CVSwipeToReplyState {
-        CVSwipeToReplyState(progressMap: progressMap)
+    func copy() -> CVMessageSwipeActionState {
+        CVMessageSwipeActionState(progressMap: progressMap)
     }
 }
 

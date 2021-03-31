@@ -34,27 +34,27 @@ public protocol CVComponent: class {
                         componentDelegate: CVComponentDelegate,
                         componentView: CVComponentView,
                         renderItem: CVRenderItem,
-                        swipeToReplyState: CVSwipeToReplyState) -> CVPanHandler?
+                        messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler?
     func startPanGesture(sender: UIPanGestureRecognizer,
                          panHandler: CVPanHandler,
                          componentDelegate: CVComponentDelegate,
                          componentView: CVComponentView,
                          renderItem: CVRenderItem,
-                         swipeToReplyState: CVSwipeToReplyState)
+                         messageSwipeActionState: CVMessageSwipeActionState)
     func handlePanGesture(sender: UIPanGestureRecognizer,
                           panHandler: CVPanHandler,
                           componentDelegate: CVComponentDelegate,
                           componentView: CVComponentView,
                           renderItem: CVRenderItem,
-                          swipeToReplyState: CVSwipeToReplyState)
+                          messageSwipeActionState: CVMessageSwipeActionState)
 
     func cellDidLayoutSubviews(componentView: CVComponentView,
                                renderItem: CVRenderItem,
-                               swipeToReplyState: CVSwipeToReplyState)
+                               messageSwipeActionState: CVMessageSwipeActionState)
 
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
-                              swipeToReplyState: CVSwipeToReplyState)
+                              messageSwipeActionState: CVMessageSwipeActionState)
 }
 
 // MARK: -
@@ -69,7 +69,7 @@ public protocol CVRootComponent: CVComponent {
                    cellMeasurement: CVCellMeasurement,
                    componentDelegate: CVComponentDelegate,
                    cellSelection: CVCellSelection,
-                   swipeToReplyState: CVSwipeToReplyState,
+                   messageSwipeActionState: CVMessageSwipeActionState,
                    componentView: CVComponentView)
 
     var isDedicatedCell: Bool { get }
@@ -165,7 +165,7 @@ public class CVComponentBase: NSObject {
                                componentDelegate: CVComponentDelegate,
                                componentView: CVComponentView,
                                renderItem: CVRenderItem,
-                               swipeToReplyState: CVSwipeToReplyState) -> CVPanHandler? {
+                               messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
         Logger.verbose("Ignoring pan.")
         return nil
     }
@@ -175,7 +175,7 @@ public class CVComponentBase: NSObject {
                                 componentDelegate: CVComponentDelegate,
                                 componentView: CVComponentView,
                                 renderItem: CVRenderItem,
-                                swipeToReplyState: CVSwipeToReplyState) {
+                                messageSwipeActionState: CVMessageSwipeActionState) {
         owsFailDebug("No pan in progress.")
     }
 
@@ -184,19 +184,19 @@ public class CVComponentBase: NSObject {
                                  componentDelegate: CVComponentDelegate,
                                  componentView: CVComponentView,
                                  renderItem: CVRenderItem,
-                                 swipeToReplyState: CVSwipeToReplyState) {
+                                 messageSwipeActionState: CVMessageSwipeActionState) {
         owsFailDebug("No pan in progress.")
     }
 
     public func cellDidLayoutSubviews(componentView: CVComponentView,
                                       renderItem: CVRenderItem,
-                                      swipeToReplyState: CVSwipeToReplyState) {
+                                      messageSwipeActionState: CVMessageSwipeActionState) {
         // Do nothing.
     }
 
     public func cellDidBecomeVisible(componentView: CVComponentView,
                                      renderItem: CVRenderItem,
-                                     swipeToReplyState: CVSwipeToReplyState) {
+                                     messageSwipeActionState: CVMessageSwipeActionState) {
         // Do nothing.
     }
 

@@ -28,7 +28,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                           cellMeasurement: CVCellMeasurement,
                           componentDelegate: CVComponentDelegate,
                           cellSelection: CVCellSelection,
-                          swipeToReplyState: CVSwipeToReplyState,
+                          messageSwipeActionState: CVMessageSwipeActionState,
                           componentView: CVComponentView) {
 
         configureForRendering(componentView: componentView,
