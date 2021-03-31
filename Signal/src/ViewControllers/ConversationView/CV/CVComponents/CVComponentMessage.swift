@@ -1565,25 +1565,27 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let didChangeActiveDirection = previousActiveDirection != activeDirection
 
-        if didChangeActiveDirection {
-            panHandler.activeDirection = activeDirection
-            switch activeDirection {
-            case .left:
-                ImpactHapticFeedback.impactOccured(style: .light)
-                panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
-                componentDelegate.cvc_didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
-            case .right:
-                ImpactHapticFeedback.impactOccured(style: .light)
-                panHandler.percentDrivenTransition?.cancel()
-                panHandler.percentDrivenTransition = nil
-            case .none:
-                panHandler.percentDrivenTransition?.cancel()
-                panHandler.percentDrivenTransition = nil
-            }
+        panHandler.activeDirection = activeDirection
+
+        // Play a haptic when moving to active.
+        if didChangeActiveDirection, activeDirection != .none {
+            ImpactHapticFeedback.impactOccured(style: .light)
         }
 
         // Update the reply image styling to reflect active state
         let isStarting = sender.state == .began
+        if isStarting {
+            // Start presenting message details. We may or may not need
+            // to present it, and we want it to be ready to go immediately.
+            // We'll cancel this presentation if we end up not needing it.
+            panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
+            componentDelegate.cvc_didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
+        }
+
+        guard let percentDrivenTransition = panHandler.percentDrivenTransition else {
+            return owsFailDebug("Misisng percentDrivenTransition")
+        }
+
         if isStarting || didChangeActiveDirection {
             let shouldAnimate = didChangeActiveDirection
             let transform: CGAffineTransform
@@ -1620,22 +1622,24 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // Only finish the pan if we're actively moving in
                 // the correct direction.
                 if xVelocity <= 0 {
-                    panHandler.percentDrivenTransition?.finish()
+                    percentDrivenTransition.finish()
                 } else {
-                    panHandler.percentDrivenTransition?.cancel()
+                    percentDrivenTransition.cancel()
                 }
             case .right:
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
                 componentDelegate.cvc_didTapReplyToItem(itemViewModel)
-                panHandler.percentDrivenTransition?.cancel()
+                percentDrivenTransition.cancel()
             case .none:
-                panHandler.percentDrivenTransition?.cancel()
+                percentDrivenTransition.cancel()
             }
         } else if activeDirection == .left {
             let viewXOffset = sender.translation(in: componentDelegate.view).x
             let percentDriventTransitionProgress =
                 (abs(viewXOffset) - swipeActionOffsetThreshold) / (componentDelegate.view.width - swipeActionOffsetThreshold)
-            panHandler.percentDrivenTransition?.update(percentDriventTransitionProgress)
+            percentDrivenTransition.update(percentDriventTransitionProgress)
+        } else {
+            percentDrivenTransition.update(0)
         }
     }
 

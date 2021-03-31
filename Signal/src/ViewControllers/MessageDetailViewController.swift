@@ -284,7 +284,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         var sections = [OWSTableSection]()
 
-        let recipientStatusGroups: [MessageReceiptStatus] = [
+        let orderedStatusGroups: [MessageReceiptStatus] = [
             .read,
             .delivered,
             .sent,
@@ -294,14 +294,16 @@ class MessageDetailViewController: OWSTableViewController2 {
             .skipped
         ]
 
-        for recipientStatusGroup in recipientStatusGroups {
-            guard let recipients = messageRecipients.get()?[recipientStatusGroup], !recipients.isEmpty else { continue }
+        guard let messageRecipients = messageRecipients.get() else { return [] }
+
+        for statusGroup in orderedStatusGroups {
+            guard let recipients = messageRecipients[statusGroup], !recipients.isEmpty else { continue }
 
             let section = OWSTableSection()
             sections.append(section)
 
-            let sectionTitle = self.sectionTitle(for: recipientStatusGroup)
-            if let iconName = sectionIconName(for: recipientStatusGroup) {
+            let sectionTitle = self.sectionTitle(for: statusGroup)
+            if let iconName = sectionIconName(for: statusGroup) {
                 let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
 
                 let headerView = UIView()
