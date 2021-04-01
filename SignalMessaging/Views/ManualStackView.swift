@@ -20,8 +20,6 @@ public struct ManualStackSubviewInfo: Equatable {
     public init(measuredSize: CGSize, subview: UIView) {
         self.measuredSize = measuredSize
 
-        //                $0.subview.contentHuggingPriority(for: axis) != .defaultHigh
-
         self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
         self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
     }
@@ -189,11 +187,12 @@ open class ManualStackView: OWSStackView {
             owsFailDebug("\(name): Missing measurement.")
             return nil
         }
-        if managedSubviews.count <= measurement.subviewInfos.count {
+        if managedSubviews.count > measurement.subviewInfos.count {
             owsFailDebug("\(name): managedSubviews: \(managedSubviews.count) != subviewInfos: \(measurement.subviewInfos.count)")
         }
         let isHorizontal = axis == .horizontal
         let count = min(managedSubviews.count, measurement.subviewInfos.count)
+        // Build the list of subviews to layout and find their layout info.
         var layoutItems = [LayoutItem]()
         for index in 0..<count {
             guard let subview = managedSubviews[safe: index] else {
@@ -203,6 +202,10 @@ open class ManualStackView: OWSStackView {
             guard let subviewInfo = measurement.subviewInfos[safe: index] else {
                 owsFailDebug("\(name): Missing measuredSize.")
                 break
+            }
+            guard !subview.isHidden else {
+                // Ignore hidden subviews.
+                continue
             }
             layoutItems.append(LayoutItem(subview: subview,
                                           subviewInfo: subviewInfo,
@@ -287,6 +290,7 @@ open class ManualStackView: OWSStackView {
             Logger.warn("\(name): underflow[\(name)]: \(underflow)")
 
             // TODO: This approach is pretty crude.
+            // We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {
                 !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
             }
@@ -304,6 +308,7 @@ open class ManualStackView: OWSStackView {
             Logger.warn("\(name): overflow[\(name)]: \(overflow)")
 
             // TODO: This approach is pretty crude.
+            // We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
                 !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
             }

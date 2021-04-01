@@ -89,7 +89,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                     strokeView.backgroundColor = .ows_gray45
 
                     let noBlurView = componentView.noBlurView
-                    noBlurView.removeAllSubviews()
+                    noBlurView.reset()
                     noBlurView.configure(config: noBlurConfig,
                                          cellMeasurement: cellMeasurement,
                                          measurementKey: Self.measurementKey_noBlur,
@@ -98,7 +98,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 }
             }()
 
-            vStackView.removeAllSubviews()
+            vStackView.reset()
             vStackView.configure(config: vStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_vStackView,

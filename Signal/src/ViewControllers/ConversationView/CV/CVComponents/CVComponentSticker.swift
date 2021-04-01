@@ -60,7 +60,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             componentView.reusableMediaView = reusableMediaView
             let mediaView = reusableMediaView.mediaView
 
-            stackView.removeAllSubviews()
+            stackView.reset()
             stackView.configure(config: stackViewConfig,
                                 cellMeasurement: cellMeasurement,
                                 measurementKey: Self.measurementKey_stackView,
@@ -93,7 +93,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             placeholderView.backgroundColor = Theme.secondaryBackgroundColor
             placeholderView.layer.cornerRadius = 18
 
-            stackView.removeAllSubviews()
+            stackView.reset()
             stackView.configure(config: stackViewConfig,
                                 cellMeasurement: cellMeasurement,
                                 measurementKey: Self.measurementKey_stackView,

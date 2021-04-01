@@ -96,7 +96,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                     return blurView
                 } else {
                     let noBlurView = componentView.noBlurView
-                    noBlurView.removeAllSubviews()
+                    noBlurView.reset()
                     noBlurView.configure(config: noBlurConfig,
                                          cellMeasurement: cellMeasurement,
                                          measurementKey: Self.measurementKey_noBlur,
@@ -104,7 +104,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                     return noBlurView
                 }
             }()
-            vStackView.removeAllSubviews()
+            vStackView.reset()
             vStackView.configure(config: vStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_vStackView,
