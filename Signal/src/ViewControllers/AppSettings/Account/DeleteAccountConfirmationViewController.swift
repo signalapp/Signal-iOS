@@ -77,9 +77,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             }
         ))
         confirmSection.add(.init(
-            customCellBlock: {
-                self.buildPhoneNumberCell()
-            }, actionBlock: { [weak self] in
+            customCell: buildPhoneNumberCell(),
+            actionBlock: { [weak self] in
                 self?.phoneNumberTextField.becomeFirstResponder()
             }
         ))
@@ -325,4 +324,3 @@ extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
         return false
     }
 }
-

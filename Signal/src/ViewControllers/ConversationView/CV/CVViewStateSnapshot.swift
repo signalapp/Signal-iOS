@@ -10,7 +10,7 @@ import PromiseKit
 struct CVViewStateSnapshot: Dependencies {
 
     let textExpansion: CVTextExpansion
-    let swipeToReplyState: CVSwipeToReplyState
+    let messageSwipeActionState: CVMessageSwipeActionState
 
     // We can only measure (configure) with a given ConversationStyle.
     // So we need to capture the ConversationStyle at the time the
@@ -38,7 +38,7 @@ struct CVViewStateSnapshot: Dependencies {
                          typingIndicatorsSender: SignalServiceAddress?,
                          hasClearedUnreadMessagesIndicator: Bool) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: viewState.textExpansion.copy(),
-                            swipeToReplyState: viewState.swipeToReplyState.copy(),
+                            messageSwipeActionState: viewState.messageSwipeActionState.copy(),
                             coreState: viewState.asCoreState,
                             typingIndicatorsSender: typingIndicatorsSender,
                             isShowingSelectionUI: viewState.isShowingSelectionUI,
@@ -49,7 +49,7 @@ struct CVViewStateSnapshot: Dependencies {
 
     static func mockSnapshotForStandaloneItems(coreState: CVCoreState) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: CVTextExpansion(),
-                            swipeToReplyState: CVSwipeToReplyState(),
+                            messageSwipeActionState: CVMessageSwipeActionState(),
                             coreState: coreState,
                             typingIndicatorsSender: nil,
                             isShowingSelectionUI: false,

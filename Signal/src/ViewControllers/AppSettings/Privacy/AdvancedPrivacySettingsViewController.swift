@@ -173,8 +173,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             .color(Theme.secondaryTextAndIconColor)
         )
         sealedSenderSection.add(.init(
-            customCellBlock: {
+            customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
+                guard let self = self else { return cell }
                 cell.selectionStyle = .none
 
                 let stackView = UIStackView()
@@ -196,7 +197,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
                 let imageView = UIImageView()
                 imageView.contentMode = .center
-                imageView.setTemplateImageName("ic_secret_sender_indicator", tintColor: Theme.primaryTextColor)
+                imageView.setTemplateImageName(Theme.iconName(.sealedSenderIndicator), tintColor: Theme.primaryTextColor)
                 imageView.autoSetDimension(.width, toSize: 20)
                 stackView.addArrangedSubview(imageView)
 

@@ -658,11 +658,11 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         let cellSelection = delegate.viewState.cellSelection
-        let swipeToReplyState = delegate.viewState.swipeToReplyState
+        let messageSwipeActionState = delegate.viewState.messageSwipeActionState
         cell.configure(renderItem: renderItem,
                        componentDelegate: componentDelegate,
                        cellSelection: cellSelection,
-                       swipeToReplyState: swipeToReplyState)
+                       messageSwipeActionState: messageSwipeActionState)
         return cell
 
         //        // This must happen after load for display, since the tap

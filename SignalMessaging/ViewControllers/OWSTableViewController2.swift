@@ -318,7 +318,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         let pillLayer = CAShapeLayer()
         var separatorLayer: CAShapeLayer?
-        let backgroundView = OWSLayerView(frame: .zero) { view in
+        let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
+            guard let self = self else { return }
             var pillFrame = view.bounds.inset(by: UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
                                                                vMargin: 0))
             pillFrame.x += view.safeAreaInsets.left

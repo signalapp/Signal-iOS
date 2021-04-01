@@ -132,7 +132,7 @@ class UsernameViewController: OWSTableViewController2 {
         )
 
         section.add(.init(
-            customCellBlock: { self.nameCell(textField: self.usernameTextField) },
+            customCell: nameCell(textField: self.usernameTextField),
             actionBlock: { [weak self] in
                 self?.usernameTextField.becomeFirstResponder()
             }

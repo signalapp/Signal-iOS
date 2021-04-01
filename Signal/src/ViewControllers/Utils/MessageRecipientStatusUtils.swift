@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -88,10 +88,12 @@ public class MessageRecipientStatusUtils: NSObject {
                                                           comment: "message status for message delivered to their recipient.") + " " + timestampString
                 return (status:.delivered, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
-            let statusMessage =
-                NSLocalizedString("MESSAGE_STATUS_SENT",
-                                  comment: "status message for sent messages")
-            return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
+
+            let timestampString = DateUtil.formatPastTimestampRelativeToNow(outgoingMessage.timestamp)
+            let shortStatusMessage = timestampString
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_SENT",
+                                                      comment: "status message for sent messages") + " " + timestampString
+            return (status:.sent, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         case .skipped:
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
                                                   comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")
@@ -147,7 +149,7 @@ public class MessageRecipientStatusUtils: NSObject {
 
     @objc
     public class func description(forMessageReceiptStatus value: MessageReceiptStatus) -> String {
-        switch(value) {
+        switch value {
         case .read:
             return "read"
         case .uploading:

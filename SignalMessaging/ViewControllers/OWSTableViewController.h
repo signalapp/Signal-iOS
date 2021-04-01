@@ -91,6 +91,9 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                      customRowHeight:(CGFloat)customRowHeight
                          actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
 

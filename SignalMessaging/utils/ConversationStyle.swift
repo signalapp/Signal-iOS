@@ -15,6 +15,8 @@ public enum ConversationStyleType: UInt {
     // The style once presentation has configured the view(s).
     // It has values from the CVC view state.
     case `default`
+    // The style used in the message detail view
+    case messageDetails
 
     fileprivate var isValid: Bool { self != .initial }
 }
@@ -137,11 +139,18 @@ public class ConversationStyle: NSObject {
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
 
-        gutterLeading = thread.isGroupThread ? 12 : 16
-        gutterTrailing = 16
+        if type == .messageDetails {
+            gutterLeading = 0
+            gutterTrailing = 0
+            fullWidthGutterLeading = 0
+            fullWidthGutterTrailing = 0
+        } else {
+            gutterLeading = thread.isGroupThread ? 12 : 16
+            gutterTrailing = 16
 
-        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
-        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
+            fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
+            fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
+        }
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 

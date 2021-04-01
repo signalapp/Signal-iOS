@@ -316,25 +316,25 @@ extension ContactSupportViewController {
             OWSTableSection(title: contactHeaderText, items: [
 
                 // Filter selection
-                OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                    return OWSTableItem.buildIconNameCell(
-                        itemName: NSLocalizedString(
-                            "CONTACT_SUPPORT_FILTER_PROMPT",
-                            comment: "Prompt telling the user to select a filter for their support request."
-                        ),
-                        accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
-                            "CONTACT_SUPPORT_SELECT_A_FILTER",
-                            comment: "Placeholder telling user they must select a filter."
-                        ),
-                        accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
-                    )
-                }, actionBlock: { [weak self] in
+                OWSTableItem(customCell: OWSTableItem.buildIconNameCell(
+                    itemName: NSLocalizedString(
+                        "CONTACT_SUPPORT_FILTER_PROMPT",
+                        comment: "Prompt telling the user to select a filter for their support request."
+                    ),
+                    accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
+                        "CONTACT_SUPPORT_SELECT_A_FILTER",
+                        comment: "Placeholder telling user they must select a filter."
+                    ),
+                    accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
+                ),
+                actionBlock: { [weak self] in
                     self?.showFilterPicker()
                 }),
 
                 // Description field
-                OWSTableItem(customCellBlock: {
+                OWSTableItem(customCellBlock: { [weak self] in
                     let cell = OWSTableItem.newCell()
+                    guard let self = self else { return cell }
                     cell.contentView.addSubview(self.descriptionField)
                     self.descriptionField.autoPinEdgesToSuperviewMargins()
                     self.descriptionField.autoSetDimension(.height, toSize: 125, relation: .greaterThanOrEqual)

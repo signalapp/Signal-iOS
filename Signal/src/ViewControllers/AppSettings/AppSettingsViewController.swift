@@ -50,7 +50,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         let profileSection = OWSTableSection()
         profileSection.add(.init(
-            customCellBlock: { self.profileCell() },
+            customCell: profileCell(),
             actionBlock: { [weak self] in
                 let vc = ProfileSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)

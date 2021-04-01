@@ -140,7 +140,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         let namesSection = OWSTableSection()
         func addTextField(_ textField: UITextField) {
             namesSection.add(.init(
-                customCellBlock: { self.nameCell(textField: textField) },
+                customCell: nameCell(textField: textField),
                 actionBlock: {
                     textField.becomeFirstResponder()
                 }

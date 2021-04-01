@@ -42,7 +42,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var hasSenderAvatarLayout: Bool {
         // Return true if space for a sender avatar appears in the layout.
         // Avatar itself might not appear due to de-duplication.
-        isIncoming && isGroupThread && senderAvatar != nil
+        isIncoming && isGroupThread && senderAvatar != nil && conversationStyle.type != .messageDetails
     }
     private var hasSenderAvatar: Bool {
         // Return true if a sender avatar appears.
@@ -71,8 +71,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var bottomButtons: CVComponent?
 
-    private var swipeToReplyProgress: CVSwipeToReplyState.Progress?
-    private var swipeToReplyReference: CVSwipeToReplyState.Reference?
+    private var swipeActionProgress: CVMessageSwipeActionState.Progress?
+    private var swipeActionReference: CVMessageSwipeActionState.Reference?
 
     private var hasSendFailureBadge = false
 
@@ -278,7 +278,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                           cellMeasurement: CVCellMeasurement,
                           componentDelegate: CVComponentDelegate,
                           cellSelection: CVCellSelection,
-                          swipeToReplyState: CVSwipeToReplyState,
+                          messageSwipeActionState: CVMessageSwipeActionState,
                           componentView: CVComponentView) {
 
         guard let componentView = componentView as? CVComponentViewMessage else {
@@ -302,8 +302,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let bottomInset = reactions != nil ? reactionsVProtrusion : 0
         componentView.layoutConstraints.append(rootView.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomInset))
 
-        self.swipeToReplyReference = nil
-        self.swipeToReplyProgress = swipeToReplyState.getProgress(interactionId: interaction.uniqueId)
+        self.swipeActionReference = nil
+        self.swipeActionProgress = messageSwipeActionState.getProgress(interactionId: interaction.uniqueId)
 
         var leadingView: UIView?
         if isShowingSelectionUI {
@@ -536,7 +536,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             cellHStack.addArrangedSubview(subview)
         }
 
-        let swipeToReplyContentView: UIView
+        let swipeActionContentView: UIView
         if let bubbleView = outerBubbleView {
             outerContentView.setContentHuggingLow()
             outerContentView.setCompressionResistanceLow()
@@ -545,10 +545,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             bubbleView.setContentHuggingLow()
             bubbleView.setCompressionResistanceLow()
             cellHStack.addArrangedSubview(bubbleView)
-            swipeToReplyContentView = bubbleView
+            swipeActionContentView = bubbleView
 
             if let componentAndView = findActiveComponentAndView(key: .bodyMedia,
-                                                          messageView: componentView) {
+                                                                 messageView: componentView) {
                 if let bodyMediaComponent = componentAndView.component as? CVComponentBodyMedia {
                     if let bubbleViewPartner = bodyMediaComponent.bubbleViewPartner(componentView: componentAndView.componentView) {
                         bubbleView.addPartnerView(bubbleViewPartner)
@@ -561,17 +561,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             outerContentView.setContentHuggingLow()
             outerContentView.setCompressionResistanceLow()
             cellHStack.addArrangedSubview(outerContentView)
-            swipeToReplyContentView = outerContentView
+            swipeActionContentView = outerContentView
         }
 
-        componentView.swipeToReplyContentView = swipeToReplyContentView
+        componentView.swipeActionContentView = swipeActionContentView
         let swipeToReplyIconView = componentView.swipeToReplyIconView
         swipeToReplyIconView.contentMode = .center
         swipeToReplyIconView.alpha = 0
         cellHStack.addSubview(swipeToReplyIconView)
         cellHStack.sendSubviewToBack(swipeToReplyIconView)
-        swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeToReplyContentView)
-        swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeToReplyContentView, withOffset: 8)
+        swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeActionContentView)
+        swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeActionContentView, withOffset: 8)
 
         if conversationStyle.hasWallpaper {
             swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
@@ -1126,7 +1126,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate var swipeToReplyContentView: UIView?
+        fileprivate var swipeActionContentView: UIView?
 
         fileprivate let swipeToReplyIconView = UIImageView()
 
@@ -1249,7 +1249,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func reset() {
-            removeSwipeToReplyAnimations()
+            removeSwipeActionAnimations()
 
             if !isDedicatedCellView {
                 cellHStack.reset()
@@ -1266,7 +1266,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             bubbleView.clearPartnerViews()
 
             if !isDedicatedCellView {
-                swipeToReplyContentView = nil
+                swipeActionContentView = nil
                 swipeToReplyIconView.image = nil
             }
             swipeToReplyIconView.alpha = 0
@@ -1298,8 +1298,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             layoutConstraints = []
         }
 
-        fileprivate func removeSwipeToReplyAnimations() {
-            swipeToReplyContentView?.layer.removeAllAnimations()
+        fileprivate func removeSwipeActionAnimations() {
+            swipeActionContentView?.layer.removeAllAnimations()
             avatarView.layer.removeAllAnimations()
             swipeToReplyIconView.layer.removeAllAnimations()
             reactionsView?.rootView.layer.removeAllAnimations()
@@ -1312,7 +1312,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                         componentDelegate: CVComponentDelegate,
                                         componentView: CVComponentView,
                                         renderItem: CVRenderItem,
-                                        swipeToReplyState: CVSwipeToReplyState) -> CVPanHandler? {
+                                        messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewMessage else {
@@ -1327,24 +1327,20 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                            componentDelegate: componentDelegate,
                                                            componentView: subcomponentView,
                                                            renderItem: renderItem,
-                                                           swipeToReplyState: swipeToReplyState) {
+                                                           messageSwipeActionState: messageSwipeActionState) {
             return panHandler
         }
 
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
-            return nil
-        }
-        tryToUpdateSwipeToReplyReference(componentView: componentView,
-                                         renderItem: renderItem,
-                                         swipeToReplyState: swipeToReplyState)
-        guard swipeToReplyReference != nil else {
+        tryToUpdateSwipeActionReference(componentView: componentView,
+                                        renderItem: renderItem,
+                                        messageSwipeActionState: messageSwipeActionState)
+        guard swipeActionReference != nil else {
             owsFailDebug("Missing reference[\(renderItem.interactionUniqueId)].")
             return nil
         }
 
         return CVPanHandler(delegate: componentDelegate,
-                            panType: .swipeToReply,
+                            panType: .messageSwipeAction,
                             renderItem: renderItem)
     }
 
@@ -1353,7 +1349,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                          componentDelegate: CVComponentDelegate,
                                          componentView: CVComponentView,
                                          renderItem: CVRenderItem,
-                                         swipeToReplyState: CVSwipeToReplyState) {
+                                         messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewMessage else {
@@ -1374,19 +1370,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                             componentDelegate: componentDelegate,
                                             componentView: subcomponentView,
                                             renderItem: renderItem,
-                                            swipeToReplyState: swipeToReplyState)
-        case .swipeToReply:
-            tryToUpdateSwipeToReplyReference(componentView: componentView,
-                                             renderItem: renderItem,
-                                             swipeToReplyState: swipeToReplyState)
-            updateSwipeToReplyProgress(sender: sender,
-                                       panHandler: panHandler,
-                                       componentDelegate: componentDelegate,
-                                       renderItem: renderItem,
-                                       componentView: componentView,
-                                       swipeToReplyState: swipeToReplyState,
-                                       hasFinished: false)
-            tryToApplySwipeToReply(componentView: componentView, isAnimated: false)
+                                            messageSwipeActionState: messageSwipeActionState)
+        case .messageSwipeAction:
+            tryToUpdateSwipeActionReference(componentView: componentView,
+                                            renderItem: renderItem,
+                                            messageSwipeActionState: messageSwipeActionState)
+            updateSwipeActionProgress(sender: sender,
+                                      panHandler: panHandler,
+                                      componentDelegate: componentDelegate,
+                                      renderItem: renderItem,
+                                      componentView: componentView,
+                                      messageSwipeActionState: messageSwipeActionState,
+                                      hasFinished: false)
+            tryToApplySwipeAction(componentView: componentView, isAnimated: false)
         }
     }
 
@@ -1395,7 +1391,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                           componentDelegate: CVComponentDelegate,
                                           componentView: CVComponentView,
                                           renderItem: CVRenderItem,
-                                          swipeToReplyState: CVSwipeToReplyState) {
+                                          messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewMessage else {
@@ -1415,8 +1411,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                              componentDelegate: componentDelegate,
                                              componentView: subcomponentView,
                                              renderItem: renderItem,
-                                             swipeToReplyState: swipeToReplyState)
-        case .swipeToReply:
+                                             messageSwipeActionState: messageSwipeActionState)
+        case .messageSwipeAction:
             let hasFinished: Bool
             switch sender.state {
             case .changed:
@@ -1424,72 +1420,72 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .ended:
                 hasFinished = true
             default:
-                clearSwipeToReply(componentView: componentView,
-                                  renderItem: renderItem,
-                                  swipeToReplyState: swipeToReplyState,
-                                  isAnimated: false)
+                clearSwipeAction(componentView: componentView,
+                                 renderItem: renderItem,
+                                 messageSwipeActionState: messageSwipeActionState,
+                                 isAnimated: false)
                 return
             }
-            updateSwipeToReplyProgress(sender: sender,
-                                       panHandler: panHandler,
-                                       componentDelegate: componentDelegate,
-                                       renderItem: renderItem,
-                                       componentView: componentView,
-                                       swipeToReplyState: swipeToReplyState,
-                                       hasFinished: hasFinished)
-            let hasFailed = sender.state == .failed || sender.state == .cancelled
+            updateSwipeActionProgress(sender: sender,
+                                      panHandler: panHandler,
+                                      componentDelegate: componentDelegate,
+                                      renderItem: renderItem,
+                                      componentView: componentView,
+                                      messageSwipeActionState: messageSwipeActionState,
+                                      hasFinished: hasFinished)
+            let hasFailed = [.failed, .cancelled].contains(sender.state)
             let isAnimated = !hasFailed
-            tryToApplySwipeToReply(componentView: componentView, isAnimated: isAnimated)
+            tryToApplySwipeAction(componentView: componentView, isAnimated: isAnimated)
             if sender.state == .ended {
-                clearSwipeToReply(componentView: componentView,
-                                  renderItem: renderItem,
-                                  swipeToReplyState: swipeToReplyState,
-                                  isAnimated: true)
+                clearSwipeAction(componentView: componentView,
+                                 renderItem: renderItem,
+                                 messageSwipeActionState: messageSwipeActionState,
+                                 isAnimated: true)
             }
         }
     }
 
     public override func cellDidLayoutSubviews(componentView: CVComponentView,
                                                renderItem: CVRenderItem,
-                                               swipeToReplyState: CVSwipeToReplyState) {
+                                               messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewMessage else {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToUpdateSwipeToReplyReference(componentView: componentView,
-                                         renderItem: renderItem,
-                                         swipeToReplyState: swipeToReplyState)
-        tryToApplySwipeToReply(componentView: componentView, isAnimated: false)
+        tryToUpdateSwipeActionReference(componentView: componentView,
+                                        renderItem: renderItem,
+                                        messageSwipeActionState: messageSwipeActionState)
+        tryToApplySwipeAction(componentView: componentView, isAnimated: false)
     }
 
     public override func cellDidBecomeVisible(componentView: CVComponentView,
                                               renderItem: CVRenderItem,
-                                              swipeToReplyState: CVSwipeToReplyState) {
+                                              messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewMessage else {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToUpdateSwipeToReplyReference(componentView: componentView,
-                                         renderItem: renderItem,
-                                         swipeToReplyState: swipeToReplyState)
-        tryToApplySwipeToReply(componentView: componentView, isAnimated: false)
+        tryToUpdateSwipeActionReference(componentView: componentView,
+                                        renderItem: renderItem,
+                                        messageSwipeActionState: messageSwipeActionState)
+        tryToApplySwipeAction(componentView: componentView, isAnimated: false)
     }
 
-    private func tryToUpdateSwipeToReplyReference(componentView: CVComponentViewMessage,
-                                                  renderItem: CVRenderItem,
-                                                  swipeToReplyState: CVSwipeToReplyState) {
+    private func tryToUpdateSwipeActionReference(componentView: CVComponentViewMessage,
+                                                 renderItem: CVRenderItem,
+                                                 messageSwipeActionState: CVMessageSwipeActionState) {
         AssertIsOnMainThread()
 
-        guard swipeToReplyReference == nil else {
+        guard swipeActionReference == nil else {
             // Reference already set.
             return
         }
 
-        guard let contentView = componentView.swipeToReplyContentView else {
+        guard let contentView = componentView.swipeActionContentView else {
             owsFailDebug("Missing outerContentView.")
             return
         }
@@ -1508,54 +1504,99 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let reactionsView = componentView.reactionsView {
             reactionsViewCenter = reactionsView.rootView.center
         }
-        let reference = CVSwipeToReplyState.Reference(contentViewCenter: contentViewCenter,
-                                                      reactionsViewCenter: reactionsViewCenter,
-                                                      avatarViewCenter: avatarViewCenter,
-                                                      iconViewCenter: iconViewCenter)
-        self.swipeToReplyReference = reference
+        let reference = CVMessageSwipeActionState.Reference(contentViewCenter: contentViewCenter,
+                                                            reactionsViewCenter: reactionsViewCenter,
+                                                            avatarViewCenter: avatarViewCenter,
+                                                            iconViewCenter: iconViewCenter)
+        self.swipeActionReference = reference
     }
 
-    private var swipeToReplyThreshold: CGFloat = 55
+    private let swipeActionOffsetThreshold: CGFloat = 55
 
-    private func updateSwipeToReplyProgress(sender: UIPanGestureRecognizer,
-                                            panHandler: CVPanHandler,
-                                            componentDelegate: CVComponentDelegate,
-                                            renderItem: CVRenderItem,
-                                            componentView: CVComponentViewMessage,
-                                            swipeToReplyState: CVSwipeToReplyState,
-                                            hasFinished: Bool) {
+    private func updateSwipeActionProgress(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        renderItem: CVRenderItem,
+        componentView: CVComponentViewMessage,
+        messageSwipeActionState: CVMessageSwipeActionState,
+        hasFinished: Bool
+    ) {
         AssertIsOnMainThread()
 
         var xOffset = sender.translation(in: componentView.rootView).x
+        var xVelocity = sender.velocity(in: componentView.rootView).x
+
         // Invert positions for RTL logic, since the user is swiping in the opposite direction.
         if CurrentAppContext().isRTL {
             xOffset = -xOffset
+            xVelocity = -xVelocity
         }
-        let hasFailed = sender.state == .failed || sender.state == .cancelled
+
+        let hasFailed = [.failed, .cancelled].contains(sender.state)
         let storedOffset = (hasFailed || hasFinished) ? 0 : xOffset
-        let progress = CVSwipeToReplyState.Progress(xOffset: storedOffset)
-        swipeToReplyState.setProgress(interactionId: renderItem.interactionUniqueId,
-                                      progress: progress)
-        self.swipeToReplyProgress = progress
+        let progress = CVMessageSwipeActionState.Progress(xOffset: storedOffset)
+        messageSwipeActionState.setProgress(
+            interactionId: renderItem.interactionUniqueId,
+            progress: progress
+        )
+        self.swipeActionProgress = progress
 
         let swipeToReplyIconView = componentView.swipeToReplyIconView
 
-        let isReplyActive = xOffset >= swipeToReplyThreshold
+        let previousActiveDirection = panHandler.activeDirection
+        let activeDirection: CVPanHandler.ActiveDirection
+        switch xOffset {
+        case let x where x >= swipeActionOffsetThreshold:
+            // We're doing a message swipe action. We should
+            // only become active if this message allows
+            // swipe-to-reply.
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            if componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) {
+                activeDirection = .right
+            } else {
+                activeDirection = .none
+            }
+        case let x where x <= -swipeActionOffsetThreshold:
+            activeDirection = .left
+        default:
+            activeDirection = .none
+        }
 
-        // If we're transitioning to the active state, play haptic feedback.
-        if isReplyActive, !panHandler.isReplyActive {
-            ImpactHapticFeedback.impactOccured(style: .light)
+        let didChangeActiveDirection = previousActiveDirection != activeDirection
+
+        panHandler.activeDirection = activeDirection
+
+        // Play a haptic when moving to active.
+        if didChangeActiveDirection {
+            switch activeDirection {
+            case .right:
+                ImpactHapticFeedback.impactOccured(style: .light)
+                panHandler.percentDrivenTransition?.cancel()
+                panHandler.percentDrivenTransition = nil
+            case .left:
+                ImpactHapticFeedback.impactOccured(style: .light)
+                panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
+                componentDelegate.cvc_didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
+            case .none:
+                panHandler.percentDrivenTransition?.cancel()
+                panHandler.percentDrivenTransition = nil
+            }
         }
 
         // Update the reply image styling to reflect active state
         let isStarting = sender.state == .began
-        let didChange = isReplyActive != panHandler.isReplyActive
-        let shouldUpdateViews = isStarting || didChange
-        if shouldUpdateViews {
-            let shouldAnimate = didChange
+        if isStarting {
+            // Prepare the message detail view as soon as we start doing
+            // any gesture, we may or may not want to present it.
+            componentDelegate.cvc_prepareMessageDetailForInteractivePresentation(CVItemViewModelImpl(renderItem: renderItem))
+        }
+
+        if isStarting || didChangeActiveDirection {
+            let shouldAnimate = didChangeActiveDirection
             let transform: CGAffineTransform
             let tintColor: UIColor
-            if isReplyActive {
+            if activeDirection == .right {
                 transform = CGAffineTransform(scaleX: 1.16, y: 1.16)
                 tintColor = isDarkThemeEnabled ? .ows_gray25 : .ows_gray75
             } else {
@@ -1565,38 +1606,64 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             swipeToReplyIconView.layer.removeAllAnimations()
             swipeToReplyIconView.tintColor = tintColor
             if shouldAnimate {
-                UIView.animate(withDuration: 0.2,
-                               delay: 0,
-                               usingSpringWithDamping: 0.06,
-                               initialSpringVelocity: 0.8,
-                               options: [.curveEaseInOut, .beginFromCurrentState],
-                               animations: {
-                                swipeToReplyIconView.transform = transform
-                               },
-                               completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0,
+                    usingSpringWithDamping: 0.06,
+                    initialSpringVelocity: 0.8,
+                    options: [.curveEaseInOut, .beginFromCurrentState],
+                    animations: {
+                        swipeToReplyIconView.transform = transform
+                    },
+                    completion: nil
+                )
             } else {
                 swipeToReplyIconView.transform = transform
             }
         }
 
-        panHandler.isReplyActive = isReplyActive
-
-        if panHandler.isReplyActive && hasFinished {
-            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            componentDelegate.cvc_didTapReplyToItem(itemViewModel)
+        if hasFinished {
+            switch activeDirection {
+            case .left:
+                guard let percentDrivenTransition = panHandler.percentDrivenTransition else {
+                    return owsFailDebug("Missing percentDrivenTransition")
+                }
+                // Only finish the pan if we're actively moving in
+                // the correct direction.
+                if xVelocity <= 0 {
+                    percentDrivenTransition.finish()
+                } else {
+                    percentDrivenTransition.cancel()
+                }
+            case .right:
+                let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+                componentDelegate.cvc_didTapReplyToItem(itemViewModel)
+            case .none:
+                break
+            }
+        } else if activeDirection == .left {
+            guard let percentDrivenTransition = panHandler.percentDrivenTransition else {
+                return owsFailDebug("Missing percentDrivenTransition")
+            }
+            let viewXOffset = sender.translation(in: componentDelegate.view).x
+            let percentDriventTransitionProgress =
+                (abs(viewXOffset) - swipeActionOffsetThreshold) / (componentDelegate.view.width - swipeActionOffsetThreshold)
+            percentDrivenTransition.update(percentDriventTransitionProgress)
         }
     }
 
-    private func tryToApplySwipeToReply(componentView: CVComponentViewMessage,
-                                        isAnimated: Bool) {
+    private func tryToApplySwipeAction(
+        componentView: CVComponentViewMessage,
+        isAnimated: Bool
+    ) {
         AssertIsOnMainThread()
 
-        guard let contentView = componentView.swipeToReplyContentView else {
+        guard let contentView = componentView.swipeActionContentView else {
             owsFailDebug("Missing outerContentView.")
             return
         }
-        guard let swipeToReplyReference = swipeToReplyReference,
-              let swipeToReplyProgress = swipeToReplyProgress else {
+        guard let swipeActionReference = swipeActionReference,
+              let swipeActionProgress = swipeActionProgress else {
             return
         }
         let swipeToReplyIconView = componentView.swipeToReplyIconView
@@ -1605,30 +1672,42 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         // Scale the translation above or below the desired range,
         // to produce an elastic feeling when you overscroll.
-        var alpha = swipeToReplyProgress.xOffset
-        if alpha < 0 {
-            alpha = alpha / 4
-        } else if alpha > swipeToReplyThreshold {
-            let overflow = alpha - swipeToReplyThreshold
-            alpha = swipeToReplyThreshold + overflow / 4
+        var alpha = swipeActionProgress.xOffset
+
+        let isSwipingLeft = alpha < 0
+
+        if isSwipingLeft, alpha < -swipeActionOffsetThreshold {
+            // If we're swiping left, stop moving the message
+            // after we reach the threshold.
+            alpha = -swipeActionOffsetThreshold
+        } else if alpha > swipeActionOffsetThreshold {
+            let overflow = alpha - swipeActionOffsetThreshold
+            alpha = swipeActionOffsetThreshold + overflow / 4
         }
         let position = CurrentAppContext().isRTL ? -alpha : alpha
-        // The swipe content moves at 1/8th the speed of the message bubble,
-        // so that it reveals itself from underneath with an elastic feel.
-        let slowPosition = position / 8
+
+        let slowPosition: CGFloat
+        if isSwipingLeft {
+            slowPosition = position
+        } else {
+            // When swiping right (swipe-to-reply) the swipe content moves at
+            // 1/8th the speed of the message bubble, so that it reveals itself
+            // from underneath with an elastic feel.
+            slowPosition = position / 8
+        }
 
         var iconAlpha: CGFloat = 1
         let useSwipeFadeTransition = isBorderless
         if useSwipeFadeTransition {
-            iconAlpha = CGFloatInverseLerp(alpha, 0, swipeToReplyThreshold).clamp01()
+            iconAlpha = CGFloatInverseLerp(alpha, 0, swipeActionOffsetThreshold).clamp01()
         }
 
         let animations = {
             swipeToReplyIconView.alpha = iconAlpha
-            contentView.center = swipeToReplyReference.contentViewCenter.plusX(position)
-            avatarView.center = swipeToReplyReference.avatarViewCenter.plusX(slowPosition)
-            iconView.center = swipeToReplyReference.iconViewCenter.plusX(slowPosition)
-            if let reactionsViewCenter = swipeToReplyReference.reactionsViewCenter,
+            contentView.center = swipeActionReference.contentViewCenter.plusX(position)
+            avatarView.center = swipeActionReference.avatarViewCenter.plusX(slowPosition)
+            iconView.center = swipeActionReference.iconViewCenter.plusX(slowPosition)
+            if let reactionsViewCenter = swipeActionReference.reactionsViewCenter,
                let reactionsView = componentView.reactionsView {
                 reactionsView.rootView.center = reactionsViewCenter.plusX(position)
             }
@@ -1640,36 +1719,36 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                            animations: animations,
                            completion: nil)
         } else {
-            componentView.removeSwipeToReplyAnimations()
+            componentView.removeSwipeActionAnimations()
             animations()
         }
     }
 
-    private func clearSwipeToReply(componentView: CVComponentViewMessage,
-                                   renderItem: CVRenderItem,
-                                   swipeToReplyState: CVSwipeToReplyState,
-                                   isAnimated: Bool) {
+    private func clearSwipeAction(componentView: CVComponentViewMessage,
+                                  renderItem: CVRenderItem,
+                                  messageSwipeActionState: CVMessageSwipeActionState,
+                                  isAnimated: Bool) {
         AssertIsOnMainThread()
 
-        swipeToReplyState.resetProgress(interactionId: renderItem.interactionUniqueId)
+        messageSwipeActionState.resetProgress(interactionId: renderItem.interactionUniqueId)
 
-        guard let contentView = componentView.swipeToReplyContentView else {
+        guard let contentView = componentView.swipeActionContentView else {
             owsFailDebug("Missing outerContentView.")
             return
         }
         let avatarView = componentView.avatarView
         let iconView = componentView.swipeToReplyIconView
-        guard let swipeToReplyReference = swipeToReplyReference else {
+        guard let swipeActionReference = swipeActionReference else {
             return
         }
 
         let animations = {
-            contentView.center = swipeToReplyReference.contentViewCenter
-            avatarView.center = swipeToReplyReference.avatarViewCenter
-            iconView.center = swipeToReplyReference.iconViewCenter
+            contentView.center = swipeActionReference.contentViewCenter
+            avatarView.center = swipeActionReference.avatarViewCenter
+            iconView.center = swipeActionReference.iconViewCenter
             iconView.alpha = 0
 
-            if let reactionsViewCenter = swipeToReplyReference.reactionsViewCenter,
+            if let reactionsViewCenter = swipeActionReference.reactionsViewCenter,
                let reactionsView = componentView.reactionsView {
                 reactionsView.rootView.center = reactionsViewCenter
             }
@@ -1678,11 +1757,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isAnimated {
             UIView.animate(withDuration: 0.2, animations: animations)
         } else {
-            componentView.removeSwipeToReplyAnimations()
+            componentView.removeSwipeActionAnimations()
             animations()
         }
 
-        self.swipeToReplyProgress = nil
+        self.swipeActionProgress = nil
     }
 }
 

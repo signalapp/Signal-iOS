@@ -219,9 +219,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 
         return OWSTableSection(title: header, items: [
             OWSTableItem(
-                customCellBlock: {
-                    NameCollisionCell.createWithModel(model, actions: actions)
-                },
+                customCell: NameCollisionCell.createWithModel(model, actions: actions),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
                     MemberActionSheet(

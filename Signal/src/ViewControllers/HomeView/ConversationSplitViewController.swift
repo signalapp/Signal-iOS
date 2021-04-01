@@ -19,6 +19,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     @objc private(set) weak var selectedConversationViewController: ConversationViewController?
 
+    weak var navigationTransitionDelegate: UINavigationControllerDelegate?
+
     /// The thread, if any, that is currently presented in the view hieararchy. It may be currently
     /// covered by a modal presentation or a pushed view controller.
     @objc var selectedThread: TSThread? {
@@ -540,6 +542,22 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
         // the current conversation is no longer selected.
         guard isCollapsed, viewController is ConversationListViewController else { return }
         selectedConversationViewController = nil
+    }
+
+    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return navigationTransitionDelegate?.navigationController?(
+            navigationController,
+            interactionControllerFor: animationController
+        )
+    }
+
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return navigationTransitionDelegate?.navigationController?(
+            navigationController,
+            animationControllerFor: operation,
+            from: fromVC,
+            to: toVC
+        )
     }
 }
 
