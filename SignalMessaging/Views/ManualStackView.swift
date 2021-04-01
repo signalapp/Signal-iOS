@@ -67,7 +67,6 @@ open class ManualStackView: OWSStackView {
         func apply() {
             if subview.frame != frame {
                 subview.frame = frame
-                Logger.verbose("---- applying layout: \(frame) to: \(subview)")
             }
         }
     }
@@ -367,14 +366,6 @@ open class ManualStackView: OWSStackView {
             layoutItem.frame.y += layoutMargins.top
         }
         let arrangementItems = layoutItems.map { $0.asArrangementItem }
-
-        Logger.verbose("---- name: \(name)")
-        Logger.verbose("---- bounds: \(bounds)")
-        Logger.verbose("---- config: \(asConfig.debugDescription)")
-        for arrangementItem in arrangementItems {
-            Logger.verbose("---- built layout: \(arrangementItem.frame) to: \(arrangementItem.subview)")
-        }
-
         return Arrangement(items: arrangementItems)
     }
 
