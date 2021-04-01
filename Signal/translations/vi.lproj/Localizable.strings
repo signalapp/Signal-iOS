@@ -310,63 +310,6 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Trở lại";
 
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Không thể xuất dữ liệu sao lưu.";
-
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Phản hồi Dịch vụ Không hợp lệ";
-
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Đang Dọn dẹp Sao lưu";
-
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Đang tiến hành sao lưu";
-
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Đang xuất dữ liệu";
-
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Đang xuất bản sao lưu";
-
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Đang tải lên bản sao lưu";
-
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Không thể nhập bản sao lưu.";
-
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Đang thiết đặt sao lưu";
-
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Đang tải xuống dữ liệu sao lưu";
-
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Đang hoàn tất sao lưu";
-
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Đang nhập bản sao lưu.";
-
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Đang khôi phục dữ liệu";
-
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Đang khôi phục các tệp";
-
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Hiện có sẵn bản sao lưu";
-
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Đang khôi phục bản sao lưu";
-
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Tiến độ";
-
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Trạng thái";
-
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Lỗi sao lưu";
-
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Tắt biểu ngữ";
 
@@ -568,27 +511,6 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Chọn Quốc gia";
 
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Không khôi phục";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Không thể xác định được có thể khôi phục bằng bản sao lưu hay không.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "Lỗi";
-
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Khôi phục";
-
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal không thể xác định được tình trạng tài khoản iCloud của bạn. Hãy đăng nhập Tài khoản iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
-
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Không có Tài khoản iCloud. Hãy đăng nhập Tài khoản iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
-
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal đã bị từ chối truy cập tài khoản iCloud để sao lưu. Hãy cấp cho Signal quyền truy cập Tài khoản iCloud trong cài đặt iOS để sao lưu dữ liệu Signal.";
-
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Chọn màu của tin nhắn gửi đi trong hộp thoại này.";
 
@@ -754,6 +676,39 @@
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Liên lạc Hỗ trợ";
 
+/* The localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+
+/* A brief localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Yêu cầu Tính năng";
+
+/* The localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+
+/* A brief localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+
+/* The localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+
+/* A brief localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Khác";
+
+/* Prompt telling the user to select a filter for their support request. */
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Chúng tôi có thể giúp gì cho bạn?";
+
+/* The localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+
+/* A brief localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+
+/* The localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+
+/* A brief localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal không thể hoàn thành yêu cầu hỗ trợ của bạn. ";
 
@@ -765,6 +720,9 @@
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Gửi Ghi chú Lỗi?";
+
+/* Placeholder telling user they must select a filter. */
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Gửi với Ghi chú Lỗi";
@@ -910,8 +868,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Nhắc tên";
 
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Im lặng";
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
+/* Label for button to mute a thread forever. */
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+
+/* Label for button to mute a thread for eight hours. */
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Im lặng";
@@ -920,19 +884,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Không tắt thông báo";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Tạm im một ngày";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 ngày";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Tạm im một giờ";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 giờ";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Tạm im một phút";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 phút";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Tạm im một tuần";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 tuần";
 
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Tạm im một năm";
+/* Indicates that this thread is muted forever. */
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "cho đến %@";
@@ -3028,9 +2992,6 @@
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Bạn đã đạt đến giới hạn số thiết bị có thể liên kết với tài khoản của mình. Vui lòng gỡ bỏ một thiết bị và thử lại.";
 
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Bạn sẽ không nhận được thông báo cho các cuộc trò chuyện đã tắt tiếng.";
-
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Đã tắt tiếng";
 
@@ -3225,6 +3186,12 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Thêm dấu chỉ vào tin nhắn để chứng minh bạn là người thật";
+
+/* Explanation on the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+
+/* Title of the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Đăng kí iPad";
@@ -3518,7 +3485,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "Máy nhắn tin";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Không rõ";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Số điện thoại";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Công ty";
@@ -3945,9 +3912,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Chào mừng!";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Hãy thử lại";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Bạn đã thử quá nhiều lần. Vui lòng chờ một phút trước khi thử lại.";
@@ -4444,54 +4408,6 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (mặc định)";
 
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Sao lưu";
-
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Sao lưu Ngay";
-
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Hủy Sao lưu";
-
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sao lưu đã được bật";
-
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "Trạng thái iCloud";
-
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Khôi phục từ Sao lưu Không thành công";
-
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Khôi phục từ Sao lưu Không hoạt động";
-
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Đang Khôi phục từ Sao lưu";
-
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Khôi phục từ Sao lưu Thành công";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Bước";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Tiến độ";
-
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Trạng thái";
-
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Sao lưu Không thành công";
-
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Đang chờ";
-
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Đang sao lưu";
-
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sao lưu Thành công";
-
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Thêm Người dùng Bị chặn";
 
@@ -4907,7 +4823,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Liên lạc chúng tôi";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Kể với chúng tôi chuyện gì đang xảy ra";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Nói cho chúng tôi biết về vấn đề:";
@@ -5118,6 +5034,12 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Thiết bị của bạn không hỗ trợ tính năng này.";
+
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Xác minh";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Cập nhật Liên hệ";

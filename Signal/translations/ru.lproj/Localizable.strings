@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Не сейчас";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "О Signal";
+"ABOUT_SECTION_TITLE" = "О приложении Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Принять новый код безопасности";
@@ -310,63 +310,6 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Назад";
 
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Не удалось экспортировать резервную копию.";
-
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Неверный ответ сервиса";
-
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Очистка резервной копии";
-
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Инициализация резервного копирования";
-
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Экспортируем данные";
-
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Экспортируем резервную копию";
-
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Отправляем резервную копию";
-
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Не удалось импортировать резервную копию.";
-
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Настраиваем резервную копию";
-
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Скачиваем резервную копию";
-
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Завершаем обработку";
-
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Импортируем резервную копию.";
-
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Восстанавливаем базу данных";
-
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Восстанавливаем файлы";
-
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Доступна резервная копия";
-
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Восстановление резервной копии";
-
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Прогресс";
-
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Статус";
-
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Неожиданная ошибка резервной копии";
-
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Закрыть баннер";
 
@@ -568,27 +511,6 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Выберите страну";
 
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Не восстанавливать";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Не удалось определить, есть ли резервная копия, которую можно восстановить.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "Ошибка";
-
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Восстановить";
-
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal не смог определить состояние вашей учётной записи iCloud. Войдите в свой аккаунт iCloud в приложении «Настройки», чтобы делать резервные копии данных Signal.";
-
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Отсутствует учётная запись iCloud. Войдите в свою учётную запись iCloud в приложении «Настройки», чтобы делать резервные копии данных Signal.";
-
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Доступ к вашей учётной записи iCloud для резервного копирования был запрещён. Разрешите Signal доступ к своему аккаунту iCloud в приложении «Настройки», чтобы делать резервные копии данных Signal.";
-
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Выберите цвет исходящих сообщений для этого чата.";
 
@@ -754,6 +676,39 @@
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Связаться с поддержкой";
 
+/* The localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+
+/* A brief localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Запрос функции";
+
+/* The localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+
+/* A brief localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+
+/* The localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+
+/* A brief localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Другое";
+
+/* Prompt telling the user to select a filter for their support request. */
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Как мы можем помочь?";
+
+/* The localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+
+/* A brief localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+
+/* The localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+
+/* A brief localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal не смог завершить ваш запрос в поддержку.";
 
@@ -765,6 +720,9 @@
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Отправить журнал отладки?";
+
+/* Placeholder telling user they must select a filter. */
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Отправить с журналом отладки";
@@ -910,8 +868,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Упоминания";
 
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Без звука";
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
+/* Label for button to mute a thread forever. */
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Всегда";
+
+/* Label for button to mute a thread for eight hours. */
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Отключить звук";
@@ -920,19 +884,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Звуки включены";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Отключить звуки на 1 день";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Отключить звуки на 1 час";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 час";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Отключить звуки на 1 минуту";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 минута";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Отключить звуки на 1 неделю";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 неделя";
 
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Отключить звуки на 1 год";
+/* Indicates that this thread is muted forever. */
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Всегда";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %@";
@@ -3028,9 +2992,6 @@
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вы достигли максимального количества устройств, которые в настоящее время можно связать с вашей учётной записью. Пожалуйста, удалите одно из устройств и повторите попытку.";
 
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Вы не будете получать уведомления о чатах, звуки которых отключены.";
-
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Без звука";
 
@@ -3226,6 +3187,12 @@
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Добавьте немного человечности в свои сообщения";
 
+/* Explanation on the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+
+/* Title of the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Зарегистрировать iPad";
 
@@ -3296,7 +3263,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Неверный PIN-код";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Введите PIN-код, который вы создали для своей учётной записи. Это не то же самое. что проверочный код из SMS.";
+"ONBOARDING_PIN_EXPLANATION" = "Введите PIN-код, который вы создали для своей учётной записи. Это не то же самое, что проверочный код из SMS.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Введите свой PIN-код";
@@ -3518,7 +3485,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "Пейджер";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Неизвестный";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "Телефон";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "Рабочий";
@@ -3945,9 +3912,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Добро пожаловать!";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Попробовать ещё раз";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Вы сделали слишком много попыток. Пожалуйста, подождите минуту, прежде чем пробовать ещё раз.";
@@ -4444,54 +4408,6 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (по умолчанию)";
 
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Резервное копирование";
-
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Создать резервную копию";
-
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Отменить резервное копирование";
-
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервное копирование включено";
-
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "Статус iCloud";
-
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Ошибка восстановления из резервной копии";
-
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Восстановление из резервной копии не производится";
-
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Восстановление из резервной копии в процессе";
-
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Восстановление из резервной копии успешно выполнено";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Этап";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Прогресс";
-
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Статус";
-
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Ошибка резервного копирования";
-
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Ожидание";
-
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Выполняется резервное копирование";
-
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Резервное копирование успешно выполнено";
-
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавить заблокированного пользователя";
 
@@ -4658,7 +4574,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Напоминания PIN-кода";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваш PIN-код не может быть восстановлен. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, чтобы только вы могли иметь к ней доступ. Ваш PIN-код невозможно восстановить. При переустановке Signal ваши профиль, настройки и контакты вернутся на свои места.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Изменить свой PIN-код";
@@ -4724,13 +4640,13 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Звонки";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Использовать Touch ID, Face ID или код вашего устройства iOS для разблокирования Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Использовать Touch ID, Face ID или код-пароль вашего устройства iOS для разблокирования Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Использовать Face ID для разблокирования Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Использовать код вашего устройства iOS для разблокирования Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Использовать код-пароль вашего устройства iOS для разблокирования Signal.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Использовать Touch ID для разблокирования Signal.";
@@ -4907,7 +4823,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Связаться с нами";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Расскажите нам, что происходит";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Расскажите нам о проблеме:";
@@ -5118,6 +5034,12 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Ваше устройство не поддерживает эту функцию.";
+
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Подтвердить";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Обновить контакт";

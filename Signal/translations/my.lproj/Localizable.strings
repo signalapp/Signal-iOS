@@ -1,8 +1,8 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "မအားသေးပါ";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ယခု မရပါ";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal ၏အကြောင်း";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "လုံခြုံရေးနံပါတ်အသစ်ကိုလက်ခံသည် ";
@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "အဆက်အသွယ်";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%@ အတွက် အဆက်အသွယ်";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "ရုပ်၊သံ၊ပုံ များ";
@@ -26,13 +26,13 @@
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "သင်";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Sticker";
+"ACCESSIBILITY_LABEL_STICKER" = "စတစ်ကာ";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "အသံ မက်ဆေ့ချ်";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "အသံ မက်ဆေ့ချ် - %@ စက္ကန့် ";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal ဖုန်းခေါ်ဆိုမှု";
@@ -47,7 +47,7 @@
 "ACTION_SHARE_CONTACT" = "အဆက်အသွယ်များကို ဝေမျှမည်";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "ဒေါင်းလုပ်ရန်နှိပ်ပါ";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "ရုပ်သံဖုန်းခေါ်မည်";
@@ -56,22 +56,22 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "အဖွဲ့ဝင်ထည့်သည် ";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "အဖွဲ့ဝင်များထည့်ရန်";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "\"%2$@\" အဖွဲ့ထဲသို့ ပေါင်းထည့်မလား?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "\"%2$@\" အဖွဲ့ထဲသို့ %1$@ ယောက်ပေါင်းထည့်မလား?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "အဖွဲ့ဝင်အသစ်ထည့်ရန်";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "အဖွဲ့ဝင်အသစ်ထည့်ရန်";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "အဖွဲ့ဝင်များထည့်ရန်";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "သင့်ကိုယ်ရေးအချက်အလက်ကို ဤအဖွဲ့နှင့်မျှဝေချင်ပါသလား?";
@@ -80,28 +80,28 @@
 "ADD_TO_CONTACTS_OFFER" = "ဤသူကို သင့်လိပ်စာစာရင်းထဲ ထည့်ချင်ပါသလား?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "အခြားအုပ်စုတစ်ခုသို့ထည့်ရန်";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "အုပ်စုထဲထည့်ရန်";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@ကိုဒီအုပ်စုထဲထည့်မလား?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@ထဲထည့်ရန်";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@သည်%@အုပ်စုထဲကအဖွဲ့ဝင်ပါ";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "နောက်ဆုံး";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ကို %@ အဖွဲ့ထဲသို့ ပေါင်းထည့်ခဲ့ပါသည်";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "အခြားအုပ်စုတစ်ခုသို့ထည့်ရန်";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "သင့်ကိုယ်ရေးအချက်အလက်ကို ဤသူနှင့်မျှဝေချင်ပါသလား? ";
@@ -116,7 +116,7 @@
 "ALERT_DONT_SAVE" = "မသိမ်းဘူး ";
 
 /* Generic error indicator. */
-"ALERT_ERROR_TITLE" = "သတိ ";
+"ALERT_ERROR_TITLE" = "ပျက်ကွက်မှု";
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "သိမ်းသည် ";
@@ -128,25 +128,25 @@
 "APN_Message" = "သတင်းစကားအသစ် ";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ကိုဖွင့်၍ မရပါ။ ကျေးဇူးပြု၍ ကျွန်ုပ်တို့ ပြဿနာ ဖြေရှင်းနိုင်ရန် support@signal.org စီသို့ ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းကို ပေးပို့ပေးပါ။";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "အမှားဖြစ်နေသည်";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "ပျက်ကွက်မှု";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ဒေတာဘေ့စ် တင်လို့မရပါ";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Signal ၏နောက်ဆုံးဗားရှင်းသို့ အဆင့်မြှင့်ပေးပါ။";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "မသိရှိသော ဒေတာဘေ့စ် ဗားရှင်း";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "လွှဲပြောင်းမှု မပြီးမြောက်နိုင်ပါ";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "အမည်ထည့်ပါ ";
@@ -158,7 +158,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ဗားရှင်း %@ကို  App Store တွင်ရရှိနိုင်ပါသည်။ ";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signal ဗားရှင်းအသစ် ရရှိနိုင်သည်";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "မွမ်းမံ ";
@@ -170,7 +170,7 @@
 "APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "အလင်း";
 
 /* Name indicating that the system theme is enabled. */
-"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "System";
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "စနစ်";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -179,19 +179,19 @@
 "ARCHIVE_ACTION" = "မှတ်တမ်း ";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "စာတန်း အကန့်အသတ် ပြည့်သွားပါပြီ";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "စာတန်းထည့်ပါ...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "စာတန်း";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "ပူးတွဲဖိုင် ထုတ်ပို့ခြင်း မအောင်မြင်ပါ";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "သိမ်းဆည်းရန် ပျက်ကွက်ခဲ့ပါသည်";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ဖိုင်အမျိုးအစား %@";
@@ -200,10 +200,10 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "အရွယ်အစား %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Saved";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "သိမ်းဆည်းပြီး";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ စီသို့ မက်ဆေ့ချ်";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ပေးပို့သည်";
@@ -215,34 +215,34 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "ပူးတွဲဖိုင်ပေးပို့ရာတွင် အခက်အခဲရှိသည် ";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ပုံကို ဖိုင်ပြောင်းလဲခြင်းမရပါ";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = " ရုပ်မြင်သံကြားဆက်သွယ်မှု လုပ်ဆောင်၍ မရနိုင်ပါ။";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ပုံကို ခွဲခြမ်းစိတ်ဖြာခြင်းမရပါ";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ရုပ်ပုံနှင့် သက်ဆိုင်သော အချက်အလက်များကို ဖယ်ရှား၍ မရပါ။";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "ပုံ၏ ဆိုဒ်အရွယ်အစားပြောင်းလဲခြင်းမရပါ";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ပူးတွဲဖိုင်သည် ကြီးလွန်းနေသည် ";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "ပူးတွဲဖိုင်ထဲတွင် မသက်ရောက်သော အရာပါရှိပါသည်";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ပူးတွဲဖိုင်ထဲတွင် မသက်ရောက်သော ဖိုင်ပုံစံရှိပါသည်";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "ပူးတွဲဖိုင်တွင် ဘာမှမပါပါ။ ";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "ပို့ရန် မီဒီယာဖိုင် ရွေးပါ";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "ကင်မရာ";
@@ -260,10 +260,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "တည်နေရာ";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "သင့် ရုပ်ပုံများ ဤနေရာသို့ ပေးပို့ရန် အပြင်အဆင်ထဲတွင် သုံးခွင့်ပြုပါ";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ရုပ်ပုံများယူပြီးလျှင် သင်သည် နောက်ဆုံးအရာများ ဤနေရာမှ ပေးပို့နိုင်ပါသည်";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ပူးတွဲ ";
@@ -272,7 +272,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "စာရွက်စာတမ်းကို ရွေးချယ်၍ မရပါ။ ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ကျေးဇူးပြု၍ ဤဖိုင်အား ချုံ့ထားသောမော်ကွန်းတိုက် ဖန်တီး၍ သို့မဟုတ် ဖိုင်လမ်းညွှန် (directory) အား ပေးပို့ပေးပါ။";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ဖွင့်မရသောဖိုင် ";
@@ -299,73 +299,16 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "အသံသတင်းစကား ";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "အသံဖိုင် မက်ဆေ့ချ်";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "အသံခေါ်ဆိုမှု";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "စပီကာ ";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "နောက်သို့";
-
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "အရံသိမ်းထားသော အချက်အလက်များကို တင်ပို့၍ မရနိုင်ပါ။";
-
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "မှန်ကန်သောဆောင်ရွက်မှုကိုမရရှိနိုင်ပါ။";
-
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "အရံသိမ်းထားသော အချက်အလက်များကို ရှင်းလင်းနေပါသည်။";
-
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "အရံသိမ်းခြင်းကို စတင်ဆောင်ရွက်နေပါပြီ";
-
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "အချက်အလက်များကို တင်ပို့နေသည်";
-
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "အရံသိမ်းထားသည်များကို တင်ပို့နေသည်";
-
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "အရံသိမ်းထားသောဖိုင်များကို တင်နေသည်";
-
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "အရံသိမ်းဆည်းမှုများ တင်သွင်း၍ မရနိုင်ပါ။";
-
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "အရံသိမ်းဆည်းမှုများကို ချိန်ညှိနေပါသည်";
-
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "အရံသိမ်းမည့် အချက်အလက်များကို ရယူနေသည်";
-
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "အရံသိမ်းဆည်းမှုကို နောက်ဆုံးအတည်ပြုနေပါသည်";
-
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "အရံသိမ်းဆည်းမှုများကို တင်ပို့နေပါသည်";
-
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "အချက်အလက်များကို ပြန်သိမ်းမည်";
-
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "ဖိုင်များကို ပြန်လည်သိမ်းဆည်းနေသည်";
-
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
-
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
-
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "တိုးတက်ပြောင်းလဲမှု";
-
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "အခြေအနေ";
-
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
@@ -374,7 +317,7 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "ပိတ်သည် ";
+"BLOCK_LIST_BLOCK_BUTTON" = "ပိတ်ပင်သည် ";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
@@ -383,61 +326,61 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "ပိတ်ပင်ထားသော အဖွဲ့များ";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "ပိတ်ပင်ထားသော သုံးသူများ";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "အဖွဲ့အား ပိတ်ပင်ထားပြီးပါပြီ";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "သုံးသူအား ပိတ်ပင်ထားပြီးပါပြီ";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ပြန်ဖွင့်သည် ";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "အချင်းချင်း မက်ဆေ့ချ်ပေးပို့ခြင်း နှင့် ခေါ်ဆိုခြင်းများ ပြုလုပ်နိုင်ပါမည်";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "လက်ရှိ အဖွဲ့ဝင်များသည် သင့်အား အဖွဲ့ထဲစီသို့ ပြန်ပေါင်းထည့်နိုင်ပါမည်";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "အဖွဲ့ဝင်များသည် သင့်ကို အဖွဲ့ထဲသို့ ပြန်ထည့်နိုင်ပါမည်။";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "ဤအဖွဲ့အား ပိတ်ပင်ခြင်းမှ ရပ်ဆိုင်းမလား?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ကိုပြန်ဖွင့်ပေးမလား? ";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ပိတ်သည် ";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ပိတ်ပင်သည် ";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ အား ပိတ်ပင်ထားပါသည်";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "အသုံးပြုသူကိုဘလော့လိုက်ပြီ";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "အသုံးပြုသူကို ပိတ်ပင်လိုက်ပြီ";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "အဖွဲ့ကို ပိတ်ပင်လိုက်ပြီ";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ကိုယ့်ကိုယ်ကို ဘလော့လို့မရပါ။ ";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ကိုယ့်ကိုယ်ကို ပိတ်ပင်လို့မရပါ";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "သတိ!";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ကို ဘလော့ဖြည်လိုက်ပြီ ";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ကို ပိတ်ပင်ခြင်းဖြည်လိုက်ပြီ ";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "ဘလော့လုပ်ထားသော လူများအနေဖြင့် သင့်အားစာပို့​ခြင်း၊ ဖုန်းခေါ်ခြင်းများ ​ပြုလုပ်၍မရပါ။";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "ပိတ်ပင်ထားသော သုံးသူများအနေဖြင့် သင့်အားစာပို့​ခြင်း၊ ဖုန်းခေါ်ခြင်းများ ​ပြုလုပ်၍မရပါ။";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
@@ -476,7 +419,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ဖုန်းခေါ်ခြင်း အဝင်ရှိသည်…";
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
@@ -509,13 +452,13 @@
 "CALL_USER_ALERT_TITLE" = "ခေါ်မှာလား?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 ဗီဒီယိုခေါ်ခြင်း အဝင်ရှိသည်…";
 
 /* notification body */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ဗီဒီယိုမပါပဲ လက်ခံမယ်";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "အဖြေ ";
@@ -524,7 +467,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "အသံ";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "လက်မခံပါ";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "ဖုန်းချမည်";
@@ -548,13 +491,13 @@
 "CALLBACK_BUTTON_TITLE" = "ပြန်ခေါ်မည် ";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "သင့် ကင်မရာ ပိတ်ထားပါသည်";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal အသုံးပြုသူ ";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "ဓါတ်ပုံရိုက်ပြီး ပို့လိုက်မယ်";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "ကင်မရာ";
@@ -568,44 +511,23 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "နိုင်ငံရွေးပါ ";
 
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "အမှားဖြစ်နေသည်";
-
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "ပြန်သိမ်းသည်";
-
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
-
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
-
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
-
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "ဤ စကားပြောဆိုမှုထဲတွင် အထွက်မက်ဆေ့ချ်များ၏ အရောင်ကို ရွေးပါ။";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "သင် ရွေးသောအရောင် သင်သာ မြင်တွေ့ရပါမည်။";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
+"COLOR_PICKER_SHEET_TITLE" = "ချက်တင် အရောင်";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ကလစ်ဘုတ်နှင့် နှိုင်းယှဉ်ပါ ";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "စကားစပြောဆိုရန် Signal သုံးသူတစ်ဦးကို ရွေးပါ သို့မဟုတ် ရှာပါ။";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "ရေးသားမယ်";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "လိပ်စာများ ";
@@ -614,25 +536,25 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "အဖွဲ့များ ";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "ဖုန်းနံပါတ်ရှာဖွေရန်";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "သုံးသူအမည်ရှာဖွေရန်";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "သင့် အဆက်အသွယ်များထဲတွင် မည်သူက Signal သုံးသူဆိုတာ သိရှိရန် iOS အပြင်အဆင်ထဲတွင် သင့်အဆက်အသွယ်စာရင်း သုံးခွင့်ပေးနိုင်ပါသည်။";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "သင့် မက်ဆေ့ချ်များ ဖျက်၍ အပ္ပလီကေးရှင်းအား မူလစနစ်သို့ ပြန်လည် ရီစပ် ချပါမည်။ ဤလုပ်ဆောင်ချက်အား ပြီးစီးလျှင် အပ္ပလီကေးရှင်း ပိတ်သွားပါမည်။";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_DATA_TITLE" = "သင်မှ ဒေတာများအားလုံး ဖျက်မည်ဆိုတာ သေချာပါသလား?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "စက်ပေါ်မှ သင့်မက်ဆေ့ချ်များအားလုံး ဖျက်၍ အပ္ပလီကေးရှင်းအား မူလစနစ်သို့ ပြန်လည် ရီစပ် ချသွားပါမည်။ သင့်ဖုန်းနှင့် သင်ပြန်ချိတ်လို့ ရပါသည်၊ သို့သောလည်း ဖျက်ပြီးသော မက်ဆေ့ချ်များ ပြန်လည်မရရှိနိုင်ပါ။ ဤလုပ်ဆောင်ချက်အား ပြီးစီးလျှင် အပ္ပလီကေးရှင်း ပိတ်သွားပါမည်။";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "သင်မှ ဒေတာများအားလုံး ဖျက်မည်ဆိုတာ သေချာပါသလား?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "သင်သည် ဤအဖွဲ့တွင် စာတိုများပေးပို့ခြင်း သို့မဟုတ် လက်ခံခြင်းမပြုနိုင်တော့ပါ။ ";
@@ -650,7 +572,7 @@
 "CONTACT_ADDRESS" = "လိပ်စာ";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "ပိတ်ဆို့လိုက်သည် ";
+"CONTACT_CELL_IS_BLOCKED" = "ပိတ်ပင်ထားသည် ";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "ဆန်းစစ်အတည်ပြုခြင်းမပြုရသေး ";
@@ -677,7 +599,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "စာတိုက်ပုံး";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "စာတိုက်ကုဒ်နံပါတ်";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "ဒေသ";
@@ -704,28 +626,28 @@
 "CONTACT_FIELD_ORGANIZATION" = "အဖွဲ့အစည်း";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "သင့် စကားပြောဆိုမှုများအတွင်းရှိ အဆက်အသွယ်များ၏ နားမည်နှင့် ဓါတ်ပုံများ ကြည့်ရှုရန် -";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "အောက်တွင်ရှိသော \"အပြင်အဆင်များသို့ သွားမယ်\" ခလုတ် နှိပ်ပါ";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "\"အဆက်အသွယ်များ\" ဖွင့်မယ်";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "အဆက်အသွယ်များ ဖွင့်မယ်";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "မအားသေးပါ";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ဖွင့်မယ်";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "သင့် စကားပြောဆိုမှုများထဲမှ အဆက်အသွယ်များ၏ နားမည်နှင့် ဓါတ်ပုံများ ကြည့်မယ်။";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "အဆက်အသွယ်များ ဖွင့်မလား?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ဖုန်း";
@@ -752,25 +674,61 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "မည်သည့်အဆက်အသွယ်ကိုမျှ ရွေးချယ်ထားခြင်းမရှိပါ။";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "ပံ့ပိုးသောအဖွဲ့နှင့် ဆက်သွယ်မယ်";
+
+/* The localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+
+/* A brief localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Feature Request";
+
+/* The localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+
+/* A brief localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+
+/* The localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+
+/* A brief localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "အခ";
+
+/* Prompt telling the user to select a filter for their support request. */
+"CONTACT_SUPPORT_FILTER_PROMPT" = "How can we help?";
+
+/* The localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+
+/* A brief localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+
+/* The localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+
+/* A brief localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal မှ သင့် အကူအညီ တောင်းဆိုစာတင်ခြင်း မအောင်မြင်ပါ။";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "ပြန်ကြိုးစားပါ";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "သင့် ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းများသည် သင့်ပြဿနာကို ပိုမြန်စွာ ဖြေရှင်းရန်အတွက် ကျွန်ုပ်တို့ကို အထောက်ကူပြုပါသည်။ သင့် ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာများကို တင်ခြင်းသည် မဖြစ်မနေ တင်ရမည်တော့မဟုတ်ပါ။";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ တင်မလား?";
+
+/* Placeholder telling user they must select a filter. */
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ တင်မယ်";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ မပါပဲ တင်မယ်";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "မြေပုံတွင် ဖွင့်ရန်";
@@ -785,10 +743,10 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "စကားပြောဆိုမှုကို ဖျက်သိမ်းမည်လား?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "စကားပြောဆိုမှု %@ ခုထက်ပို၍ ရွေးလို့မရပါ။";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "အဖွဲ့များ";
@@ -797,37 +755,37 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "မကြာသေးမီက ပြောဆိုထားသော စကားစမြည်";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "လူများ";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "လက်ခံသူများ";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "ကိုက်ညီမှုများ မရှိပါ";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "ကိုက်ညီမှု တစ်ခု";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "စကားပြောဆိုမှု အပြင်အဆင်များ";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Add Members";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "အဖွဲ့ဝင်များထည့်မည်";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "ရှိရင်းစွဲလိပ်စာတွင် ထပ်ဖြည့်မည် ";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "စနစ်ထဲရှိ အဆက်အသွယ်စာရင်းသို့ ပေါင်းမယ်";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "စီမံသူများ";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "အားလုံး";
 
 /* Label indicating that no member can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "မလုပ်ဆောင်သော";
@@ -842,13 +800,13 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "You will no longer receive messages or updates from this group.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်မယ်";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "သုံးသူကို ပိတ်ပင်မယ်";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "ချက်တင် အရောင်";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "ပြင်ရန်";
@@ -902,16 +860,22 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "အသံပိတ်ထားလျှင် အသိမပေးပါနဲ့";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "အသံပိတ်ထားသော စကားပြောဆိုမှုများတွင် သင့်ကို မန်းရှင်းခေါ်လျှင် အသိပေးချက်များ လက်ခံမလား?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
 
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "အသံပိတ်သည် ";
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
+/* Label for button to mute a thread forever. */
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+
+/* Label for button to mute a thread for eight hours. */
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "အသံပိတ်သည် ";
@@ -920,19 +884,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "အသံမပိတ်ပါ ";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "တစ်ရက် အသံပိတ်မည် ";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 day";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "တစ်နာရီအသံပိတ်မည် ";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 hour";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "တစ်မိနစ်အသံပိတ်မည် ";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 minute";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "တစ်ပတ် အသံပိတ်မည် ";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 week";
 
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "တစ်နှစ်အသံပိတ်မည် ";
+/* Indicates that this thread is muted forever. */
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@အထိ ";
@@ -956,10 +920,10 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်ခြင်းမှ ဖြည်မယ်";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "အသုံးပြုသူကို ပိတ်ပင်ခြင်းမှ ဖြည်မယ်";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "အသံပြန်ဖွင့် ";
@@ -1043,7 +1007,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "မှတ်တမ်းများကို တင်၍မရပါ";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "သင်၏ debug မှတ်တမ်း နှင့်ချိတ်ဆက်ထားသော link ကို ဘာလုပ်လိုပါသလဲ။";
+"DEBUG_LOG_ALERT_MESSAGE" = "သင်၏ ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ နှင့်ချိတ်ဆက်ထားသော လင့်ခ် ကို ဘာလုပ်လိုပါသလဲ?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "မည်သည့်မှတ်တမ်းကိုမျှ ရှာမတွေ့နိုင်ပါ။";
@@ -1073,7 +1037,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub သို့ သွားနေခြင်း";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာများ အကြောင်း";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ကိုယ်ပိုင်စာရင်း ကိုဖျက်ပါ";
@@ -1205,7 +1169,7 @@
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "လွှဲပြောင်းမည့် အကောင့်";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
@@ -1310,19 +1274,19 @@
 "EMAIL_SIGNAL_TITLE" = "Email unavailable";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "လုပ်ရှားမှုများ";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "အလံများ";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "ပစ္စည်းအရာများ";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1331,7 +1295,7 @@
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "သင်္ကေတများ";
 
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
@@ -1532,10 +1496,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "ရှာဖွေလိုသည်ကို ရိုက်ထည့်ပါ";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "အပြင်အဆင်များသို့ သွားမယ်";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "ဤ Signal ဗားရှင်းသည် ဒေတာဘေ့စ် စွမ်းရည်အကောင်းဆုံးဖြစ်စေရန် တိုးတက်နိုင်စွမ်းများ ပါဝင်ပါသည်။ လုပ်ငန်းစဉ်ကို ပြီးမြောက်ရန် သင် အပ္ပလီကေးရှင်းကို ဖွင့်ရန်လိုပါမည်။";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "အချက်အလက်သိမ်းဆည်းမှုကို ဆီလျော်အောင်လုပ်ဆောင်နေသည်";
@@ -1580,10 +1544,10 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ အား ပိတ်ပင်ထားပါသည်";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ အား ပိတ်ပင်ထားပါသည်";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
@@ -1664,13 +1628,13 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "နှိပ်ဆွဲ၍ မြင်ကွင်းပြောင်းပါ";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "ဤနေရာနှိပ်၍ အဖွဲ့လိုက်ဖုန်းခေါ်ဆိုပါ";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
@@ -1700,10 +1664,10 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "အဖွဲ့လိုက်ခေါ်ဆိုနိုင်ခြိင်း မိတ်ဆက်ပါသည်";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့ဖွဲ့ခဲ့ပါသည်။";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
@@ -1829,7 +1793,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "ဝင်ပါမယ်";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "လုပ်ဆောင်နေသည်…";
@@ -1958,7 +1922,7 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "သင်သည် အဖွဲ့ထဲ ဝင်လိုက်ပါသည်။";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
@@ -2009,7 +1973,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "သင်";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "အသံခေါ်ဆိုမှု";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
@@ -2027,13 +1991,13 @@
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap to review";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "နှိပ်၍ ကြည့်ရှုသုံးသပ်ပါ";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "အဖွဲ့ဝင်";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Review Members";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "အဖွဲ့ဝင်များ သုံးသပ်မယ်";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
@@ -2249,7 +2213,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်မယ်";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -2291,7 +2255,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "မက်ဆေ့ရာဇဝင် နှင့် မီဒီယာများသည် အဆင့်မမြှင့်ခင် သိမ်းဆည်းထားပါမည်။";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -2345,13 +2309,13 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@mentions နှင့် အက်မင် ကဲ့သို့သောအင်္ဂါရပ်အသစ်များကို အသုံးပြုရန် ဤအုပ်စုကိုအဆင့်မြှင့်ပါ။";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "မက်ဆေ့ရာဇဝင် နှင့် မီဒီယာများအားလုံးကို အဆင့်မမြှင့်ခင် သိမ်းဆည်းထားပါမည်။";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
@@ -2360,7 +2324,7 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Add Members";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များထည့်မည်";
 
 /* Title for the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
@@ -2369,7 +2333,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Add Members";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များထည့်မည်";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
@@ -2378,7 +2342,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "မက်ဆေ့ရာဇဝင် နှင့် မီဒီယာများအားလုံးကို အဆင့်မမြှင့်ခင် သိမ်းဆည်းထားပါမည်။";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -2444,7 +2408,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "ကျွန်ုပ်တို့ကို ဆက်သွယ်ပါ";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Support Center";
@@ -2477,7 +2441,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "မက်ဆေ့ပို့ရန် တောင်ခံချက်";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = " '%@' ကို ရှာမတွေ့ပါ";
@@ -2585,7 +2549,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "ဝင်ပါမယ်";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
@@ -2711,7 +2675,7 @@
 "LOGGING_SECTION" = "မှတ်တမ်းထည့်နေသည်";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းများသည် Signal အား ပြဿနာ နှင့် ပျက်ကွက်မှုများ ဖြေရှင်းရာတွင် အထောက်ကူပြုပါသည်။";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "စာ";
@@ -2846,10 +2810,10 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "တားမြစ်မည်";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ပိတ်ပယ်ပြီး ဖျက်မယ်";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ပိတ်ပယ်ထားသောသူများသည် သင့်စီသို့ ခေါ်ဆိုခြင်းနှင့် မက်ဆေ့ပို့ခြင်းများ မပြုလုပ်နိုင်ပါ။";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
@@ -2858,7 +2822,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "ပိတ်ပယ်ပြီး %@ မှ ထွက်ခွာမလား?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ဖျက်မည်";
@@ -2867,7 +2831,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "စကားပြောဆိုမှုကို ဖျက်သိမ်းမည်လား?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
@@ -2891,13 +2855,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Request";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "တောင်းခံစာ သုံးသပ်မယ်";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "တောင်းခံစာ သုံးသပ်မယ်";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "လက်ခံသည် ";
@@ -2939,7 +2903,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ပြန်ဖွင့်သည် ";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "တောင်းခံခြင်း ပယ်ဖျက်မယ်";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2960,7 +2924,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "မအောင်မြင်သော";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "အစိတ်အပိုင်းပေးပို့ဖြစ်၊ နှိပ်၍အသေးစိတ် ကြည့်ရှုပါ";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "ဖတ်ပြီး";
@@ -2990,10 +2954,10 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@သည်အတည်ပြုထားမှု မရှိတော့ပါ။ လုပ်ဆောင်ချက်များကို ကြည့်ရန် တစ်ချက်နှိပ်ပါ။";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "ဤအဖွဲ့ထဲမှ အဖွဲ့ဝင်တစ်ဦးအား သင်မှ ပိတ်ပယ်ထားပါသည်";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "ဤအဖွဲ့ထဲမှ အဖွဲ့ဝင် %@ ဦးအား သင်မှ ပိတ်ပယ်ထားပါသည်";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "အဖွဲ့အတွင်းမှ တစ်ယောက်ထက်မကသောသူများသည် အတည်ပြုချက်မရှိတော့ပါ။ လုပ်ဆောင်ချက်များကို ကြည့်ရန် တစ်ချက်နှိပ်ပါ။";
@@ -3028,11 +2992,8 @@
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
 
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
-
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "အသံပိတ်ထား";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3053,7 +3014,7 @@
 "NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi and Cellular";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "ဝိုင်ဖိုင် နှင့် ဆယ်လူလာ";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ဖုန်းနံပါတ်ဖြင့် ရှာပါ";
@@ -3143,7 +3104,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "အောက်တွင်ရှိသော \"အပြင်အဆင်များသို့ သွားမယ်\" ခလုတ် နှိပ်ပါ";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
@@ -3158,7 +3119,7 @@
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "မအားသေးပါ";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ဖွင့်မယ်";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
@@ -3225,6 +3186,12 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+
+/* Explanation on the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+
+/* Title of the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
@@ -3359,7 +3326,7 @@
 "OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Add to Group";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "အုပ်စုထဲထည့်ရန်";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
@@ -3416,7 +3383,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "အခြားအဖွဲ့ဝင်များကဖိတ်ကြားထားသူများ၏အသေးစိတ်အချက်အလက်များမပြပါ။ အကယ်၍ ဖိတ်ကြားခံထားရသူများပူးပေါင်းရန်ရွေးချယ်ပါကထိုအချိန်ကသူတို့၏သတင်းအချက်အလက်များကိုအုပ်စုနှင့်မျှဝေမည်ဖြစ်သည်။ သူတို့ဟာအဖွဲ့ထဲမဝင်မချင်းအုပ်စုထဲမှာစာတွေမတွေ့ဘူးဘူး";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
@@ -3425,37 +3392,37 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "အခြားအဖွဲ့ဝင်များကဖိတ်ကြားသည်";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ဖိတ်ခေါ်ထားသော လူများ";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "တစ်ခါကြည့် မီဒီယာ";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ရုပ်၊သံ၊ပုံ များ";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "တစ်ခါကြည့် ဓါတ်ပုံ";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "တစ်ခါကြည့် ဗီဒီယို";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "View Photo";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ဓါတ်ပုံ ကြည့်ရှုမယ်";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "ဗီဒီယို ကြည့်ရှုမယ်";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "ကြည့်ရှုပြီး";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
@@ -3518,7 +3485,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "မသိပါ";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "ဖုန်း";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "အလုပ်ခွင်";
@@ -3560,13 +3527,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "ပင်နံပါတ် ပိတ်မယ်";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "သတိပေးချက်";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
@@ -3608,7 +3575,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "ပင်နံပါတ် ပိတ်မယ်";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Create your PIN";
@@ -3779,7 +3746,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "သုံးသူအမည်";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
@@ -3946,9 +3913,6 @@
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "ကြိုဆိုပါသည်";
 
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "ပြန်ကြိုးစားပါ";
-
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "ကြိုးစားသည့်အကြိမ် စိပ်နေသည်။ ပြန်မကြိုးစားခင် တစ်မိနစ်လောက်စောင့်ပါ။";
 
@@ -4076,7 +4040,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "View";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "ကြည့်ရှုမယ်";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "ကိုယ်တို့ရဲ့ Signal လုံခြုံရေးနံပါတ် \n%@";
@@ -4412,22 +4376,22 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Debug Log ကို လုပ်ဆောင်ပါ";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "အဆင့်မြင့် ပင်နံပါတ် အပြင်အဆင်များ";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "အဆင့်မြင့် ပင်နံပါတ် အပြင်အဆင်များ";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "ပင်နံပါတ် ပိတ်မယ်";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "ပင်နံပါတ် ဖွင့်မယ်";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Debug Log တင်ပါ";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "ပျက်ကွက်မှု မှတ်တမ်းများ";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
@@ -4444,56 +4408,8 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (နဂိုမူလ)";
 
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "အရံသိမ်းဆည်းခြင်း";
-
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "အရံသိမ်းဆည်းခြင်း အခုလုပ်ဆောင်ပါမည်။";
-
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "အရံသိမ်းဆည်းခြင်းကို မလုပ်ဆောင်တော့ပါ။";
-
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "အရံသိမ်းဆည်းမှုကို ဖွင့်ထားမည်";
-
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
-
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
-
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
-
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
-
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "အဆင့်";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "တိုးတက်ပြောင်းလဲမှု";
-
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "အခြေအနေ";
-
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "အရံသိမ်းဆည်းမှု လုပ်ဆောင်ချက် မအောင်မြင်ပါ";
-
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "စောင့်ဆိုင်းနေပါသည်";
-
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "အရံအဖြစ် သိမ်းဆည်းနေပါသည်";
-
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "အရံသိမ်းဆည်းမှု အောင်မြင်ပါသည်";
-
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ပိတ်ပယ်ထားသောသုံးသူ ပေါင်းထည့်မယ်";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal ပေါ်တွင် သင့်လိပ်စာစာရင်းထဲမှ လူတစ်ယောက်မှ မရှိပါ။";
@@ -4520,7 +4436,7 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "ဒေတာ သုံးနှုန်း";
 
 /* Item title for the low bandwidth call setting */
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
@@ -4541,7 +4457,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "ဒေတာ သုံးနှုန်း";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ကိုယ်ပိုင်စာရင်း ကိုဖျက်ပါ";
@@ -4556,7 +4472,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "အားလုံးကို ဖျက်မည်";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Signal စီသို့ လှူဒါန်းမယ်";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "အကူအညီ";
@@ -4586,10 +4502,10 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "ဘယ်တော့မှ";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "ဝိုင်ဖိုင် နှင့် ဆယ်လူလာ";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "ဝိုင်ဖိုင်";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "အသံ";
@@ -4598,13 +4514,13 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "စာရွက်စာတမ်းများ";
 
 /* Label for the 'photo' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Photos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "ဓါတ်ပုံများ";
 
 /* Label for the 'video' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "ဗီဒီယိုများ";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "မက်ဆေ့ချ်ပေးပို့ခြင်း";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
@@ -4613,7 +4529,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "အပြင်အဆင်များ";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "အသံပိတ်ထားသော စကားပြောဆိုမှုများ ပါဝင်မယ်";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
@@ -4691,7 +4607,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "ဖွင့်မယ်";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "အကယ်၍ သင်၏ Signal PIN ကို နောက်တစ်ကြိမ် မှတ်ပုံတင်သည့်အခါတွင် မေ့နေပါက သင်၏ အကောင့်ကို ၇ ရက် အသုံးပြုနိုင်မည်မဟုတ်ပါ";
@@ -4769,7 +4685,7 @@
 "SETTINGS_VERSION" = "ဗားရှင်း";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can…";
+"SETTINGS_WHO_CAN" = "ဘယ်သူ လုပ်နိုင်ပါလဲ...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "မေးလ်";
@@ -4904,10 +4820,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "လုံခြုံရေးနံပါတ်တွေ ကိုက်ညီပါတယ်!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "ကျွန်ုပ်တို့ကို ဆက်သွယ်ပါ";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
@@ -4964,7 +4880,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "စစ်ဆေးအတည်ပြုသည်";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
+"THIS_MESSAGE_WAS_DELETED" = "ဤမက်ဆေ့အား ဖျက်ပြီးပါပြီ";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
@@ -5119,6 +5035,12 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "သင့်ဖုန်းမှ အခုလုပ်ဆောင်ချက်ကို အထောက်အပံ့မပေးပါ။";
 
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "စစ်ဆေးအတည်ပြုသည်";
+
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Update Contact";
 
@@ -5141,7 +5063,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "ပင်နံပါတ် ပိတ်မယ်";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
@@ -5174,7 +5096,7 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "သုံးသူအမည်";
 
 /* An error indicating that the supplied username is too short. */
 "USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
@@ -5219,7 +5141,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "မက်ဆေ့ ဖတ်ကြည့်ရှုပြီး ဖျောက်ကွယ်ရန် ဤနေရာနှိပ်ပါ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
@@ -5297,7 +5219,7 @@
 "WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "သင်သည် ဤမက်ဆေ့အား ဖျက်လိုက်ပါပြီ။";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "စာများ ပျက်သွားစေရန် လုပ်ထားချက်ကို ရပ်လိုက်သည်။";

@@ -310,63 +310,6 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "மீண்டும்";
 
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "காப்புப்பதிவு பயனர் தரவு  ஏற்றுமதி செய்ய முடியவில்லை.";
-
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "தவறான சேவை பதில்";
-
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "காப்புப்பதிவு பயனர் தரவு சுத்தம் செய்தல்";
-
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "காப்புப்பிரதி துவக்குகிறது";
-
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "தரவை ஏற்றுமதி செய்கிறது";
-
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "காப்புப்பிரதி ஏற்றுமதி செய்யப்படுகிறது ";
-
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "காப்புப்பிரதி பதிவேற்றுகிறது";
-
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "காப்புப்பிரதி இறக்குமதி செய்ய முடியவில்லை.";
-
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "காப்புப்பிரதி  உள்ளமைக்கிறது";
-
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = " காப்புப்பிரதி  பதிவிறக்குகிறது";
-
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "காப்புப்பிரதி  இறுதி செய்தல்";
-
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "காப்புப்பிரதி  இறக்குமதி செய்கிறது.";
-
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "தரவுத்தளத்தை மீட்டமைக்கிறது";
-
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "கோப்புகளை மீட்டமைக்கிறது";
-
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "காப்புப்பிரதி  கிடைக்கும்";
-
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "காப்புப்பதிவு பயனர் தரவு மீட்டமைக்கிறது";
-
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "முன்னேற்றம்";
-
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "நிலைமை";
-
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "எதிர்பாராத காப்புப்பதிவு பயனர் தரவு பிழை ";
-
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "பதாகையை மூடு";
 
@@ -568,27 +511,6 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "நாட்டினை தேர்வுசெய்";
 
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "மீட்டமைக்க வேண்டாம்";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "மீட்டெடுக்கக்கூடிய காப்புப்பதிவு பயனர் தரவு உள்ளதா என்பதை தீர்மானிக்க முடியவில்லை.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "பிழை";
-
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "மீட்டமை";
-
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "உங்கள் iCloud கணக்கு நிலையை Signal தீர்மானிக்க முடியவில்லை. உங்கள் Signal காப்புப்பதிவு பயனர் தரவு பிரதி எடுக்க iOS அமைப்புகள் பயன்பாடு உங்கள் iCloud கணக்கு உள்நுழைக.";
-
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "ICloud கணக்கு இல்லை. உங்கள் Signal காப்புப்பதிவு பயனர் தரவு பிரதி எடுக்க iOS செயலி பயன்பாட்டில்  உங்கள் iCloud கணக்கு உள்நுழைக.";
-
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "காப்புப்பதிவு பயனர் தரவு உங்கள் iCloud கணக்கில் அணுக Signal மறுக்கப்பட்டது. உங்கள் Signal தரவை காப்புப் பிரதி எடுக்க iOS அமைப்புகள் செயலியில் உங்கள் iCloud கணக்கில்  Signal  அணுகலை வழங்கவும்.";
-
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "இதில் வெளிச்செல்லும் செய்திகளின் நிறத்தைத் தேர்வுசெய்க அரட்டை.";
 
@@ -754,6 +676,39 @@
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "தொடர்பு ஆதரவு";
 
+/* The localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+
+/* A brief localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "சிறப்பு விண்ணப்பம்";
+
+/* The localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+
+/* A brief localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+
+/* The localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+
+/* A brief localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "மற்றவை ";
+
+/* Prompt telling the user to select a filter for their support request. */
+"CONTACT_SUPPORT_FILTER_PROMPT" = "நாம் எப்படி முடியும் உதவி?";
+
+/* The localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+
+/* A brief localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+
+/* The localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+
+/* A brief localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal இருந்தது முடிக்க முடியவில்லை உங்கள் ஆதரவு கோரிக்கை.";
 
@@ -765,6 +720,9 @@
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "சமர்ப்பிக்கவும் பிழைத்திருத்த பதிவு?";
+
+/* Placeholder telling user they must select a filter. */
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "உடன் சமர்ப்பிக்கவும் பிழைத்திருத்த பதிவு";
@@ -910,8 +868,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "குறிப்பிடுகிறது";
 
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "முடக்கு";
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
+/* Label for button to mute a thread forever. */
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+
+/* Label for button to mute a thread for eight hours. */
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "முடக்கு";
@@ -920,19 +884,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "முடக்கப்படவில்லை";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ஒரு நாள் முடக்கு";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 நாள்";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ஒரு மணி நேரம் முடக்கு";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 மணி நேரம்";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ஒரு நிமிடம் முடக்கு";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 நிமிடம்";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ஒரு வாரம் முடக்கு";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 வாரம்";
 
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ஒரு வருடம் முடக்கு";
+/* Indicates that this thread is muted forever. */
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ வரை";
@@ -3028,9 +2992,6 @@
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "உங்கள் கணக்கு   தற்போது இணைக்கக்கூடிய அதிகபட்ச சாதனங்களை நீங்கள் அடைந்துவிட்டீர்கள். ஒரு சாதனத்தை அகற்றிவிட்டு மீண்டும் முயற்சிக்கவும்.";
 
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "நீங்கள் பெற மாட்டீர்கள் அறிவிப்புகள் முடக்கிய அரட்டைகளுக்கு.";
-
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "முடக்கியது";
 
@@ -3225,6 +3186,12 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "உங்கள் செய்திகளில் மனிதநேயத்தைத் தொடவும்";
+
+/* Explanation on the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+
+/* Title of the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ஐபாட் பதிவு";
@@ -3518,7 +3485,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "பேஜர்";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "தெரியாத";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "தொலைபேசி";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "வேலை";
@@ -3945,9 +3912,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "நல்வரவு!";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "மீண்டும் முயற்சி செய்";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "நீங்கள் அடிக்கடி முயற்சித்தீர்கள். மீண்டும் முயற்சிக்கும் முன் ஒரு நிமிடம் காத்திருங்கள்.";
@@ -4444,54 +4408,6 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (இயல்புநிலை)";
 
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "காப்புப்பதிவு பயனர் தரவு";
-
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "இப்பொழது பாதுகாப்பிற்காக சேமித்து வை காப்புப்பதிவு பயனர் தரவு";
-
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "காப்புப்பதிவு பயனர் தரவு ரத்துசெய்";
-
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "காப்புப்பதிவு பயனர் தரவு இயக்கப்பட்டது";
-
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud நிலை";
-
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு தோல்வியுற்றது";
-
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "செயலற்றதை மீட்டமை காப்புப்பதிவு பயனர் தரவு\n\n ";
-
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு செயலில் உள்ளது";
-
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு வெற்றி பெற்றது";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "கட்டம்";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "முன்னேற்றம்";
-
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "நிலைமை";
-
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "காப்புப்பதிவு பயனர் தரவு தோல்வியுற்றது";
-
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "காத்திருக்கிறது";
-
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "காப்புப்பிரதி நகல் எடுத்தல்";
-
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "காப்புப்பதிவு பயனர் தரவு மீட்டெடுப்பு வெற்றி";
-
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "தடுக்கப்பட்ட பயனரைச் சேர்க்கவும்";
 
@@ -4907,7 +4823,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "எங்களை தொடர்பு கொள்ள";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "என்ன நடக்கிறது என்று சொல்லுங்கள்";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "பிரச்சினை பற்றி எங்களிடம் கூறுங்கள்: ";
@@ -5118,6 +5034,12 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "உங்கள் சாதனம் இந்த அம்சத்தை ஆதரிக்கவில்லை.";
+
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "சரிபார்க்கவும்";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "தொடர்பைப் புதுப்பிக்கவும்";

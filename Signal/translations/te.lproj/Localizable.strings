@@ -310,63 +310,6 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "తిరిగి";
 
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ప్రత్యామ్నాయ సమాచారని  ఎగుమతి చేయలేము.";
-
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "సేవా ప్రతిస్పందన చెల్లదు";
-
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "ప్రత్యామ్నాయను  శుభ్రపరుస్తుంది";
-
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "ప్రత్యామ్నాయను  ప్రారంభిస్తోంది";
-
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "సమాచారని  ఎగుమతి చేస్తోంది";
-
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "ప్రత్యామ్నాయను  ఎగుమతి చేస్తోంది";
-
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "ప్రత్యామ్నాయను  అప్‌లోడ్ చేస్తోంది";
-
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ప్రత్యామ్నాయ దిగుమతి కాలేదు.";
-
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "ప్రత్యామ్నాయను  కాన్ఫిగర్ చేస్తోంది";
-
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "ప్రత్యామ్నాయ సమాచారని  డౌన్‌లోడ్ చేస్తోంది";
-
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "ప్రత్యామ్నాయ ఖరారు చేస్తోంది";
-
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "ప్రత్యామ్నాయ దిగుమతి చేస్తోంది.";
-
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "దత్తాంశమూల పునరుద్ధరిస్తోంది";
-
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "పంక్తిలను  పునరుద్ధరిస్తోంది";
-
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "ప్రత్యామ్నాయ అందుబాటులో ఉంది";
-
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "ప్రత్యామ్నాయ పునరుద్ధరిస్తోంది";
-
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "పురోగతి";
-
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "స్థితి";
-
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "ఊహించని ప్రత్యామ్నాయ లోపం";
-
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "బ్యానర్ మూసివేయండి";
 
@@ -568,27 +511,6 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "దేశాన్ని ఎంచుకోండి";
 
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "పునరుద్ధరించవద్దు";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "పునరుద్ధరించగల ప్రత్యామ్నాయ ఉందా అని నిర్ణయించలేకపోయాము.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "లోపం";
-
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "పునరుద్ధరించు";
-
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal మీ iCloud ఖాతా స్థితిని నిర్ణయించలేదు. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగ్‌ల అనువర్తనంలో మీ iCloud ఖాతాకు సైన్ ఇన్ చేయండి.";
-
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "ఐక్లౌడ్ ఖాతా లేదు. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగ్‌ల అనువర్తనంలో మీ iCloud ఖాతాకు సైన్ ఇన్ చేయండి.";
-
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "ప్రత్యామ్నాయల కోసం మీ iCloud ఖాతాను యాక్సెస్ చేయడానికి Signal తిరస్కరించబడింది. మీ Signal డేటాను ప్రత్యామ్నాయ చేయడానికి iOS సెట్టింగుల అనువర్తనంలో మీ iCloud ఖాతాకు Signal యాక్సెస్ ఇవ్వండి.";
-
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "ఈ చాట్‌లో అవుట్‌గోయింగ్ సందేశాల రంగును ఎంచుకోండి.";
 
@@ -754,6 +676,39 @@
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "మద్దతును సంప్రదించండి";
 
+/* The localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+
+/* A brief localized representation of the 'feature request' support filter. */
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "లక్షణ వినతి ";
+
+/* The localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+
+/* A brief localized representation of the 'feedback' support filter. */
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+
+/* The localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+
+/* A brief localized representation of the 'other' support filter. */
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "ఇతర";
+
+/* Prompt telling the user to select a filter for their support request. */
+"CONTACT_SUPPORT_FILTER_PROMPT" = "మేము ఏ విధంగా సహయపడగలము?";
+
+/* The localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+
+/* A brief localized representation of the 'question' support filter. */
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+
+/* The localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+
+/* A brief localized representation of the 'something not working' support filter. */
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal మీ మద్దతు అభ్యర్థనను పూర్తి చేయలేకపోయింది.";
 
@@ -765,6 +720,9 @@
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "డీబగ్ లాగ్‌ను సమర్పించాలా?";
+
+/* Placeholder telling user they must select a filter. */
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "డీబగ్ లాగ్‌తో సమర్పించండి";
@@ -910,8 +868,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ప్రస్తావనలు";
 
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "నిశబ్ధం";
+/* Title for the mute action sheet */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+
+/* Label for button to mute a thread forever. */
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+
+/* Label for button to mute a thread for eight hours. */
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "నిశబ్ధం";
@@ -920,19 +884,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "మ్యూట్ చేయలేదు";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ఒక రోజు మ్యూట్ చేయండి";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 రోజు";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ఒక గంట మ్యూట్ చేయండి";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 గంట";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ఒక నిమిషం మ్యూట్ చేయండి";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 నిమిషం";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ఒక వారం మ్యూట్ చేయండి";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 వారం";
 
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ఒక సంవత్సరం మ్యూట్ చేయండి";
+/* Indicates that this thread is muted forever. */
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "వరకు %@";
@@ -3028,9 +2992,6 @@
 /* alert body: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "మీరు ప్రస్తుతం మీ ఖాతాతో లింక్ చేయగల గరిష్ట పరికరాలను చేరుకున్నారు. దయచేసి పరికరాన్ని తీసివేసి, మళ్లీ ప్రయత్నించండి.";
 
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "మ్యూట్ చేసిన మాటామంతీ‌ల కోసం మీకు నోటిఫికేషన్‌లు అందవు.";
-
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "మ్యూట్ చేయబడింది";
 
@@ -3225,6 +3186,12 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
+
+/* Explanation on the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+
+/* Title of the 'onboarding after dropped YDB' view. */
+"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ఐప్యాడ్ నమోదు";
@@ -3518,7 +3485,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "పేజర్";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "తెలియని";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "ఫోన్";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "పని";
@@ -3945,9 +3912,6 @@
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "స్వాగతం!";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "మళ్ళీ ప్రయత్నించండి";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "మీరు చాలా తరచుగా ప్రయత్నించారు. మళ్ళీ ప్రయత్నించడానికి ముందు దయచేసి ఒక నిమిషం వేచి ఉండండి.";
@@ -4444,54 +4408,6 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (అప్రమేయం)";
 
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "ప్రత్యామ్నాయ";
-
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "భద్రపరచు";
-
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "ప్రత్యామ్నాయను రద్దు చేయండి";
-
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "ప్రత్యామ్నాయ ప్రారంభించబడింది";
-
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud స్థితి";
-
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "ప్రత్యామ్నాయ పునరుద్ధరణ విఫలమైంది";
-
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "ప్రత్యామ్నాయ నిష్క్రియ పునరుద్ధరణ";
-
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "ప్రత్యామ్నాయ పునరుద్ధరణ పురోగతిలో ఉంది";
-
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "ప్రత్యామ్నాయ పునరుద్ధరణ విజయవంతమైంది";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "దశ";
-
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "పురోగతి";
-
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "స్థితి";
-
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "ప్రత్యామ్నాయ విఫలమైంది";
-
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "వేచి";
-
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "ప్రత్యామ్నాయ";
-
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "ప్రత్యామ్నాయ విజయవంతమైంది";
-
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "నిరోధించిన వినియోగదారుని జోడించండి";
 
@@ -4907,7 +4823,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "మమ్మల్ని సంప్రదించండి";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "ఏమి జరుగుతుందో మాకు చెప్పండి";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "సమస్య గురించి మాకు చెప్పండి:";
@@ -5118,6 +5034,12 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "మీ పరికరం ఈ లక్షణానికి మద్దతు ఇవ్వదు.";
+
+/* Description for the unverified safety number change. Embeds {name of contact with identity change} */
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+
+/* Action to verify a safety number after it has changed */
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "నిర్ధారించబడిన";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "పరిచయాన్ని నవీకరించండి";
