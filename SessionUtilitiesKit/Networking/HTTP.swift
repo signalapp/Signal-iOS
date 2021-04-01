@@ -2,15 +2,28 @@ import Foundation
 import PromiseKit
 
 public enum HTTP {
-    private static let sslURLSession = URLSession(configuration: .ephemeral)
-    private static let defaultURLSession = URLSession(configuration: .ephemeral, delegate: defaultURLSessionDelegate, delegateQueue: nil)
-    private static let defaultURLSessionDelegate = DefaultURLSessionDelegateImplementation()
+    private static let seedNodeURLSession = URLSession(configuration: .ephemeral, delegate: seedNodeURLSessionDelegate, delegateQueue: nil)
+    private static let seedNodeURLSessionDelegate = SeedNodeURLSessionDelegateImplementation()
+    private static let snodeURLSession = URLSession(configuration: .ephemeral, delegate: snodeURLSessionDelegate, delegateQueue: nil)
+    private static let snodeURLSessionDelegate = SnodeURLSessionDelegateImplementation()
 
     // MARK: Settings
     public static let timeout: TimeInterval = 10
 
-    // MARK: URL Session Delegate Implementation
-    private final class DefaultURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
+    // MARK: Seed Node URL Session Delegate Implementation
+    private final class SeedNodeURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
+
+        func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            
+            // TODO: Implement
+            
+            // Snode to snode communication uses self-signed certificates but clients can safely ignore this
+            completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+        }
+    }
+    
+    // MARK: Snode URL Session Delegate Implementation
+    private final class SnodeURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
 
         func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
             // Snode to snode communication uses self-signed certificates but clients can safely ignore this
@@ -42,32 +55,32 @@ public enum HTTP {
     }
 
     // MARK: Main
-    public static func execute(_ verb: Verb, _ url: String, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
-        return execute(verb, url, body: nil, timeout: timeout, useSSLURLSession: useSSLURLSession)
+    public static func execute(_ verb: Verb, _ url: String, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+        return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
     }
 
-    public static func execute(_ verb: Verb, _ url: String, parameters: JSON?, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, parameters: JSON?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
         if let parameters = parameters {
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return Promise(error: Error.invalidJSON) }
                 let body = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
-                return execute(verb, url, body: body, timeout: timeout, useSSLURLSession: useSSLURLSession)
+                return execute(verb, url, body: body, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
             } catch (let error) {
                 return Promise(error: error)
             }
         } else {
-            return execute(verb, url, body: nil, timeout: timeout, useSSLURLSession: useSSLURLSession)
+            return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
         }
     }
 
-    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = verb.rawValue
         request.httpBody = body
         request.timeoutInterval = timeout
         request.allHTTPHeaderFields?.removeValue(forKey: "User-Agent")
         let (promise, seal) = Promise<JSON>.pending()
-        let urlSession = useSSLURLSession ? sslURLSession : defaultURLSession
+        let urlSession = useSeedNodeURLSession ? seedNodeURLSession : snodeURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in
             guard let data = data, let response = response as? HTTPURLResponse else {
                 if let error = error {
