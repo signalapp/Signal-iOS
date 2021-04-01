@@ -6,38 +6,38 @@ extension ContextMenuVC {
         let title: String
         let work: () -> Void
 
-        static func reply(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func reply(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Reply"
-            return Action(icon: UIImage(named: "ic_reply")!, title: title) { delegate.reply(viewItem) }
+            return Action(icon: UIImage(named: "ic_reply")!, title: title) { delegate?.reply(viewItem) }
         }
 
-        static func copy(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func copy(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Copy"
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate.copy(viewItem) }
+            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copy(viewItem) }
         }
 
-        static func copySessionID(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func copySessionID(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Copy Session ID"
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate.copySessionID(viewItem) }
+            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copySessionID(viewItem) }
         }
 
-        static func delete(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func delete(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Delete"
-            return Action(icon: UIImage(named: "ic_trash")!, title: title) { delegate.delete(viewItem) }
+            return Action(icon: UIImage(named: "ic_trash")!, title: title) { delegate?.delete(viewItem) }
         }
 
-        static func save(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func save(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Save"
-            return Action(icon: UIImage(named: "ic_download")!, title: title) { delegate.save(viewItem) }
+            return Action(icon: UIImage(named: "ic_download")!, title: title) { delegate?.save(viewItem) }
         }
 
-        static func ban(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate) -> Action {
+        static func ban(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Ban User"
-            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate.ban(viewItem) }
+            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.ban(viewItem) }
         }
     }
 
-    static func actions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate) -> [Action] {
+    static func actions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
         func isReplyingAllowed() -> Bool {
             guard let message = viewItem.interaction as? TSOutgoingMessage else { return true }
             switch message.messageState {
@@ -71,7 +71,7 @@ extension ContextMenuVC {
 }
 
 // MARK: Delegate
-protocol ContextMenuActionDelegate {
+protocol ContextMenuActionDelegate : class {
     
     func reply(_ viewItem: ConversationViewItem)
     func copy(_ viewItem: ConversationViewItem)

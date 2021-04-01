@@ -1,7 +1,7 @@
 
 final class ConversationTitleView : UIView {
     private let thread: TSThread
-    var delegate: ConversationTitleViewDelegate?
+    weak var delegate: ConversationTitleViewDelegate?
 
     override var intrinsicContentSize: CGSize {
         return UIView.layoutFittingExpandedSize
@@ -121,7 +121,7 @@ final class ConversationTitleView : UIView {
 }
 
 // MARK: Delegate
-protocol ConversationTitleViewDelegate {
+protocol ConversationTitleViewDelegate : class {
     
     func handleTitleViewTapped()
 }

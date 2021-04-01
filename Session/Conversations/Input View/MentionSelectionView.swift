@@ -9,7 +9,7 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
     var openGroupServer: String?
     var openGroupChannel: UInt64?
     var openGroupRoom: String?
-    var delegate: MentionSelectionViewDelegate?
+    weak var delegate: MentionSelectionViewDelegate?
 
     // MARK: Components
     lazy var tableView: UITableView = { // TODO: Make this private
@@ -177,7 +177,7 @@ private extension MentionSelectionView {
 
 // MARK: - Delegate
 
-protocol MentionSelectionViewDelegate {
+protocol MentionSelectionViewDelegate : class {
 
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)
 }

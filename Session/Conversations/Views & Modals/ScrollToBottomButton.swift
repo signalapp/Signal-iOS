@@ -1,6 +1,6 @@
     
 final class ScrollToBottomButton : UIView {
-    private let delegate: ScrollToBottomButtonDelegate
+    private weak var delegate: ScrollToBottomButtonDelegate?
     
     // MARK: Settings
     private static let size: CGFloat = 40
@@ -57,11 +57,11 @@ final class ScrollToBottomButton : UIView {
     
     // MARK: Interaction
     @objc private func handleTap() {
-        delegate.handleScrollToBottomButtonTapped()
+        delegate?.handleScrollToBottomButtonTapped()
     }
 }
 
-protocol ScrollToBottomButtonDelegate {
+    protocol ScrollToBottomButtonDelegate : class {
     
     func handleScrollToBottomButtonTapped()
 }
