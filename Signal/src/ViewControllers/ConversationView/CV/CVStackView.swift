@@ -1,15 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-public struct CVStackViewConfig {
-    let axis: NSLayoutConstraint.Axis
-    let alignment: UIStackView.Alignment
-    let spacing: CGFloat
-    let layoutMargins: UIEdgeInsets
-}
+public typealias CVStackViewConfig = OWSStackView.Config
 
 // MARK: -
 
@@ -64,5 +59,32 @@ public extension CGRect {
         set {
             size.height = newValue
         }
+    }
+}
+
+// MARK: -
+
+public extension ManualStackView {
+
+    func configure(config: Config,
+                   cellMeasurement: CVCellMeasurement,
+                   measurementKey: String,
+                   subviews: [UIView]) {
+        guard let measurement = cellMeasurement.measurement(key: measurementKey) else {
+            owsFailDebug("Missing measurement.")
+            return
+        }
+        configure(config: config,
+                  measurement: measurement,
+                  subviews: subviews)
+    }
+
+    static func measure(config: Config,
+                        measurementBuilder: CVCellMeasurement.Builder,
+                        measurementKey: String,
+                        subviewInfos: [ManualStackSubviewInfo]) -> Measurement {
+        let measurement = Self.measure(config: config, subviewInfos: subviewInfos)
+        measurementBuilder.setMeasurement(key: measurementKey, value: measurement)
+        return measurement
     }
 }

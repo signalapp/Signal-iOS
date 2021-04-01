@@ -26,7 +26,7 @@ public extension UIEdgeInsets {
     }
 
     func minus(_ inset: CGFloat) -> UIEdgeInsets {
-        return plus(-inset)
+        plus(-inset)
     }
 
     var asSize: CGSize {
@@ -40,8 +40,8 @@ public extension UIEdgeInsets {
 @objc
 public extension UINavigationController {
     func pushViewController(_ viewController: UIViewController,
-                                   animated: Bool,
-                                   completion: (() -> Void)?) {
+                            animated: Bool,
+                            completion: (() -> Void)?) {
         CATransaction.begin()
         CATransaction.setCompletionBlock(completion)
         pushViewController(viewController, animated: animated)
@@ -49,7 +49,7 @@ public extension UINavigationController {
     }
 
     func popViewController(animated: Bool,
-                                  completion: (() -> Void)?) {
+                           completion: (() -> Void)?) {
         CATransaction.begin()
         CATransaction.setCompletionBlock(completion)
         popViewController(animated: animated)
@@ -57,8 +57,8 @@ public extension UINavigationController {
     }
 
     func popToViewController(_ viewController: UIViewController,
-                                    animated: Bool,
-                                    completion: (() -> Void)?) {
+                             animated: Bool,
+                             completion: (() -> Void)?) {
         CATransaction.begin()
         CATransaction.setCompletionBlock(completion)
         self.popToViewController(viewController, animated: animated)
@@ -95,7 +95,7 @@ public class SpacerView: UIView {
 @objc
 public extension UIView {
     func renderAsImage() -> UIImage? {
-        return renderAsImage(opaque: false, scale: UIScreen.main.scale)
+        renderAsImage(opaque: false, scale: UIScreen.main.scale)
     }
 
     func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
@@ -184,11 +184,11 @@ public extension UIView {
     }
 
     class func accessibilityIdentifier(in container: NSObject, name: String) -> String {
-        return "\(type(of: container)).\(name)"
+        "\(type(of: container)).\(name)"
     }
 
     class func accessibilityIdentifier(containerName: String, name: String) -> String {
-        return "\(containerName).\(name)"
+        "\(containerName).\(name)"
     }
 
     func setAccessibilityIdentifier(in container: NSObject, name: String) {
@@ -282,6 +282,13 @@ public extension UIView {
         NSLayoutConstraint(item: self, attribute: .width, relatedBy: .equal, toItem: otherView, attribute: .width, multiplier: 1, constant: 0).autoInstall()
     }
 
+    func autoPinEdgesToSuperviewEdges(withInsets insets: UIEdgeInsets) {
+        autoPinEdge(toSuperviewEdge: .top, withInset: insets.top)
+        autoPinEdge(toSuperviewEdge: .bottom, withInset: insets.bottom)
+        autoPinEdge(toSuperviewEdge: .left, withInset: insets.left)
+        autoPinEdge(toSuperviewEdge: .right, withInset: insets.right)
+    }
+
     func removeAllSubviews() {
         for subview in subviews {
             subview.removeFromSuperview()
@@ -353,29 +360,29 @@ public extension UIViewController {
 
 public extension CGPoint {
     func toUnitCoordinates(viewBounds: CGRect, shouldClamp: Bool) -> CGPoint {
-        return CGPoint(x: (x - viewBounds.origin.x).inverseLerp(0, viewBounds.width, shouldClamp: shouldClamp),
-                       y: (y - viewBounds.origin.y).inverseLerp(0, viewBounds.height, shouldClamp: shouldClamp))
+        CGPoint(x: (x - viewBounds.origin.x).inverseLerp(0, viewBounds.width, shouldClamp: shouldClamp),
+                y: (y - viewBounds.origin.y).inverseLerp(0, viewBounds.height, shouldClamp: shouldClamp))
     }
 
     func toUnitCoordinates(viewSize: CGSize, shouldClamp: Bool) -> CGPoint {
-        return toUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize), shouldClamp: shouldClamp)
+        toUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize), shouldClamp: shouldClamp)
     }
 
     func fromUnitCoordinates(viewBounds: CGRect) -> CGPoint {
-        return CGPoint(x: viewBounds.origin.x + x.lerp(0, viewBounds.size.width),
-                       y: viewBounds.origin.y + y.lerp(0, viewBounds.size.height))
+        CGPoint(x: viewBounds.origin.x + x.lerp(0, viewBounds.size.width),
+                y: viewBounds.origin.y + y.lerp(0, viewBounds.size.height))
     }
 
     func fromUnitCoordinates(viewSize: CGSize) -> CGPoint {
-        return fromUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize))
+        fromUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize))
     }
 
     func inverse() -> CGPoint {
-        return CGPoint(x: -x, y: -y)
+        CGPoint(x: -x, y: -y)
     }
 
     func plus(_ value: CGPoint) -> CGPoint {
-        return CGPointAdd(self, value)
+        CGPointAdd(self, value)
     }
 
     func plusX(_ value: CGFloat) -> CGPoint {
@@ -387,37 +394,37 @@ public extension CGPoint {
     }
 
     func minus(_ value: CGPoint) -> CGPoint {
-        return CGPointSubtract(self, value)
+        CGPointSubtract(self, value)
     }
 
     func times(_ value: CGFloat) -> CGPoint {
-        return CGPoint(x: x * value, y: y * value)
+        CGPoint(x: x * value, y: y * value)
     }
 
     func min(_ value: CGPoint) -> CGPoint {
         // We use "Swift" to disambiguate the global function min() from this method.
-        return CGPoint(x: Swift.min(x, value.x),
-                       y: Swift.min(y, value.y))
+        CGPoint(x: Swift.min(x, value.x),
+                y: Swift.min(y, value.y))
     }
 
     func max(_ value: CGPoint) -> CGPoint {
         // We use "Swift" to disambiguate the global function max() from this method.
-        return CGPoint(x: Swift.max(x, value.x),
-                       y: Swift.max(y, value.y))
+        CGPoint(x: Swift.max(x, value.x),
+                y: Swift.max(y, value.y))
     }
 
     var length: CGFloat {
-        return sqrt(x * x + y * y)
+        sqrt(x * x + y * y)
     }
 
     @inlinable
     func distance(_ other: CGPoint) -> CGFloat {
-        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2))
+        sqrt(pow(x - other.x, 2) + pow(y - other.y, 2))
     }
 
     @inlinable
     func within(_ delta: CGFloat, of other: CGPoint) -> Bool {
-        return distance(other) <= delta
+        distance(other) <= delta
     }
 
     static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
@@ -425,22 +432,22 @@ public extension CGPoint {
     static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
 
     func applyingInverse(_ transform: CGAffineTransform) -> CGPoint {
-        return applying(transform.inverted())
+        applying(transform.inverted())
     }
 
     func fuzzyEquals(_ other: CGPoint, tolerance: CGFloat = 0.001) -> Bool {
-        return (x.fuzzyEquals(other.x, tolerance: tolerance) &&
+        (x.fuzzyEquals(other.x, tolerance: tolerance) &&
             y.fuzzyEquals(other.y, tolerance: tolerance))
     }
 
     static func tan(angle: CGFloat) -> CGPoint {
-        return CGPoint(x: sin(angle),
-                       y: cos(angle))
+        CGPoint(x: sin(angle),
+                y: cos(angle))
     }
 
     func clamp(_ rect: CGRect) -> CGPoint {
-        return CGPoint(x: x.clamp(rect.minX, rect.maxX),
-                       y: y.clamp(rect.minY, rect.maxY))
+        CGPoint(x: x.clamp(rect.minX, rect.maxX),
+                y: y.clamp(rect.minY, rect.maxY))
     }
 }
 
@@ -456,31 +463,31 @@ public extension CGSize {
     }
 
     var asPoint: CGPoint {
-        return CGPoint(x: width, y: height)
+        CGPoint(x: width, y: height)
     }
 
     var ceil: CGSize {
-        return CGSizeCeil(self)
+        CGSizeCeil(self)
     }
 
     var floor: CGSize {
-        return CGSizeFloor(self)
+        CGSizeFloor(self)
     }
 
     var round: CGSize {
-        return CGSizeRound(self)
+        CGSizeRound(self)
     }
 
     var abs: CGSize {
-        return CGSize(width: Swift.abs(width), height: Swift.abs(height))
+        CGSize(width: Swift.abs(width), height: Swift.abs(height))
     }
 
     var largerAxis: CGFloat {
-        return Swift.max(width, height)
+        Swift.max(width, height)
     }
 
     var smallerAxis: CGFloat {
-        return min(width, height)
+        min(width, height)
     }
 
     init(square: CGFloat) {
@@ -488,7 +495,7 @@ public extension CGSize {
     }
 
     func plus(_ value: CGSize) -> CGSize {
-        return CGSizeAdd(self, value)
+        CGSizeAdd(self, value)
     }
 
     func max(_ other: CGSize) -> CGSize {
@@ -497,7 +504,16 @@ public extension CGSize {
     }
 
     static func square(_ size: CGFloat) -> CGSize {
-        return CGSize(width: size, height: size)
+        CGSize(width: size, height: size)
+    }
+
+    static func + (left: CGSize, right: CGSize) -> CGSize {
+        left.plus(right)
+    }
+
+    static func - (left: CGSize, right: CGSize) -> CGSize {
+        CGSize(width: left.width - right.width,
+               height: left.height - right.height)
     }
 }
 
@@ -524,23 +540,23 @@ public extension CGRect {
     }
 
     var center: CGPoint {
-        return CGPoint(x: midX, y: midY)
+        CGPoint(x: midX, y: midY)
     }
 
     var topLeft: CGPoint {
-        return origin
+        origin
     }
 
     var topRight: CGPoint {
-        return CGPoint(x: maxX, y: minY)
+        CGPoint(x: maxX, y: minY)
     }
 
     var bottomLeft: CGPoint {
-        return CGPoint(x: minX, y: maxY)
+        CGPoint(x: minX, y: maxY)
     }
 
     var bottomRight: CGPoint {
-        return CGPoint(x: maxX, y: maxY)
+        CGPoint(x: maxX, y: maxY)
     }
 
     func pinnedToVerticalEdge(of boundingRect: CGRect) -> CGRect {
@@ -585,23 +601,23 @@ public extension CGRect {
 
 public extension CGAffineTransform {
     static func translate(_ point: CGPoint) -> CGAffineTransform {
-        return CGAffineTransform(translationX: point.x, y: point.y)
+        CGAffineTransform(translationX: point.x, y: point.y)
     }
 
     static func scale(_ scaling: CGFloat) -> CGAffineTransform {
-        return CGAffineTransform(scaleX: scaling, y: scaling)
+        CGAffineTransform(scaleX: scaling, y: scaling)
     }
 
     func translate(_ point: CGPoint) -> CGAffineTransform {
-        return translatedBy(x: point.x, y: point.y)
+        translatedBy(x: point.x, y: point.y)
     }
 
     func scale(_ scaling: CGFloat) -> CGAffineTransform {
-        return scaledBy(x: scaling, y: scaling)
+        scaledBy(x: scaling, y: scaling)
     }
 
     func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
-        return rotated(by: angleRadians)
+        rotated(by: angleRadians)
     }
 }
 
@@ -812,7 +828,7 @@ public extension UIToolbar {
 
         return toolbar
     }
- }
+}
 
 // MARK: -
 
@@ -823,6 +839,10 @@ public extension UIEdgeInsets {
 
     var totalHeight: CGFloat {
         top + bottom
+    }
+
+    var totalSize: CGSize {
+        CGSize(width: totalWidth, height: totalHeight)
     }
 }
 

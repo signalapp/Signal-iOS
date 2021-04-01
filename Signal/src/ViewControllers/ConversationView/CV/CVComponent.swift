@@ -91,19 +91,25 @@ public protocol CVAccessibilityComponent: CVComponent {
 // necessary because some UIViews (like UIImageView) set up
 // layout contraints based on their content that we want to override.
 public struct CVCellMeasurement: Equatable {
+
+    public typealias Measurement = ManualStackMeasurement
+
     let cellSize: CGSize
     private let sizes: [String: CGSize]
     private let values: [String: CGFloat]
+    private let measurements: [String: Measurement]
 
     public class Builder {
         var cellSize: CGSize = .zero
         private var sizes = [String: CGSize]()
         private var values = [String: CGFloat]()
+        private var measurements = [String: Measurement]()
 
         func build() -> CVCellMeasurement {
             CVCellMeasurement(cellSize: cellSize,
                               sizes: sizes,
-                              values: values)
+                              values: values,
+                              measurements: measurements)
         }
 
         func setSize(key: String, size: CGSize) {
@@ -112,6 +118,10 @@ public struct CVCellMeasurement: Equatable {
 
         func setValue(key: String, value: CGFloat) {
             values[key] = value
+        }
+
+        func setMeasurement(key: String, value: Measurement) {
+            measurements[key] = value
         }
     }
 
@@ -123,14 +133,19 @@ public struct CVCellMeasurement: Equatable {
         values[key]
     }
 
+    func measurement(key: String) -> Measurement? {
+        measurements[key]
+    }
+
     public var debugDescription: String {
-        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values)]"
+        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values), measurements: \(measurements)]"
     }
 
     public func debugLog() {
         Logger.verbose("cellSize: \(cellSize)")
         Logger.verbose("sizes: \(sizes)")
         Logger.verbose("values: \(values)")
+        Logger.verbose("measurements: \(measurements)")
     }
 }
 
