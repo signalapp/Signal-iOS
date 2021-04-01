@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppSetup : NSObject
 
 + (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
-                                  migrationCompletion:(dispatch_block_t)migrationCompletion;
+                                  migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion;
 
 @end
 

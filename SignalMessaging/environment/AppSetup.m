@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation AppSetup
 
 + (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
-                                  migrationCompletion:(dispatch_block_t)migrationCompletion
+                                  migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {
     OWSAssertDebug(appSpecificSingletonBlock);
     OWSAssertDebug(migrationCompletion);
@@ -197,7 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
                     NSError *_Nullable error;
                     [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
                     if (error != nil) {
-                        OWSFailDebug(@"error: %@", error);
+                        OWSFailDebug(@"Failed to truncate database: %@", error);
+
+                        dispatch_async(dispatch_get_main_queue(), ^{ migrationCompletion(error); });
                     }
                 }
 
@@ -213,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
                         if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
                             [SSKEnvironment.shared warmCaches];
                         }
-                        migrationCompletion();
+                        migrationCompletion(nil);
 
                         OWSAssertDebug(backgroundTask);
                         backgroundTask = nil;

@@ -11,14 +11,34 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // 256 bit key + 128 bit salt
     public static let kSQLCipherKeySpecLength: UInt = 48
 
-    static func databaseDirUrl(baseDir: URL) -> URL {
-        return baseDir.appendingPathComponent("grdb", isDirectory: true)
+    @objc
+    public enum DirectoryMode: Int {
+        case primary
+        case hotswap
+
+        var folderName: String {
+            switch self {
+            case .primary: return "grdb"
+            case .hotswap: return "grdb-hotswap"
+            }
+        }
     }
 
-    static func databaseFileUrl(baseDir: URL) -> URL {
-        let databaseDir = databaseDirUrl(baseDir: baseDir)
+    @objc
+    public static func databaseDirUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        return baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
+    }
+
+    public static func databaseFileUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
+    }
+
+    public static func databaseWalUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
+        OWSFileSystem.ensureDirectoryExists(databaseDir.path)
+        return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
     }
 
     private let databaseUrl: URL
@@ -29,8 +49,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    init(baseDir: URL) {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+    init(baseDir: URL, directoryMode: DirectoryMode = .primary) {
+        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir, directoryMode: directoryMode)
 
         do {
             // Crash if keychain is inaccessible.
@@ -234,6 +254,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         } catch {
             owsFailDebug("Could not clear keychain: \(error)")
         }
+    }
+
+    static func prepareDatabase(db: Database, keyspec: GRDBKeySpecSource, name: String? = nil) throws {
+        let prefix: String
+        if let name = name, !name.isEmpty {
+            prefix = name + "."
+        } else {
+            prefix = ""
+        }
+
+        let keyspec = try keyspec.fetchString()
+        try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
+        try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
     }
 }
 
@@ -511,10 +544,8 @@ private struct GRDBStorage {
                 return true
             }
         })
-        configuration.prepareDatabase = { (db: Database) in
-            let keyspec = try keyspec.fetchString()
-            try db.execute(sql: "PRAGMA key = \"\(keyspec)\"")
-            try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
+        configuration.prepareDatabase = { db in
+            try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true

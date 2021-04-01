@@ -55,7 +55,8 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_None,
     LaunchFailure_CouldNotLoadDatabase,
     LaunchFailure_UnknownDatabaseVersion,
-    LaunchFailure_CouldNotRestoreTransferredData
+    LaunchFailure_CouldNotRestoreTransferredData,
+    LaunchFailure_DatabaseUnrecoverablyCorrupted
 };
 
 NSString *NSStringForLaunchFailure(LaunchFailure launchFailure);
@@ -70,6 +71,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return @"LaunchFailure_UnknownDatabaseVersion";
         case LaunchFailure_CouldNotRestoreTransferredData:
             return @"LaunchFailure_CouldNotRestoreTransferredData";
+        case LaunchFailure_DatabaseUnrecoverablyCorrupted:
+            return @"LaunchFailure_DatabaseUnrecoverablyCorrupted";
     }
 }
 
@@ -189,6 +192,8 @@ void uncaughtExceptionHandler(NSException *exception)
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
+    } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
+        launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
     }
     if (launchFailure != LaunchFailure_None) {
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
@@ -211,10 +216,15 @@ void uncaughtExceptionHandler(NSException *exception)
             [AppEnvironment.shared setup];
             [SignalApp.shared setup];
         }
-        migrationCompletion:^{
+        migrationCompletion:^(NSError *_Nullable error) {
             OWSAssertIsOnMainThread();
 
-            [self versionMigrationsDidComplete];
+            if (error != nil) {
+                OWSFailDebug(@"Error: %@", error);
+                [self showUIForLaunchFailure:LaunchFailure_DatabaseUnrecoverablyCorrupted];
+            } else {
+                [self versionMigrationsDidComplete];
+            }
         }];
 
     [UIUtil setupSignalAppearence];
@@ -309,8 +319,10 @@ void uncaughtExceptionHandler(NSException *exception)
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
     [AppVersion shared];
 
-    self.window = [OWSWindow new];
-    CurrentAppContext().mainWindow = self.window;
+    if (self.window == nil) {
+        self.window = [OWSWindow new];
+        CurrentAppContext().mainWindow = self.window;
+    }
 
     // Show the launch screen
     UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
@@ -323,6 +335,8 @@ void uncaughtExceptionHandler(NSException *exception)
     NSString *alertMessage
         = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE", @"Message for the 'app launch failed' alert.");
     switch (launchFailure) {
+        case LaunchFailure_DatabaseUnrecoverablyCorrupted:
+            // Fallthrough
         case LaunchFailure_CouldNotLoadDatabase:
             alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
                 @"Error indicating that the app could not launch because the database could not be loaded.");
@@ -527,8 +541,6 @@ void uncaughtExceptionHandler(NSException *exception)
     if (CurrentAppContext().isRunningTests) {
         return;
     }
-
-    [SignalApp.shared ensureRootViewController:launchStartedAt];
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self handleActivation]; });
 
@@ -1059,6 +1071,11 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)checkIfAppIsReady
 {
     OWSAssertIsOnMainThread();
+
+    // If launch failed, the app will never be ready.
+    if (self.didAppLaunchFail) {
+        return;
+    }
 
     // App isn't ready until storage is ready AND all version migrations are complete.
     if (!self.areVersionMigrationsComplete) {
