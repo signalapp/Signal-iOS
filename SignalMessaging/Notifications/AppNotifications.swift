@@ -149,7 +149,7 @@ extension AppNotificationAction {
 
 // Delay notification of incoming messages when it's likely to be read by a linked device to
 // avoid notifying a user on their phone while a conversation is actively happening on desktop.
-let kNotificationDelayForRemoteRead: TimeInterval = 5
+let kNotificationDelayForRemoteRead: TimeInterval = 20
 
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
