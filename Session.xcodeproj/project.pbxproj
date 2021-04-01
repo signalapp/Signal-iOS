@@ -186,12 +186,12 @@
 		B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */; };
 		B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
-		B81D25BA26157F20004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
-		B81D25BB26157F20004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
-		B81D25BC26157F20004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B81D25C526157F40004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
 		B81D25C626157F40004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
+		B81D25EA2615836C004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
+		B81D25EB2615836C004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
+		B81D25EC2615836C004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821494525D4D6FF009C0F2A /* URLModal.swift */; };
 		B821494F25D4E163009C0F2A /* BodyTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821494E25D4E163009C0F2A /* BodyTextView.swift */; };
 		B82149B825D60393009C0F2A /* BlockedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149B725D60393009C0F2A /* BlockedModal.swift */; };
@@ -3339,6 +3339,9 @@
 		C3C2A68B255388D500C340D1 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
+				B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */,
+				B81D25B726157F20004D1FE1 /* storage-seed-1.crt */,
+				B81D25B926157F20004D1FE1 /* storage-seed-3.crt */,
 				C3C2A67B255388CC00C340D1 /* SessionUtilitiesKit.h */,
 				C3C2A67C255388CC00C340D1 /* Info.plist */,
 			);
@@ -3369,9 +3372,6 @@
 		C3C2A70A25539DF900C340D1 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
-				B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */,
-				B81D25B726157F20004D1FE1 /* storage-seed-1.crt */,
-				B81D25B926157F20004D1FE1 /* storage-seed-3.crt */,
 				C3C2A6F225539DE700C340D1 /* SessionMessagingKit.h */,
 				C3C2A6F325539DE700C340D1 /* Info.plist */,
 			);
@@ -4175,6 +4175,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B81D25EB2615836C004D1FE1 /* storage-seed-1.crt in Resources */,
+				B81D25EC2615836C004D1FE1 /* storage-seed-3.crt in Resources */,
+				B81D25EA2615836C004D1FE1 /* public-loki-foundation.crt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4182,9 +4185,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B81D25BB26157F20004D1FE1 /* public-loki-foundation.crt in Resources */,
-				B81D25BC26157F20004D1FE1 /* storage-seed-3.crt in Resources */,
-				B81D25BA26157F20004D1FE1 /* storage-seed-1.crt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
