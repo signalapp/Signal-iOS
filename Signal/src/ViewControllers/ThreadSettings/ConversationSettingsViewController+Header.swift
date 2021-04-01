@@ -205,21 +205,7 @@ extension ConversationSettingsViewController {
 
         builder.addLastSubviews()
 
-        let header = builder.build()
-
-        // This will not appear in public builds.
-        if DebugFlags.groupsV2showV2Indicator,
-            thread.isGroupV2Thread {
-            let indicatorLabel = UILabel()
-            indicatorLabel.text = thread.isGroupV2Thread ? "v2" : "v1"
-            indicatorLabel.textColor = Theme.secondaryTextAndIconColor
-            indicatorLabel.font = .ows_dynamicTypeBody
-            header.addSubview(indicatorLabel)
-            indicatorLabel.autoPinEdge(toSuperviewMargin: .trailing)
-            indicatorLabel.autoPinEdge(toSuperviewMargin: .bottom)
-        }
-
-        return header
+        return builder.build()
     }
 
     private func buildHeaderForContact(contactThread: TSContactThread) -> UIView {

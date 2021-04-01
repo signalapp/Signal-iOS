@@ -39,7 +39,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
     private func updateTableContents() {
         let groupModelV2 = self.groupModelV2
-        let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
 
         let contents = OWSTableContents()
 
@@ -47,84 +46,66 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
         do {
             let section = OWSTableSection()
-            section.headerTitle = NSLocalizedString("GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE",
-                                                    comment: "Title for the 'manage and share' section of the 'group link' view.")
+
             let switchAction = #selector(didToggleGroupLinkEnabled(_:))
-            section.add(OWSTableItem(customCellBlock: { [weak self] () -> UITableViewCell in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-                let cell = OWSTableItem.newCell()
-                cell.preservesSuperviewLayoutMargins = true
-                cell.contentView.preservesSuperviewLayoutMargins = true
-                cell.selectionStyle = .none
-
-                let rowLabel = UILabel()
-                rowLabel.text = NSLocalizedString("GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH",
-                                                  comment: "Label for the 'enable group link' switch in the 'group link' view.")
-                rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = OWSTableItem.primaryLabelFont
-                rowLabel.lineBreakMode = .byTruncatingTail
-
-                let switchView = UISwitch()
-                switchView.isOn = groupModelV2.isGroupInviteLinkEnabled
-                switchView.addTarget(self, action: switchAction, for: .valueChanged)
-                switchView.isEnabled = true
-
-                let topRow = UIStackView(arrangedSubviews: [ rowLabel, switchView ])
-                topRow.spacing = 16
-                topRow.alignment = .center
-
-                let vStack = UIStackView(arrangedSubviews: [ topRow ])
-                vStack.axis = .vertical
-                vStack.alignment = .fill
-                vStack.spacing = 10
-                cell.contentView.addSubview(vStack)
-                vStack.autoPinEdgesToSuperviewMargins()
-
-                if groupModelV2.isGroupInviteLinkEnabled {
-                    do {
-                        let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-                        let urlLabel = UILabel()
-                        urlLabel.text = inviteLinkUrl.absoluteString
-                        urlLabel.font = .ows_dynamicTypeSubheadline
-                        urlLabel.textColor = Theme.secondaryTextAndIconColor
-                        urlLabel.numberOfLines = 0
-                        urlLabel.lineBreakMode = .byCharWrapping
-                        vStack.addArrangedSubview(urlLabel)
-                    } catch {
-                        owsFailDebug("Error: \(error)")
-                    }
-                }
-
-                switchView.accessibilityIdentifier = "group_link_view_enable_group_link_switch"
-                cell.accessibilityIdentifier = "group_link_view_enable_group_link"
-
-                return cell
-            }))
+            section.add(.switch(
+                withText: NSLocalizedString("GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH",
+                                            comment: "Label for the 'enable group link' switch in the 'group link' view."),
+                accessibilityIdentifier: "group_link_view_enable_group_link",
+                isOn: { groupModelV2.isGroupInviteLinkEnabled },
+                isEnabledBlock: { true },
+                target: self,
+                selector: switchAction
+            ))
 
             if groupModelV2.isGroupInviteLinkEnabled {
-                section.add(OWSTableItem.actionItem(icon: ThemeIcon.messageActionShare,
-                                                    tintColor: Theme.accentBlueColor,
-                                                    name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
-                                                                                comment: "Label for the 'share link' button in the 'group link' view."),
-                                                    textColor: Theme.accentBlueColor,
-                                                    accessibilityIdentifier: "group_link_view_share_link",
-                                                    actionBlock: { [weak self] in
-                                                        self?.shareLinkPressed()
-                }))
-                section.add(OWSTableItem.actionItem(icon: ThemeIcon.retry24,
-                                                    tintColor: Theme.accentBlueColor,
-                                                    name: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
-                                                                            comment: "Label for the 'reset link' button in the 'group link' view."),
-                                                    textColor: Theme.accentBlueColor,
-                                                    accessibilityIdentifier: "group_link_view_reset_link",
-                                                    actionBlock: { [weak self] in
-                                                        self?.resetLinkPressed()
-                }))
+                do {
+                    let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+                    let urlLabel = UILabel()
+                    urlLabel.text = inviteLinkUrl.absoluteString
+                    urlLabel.font = .ows_dynamicTypeSubheadline
+                    urlLabel.textColor = Theme.secondaryTextAndIconColor
+                    urlLabel.numberOfLines = 0
+                    urlLabel.lineBreakMode = .byCharWrapping
+
+                    section.add(.init(
+                        customCellBlock: { () -> UITableViewCell in
+                            let cell = OWSTableItem.newCell()
+                            cell.selectionStyle = .none
+                            cell.contentView.addSubview(urlLabel)
+                            urlLabel.autoPinEdgesToSuperviewMargins()
+                            return cell
+                        },
+                        actionBlock: {
+
+                        }
+                    ))
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
             }
 
+            contents.addSection(section)
+        }
+
+        // MARK: - Sharing
+        if groupModelV2.isGroupInviteLinkEnabled {
+            let section = OWSTableSection()
+            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing))
+            section.add(OWSTableItem.actionItem(icon: .messageActionShare,
+                                                name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
+                                                                        comment: "Label for the 'share link' button in the 'group link' view."),
+                                                accessibilityIdentifier: "group_link_view_share_link",
+                                                actionBlock: { [weak self] in
+                                                    self?.shareLinkPressed()
+                                                }))
+            section.add(OWSTableItem.actionItem(icon: .retry24,
+                                                name: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+                                                                        comment: "Label for the 'reset link' button in the 'group link' view."),
+                                                accessibilityIdentifier: "group_link_view_reset_link",
+                                                actionBlock: { [weak self] in
+                                                    self?.resetLinkPressed()
+                                                }))
             contents.addSection(section)
         }
 
@@ -132,8 +113,6 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
         do {
             let section = OWSTableSection()
-            section.headerTitle = NSLocalizedString("GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE",
-                                                    comment: "Title for the 'member requests' section of the 'group link' view.")
             section.footerTitle = NSLocalizedString("GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
                                                     comment: "Footer for the 'member requests' section of the 'group link' view.")
             section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",

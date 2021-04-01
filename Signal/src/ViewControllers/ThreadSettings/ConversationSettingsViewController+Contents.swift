@@ -54,10 +54,12 @@ extension ConversationSettingsViewController {
         let header = buildMainHeader()
         lastContentWidth = view.width
         mainSection.customHeaderView = header
-        addBasicItems(to: mainSection)
 
-        // TODO: We can remove this item once message requests are mandatory.
-        addProfileSharingItems(to: mainSection)
+        addDisappearingMessagesItem(to: mainSection)
+        addWallpaperSettingsItem(to: mainSection)
+        if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
+        addSystemContactItemIfNecessary(to: mainSection)
+        addSafetyNumberItemIfNecessary(to: mainSection)
 
         if DebugFlags.shouldShowColorPicker {
             addColorPickerItems(to: mainSection)
@@ -65,20 +67,10 @@ extension ConversationSettingsViewController {
 
         contents.addSection(mainSection)
 
-        buildDisappearingMessagesSection(to: mainSection)
-
-        if !isNoteToSelf {
-            contents.addSection(buildNotificationsSection())
-        }
-
         if let groupModel = currentGroupModel,
             !groupModel.isPlaceholder {
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
-                if canEditConversationAccess {
-                    buildGroupAccessSections(groupModelV2: groupModelV2, contents: contents)
-                }
-
-                buildRequestsInvitesAndLinkSection(groupModelV2: groupModelV2, contents: contents)
+                buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
             }
 
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
@@ -98,25 +90,7 @@ extension ConversationSettingsViewController {
     }
 
     private func addBasicItems(to section: OWSTableSection) {
-
         let isNoteToSelf = thread.isNoteToSelf
-
-        if let contactThread = thread as? TSContactThread,
-            contactsManagerImpl.supportsContactEditing && !hasExistingContact {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
-                                                                                comment: "button in conversation settings view."),
-                                                        icon: .settingsAddToContacts,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts"))
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showAddToSystemContactsActionSheet(contactThread: contactThread)
-            }))
-        }
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
@@ -148,42 +122,6 @@ extension ConversationSettingsViewController {
             }))
         }
 
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                icon: .settingsWallpaper,
-                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
-                                            comment: "Label for settings view that allows user to change the wallpaper."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
-            )
-            return cell
-        },
-        actionBlock: { [weak self] in
-            self?.showWallpaperSettingsView()
-        }))
-
-        if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
-            // Safety Numbers
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("VERIFY_PRIVACY",
-                                                                                comment: "Label for button or row which allows users to verify the safety number of another user."),
-                                                        icon: .settingsViewSafetyNumber,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "safety_numbers"))
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showVerificationView()
-            }))
-        }
-
         // Indicate if the user is in the system contacts
         if !isNoteToSelf && !isGroupThread && hasExistingContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -210,47 +148,112 @@ extension ConversationSettingsViewController {
         }
     }
 
-    private func addProfileSharingItems(to section: OWSTableSection) {
-        guard !thread.isGroupV2Thread else {
-            return
-        }
+    private func addSafetyNumberItemIfNecessary(to section: OWSTableSection) {
+        guard !thread.isNoteToSelf, !isGroupThread, thread.hasSafetyNumbers() else { return }
 
-        let isLocalUserFullMember = self.isLocalUserFullMember
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
 
-        // For pre-message request threads, allow manually sharing your profile if the thread is not whitelisted.
-        let (isPreMessageRequestsThread, isThreadInProfileWhitelist) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
-            return (
-                GRDBThreadFinder.isPreMessageRequestsThread(self.thread, transaction: transaction.unwrapGrdbRead),
-                Self.profileManager.isThread(inProfileWhitelist: self.thread, transaction: transaction)
-            )
-        }
+            return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("VERIFY_PRIVACY",
+                                                                            comment: "Label for button or row which allows users to verify the safety number of another user."),
+                                                    icon: .settingsViewSafetyNumber,
+                                                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "safety_numbers"))
+        },
+        actionBlock: { [weak self] in
+            self?.showVerificationView()
+        }))
+    }
 
-        if isPreMessageRequestsThread && !isThreadInProfileWhitelist {
+    private func addSystemContactItemIfNecessary(to section: OWSTableSection) {
+        guard !thread.isNoteToSelf,
+              let contactThread = thread as? TSContactThread,
+              contactsManagerImpl.supportsContactEditing else { return }
+
+        if hasExistingContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
 
-                let title =
-                    (self.isGroupThread
-                        ? NSLocalizedString("CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                            comment: "Action that shares user profile with a group.")
-                        : NSLocalizedString("CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                            comment: "Action that shares user profile with a user."))
-                let cell = OWSTableItem.buildDisclosureCell(name: title,
-                                                            icon: .settingsProfile,
-                                                            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_profile"))
-                cell.isUserInteractionEnabled = isLocalUserFullMember
-                return cell
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showShareProfileAlert()
+                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString(
+                                                            "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                                                            comment: "Indicates that user is in the system contacts list."),
+                                                        icon: .settingsUserInContacts,
+                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts"))
+            },
+            actionBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return
+                }
+                if self.contactsManagerImpl.supportsContactEditing {
+                    self.presentContactViewController()
+                }
+            }))
+        } else {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
+                                                                                comment: "button in conversation settings view."),
+                                                        icon: .settingsAddToContacts,
+                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts"))
+            },
+            actionBlock: { [weak self] in
+                self?.showAddToSystemContactsActionSheet(contactThread: contactThread)
             }))
         }
     }
 
-    private func buildDisappearingMessagesSection(to section: OWSTableSection) {
+    private func addWallpaperSettingsItem(to section: OWSTableSection) {
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsWallpaper,
+                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the wallpaper."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showWallpaperSettingsView()
+        }))
+    }
+
+    private func addSoundAndNotificationSettingsItem(to section: OWSTableSection) {
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsMessageSound,
+                itemName: NSLocalizedString(
+                    "SOUND_AND_NOTIFICATION_SETTINGS",
+                    comment: "table cell label in conversation settings"
+                ),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sound_and_notifications")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showSoundAndNotificationsSettingsView()
+        }))
+    }
+
+    private func addDisappearingMessagesItem(to section: OWSTableSection) {
 
         let canEditConversationAttributes = self.canEditConversationAttributes
         let disappearingMessagesConfiguration = self.disappearingMessagesConfiguration
@@ -305,111 +308,6 @@ extension ConversationSettingsViewController {
                                  actionBlock: { [weak self] in
                                     self?.showColorPicker()
         }))
-    }
-
-    private func buildNotificationsSection() -> OWSTableSection {
-        let section = OWSTableSection()
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let sound = OWSSounds.notificationSound(for: self.thread)
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsMessageSound,
-                                                                itemName: NSLocalizedString("SETTINGS_ITEM_NOTIFICATION_SOUND",
-                                                                                            comment: "Label for settings view that allows user to change the notification sound."),
-                                                                accessoryText: OWSSounds.displayName(forSound: sound))
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notifications")
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showSoundSettingsView()
-        }))
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            var muteStatus = NSLocalizedString("CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
-                                               comment: "Indicates that the current thread is not muted.")
-
-            let now = Date()
-
-            if self.thread.mutedUntilTimestamp == TSThread.alwaysMutedTimestamp {
-                muteStatus = NSLocalizedString("CONVERSATION_SETTINGS_MUTED_ALWAYS",
-                                               comment: "Indicates that this thread is muted forever.")
-            } else if let mutedUntilDate = self.thread.mutedUntilDate, mutedUntilDate > now {
-                let calendar = Calendar.current
-                let muteUntilComponents = calendar.dateComponents([.year, .month, .day], from: mutedUntilDate)
-                let nowComponents = calendar.dateComponents([.year, .month, .day], from: now)
-                let dateFormatter = DateFormatter()
-                if nowComponents.year != muteUntilComponents.year
-                    || nowComponents.month != muteUntilComponents.month
-                    || nowComponents.day != muteUntilComponents.day {
-
-                    dateFormatter.dateStyle = .short
-                    dateFormatter.timeStyle = .short
-                } else {
-                    dateFormatter.dateStyle = .none
-                    dateFormatter.timeStyle = .short
-                }
-
-                let formatString = NSLocalizedString("CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
-                                                     comment: "Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}.")
-                muteStatus = String(format: formatString,
-                                    dateFormatter.string(from: mutedUntilDate))
-            }
-
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsMuted,
-                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_MUTE_LABEL",
-                                                                                            comment: "label for 'mute thread' cell in conversation settings"),
-                                                                accessoryText: muteStatus)
-
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mute")
-
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showMuteUnmuteActionSheet()
-        }))
-
-        if Mention.threadAllowsMentionSend(thread) {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsMention,
-                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_MENTIONS_LABEL",
-                                                                                                comment: "label for 'mentions' cell in conversation settings"),
-                                                                    accessoryText: self.nameForMentionMode(self.thread.mentionNotificationMode))
-
-                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mentions")
-
-                return cell
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showMentionNotificationModeActionSheet()
-            }))
-        }
-
-        return section
-    }
-
-    func nameForMentionMode(_ mode: TSThreadMentionNotificationMode) -> String {
-        switch mode {
-        case .default, .always:
-            return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS",
-                                     comment: "label for 'always' option for mention notifications in conversation settings")
-        case .never:
-            return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_NEVER",
-                                     comment: "label for 'never' option for mention notifications in conversation settings")
-        }
     }
 
     private func buildBlockAndLeaveSection() -> OWSTableSection {
@@ -480,52 +378,6 @@ extension ConversationSettingsViewController {
         }))
 
         return section
-    }
-
-    private func buildGroupAccessSections(groupModelV2: TSGroupModelV2,
-                                          contents: OWSTableContents) {
-
-        let section = OWSTableSection()
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.members)
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
-                                                                                            comment: "Label for 'edit membership access' action in conversation settings view."),
-                                                                accessoryText: accessStatus)
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_membership_access")
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showGroupMembershipAccessView()
-        }))
-
-        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
-                                                comment: "Footer for the 'attributes access' section in conversation settings view.")
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.attributes)
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
-                                                                                            comment: "Label for 'edit attributes access' action in conversation settings view."),
-                                                                accessoryText: accessStatus)
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_attributes_access")
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showGroupAttributesAccessView()
-        }))
-        contents.addSection(section)
     }
 
     private func accessoryLabel(forAccess access: GroupV2Access) -> String {
@@ -735,22 +587,11 @@ extension ConversationSettingsViewController {
         return section
     }
 
-    private func buildRequestsInvitesAndLinkSection(groupModelV2: TSGroupModelV2,
-                                                    contents: OWSTableContents) {
-
+    private func buildGroupSettingsSection(
+        groupModelV2: TSGroupModelV2,
+        contents: OWSTableContents
+    ) {
         let section = OWSTableSection()
-
-        let itemTitle = (RemoteConfig.groupsV2InviteLinks
-            ? NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
-                                comment: "Label for 'member requests & invites' action in conversation settings view.")
-            : NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_INVITES",
-                                comment: "Label for 'member invites' action in conversation settings view."))
-        section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
-                                                name: itemTitle,
-                                                accessibilityIdentifier: "conversation_settings_requests_and_invites",
-                                                actionBlock: { [weak self] in
-                                                    self?.showMemberRequestsAndInvitesView()
-        }))
 
         if RemoteConfig.groupsV2InviteLinks {
             let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
@@ -764,6 +605,34 @@ extension ConversationSettingsViewController {
                                                     actionBlock: { [weak self] in
                                                         self?.showGroupLinkView()
             }))
+        }
+
+        let itemTitle = (RemoteConfig.groupsV2InviteLinks
+            ? NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
+                                comment: "Label for 'member requests & invites' action in conversation settings view.")
+            : NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_INVITES",
+                                comment: "Label for 'member invites' action in conversation settings view."))
+        section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
+                                                name: itemTitle,
+                                                accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
+                                                accessibilityIdentifier: "conversation_settings_requests_and_invites",
+                                                actionBlock: { [weak self] in
+                                                    self?.showMemberRequestsAndInvitesView()
+        }))
+
+        if canEditConversationAccess {
+            let itemTitle = NSLocalizedString(
+                "CONVERSATION_SETTINGS_PERMISSIONS",
+                comment: "Label for 'permissions' action in conversation settings view."
+            )
+            section.add(OWSTableItem.disclosureItem(
+                icon: .settingsPrivacy,
+                name: itemTitle,
+                accessibilityIdentifier: "conversation_settings_permissions",
+                actionBlock: { [weak self] in
+                    self?.showPermissionsSettingsView()
+                }
+            ))
         }
 
         contents.addSection(section)
