@@ -189,9 +189,6 @@
 		B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B81D25C526157F40004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
 		B81D25C626157F40004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
-		B81D25EA2615836C004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
-		B81D25EB2615836C004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
-		B81D25EC2615836C004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821494525D4D6FF009C0F2A /* URLModal.swift */; };
 		B821494F25D4E163009C0F2A /* BodyTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821494E25D4E163009C0F2A /* BodyTextView.swift */; };
 		B82149B825D60393009C0F2A /* BlockedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149B725D60393009C0F2A /* BlockedModal.swift */; };
@@ -2193,6 +2190,16 @@
 			path = "Content Views";
 			sourceTree = "<group>";
 		};
+		B81D260326158DF5004D1FE1 /* Certificates */ = {
+			isa = PBXGroup;
+			children = (
+				B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */,
+				B81D25B726157F20004D1FE1 /* storage-seed-1.crt */,
+				B81D25B926157F20004D1FE1 /* storage-seed-3.crt */,
+			);
+			path = Certificates;
+			sourceTree = "<group>";
+		};
 		B821493625D4D6A7009C0F2A /* Views & Modals */ = {
 			isa = PBXGroup;
 			children = (
@@ -3339,9 +3346,6 @@
 		C3C2A68B255388D500C340D1 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
-				B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */,
-				B81D25B726157F20004D1FE1 /* storage-seed-1.crt */,
-				B81D25B926157F20004D1FE1 /* storage-seed-3.crt */,
 				C3C2A67B255388CC00C340D1 /* SessionUtilitiesKit.h */,
 				C3C2A67C255388CC00C340D1 /* Info.plist */,
 			);
@@ -3514,6 +3518,7 @@
 		C3F0A58F255C8E3D007BE2A3 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
+				B81D260326158DF5004D1FE1 /* Certificates */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				C3AAFFF125AE99710089E6DD /* AppDelegate.swift */,
@@ -4175,9 +4180,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B81D25EB2615836C004D1FE1 /* storage-seed-1.crt in Resources */,
-				B81D25EC2615836C004D1FE1 /* storage-seed-3.crt in Resources */,
-				B81D25EA2615836C004D1FE1 /* public-loki-foundation.crt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4192,6 +4194,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B81D25C526157F40004D1FE1 /* storage-seed-1.crt in Resources */,
+				B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */,
+				B81D25C626157F40004D1FE1 /* public-loki-foundation.crt in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
@@ -4217,12 +4222,10 @@
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,
-				B81D25C626157F40004D1FE1 /* public-loki-foundation.crt in Resources */,
 				AD83FF411A73426500B5C81A /* audio_play_button_blue@2x.png in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */,
 				B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */,
-				B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */,
 				C3CA3AB4255CDAE600F4C6D4 /* japanese.txt in Resources */,
 				B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */,
 				B633C5861A1D190B0059AC12 /* call@2x.png in Resources */,
@@ -4253,7 +4256,6 @@
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				4C61819F219E1796009BD6B5 /* typing-animation-dark.gif in Resources */,
-				B81D25C526157F40004D1FE1 /* storage-seed-1.crt in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				C3CA3ABE255CDB0D00F4C6D4 /* portuguese.txt in Resources */,

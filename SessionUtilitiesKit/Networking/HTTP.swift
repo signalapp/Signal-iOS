@@ -8,19 +8,22 @@ public enum HTTP {
     private static let snodeURLSessionDelegate = SnodeURLSessionDelegateImplementation()
 
     // MARK: Certificates
-    private static let storageSeed1Cert: Data = {
+    private static let storageSeed1Cert: SecCertificate = {
         let path = Bundle.main.path(forResource: "storage-seed-1", ofType: "crt")!
-        return try! Data(contentsOf: URL(string: path)!)
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+        return SecCertificateCreateWithData(nil, data as CFData)!
     }()
     
-    private static let storageSeed3Cert: Data = {
+    private static let storageSeed3Cert: SecCertificate = {
         let path = Bundle.main.path(forResource: "storage-seed-3", ofType: "crt")!
-        return try! Data(contentsOf: URL(string: path)!)
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+        return SecCertificateCreateWithData(nil, data as CFData)!
     }()
     
-    private static let publicLokiFoundationCert: Data = {
+    private static let publicLokiFoundationCert: SecCertificate = {
         let path = Bundle.main.path(forResource: "public-loki-foundation", ofType: "crt")!
-        return try! Data(contentsOf: URL(string: path)!)
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+        return SecCertificateCreateWithData(nil, data as CFData)!
     }()
     
     // MARK: Settings
@@ -30,12 +33,23 @@ public enum HTTP {
     private final class SeedNodeURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
 
         func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-            guard let trust = challenge.protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(trust, 0) else { return completionHandler(.cancelAuthenticationChallenge, nil) }
-            let data = SecCertificateCopyData(certificate) as Data
-            if storageSeed1Cert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
-            if storageSeed3Cert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
-            if publicLokiFoundationCert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
-            return completionHandler(.cancelAuthenticationChallenge, nil)
+            guard let trust = challenge.protectionSpace.serverTrust else {
+                return completionHandler(.cancelAuthenticationChallenge, nil)
+            }
+            // Mark the seed node certificates as trusted
+            let certificates = [ storageSeed1Cert, storageSeed3Cert, publicLokiFoundationCert ]
+            guard SecTrustSetAnchorCertificates(trust, certificates as CFArray) == errSecSuccess else {
+                return completionHandler(.cancelAuthenticationChallenge, nil)
+            }
+            // Check that the presented certificate is one of the trusted seed node certificates
+            var result: SecTrustResultType = .invalid
+            guard SecTrustEvaluate(trust, &result) == errSecSuccess else {
+                return completionHandler(.cancelAuthenticationChallenge, nil)
+            }
+            switch result {
+            case .proceed: return completionHandler(.useCredential, URLCredential(trust: trust))
+            default: return completionHandler(.cancelAuthenticationChallenge, nil)
+            }
         }
     }
     
