@@ -3931,6 +3931,10 @@ typedef enum : NSUInteger {
 
 - (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve
 {
+    if (self.isInteractiveTransitionInProgress) {
+        return;
+    }
+
     if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
         // The animation curve provided by the keyboard notifications
         // is a private value not represented in UIViewAnimationOptions.
@@ -4449,6 +4453,11 @@ typedef enum : NSUInteger {
 - (void)cvc_didTapShowMessageDetail:(CVItemViewModelImpl *)itemViewModel
 {
     [self showDetailView:itemViewModel];
+}
+
+- (void)cvc_prepareMessageDetailForInteractivePresentation:(CVItemViewModelImpl *)itemViewModel
+{
+    [self prepareDetailViewForInteractivePresentation:itemViewModel];
 }
 
 #pragma mark - Selection

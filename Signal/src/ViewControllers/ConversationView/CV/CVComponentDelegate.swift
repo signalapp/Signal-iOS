@@ -101,6 +101,8 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 
+    func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)
+
     @objc
     var view: UIView { get }
 

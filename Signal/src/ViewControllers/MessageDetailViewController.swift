@@ -21,13 +21,13 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     // MARK: Properties
 
-    private weak var pushPercentDrivenTransition: UIPercentDrivenInteractiveTransition?
+    weak var pushPercentDrivenTransition: UIPercentDrivenInteractiveTransition?
     private var popPercentDrivenTransition: UIPercentDrivenInteractiveTransition?
 
     private var renderItem: CVRenderItem?
     private var thread: TSThread? { renderItem?.itemModel.thread }
 
-    private var message: TSMessage
+    private(set) var message: TSMessage
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
 
@@ -69,12 +69,9 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     required init(
         message: TSMessage,
-        thread: TSThread,
-        percentDrivenTransition: UIPercentDrivenInteractiveTransition?
+        thread: TSThread
     ) {
         self.message = message
-        self.pushPercentDrivenTransition = percentDrivenTransition
-
         super.init()
     }
 
@@ -898,6 +895,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapMention(_ mention: Mention) {}
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: - Selection
 

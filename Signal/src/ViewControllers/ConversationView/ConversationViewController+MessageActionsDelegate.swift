@@ -8,6 +8,24 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     @objc
+    func prepareDetailViewForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        guard let message = itemViewModel.interaction as? TSMessage else {
+            return owsFailDebug("Invalid interaction.")
+        }
+
+        guard let panHandler = panHandler else {
+            return owsFailDebug("Missing panHandler")
+        }
+
+        let detailVC = MessageDetailViewController(message: message, thread: thread)
+        detailVC.detailDelegate = self
+        conversationSplitViewController?.navigationTransitionDelegate = detailVC
+        panHandler.messageDetailViewController = detailVC
+    }
+
+    @objc
     func showDetailView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -16,13 +34,20 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
 
-        let detailVC = MessageDetailViewController(
-            message: message,
-            thread: thread,
-            percentDrivenTransition: viewState.panHandler?.percentDrivenTransition
-        )
-        detailVC.detailDelegate = self
-        conversationSplitViewController?.navigationTransitionDelegate = detailVC
+        let panHandler = viewState.panHandler
+
+        let detailVC: MessageDetailViewController
+        if let panHandler = panHandler,
+           let messageDetailViewController = panHandler.messageDetailViewController,
+           messageDetailViewController.message.uniqueId == message.uniqueId {
+            detailVC = messageDetailViewController
+            detailVC.pushPercentDrivenTransition = panHandler.percentDrivenTransition
+        } else {
+            detailVC = MessageDetailViewController(message: message, thread: thread)
+            detailVC.detailDelegate = self
+            conversationSplitViewController?.navigationTransitionDelegate = detailVC
+        }
+
         navigationController?.pushViewController(detailVC, animated: true)
     }
 

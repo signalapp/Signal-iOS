@@ -346,6 +346,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
+
     var view: UIView { self }
 
     // MARK: - Selection
