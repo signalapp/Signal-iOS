@@ -6,6 +6,8 @@ import Foundation
 import Lottie
 
 // A view for presenting attachment upload/download/failure/pending state.
+//
+// TODO: Remove iOS Auto Layout in this view.
 @objc
 public class CVAttachmentProgressView: UIView {
 
@@ -367,6 +369,15 @@ public class CVAttachmentProgressView: UIView {
         outerContentView.autoPinEdgesToSuperviewEdges()
         outerContentView.setContentHuggingHigh()
         outerContentView.setCompressionResistanceHigh()
+    }
+
+    public var layoutSize: CGSize {
+        switch style {
+        case .withCircle:
+            return .square(Self.outerDiameter(style: style))
+        case .withoutCircle:
+            return .square(Self.innerDiameter(style: style))
+        }
     }
 
     private func configureState() {

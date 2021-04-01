@@ -130,6 +130,9 @@ open class ManualStackView: OWSStackView {
     public override func addArrangedSubview(_ view: UIView) {
         addSubview(view)
         owsAssertDebug(!managedSubviews.contains(view))
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+
         managedSubviews.append(view)
     }
 
@@ -515,7 +518,7 @@ open class ManualStackView: OWSStackView {
         return Measurement(measuredSize: size, subviewInfos: subviewInfos)
     }
 
-    public override func reset() {
+    open override func reset() {
         super.reset()
 
         self.measurement = nil
@@ -524,15 +527,60 @@ open class ManualStackView: OWSStackView {
 
     // MARK: -
 
-    public func centerSubview(_ subview: UIView, onSiblingView siblingView: UIView) {
+    public func centerSubviewWithLayoutBlock(_ subview: UIView,
+                                             onSiblingView siblingView: UIView,
+                                             size: CGSize) {
         owsAssertDebug(subview.superview != nil)
         owsAssertDebug(subview.superview == siblingView.superview)
 
-        layoutBlocks.append { _ in
-            owsAssertDebug(subview.superview != nil)
-            owsAssertDebug(subview.superview == siblingView.superview)
+        subview.translatesAutoresizingMaskIntoConstraints = false
 
-            subview.center = siblingView.center
+        layoutBlocks.append { _ in
+            guard let superview = subview.superview else {
+                owsFailDebug("Missing superview.")
+                return
+            }
+            owsAssertDebug(superview == siblingView.superview)
+
+            let siblingCenter = superview.convert(siblingView.center,
+                                                  from: siblingView.superview)
+            subview.frame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
+                                                   y: siblingCenter.y - subview.height * 0.5),
+                                   size: size)
+        }
+    }
+
+    public func centerSubviewOnSuperviewWithLayoutBlock(_ subview: UIView,
+                                                        size: CGSize) {
+        owsAssertDebug(subview.superview != nil)
+
+        subview.translatesAutoresizingMaskIntoConstraints = false
+
+        layoutBlocks.append { _ in
+            guard let superview = subview.superview else {
+                owsFailDebug("Missing superview.")
+                return
+            }
+
+            let superviewBounds = superview.bounds
+            subview.frame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
+                                                   y: (superviewBounds.height - subview.height) * 0.5),
+                                   size: size)
+        }
+    }
+
+    public func layoutSubviewToFillSuperviewBoundsWithLayoutBlock(_ subview: UIView) {
+        owsAssertDebug(subview.superview != nil)
+
+        subview.translatesAutoresizingMaskIntoConstraints = false
+
+        layoutBlocks.append { _ in
+            guard let superview = subview.superview else {
+                owsFailDebug("Missing superview.")
+                return
+            }
+
+            subview.frame = superview.bounds
         }
     }
 }
