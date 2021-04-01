@@ -242,7 +242,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         let section = OWSTableSection()
         section.add(.init(
-            customCellBlock: { () -> UITableViewCell in
+            customCellBlock: {
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
                 cell.contentView.addSubview(messageStack)
@@ -356,8 +356,9 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func contactItem(for address: SignalServiceAddress, accessoryText: String, displayUDIndicator: Bool) -> OWSTableItem {
         return .init(
-            customCellBlock: { () -> UITableViewCell in
+            customCellBlock: { [weak self] in
                 let cell = ContactTableViewCell()
+                guard let self = self else { return cell }
                 cell.configureWithSneakyTransaction(recipientAddress: address)
                 cell.ows_setAccessoryView(self.buildAccessoryView(text: accessoryText, displayUDIndicator: displayUDIndicator))
                 return cell

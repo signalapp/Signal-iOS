@@ -194,7 +194,7 @@ class ProfileBioViewController: OWSTableViewController2 {
         let cancelButton = self.cancelButton
 
         let bioSection = OWSTableSection()
-        bioSection.add(OWSTableItem(customCellBlock: { [weak self] () -> UITableViewCell in
+        bioSection.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
             bioEmojiLabel.font = .ows_dynamicTypeBodyClamped
@@ -221,7 +221,7 @@ class ProfileBioViewController: OWSTableViewController2 {
 
         let defaultBiosSection = OWSTableSection()
         for defaultBio in DefaultBio.values {
-            defaultBiosSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+            defaultBiosSection.add(OWSTableItem(customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
                 let emojiLabel = UILabel()

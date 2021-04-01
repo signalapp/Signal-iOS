@@ -177,6 +177,11 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    return [self itemWithCustomCell:customCell customRowHeight:UITableViewAutomaticDimension actionBlock:actionBlock];
+}
+
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {

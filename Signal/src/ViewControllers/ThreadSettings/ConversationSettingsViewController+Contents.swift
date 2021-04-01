@@ -256,7 +256,8 @@ extension ConversationSettingsViewController {
         let disappearingMessagesConfiguration = self.disappearingMessagesConfiguration
 
         section.add(.init(
-            customCellBlock: {
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildIconNameCell(
                     icon: disappearingMessagesConfiguration.isEnabled
                         ? .settingsTimer

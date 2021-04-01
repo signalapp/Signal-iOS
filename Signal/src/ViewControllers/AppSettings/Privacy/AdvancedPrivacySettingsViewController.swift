@@ -173,8 +173,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             .color(Theme.secondaryTextAndIconColor)
         )
         sealedSenderSection.add(.init(
-            customCellBlock: {
+            customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
+                guard let self = self else { return cell }
                 cell.selectionStyle = .none
 
                 let stackView = UIStackView()

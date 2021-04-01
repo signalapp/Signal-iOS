@@ -127,17 +127,19 @@ public extension OWSTableItem {
                      accessibilityIdentifier: String,
                      actionBlock: (() -> Void)? = nil) -> OWSTableItem {
 
-        OWSTableItem(customCellBlock: {
-            OWSTableItem.buildCellWithAccessoryLabel(icon: icon,
-                                                     tintColor: tintColor,
-                                                     itemName: name,
-                                                     textColor: textColor,
-                                                     accessoryText: accessoryText,
-                                                     accessoryType: accessoryType,
-                                                     accessoryImage: accessoryImage,
-                                                     accessibilityIdentifier: accessibilityIdentifier)
-            },
-                     actionBlock: actionBlock)
+        OWSTableItem(
+            customCell: OWSTableItem.buildCellWithAccessoryLabel(
+                icon: icon,
+                tintColor: tintColor,
+                itemName: name,
+                textColor: textColor,
+                accessoryText: accessoryText,
+                accessoryType: accessoryType,
+                accessoryImage: accessoryImage,
+                accessibilityIdentifier: accessibilityIdentifier
+            ),
+            actionBlock: actionBlock
+        )
     }
 
     @available(swift, obsoleted: 1.0)
