@@ -208,9 +208,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
         }, completion: { [weak self] in
             tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-            Storage.shared.write { transaction in
+            Storage.shared.write(with: { transaction in
                 tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
-            }
+            }, completion: { [weak self] in
+                // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
+                // the height of the new message cell
+                self?.scrollToBottom(isAnimated: false)
+            })
             Storage.shared.write { transaction in
                 MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
