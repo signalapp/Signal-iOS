@@ -235,7 +235,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`)
+  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, commit `01c27be4d2c4b31eeaf568df7585312906eb95e3`)
   - PromiseKit
   - PureLayout
   - Reachability
@@ -315,6 +315,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
+    :commit: 01c27be4d2c4b31eeaf568df7585312906eb95e3
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
@@ -360,7 +361,7 @@ CHECKOUT OPTIONS:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :commit: 68288252a9e56c3df0dcac9f74bf990cff0a8461
+    :commit: 01c27be4d2c4b31eeaf568df7585312906eb95e3
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
@@ -440,6 +441,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: b3c1cb15ebfc9269e06b8c0d40106d6361587c6d
+PODFILE CHECKSUM: 779e71b64dce08f9185b19885c7d874427969f99
 
 COCOAPODS: 1.9.2
