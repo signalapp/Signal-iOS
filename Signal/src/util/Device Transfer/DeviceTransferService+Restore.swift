@@ -157,9 +157,15 @@ extension DeviceTransferService {
             // path will be later overriden with the hotswap path.
             let newFilePath: String
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                newFilePath = databasePrimaryPath
+                newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
+                    baseDir: SDSDatabaseStorage.baseDir,
+                    directoryMode: .primary
+                ).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                newFilePath = databaseWalPrimaryPath
+                newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
+                    baseDir: SDSDatabaseStorage.baseDir,
+                    directoryMode: .primary
+                ).path
             } else {
                 newFilePath = URL(
                     fileURLWithPath: file.relativePath,
@@ -174,9 +180,15 @@ extension DeviceTransferService {
             // tries to perform a write.
             var hotswapFilePath: String?
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                hotswapFilePath = databaseHotswapPath
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
+                    baseDir: SDSDatabaseStorage.baseDir,
+                    directoryMode: .hotswap
+                ).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                hotswapFilePath = databaseWalHotswapPath
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
+                    baseDir: SDSDatabaseStorage.baseDir,
+                    directoryMode: .hotswap
+                ).path
             }
 
             let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath)
@@ -291,59 +303,29 @@ extension DeviceTransferService {
         return true
     }
 
-    private var databasePrimaryPath: String {
-        GRDBDatabaseStorageAdapter.databaseFileUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .primary
-        ).path
-    }
-    private var databaseWalPrimaryPath: String {
-        GRDBDatabaseStorageAdapter.databaseWalUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .primary
-        ).path
-    }
-
-    private var databaseHotswapPath: String {
-        GRDBDatabaseStorageAdapter.databaseFileUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .hotswap
-        ).path
-    }
-    private var databaseWalHotswapPath: String {
-        GRDBDatabaseStorageAdapter.databaseWalUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .hotswap
-        ).path
-    }
-
     private func promoteTransferDatabaseToPrimaryDatabase() -> Bool {
         Logger.info("Promoting the hotswap database to the primary database")
 
-        if OWSFileSystem.fileOrFolderExists(atPath: databaseHotswapPath) {
-            guard move(pendingFilePath: databaseHotswapPath, to: databasePrimaryPath) else {
+        let primaryDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
+            baseDir: SDSDatabaseStorage.baseDir,
+            directoryMode: .primary
+        ).path
+        let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
+            baseDir: SDSDatabaseStorage.baseDir,
+            directoryMode: .hotswap
+        ).path
+
+        if OWSFileSystem.fileOrFolderExists(atPath: hotswapDatabaseDirectoryPath) {
+            guard move(pendingFilePath: hotswapDatabaseDirectoryPath, to: primaryDatabaseDirectoryPath) else {
                 owsFailDebug("Failed to promote hotswap database to primary database.")
                 return false
             }
         } else {
-            guard OWSFileSystem.fileOrFolderExists(atPath: databasePrimaryPath) else {
-                owsFailDebug("Missing primary and hotswap database files.")
+            guard OWSFileSystem.fileOrFolderExists(atPath: primaryDatabaseDirectoryPath) else {
+                owsFailDebug("Missing primary and hotswap database directories.")
                 return false
             }
-            Logger.info("Missing hotswap database, we may have partially restored. Assuming primary database is correct.")
-        }
-
-        if OWSFileSystem.fileOrFolderExists(atPath: databaseWalHotswapPath) {
-            guard move(pendingFilePath: databaseWalHotswapPath, to: databaseWalPrimaryPath) else {
-                owsFailDebug("Failed to promote hotswap database wal to primary database wal.")
-                return false
-            }
-        } else {
-            guard OWSFileSystem.fileOrFolderExists(atPath: databaseWalPrimaryPath) else {
-                owsFailDebug("Missing primary and hotswap database wal files.")
-                return false
-            }
-            Logger.info("Missing hotswap database wal, we may have partially restored. Assuming primary database wal is correct.")
+            Logger.info("Missing hotswap database, we may have previously restored. Assuming primary database is correct.")
         }
 
         pendingPromotionFromHotSwapToPrimaryDatabase = false
