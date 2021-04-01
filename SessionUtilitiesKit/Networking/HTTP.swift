@@ -7,6 +7,22 @@ public enum HTTP {
     private static let snodeURLSession = URLSession(configuration: .ephemeral, delegate: snodeURLSessionDelegate, delegateQueue: nil)
     private static let snodeURLSessionDelegate = SnodeURLSessionDelegateImplementation()
 
+    // MARK: Certificates
+    private static let storageSeed1Cert: Data = {
+        let path = Bundle.main.path(forResource: "storage-seed-1", ofType: "crt")!
+        return try! Data(contentsOf: URL(string: path)!)
+    }()
+    
+    private static let storageSeed3Cert: Data = {
+        let path = Bundle.main.path(forResource: "storage-seed-3", ofType: "crt")!
+        return try! Data(contentsOf: URL(string: path)!)
+    }()
+    
+    private static let publicLokiFoundationCert: Data = {
+        let path = Bundle.main.path(forResource: "public-loki-foundation", ofType: "crt")!
+        return try! Data(contentsOf: URL(string: path)!)
+    }()
+    
     // MARK: Settings
     public static let timeout: TimeInterval = 10
 
@@ -14,11 +30,12 @@ public enum HTTP {
     private final class SeedNodeURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
 
         func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-            
-            // TODO: Implement
-            
-            // Snode to snode communication uses self-signed certificates but clients can safely ignore this
-            completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+            guard let trust = challenge.protectionSpace.serverTrust, let certificate = SecTrustGetCertificateAtIndex(trust, 0) else { return completionHandler(.cancelAuthenticationChallenge, nil) }
+            let data = SecCertificateCopyData(certificate) as Data
+            if storageSeed1Cert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
+            if storageSeed3Cert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
+            if publicLokiFoundationCert == data { return completionHandler(.useCredential, URLCredential(trust: trust)) }
+            return completionHandler(.cancelAuthenticationChallenge, nil)
         }
     }
     
