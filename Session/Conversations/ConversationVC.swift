@@ -213,11 +213,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             DispatchQueue.main.async {
                 if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
-                    self.scrollButton.alpha = self.getScrollButtonOpacity()
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
                     self.scrollToBottom(isAnimated: false)
                 }
+                self.scrollButton.alpha = self.getScrollButtonOpacity()
             }
         }
     }
@@ -236,6 +236,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 self.thread.setDraft(text, transaction: transaction)
             }
         }
+        inputAccessoryView?.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -298,10 +299,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        let newContentOffsetY = self.messagesTableView.contentOffset.y + newHeight - self.messagesTableView.keyboardHeight
-        self.messagesTableView.contentOffset.y = newContentOffsetY
+        let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
+        self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
         self.messagesTableView.keyboardHeight = newHeight
-        self.scrollButton.alpha = 0
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
