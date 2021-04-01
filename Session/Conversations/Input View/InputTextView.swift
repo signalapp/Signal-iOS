@@ -1,6 +1,6 @@
 
 public final class InputTextView : UITextView, UITextViewDelegate {
-    private let snDelegate: InputTextViewDelegate
+    private weak var snDelegate: InputTextViewDelegate?
     private let maxWidth: CGFloat
     private lazy var heightConstraint = self.set(.height, to: minHeight)
     
@@ -60,7 +60,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     }
     
     private func handleTextChanged() {
-        defer { snDelegate.inputTextViewDidChangeContent(self) }
+        defer { snDelegate?.inputTextViewDidChangeContent(self) }
         placeholderLabel.isHidden = !text.isEmpty
         let height = frame.height
         let size = sizeThatFits(CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
@@ -69,12 +69,12 @@ public final class InputTextView : UITextView, UITextViewDelegate {
         let newHeight = size.height.clamp(minHeight, maxHeight)
         guard newHeight != height else { return }
         heightConstraint.constant = newHeight
-        snDelegate.inputTextViewDidChangeSize(self)
+        snDelegate?.inputTextViewDidChangeSize(self)
     }
 }
 
 // MARK: Delegate
-protocol InputTextViewDelegate {
+protocol InputTextViewDelegate : class {
     
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView)
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)

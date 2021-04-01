@@ -1,7 +1,7 @@
 import UIKit
 
 class MessageCell : UITableViewCell {
-    var delegate: MessageCellDelegate?
+    weak var delegate: MessageCellDelegate?
     var viewItem: ConversationViewItem? { didSet { update() } }
     
     // MARK: Settings
@@ -48,7 +48,7 @@ class MessageCell : UITableViewCell {
     }
 }
 
-protocol MessageCellDelegate {
+protocol MessageCellDelegate : class {
     var lastSearchedText: String? { get }
     
     func getMediaCache() -> NSCache<NSString, AnyObject>

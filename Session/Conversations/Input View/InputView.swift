@@ -1,6 +1,6 @@
 
 final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
-    private let delegate: InputViewDelegate
+    private weak var delegate: InputViewDelegate?
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
     private var voiceMessageRecordingView: VoiceMessageRecordingView?
@@ -135,7 +135,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         sendButton.isHidden = !hasText
         voiceMessageButtonContainer.isHidden = hasText
         autoGenerateLinkPreviewIfPossible()
-        delegate.inputTextViewDidChangeContent(inputTextView)
+        delegate?.inputTextViewDidChangeContent(inputTextView)
     }
 
     // We want to show either a link preview or a quote draft, but never both at the same time. When trying to
@@ -164,7 +164,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         let userDefaults = UserDefaults.standard
         if !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty && !SSKPreferences.areLinkPreviewsEnabled
             && !userDefaults[.hasSeenLinkPreviewSuggestion] {
-            delegate.showLinkPreviewSuggestionModal()
+            delegate?.showLinkPreviewSuggestionModal()
             userDefaults[.hasSeenLinkPreviewSuggestion] = true
             return
         }
@@ -235,12 +235,12 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
     
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton) {
-        if inputViewButton == sendButton { delegate.handleSendButtonTapped() }
+        if inputViewButton == sendButton { delegate?.handleSendButtonTapped() }
     }
 
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) {
         guard inputViewButton == voiceMessageButton else { return }
-        delegate.startVoiceMessageRecording()
+        delegate?.startVoiceMessageRecording()
         showVoiceMessageUI()
     }
 
@@ -257,7 +257,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     func handleQuoteViewCancelButtonTapped() {
-        delegate.handleQuoteViewCancelButtonTapped()
+        delegate?.handleQuoteViewCancelButtonTapped()
     }
 
     override func resignFirstResponder() -> Bool {
@@ -326,7 +326,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
-        delegate.handleMentionSelected(mention, from: view)
+        delegate?.handleMentionSelected(mention, from: view)
     }
 
     // MARK: Convenience
@@ -341,7 +341,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
 }
 
 // MARK: Delegate
-protocol InputViewDelegate : ExpandingAttachmentsButtonDelegate, VoiceMessageRecordingViewDelegate {
+protocol InputViewDelegate : class, ExpandingAttachmentsButtonDelegate, VoiceMessageRecordingViewDelegate {
 
     func showLinkPreviewSuggestionModal()
     func handleSendButtonTapped()
