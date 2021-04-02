@@ -82,8 +82,12 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         addressTextfield.keyboardAppearance = Theme.keyboardAppearance
         addressTextfield.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
         addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
-        addressTextfield.placeholder = NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
-                                                         comment: "Placeholder text for the address text field in the 'transfer currency out' settings view.")
+        let placeholder = NSAttributedString(string: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
+                                                                       comment: "Placeholder text for the address text field in the 'transfer currency out' settings view."),
+                                             attributes: [
+                                                .foregroundColor: Theme.secondaryTextAndIconColor
+                                             ])
+        addressTextfield.attributedPlaceholder = placeholder
     }
 
     @objc

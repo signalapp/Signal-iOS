@@ -78,8 +78,12 @@ public class SendPaymentMemoViewController: OWSViewController {
 
         memoTextField.backgroundColor = .clear
         memoTextField.font = .ows_dynamicTypeBodyClamped
-        memoTextField.placeholder = NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
-                                                      comment: "Placeholder for the new payment or payment request message.")
+        let placeholder = NSAttributedString(string: NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
+                                                                       comment: "Placeholder for the new payment or payment request message."),
+                                             attributes: [
+                                                .foregroundColor: Theme.secondaryTextAndIconColor
+                                             ])
+        memoTextField.attributedPlaceholder = placeholder
         memoTextField.delegate = self
         memoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
@@ -98,7 +102,10 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoRow.alignment = .center
         memoRow.isLayoutMarginsRelativeArrangement = true
         memoRow.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 14)
-        let backgroundView = memoRow.addBackgroundView(withBackgroundColor: Theme.tableCell2BackgroundColor)
+        let backgroundColor = (Theme.isDarkThemeEnabled
+                                ? Theme.washColor
+                                : Theme.backgroundColor)
+        let backgroundView = memoRow.addBackgroundView(withBackgroundColor: backgroundColor)
         backgroundView.layer.cornerRadius = 10
 
         updateMemoCharacterCount()

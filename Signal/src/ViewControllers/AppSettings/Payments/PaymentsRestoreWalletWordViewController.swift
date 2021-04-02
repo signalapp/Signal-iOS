@@ -117,7 +117,12 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
         let placeholderFormat = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
                                                   comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.")
-        textfield.placeholder = String(format: placeholderFormat, OWSFormat.formatInt(wordIndex + 1))
+        let placeholder = NSAttributedString(string: String(format: placeholderFormat,
+                                                            OWSFormat.formatInt(wordIndex + 1)),
+                                             attributes: [
+                                                .foregroundColor: Theme.secondaryTextAndIconColor
+                                             ])
+        textfield.attributedPlaceholder = placeholder
 
         let textfieldStack = UIStackView(arrangedSubviews: [ textfield ])
         textfieldStack.axis = .vertical
@@ -125,7 +130,11 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfieldStack.isLayoutMarginsRelativeArrangement = true
         textfieldStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHInnerMargin,
                                                     vMargin: OWSTableViewController2.cellVInnerMargin)
-        textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: 10)
+        let backgroundColor = (Theme.isDarkThemeEnabled
+                                ? Theme.washColor
+                                : Theme.backgroundColor)
+        textfieldStack.addBackgroundView(withBackgroundColor: backgroundColor,
+                                         cornerRadius: 10)
 
         warningLabel.text = " "
         warningLabel.font = .ows_dynamicTypeCaption1
