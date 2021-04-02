@@ -104,7 +104,21 @@ public class PaymentsQRScanViewController: OWSViewController {
 
 extension PaymentsQRScanViewController: OWSQRScannerDelegate {
     public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith data: Data) {
-        // Ignore.
+        if let dataString = String(data: data, encoding: .utf8) {
+            if nil != PaymentsImpl.parse(publicAddressBase58: dataString) {
+                delegate?.didScanPaymentAddressQRCode(publicAddressBase58: dataString)
+                navigationController?.popViewController(animated: true)
+                return
+            } else if let publicAddressUrl = URL(string: dataString),
+                      let publicAddress = PaymentsImpl.parseAsPublicAddress(url: publicAddressUrl) {
+                let publicAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
+                delegate?.didScanPaymentAddressQRCode(publicAddressBase58: publicAddressBase58)
+                navigationController?.popViewController(animated: true)
+                return
+            }
+        }
+        OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS",
+                                                                  comment: "Error indicating that a QR code does not contain a valid MobileCoin public address."))
     }
 
     public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {

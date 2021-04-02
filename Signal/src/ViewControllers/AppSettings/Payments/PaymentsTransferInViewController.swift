@@ -99,14 +99,14 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             configureWithSubviews(subviews: [label])
         }
 
-        guard let walletAddressQRUrl = payments.walletAddressQRUrl(),
-              let walletAddressBase58 = payments.walletAddressBase58() else {
+        guard let walletAddressBase58 = payments.walletAddressBase58(),
+              let walletAddressBase58Data = walletAddressBase58.data(using: .utf8) else {
             configureForError()
             return
         }
         let qrImage: UIImage
         do {
-            qrImage = try QRCodeView.buildQRImage(url: walletAddressQRUrl)
+            qrImage = try QRCodeView.buildQRImage(data: walletAddressBase58Data)
         } catch {
             owsFailDebug("Error: \(error)")
             configureForError()

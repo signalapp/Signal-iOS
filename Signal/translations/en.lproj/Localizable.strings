@@ -712,6 +712,12 @@
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Other";
 
+/* The localized representation of the 'payments' support filter. */
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+
+/* A brief localized representation of the 'payments' support filter. */
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "How can we help?";
 
@@ -5073,6 +5079,9 @@
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+
+/* Error indicating that a QR code does not contain a valid MobileCoin public address. */
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
