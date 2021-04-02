@@ -847,7 +847,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                 style: .default) { _ in
             // TODO: Verify that this URL is final.
             UIApplication.shared.open(
-                URL(string: "https://signal.org/legal/")!,
+                URL(string: "https://buymobilecoin.com/terms-of-use.html")!,
                 options: [:],
                 completionHandler: nil
             )
