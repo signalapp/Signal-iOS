@@ -474,8 +474,16 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             case let paymentsError as PaymentsError:
                 switch paymentsError {
                 case .insufficientFunds:
-                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
-                                             comment: "Indicates that a payment failed due to insufficient funds.")
+                    if let paymentBalance = self.paymentsSwift.currentPaymentBalance {
+                        let formattedBalance = PaymentsFormat.format(paymentAmount: paymentBalance.amount,
+                                                                     isShortForm: false)
+                        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT",
+                                                       comment: "Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}.")
+                        return String(format: format, formattedBalance)
+                    } else {
+                        return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
+                                                 comment: "Indicates that a payment failed due to insufficient funds.")
+                    }
                 case .timeout,
                      .connectionFailure,
                      .serverRateLimited,
@@ -508,10 +516,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         guard withErrorPrefix else {
             return errorDescription
         }
-
-        let format = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_FORMAT",
-                                       comment: "Format for message indicating that error occurred while sending a payment or payment request. Embeds: {{ a description of the error that occurred }}.")
-        return String(format: format, errorDescription)
+        // We don't use error prefixes for now.
+        return errorDescription
     }
 
     private func buildConfirmPaymentButtons() -> UIView {

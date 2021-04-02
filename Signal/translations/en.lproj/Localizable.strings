@@ -3412,20 +3412,20 @@
 /* Indicates that a payment failed due to a connectivity failure. */
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
 
-/* Format for message indicating that error occurred while sending a payment or payment request. Embeds: {{ a description of the error that occurred }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_FORMAT" = "Error: %@";
-
 /* Indicates that a payment failed due to insufficient funds. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+
+/* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Please upgrade Signal";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Payment could not be completed";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
@@ -3536,7 +3536,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "User has not enabled payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
@@ -4694,13 +4694,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@ in your payments account. If you do not transfer it before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer remaining payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Remaining Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
@@ -4796,7 +4796,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Accept Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -4820,10 +4820,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Cannot deactivate payments; balance is not available.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Cannot send payment; balance is not available.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
@@ -4877,7 +4877,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy protecting digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
@@ -5096,7 +5096,7 @@
 "SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Set Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'show all payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "See All";
@@ -5174,7 +5174,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
