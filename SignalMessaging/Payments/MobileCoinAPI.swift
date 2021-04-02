@@ -42,26 +42,6 @@ class MobileCoinAPI: Dependencies {
         }
     }
 
-    public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) throws -> Data {
-        guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
-            throw PaymentsError.invalidEntropy
-        }
-        let passphrase = try Self.passphrase(forPaymentsEntropy: paymentsEntropy)
-        let mnemonic = passphrase.asPassphrase
-        let result = AccountKey.rootEntropy(fromMnemonic: mnemonic, accountIndex: 0)
-        switch result {
-        case .success(let mcRootEntropy):
-            guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
-                throw PaymentsError.invalidEntropy
-            }
-            return mcRootEntropy
-        case .failure(let error):
-            owsFailDebug("Error: \(error)")
-            let error = Self.convertMCError(error: error)
-            throw error
-        }
-    }
-
     public static func isValidPassphraseWord(_ word: String?) -> Bool {
         guard let word = word?.strippedOrNil else {
             return false
@@ -71,7 +51,7 @@ class MobileCoinAPI: Dependencies {
 
     // MARK: -
 
-    private let mcRootEntropy: Data
+    private let paymentsEntropy: Data
 
     // PAYMENTS TODO: Finalize this value with the designers.
     private static let timeoutDuration: TimeInterval = 60
@@ -80,17 +60,17 @@ class MobileCoinAPI: Dependencies {
 
     private let client: MobileCoinClient
 
-    private init(mcRootEntropy: Data,
+    private init(paymentsEntropy: Data,
                  localAccount: MobileCoinAccount,
                  client: MobileCoinClient) throws {
 
-        guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
+        guard paymentsEntropy.count == PaymentsConstants.paymentsEntropyLength else {
             throw PaymentsError.invalidEntropy
         }
 
         owsAssertDebug(Self.payments.arePaymentsEnabled)
 
-        self.mcRootEntropy = mcRootEntropy
+        self.paymentsEntropy = paymentsEntropy
         self.localAccount = localAccount
         self.client = client
     }
@@ -105,8 +85,8 @@ class MobileCoinAPI: Dependencies {
 
     // MARK: -
 
-    public static func buildLocalAccount(mcRootEntropy: Data) throws -> MobileCoinAccount {
-        try Self.buildAccount(forMCRootEntropy: mcRootEntropy)
+    public static func buildLocalAccount(paymentsEntropy: Data) throws -> MobileCoinAccount {
+        try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
     }
 
     private static func parseAuthorizationResponse(responseObject: Any?) throws -> OWSAuthorization {
@@ -118,16 +98,16 @@ class MobileCoinAPI: Dependencies {
         return OWSAuthorization(username: username, password: password)
     }
 
-    public static func buildPromise(mcRootEntropy: Data) -> Promise<MobileCoinAPI> {
+    public static func buildPromise(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
         firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
         }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> OWSAuthorization in
             try Self.parseAuthorizationResponse(responseObject: responseObject)
         }.map(on: .global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
-            let localAccount = try Self.buildAccount(forMCRootEntropy: mcRootEntropy)
+            let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
             let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
-            return try MobileCoinAPI(mcRootEntropy: mcRootEntropy,
+            return try MobileCoinAPI(paymentsEntropy: paymentsEntropy,
                                      localAccount: localAccount,
                                      client: client)
         }

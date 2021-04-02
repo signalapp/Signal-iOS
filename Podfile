@@ -75,10 +75,10 @@ pod 'BonMot', inhibit_warnings: true
 # For catalyst we need to be on master until 3.6.7 or later is released
 pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
 
-pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.0.1-pre1'
+pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.0.1-pre4'
 
 # pod 'MobileCoin', '= 1.0.1-pre1'
-pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', commit: '01c27be4d2c4b31eeaf568df7585312906eb95e3'
+pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git'
 # pod 'MobileCoin', path: '../MobileCoin-Swift'
 
 target 'Signal' do

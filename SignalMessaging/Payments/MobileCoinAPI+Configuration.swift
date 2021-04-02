@@ -490,8 +490,16 @@ extension MobileCoinAPI {
                 let clientResult = MobileCoinClient.make(accountKey: accountKey, config: config)
                 switch clientResult {
                 case .success(let client):
-                    client.setBasicAuthorization(username: authorization.username,
-                                                 password: authorization.password)
+                    // There are separate FOG and consensus auth credentials which correspond to
+                    // the consensus URL and fog URLs.
+                    //
+                    // We currently use a MobileCoin Consensus node and Signal Fog; Signal Fog
+                    // requires an auth token but MobileCoin Consensus doesn't.
+                    //
+                    // TODO: We'll need to setConsensusBasicAuthorization() if/when we
+                    // switch to Signal consensus.
+                    client.setFogBasicAuthorization(username: authorization.username,
+                                                    password: authorization.password)
                     return client
                 case .failure(let error):
                     owsFailDebug("Error: \(error)")
@@ -533,23 +541,28 @@ extension MobileCoinAPI {
         }
     }
 
-    class func buildAccount(forMCRootEntropy mcRootEntropy: Data) throws -> MobileCoinAccount {
+    class func buildAccount(forPaymentsEntropy paymentsEntropy: Data) throws -> MobileCoinAccount {
         let environment = Environment.current
         let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
-        let accountKey = try buildAccountKey(forMCRootEntropy: mcRootEntropy,
+        let accountKey = try buildAccountKey(forPaymentsEntropy: paymentsEntropy,
                                              networkConfig: networkConfig)
         return MobileCoinAccount(environment: environment,
                                  accountKey: accountKey)
     }
 
-    class func buildAccountKey(forMCRootEntropy mcRootEntropy: Data,
+    class func buildAccountKey(forPaymentsEntropy paymentsEntropy: Data,
                                networkConfig: MobileCoinNetworkConfig) throws -> MobileCoin.AccountKey {
+        let passphrase = try Self.passphrase(forPaymentsEntropy: paymentsEntropy)
+        let mnemonic = passphrase.asPassphrase
         let fogAuthoritySpki = Self.fogAuthoritySpki(environment: .current)
         let fogReportId = ""
-        let result = MobileCoin.AccountKey.make(rootEntropy: mcRootEntropy,
+        let accountIndex: UInt32 = 0
+        let result = MobileCoin.AccountKey.make(mnemonic: mnemonic,
                                                 fogReportUrl: networkConfig.fogUrl,
                                                 fogReportId: fogReportId,
-                                                fogAuthoritySpki: fogAuthoritySpki)
+                                                fogAuthoritySpki: fogAuthoritySpki,
+                                                accountIndex: accountIndex)
+
         switch result {
         case .success(let accountKey):
             return accountKey

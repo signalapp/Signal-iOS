@@ -71,7 +71,11 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
             return localeCurrencyCode
         }
         Logger.verbose("Missing currency code: \(Locale.current.currencyCode ?? "unknown").")
-        owsFailDebug("Missing currency code.")
+        if Platform.isSimulator {
+            Logger.warn("Missing currency code.")
+        } else {
+            owsFailDebug("Missing currency code.")
+        }
         return Self.defaultCurrencyCode
     }
 

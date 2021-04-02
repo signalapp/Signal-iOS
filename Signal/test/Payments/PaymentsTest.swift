@@ -49,11 +49,6 @@ class PaymentsTest: SignalBaseTest {
             return
         }
         XCTAssertEqual(paymentsEntropy, self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase))
-        guard let mcRootEntropy = self.payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
-            XCTFail("Missing mcRootEntropy.")
-            return
-        }
-        XCTAssertEqual(mcRootEntropy.count, Int(PaymentsConstants.mcRootEntropyLength))
     }
 
     func test_paymentAddressSigning() {

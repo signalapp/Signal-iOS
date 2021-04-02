@@ -70,7 +70,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
-    private func getOrBuildCurrentApi(mcRootEntropy: Data) -> Promise<MobileCoinAPI> {
+    private func getOrBuildCurrentApi(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
         func getCurrentApi() -> MobileCoinAPI? {
             return Self.unfairLock.withLock { () -> MobileCoinAPI? in
                 if let handle = self.currentApiHandle,
@@ -92,7 +92,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         return firstly(on: .global()) {
-            MobileCoinAPI.buildPromise(mcRootEntropy: mcRootEntropy)
+            MobileCoinAPI.buildPromise(paymentsEntropy: paymentsEntropy)
         }.map(on: .global()) { (api: MobileCoinAPI) -> MobileCoinAPI in
             setCurrentApi(api)
             return api
@@ -107,8 +107,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             return Promise(error: PaymentsError.notEnabled)
         }
         switch paymentsState {
-        case .enabled(_, let mcRootEntropy):
-            return getOrBuildCurrentApi(mcRootEntropy: mcRootEntropy)
+        case .enabled(let paymentsEntropy):
+            return getOrBuildCurrentApi(paymentsEntropy: paymentsEntropy)
         case .disabled, .disabledWithPaymentsEntropy:
             return Promise(error: PaymentsError.notEnabled)
         }
@@ -170,19 +170,12 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public var paymentsEntropy: Data? {
-        paymentsState.paymentsEntropy
-    }
-
-    public var mcRootEntropy: Data? {
-        paymentsState.mcRootEntropy
-    }
-
-    public static func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
-        do {
-            return try MobileCoinAPI.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
+        if DevFlags.useFakePaymentsEntropy_self,
+           let localAddress = Self.tsAccountManager.localAddress,
+           Self.hasFakePaymentEntropy(forAddress: localAddress) {
+            return Self.fakePaymentsEntropy(forAddress: localAddress)
+        } else {
+            return paymentsState.paymentsEntropy
         }
     }
 
@@ -216,16 +209,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         MobileCoinAPI.isValidPassphraseWord(word)
     }
 
-    public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
-        if DevFlags.useFakeRootEntropy_self,
-           let localAddress = Self.tsAccountManager.localAddress,
-           Self.hasMCFakeRootEntropy(forAddress: localAddress) {
-            return Self.fakeMCRootEntropy(forAddress: localAddress)
-        } else {
-            return Self.mcRootEntropy(forPaymentsEntropy: paymentsEntropy)
-        }
-    }
-
     public func enablePayments(transaction: SDSAnyWriteTransaction) {
         // We must preserve any existing paymentsEntropy.
         let paymentsEntropy = self.paymentsEntropy ?? Self.generateRandomPaymentsEntropy()
@@ -250,7 +233,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public func disablePayments(transaction: SDSAnyWriteTransaction) {
         switch paymentsState {
-        case .enabled(let paymentsEntropy, _):
+        case .enabled(let paymentsEntropy):
             setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
                              updateStorageService: true,
                              transaction: transaction)
@@ -443,7 +426,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     // PAYMENTS TODO: Remove.
     private enum DevFlags {
-        static var useFakeRootEntropy_self: Bool {
+        static var useFakePaymentsEntropy_self: Bool {
             #if DEBUG
             return (MobileCoinAPI.Environment.current == .mobileCoinAlphaNet ||
                         MobileCoinAPI.Environment.current == .mobileCoinMobileDev)
@@ -457,11 +440,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // TODO: Remove.
     private struct DevDevice {
         fileprivate let address: SignalServiceAddress
-        fileprivate let fakeMCRootEntropy: Data
+        fileprivate let fakePaymentsEntropy: Data
 
-        init(phoneNumber: String, fakeMCRootEntropy: Data) throws {
+        init(phoneNumber: String, fakePaymentsEntropy: Data) throws {
             self.address = SignalServiceAddress(phoneNumber: phoneNumber)
-            self.fakeMCRootEntropy = fakeMCRootEntropy
+            self.fakePaymentsEntropy = fakePaymentsEntropy
         }
     }
 
@@ -469,7 +452,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         return [
             // iPhone 11 Pro Max Simulator
             try! DevDevice(phoneNumber: "+441752395464",
-                           fakeMCRootEntropy: MobileCoinAPI.rootEntropy1)
+                           fakePaymentsEntropy: MobileCoinAPI.rootEntropy1)
 
             //            // iPhone Xs Simulator
             //            try! DevDevice(phoneNumber: "+14503002620",
@@ -493,13 +476,16 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         ]
     }
 
-    private class func fakeMCRootEntropy(forAddress address: SignalServiceAddress) -> Data {
-        let device = fakeDevDevices.filter { $0.address == address }.first!
-        return device.fakeMCRootEntropy
+    private class func fakeDevDevice(forAddress address: SignalServiceAddress) -> DevDevice? {
+        fakeDevDevices.filter { $0.address == address }.first!
     }
 
-    private class func hasMCFakeRootEntropy(forAddress address: SignalServiceAddress) -> Bool {
-        !fakeDevDevices.filter { $0.address == address }.isEmpty
+    private class func fakePaymentsEntropy(forAddress address: SignalServiceAddress) -> Data {
+        fakeDevDevice(forAddress: address)!.fakePaymentsEntropy
+    }
+
+    private class func hasFakePaymentEntropy(forAddress address: SignalServiceAddress) -> Bool {
+        fakeDevDevice(forAddress: address) != nil
     }
 
     // MARK: -
@@ -690,13 +676,13 @@ public extension PaymentsImpl {
 public extension PaymentsImpl {
 
     private func localMobileCoinAccount() -> MobileCoinAPI.MobileCoinAccount? {
-        guard let mcRootEntropy = paymentsState.mcRootEntropy else {
-            owsFailDebug("Missing mcRootEntropy.")
+        guard let paymentsEntropy = paymentsState.paymentsEntropy else {
+            owsFailDebug("Missing paymentsEntropy.")
             return nil
         }
 
         do {
-            return try MobileCoinAPI.buildLocalAccount(mcRootEntropy: mcRootEntropy)
+            return try MobileCoinAPI.buildLocalAccount(paymentsEntropy: paymentsEntropy)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -1070,7 +1056,7 @@ public extension PaymentsImpl {
         }
         guard let mcReceiptData = paymentModel.mcReceiptData,
               !mcReceiptData.isEmpty,
-              let mcReceipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
+              nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
             if DebugFlags.paymentsIgnoreBadData.get() {
                 Logger.warn("Missing or invalid mcReceiptData.")
             } else {

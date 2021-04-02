@@ -40,7 +40,7 @@ PODS:
     - SwiftNIOSSL (< 3.0.0, >= 2.8.0)
     - SwiftNIOTransportServices (< 2.0.0, >= 1.6.0)
     - SwiftProtobuf (< 2.0.0, >= 1.9.0)
-  - LibMobileCoin (1.0.1-pre1):
+  - LibMobileCoin (1.0.1-pre4):
     - gRPC-Swift (~> 1.0.0)
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
@@ -231,11 +231,11 @@ DEPENDENCIES:
   - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`, branch `mkirk/1.0.2t`)
-  - LibMobileCoin (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, branch `signal/1.0.1-pre1`)
+  - LibMobileCoin (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, branch `signal/1.0.1-pre4`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, commit `01c27be4d2c4b31eeaf568df7585312906eb95e3`)
+  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`)
   - PromiseKit
   - PureLayout
   - Reachability
@@ -306,7 +306,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/1.0.2t
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   LibMobileCoin:
-    :branch: signal/1.0.1-pre1
+    :branch: signal/1.0.1-pre4
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :branch: signal-master
@@ -315,7 +315,6 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :commit: 01c27be4d2c4b31eeaf568df7585312906eb95e3
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
@@ -352,7 +351,7 @@ CHECKOUT OPTIONS:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   LibMobileCoin:
-    :commit: be4ad7c5ab9b97557959f429b3cb390b0bd1d703
+    :commit: 2d59881ea5a61022f9cca2ea2b6bd281bb7784b5
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :commit: 9e30e12883947b95972c1eee36b6801a09689364
@@ -361,7 +360,7 @@ CHECKOUT OPTIONS:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :commit: 01c27be4d2c4b31eeaf568df7585312906eb95e3
+    :commit: 8bfc418195e9432f816a14fb7d745b37409f32d7
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
@@ -406,7 +405,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
   gRPC-Swift: 77154009a019e97f8c4bd8f2bb75fe9726801157
-  LibMobileCoin: c97cff4367dc1c983d77c187de8bb7495ca497d1
+  LibMobileCoin: 77fa1f5491846ed115a7fff26ce8abfb813e1e01
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
@@ -441,6 +440,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 779e71b64dce08f9185b19885c7d874427969f99
+PODFILE CHECKSUM: 3e4154b2ea4c4dae855ba7569bddd8f6f5603d6c
 
 COCOAPODS: 1.9.2

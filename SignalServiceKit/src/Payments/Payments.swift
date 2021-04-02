@@ -56,10 +56,6 @@ public protocol Payments: AnyObject {
 
     var paymentsEntropy: Data? { get }
 
-    var mcRootEntropy: Data? { get }
-
-    func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data?
-
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
 
     func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
@@ -188,16 +184,14 @@ public enum PaymentsState: Equatable, Dependencies {
 
     case disabled
     case disabledWithPaymentsEntropy(paymentsEntropy: Data)
-    case enabled(paymentsEntropy: Data, mcRootEntropy: Data)
+    case enabled(paymentsEntropy: Data)
 
     // We should almost always construct instances of PaymentsState
     // using this method.  It enforces important invariants.
     //
     // * paymentsEntropy is not discarded.
-    // * Payments are only enabled if mcRootEntropy can be derived from
-    //   paymentsEntropy.
-    // * Payments are only enabled if paymentsEntropy and mcRootEntropy
-    //   have valid length.
+    // * Payments are only enabled if paymentsEntropy is valid.
+    // * Payments are only enabled if paymentsEntropy has valid length.
     public static func build(arePaymentsEnabled: Bool,
                              paymentsEntropy: Data?) -> PaymentsState {
         guard let paymentsEntropy = paymentsEntropy else {
@@ -207,21 +201,8 @@ public enum PaymentsState: Equatable, Dependencies {
             owsFailDebug("paymentsEntropy has invalid length: \(paymentsEntropy.count) != \(PaymentsConstants.paymentsEntropyLength).")
             return .disabled
         }
-        guard let mcRootEntropy = payments.mcRootEntropy(forPaymentsEntropy: paymentsEntropy) else {
-            owsFailDebug("Could not derive mcRootEntropy from paymentsEntropy.")
-            // It's essential that we _not_ discard paymentsEntropy even if we
-            // can't derive a valid mcRootEntropy from it.
-            return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
-        }
-        guard mcRootEntropy.count == PaymentsConstants.mcRootEntropyLength else {
-            owsFailDebug("mcRootEntropy has invalid length: \(mcRootEntropy.count) != \(PaymentsConstants.mcRootEntropyLength).")
-            // It's essential that we _not_ discard paymentsEntropy even if we
-            // can't derive a valid mcRootEntropy from it.
-            return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
-        }
         if arePaymentsEnabled {
-            return .enabled(paymentsEntropy: paymentsEntropy,
-                            mcRootEntropy: mcRootEntropy)
+            return .enabled(paymentsEntropy: paymentsEntropy)
         } else {
             return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
         }
@@ -238,7 +219,7 @@ public enum PaymentsState: Equatable, Dependencies {
 
     public var paymentsEntropy: Data? {
         switch self {
-        case .enabled(let paymentsEntropy, _):
+        case .enabled(let paymentsEntropy):
             return paymentsEntropy
         case .disabled:
             return nil
@@ -247,23 +228,11 @@ public enum PaymentsState: Equatable, Dependencies {
         }
     }
 
-    public var mcRootEntropy: Data? {
-        switch self {
-        case .enabled(_, let mcRootEntropy):
-            return mcRootEntropy
-        case .disabled:
-            return nil
-        case .disabledWithPaymentsEntropy:
-            return nil
-        }
-    }
-
     // MARK: Equatable
 
     public static func == (lhs: PaymentsState, rhs: PaymentsState) -> Bool {
         return (lhs.isEnabled == rhs.isEnabled &&
-                    lhs.paymentsEntropy == rhs.paymentsEntropy &&
-                    lhs.mcRootEntropy == rhs.mcRootEntropy)
+                    lhs.paymentsEntropy == rhs.paymentsEntropy)
     }
 }
 
@@ -346,12 +315,6 @@ extension MockPayments: PaymentsSwift {
     }
 
     public var paymentsEntropy: Data? { nil }
-
-    public var mcRootEntropy: Data? { nil }
-
-    public func mcRootEntropy(forPaymentsEntropy paymentsEntropy: Data) -> Data? {
-        owsFail("Not implemented.")
-    }
 
     public func walletAddressBase58() -> String? {
         owsFail("Not implemented.")
@@ -671,8 +634,6 @@ public class PaymentsConstants {
     }
 
     public static let paymentsEntropyLength: UInt = 32
-
-    public static let mcRootEntropyLength: UInt = 32
 }
 
 // MARK: -
