@@ -157,8 +157,14 @@ class SendPaymentHelper: Dependencies {
             guard let self = self else { return }
             self.maximumPaymentAmount = maximumPaymentAmount
             self.delegate?.balanceDidChange()
-        }.catch(on: .global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
+        }.catch(on: .global()) { [weak self] error in
+            if case PaymentsError.insufficientFunds = error {
+                guard let self = self else { return }
+                self.maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)
+                self.delegate?.balanceDidChange()
+            } else {
+                owsFailDebugUnlessMCNetworkFailure(error)
+            }
         }
 
         delegate?.balanceDidChange()

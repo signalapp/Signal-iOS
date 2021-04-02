@@ -695,7 +695,6 @@ public extension PaymentsError {
              .invalidWalletKey,
              .invalidAmount,
              .invalidFee,
-             .insufficientFunds,
              .invalidModel,
              .indeterminateState,
              .unknownSDKError,
@@ -719,7 +718,8 @@ public extension PaymentsError {
              .connectionFailure,
              .timeout:
             return false
-        case .tooOldToSubmit:
+        case .tooOldToSubmit,
+             .insufficientFunds:
             return true
         }
     }
