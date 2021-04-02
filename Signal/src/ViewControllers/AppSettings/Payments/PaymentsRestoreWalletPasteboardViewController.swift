@@ -27,6 +27,8 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE",
                                   comment: "Title for the 'restore payments wallet from pasteboard' view of the app settings.")
 
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                            target: self,
                                                            action: #selector(didTapDismiss),

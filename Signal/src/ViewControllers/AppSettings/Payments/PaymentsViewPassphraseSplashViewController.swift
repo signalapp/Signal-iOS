@@ -37,6 +37,8 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
                                   comment: "Title for the 'view payments passphrase' view of the app settings.")
 
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         rootView.axis = .vertical
         rootView.alignment = .fill
         view.addSubview(rootView)

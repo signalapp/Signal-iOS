@@ -53,6 +53,9 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
         title = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
                                   comment: "Title for the 'restore payments wallet' view of the app settings.")
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         createContents()
     }
 

@@ -817,11 +817,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
         }
 
+        Self.removeBackButtonText(viewController: viewController)
+
+        if viewController != self { applyTheme() }
+    }
+
+    public static func removeBackButtonText(viewController: UIViewController) {
         // We never want to show titles on back buttons, so we replace it with
         // blank spaces. We pad it out slightly so that it's more tappable.
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
-
-        if viewController != self { applyTheme() }
     }
 
     @objc(removeThemeFromViewController:)
