@@ -845,7 +845,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                          comment: "Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings."),
                                                 accessibilityIdentifier: "payments.settings.activate.view-terms",
                                                 style: .default) { _ in
-            // TODO: Verify that this URL is final.
             UIApplication.shared.open(
                 URL(string: "https://buymobilecoin.com/terms-of-use.html")!,
                 options: [:],

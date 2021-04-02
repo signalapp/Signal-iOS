@@ -114,7 +114,7 @@ public class SendPaymentMemoViewController: OWSViewController {
     // MARK: -
 
     fileprivate func updateMemoCharacterCount() {
-        guard let strippedMemoMessage = memoTextField.text?.ows_stripped(),
+        guard let strippedMemoMessage = memoTextField.text,
               strippedMemoMessage.count > 0 else {
             // Use whitespace to reserve space in the layout
             // to avoid jitter.
