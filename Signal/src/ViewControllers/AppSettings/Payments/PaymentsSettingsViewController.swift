@@ -306,7 +306,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             // "pending balance" and "has balance" states.
             balanceLabel.text = " "
 
-            let activityIndicator = UIActivityIndicatorView(style: .gray)
+            let activityIndicator = UIActivityIndicatorView(style: Theme.isDarkThemeEnabled
+                                                                ? .white
+                                                                : .gray)
             balanceStack.addSubview(activityIndicator)
             activityIndicator.autoCenterInSuperview()
             activityIndicator.startAnimating()

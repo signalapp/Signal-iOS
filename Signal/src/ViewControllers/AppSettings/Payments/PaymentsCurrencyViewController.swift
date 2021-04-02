@@ -80,9 +80,10 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
             supportedSection.add(OWSTableItem(customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
-                let activityIndicator = UIActivityIndicatorView(style: .gray)
+                let activityIndicator = UIActivityIndicatorView(style: Theme.isDarkThemeEnabled
+                                                                    ? .white
+                                                                    : .gray)
                 activityIndicator.startAnimating()
-                activityIndicator.autoSetDimensions(to: .square(48))
 
                 cell.contentView.addSubview(activityIndicator)
                 activityIndicator.autoHCenterInSuperview()

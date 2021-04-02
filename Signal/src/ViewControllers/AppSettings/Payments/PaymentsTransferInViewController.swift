@@ -111,7 +111,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         }
         let qrImage: UIImage
         do {
-            qrImage = try QRCodeView.buildQRImage(data: walletAddressBase58Data)
+            qrImage = try QRCodeView.buildQRImage(data: walletAddressBase58Data,
+                                                  forExport: true)
         } catch {
             owsFailDebug("Error: \(error)")
             configureForError()
@@ -125,6 +126,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         let viewSize = view.bounds.size
         let qrCodeSize = min(viewSize.width, viewSize.height) * 0.5
         qrCodeView.autoSetDimensions(to: .square(qrCodeSize))
+        qrCodeView.layer.cornerRadius = 8
+        qrCodeView.layer.masksToBounds = true
 
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
