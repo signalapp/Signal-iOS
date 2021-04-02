@@ -159,7 +159,10 @@ public class PaymentsViewUtils: NSObject {
         stack.spacing = 24
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
-        stack.addBackgroundView(withBackgroundColor: Theme.backgroundColor,
+        let backgroundColor = (Theme.isDarkThemeEnabled
+                                ? Theme.washColor
+                                : Theme.backgroundColor)
+        stack.addBackgroundView(withBackgroundColor: backgroundColor,
                                 cornerRadius: 10)
 
         if let footerButton = footerButton {

@@ -81,6 +81,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
         let section = OWSTableSection()
         section.customHeaderView = buildHeader()
+        section.shouldDisableCellSelection = true
 
         let passphrase = self.passphrase
         section.add(OWSTableItem(customCellBlock: {

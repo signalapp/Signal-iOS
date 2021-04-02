@@ -175,6 +175,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         let section0 = OWSTableSection()
         let section1 = OWSTableSection()
         section0.customHeaderView = buildConfirmHeader()
+        section0.shouldDisableCellSelection = true
+        section1.shouldDisableCellSelection = true
 
         func buildWordRow(wordTextfield: UITextField,
                           correctnessIconView: UIView,

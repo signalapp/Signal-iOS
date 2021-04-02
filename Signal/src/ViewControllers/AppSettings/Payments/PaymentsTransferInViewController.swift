@@ -36,18 +36,18 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         let addressSection = OWSTableSection()
         addressSection.hasBackground = false
+        addressSection.shouldDisableCellSelection = true
         addressSection.add(OWSTableItem(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             self?.configureAddressCell(cell: cell)
             return cell
         },
-        actionBlock: { [weak self] in
-            self?.didTapCopyAddress()
-        }))
+        actionBlock: nil))
         contents.addSection(addressSection)
 
         let infoSection = OWSTableSection()
         infoSection.hasBackground = false
+        infoSection.shouldDisableCellSelection = true
         infoSection.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
@@ -79,7 +79,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             innerStack.addBackgroundView(withBackgroundColor: self.cellBackgroundColor,
                                          cornerRadius: 10)
 
-            let outerStack = UIStackView(arrangedSubviews: [innerStack])
+            let outerStack = OWSStackView(name: "outerStack",
+                                          arrangedSubviews: [innerStack])
             outerStack.axis = .vertical
             outerStack.alignment = .center
             outerStack.layoutMargins = UIEdgeInsets(top: 40, leading: 40, bottom: 0, trailing: 40)
@@ -87,6 +88,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             cell.contentView.addSubview(outerStack)
             outerStack.autoPinEdgesToSuperviewMargins()
             cell.addBackgroundView(backgroundColor: self.tableBackgroundColor)
+
+            outerStack.addTapGesture { [weak self] in
+                self?.didTapCopyAddress()
+            }
         }
 
         func configureForError() {

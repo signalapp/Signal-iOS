@@ -62,6 +62,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
+        headerSection.shouldDisableCellSelection = true
         headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             self?.configureHeader(cell: cell)

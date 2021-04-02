@@ -224,15 +224,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
+        headerSection.shouldDisableCellSelection = true
         headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             self?.configureEnabledHeader(cell: cell)
             return cell
         },
-        actionBlock: {
-            Self.paymentsSwift.updateCurrentPaymentBalance()
-            Self.paymentsCurrencies.updateConversationRatesIfStale()
-        }))
+        actionBlock: nil))
         contents.addSection(headerSection)
 
         let historySection = OWSTableSection()
@@ -333,7 +331,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         buttonStack.alignment = .fill
         buttonStack.distribution = .fillEqually
 
-        let headerStack = UIStackView(arrangedSubviews: [
+        let headerStack = OWSStackView(name: "headerStack",
+                                       arrangedSubviews: [
             balanceStack,
             UIView.spacer(withHeight: 8),
             conversionStack2,
@@ -347,9 +346,13 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                  bottom: 8,
                                                  trailing: OWSTableViewController2.cellHOuterMargin)
         headerStack.isLayoutMarginsRelativeArrangement = true
-        headerStack.addBackgroundView(withBackgroundColor: self.tableBackgroundColor)
         cell.contentView.addSubview(headerStack)
         headerStack.autoPinEdgesToSuperviewEdges()
+
+        headerStack.addTapGesture {
+            Self.paymentsSwift.updateCurrentPaymentBalance()
+            Self.paymentsCurrencies.updateConversationRatesIfStale()
+        }
     }
 
     private func buildHeaderButton(title: String, iconName: String, selector: Selector) -> UIView {
@@ -412,6 +415,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         guard paymentsHistoryDataSource.hasItems else {
             section.hasBackground = false
+            section.shouldDisableCellSelection = true
             section.add(OWSTableItem(customCellBlock: {
                 let cell = OWSTableItem.newCell()
 
@@ -495,6 +499,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
+        headerSection.shouldDisableCellSelection = true
         headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             self?.configureNotEnabledCell(cell)

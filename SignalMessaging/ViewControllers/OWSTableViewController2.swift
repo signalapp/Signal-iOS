@@ -676,6 +676,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
     }
 
+    public func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        guard let section = contents.sections[safe: indexPath.section] else {
+            owsFailDebug("Missing section: \(indexPath.section)")
+            return true
+        }
+        return !section.shouldDisableCellSelection
+    }
+
     // MARK: - Index
 
     // tell table which section corresponds to section title/index (e.g. "B",1))

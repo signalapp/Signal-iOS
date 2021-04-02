@@ -72,6 +72,8 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.customHeaderView = buildHeader()
         section.customFooterView = buildFooter()
+        section.hasBackground = false
+        section.shouldDisableCellSelection = true
 
         let passphrase = self.passphrase
         section.add(OWSTableItem(customCellBlock: { [weak self] in

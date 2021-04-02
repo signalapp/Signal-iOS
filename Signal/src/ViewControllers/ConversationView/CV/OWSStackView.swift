@@ -77,4 +77,22 @@ class OWSStackView: UIStackView {
                           spacing: self.spacing,
                           layoutMargins: self.layoutMargins)
     }
+
+    public typealias TapBlock = () -> Void
+    private var tapBlock: TapBlock?
+
+    public func addTapGesture(_ tapBlock: @escaping TapBlock) {
+        owsAssertDebug(self.tapBlock == nil)
+
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+        self.tapBlock = tapBlock
+    }
+
+    @objc
+    private func didTap() {
+        owsAssertDebug(tapBlock != nil)
+
+        tapBlock?()
+    }
 }

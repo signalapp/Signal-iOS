@@ -104,6 +104,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         iconView.isUserInteractionEnabled = true
         iconView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapScanQR)))
 
+        section.shouldDisableCellSelection = true
         section.add(OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
 
