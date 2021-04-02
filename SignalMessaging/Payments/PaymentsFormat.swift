@@ -26,7 +26,7 @@ public extension PaymentsFormat {
                                                     : Int(PaymentsConstants.maxMobDecimalDigits))
         numberFormatter.usesSignificantDigits = false
         if isShortForm {
-            numberFormatter.roundingMode = .up
+            numberFormatter.roundingMode = .halfEven
         }
         return numberFormatter
     }
