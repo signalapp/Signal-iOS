@@ -761,6 +761,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     @objc
     public var cellBackgroundColor: UIColor {
+        Self.cellBackgroundColor(useNewStyle: useNewStyle,
+                                 isUsingPresentedStyle: isUsingPresentedStyle,
+                                 useThemeBackgroundColors: useThemeBackgroundColors)
+    }
+
+    public static func cellBackgroundColor(useNewStyle: Bool = true,
+                                           isUsingPresentedStyle: Bool,
+                                           useThemeBackgroundColors: Bool = false) -> UIColor {
         if useNewStyle {
             if isUsingPresentedStyle {
                 return Theme.tableCell2PresentedBackgroundColor

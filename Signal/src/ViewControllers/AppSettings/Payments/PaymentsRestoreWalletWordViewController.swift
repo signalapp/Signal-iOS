@@ -130,9 +130,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfieldStack.isLayoutMarginsRelativeArrangement = true
         textfieldStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHInnerMargin,
                                                     vMargin: OWSTableViewController2.cellVInnerMargin)
-        let backgroundColor = (Theme.isDarkThemeEnabled
-                                ? Theme.washColor
-                                : Theme.backgroundColor)
+        let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
         textfieldStack.addBackgroundView(withBackgroundColor: backgroundColor,
                                          cornerRadius: 10)
 

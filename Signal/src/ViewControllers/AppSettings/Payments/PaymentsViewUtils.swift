@@ -159,9 +159,7 @@ public class PaymentsViewUtils: NSObject {
         stack.spacing = 24
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
-        let backgroundColor = (Theme.isDarkThemeEnabled
-                                ? Theme.washColor
-                                : Theme.backgroundColor)
+        let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
         stack.addBackgroundView(withBackgroundColor: backgroundColor,
                                 cornerRadius: 10)
 

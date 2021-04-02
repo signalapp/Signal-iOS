@@ -102,9 +102,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoRow.alignment = .center
         memoRow.isLayoutMarginsRelativeArrangement = true
         memoRow.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 14)
-        let backgroundColor = (Theme.isDarkThemeEnabled
-                                ? Theme.washColor
-                                : Theme.backgroundColor)
+        let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
         let backgroundView = memoRow.addBackgroundView(withBackgroundColor: backgroundColor)
         backgroundView.layer.cornerRadius = 10
 

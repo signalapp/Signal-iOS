@@ -381,7 +381,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         stack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: selector))
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = Theme.tableCell2BackgroundColor
+        backgroundView.backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
         backgroundView.layer.cornerRadius = 10
         stack.addSubview(backgroundView)
         stack.sendSubviewToBack(backgroundView)
