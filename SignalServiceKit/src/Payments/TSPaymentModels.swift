@@ -328,6 +328,9 @@ public class TSPaymentModels: NSObject {
     @objc(parsePaymentProtosInDataMessage:thread:)
     public class func parsePaymentProtos(dataMessage: SSKProtoDataMessage,
                                          thread: TSThread) -> TSPaymentModels? {
+        guard !CurrentAppContext().isRunningTests else {
+            return nil
+        }
         guard payments.arePaymentsEnabled else {
             return nil
         }

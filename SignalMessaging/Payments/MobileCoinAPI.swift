@@ -78,7 +78,8 @@ class MobileCoinAPI: Dependencies {
     // MARK: -
 
     public static func configureSDKLogging() {
-        if DebugFlags.internalLogging {
+        if DebugFlags.internalLogging,
+           !CurrentAppContext().isRunningTests {
             MobileCoinLogging.logSensitiveData = true
         }
     }
