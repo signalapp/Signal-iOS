@@ -642,9 +642,9 @@ public class SendPaymentViewController: OWSViewController {
 
         let isZero = amount.inputString.isZero
 
-        func disableSmallLabel() {
-            let isInvalid = (!isZero && currentCurrencyConversion != nil)
-            smallAmountLabel.text = (isInvalid
+        func hideConversionLabelOrShowWarning() {
+            let shouldHaveValidValue = (!isZero && currentCurrencyConversion != nil)
+            smallAmountLabel.text = (shouldHaveValidValue
                                         ? NSLocalizedString("PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT",
                                                             comment: "Label for the 'invalid amount' button.")
                                         : " ")
@@ -677,7 +677,7 @@ public class SendPaymentViewController: OWSViewController {
                                                                     currencyConversion: currencyConversion,
                                                                     isZero: isZero))
             } else {
-                disableSmallLabel()
+                hideConversionLabelOrShowWarning()
             }
         case .fiatCurrency(_, let currencyConversion):
             if let otherCurrencyAmount = self.otherCurrencyAmount {
