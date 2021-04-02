@@ -36,7 +36,8 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     private func createContents() {
 
-        view.backgroundColor = Theme.tableView2BackgroundColor
+        let backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        view.backgroundColor = backgroundColor
 
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 
@@ -70,7 +71,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
                                                                                       comment: "Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view."),
                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                titleColor: .ows_accentBlue,
-                                               backgroundColor: Theme.tableViewBackgroundColor,
+                                               backgroundColor: backgroundColor,
                                                target: self,
                                                selector: #selector(didTapPasteFromPasteboardButton))
         pasteFromPasteboardButton.autoSetHeightUsingFont()

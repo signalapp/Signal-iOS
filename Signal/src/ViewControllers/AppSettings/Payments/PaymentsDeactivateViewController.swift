@@ -82,7 +82,9 @@ public class PaymentsDeactivateViewController: OWSViewController {
     }
 
     private func updateContents() {
-        view.backgroundColor = Theme.backgroundColor
+        let backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        view.backgroundColor = backgroundColor
+
         view.removeAllSubviews()
 
         let titleLabel = UILabel()
@@ -105,7 +107,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                                     comment: "Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings."),
             font: .ows_dynamicTypeBody2Clamped,
             learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_deactivate")
-        explanationLabel.backgroundColor = Theme.backgroundColor
+        explanationLabel.backgroundColor = backgroundColor
         explanationLabel.textAlignment = .center
 
         let transferBalanceButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE",
@@ -121,7 +123,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
                                                                                         comment: "Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings."),
                                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                                titleColor: .ows_accentRed,
-                                                               backgroundColor: .white,
+                                                               backgroundColor: backgroundColor,
                                                                target: self,
                                                                selector: #selector(didTapDeactivateImmediatelyButton))
         deactivateImmediatelyButton.autoSetHeightUsingFont()

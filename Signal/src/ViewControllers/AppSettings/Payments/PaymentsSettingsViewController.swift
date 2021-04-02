@@ -116,8 +116,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        useThemeBackgroundColors = true
-
         title = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_TITLE",
                                   comment: "Title for the 'payments settings' view in the app settings.")
 
@@ -349,7 +347,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                  bottom: 8,
                                                  trailing: OWSTableViewController2.cellHOuterMargin)
         headerStack.isLayoutMarginsRelativeArrangement = true
-        headerStack.addBackgroundView(withBackgroundColor: Theme.tableView2BackgroundColor)
+        headerStack.addBackgroundView(withBackgroundColor: self.tableBackgroundColor)
         cell.contentView.addSubview(headerStack)
         headerStack.autoPinEdgesToSuperviewEdges()
     }

@@ -32,8 +32,6 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        useThemeBackgroundColors = true
-
         title = NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE",
                                   comment: "Label for 'transfer currency out' view in the payment settings.")
 

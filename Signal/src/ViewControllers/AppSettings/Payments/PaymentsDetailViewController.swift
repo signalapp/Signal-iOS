@@ -17,8 +17,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        useThemeBackgroundColors = true
-
         title = NSLocalizedString("SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE",
                                   comment: "Label for the 'payments details' view of the app settings.")
 

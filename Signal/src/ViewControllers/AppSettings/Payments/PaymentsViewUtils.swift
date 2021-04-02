@@ -176,7 +176,7 @@ public class PaymentsViewUtils: NSObject {
                                                    font: UIFont,
                                                    learnMoreUrl: String) -> UITextView {
         let textView = LinkingTextView()
-        textView.backgroundColor = Theme.tableView2BackgroundColor
+        textView.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
         textView.textColor = (Theme.isDarkThemeEnabled
                                 ? UIColor.ows_gray05
                                 : UIColor.ows_gray90)

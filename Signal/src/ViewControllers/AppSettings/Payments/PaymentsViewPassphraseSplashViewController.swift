@@ -66,7 +66,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     private func updateContents() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = Theme.tableView2BackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 

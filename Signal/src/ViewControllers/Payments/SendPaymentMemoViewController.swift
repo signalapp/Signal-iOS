@@ -31,8 +31,6 @@ public class SendPaymentMemoViewController: OWSViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
-
         updateContents()
     }
 
@@ -55,7 +53,8 @@ public class SendPaymentMemoViewController: OWSViewController {
     private func updateContents() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = Theme.tableView2BackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+
         navigationItem.title = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                  comment: "Label for the 'add memo' ui in the 'send payment' UI.")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,

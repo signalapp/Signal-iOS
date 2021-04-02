@@ -48,7 +48,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
 
     private func createContents() {
 
-        view.backgroundColor = Theme.tableView2BackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         textField.textColor = Theme.primaryTextColor
         textField.font = .ows_dynamicTypeBodyClamped

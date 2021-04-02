@@ -70,7 +70,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
     private func createContents() {
 
-        view.backgroundColor = Theme.tableView2BackgroundColor
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
