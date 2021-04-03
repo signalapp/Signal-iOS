@@ -56,6 +56,11 @@ public extension PaymentsFormat {
         // Hide commas.
         numberFormatter.groupingSeparator = ""
         numberFormatter.numberStyle = .decimal
+
+        numberFormatter.maximumFractionDigits = Int(PaymentsConstants.maxMobDecimalDigits)
+        numberFormatter.usesSignificantDigits = false
+        numberFormatter.roundingMode = .halfEven
+
         return numberFormatter
     }()
 

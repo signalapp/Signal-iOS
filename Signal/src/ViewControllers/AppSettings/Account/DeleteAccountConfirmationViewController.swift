@@ -213,7 +213,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             comment: "Title for the alert confirming whether the user wants transfer their payments balance before deleting their account.")
 
         let formattedBalance = PaymentsFormat.format(paymentAmount: paymentBalance,
-                                                     isShortForm: true,
+                                                     isShortForm: false,
                                                      withCurrencyCode: true,
                                                      withSpace: true)
         let messageFormat = NSLocalizedString(

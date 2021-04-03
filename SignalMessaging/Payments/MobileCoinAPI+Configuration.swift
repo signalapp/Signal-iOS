@@ -9,7 +9,7 @@ extension MobileCoinAPI {
 
     // MARK: - Environment
 
-    enum Environment {
+    public enum Environment: CustomStringConvertible {
         case mobileCoinAlphaNet
         case mobileCoinMobileDev
         case signalTestNet
@@ -17,7 +17,7 @@ extension MobileCoinAPI {
         case signalMainNet
         case mobileCoinMainNet
 
-        static var current: Environment {
+        public static var current: Environment {
             if FeatureFlags.isUsingProductionService {
                 owsAssertDebug(DebugFlags.paymentsExternalBeta)
                 return .signalMainNet
@@ -30,6 +30,23 @@ extension MobileCoinAPI {
                 #endif
             } else {
                 return .mobileCoinAlphaNet
+            }
+        }
+
+        public var description: String {
+            switch self {
+            case .mobileCoinAlphaNet:
+                return ".mobileCoinAlphaNet"
+            case .mobileCoinMobileDev:
+                return ".mobileCoinMobileDev"
+            case .signalTestNet:
+                return ".signalTestNet"
+            case .mobileCoinTestNet:
+                return ".mobileCoinTestNet"
+            case .signalMainNet:
+                return ".signalMainNet"
+            case .mobileCoinMainNet:
+                return ".mobileCoinMainNet"
             }
         }
     }

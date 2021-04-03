@@ -477,7 +477,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private class func fakeDevDevice(forAddress address: SignalServiceAddress) -> DevDevice? {
-        fakeDevDevices.filter { $0.address == address }.first!
+        fakeDevDevices.filter { $0.address == address }.first
     }
 
     private class func fakePaymentsEntropy(forAddress address: SignalServiceAddress) -> Data {

@@ -1363,8 +1363,8 @@ private struct InputString: Equatable {
                 }
             }
         }()
-        Logger.info("Before: \(self.asCharString) -> \(self.asString(formatMode: .parsing)), \(self.digitCountBeforeDecimal), \(self.digitCountAfterDecimal), \(result.asDouble)")
-        Logger.info("Considering: \(result.asCharString) -> \(result.asString(formatMode: .parsing)), \(result.digitCountBeforeDecimal), \(result.digitCountAfterDecimal), \(result.asDouble)")
+        Logger.verbose("Before: \(self.asCharString) -> \(self.asString(formatMode: .parsing)), \(self.digitCountBeforeDecimal), \(self.digitCountAfterDecimal), \(result.asDouble)")
+        Logger.verbose("Considering: \(result.asCharString) -> \(result.asString(formatMode: .parsing)), \(result.digitCountBeforeDecimal), \(result.digitCountAfterDecimal), \(result.asDouble)")
         guard result.isValid else {
             Logger.warn("Invalid result: \(self.asString(formatMode: .parsing)) -> \(result.asString(formatMode: .parsing))")
             return self

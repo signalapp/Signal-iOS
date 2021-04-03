@@ -138,6 +138,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.label(withText: "Payments EnabledKey: \(payments.arePaymentsEnabled ? "Yes" : "No")"))
         infoSection.add(.label(withText: "Payments Entropy: \(payments.paymentsEntropy?.hexadecimalString ?? "None")"))
+        infoSection.add(.label(withText: "MobileCoin Environment: \(MobileCoinAPI.Environment.current)"))
 
         contents.addSection(infoSection)
 

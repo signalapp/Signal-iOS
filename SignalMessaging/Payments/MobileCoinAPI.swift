@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import MobileCoin
 
-class MobileCoinAPI: Dependencies {
+public class MobileCoinAPI: Dependencies {
 
     // MARK: - Passphrases & Entropy
 
@@ -56,7 +56,7 @@ class MobileCoinAPI: Dependencies {
     // PAYMENTS TODO: Finalize this value with the designers.
     private static let timeoutDuration: TimeInterval = 60
 
-    public let localAccount: MobileCoinAccount
+    let localAccount: MobileCoinAccount
 
     private let client: MobileCoinClient
 
@@ -86,7 +86,7 @@ class MobileCoinAPI: Dependencies {
 
     // MARK: -
 
-    public static func buildLocalAccount(paymentsEntropy: Data) throws -> MobileCoinAccount {
+    static func buildLocalAccount(paymentsEntropy: Data) throws -> MobileCoinAccount {
         try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
     }
 
@@ -216,6 +216,8 @@ class MobileCoinAPI: Dependencies {
                             shouldUpdateBalance: Bool) -> Promise<PreparedTransaction> {
         Logger.verbose("")
 
+        Logger.verbose("paymentAmount: \(paymentAmount.picoMob)")
+
         let client = self.client
 
         return firstly(on: .global()) { () throws -> Promise<Void> in
@@ -231,6 +233,7 @@ class MobileCoinAPI: Dependencies {
         }.map(on: .global()) { () -> TSPaymentAmount in
             try self.getEstimatedFee(forPaymentAmount: paymentAmount)
         }.then(on: .global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
+            Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount.picoMob)")
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")
             }
