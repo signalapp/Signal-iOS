@@ -60,6 +60,13 @@ open class ManualStackView: OWSStackView {
 
     private var layoutBlocks = [LayoutBlock]()
 
+    @objc
+    public required init(name: String, arrangedSubviews: [UIView] = []) {
+        super.init(name: name, arrangedSubviews: arrangedSubviews)
+
+        translatesAutoresizingMaskIntoConstraints = false
+    }
+
     private struct ArrangementItem {
         let subview: UIView
         let frame: CGRect
