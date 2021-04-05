@@ -65,7 +65,8 @@ public protocol GroupsV2: AnyObject {
     func hasProfileKeyCredential(for address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool
 
-    func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise
+    func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
+                                              ignoreMissingProfiles: Bool) -> AnyPromise
 
     func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data
 
@@ -94,7 +95,8 @@ public protocol GroupsV2Swift: GroupsV2 {
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
 
-    func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
+    func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
+                                          ignoreMissingProfiles: Bool) -> Promise<Void>
 
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
@@ -515,11 +517,13 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise {
+    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
+                                                     ignoreMissingProfiles: Bool) -> AnyPromise {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
+                                                 ignoreMissingProfiles: Bool) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 
