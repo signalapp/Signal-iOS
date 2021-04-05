@@ -501,6 +501,14 @@ dispatch_queue_t NetworkManagerQueue()
 
 #if TESTABLE_BUILD
     [TSNetworkManager logCurlForTask:task];
+
+    if ([task.response isKindOfClass:NSHTTPURLResponse.class]) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+        for (id key in [httpResponse.allHeaderFields keysSortedByValueUsingSelector:@selector(compare:)]) {
+            id _Nullable value = httpResponse.allHeaderFields[key];
+            OWSLogVerbose(@"Header[%@]: %@", key, value);
+        }
+    }
 #endif
 
     [OutageDetection.shared reportConnectionFailure];
