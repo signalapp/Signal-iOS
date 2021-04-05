@@ -347,7 +347,8 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
 
         return firstly {
-            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
+            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials,
+                                                          ignoreMissingProfiles: false)
         }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
             groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
         }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
