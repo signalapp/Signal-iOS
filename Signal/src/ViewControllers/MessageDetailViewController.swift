@@ -1071,6 +1071,13 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
                 toView.removeFromSuperview()
             } else {
                 fromView.removeFromSuperview()
+
+                // When completing the transition, the first responder chain gets
+                // messed with. We don't want the keyboard to present when returning
+                // from message details, so we dismiss it when we leave the view.
+                if let fromViewController = transitionContext.viewController(forKey: .from) as? ConversationViewController {
+                    fromViewController.dismissKeyBoard()
+                }
             }
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)

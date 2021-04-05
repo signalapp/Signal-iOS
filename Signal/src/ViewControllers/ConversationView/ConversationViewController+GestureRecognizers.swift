@@ -33,11 +33,6 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         }
     }
 
-    @objc
-    public var isInteractiveTransitionInProgress: Bool {
-        return panHandler?.percentDrivenTransition != nil
-    }
-
     // TODO: Revisit
     private func cellAtPoint(_ point: CGPoint) -> CVCell? {
         guard let indexPath = collectionView.indexPathForItem(at: point),

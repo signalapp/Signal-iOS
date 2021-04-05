@@ -3971,7 +3971,7 @@ typedef enum : NSUInteger {
 
 - (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve
 {
-    if (self.isInteractiveTransitionInProgress) {
+    if (self.transitionCoordinator.isInteractive) {
         return;
     }
 
