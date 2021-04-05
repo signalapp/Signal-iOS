@@ -73,11 +73,11 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - MobileCoin (1.0.1-pre1):
-    - MobileCoin/Core (= 1.0.1-pre1)
-  - MobileCoin/Core (1.0.1-pre1):
+  - MobileCoin (1.0.0-rc1):
+    - MobileCoin/Core (= 1.0.0-rc1)
+  - MobileCoin/Core (1.0.0-rc1):
     - gRPC-Swift (~> 1.0.0)
-    - LibMobileCoin (~> 1.0.1-pre1)
+    - LibMobileCoin (= 1.0.1-pre4)
     - Logging (~> 1.4)
     - SwiftNIO (~> 2.22)
     - SwiftNIOHPACK (~> 1.16)
@@ -360,7 +360,7 @@ CHECKOUT OPTIONS:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
-    :commit: 8bfc418195e9432f816a14fb7d745b37409f32d7
+    :commit: 8ade846a17e1ca25dc9807ed36b33c3d5bc93e67
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
@@ -411,7 +411,7 @@ SPEC CHECKSUMS:
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  MobileCoin: 7a8bbade1ec71b9da498742bfd2087ab34b60a92
+  MobileCoin: 833ac4d404441f2560358cf1bfd8291b0e28b453
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
