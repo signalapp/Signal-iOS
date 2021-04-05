@@ -26,7 +26,8 @@ public extension DebugLogger {
                         file: String,
                         function: String,
                         line: UInt) {
-            let message = message.description
+            // TODO: Remove.
+            let message = "MCSDK: " + message.description
             let line = Int(line)
 
             switch level {

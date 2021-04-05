@@ -73,7 +73,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
             //
             // * The balance becomes unavailable (this should never happen).
             // * The balance becomes zero (this should be extremely rare).
-            owsFailDebug("Missing or empty balance.")
+            Logger.warn("Missing or empty balance.")
             dismiss(animated: true, completion: nil)
             return
         }
