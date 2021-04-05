@@ -328,7 +328,8 @@ public class GroupManager: NSObject {
             // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
             firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind))
+                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind),
+                                                               ignoreMissingProfiles: false)
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
             }

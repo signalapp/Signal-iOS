@@ -1163,8 +1163,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     @objc
-    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress]) -> AnyPromise {
-        return AnyPromise(tryToEnsureProfileKeyCredentials(for: addresses))
+    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
+                                                     ignoreMissingProfiles: Bool) -> AnyPromise {
+        return AnyPromise(tryToEnsureProfileKeyCredentials(for: addresses,
+                                                           ignoreMissingProfiles: ignoreMissingProfiles))
     }
 
     // When creating (or modifying) a v2 group, we need profile key
@@ -1176,7 +1178,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // one of the first things we do is decide whether to create a v1
     // or v2 group.  We have to create a v1 group unless we know the
     // uuid and profile key credential for all members.
-    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
+                                                 ignoreMissingProfiles: Bool) -> Promise<Void> {
 
         var uuidsWithoutProfileKeyCredentials = [UUID]()
         databaseStorage.read { transaction in
@@ -1197,15 +1200,26 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise.value(())
         }
 
-        var promises = [Promise<SignalServiceProfile>]()
+        var promises = [Promise<Void>]()
         for uuid in uuidsWithoutProfileKeyCredentials {
             let address = SignalServiceAddress(uuid: uuid)
-            promises.append(ProfileFetcherJob.fetchProfilePromise(address: address,
-                                                                  mainAppOnly: false,
-                                                                  ignoreThrottling: true,
-                                                                  fetchType: .versioned))
+
+            let promise = firstly(on: .global()) { () -> Promise<Void> in
+                ProfileFetcherJob.fetchProfilePromise(address: address,
+                                                      mainAppOnly: false,
+                                                      ignoreThrottling: true,
+                                                      fetchType: .versioned).asVoid()
+            }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+                if case ProfileFetchError.missing = error,
+                   ignoreMissingProfiles {
+                    Logger.info("Ignoring missing profile: \(error)")
+                    return Promise.value(())
+                }
+                throw error
+            }
+            promises.append(promise)
         }
-        return when(fulfilled: promises).asVoid()
+        return when(fulfilled: promises)
     }
 
     // MARK: - Auth Credentials
