@@ -36,17 +36,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         MobileCoinAPI.configureSDKLogging()
-
-        // TODO: Remove
-        if DebugFlags.paymentsBeta,
-           CurrentAppContext().isMainApp,
-           !CurrentAppContext().isRunningTests {
-            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                if Self.tsAccountManager.isRegisteredAndReady {
-                    Self.profileManager.reuploadLocalProfile()
-                }
-            }
-        }
     }
 
     struct ApiHandle {
@@ -124,7 +113,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         if DebugFlags.paymentsAllowAllCountries {
             return true
         }
-        // TODO: Test.
         guard let localNumber = Self.tsAccountManager.localNumber else {
             return false
         }
@@ -170,13 +158,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public var paymentsEntropy: Data? {
-        if DevFlags.useFakePaymentsEntropy_self,
-           let localAddress = Self.tsAccountManager.localAddress,
-           Self.hasFakePaymentEntropy(forAddress: localAddress) {
-            return Self.fakePaymentsEntropy(forAddress: localAddress)
-        } else {
-            return paymentsState.paymentsEntropy
-        }
+        paymentsState.paymentsEntropy
     }
 
     public var passphrase: PaymentsPassphrase? {
@@ -420,72 +402,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         updateCurrentPaymentBalance()
-    }
-
-    // MARK: - Operations
-
-    // PAYMENTS TODO: Remove.
-    private enum DevFlags {
-        static var useFakePaymentsEntropy_self: Bool {
-            #if DEBUG
-            return (MobileCoinAPI.Environment.current == .mobileCoinAlphaNet ||
-                        MobileCoinAPI.Environment.current == .mobileCoinMobileDev)
-
-            #else
-            return false
-            #endif
-        }
-    }
-
-    // TODO: Remove.
-    private struct DevDevice {
-        fileprivate let address: SignalServiceAddress
-        fileprivate let fakePaymentsEntropy: Data
-
-        init(phoneNumber: String, fakePaymentsEntropy: Data) throws {
-            self.address = SignalServiceAddress(phoneNumber: phoneNumber)
-            self.fakePaymentsEntropy = fakePaymentsEntropy
-        }
-    }
-
-    private class var fakeDevDevices: [DevDevice] {
-        return [
-            // iPhone 11 Pro Max Simulator
-            try! DevDevice(phoneNumber: "+441752395464",
-                           fakePaymentsEntropy: MobileCoinAPI.rootEntropy1)
-
-            //            // iPhone Xs Simulator
-            //            try! DevDevice(phoneNumber: "+14503002620",
-            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy2),
-            //
-            //            // iPhone Xr Simulator
-            //            try! DevDevice(phoneNumber: "+13602090656",
-            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy3),
-            //
-            //            // iPhone XS Max Device
-            //            try! DevDevice(phoneNumber: "+12262864592",
-            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy4),
-            //
-            //            // iPhone 12 mini Device
-            //            try! DevDevice(phoneNumber: "+12534877762",
-            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy5),
-            //
-            //            // iPhone 11 Pro Simulator
-            //            try! DevDevice(phoneNumber: "+15092608677",
-            //                           fakeRootEntropy: MobileCoinAPI.rootEntropy6)
-        ]
-    }
-
-    private class func fakeDevDevice(forAddress address: SignalServiceAddress) -> DevDevice? {
-        fakeDevDevices.filter { $0.address == address }.first
-    }
-
-    private class func fakePaymentsEntropy(forAddress address: SignalServiceAddress) -> Data {
-        fakeDevDevice(forAddress: address)!.fakePaymentsEntropy
-    }
-
-    private class func hasFakePaymentEntropy(forAddress address: SignalServiceAddress) -> Bool {
-        fakeDevDevice(forAddress: address) != nil
     }
 
     // MARK: -
