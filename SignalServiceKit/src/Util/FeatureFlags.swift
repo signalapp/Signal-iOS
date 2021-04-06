@@ -425,11 +425,11 @@ public class DebugFlags: BaseFlags {
 
     // TODO:
     @objc
-    public static let paymentsInternalBeta = build.includes(.openPreview)
+    public static let paymentsInternalBeta = false
 
     // TODO:
     @objc
-    public static let paymentsExternalBeta = false
+    public static let paymentsExternalBeta = build.includes(.openPreview)
 
     @objc
     public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
