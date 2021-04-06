@@ -857,7 +857,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                 accessibilityIdentifier: "payments.settings.activate.view-terms",
                                                 style: .default) { _ in
             UIApplication.shared.open(
-                URL(string: "https://buymobilecoin.com/terms-of-use.html")!,
+                URL(string: "https://www.mobilecoin.com/terms-of-use.html")!,
                 options: [:],
                 completionHandler: nil
             )
