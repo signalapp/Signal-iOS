@@ -9,19 +9,19 @@ public enum HTTP {
 
     // MARK: Certificates
     private static let storageSeed1Cert: SecCertificate = {
-        let path = Bundle.main.path(forResource: "storage-seed-1", ofType: "crt")!
+        let path = Bundle.main.path(forResource: "storage-seed-1", ofType: "der")!
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
         return SecCertificateCreateWithData(nil, data as CFData)!
     }()
     
     private static let storageSeed3Cert: SecCertificate = {
-        let path = Bundle.main.path(forResource: "storage-seed-3", ofType: "crt")!
+        let path = Bundle.main.path(forResource: "storage-seed-3", ofType: "der")!
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
         return SecCertificateCreateWithData(nil, data as CFData)!
     }()
     
     private static let publicLokiFoundationCert: SecCertificate = {
-        let path = Bundle.main.path(forResource: "public-loki-foundation", ofType: "crt")!
+        let path = Bundle.main.path(forResource: "public-loki-foundation", ofType: "der")!
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
         return SecCertificateCreateWithData(nil, data as CFData)!
     }()

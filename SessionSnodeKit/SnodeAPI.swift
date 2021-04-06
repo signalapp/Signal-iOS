@@ -18,7 +18,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
     private static let minimumSwarmSnodeCount = 3
-    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
+    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
     private static let snodeFailureThreshold = 3
     private static let targetSwarmSnodeCount = 2
 
