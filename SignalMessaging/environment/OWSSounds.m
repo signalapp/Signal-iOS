@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import "OWSAudioPlayer.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

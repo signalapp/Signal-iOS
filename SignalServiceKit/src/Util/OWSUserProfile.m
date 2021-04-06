@@ -880,14 +880,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
 }
 
-+ (nullable NSError *)migrateToSharedData
-{
-    OWSLogInfo(@"");
-
-    return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
-                       sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];
-}
-
 + (NSString *)profileAvatarsDirPath
 {
     static NSString *profileAvatarsDirPath = nil;

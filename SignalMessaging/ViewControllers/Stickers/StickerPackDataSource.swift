@@ -458,10 +458,6 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         // This sticker is not downloaded; try to download now.
         firstly(on: .global()) {
             StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-        }.map(on: .global()) { (stickerData: Data) -> URL in
-            let temporaryFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: stickerPackItem.stickerType.fileExtension)
-            try stickerData.write(to: temporaryFileUrl)
-            return temporaryFileUrl
         }.done { [weak self] (temporaryFileUrl) in
             guard let self = self else {
                 return

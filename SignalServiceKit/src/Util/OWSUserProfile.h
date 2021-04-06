@@ -178,7 +178,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 #pragma mark - Profile Avatars Directory
 
 + (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename;
-+ (nullable NSError *)migrateToSharedData;
 + (NSString *)legacyProfileAvatarsDirPath;
 + (NSString *)sharedDataProfileAvatarsDirPath;
 + (NSString *)profileAvatarsDirPath;

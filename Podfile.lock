@@ -243,8 +243,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - "SignalCoreKit (from `ssh://git@github.com/signalapp/SignalCoreKit-Private.git`)"
+  - "SignalCoreKit/Tests (from `ssh://git@github.com/signalapp/SignalCoreKit-Private.git`)"
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -321,7 +321,7 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private.git"
   SignalMetadataKit:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -366,8 +366,8 @@ CHECKOUT OPTIONS:
     :commit: a983a564ac58148cdd69dc69aaf45149db3dde63
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 442e2d544a3fac6627ec941abbbd3ad37327874b
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :commit: 64410ab6b3b8f6c082d5cf6ddd7d58915b997c75
+    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private.git"
   SignalMetadataKit:
     :commit: af0c4d175384160946aca9d47247f80e26cb0625
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -436,6 +436,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cc275453c6e58cccab22770fcd6c7be58b55b69d
+PODFILE CHECKSUM: 0b01c8291333a1974b6eb0f60c7cfe007ee5a720
 
 COCOAPODS: 1.9.2

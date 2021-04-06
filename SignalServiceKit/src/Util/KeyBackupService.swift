@@ -418,7 +418,7 @@ public class KeyBackupService: NSObject {
                 return nil
             }
 
-            return Cryptography.computeSHA256HMAC(data, withHMACKey: dataToDeriveFrom)
+            return Cryptography.computeSHA256HMAC(data, key: dataToDeriveFrom)
         }
 
         public var isAvailable: Bool { return data != nil }

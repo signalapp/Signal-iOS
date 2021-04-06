@@ -46,8 +46,8 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
         operationQueue = [NSOperationQueue new];
         operationQueue.name = @"Uploads";
 
-        // TODO - stream uploads from file and raise this limit.
-        operationQueue.maxConcurrentOperationCount = 1;
+        // TODO: Tune this limit.
+        operationQueue.maxConcurrentOperationCount = 8;
     });
 
     return operationQueue;

@@ -106,35 +106,31 @@ public class OWSAttachmentUploadV2: NSObject {
         self.canUseV3 = canUseV3
     }
 
-    private func attachmentData() -> Promise<Data> {
-        return firstly(on: Self.serialQueue) { () -> Data in
-            let attachmentData = try self.attachmentStream.readDataFromFile()
+    private func attachmentMetadata() -> Promise<(url: URL, length: Int)> {
+        return firstly(on: Self.serialQueue) {
+            let temporaryFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+            let metadata = try Cryptography.encryptAttachment(at: self.attachmentStream.originalMediaURL!, output: temporaryFile)
 
-            var nsEncryptionKey = NSData()
-            var nsDigest = NSData()
-            guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(attachmentData,
-                                                                                   shouldPad: true,
-                                                                                   outKey: &nsEncryptionKey,
-                                                                                   outDigest: &nsDigest) else {
-                                                                                    throw OWSAssertionError("Could not encrypt attachment data.")
-            }
-            let encryptionKey = nsEncryptionKey as Data
-            let digest = nsDigest as Data
-            guard !encryptionKey.isEmpty,
-                !digest.isEmpty else {
-                    throw OWSAssertionError("Could not encrypt attachment data.")
+            self.encryptionKey = metadata.key
+            self.digest = metadata.digest
+
+            guard let length = metadata.length, let plaintextLength = metadata.plaintextLength else {
+                throw OWSAssertionError("Missing length.")
             }
 
-            self.encryptionKey = encryptionKey
-            self.digest = digest
-
-            guard attachmentData.count <= OWSMediaUtils.kMaxFileSizeGeneric,
-                  encryptedAttachmentData.count <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
-                throw OWSAssertionError("Data is too large: \(encryptedAttachmentData.count).").asUnretryableError
+            guard plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
+                  length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
+                throw OWSAssertionError("Data is too large: \(length).").asUnretryableError
             }
 
-            return encryptedAttachmentData
+            return (temporaryFile, length)
         }
+    }
+
+    private func attachmentData() -> Promise<Data> {
+        // TODO: Eliminate the need for ever loading the attachment data into memory.
+        // Right now, this is only used when updating group avatars.
+        return attachmentMetadata().map { try Data(contentsOf: $0.url) }
     }
 
     @objc
@@ -342,14 +338,10 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func prepareUploadV3() -> Promise<UploadV3Metadata> {
-        return firstly(on: Self.serialQueue) { () -> Promise<Data> in
-            self.attachmentData()
-        }.map(on: Self.serialQueue) { (encryptedData: Data) -> UploadV3Metadata in
-            // Write the encrypted data to a temporary file.
-            let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
-            let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
-            try encryptedData.write(to: temporaryFileUrl)
-            return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
+        return firstly(on: Self.serialQueue) {
+            self.attachmentMetadata()
+        }.map(on: Self.serialQueue) {
+            return UploadV3Metadata(temporaryFileUrl: $0.url, dataLength: $0.length)
         }
     }
 

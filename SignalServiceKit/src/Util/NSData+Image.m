@@ -642,11 +642,14 @@ typedef struct {
 
     if (filePath.length > 0) {
         NSString *fileExtension = [filePath pathExtension].lowercaseString;
-        NSString *_Nullable mimeTypeForFileExtension = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
-        if (mimeTypeForFileExtension.length > 0 &&
-            [mimeType caseInsensitiveCompare:mimeTypeForFileExtension] != NSOrderedSame) {
-            OWSLogInfo(@"fileExtension does not match: %@, %@, %@", fileExtension, mimeType, mimeTypeForFileExtension);
-            // Do not fail in production.
+        if (fileExtension.length > 0) {
+            NSString *_Nullable mimeTypeForFileExtension = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+            if (mimeTypeForFileExtension.length > 0 &&
+                [mimeType caseInsensitiveCompare:mimeTypeForFileExtension] != NSOrderedSame) {
+                OWSLogInfo(
+                    @"fileExtension does not match: %@, %@, %@", fileExtension, mimeType, mimeTypeForFileExtension);
+                // Do not fail in production.
+            }
         }
     }
 

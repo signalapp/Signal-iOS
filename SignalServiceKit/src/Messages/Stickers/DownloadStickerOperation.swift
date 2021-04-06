@@ -9,37 +9,28 @@ class DownloadStickerOperation: CDNDownloadOperation {
 
     // MARK: - Cache
 
-    private static let cache: NSCache<NSString, NSData> = {
-        let cache = NSCache<NSString, NSData>()
-        // Limits are imprecise/not strict.
-        cache.countLimit = 50
-        return cache
-    }()
-    private static let maxCacheDataLength: UInt = 100 * 1000
+    private static let cache = NSCache<NSString, NSURL>()
 
-    public class func cachedData(for stickerInfo: StickerInfo) -> Data? {
-        guard let stickerData = cache.object(forKey: stickerInfo.asKey() as NSString) else {
+    public class func cachedUrl(for stickerInfo: StickerInfo) -> URL? {
+        guard let stickerUrl = cache.object(forKey: stickerInfo.asKey() as NSString) else {
             return nil
         }
-        return stickerData as Data
+        guard OWSFileSystem.fileOrFolderExists(url: stickerUrl as URL) else { return nil }
+        return stickerUrl as URL
     }
 
-    private class func setCachedData(_ data: Data,
-                                     for stickerInfo: StickerInfo) {
-        guard data.count <= maxCacheDataLength else {
-            return
-        }
-        cache.setObject(data as NSData, forKey: stickerInfo.asKey() as NSString)
+    private class func setCachedUrl(_ url: URL, for stickerInfo: StickerInfo) {
+        cache.setObject(url as NSURL, forKey: stickerInfo.asKey() as NSString)
     }
 
     // MARK: -
 
     private let stickerInfo: StickerInfo
-    private let success: (Data) -> Void
+    private let success: (URL) -> Void
     private let failure: (Error) -> Void
 
     @objc public required init(stickerInfo: StickerInfo,
-                               success : @escaping (Data) -> Void,
+                               success : @escaping (URL) -> Void,
                                failure : @escaping (Error) -> Void) {
         assert(stickerInfo.packId.count > 0)
         assert(stickerInfo.packKey.count > 0)
@@ -52,16 +43,16 @@ class DownloadStickerOperation: CDNDownloadOperation {
     }
 
     override public func run() {
-        if let stickerData = DownloadStickerOperation.cachedData(for: stickerInfo) {
+        if let stickerUrl = DownloadStickerOperation.cachedUrl(for: stickerInfo) {
             Logger.verbose("Using cached value: \(stickerInfo).")
-            success(stickerData)
+            success(stickerUrl)
             self.reportSuccess()
             return
         }
 
-        if let stickerData = loadInstalledStickerData() {
+        if let stickerUrl = loadInstalledStickerUrl() {
             Logger.verbose("Skipping redundant operation: \(stickerInfo).")
-            success(stickerData)
+            success(stickerUrl)
             self.reportSuccess()
             return
         }
@@ -73,17 +64,17 @@ class DownloadStickerOperation: CDNDownloadOperation {
 
         firstly {
             return try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDataDownloadSize)
-        }.done(on: DispatchQueue.global()) { [weak self] data in
+        }.done(on: DispatchQueue.global()) { [weak self] (url: URL) in
             guard let self = self else {
                 return
             }
 
             do {
-                let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
+                let url = try StickerManager.decrypt(at: url, packKey: self.stickerInfo.packKey)
 
-                DownloadStickerOperation.setCachedData(plaintext, for: self.stickerInfo)
+                DownloadStickerOperation.setCachedUrl(url, for: self.stickerInfo)
 
-                self.success(plaintext)
+                self.success(url)
 
                 self.reportSuccess()
             } catch {
@@ -102,17 +93,8 @@ class DownloadStickerOperation: CDNDownloadOperation {
         }
     }
 
-    private func loadInstalledStickerData() -> Data? {
-        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                      verifyExists: true) else {
-                                                                                        return nil
-        }
-        do {
-            return try Data(contentsOf: stickerDataUrl)
-        } catch let error as NSError {
-            owsFailDebug("Could not load installed sticker data: \(error)")
-            return nil
-        }
+    private func loadInstalledStickerUrl() -> URL? {
+        return StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo, verifyExists: true)
     }
 
     override public func didFail(error: Error) {

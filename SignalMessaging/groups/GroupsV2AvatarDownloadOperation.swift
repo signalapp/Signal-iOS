@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,7 +28,7 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     override public func run() {
         firstly {
             return try tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize)
-        }.done(on: DispatchQueue.global()) { [weak self] data in
+        }.done(on: DispatchQueue.global()) { [weak self] (data: Data) in
             guard let self = self else {
                 return
             }

@@ -73,11 +73,11 @@ public class DeviceNames: NSObject {
             owsFailDebug("Could not convert text to UTF-8.")
             throw DeviceNameError.assertionFailure
         }
-        guard let syntheticIVKey = Cryptography.computeSHA256HMAC(syntheticIVInput, withHMACKey: masterSecret) else {
+        guard let syntheticIVKey = Cryptography.computeSHA256HMAC(syntheticIVInput, key: masterSecret) else {
             owsFailDebug("Could not compute synthetic IV key.")
             throw DeviceNameError.assertionFailure
         }
-        guard let syntheticIV = Cryptography.truncatedSHA256HMAC(plaintextData, withHMACKey: syntheticIVKey, truncation: syntheticIVLength) else {
+        guard let syntheticIV = Cryptography.computeSHA256HMAC(plaintextData, key: syntheticIVKey, truncatedToBytes: syntheticIVLength) else {
             owsFailDebug("Could not compute synthetic IV.")
             throw DeviceNameError.assertionFailure
         }
@@ -91,11 +91,11 @@ public class DeviceNames: NSObject {
             owsFailDebug("Could not convert text to UTF-8.")
             throw DeviceNameError.assertionFailure
         }
-        guard let cipherKeyKey = Cryptography.computeSHA256HMAC(cipherKeyInput, withHMACKey: masterSecret) else {
+        guard let cipherKeyKey = Cryptography.computeSHA256HMAC(cipherKeyInput, key: masterSecret) else {
             owsFailDebug("Could not compute cipher key key.")
             throw DeviceNameError.assertionFailure
         }
-        guard let cipherKey = Cryptography.computeSHA256HMAC(syntheticIV, withHMACKey: cipherKeyKey) else {
+        guard let cipherKey = Cryptography.computeSHA256HMAC(syntheticIV, key: cipherKeyKey) else {
             owsFailDebug("Could not compute cipher key.")
             throw DeviceNameError.assertionFailure
         }

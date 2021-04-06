@@ -38,14 +38,14 @@ open class CDNDownloadOperation: OWSOperation {
     let kMaxStickerDataDownloadSize: UInt = 1000 * 1000
     let kMaxStickerPackDownloadSize: UInt = 1000 * 1000
 
-    public func tryToDownload(urlPath: String, maxDownloadSize: UInt?) throws -> Promise<Data> {
+    public func tryToDownload(urlPath: String, maxDownloadSize: UInt?) throws -> Promise<URL> {
         guard !isCorrupt(urlPath: urlPath) else {
             Logger.warn("Skipping download of corrupt data.")
             throw StickerError.corruptData
         }
 
         // We use a seperate promise so that we can cancel from the progress block.
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, resolver) = Promise<URL>.pending()
 
         let hasCheckedContentLength = AtomicBool(false)
         firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
@@ -83,11 +83,11 @@ open class CDNDownloadOperation: OWSOperation {
             }
 
             do {
-                let data = try Data(contentsOf: downloadUrl)
-                try OWSFileSystem.deleteFile(url: downloadUrl)
-                resolver.fulfill(data)
+                let temporaryFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+                try OWSFileSystem.moveFile(from: downloadUrl, to: temporaryFileUrl)
+                resolver.fulfill(temporaryFileUrl)
             } catch {
-                owsFailDebug("Could not load data failed: \(error)")
+                owsFailDebug("Could not move to temporary file: \(error)")
                 // Fail immediately; do not retry.
                 throw error.asUnretryableError
             }
@@ -99,9 +99,23 @@ open class CDNDownloadOperation: OWSOperation {
         return promise
     }
 
+    public func tryToDownload(urlPath: String, maxDownloadSize: UInt?) throws -> Promise<Data> {
+        return try tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize).map { (downloadUrl: URL) in
+            do {
+                let data = try Data(contentsOf: downloadUrl)
+                try OWSFileSystem.deleteFile(url: downloadUrl)
+                return data
+            } catch {
+                owsFailDebug("Could not load data failed: \(error)")
+                // Fail immediately; do not retry.
+                throw error.asUnretryableError
+            }
+        }
+    }
+
     private func handleDownloadProgress(task: URLSessionTask,
                                         progress: Progress,
-                                        resolver: Resolver<Data>,
+                                        resolver: Resolver<URL>,
                                         maxDownloadSize: UInt?,
                                         hasCheckedContentLength: AtomicBool) {
         // Don't do anything until we've received at least one byte of data.

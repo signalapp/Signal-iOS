@@ -308,14 +308,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"Attachments"];
 }
 
-+ (nullable NSError *)migrateToSharedData
-{
-    OWSLogInfo(@"");
-
-    return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
-                       sharedDataFilePath:self.sharedDataAttachmentsDirPath];
-}
-
 + (NSString *)attachmentsFolder
 {
     static NSString *attachmentsFolder = nil;

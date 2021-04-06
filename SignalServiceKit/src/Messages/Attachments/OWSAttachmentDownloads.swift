@@ -1273,35 +1273,37 @@ public extension OWSAttachmentDownloads {
         // & decrypt a single attachment at a time.
         return firstly(on: Self.serialQueue) { () -> TSAttachmentStream in
             let cipherText = try Data(contentsOf: encryptedFileUrl)
-            return try Self.decrypt(cipherText: cipherText,
-                                    attachmentPointer: attachmentPointer)
+            return try autoreleasepool {
+                let attachmentStream = databaseStorage.read { transaction in
+                    TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+                }
+
+                guard let originalMediaURL = attachmentStream.originalMediaURL else {
+                    throw OWSAssertionError("Missing originalMediaURL.")
+                }
+
+                guard let encryptionKey = attachmentPointer.encryptionKey else {
+                    throw OWSAssertionError("Missing encryptionKey.")
+                }
+
+                try Cryptography.decryptAttachment(
+                    at: encryptedFileUrl,
+                    metadata: EncryptionMetadata(
+                        key: encryptionKey,
+                        digest: attachmentPointer.digest,
+                        plaintextLength: Int(attachmentPointer.byteCount)
+                    ),
+                    output: originalMediaURL
+                )
+
+                return attachmentStream
+            }
         }.ensure(on: Self.serialQueue) {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
             } catch {
                 owsFailDebug("Error: \(error).")
             }
-        }
-    }
-
-    private class func decrypt(cipherText: Data,
-                               attachmentPointer: TSAttachmentPointer) throws -> TSAttachmentStream {
-
-        guard let encryptionKey = attachmentPointer.encryptionKey else {
-            throw OWSAssertionError("Missing encryptionKey.")
-        }
-        return try autoreleasepool {
-            let plaintext: Data = try Cryptography.decryptAttachment(cipherText,
-                                                                     withKey: encryptionKey,
-                                                                     digest: attachmentPointer.digest,
-                                                                     unpaddedSize: attachmentPointer.byteCount)
-
-            let attachmentStream = databaseStorage.read { transaction in
-                TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
-            }
-            try attachmentStream.write(plaintext)
-
-            return attachmentStream
         }
     }
 

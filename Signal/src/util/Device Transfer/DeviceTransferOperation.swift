@@ -88,7 +88,7 @@ class DeviceTransferOperation: OWSOperation {
             }
         }
 
-        guard let sha256Digest = Cryptography.computeSHA256DigestOfFile(at: url) else {
+        guard let sha256Digest = try? Cryptography.computeSHA256DigestOfFile(at: url) else {
             return reportError(OWSAssertionError("Failed to calculate sha256 for file"))
         }
 

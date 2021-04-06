@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import CommonCrypto
@@ -126,7 +126,7 @@ public class OWSProvisioningCipher: NSObject {
     }
 
     private func mac(forMessage message: Data, key: ArraySlice<UInt8>) throws -> Data {
-        guard let mac = Cryptography.computeSHA256HMAC(message, withHMACKey: Data(key)) else {
+        guard let mac = Cryptography.computeSHA256HMAC(message, key: Data(key)) else {
             throw Error.macComputationFailed
         }
         return mac

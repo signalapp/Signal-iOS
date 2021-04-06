@@ -668,13 +668,16 @@ public class StickerManager: NSObject {
 
     @objc
     public class func installSticker(stickerInfo: StickerInfo,
-                                     stickerData: Data,
+                                     stickerUrl stickerTemporaryUrl: URL,
                                      contentType: String?,
                                      emojiString: String?) -> Bool {
-        assert(stickerData.count > 0)
-
         guard nil == fetchInstalledStickerWithSneakyTransaction(stickerInfo: stickerInfo) else {
             // Sticker already installed, skip.
+            return false
+        }
+
+        guard OWSFileSystem.fileOrFolderExists(url: stickerTemporaryUrl) else {
+            owsFailDebug("Missing sticker file.")
             return false
         }
 
@@ -690,7 +693,11 @@ public class StickerManager: NSObject {
         }
 
         do {
-            try stickerData.write(to: stickerDataUrl, options: .atomic)
+            // We copy the file rather than move it as some transient data sources
+            // could be trying to access the temp file at this point. Stickers are
+            // generally very small so this shouldn't be a big perf hit.
+            try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
+            try FileManager.default.copyItem(at: stickerTemporaryUrl, to: stickerDataUrl)
         } catch let error as NSError {
             owsFailDebug("File write failed: \(error)")
             return false
@@ -737,20 +744,20 @@ public class StickerManager: NSObject {
 
         return firstly {
             tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-        }.map(on: .global()) { stickerData in
+        }.map(on: .global()) { stickerUrl in
             self.installSticker(stickerInfo: stickerInfo,
-                                stickerData: stickerData,
+                                stickerUrl: stickerUrl,
                                 contentType: item.contentType,
                                 emojiString: emojiString)
         }
     }
 
     private struct StickerDownload {
-        let promise: Promise<Data>
-        let resolver: Resolver<Data>
+        let promise: Promise<URL>
+        let resolver: Resolver<URL>
 
         init() {
-            let (promise, resolver) = Promise<Data>.pending()
+            let (promise, resolver) = Promise<URL>.pending()
             self.promise = promise
             self.resolver = resolver
         }
@@ -766,11 +773,11 @@ public class StickerManager: NSObject {
     }()
 
     private func tryToDownloadSticker(stickerPack: StickerPack,
-                                      stickerInfo: StickerInfo) -> Promise<Data> {
-        if let data = DownloadStickerOperation.cachedData(for: stickerInfo) {
-            return Promise.value(data)
+                                      stickerInfo: StickerInfo) -> Promise<URL> {
+        if let stickerUrl = DownloadStickerOperation.cachedUrl(for: stickerInfo) {
+            return Promise.value(stickerUrl)
         }
-        return stickerDownloadQueue.sync { () -> Promise<Data> in
+        return stickerDownloadQueue.sync { () -> Promise<URL> in
             if let stickerDownload = stickerDownloadMap[stickerInfo.asKey()] {
                 return stickerDownload.promise
             }
@@ -804,7 +811,7 @@ public class StickerManager: NSObject {
 
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack,
-                                           stickerInfo: StickerInfo) -> Promise<Data> {
+                                           stickerInfo: StickerInfo) -> Promise<URL> {
         shared.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
     }
 
@@ -1058,9 +1065,8 @@ public class StickerManager: NSObject {
 
     // MARK: - Misc.
 
-    // Data might be a sticker or a sticker pack manifest.
-    public class func decrypt(ciphertext: Data,
-                              packKey: Data) throws -> Data {
+    // URL might be a sticker or a sticker pack manifest.
+    public class func decrypt(at url: URL, packKey: Data) throws -> URL {
         guard packKey.count == packKeyLength else {
             owsFailDebug("Invalid pack key length: \(packKey.count).")
             throw StickerError.invalidInput
@@ -1070,7 +1076,10 @@ public class StickerManager: NSObject {
         let stickerKey = try stickerKeyInfo.utf8.withContiguousStorageIfAvailable {
             try hkdf(outputLength: stickerKeyLength, version: 3, inputKeyMaterial: packKey, salt: [], info: $0)
         }!
-        return try Cryptography.decryptStickerData(ciphertext, withKey: Data(stickerKey))
+
+        let temporaryDecryptedFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+        try Cryptography.decryptFile(at: url, metadata: .init(key: Data(stickerKey)), output: temporaryDecryptedFile)
+        return temporaryDecryptedFile
     }
 
     private class func ensureAllStickerDownloadsAsync() {

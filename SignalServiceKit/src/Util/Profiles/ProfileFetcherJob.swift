@@ -606,7 +606,7 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let dataToVerify = Data(count: 32)
-        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
+        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, key: udAccessKey.keyData) else {
             owsFailDebug("could not compute verification")
             udManager.setUnidentifiedAccessMode(.disabled, address: address)
             return
