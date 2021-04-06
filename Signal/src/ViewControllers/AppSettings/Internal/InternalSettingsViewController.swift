@@ -143,18 +143,18 @@ class InternalSettingsViewController: OWSTableViewController2 {
             #if TESTABLE_BUILD
             Logger.verbose("Payments mnemonic: \(paymentsEntropy.hexadecimalString)")
             #endif
-        }
-        if let passphrase = paymentsSwift.passphrase {
-            infoSection.add(.label(withText: "Payments mnemonic: \(passphrase.asPassphrase)"))
-            #if TESTABLE_BUILD
-            Logger.verbose("Payments mnemonic: \(passphrase)")
-            #endif
-        }
-        if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
-            infoSection.add(.label(withText: "Payments Address b58: \(walletAddressBase58)"))
-            #if TESTABLE_BUILD
-            Logger.verbose("Payments Address b58: \(walletAddressBase58)")
-            #endif
+            if let passphrase = paymentsSwift.passphrase {
+                infoSection.add(.label(withText: "Payments mnemonic: \(passphrase.asPassphrase)"))
+                #if TESTABLE_BUILD
+                Logger.verbose("Payments mnemonic: \(passphrase)")
+                #endif
+            }
+            if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
+                infoSection.add(.label(withText: "Payments Address b58: \(walletAddressBase58)"))
+                #if TESTABLE_BUILD
+                Logger.verbose("Payments Address b58: \(walletAddressBase58)")
+                #endif
+            }
         }
 
         contents.addSection(infoSection)
