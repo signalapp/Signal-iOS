@@ -78,7 +78,6 @@ pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_w
 pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.0.0'
 
 pod 'MobileCoin'
-# pod 'MobileCoin', '= 1.0.1-pre1'
 # pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git'
 # pod 'MobileCoin', path: '../MobileCoin-Swift'
 
