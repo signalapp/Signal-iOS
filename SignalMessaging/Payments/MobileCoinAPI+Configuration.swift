@@ -78,7 +78,7 @@ extension MobileCoinAPI {
         }
 
         static var mobileCoinMainNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.prod.mobilecoinww.com:443"
+            let consensusUrl = "mc://node1.prod.mobilecoinww.com"
             let fogUrl = "fog://fog.prod.mobilecoinww.com"
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }

@@ -42,13 +42,26 @@ class PaymentsTest: SignalBaseTest {
         XCTAssertEqual(publicAddressBase58, PaymentsImpl.formatAsBase58(publicAddress: publicAddressFromUrl))
     }
 
-    func test_passphraseRoundtrip() {
+    func test_passphraseRoundtrip1() {
         let paymentsEntropy = Randomness.generateRandomBytes(Int32(PaymentsConstants.paymentsEntropyLength))
         guard let passphrase = self.paymentsSwift.passphrase(forPaymentsEntropy: paymentsEntropy) else {
             XCTFail("Missing passphrase.")
             return
         }
         XCTAssertEqual(paymentsEntropy, self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase))
+    }
+
+    func test_passphraseRoundtrip2() {
+        let passphraseWords: [String] = "glide belt note artist surge aware disease cry mobile assume weird space pigeon scrap vast iron maximum begin rug public spice remember sword cruel".split(separator: " ").map { String($0) }
+        let passphrase1 = try! PaymentsPassphrase(words: passphraseWords)
+        let paymentsEntropy = self.paymentsSwift.paymentsEntropy(forPassphrase: passphrase1)!
+        guard let passphrase2 = self.paymentsSwift.passphrase(forPaymentsEntropy: paymentsEntropy) else {
+            XCTFail("Missing passphrase.")
+            return
+        }
+        XCTAssertEqual(passphrase1, passphrase2)
+        let paymentsEntropyExpected = Data(base64Encoded: "YwKeWoaNpCCPwamOYb/k6CpLgvxrsoliivRWjRlrdxE=")!
+        XCTAssertEqual(paymentsEntropyExpected, paymentsEntropy)
     }
 
     func test_paymentAddressSigning() {
