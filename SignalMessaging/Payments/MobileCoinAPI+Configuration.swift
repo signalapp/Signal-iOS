@@ -19,9 +19,9 @@ extension MobileCoinAPI {
 
         public static var current: Environment {
             if FeatureFlags.isUsingProductionService {
-                owsAssertDebug(DebugFlags.paymentsExternalBeta)
+                owsAssertDebug(FeatureFlags.paymentsExternalBeta)
                 return .signalMainNet
-            } else if DebugFlags.paymentsInternalBeta {
+            } else if FeatureFlags.paymentsInternalBeta {
                 // TODO: Revisit.
                 #if TESTABLE_BUILD
                 return .mobileCoinAlphaNet

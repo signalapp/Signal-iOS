@@ -115,14 +115,10 @@ public class FeatureFlags: BaseFlags {
 
     @objc
     public static var isUsingProductionService: Bool {
-        if DebugFlags.paymentsInternalBeta {
-            owsAssertDebug(!DebugFlags.paymentsExternalBeta)
+        if paymentsInternalBeta {
+            owsAssertDebug(!paymentsExternalBeta)
             return false
-        } else if DebugFlags.paymentsExternalBeta {
-            owsAssertDebug(!DebugFlags.paymentsInternalBeta)
-            return true
         } else {
-            owsFailDebug("Unexpected state.")
             return true
         }
     }
@@ -158,7 +154,16 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_AnimatedWebp = true
 
     @objc
-    public static let paymentsEnabled = build.includes(.openPreview)
+    public static let paymentsInternalBeta = false
+
+    @objc
+    public static let paymentsExternalBeta = build.includes(.beta)
+
+    @objc
+    public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
+
+    @objc
+    public static let paymentsEnabled = paymentsBeta
 
     @objc
     public static let paymentsRequests = false
@@ -423,17 +428,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let paymentsOnlyInContactThreads = true
 
-    // TODO:
-    @objc
-    public static let paymentsInternalBeta = false
-
-    // TODO:
-    @objc
-    public static let paymentsExternalBeta = build.includes(.openPreview)
-
-    @objc
-    public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
-
     @objc
     public static let paymentsIgnoreBlockTimestamps = TestableFlag(false,
                                                                    title: LocalizationNotNeeded("Payments: Ignore ledger block timestamps"),
@@ -490,7 +484,7 @@ public class DebugFlags: BaseFlags {
                                                                                    details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified."))
 
     @objc
-    public static let paymentsAllowAllCountries = paymentsInternalBeta
+    public static let paymentsAllowAllCountries = FeatureFlags.paymentsInternalBeta
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

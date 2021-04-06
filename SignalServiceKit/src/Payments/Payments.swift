@@ -597,8 +597,8 @@ public class PaymentsConstants {
               validGroupingSizes.contains(groupingSize),
               decimalSeparator != groupingSeparator else {
 
-            if DebugFlags.paymentsBeta {
-                // Fall back to US/UK style formatting.
+            if FeatureFlags.paymentsBeta {
+                // Fall back to UK style formatting.
                 return DecimalFormattingInfo(decimalSeparator: ".",
                                              groupingSeparator: ",",
                                              groupingSize: 3,
