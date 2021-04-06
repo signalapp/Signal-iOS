@@ -62,6 +62,19 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
 
+            var profilePaymentAddressData: Data?
+            if Self.payments.arePaymentsEnabled,
+               let addressProtoData = Self.payments.localPaymentAddressProtoData() {
+
+                var paymentAddressDataWithLength = Data()
+                var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))
+                withUnsafePointer(to: &littleEndian) { pointer in
+                    paymentAddressDataWithLength.append(UnsafeBufferPointer(start: pointer, count: 1))
+                }
+                paymentAddressDataWithLength.append(addressProtoData)
+                profilePaymentAddressData = paymentAddressDataWithLength
+            }
+
             var nameValue: ProfileValue?
             if let profileGivenName = profileGivenName {
                 var nameComponents = PersonNameComponents()
@@ -75,14 +88,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 nameValue = encryptedValue
             }
 
-            func encryptOptionalValue(_ value: String?,
-                                      paddedLengths: [Int],
-                                      validBase64Lengths: [Int]) throws -> ProfileValue? {
+            func encryptOptionalData(_ value: Data?,
+                                     paddedLengths: [Int],
+                                     validBase64Lengths: [Int]) throws -> ProfileValue? {
                 guard let value = value,
                       !value.isEmpty else {
                     return nil
                 }
-                guard let encryptedValue = OWSUserProfile.encrypt(string: value,
+                guard let encryptedValue = OWSUserProfile.encrypt(data: value,
                                                                   profileKey: profileKey,
                                                                   paddedLengths: paddedLengths,
                                                                   validBase64Lengths: validBase64Lengths) else {
@@ -91,15 +104,35 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 return encryptedValue
             }
 
+            func encryptOptionalString(_ value: String?,
+                                       paddedLengths: [Int],
+                                       validBase64Lengths: [Int]) throws -> ProfileValue? {
+                guard let value = value,
+                      !value.isEmpty else {
+                    return nil
+                }
+                guard let stringData = value.data(using: .utf8) else {
+                    owsFailDebug("Invalid value.")
+                    return nil
+                }
+                return try encryptOptionalData(stringData,
+                                               paddedLengths: paddedLengths,
+                                               validBase64Lengths: validBase64Lengths)
+            }
+
             // The Base 64 lengths reflect encryption + Base 64 encoding
             // of the max-length padded value.
-            let bioValue = try encryptOptionalValue(profileBio,
-                                                    paddedLengths: [128, 254, 512 ],
-                                                    validBase64Lengths: [208, 376, 720])
+            let bioValue = try encryptOptionalString(profileBio,
+                                                     paddedLengths: [128, 254, 512 ],
+                                                     validBase64Lengths: [208, 376, 720])
 
-            let bioEmojiValue = try encryptOptionalValue(profileBioEmoji,
-                                                         paddedLengths: [32 ],
-                                                         validBase64Lengths: [80])
+            let bioEmojiValue = try encryptOptionalString(profileBioEmoji,
+                                                          paddedLengths: [32],
+                                                          validBase64Lengths: [80])
+
+            let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData,
+                                                              paddedLengths: [554],
+                                                              validBase64Lengths: [776])
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: zkgUuid)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
@@ -107,6 +140,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                        bio: bioValue,
                                                                        bioEmoji: bioEmojiValue,
                                                                        hasAvatar: hasAvatar,
+                                                                       paymentAddress: paymentAddressValue,
                                                                        version: profileKeyVersionString,
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
@@ -115,7 +149,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
                 guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
                                                                               profileKey: profileKey) else {
-                                                                                throw OWSAssertionError("Could not encrypt profile avatar.")
+                    throw OWSAssertionError("Could not encrypt profile avatar.")
                 }
                 return self.parseFormAndUpload(formResponseObject: responseObject,
                                                profileAvatarData: encryptedProfileAvatarData)
@@ -146,8 +180,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
     public func versionedProfileRequest(address: SignalServiceAddress,
                                         udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
         guard address.isValid,
-            let uuid: UUID = address.uuid else {
-                throw OWSAssertionError("Invalid address: \(address)")
+              let uuid: UUID = address.uuid else {
+            throw OWSAssertionError("Invalid address: \(address)")
         }
         let zkgUuid = try uuid.asZKGUuid()
 
@@ -258,8 +292,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
     public func profileKeyCredentialData(for address: SignalServiceAddress,
                                          transaction: SDSAnyReadTransaction) throws -> Data? {
         guard address.isValid,
-            let uuid = address.uuid else {
-                throw OWSAssertionError("Invalid address: \(address)")
+              let uuid = address.uuid else {
+            throw OWSAssertionError("Invalid address: \(address)")
         }
 
         return Self.credentialStore.getData(uuid.uuidString, transaction: transaction)
@@ -290,13 +324,5 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
         Self.credentialStore.removeAll(transaction: transaction)
-    }
-}
-
-// MARK: -
-
-public extension Array where Element == UInt8 {
-    var asData: Data {
-        return Data(self)
     }
 }

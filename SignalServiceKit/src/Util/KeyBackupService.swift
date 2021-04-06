@@ -345,7 +345,7 @@ public class KeyBackupService: NSObject {
     }
 
     @objc(deleteKeys)
-    static func objc_deleteKeys() -> AnyPromise {
+    public static func objc_deleteKeys() -> AnyPromise {
         return AnyPromise(deleteKeys())
     }
 
@@ -461,7 +461,7 @@ public class KeyBackupService: NSObject {
     }
 
     @objc
-    static func deriveRegistrationLockToken() -> String? {
+    public static func deriveRegistrationLockToken() -> String? {
         return DerivedKey.registrationLock.data?.hexadecimalString
     }
 
@@ -659,9 +659,13 @@ public class KeyBackupService: NSObject {
         guard state.enclaveName != currentEnclave.name,
             state.masterKey != nil,
             tsAccountManager.isRegisteredAndReady else { return }
-
+        guard state.isMasterKeyBackedUp else {
+            Logger.warn("Can't migrate KBS enclave because pins are not enabled.")
+            return
+        }
         guard let pin = OWS2FAManager.shared.pinCode else {
-            return owsFailDebug("Can't migrate KBS enclave because local pin is missing")
+            owsFailDebug("Can't migrate KBS enclave because local pin is missing")
+            return
         }
 
         Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(currentEnclave.name)")
@@ -719,6 +723,8 @@ public class KeyBackupService: NSObject {
         enclaveName: String,
         transaction: SDSAnyWriteTransaction
     ) {
+        owsAssertDebug(tsAccountManager.isPrimaryDevice)
+
         let previousState = getOrLoadState(transaction: transaction)
 
         guard masterKey != previousState.masterKey

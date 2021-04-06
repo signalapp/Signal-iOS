@@ -636,7 +636,7 @@ public class TSThreadCursor: NSObject {
             return nil
         }
         let value = try TSThread.fromRecord(record)
-        Self.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -690,7 +690,7 @@ public extension TSThread {
         assert(uniqueId.count > 0)
 
         if !ignoreCache,
-            let cachedCopy = Self.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction) {
+            let cachedCopy = SSKEnvironment.shared.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction) {
             return cachedCopy
         }
 
@@ -891,7 +891,7 @@ public extension TSThread {
             }
 
             let value = try TSThread.fromRecord(record)
-            Self.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

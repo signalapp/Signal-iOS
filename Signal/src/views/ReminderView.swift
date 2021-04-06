@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,12 +30,12 @@ class ReminderView: UIView {
     }
     let mode: ReminderViewMode
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     override init(frame: CGRect) {
         notImplemented()
     }

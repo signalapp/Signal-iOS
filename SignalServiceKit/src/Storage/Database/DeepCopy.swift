@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ public protocol DeepCopyable {
 
 public class DeepCopies {
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
+    @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {
     }
 
@@ -132,6 +132,15 @@ extension String: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self as NSString)
+    }
+}
+
+// MARK: -
+
+extension Data: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // No need to copy; Data is immutable.
+        return self as NSData
     }
 }
 
@@ -289,6 +298,46 @@ extension ProfileChanges: DeepCopyable {
 
 @objc
 extension MessageBodyRanges: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+@objc
+extension TSPaymentCancellation: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+@objc
+extension TSPaymentNotification: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+@objc
+extension TSPaymentRequest: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+@objc
+extension MobileCoinPayment: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -75,6 +75,14 @@ public extension UInt {
         assert(minValue <= maxValue)
 
         return Swift.max(minValue, Swift.min(maxValue, self))
+    }
+}
+
+// MARK: -
+
+public extension UInt64 {
+    var asNSNumber: NSNumber {
+        NSNumber(value: self)
     }
 }
 

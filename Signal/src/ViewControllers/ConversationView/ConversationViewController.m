@@ -274,10 +274,6 @@ typedef enum : NSUInteger {
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -342,8 +338,10 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 }
 
-- (void)themeDidChange:(NSNotification *)notification
+- (void)themeDidChange
 {
+    [super themeDidChange];
+
     [self updateThemeIfNecessary];
 }
 
@@ -921,6 +919,11 @@ typedef enum : NSUInteger {
 - (BOOL)isBlockedConversation
 {
     return [self.blockingManager isThreadBlocked:self.thread];
+}
+
+- (BOOL)isGroup
+{
+    return self.thread.isGroupThread;
 }
 
 - (int)blockedGroupMemberCount
@@ -2692,6 +2695,41 @@ typedef enum : NSUInteger {
     [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)paymentButtonPressed
+{
+    OWSAssertIsOnMainThread();
+
+    [self showSendPaymentUIWithPaymentRequest:nil];
+}
+
+- (void)showSendPaymentUIWithPaymentRequest:(nullable TSPaymentRequestModel *)paymentRequestModel
+{
+    OWSAssertIsOnMainThread();
+
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFailDebug(@"Not a contact thread.");
+        return;
+    }
+
+    [self dismissKeyBoard];
+
+    if (RemoteConfig.paymentsResetKillSwitch) {
+        [OWSActionSheets
+            showErrorAlertWithMessage:NSLocalizedString(@"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
+                                          @"Error message indicating that payments cannot be sent because the feature "
+                                          @"is not currently available.")];
+        return;
+    }
+
+    TSContactThread *thread = (TSContactThread *)self.thread;
+    [SendPaymentViewController presentFromConversationView:self
+                                                  delegate:self
+                                          recipientAddress:thread.contactAddress
+                                       paymentRequestModel:paymentRequestModel
+                                      initialPaymentAmount:nil
+                                        isOutgoingTransfer:NO];
+}
+
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
 {
     OWSAssertIsOnMainThread();
@@ -2941,6 +2979,8 @@ typedef enum : NSUInteger {
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
+
+    [super applyTheme];
 
     if (!self.hasViewWillAppearEverBegun) {
         OWSFailDebug(@"InputToolbar not yet ready.");

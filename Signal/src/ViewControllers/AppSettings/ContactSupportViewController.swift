@@ -19,6 +19,7 @@ enum ContactSupportFilter: String, CaseIterable {
     case feedback = "Feedback"
     case something_not_working = "Something Not Working"
     case other = "Other"
+    case payments = "Payments"
 
     var localizedString: String {
         switch self {
@@ -46,6 +47,11 @@ enum ContactSupportFilter: String, CaseIterable {
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER",
                 comment: "The localized representation of the 'other' support filter."
+            )
+        case .payments:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_PAYMENTS",
+                comment: "The localized representation of the 'payments' support filter."
             )
         }
     }
@@ -76,6 +82,11 @@ enum ContactSupportFilter: String, CaseIterable {
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER_SHORT",
                 comment: "A brief localized representation of the 'other' support filter."
+            )
+        case .payments:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT",
+                comment: "A brief localized representation of the 'payments' support filter."
             )
         }
     }
@@ -144,6 +155,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     override func applyTheme() {
         super.applyTheme()
+
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
         // Rebuild the contents to force them to update their theme

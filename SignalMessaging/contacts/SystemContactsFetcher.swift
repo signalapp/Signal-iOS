@@ -195,7 +195,8 @@ public class SystemContactsFetcher: NSObject {
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
-    override init() {
+    @objc
+    public override init() {
         self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee()
 
         super.init()

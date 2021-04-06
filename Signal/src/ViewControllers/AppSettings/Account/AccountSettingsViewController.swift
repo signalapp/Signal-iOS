@@ -54,11 +54,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "pin"),
                 actionBlock: { [weak self] in
-                    if OWS2FAManager.shared.is2FAEnabled() {
-                        self?.showChangePin()
-                    } else {
-                        self?.showCreatePin()
-                    }
+                    self?.showCreateOrChangePin()
                 }
             ))
 
@@ -189,7 +185,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             message: NSLocalizedString("CONFIRM_DELETE_DATA_TEXT", comment: ""),
             proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
-        ) { [weak self] _ in
+        ) { _ in
             SignalApp.resetAppData()
         }
     }
@@ -297,6 +293,14 @@ class AccountSettingsViewController: OWSTableViewController2 {
         actionSheet.addAction(cancelAction)
 
         presentActionSheet(actionSheet)
+    }
+
+    public func showCreateOrChangePin() {
+        if OWS2FAManager.shared.is2FAEnabled() {
+            showChangePin()
+        } else {
+            showCreatePin()
+        }
     }
 
     private func showChangePin() {

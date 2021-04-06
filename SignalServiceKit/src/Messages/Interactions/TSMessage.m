@@ -70,7 +70,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder
 {
     self = [super initInteractionWithTimestamp:messageBuilder.timestamp thread:messageBuilder.thread];
-
     if (!self) {
         return self;
     }
@@ -781,8 +780,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)hasRenderableContent
 {
-    return (
-        self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker != nil);
+    // We DO NOT consider a message with just a linkPreview
+    // or quotedMessage to be renderable.
+    return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker);
 }
 
 #pragma mark - View Once

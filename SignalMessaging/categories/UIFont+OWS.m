@@ -188,6 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleBody];
 }
 
++ (UIFont *)ows_dynamicTypeBody2ClampedFont
+{
+    return self.ows_dynamicTypeSubheadlineClampedFont;
+}
+
 + (UIFont *)ows_dynamicTypeCalloutClampedFont
 {
     return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCallout];

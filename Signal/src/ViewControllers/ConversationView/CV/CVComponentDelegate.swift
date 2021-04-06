@@ -193,6 +193,7 @@ struct CVMessageAction: Equatable {
     }
 
     enum Action: Equatable {
+        case none
         case cvc_didTapPreviouslyVerifiedIdentityChange(address: SignalServiceAddress)
         case cvc_didTapUnverifiedIdentityChange(address: SignalServiceAddress)
         case cvc_didTapInvalidIdentityKeyErrorMessage(errorMessage: TSInvalidIdentityKeyErrorMessage)
@@ -215,6 +216,8 @@ struct CVMessageAction: Equatable {
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
+            case .none:
+                break
             case .cvc_didTapPreviouslyVerifiedIdentityChange(let address):
                 delegate.cvc_didTapPreviouslyVerifiedIdentityChange(address)
             case .cvc_didTapUnverifiedIdentityChange(let address):

@@ -39,7 +39,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
-    required init(delegate: SDSDatabaseStorageDelegate) {
+    public required init(delegate: SDSDatabaseStorageDelegate) {
         self.delegate = delegate
 
         super.init()

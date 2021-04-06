@@ -122,7 +122,7 @@ public class ReactionManager: NSObject {
     }
 
     @objc
-    class func processIncomingReaction(
+    public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         threadId: String,
         reactor: SignalServiceAddress,

@@ -97,6 +97,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldUseTheme) {
         self.view.backgroundColor = Theme.backgroundColor;
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
 }
 
 #pragma mark -
@@ -151,6 +156,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)owsViewControllerApplicationDidBecomeActive:(NSNotification *)notification
 {
     [self setNeedsStatusBarAppearanceUpdate];
+}
+
+- (void)themeDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyTheme];
+}
+
+- (void)applyTheme
+{
+    OWSAssertIsOnMainThread();
+
+    // Do nothing; this is a convenience hook for subclasses.
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification

@@ -666,9 +666,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // This should match the state in the database.  If it doesn't,
                         // this reflects a bug, perhaps a deviation in how the service
                         // and client apply the "group changes" to the local model.
+                        //
+                        // There is a valid exception: when another group member joins
+                        // via group invite link, the group memberships won't exactly
+                        // match. This is fine and the app will recover gracefully.
                         Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
                         Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
-                        owsFailDebug("Group models don't match.")
+                        Logger.warn("Group models don't match.")
                     }
                 }
 

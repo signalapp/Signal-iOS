@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SDSDatabaseStorage *databaseStorageRef;
 @property (nonatomic) AccountServiceClient *accountServiceClientRef;
 @property (nonatomic) id<GroupsV2> groupsV2Ref;
+@property (nonatomic) id<Payments> paymentsRef;
+@property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 
 @end
 

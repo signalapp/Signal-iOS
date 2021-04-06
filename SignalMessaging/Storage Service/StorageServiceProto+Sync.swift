@@ -65,6 +65,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
         }
 
+        // Unknown
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -548,6 +550,14 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         builder.setPreferContactAvatars(preferContactAvatars)
 
+        let paymentsState = paymentsSwift.paymentsState
+        var paymentsBuilder = StorageServiceProtoAccountRecordPayments.builder()
+        paymentsBuilder.setEnabled(paymentsState.isEnabled)
+        if let paymentsEntropy = paymentsState.paymentsEntropy {
+            paymentsBuilder.setPaymentsEntropy(paymentsEntropy)
+        }
+        builder.setPayments(try paymentsBuilder.build())
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -698,6 +708,25 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                 preferContactAvatars,
                 updateStorageService: false,
                 transaction: transaction)
+        }
+
+        let localPaymentsState = Self.paymentsSwift.paymentsState
+        let servicePaymentsState = PaymentsState.build(arePaymentsEnabled: self.payments?.enabled ?? false,
+                                                       paymentsEntropy: self.payments?.paymentsEntropy)
+        if localPaymentsState != servicePaymentsState {
+            // Merge with payments states.
+            //
+            // 1. Honor "arePaymentsEnabled" from the service.
+            let arePaymentsEnabled = servicePaymentsState.isEnabled
+            // 2. Prefer paymentsEntropy from service, but try to retain local
+            //    paymentsEntropy otherwise.
+            let paymentsEntropy = servicePaymentsState.paymentsEntropy ?? localPaymentsState.paymentsEntropy
+            let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
+                                                          paymentsEntropy: paymentsEntropy)
+
+            Self.paymentsSwift.setPaymentsState(mergedPaymentsState,
+                                                updateStorageService: false,
+                                                transaction: transaction)
         }
 
         return mergeState

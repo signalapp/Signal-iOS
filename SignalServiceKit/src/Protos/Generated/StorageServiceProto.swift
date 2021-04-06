@@ -2309,6 +2309,143 @@ extension StorageServiceProtoAccountRecordPinnedConversation.StorageServiceProto
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordPayments
+
+public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStringConvertible {
+
+    // MARK: - StorageServiceProtoAccountRecordPaymentsBuilder
+
+    public static func builder() -> StorageServiceProtoAccountRecordPaymentsBuilder {
+        return StorageServiceProtoAccountRecordPaymentsBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordPaymentsBuilder {
+        var builder = StorageServiceProtoAccountRecordPaymentsBuilder()
+        if hasEnabled {
+            builder.setEnabled(enabled)
+        }
+        if let _value = paymentsEntropy {
+            builder.setPaymentsEntropy(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public struct StorageServiceProtoAccountRecordPaymentsBuilder {
+
+        private var proto = StorageServiceProtos_AccountRecord.Payments()
+
+        fileprivate init() {}
+
+        public mutating func setEnabled(_ valueParam: Bool) {
+            proto.enabled = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setPaymentsEntropy(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.paymentsEntropy = valueParam
+        }
+
+        public mutating func setPaymentsEntropy(_ valueParam: Data) {
+            proto.paymentsEntropy = valueParam
+        }
+
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> StorageServiceProtoAccountRecordPayments {
+            return try StorageServiceProtoAccountRecordPayments(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoAccountRecordPayments(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.Payments
+
+    public var enabled: Bool {
+        return proto.enabled
+    }
+    public var hasEnabled: Bool {
+        return true
+    }
+
+    public var paymentsEntropy: Data? {
+        guard hasPaymentsEntropy else {
+            return nil
+        }
+        return proto.paymentsEntropy
+    }
+    public var hasPaymentsEntropy: Bool {
+        return !proto.paymentsEntropy.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.Payments) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.Payments(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.Payments) throws {
+        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordPayments -
+
+        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordPayments -
+
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoAccountRecordPayments {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordPayments.StorageServiceProtoAccountRecordPaymentsBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPayments? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -2415,6 +2552,9 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if hasPreferContactAvatars {
             builder.setPreferContactAvatars(preferContactAvatars)
         }
+        if let _value = payments {
+            builder.setPayments(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2515,6 +2655,16 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
             proto.preferContactAvatars = valueParam
         }
 
+        @available(swift, obsoleted: 1.0)
+        public mutating func setPayments(_ valueParam: StorageServiceProtoAccountRecordPayments?) {
+            guard let valueParam = valueParam else { return }
+            proto.payments = valueParam.proto
+        }
+
+        public mutating func setPayments(_ valueParam: StorageServiceProtoAccountRecordPayments) {
+            proto.payments = valueParam.proto
+        }
+
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -2531,6 +2681,8 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     fileprivate let proto: StorageServiceProtos_AccountRecord
 
     public let pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation]
+
+    public let payments: StorageServiceProtoAccountRecordPayments?
 
     public var profileKey: Data? {
         guard hasProfileKey else {
@@ -2662,9 +2814,11 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
 
     private init(proto: StorageServiceProtos_AccountRecord,
-                 pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation]) {
+                 pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
+                 payments: StorageServiceProtoAccountRecordPayments?) {
         self.proto = proto
         self.pinnedConversations = pinnedConversations
+        self.payments = payments
     }
 
     public func serializedData() throws -> Data {
@@ -2680,12 +2834,18 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         var pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation] = []
         pinnedConversations = try proto.pinnedConversations.map { try StorageServiceProtoAccountRecordPinnedConversation($0) }
 
+        var payments: StorageServiceProtoAccountRecordPayments?
+        if proto.hasPayments {
+            payments = try StorageServiceProtoAccountRecordPayments(proto.payments)
+        }
+
         // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoAccountRecord -
 
         self.init(proto: proto,
-                  pinnedConversations: pinnedConversations)
+                  pinnedConversations: pinnedConversations,
+                  payments: payments)
     }
 
     public init(from decoder: Swift.Decoder) throws {

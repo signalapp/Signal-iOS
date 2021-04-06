@@ -11,6 +11,9 @@ protocol AttachmentFormatPickerDelegate: class {
     func didTapFile()
     func didTapContact()
     func didTapLocation()
+    func didTapPayment()
+
+    var isGroup: Bool { get }
 }
 
 class AttachmentFormatPickerView: UICollectionView {
@@ -24,6 +27,14 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     private let collectionViewFlowLayout = UICollectionViewFlowLayout()
+
+    private var isGroup: Bool {
+        guard let attachmentFormatPickerDelegate = attachmentFormatPickerDelegate else {
+            owsFailDebug("Missing attachmentFormatPickerDelegate.")
+            return false
+        }
+        return attachmentFormatPickerDelegate.isGroup
+    }
 
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
@@ -60,19 +71,42 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 }
 
-enum AttachmentType: String, CaseIterable {
+enum AttachmentType: String, CaseIterable, Dependencies {
     case camera
     case gif
     case file
+    case payment
     case contact
     case location
+
+    static var contactCases: [AttachmentType] {
+        if payments.shouldShowPaymentsUI {
+            return allCases
+        } else {
+            return everythingExceptPayments
+        }
+    }
+
+    static var groupCases: [AttachmentType] {
+        everythingExceptPayments
+    }
+
+    static var everythingExceptPayments: [AttachmentType] {
+        return allCases.filter { (value: AttachmentType) in
+            value != .payment
+        }
+    }
+
+    static func cases(isGroup: Bool) -> [AttachmentType] {
+        return isGroup ? groupCases : contactCases
+    }
 }
 
 // MARK: - UICollectionViewDelegate
 
 extension AttachmentFormatPickerView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch AttachmentType.allCases[indexPath.row] {
+        switch AttachmentType.cases(isGroup: isGroup)[indexPath.row] {
         case .camera:
             attachmentFormatPickerDelegate?.didTapCamera()
         case .contact:
@@ -83,6 +117,8 @@ extension AttachmentFormatPickerView: UICollectionViewDelegate {
             attachmentFormatPickerDelegate?.didTapGif()
         case .location:
             attachmentFormatPickerDelegate?.didTapLocation()
+        case .payment:
+            attachmentFormatPickerDelegate?.didTapPayment()
         }
     }
 }
@@ -96,7 +132,7 @@ extension AttachmentFormatPickerView: UICollectionViewDataSource {
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-        return AttachmentType.allCases.count
+        return AttachmentType.cases(isGroup: isGroup).count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -104,7 +140,7 @@ extension AttachmentFormatPickerView: UICollectionViewDataSource {
             owsFail("cell was unexpectedly nil")
         }
 
-        let type = AttachmentType.allCases[indexPath.item]
+        let type = AttachmentType.cases(isGroup: isGroup)[indexPath.item]
         cell.configure(type: type)
         return cell
     }
@@ -183,6 +219,9 @@ class AttachmentFormatCell: UICollectionViewCell {
         case .location:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_LOCATION", comment: "A button to select a location from the Attachment Keyboard")
             imageName = Theme.iconName(.attachmentLocation)
+        case .payment:
+            text = NSLocalizedString("ATTACHMENT_KEYBOARD_PAYMENT", comment: "A button to select a payment from the Attachment Keyboard")
+            imageName = Theme.iconName(.attachmentPayment)
         }
 
         // The light theme images come with a background baked in, so we don't tint them.

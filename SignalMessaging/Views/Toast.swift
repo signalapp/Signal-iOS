@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -168,5 +168,27 @@ class ToastView: UIView {
     @objc
     func didSwipe(gesture: UISwipeGestureRecognizer) {
         self.delegate?.didSwipeToastView(self)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIView {
+    func presentToast(text: String, fromViewController: UIViewController) {
+        fromViewController.presentToast(text: text)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIViewController {
+    func presentToast(text: String, extraVInset: CGFloat = 0) {
+        let toastController = ToastController(text: text)
+        // TODO: There should be a better way to do this.
+        // TODO: Take into account the keyboard height.
+        let bottomInset = bottomLayoutGuide.length + 8 + extraVInset
+        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
     }
 }

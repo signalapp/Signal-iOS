@@ -128,6 +128,9 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new]
                                         viewController:viewController
                                                 thread:thread]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIPayments new]
+                                        viewController:viewController
+                                                thread:thread]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
@@ -154,6 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIPayments new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIScreenshots new]
                                         viewController:viewController
                                                 thread:nil]];

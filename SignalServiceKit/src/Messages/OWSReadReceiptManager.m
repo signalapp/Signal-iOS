@@ -183,7 +183,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (void)messageWasRead:(TSIncomingMessage *)message
                 thread:(TSThread *)thread
           circumstance:(OWSReadCircumstance)circumstance
-           transaction:(SDSAnyWriteTransaction *)transaction;
+           transaction:(SDSAnyWriteTransaction *)transaction
 {
     switch (circumstance) {
         case OWSReadCircumstanceReadOnLinkedDevice:

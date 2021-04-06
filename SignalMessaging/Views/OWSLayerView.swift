@@ -10,7 +10,10 @@ open class OWSLayerView: UIView {
     public var shouldAnimate = true
 
     @objc
-    public var layoutCallback: ((UIView) -> Void)
+    public var layoutCallback: (UIView) -> Void
+
+    public typealias TapBlock = () -> Void
+    private var tapBlock: TapBlock?
 
     @objc
     public init() {
@@ -94,5 +97,20 @@ open class OWSLayerView: UIView {
             layoutCallback(self)
             CATransaction.commit()
         }
+    }
+
+    public func addTapGesture(_ tapBlock: @escaping TapBlock) {
+        self.tapBlock = tapBlock
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+    }
+
+    @objc
+    private func didTap() {
+        guard let tapBlock = tapBlock else {
+            owsFailDebug("Missing tapBlock.")
+            return
+        }
+        tapBlock()
     }
 }

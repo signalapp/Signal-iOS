@@ -71,6 +71,19 @@ import Foundation
     }
 
     @objc
+    public class var okayAction: ActionSheetAction {
+        let action = ActionSheetAction(
+            title: CommonStrings.okButton,
+            accessibilityIdentifier: "OWSActionSheets.okay",
+            style: .cancel
+        ) { _ in
+            Logger.debug("Okay item")
+            // Do nothing.
+        }
+        return action
+    }
+
+    @objc
     public class var cancelAction: ActionSheetAction {
         let action = ActionSheetAction(
             title: CommonStrings.cancelButton,

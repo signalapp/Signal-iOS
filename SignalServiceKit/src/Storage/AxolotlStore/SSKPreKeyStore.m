@@ -30,7 +30,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 @implementation SDSKeyValueStore (SSKPreKeyStore)
 
-- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.asObjC objectForKey:key ofExpectedType:PreKeyRecord.class transaction:transaction];
 }

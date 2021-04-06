@@ -468,6 +468,7 @@ extension ConversationViewController: MessageDetailViewDelegate {
         navigationController?.popToViewController(self, animated: true)
     }
 }
+
 // MARK: -
 
 extension ConversationViewController: LongTextViewDelegate {
@@ -501,5 +502,15 @@ extension ConversationViewController: LongTextViewDelegate {
             viewController.delegate = self
             navigationController?.pushViewController(viewController, animated: true)
         }
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: SendPaymentViewDelegate {
+    public func didSendPayment() {
+        let paymentSettingsView = PaymentsSettingsViewController(mode: .standalone)
+        let navigationController = OWSNavigationController(rootViewController: paymentSettingsView)
+        presentFormSheet(navigationController, animated: true)
     }
 }

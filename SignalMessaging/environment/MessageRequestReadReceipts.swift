@@ -7,7 +7,8 @@ import Foundation
 @objc
 public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
 
-    override init() {
+    @objc
+    public override init() {
         super.init()
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             NotificationCenter.default.addObserver(self,

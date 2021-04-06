@@ -98,6 +98,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                             encryptedDeviceName:(NSData *)encryptedDeviceName
     NS_SWIFT_NAME(verifySecondaryDeviceRequest(verificationCode:phoneNumber:authKey:encryptedDeviceName:));
 
++ (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest());
+
 #pragma mark - Attributes and Capabilities
 
 + (TSRequest *)updatePrimaryDeviceAttributesRequest;
@@ -171,6 +173,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                               bio:(nullable ProfileValue *)bio
                                          bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
+                                   paymentAddress:(nullable ProfileValue *)paymentAddress
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment;
 
@@ -183,6 +186,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
                                                          toRedemptionDays:(uint32_t)toRedemptionDays
     NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionDays:toRedemptionDays:));
+
+#pragma mark - Payments
+
++ (TSRequest *)paymentsAuthenticationCredentialRequest;
 
 @end
 

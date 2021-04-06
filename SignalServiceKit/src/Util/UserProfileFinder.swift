@@ -6,11 +6,11 @@ import Foundation
 import GRDB
 
 @objc
-class AnyUserProfileFinder: NSObject {
+public class AnyUserProfileFinder: NSObject {
     let grdbAdapter = GRDBUserProfileFinder()
 }
 
-extension AnyUserProfileFinder {
+public extension AnyUserProfileFinder {
     @objc(userProfileForAddress:transaction:)
     func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         switch transaction.readTransaction {

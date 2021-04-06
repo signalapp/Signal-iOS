@@ -136,6 +136,27 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Audio Category: \(AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: ""))"))
         infoSection.add(.label(withText: "Local Profile Key: \(profileManager.localProfileKey().keyData.hexadecimalString)"))
 
+        infoSection.add(.label(withText: "MobileCoin Environment: \(MobileCoinAPI.Environment.current)"))
+        infoSection.add(.label(withText: "Payments EnabledKey: \(payments.arePaymentsEnabled ? "Yes" : "No")"))
+        if let paymentsEntropy = paymentsSwift.paymentsEntropy {
+            infoSection.add(.label(withText: "Payments Entropy: \(paymentsEntropy.hexadecimalString)"))
+            #if TESTABLE_BUILD
+            Logger.verbose("Payments mnemonic: \(paymentsEntropy.hexadecimalString)")
+            #endif
+        }
+        if let passphrase = paymentsSwift.passphrase {
+            infoSection.add(.label(withText: "Payments mnemonic: \(passphrase.asPassphrase)"))
+            #if TESTABLE_BUILD
+            Logger.verbose("Payments mnemonic: \(passphrase)")
+            #endif
+        }
+        if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
+            infoSection.add(.label(withText: "Payments Address b58: \(walletAddressBase58)"))
+            #if TESTABLE_BUILD
+            Logger.verbose("Payments Address b58: \(walletAddressBase58)")
+            #endif
+        }
+
         contents.addSection(infoSection)
 
         if DebugFlags.groupsV2memberStatusIndicators, let localAddress = tsAccountManager.localAddress {

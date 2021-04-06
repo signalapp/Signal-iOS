@@ -194,6 +194,75 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         phoneNumberTextField.resignFirstResponder()
 
+        showDeletionConfirmUI_checkPayments()
+    }
+
+    private func showDeletionConfirmUI_checkPayments() {
+        if self.payments.arePaymentsEnabled,
+           let paymentBalance = self.paymentsSwift.currentPaymentBalance,
+           !paymentBalance.amount.isZero {
+            showDeleteAccountPaymentsConfirmationUI(paymentBalance: paymentBalance.amount)
+        } else {
+            showDeletionConfirmUI()
+        }
+    }
+
+    private func showDeleteAccountPaymentsConfirmationUI(paymentBalance: TSPaymentAmount) {
+        let title = NSLocalizedString(
+            "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE",
+            comment: "Title for the alert confirming whether the user wants transfer their payments balance before deleting their account.")
+
+        let formattedBalance = PaymentsFormat.format(paymentAmount: paymentBalance,
+                                                     isShortForm: false,
+                                                     withCurrencyCode: true,
+                                                     withSpace: true)
+        let messageFormat = NSLocalizedString(
+            "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT",
+            comment: "Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}.")
+        let message = String(format: messageFormat, formattedBalance)
+
+        let actionSheet = ActionSheetController( title: title, message: message)
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString(
+                                                    "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER",
+                                                    comment: "Button for transferring the user's payments balance before deleting their account."),
+                                                style: .default
+        ) { [weak self] _ in
+            self?.transferPaymentsButton()
+        })
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString(
+                                                    "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER",
+                                                    comment: "Button for to _not_ transfer the user's payments balance before deleting their account."),
+                                                style: .destructive
+        ) { [weak self] _ in
+            self?.showDeletionConfirmUI()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    private func transferPaymentsButton() {
+        dismiss(animated: true) {
+            guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+                owsFailDebug("Could not identify frontmostViewController")
+                return
+            }
+            guard let navigationController = frontmostViewController.navigationController else {
+                owsFailDebug("Missing navigationController.")
+                return
+            }
+            var viewControllers = navigationController.viewControllers
+            _ = viewControllers.removeLast()
+            viewControllers.append(PaymentsSettingsViewController(mode: .inAppSettings))
+            viewControllers.append(PaymentsTransferOutViewController(transferAmount: nil))
+            navigationController.setViewControllers(viewControllers, animated: true)
+        }
+    }
+
+    private func showDeletionConfirmUI() {
+
         OWSActionSheets.showConfirmationAlert(
             title: NSLocalizedString(
                 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE",

@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
+		0A1C228F3860F9C358AD6668 /* Pods_NotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 817EA657B4B8AE5D2E9287B3 /* Pods_NotificationServiceExtension.framework */; };
 		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
-		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
@@ -36,6 +36,16 @@
 		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
 		3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */; };
 		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
+		3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
+		3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */; };
+		3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */; };
+		3406D32625DD5EAF00885B14 /* ConversationListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */; };
+		3406D32B25DD80D600885B14 /* payments_spinner_fail.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32725DD80D600885B14 /* payments_spinner_fail.json */; };
+		3406D32C25DD80D600885B14 /* payments_spinner_success.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32825DD80D600885B14 /* payments_spinner_success.json */; };
+		3406D32D25DD80D600885B14 /* payments_spinner_info.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32925DD80D600885B14 /* payments_spinner_info.json */; };
+		3406D32E25DD80D600885B14 /* payments_spinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32A25DD80D600885B14 /* payments_spinner.json */; };
+		3406D33125DD832800885B14 /* payments_spinner_info_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32F25DD832700885B14 /* payments_spinner_info_dark.json */; };
+		3406D33225DD832800885B14 /* payments_spinner_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D33025DD832800885B14 /* payments_spinner_dark.json */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */; };
@@ -64,7 +74,10 @@
 		34123C5E239AA3E900782788 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5D239AA3E900782788 /* TooltipView.swift */; };
 		34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
+		3414896925C9B6490098E3ED /* PaymentsCurrencyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* PaymentsCurrencyViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
+		34156C8B25A3B3D000556182 /* paymentSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 34156C8A25A3B3D000556182 /* paymentSpinner.json */; };
+		34156C8F25A7521800556182 /* CVMessageActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34156C8E25A7521700556182 /* CVMessageActionButton.swift */; };
 		3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */; };
 		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
@@ -155,7 +168,7 @@
 		3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */; };
 		3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3464451122B7F97100A957B1 /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450F22B7F97000A957B1 /* DateUtil.m */; };
-		3464451222B7F97100A957B1 /* DateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464451022B7F97100A957B1 /* DateUtil.h */; };
+		3464451222B7F97100A957B1 /* DateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464451022B7F97100A957B1 /* DateUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */; };
 		3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */; };
 		346594802434D49F00E5C510 /* NewGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947F2434D49F00E5C510 /* NewGroupState.swift */; };
@@ -177,9 +190,16 @@
 		346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */; };
 		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
 		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
+		346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3025FD050F00F493C7 /* PaymentsTest.swift */; };
+		346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3725FFDC6900F493C7 /* restore.json */; };
+		346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3825FFDC6900F493C7 /* restore-dark.json */; };
+		346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3925FFDC6900F493C7 /* update-pin-dark.json */; };
+		346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */ = {isa = PBXBuildFile; fileRef = 346EFC3A25FFDC6A00F493C7 /* update-pin.json */; };
+		346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
+		347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */; };
 		3470518C254B320700A19468 /* CVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518B254B320700A19468 /* CVRenderState.swift */; };
 		3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */; };
 		3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8732554926200F5847C /* QuotedMessageView.swift */; };
@@ -188,8 +208,18 @@
 		3470C87A2555DE5F00F5847C /* CVComponentContactShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8792555DE5F00F5847C /* CVComponentContactShare.swift */; };
 		3470C8802555F25200F5847C /* CVContactShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C87F2555F25200F5847C /* CVContactShareView.swift */; };
 		3470C8822559B23F00F5847C /* CVUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8812559B23F00F5847C /* CVUpdate.swift */; };
+		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
+		3474C56126111588006723D2 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56626111605006723D2 /* PaymentsReconciliation.swift */; };
+		3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56726111605006723D2 /* PaymentsProcessor.swift */; };
+		3474C57026111605006723D2 /* PaymentsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56826111605006723D2 /* PaymentsUI.swift */; };
+		3474C57126111605006723D2 /* MobileCoinAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56926111605006723D2 /* MobileCoinAPI.swift */; };
+		3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56A26111605006723D2 /* PaymentsFormat.swift */; };
+		3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56B26111605006723D2 /* PaymentsImpl.swift */; };
+		3474C57426111605006723D2 /* MobileCoinAPI+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */; };
+		3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */; };
 		3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -231,6 +261,11 @@
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
+		34848D5E25D43ADD00E5034B /* cash-out.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5A25D43ADD00E5034B /* cash-out.json */; };
+		34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5B25D43ADD00E5034B /* about-mobilecoin.json */; };
+		34848D6025D43ADD00E5034B /* activate-payments.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5C25D43ADD00E5034B /* activate-payments.json */; };
+		34848D6125D43ADD00E5034B /* add-money.json in Resources */ = {isa = PBXBuildFile; fileRef = 34848D5D25D43ADD00E5034B /* add-money.json */; };
+		34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34848D6225D44EBD00E5034B /* PaymentsTransferInViewController.swift */; };
 		348815B325503BAA00D4F4C4 /* CVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815B225503BAA00D4F4C4 /* CVLoader.swift */; };
 		348815BA2552063F00D4F4C4 /* CVAvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815B92552063D00D4F4C4 /* CVAvatarBuilder.swift */; };
 		348815BC2552E67900D4F4C4 /* CVComponentSystemMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815BB2552E67900D4F4C4 /* CVComponentSystemMessage.swift */; };
@@ -248,6 +283,7 @@
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		348C686D246B0B110039705A /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
+		348ECD8C25F278460083C47D /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD8B25F278450083C47D /* DebugLogger.swift */; };
 		348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28C25B897BF00814FC2 /* CVMediaCache.swift */; };
 		348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */; };
 		3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */; };
@@ -256,16 +292,30 @@
 		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
 		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
 		34955A73260A366600F3789A /* OnboardingDroppedYdbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955A72260A366600F3789A /* OnboardingDroppedYdbViewController.swift */; };
+		3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */; };
+		3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */; };
+		3495FF0A25F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */; };
+		3495FF0B25F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */; };
+		3495FF0D25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */; };
+		3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
 		3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */; };
 		3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955B219B605E00DCFE74 /* PhotoLibrary.swift */; };
 		349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349767E025B8744700ECE1B0 /* ManageStickersViewController.swift */; };
 		349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349767E125B8744700ECE1B0 /* StickerPackViewController.swift */; };
+		3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971425D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift */; };
+		3497972025DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971E25DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift */; };
+		3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */; };
+		3497972325DAAE3800E99FA4 /* SendPaymentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */; };
 		3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A524DC81E100CA492C /* OWSContactsManager.swift */; };
 		3498A0A824DC936300CA492C /* ContactsViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A724DC936200CA492C /* ContactsViewHelper.swift */; };
 		3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */; };
 		3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC882513896400B1F315 /* Dependencies+MainApp.swift */; };
+		3498AC902518E92B00B1F315 /* PaymentsHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */; };
+		3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */; };
+		3498AC922518E92B00B1F315 /* PaymentsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */; };
+		3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC972518E98A00B1F315 /* DebugUIPayments.swift */; };
 		3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */; };
 		34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupMembersViewController.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
@@ -397,9 +447,13 @@
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
+		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
-		34FB6A5725D4127A00E599B1 /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5625D4127900E599B1 /* OWSTableViewController2.swift */; };
+		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
+		34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */; };
+		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
+		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
 		34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB29121FF986600A01202 /* UIView+OWS.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
@@ -610,6 +664,7 @@
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
 		5AC566C518874973406105BF /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
+		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -837,7 +892,6 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		DA2448EB739FFD5100E94059 /* Pods_NotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFF2FAAECC00C2F8262444B8 /* Pods_NotificationServiceExtension.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
@@ -938,8 +992,8 @@
 
 /* Begin PBXFileReference section */
 		02CD38E58B58A689DCF037AD /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
-		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
+		14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
 		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
 		173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionMigrationPerfTest.swift; sourceTree = "<group>"; };
@@ -971,6 +1025,16 @@
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
 		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
+		3406D31D25DBF70400885B14 /* RefreshEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshEvent.swift; sourceTree = "<group>"; };
+		3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTransferOutViewController.swift; sourceTree = "<group>"; };
+		3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsQRScanViewController.swift; sourceTree = "<group>"; };
+		3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationListViewController.swift; sourceTree = "<group>"; };
+		3406D32725DD80D600885B14 /* payments_spinner_fail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_fail.json; sourceTree = "<group>"; };
+		3406D32825DD80D600885B14 /* payments_spinner_success.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_success.json; sourceTree = "<group>"; };
+		3406D32925DD80D600885B14 /* payments_spinner_info.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_info.json; sourceTree = "<group>"; };
+		3406D32A25DD80D600885B14 /* payments_spinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner.json; sourceTree = "<group>"; };
+		3406D32F25DD832700885B14 /* payments_spinner_info_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_info_dark.json; sourceTree = "<group>"; };
+		3406D33025DD832800885B14 /* payments_spinner_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_dark.json; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
 		34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPaletteView.swift; sourceTree = "<group>"; };
@@ -1010,9 +1074,12 @@
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3414896825C9B6490098E3ED /* PaymentsCurrencyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsCurrencyViewController.swift; sourceTree = "<group>"; };
 		3414896C25CC3C2E0098E3ED /* kab */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kab; path = translations/kab.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3414896D25CC3C2E0098E3ED /* kab */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kab; path = translations/kab.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachmentProgressView.swift; sourceTree = "<group>"; };
+		34156C8A25A3B3D000556182 /* paymentSpinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = paymentSpinner.json; sourceTree = "<group>"; };
+		34156C8E25A7521700556182 /* CVMessageActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMessageActionButton.swift; sourceTree = "<group>"; };
 		3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
 		341D392825472F3B00996E7B /* CVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewState.swift; sourceTree = "<group>"; };
@@ -1145,9 +1212,16 @@
 		346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadSettingsViewController.swift; sourceTree = "<group>"; };
 		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
+		346EFC3025FD050F00F493C7 /* PaymentsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTest.swift; sourceTree = "<group>"; };
+		346EFC3725FFDC6900F493C7 /* restore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = restore.json; sourceTree = "<group>"; };
+		346EFC3825FFDC6900F493C7 /* restore-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "restore-dark.json"; sourceTree = "<group>"; };
+		346EFC3925FFDC6900F493C7 /* update-pin-dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin-dark.json"; sourceTree = "<group>"; };
+		346EFC3A25FFDC6A00F493C7 /* update-pin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "update-pin.json"; sourceTree = "<group>"; };
+		346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletPasteboardViewController.swift; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
+		347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDeactivateViewController.swift; sourceTree = "<group>"; };
 		3470518B254B320700A19468 /* CVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVRenderState.swift; sourceTree = "<group>"; };
 		3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+CVC.swift"; sourceTree = "<group>"; };
 		3470C8732554926200F5847C /* QuotedMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuotedMessageView.swift; sourceTree = "<group>"; };
@@ -1156,8 +1230,17 @@
 		3470C8792555DE5F00F5847C /* CVComponentContactShare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentContactShare.swift; sourceTree = "<group>"; };
 		3470C87F2555F25200F5847C /* CVContactShareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVContactShareView.swift; sourceTree = "<group>"; };
 		3470C8812559B23F00F5847C /* CVUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVUpdate.swift; sourceTree = "<group>"; };
+		3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliationTest.swift; sourceTree = "<group>"; };
 		347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AvatarDownloadOperation.swift; sourceTree = "<group>"; };
 		347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BottomBar.swift"; sourceTree = "<group>"; };
+		3474C56626111605006723D2 /* PaymentsReconciliation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliation.swift; sourceTree = "<group>"; };
+		3474C56726111605006723D2 /* PaymentsProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsProcessor.swift; sourceTree = "<group>"; };
+		3474C56826111605006723D2 /* PaymentsUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsUI.swift; sourceTree = "<group>"; };
+		3474C56926111605006723D2 /* MobileCoinAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinAPI.swift; sourceTree = "<group>"; };
+		3474C56A26111605006723D2 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
+		3474C56B26111605006723D2 /* PaymentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsImpl.swift; sourceTree = "<group>"; };
+		3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MobileCoinAPI+Configuration.swift"; sourceTree = "<group>"; };
+		3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsCurrenciesImpl.swift; sourceTree = "<group>"; };
 		3476236124081F8900D4FB6F /* GroupManager+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+SignalMessaging.swift"; sourceTree = "<group>"; };
 		34784592237C4813000D1CAA /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		34784593237C4819000D1CAA /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1200,6 +1283,11 @@
 		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
 		34843B2A214FE295004DED45 /* MockEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockEnvironment.m; sourceTree = "<group>"; };
 		34843B2B214FE295004DED45 /* MockEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockEnvironment.h; sourceTree = "<group>"; };
+		34848D5A25D43ADD00E5034B /* cash-out.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "cash-out.json"; sourceTree = "<group>"; };
+		34848D5B25D43ADD00E5034B /* about-mobilecoin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "about-mobilecoin.json"; sourceTree = "<group>"; };
+		34848D5C25D43ADD00E5034B /* activate-payments.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "activate-payments.json"; sourceTree = "<group>"; };
+		34848D5D25D43ADD00E5034B /* add-money.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "add-money.json"; sourceTree = "<group>"; };
+		34848D6225D44EBD00E5034B /* PaymentsTransferInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTransferInViewController.swift; sourceTree = "<group>"; };
 		348815B225503BAA00D4F4C4 /* CVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVLoader.swift; sourceTree = "<group>"; };
 		348815B92552063D00D4F4C4 /* CVAvatarBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAvatarBuilder.swift; sourceTree = "<group>"; };
 		348815BB2552E67900D4F4C4 /* CVComponentSystemMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentSystemMessage.swift; sourceTree = "<group>"; };
@@ -1217,6 +1305,7 @@
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348C686C246B0B100039705A /* ThreadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadUtil.swift; sourceTree = "<group>"; };
+		348ECD8B25F278450083C47D /* DebugLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		348EE28C25B897BF00814FC2 /* CVMediaCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaCache.swift; sourceTree = "<group>"; };
 		348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReusableMediaView.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
@@ -1227,6 +1316,12 @@
 		349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGroupMemberViewController.swift; sourceTree = "<group>"; };
 		34955A72260A366600F3789A /* OnboardingDroppedYdbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingDroppedYdbViewController.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseConfirmViewController.swift; sourceTree = "<group>"; };
+		3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseGridViewController.swift; sourceTree = "<group>"; };
+		3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletSplashViewController.swift; sourceTree = "<group>"; };
+		3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletWordViewController.swift; sourceTree = "<group>"; };
+		3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsRestoreWalletCompleteViewController.swift; sourceTree = "<group>"; };
+		3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseSplashViewController.swift; sourceTree = "<group>"; };
 		3495FF1325F9A0C900959D6E /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3495FF1425F9A0C900959D6E /* ug */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ug; path = translations/ug.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744E2076ACCE00080B5F /* LongTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongTextViewController.swift; sourceTree = "<group>"; };
@@ -1235,10 +1330,18 @@
 		3496955B219B605E00DCFE74 /* PhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibrary.swift; sourceTree = "<group>"; };
 		349767E025B8744700ECE1B0 /* ManageStickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageStickersViewController.swift; sourceTree = "<group>"; };
 		349767E125B8744700ECE1B0 /* StickerPackViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackViewController.swift; sourceTree = "<group>"; };
+		3497971425D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsSendRecipientViewController.swift; sourceTree = "<group>"; };
+		3497971E25DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentCompletionActionSheet.swift; sourceTree = "<group>"; };
+		3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentViewController.swift; sourceTree = "<group>"; };
+		3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentHelper.swift; sourceTree = "<group>"; };
 		3498A0A524DC81E100CA492C /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
 		3498A0A724DC936200CA492C /* ContactsViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewHelper.swift; sourceTree = "<group>"; };
 		3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalMessaging.swift"; sourceTree = "<group>"; };
 		3498AC882513896400B1F315 /* Dependencies+MainApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+MainApp.swift"; sourceTree = "<group>"; };
+		3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistoryViewController.swift; sourceTree = "<group>"; };
+		3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHistory.swift; sourceTree = "<group>"; };
+		3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsSettingsViewController.swift; sourceTree = "<group>"; };
+		3498AC972518E98A00B1F315 /* DebugUIPayments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIPayments.swift; sourceTree = "<group>"; };
 		3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationViewLayout.swift; sourceTree = "<group>"; };
 		34995F172411838C00C70546 /* NewGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersViewController.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
@@ -1398,15 +1501,18 @@
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
+		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
-		34FB6A5625D4127900E599B1 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
+		34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDetailViewController.swift; sourceTree = "<group>"; };
+		34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
+		34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewUtils.swift; sourceTree = "<group>"; };
+		34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentModelCell.swift; sourceTree = "<group>"; };
 		34FDB29121FF986600A01202 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
 		38AD4FA92310B7E00038BA75 /* SignalRingRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SignalRingRTC.framework; path = ThirdParty/WebRTC/Build/SignalRingRTC.framework; sourceTree = "<group>"; };
 		399D8A7F461D7253DFFB91C5 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		4224D4E5D7921F25823ECDCA /* Pods-SignalPerformanceTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.testable release.xcconfig"; sourceTree = "<group>"; };
-		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
 		4509E7991DD653700025A59F /* WebRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebRTC.framework; path = ThirdParty/WebRTC/Build/WebRTC.framework; sourceTree = "<group>"; };
@@ -1610,18 +1716,21 @@
 		4CFB4E9B220BC56D00ECB4DE /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = translations/nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadIndicatorInteraction.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MessageActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionsViewController.swift; sourceTree = "<group>"; };
-		4F673294B9C30EE43B6FB0BC /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
-		536198E33A8BF8BAF669C0CF /* Pods-SignalShareExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.profiling.xcconfig"; sourceTree = "<group>"; };
+		4EB6D2B725EC159086894748 /* Pods-NotificationServiceExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.profiling.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
-		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FA8ECDCB1FC62E29D025E4B /* Pods-NotificationServiceExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		7856A9F703AAD99E22B75A9B /* Pods-SignalShareExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.profiling.xcconfig"; sourceTree = "<group>"; };
 		7BB1CB6F2D7841356BE367EA /* Pods-Signal.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.testable release.xcconfig"; sourceTree = "<group>"; };
-		80A8593EDA963AA130D319BA /* Pods-NotificationServiceExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.testable release.xcconfig"; sourceTree = "<group>"; };
+		7C5895EC8A421236BDBD71BD /* Pods-NotificationServiceExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.testable release.xcconfig"; sourceTree = "<group>"; };
+		7C5EABE2C09180BC71C4E097 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		817EA657B4B8AE5D2E9287B3 /* Pods_NotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
 		8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
 		88081436234D80150004C187 /* UIResponder+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
@@ -1868,9 +1977,7 @@
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.test.xcconfig"; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
-		981DAA2DEFCE9F8757D7C71A /* Pods-NotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		9B533A9FA46206D3D99C9ADA /* Pods-SignalMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.debug.xcconfig"; sourceTree = "<group>"; };
-		A06D5B0F7B646A5E4EF835F4 /* Pods-NotificationServiceExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.profiling.xcconfig"; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
@@ -1932,13 +2039,13 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		DCFF39FE94636EAFEAF06C70 /* Pods-NotificationServiceExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		D4164D79E1C97918C458A743 /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
-		EFF2FAAECC00C2F8262444B8 /* Pods_NotificationServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotificationServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EBA1F323BC6D9256EF83C605 /* Pods-NotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -1951,7 +2058,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */,
-				2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */,
+				641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1991,7 +2098,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				888F188623AC5A9E000780E9 /* SignalMessaging.framework in Frameworks */,
-				DA2448EB739FFD5100E94059 /* Pods_NotificationServiceExtension.framework in Frameworks */,
+				0A1C228F3860F9C358AD6668 /* Pods_NotificationServiceExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2186,6 +2293,7 @@
 				887B6DCE25F6C45B00E677D4 /* Internal */,
 				887B6DCD25F6C44800E677D4 /* Linked Devices */,
 				887B380B25F042A300685845 /* Notifications */,
+				3498AC8C2518E92B00B1F315 /* Payments */,
 				887B381425F0681B00685845 /* Privacy */,
 				8871B16D25F007CE00D4E070 /* Profile */,
 			);
@@ -2238,6 +2346,7 @@
 				34386A50207D0C01009F5D9C /* ConversationListCell.m */,
 				34386A4F207D0C01009F5D9C /* ConversationListViewController.h */,
 				34386A4D207D0C01009F5D9C /* ConversationListViewController.m */,
+				3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
 			);
@@ -2260,7 +2369,6 @@
 			isa = PBXGroup;
 			children = (
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
-				885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
@@ -2269,6 +2377,7 @@
 				3464450F22B7F97000A957B1 /* DateUtil.m */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
+				348ECD8B25F278450083C47D /* DebugLogger.swift */,
 				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
@@ -2297,7 +2406,9 @@
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
 				34641E1120878FB000E2EDE5 /* OWSWindowManager.h */,
 				34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */,
+				885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
+				3406D31D25DBF70400885B14 /* RefreshEvent.swift */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
@@ -2500,6 +2611,30 @@
 			path = appearance;
 			sourceTree = "<group>";
 		};
+		3471210D25ED5F850037CD1F /* Payments */ = {
+			isa = PBXGroup;
+			children = (
+				346EFC3025FD050F00F493C7 /* PaymentsTest.swift */,
+				3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */,
+			);
+			path = Payments;
+			sourceTree = "<group>";
+		};
+		3474C56526111605006723D2 /* Payments */ = {
+			isa = PBXGroup;
+			children = (
+				3474C56926111605006723D2 /* MobileCoinAPI.swift */,
+				3474C56C26111605006723D2 /* MobileCoinAPI+Configuration.swift */,
+				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
+				3474C56A26111605006723D2 /* PaymentsFormat.swift */,
+				3474C56B26111605006723D2 /* PaymentsImpl.swift */,
+				3474C56726111605006723D2 /* PaymentsProcessor.swift */,
+				3474C56626111605006723D2 /* PaymentsReconciliation.swift */,
+				3474C56826111605006723D2 /* PaymentsUI.swift */,
+			);
+			path = Payments;
+			sourceTree = "<group>";
+		};
 		347C3818252CE69400F3D941 /* CV */ = {
 			isa = PBXGroup;
 			children = (
@@ -2553,6 +2688,7 @@
 				347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */,
 				347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */,
 				348815BF2553291200D4F4C4 /* CVComponentViewOnce.swift */,
+				34156C8E25A7521700556182 /* CVMessageActionButton.swift */,
 			);
 			path = CVComponents;
 			sourceTree = "<group>";
@@ -2589,6 +2725,43 @@
 				349767E125B8744700ECE1B0 /* StickerPackViewController.swift */,
 			);
 			path = Stickers;
+			sourceTree = "<group>";
+		};
+		3497971D25DAA86100E99FA4 /* Payments */ = {
+			isa = PBXGroup;
+			children = (
+				3497971E25DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift */,
+				3497972225DAAE3800E99FA4 /* SendPaymentHelper.swift */,
+				34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */,
+				3497971F25DAA86100E99FA4 /* SendPaymentViewController.swift */,
+			);
+			path = Payments;
+			sourceTree = "<group>";
+		};
+		3498AC8C2518E92B00B1F315 /* Payments */ = {
+			isa = PBXGroup;
+			children = (
+				34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */,
+				3414896825C9B6490098E3ED /* PaymentsCurrencyViewController.swift */,
+				347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */,
+				34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */,
+				3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */,
+				3498AC8D2518E92B00B1F315 /* PaymentsHistoryViewController.swift */,
+				3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */,
+				3495FF0C25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift */,
+				346EFC3F260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift */,
+				3495FF0825F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift */,
+				3495FF0925F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift */,
+				3497971425D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift */,
+				3498AC8F2518E92B00B1F315 /* PaymentsSettingsViewController.swift */,
+				34848D6225D44EBD00E5034B /* PaymentsTransferInViewController.swift */,
+				3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */,
+				3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */,
+				3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */,
+				3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */,
+				34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */,
+			);
+			path = Payments;
 			sourceTree = "<group>";
 		};
 		34995F122411838C00C70546 /* NewGroupView */ = {
@@ -2631,7 +2804,6 @@
 				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
 				4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */,
 				4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */,
-				349767DE25B8744600ECE1B0 /* Stickers */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
@@ -2659,11 +2831,13 @@
 				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
+				3497971D25DAA86100E99FA4 /* Payments */,
 				34969558219B605E00DCFE74 /* Photos */,
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
+				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
 				3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */,
@@ -2843,6 +3017,7 @@
 				457C87B72032645C008D52D6 /* DebugUINotifications.swift */,
 				34E3EF0E1EFC2684007F6822 /* DebugUIPage.h */,
 				34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */,
+				3498AC972518E98A00B1F315 /* DebugUIPayments.swift */,
 				4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */,
 				34D3E578245A189D00F5E4A1 /* DebugUIScreenshots.h */,
 				34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */,
@@ -2894,7 +3069,7 @@
 				34AC09CE211B39B000997B47 /* OWSTableViewController.h */,
 				34AC09CB211B39AF00997B47 /* OWSTableViewController.m */,
 				3465948324352FE900E5C510 /* OWSTableViewController.swift */,
-				34FB6A5625D4127900E599B1 /* OWSTableViewController2.swift */,
+				34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */,
 				34AC09D4211B39B000997B47 /* OWSViewController.h */,
 				34AC09C5211B39AF00997B47 /* OWSViewController.m */,
 				8827004B232071C500F01C46 /* OWSWindow.swift */,
@@ -2945,6 +3120,7 @@
 				34BB3C5723C6644B001651FC /* groups */,
 				453518951FC63DBF00210559 /* Info.plist */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
+				3474C56526111605006723D2 /* Payments */,
 				346129B01FD1F7E800532771 /* profiles */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
@@ -3523,7 +3699,11 @@
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
+				34848D5B25D43ADD00E5034B /* about-mobilecoin.json */,
+				34848D5C25D43ADD00E5034B /* activate-payments.json */,
+				34848D5D25D43ADD00E5034B /* add-money.json */,
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
+				34848D5A25D43ADD00E5034B /* cash-out.json */,
 				34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */,
 				34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */,
 				34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */,
@@ -3531,14 +3711,25 @@
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
+				3406D33025DD832800885B14 /* payments_spinner_dark.json */,
+				3406D32725DD80D600885B14 /* payments_spinner_fail.json */,
+				3406D32F25DD832700885B14 /* payments_spinner_info_dark.json */,
+				3406D32925DD80D600885B14 /* payments_spinner_info.json */,
+				3406D32825DD80D600885B14 /* payments_spinner_success.json */,
+				3406D32A25DD80D600885B14 /* payments_spinner.json */,
+				34156C8A25A3B3D000556182 /* paymentSpinner.json */,
 				888C827F23D795F90059464B /* pinCreationFail.json */,
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
+				346EFC3825FFDC6900F493C7 /* restore-dark.json */,
+				346EFC3725FFDC6900F493C7 /* restore.json */,
 				347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */,
 				347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				887CD4862473587300FDD265 /* transfer.json */,
+				346EFC3925FFDC6900F493C7 /* update-pin-dark.json */,
+				346EFC3A25FFDC6A00F493C7 /* update-pin.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 			);
 			path = Lottie;
@@ -3632,30 +3823,30 @@
 				DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */,
 				1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */,
 				8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */,
-				69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */,
 				1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */,
-				435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */,
 				9B533A9FA46206D3D99C9ADA /* Pods-SignalMessaging.debug.xcconfig */,
 				948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */,
 				8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */,
 				7BB1CB6F2D7841356BE367EA /* Pods-Signal.testable release.xcconfig */,
 				FD351756BE688D00B63E00CD /* Pods-SignalMessaging.testable release.xcconfig */,
-				4F673294B9C30EE43B6FB0BC /* Pods-SignalShareExtension.testable release.xcconfig */,
 				63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */,
 				02CD38E58B58A689DCF037AD /* Pods-SignalTests.app store release.xcconfig */,
 				399D8A7F461D7253DFFB91C5 /* Pods-SignalTests.testable release.xcconfig */,
 				CAA04E8D62A697EE833BC729 /* Pods-SignalPerformanceTests.debug.xcconfig */,
 				1BC279B87E730B066A5AFB2A /* Pods-SignalPerformanceTests.app store release.xcconfig */,
 				4224D4E5D7921F25823ECDCA /* Pods-SignalPerformanceTests.testable release.xcconfig */,
-				981DAA2DEFCE9F8757D7C71A /* Pods-NotificationServiceExtension.debug.xcconfig */,
-				DCFF39FE94636EAFEAF06C70 /* Pods-NotificationServiceExtension.app store release.xcconfig */,
-				80A8593EDA963AA130D319BA /* Pods-NotificationServiceExtension.testable release.xcconfig */,
-				A06D5B0F7B646A5E4EF835F4 /* Pods-NotificationServiceExtension.profiling.xcconfig */,
 				AEA97ACC8D9F89DB5E045B2B /* Pods-Signal.profiling.xcconfig */,
 				10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */,
 				F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */,
-				536198E33A8BF8BAF669C0CF /* Pods-SignalShareExtension.profiling.xcconfig */,
 				E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */,
+				EBA1F323BC6D9256EF83C605 /* Pods-NotificationServiceExtension.debug.xcconfig */,
+				6FA8ECDCB1FC62E29D025E4B /* Pods-NotificationServiceExtension.app store release.xcconfig */,
+				4EB6D2B725EC159086894748 /* Pods-NotificationServiceExtension.profiling.xcconfig */,
+				7C5895EC8A421236BDBD71BD /* Pods-NotificationServiceExtension.testable release.xcconfig */,
+				14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */,
+				7C5EABE2C09180BC71C4E097 /* Pods-SignalShareExtension.app store release.xcconfig */,
+				7856A9F703AAD99E22B75A9B /* Pods-SignalShareExtension.profiling.xcconfig */,
+				D4164D79E1C97918C458A743 /* Pods-SignalShareExtension.testable release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -3663,12 +3854,13 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
-				1704690725D4C2DA000793D8 /* attachments */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
+				1704690725D4C2DA000793D8 /* attachments */,
 				B660F6751C29867F00687D6E /* contact */,
 				349BC85F253A2651003C949A /* Groups */,
 				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
+				3471210D25ED5F850037CD1F /* Payments */,
 				4C10B1C523176DB00099396B /* PerformanceTests */,
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
 				34843B2221432292004DED45 /* SignalBaseTest.m */,
@@ -3795,11 +3987,11 @@
 				D221A08F169C9E5E00537ABF /* Foundation.framework */,
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
 				D17BB5C25D615AB49813100C /* Pods_Signal.framework */,
-				0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */,
 				748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */,
 				264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */,
 				C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */,
-				EFF2FAAECC00C2F8262444B8 /* Pods_NotificationServiceExtension.framework */,
+				817EA657B4B8AE5D2E9287B3 /* Pods_NotificationServiceExtension.framework */,
+				6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -3915,7 +4107,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */;
 			buildPhases = (
-				16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */,
+				CE565F413E69EC5A90EA8FA6 /* [CP] Check Pods Manifest.lock */,
 				453518641FC635DD00210559 /* Sources */,
 				453518651FC635DD00210559 /* Frameworks */,
 				88905E9F229CDE3A004E4234 /* Run Script: update_share_plist_info */,
@@ -3975,7 +4167,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 885AC56F23AB42430077705E /* Build configuration list for PBXNativeTarget "NotificationServiceExtension" */;
 			buildPhases = (
-				DD22029638F7E2469D6F373D /* [CP] Check Pods Manifest.lock */,
+				87F256A4DB286E7AD3E30A5E /* [CP] Check Pods Manifest.lock */,
 				885AC56023AB42430077705E /* Sources */,
 				885AC56123AB42430077705E /* Frameworks */,
 				885AC56223AB42430077705E /* Resources */,
@@ -4274,17 +4466,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3406D33225DD832800885B14 /* payments_spinner_dark.json in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
+				346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */,
 				34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */,
+				34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				880C0FF7233D3F7C00386FB8 /* playPauseButton.json in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
+				3406D33125DD832800885B14 /* payments_spinner_info_dark.json in Resources */,
 				4C9D34972369F0FC006A4307 /* notificationPermission.json in Resources */,
+				3406D32B25DD80D600885B14 /* payments_spinner_fail.json in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
@@ -4300,7 +4497,9 @@
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
+				3406D32E25DD80D600885B14 /* payments_spinner.json in Resources */,
 				88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */,
+				34156C8B25A3B3D000556182 /* paymentSpinner.json in Resources */,
 				88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
@@ -4309,6 +4508,7 @@
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */,
 				88A9419724099F85000E9700 /* attachment_light.json in Resources */,
+				3406D32C25DD80D600885B14 /* payments_spinner_success.json in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				886CB07C24E78F2200753909 /* Reflection.m4r in Resources */,
@@ -4316,9 +4516,13 @@
 				347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
+				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
+				3406D32D25DD80D600885B14 /* payments_spinner_info.json in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
+				34848D6025D43ADD00E5034B /* activate-payments.json in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
+				34848D5E25D43ADD00E5034B /* cash-out.json in Resources */,
 				88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
@@ -4330,14 +4534,17 @@
 				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
+				346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
 				34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
+				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
 				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
+				346EFC3C25FFDC6A00F493C7 /* restore-dark.json in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
@@ -4372,24 +4579,6 @@
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Signal-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4455,11 +4644,22 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
+				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSLShims/CNIOBoringSSLShims.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIODarwin/CNIODarwin.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOHTTPParser/CNIOHTTPParser.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOLinux/CNIOLinux.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOWindows/CNIOWindows.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
+				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -4471,12 +4671,23 @@
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIO/NIO.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOConcurrencyHelpers/NIOConcurrencyHelpers.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOExtras/NIOExtras.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOFoundationCompat/NIOFoundationCompat.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHPACK/NIOHPACK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP1/NIOHTTP1.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP2/NIOHTTP2.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOSSL/NIOSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTLS/NIOTLS.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTransportServices/NIOTransportServices.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework.dSYM",
 				"${BUILT_PRODUCTS_DIR}/blurhash/blurhash.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Swift/GRPC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
@@ -4488,11 +4699,22 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSLShims.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIODarwin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOHTTPParser.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOLinux.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOWindows.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -4504,12 +4726,23 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOConcurrencyHelpers.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOExtras.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOFoundationCompat.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHPACK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP1.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTLS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTransportServices.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/ZXingObjC.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/blurhash.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
@@ -4549,11 +4782,22 @@
 				"${PODS_ROOT}/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
+				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSLShims/CNIOBoringSSLShims.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIODarwin/CNIODarwin.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOHTTPParser/CNIOHTTPParser.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOLinux/CNIOLinux.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOWindows/CNIOWindows.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
+				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -4565,12 +4809,23 @@
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIO/NIO.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOConcurrencyHelpers/NIOConcurrencyHelpers.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOExtras/NIOExtras.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOFoundationCompat/NIOFoundationCompat.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHPACK/NIOHPACK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP1/NIOHTTP1.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP2/NIOHTTP2.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOSSL/NIOSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTLS/NIOTLS.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTransportServices/NIOTransportServices.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework.dSYM",
 				"${BUILT_PRODUCTS_DIR}/blurhash/blurhash.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Swift/GRPC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
@@ -4579,11 +4834,22 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSLShims.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIODarwin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOHTTPParser.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOLinux.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOWindows.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -4595,12 +4861,23 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOConcurrencyHelpers.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOExtras.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOFoundationCompat.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHPACK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP1.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTLS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTransportServices.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/ZXingObjC.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/blurhash.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
@@ -4608,6 +4885,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		87F256A4DB286E7AD3E30A5E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NotificationServiceExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		88905E9F229CDE3A004E4234 /* Run Script: update_share_plist_info */ = {
@@ -4637,11 +4936,22 @@
 				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
+				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSLShims/CNIOBoringSSLShims.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIODarwin/CNIODarwin.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOHTTPParser/CNIOHTTPParser.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOLinux/CNIOLinux.framework",
+				"${BUILT_PRODUCTS_DIR}/CNIOWindows/CNIOWindows.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
+				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -4653,12 +4963,23 @@
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIO/NIO.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOConcurrencyHelpers/NIOConcurrencyHelpers.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOExtras/NIOExtras.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOFoundationCompat/NIOFoundationCompat.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHPACK/NIOHPACK.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP1/NIOHTTP1.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOHTTP2/NIOHTTP2.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOSSL/NIOSSL.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTLS/NIOTLS.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftNIOTransportServices/NIOTransportServices.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework",
 				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework.dSYM",
 				"${BUILT_PRODUCTS_DIR}/blurhash/blurhash.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Swift/GRPC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
@@ -4667,11 +4988,22 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSLShims.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIODarwin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOHTTPParser.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOLinux.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOWindows.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -4683,12 +5015,23 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOConcurrencyHelpers.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOExtras.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOFoundationCompat.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHPACK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP1.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOHTTP2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOSSL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTLS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOTransportServices.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/ZXingObjC.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/blurhash.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
@@ -4698,7 +5041,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DD22029638F7E2469D6F373D /* [CP] Check Pods Manifest.lock */ = {
+		CE565F413E69EC5A90EA8FA6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4713,7 +5056,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-NotificationServiceExtension-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SignalShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4800,6 +5143,7 @@
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
+				3474C57026111605006723D2 /* PaymentsUI.swift in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
 				34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */,
 				346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */,
@@ -4817,6 +5161,7 @@
 				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */,
+				3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				4C0387532339B3220062D293 /* UIColor+OWS.swift in Sources */,
 				88D5887824846A7F00DC9AB6 /* InputAccessoryViewPlaceholder.swift in Sources */,
@@ -4832,12 +5177,15 @@
 				885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */,
 				34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */,
 				34AC0A12211B39EA00997B47 /* ContactTableViewCell.m in Sources */,
+				348ECD8C25F278460083C47D /* DebugLogger.swift in Sources */,
+				34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */,
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				34C2EEB42270D1CE00BCA1D0 /* StickerView.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
 				88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
+				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				34AC09EB211B39B100997B47 /* ContactShareApprovalViewController.swift in Sources */,
 				34AC0A1F211B39EA00997B47 /* AvatarImageView.swift in Sources */,
@@ -4855,6 +5203,7 @@
 				34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */,
 				451F8A341FD710C3005CB9DA /* FullTextSearcher.swift in Sources */,
 				34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */,
+				3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */,
 				34AC0A10211B39EA00997B47 /* TappableView.swift in Sources */,
 				3426A372256320420036407F /* CVText.swift in Sources */,
 				34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */,
@@ -4875,6 +5224,7 @@
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
 				8860CC212508507F00A4D18E /* GroupLinkPreview.swift in Sources */,
 				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
+				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				34BBC851220B8EEF00857249 /* ImageEditorCanvasView.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */,
@@ -4886,6 +5236,7 @@
 				4C295880233AE23000AAB2AA /* Theme+OWS.swift in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,
 				34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
+				3474C57426111605006723D2 /* MobileCoinAPI+Configuration.swift in Sources */,
 				340872BF22393CFA00CB25B0 /* UIGestureRecognizer+OWS.swift in Sources */,
 				88139CD6236290090003B264 /* ActionSheetController.swift in Sources */,
 				34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */,
@@ -4900,13 +5251,15 @@
 				34AC0A19211B39EA00997B47 /* OWSActionSheets.swift in Sources */,
 				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
+				3474C57126111605006723D2 /* MobileCoinAPI.swift in Sources */,
 				34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */,
 				889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
-				34FB6A5725D4127A00E599B1 /* OWSTableViewController2.swift in Sources */,
+				3474C56126111588006723D2 /* (null) in Sources */,
+				3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */,
 				34AC0A18211B39EA00997B47 /* TappableStackView.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				349C3637233D198300D52012 /* LaunchJobs.swift in Sources */,
@@ -4927,6 +5280,7 @@
 				88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */,
 				34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
+				3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */,
 				8860CC1A25084AFB00A4D18E /* OWSBubbleView.m in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
@@ -5007,6 +5361,7 @@
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */,
 				34386A52207D0C01009F5D9C /* ConversationListCell.m in Sources */,
+				3406D32625DD5EAF00885B14 /* ConversationListViewController.swift in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
 				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,
@@ -5019,6 +5374,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				3470C8822559B23F00F5847C /* CVUpdate.swift in Sources */,
 				348815C8255346A500D4F4C4 /* CVNode.swift in Sources */,
+				3497972325DAAE3800E99FA4 /* SendPaymentHelper.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
 				88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
@@ -5035,6 +5391,7 @@
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */,
+				3495FF0B25F9276E00959D6E /* PaymentsRestoreWalletWordViewController.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
 				348815C02553291300D4F4C4 /* CVComponentViewOnce.swift in Sources */,
@@ -5045,6 +5402,8 @@
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
 				4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */,
 				347C3829252CE69400F3D941 /* CVComponentState+GroupLink.swift in Sources */,
+				3498AC922518E92B00B1F315 /* PaymentsSettingsViewController.swift in Sources */,
+				3497972025DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				34386A51207D0C01009F5D9C /* ConversationListViewController.m in Sources */,
 				348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */,
@@ -5058,6 +5417,7 @@
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */,
+				3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
 				887889B2247F2E72001B5FCF /* Emoji.swift in Sources */,
 				3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */,
@@ -5080,6 +5440,7 @@
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				88EAD79223764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
 				323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */,
+				3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */,
@@ -5118,11 +5479,15 @@
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsViewController.swift in Sources */,
 				4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				34156C8F25A7521800556182 /* CVMessageActionButton.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				348815BC2552E67900D4F4C4 /* CVComponentSystemMessage.swift in Sources */,
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
+				3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
+				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
+				3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */,
 				34A17D81253F7237009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
@@ -5130,6 +5495,7 @@
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */,
 				34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */,
+				3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */,
 				88238EBC24F21EE400F28079 /* EmojiSkinTonePicker.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				341D392925472F3B00996E7B /* CVViewState.swift in Sources */,
@@ -5155,6 +5521,7 @@
 				32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				347C3849252D004C00F3D941 /* CVComponentDateHeader.swift in Sources */,
+				34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */,
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
@@ -5165,6 +5532,7 @@
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
+				3414896925C9B6490098E3ED /* PaymentsCurrencyViewController.swift in Sources */,
 				3470C87A2555DE5F00F5847C /* CVComponentContactShare.swift in Sources */,
 				886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */,
 				88238EA424E9DDE900F28079 /* CallButton.swift in Sources */,
@@ -5184,6 +5552,7 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
+				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
@@ -5199,15 +5568,18 @@
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
 				3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */,
 				88588D18252D312800405414 /* GroupCallViewController.swift in Sources */,
+				3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
+				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
 				88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
+				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
@@ -5232,6 +5604,7 @@
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */,
 				347C3846252CE6C900F3D941 /* CVComponentSenderName.swift in Sources */,
+				3498AC902518E92B00B1F315 /* PaymentsHistoryViewController.swift in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				3470C8772555883600F5847C /* CVLoadRequest.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
@@ -5253,6 +5626,7 @@
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				348815B325503BAA00D4F4C4 /* CVLoader.swift in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
+				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
 				329E631F25D64971002ED315 /* OnboardingProfileCreationViewController.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
@@ -5268,6 +5642,7 @@
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
+				3495FF0A25F9276E00959D6E /* PaymentsRestoreWalletSplashViewController.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
 				347C382E252CE69400F3D941 /* CVComponentState.swift in Sources */,
 				8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */,
@@ -5306,6 +5681,7 @@
 				88238EBA24F2130300F28079 /* EmojiWithSkinTones+String.swift in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
 				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
+				3495FF0D25F934C500959D6E /* PaymentsRestoreWalletCompleteViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
@@ -5314,9 +5690,11 @@
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
 				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
+				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
+				346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */,
@@ -5345,6 +5723,7 @@
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
 				3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
+				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */,
@@ -5366,6 +5745,7 @@
 				3470C8802555F25200F5847C /* CVContactShareView.swift in Sources */,
 				32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */,
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
+				34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */,
 				34E0127423FDA960002D0D13 /* DebugUIGroupsV2.swift in Sources */,
 				88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
@@ -5386,6 +5766,7 @@
 				1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
+				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
@@ -5395,6 +5776,7 @@
 				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
+				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
@@ -5607,7 +5989,7 @@
 /* Begin XCBuildConfiguration section */
 		453518731FC635DD00210559 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */;
+			baseConfigurationReference = 14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -5653,7 +6035,7 @@
 		};
 		453518751FC635DD00210559 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */;
+			baseConfigurationReference = 7C5EABE2C09180BC71C4E097 /* Pods-SignalShareExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6058,7 +6440,7 @@
 		};
 		4C10B17D23176CEB0099396B /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F673294B9C30EE43B6FB0BC /* Pods-SignalShareExtension.testable release.xcconfig */;
+			baseConfigurationReference = D4164D79E1C97918C458A743 /* Pods-SignalShareExtension.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6566,7 +6948,7 @@
 		};
 		88238EAA24EAD2FD00F28079 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 536198E33A8BF8BAF669C0CF /* Pods-SignalShareExtension.profiling.xcconfig */;
+			baseConfigurationReference = 7856A9F703AAD99E22B75A9B /* Pods-SignalShareExtension.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6762,7 +7144,7 @@
 		};
 		88238EAD24EAD2FD00F28079 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A06D5B0F7B646A5E4EF835F4 /* Pods-NotificationServiceExtension.profiling.xcconfig */;
+			baseConfigurationReference = 4EB6D2B725EC159086894748 /* Pods-NotificationServiceExtension.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6828,7 +7210,7 @@
 		};
 		885AC56C23AB42430077705E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 981DAA2DEFCE9F8757D7C71A /* Pods-NotificationServiceExtension.debug.xcconfig */;
+			baseConfigurationReference = EBA1F323BC6D9256EF83C605 /* Pods-NotificationServiceExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -6875,7 +7257,7 @@
 		};
 		885AC56D23AB42430077705E /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DCFF39FE94636EAFEAF06C70 /* Pods-NotificationServiceExtension.app store release.xcconfig */;
+			baseConfigurationReference = 6FA8ECDCB1FC62E29D025E4B /* Pods-NotificationServiceExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6941,7 +7323,7 @@
 		};
 		885AC56E23AB42430077705E /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80A8593EDA963AA130D319BA /* Pods-NotificationServiceExtension.testable release.xcconfig */;
+			baseConfigurationReference = 7C5895EC8A421236BDBD71BD /* Pods-NotificationServiceExtension.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

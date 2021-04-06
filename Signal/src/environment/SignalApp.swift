@@ -33,4 +33,12 @@ extension SignalApp {
             completion?()
         }
     }
+
+    func showAppSettings(mode: ShowAppSettingsMode) {
+        guard let conversationSplitViewController = self.conversationSplitViewControllerForSwift else {
+            owsFailDebug("Missing conversationSplitViewController.")
+            return
+        }
+        conversationSplitViewController.showAppSettingsWithMode(mode)
+    }
 }

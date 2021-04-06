@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.unexpiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
                                                                                   thread:self.thread
                                                                              messageBody:@"outgoing message"
-                                                                           attachmentIds:[NSMutableArray new]
+                                                                           attachmentIds:@[]
                                                                         expiresInSeconds:0
                                                                          expireStartedAt:0
                                                                           isVoiceMessage:NO
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.expiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
                                                                                 thread:self.thread
                                                                            messageBody:@"outgoing message"
-                                                                         attachmentIds:[NSMutableArray new]
+                                                                         attachmentIds:@[]
                                                                       expiresInSeconds:30
                                                                        expireStartedAt:0
                                                                         isVoiceMessage:NO

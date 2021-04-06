@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
 
     private var dataMap = [String: Data]()
 
-    override init() {
+    @objc
+    public override init() {
         super.init()
     }
 

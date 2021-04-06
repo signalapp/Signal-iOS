@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -230,15 +230,13 @@ class IntroducingPinsSplash: SplashViewController {
 
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         guard let fromViewController = presentingViewController else {
-            return //owsFailDebug("Trying to dismiss while not presented.")
+            return // owsFailDebug("Trying to dismiss while not presented.")
         }
 
+        let toastText = self.toastText
         super.dismiss(animated: flag) { [weak self] in
             if let self = self, !self.isDismissWithoutCompleting {
-                self.presentToast(
-                    text: self.toastText,
-                    fromViewController: fromViewController
-                )
+                fromViewController.presentToast(text: toastText)
             }
             completion?()
         }

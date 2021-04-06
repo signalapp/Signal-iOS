@@ -432,6 +432,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (BOOL)shouldBeSaved
 {
+    if (!super.shouldBeSaved) {
+        return NO;
+    }
     if (self.groupMetaMessage == TSGroupMetaMessageDeliver || self.groupMetaMessage == TSGroupMetaMessageUnspecified) {
         return YES;
     }
@@ -552,7 +555,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }]].count;
 }
 
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address;
+- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
 
@@ -607,7 +610,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
-- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

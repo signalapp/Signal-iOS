@@ -90,10 +90,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
+@property (nonatomic, readonly) UIView *paymentsReminderView;
 
 @property (nonatomic) BOOL hasArchivedThreadsRow;
 @property (nonatomic) BOOL hasThemeChanged;
 @property (nonatomic) BOOL hasVisibleReminders;
+
+@property (nonatomic) NSUInteger unreadPaymentNotificationsCount;
+@property (nonatomic, nullable) TSPaymentModel *firstUnreadPaymentModel;
 
 @end
 
@@ -155,10 +159,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(outageStateDidChange:)
                                                  name:OutageDetection.outageStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
@@ -231,11 +231,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(NSNotification *)notification
+- (void)themeDidChange
 {
     OWSAssertIsOnMainThread();
 
-    [self applyTheme];
+    [super themeDidChange];
+
     [self.tableView reloadData];
 
     self.hasThemeChanged = YES;
@@ -246,6 +247,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.tableView);
     OWSAssertDebug(self.searchBar);
+
+    [super applyTheme];
 
     if (self.splitViewController.isCollapsed) {
         self.view.backgroundColor = Theme.backgroundColor;
@@ -353,6 +356,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _archiveReminderView = archiveReminderView;
     [reminderStackView addArrangedSubview:archiveReminderView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, archiveReminderView);
+
+    UIView *paymentsReminderView = [UIView new];
+    _paymentsReminderView = paymentsReminderView;
+    [reminderStackView addArrangedSubview:paymentsReminderView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, paymentsReminderView);
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
@@ -578,8 +586,24 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.expiredView.hidden = !AppExpiry.shared.isExpiringSoon;
     [self.expiredView updateText];
 
+    if (self.unreadPaymentNotificationsCount == 0 || self.firstUnreadPaymentModel == nil) {
+        self.paymentsReminderView.hidden = YES;
+    } else if (self.unreadPaymentNotificationsCount == 1 && self.firstUnreadPaymentModel != nil) {
+        self.paymentsReminderView.hidden = NO;
+
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            [self configureUnreadPaymentsBannerSingle:self.paymentsReminderView
+                                         paymentModel:self.firstUnreadPaymentModel
+                                          transaction:transaction];
+        }];
+    } else {
+        self.paymentsReminderView.hidden = NO;
+        [self configureUnreadPaymentsBannerMultiple:self.paymentsReminderView
+                                        unreadCount:self.unreadPaymentNotificationsCount];
+    }
+
     self.hasVisibleReminders = (!self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
-        || !self.outageView.isHidden || !self.expiredView.isHidden);
+        || !self.outageView.isHidden || !self.expiredView.isHidden || !self.paymentsReminderView.isHidden);
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
@@ -760,7 +784,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarButton];
+    UIView *avatarWrapper = [UIView containerView];
+    [avatarWrapper addSubview:avatarButton];
+    [avatarButton autoPinEdgesToSuperviewEdges];
+
+    if (self.unreadPaymentNotificationsCount > 0) {
+        [PaymentsViewUtils addUnreadBadgeToView:avatarWrapper];
+    }
+
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarWrapper];
 
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
@@ -837,19 +869,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             [[OWSNavigationController alloc] initWithRootViewController:newGroupViewController];
         [self.navigationController presentFormSheetViewController:modal animated:YES completion:nil];
     }];
-}
-
-- (void)showAppSettings
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-
-    // Dismiss any message actions if they're presented
-    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
-
-    OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
-    [self presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)focusSearch
@@ -1016,6 +1035,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     [self.searchResultsController viewWillAppear:animated];
+
+    [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -1396,6 +1417,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
 {
+    OWSAssertDebug(indexPath.section == ConversationListViewControllerSectionPinned
+        || indexPath.section == ConversationListViewControllerSectionUnpinned);
+
     return [self.threadMapping threadForIndexPath:indexPath];
 }
 
@@ -2029,16 +2053,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSString *currentSelectedThreadId = self.conversationSplitViewController.selectedThread.uniqueId;
     if (!indexPath) {
         return NO;
-    } else if ([[self threadForIndexPath:indexPath].uniqueId isEqual:currentSelectedThreadId]) {
-        // Currently, no previewing the currently selected thread.
-        // Though, in a scene-aware, multiwindow world, we may opt to permit this.
-        // If only to allow the user to pick up and drag a conversation to a new window.
-        return NO;
     } else {
         switch (indexPath.section) {
             case ConversationListViewControllerSectionPinned:
             case ConversationListViewControllerSectionUnpinned:
-                return YES;
+                if ([[self threadForIndexPath:indexPath].uniqueId isEqual:currentSelectedThreadId]) {
+                    // Currently, no previewing the currently selected thread.
+                    // Though, in a scene-aware, multiwindow world, we may opt to permit this.
+                    // If only to allow the user to pick up and drag a conversation to a new window.
+                    return NO;
+                } else {
+                    return YES;
+                }
             default:
                 return NO;
         }
@@ -2080,11 +2106,44 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
 
+    if ([databaseChanges didUpdateModelWithCollection:TSPaymentModel.collection]) {
+        [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
+    }
+
     if (!self.shouldObserveDBModifications) {
         return;
     }
 
     [self anyUIDBDidUpdateWithUpdatedThreadIds:databaseChanges.threadUniqueIds];
+}
+
+- (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction
+{
+    if (!self.payments.arePaymentsEnabled) {
+        self.unreadPaymentNotificationsCount = 0;
+        self.firstUnreadPaymentModel = nil;
+
+        [self updateBarButtonItems];
+        [self updateReminderViews];
+        return;
+    }
+
+    __block NSUInteger unreadPaymentNotificationsCount;
+    __block TSPaymentModel *_Nullable firstUnreadPaymentModel;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        unreadPaymentNotificationsCount = [PaymentFinder unreadCountWithTransaction:transaction];
+        firstUnreadPaymentModel = [PaymentFinder firstUnreadPaymentModelWithTransaction:transaction];
+    }];
+    if (self.unreadPaymentNotificationsCount == unreadPaymentNotificationsCount &&
+        [NSObject isNullableObject:self.firstUnreadPaymentModel equalTo:firstUnreadPaymentModel]) {
+        return;
+    }
+
+    self.unreadPaymentNotificationsCount = unreadPaymentNotificationsCount;
+    self.firstUnreadPaymentModel = firstUnreadPaymentModel;
+
+    [self updateBarButtonItems];
+    [self updateReminderViews];
 }
 
 - (void)uiDatabaseSnapshotDidUpdateExternally

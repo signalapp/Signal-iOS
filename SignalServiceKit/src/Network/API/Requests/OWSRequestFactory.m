@@ -414,6 +414,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
++ (TSRequest *)currencyConversionRequest NS_SWIFT_NAME(currencyConversionRequest())
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/payments/conversions"] method:@"GET" parameters:@{}];
+}
+
 + (NSDictionary<NSString *, id> *)accountAttributesWithAuthKey:(NSString *)authKey
                                                            pin:(nullable NSString *)pin
                                            encryptedDeviceName:(nullable NSData *)encryptedDeviceName
@@ -784,6 +789,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               bio:(nullable ProfileValue *)bio
                                          bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
+                                   paymentAddress:(nullable ProfileValue *)paymentAddress
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment
 {
@@ -809,6 +815,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (bioEmoji != nil) {
         OWSAssertDebug(bioEmoji.hasValidBase64Length);
         parameters[@"aboutEmoji"] = bioEmoji.encryptedBase64;
+    }
+    if (paymentAddress != nil) {
+        OWSAssertDebug(paymentAddress.hasValidBase64Length);
+        parameters[@"paymentAddress"] = paymentAddress.encryptedBase64;
     }
 
     NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];
@@ -836,6 +846,14 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSString *path = [NSString stringWithFormat:@"/v1/certificate/group/%lu/%lu",
                                (unsigned long)fromRedemptionDays,
                                (unsigned long)toRedemptionDays];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
+#pragma mark - Payments
+
++ (TSRequest *)paymentsAuthenticationCredentialRequest
+{
+    NSString *path = @"/v1/payments/auth";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 

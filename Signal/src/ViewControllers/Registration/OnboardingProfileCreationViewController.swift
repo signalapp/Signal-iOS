@@ -235,12 +235,6 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         super.viewDidLoad()
         shouldBottomViewReserveSpaceForKeyboard = false
         avatarViewHelper.delegate = self
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applyTheme),
-            name: .ThemeDidChange,
-            object: nil)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -281,7 +275,9 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
     }
 
     @objc
-    private func applyTheme() {
+    public override func applyTheme() {
+        super.applyTheme()
+
         UIView.transition(with: view, duration: 0.25, options: .transitionCrossDissolve) {
             self.view.backgroundColor = Theme.backgroundColor
 

@@ -3,6 +3,7 @@
 //
 
 #import "TSMessage.h"
+#import "TSPaymentModels.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

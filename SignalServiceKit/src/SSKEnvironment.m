@@ -50,6 +50,8 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) EarlyMessageManager *earlyMessageManagerRef;
 @property (nonatomic) OWSMessagePipelineSupervisor *messagePipelineSupervisorRef;
 @property (nonatomic) AppExpiry *appExpiryRef;
+@property (nonatomic) id<Payments> paymentsRef;
+@property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 
 @end
 
@@ -105,6 +107,8 @@ static SSKEnvironment *sharedSSKEnvironment;
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
                               appExpiry:(AppExpiry *)appExpiry
                        messageProcessor:(MessageProcessor *)messageProcessor
+                               payments:(id<Payments>)payments
+                     paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
 {
     self = [super init];
     if (!self) {
@@ -156,6 +160,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messagePipelineSupervisorRef = messagePipelineSupervisor;
     _appExpiryRef = appExpiry;
     _messageProcessorRef = messageProcessor;
+    _paymentsRef = payments;
+    _paymentsCurrenciesRef = paymentsCurrencies;
 
     return self;
 }
@@ -242,6 +248,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     [OWSKeyBackupService warmCaches];
     [PinnedThreadManager warmCaches];
     [self.typingIndicatorsImpl warmCaches];
+    [self.payments warmCaches];
+    [self.paymentsCurrencies warmCaches];
 }
 
 @end

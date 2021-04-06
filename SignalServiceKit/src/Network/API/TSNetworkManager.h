@@ -25,6 +25,15 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 
 @class TSRequest;
 
+#define OWSFailDebugUnlessNetworkFailure(error)                                                                        \
+    if (IsNetworkConnectivityFailure(error)) {                                                                         \
+        OWSLogWarn(@"Error: %@", error);                                                                               \
+    } else {                                                                                                           \
+        OWSFailDebug(@"Error: %@", error);                                                                             \
+    }
+
+#pragma mark -
+
 @interface TSNetworkManager : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;

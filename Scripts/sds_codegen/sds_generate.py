@@ -2085,14 +2085,20 @@ import SignalCoreKit
 @objc
 public enum SDSRecordType: UInt {
 ''' % ( sds_common.pretty_module_path(__file__), )
-    for key in sorted(record_type_map.keys()):
+
+    record_type_pairs = []
+    for key in record_type_map.keys():
         if key.startswith('#'):
             # Ignore comments
             continue
         enum_name = get_record_type_enum_name(key)
+        record_type_pairs.append((str(enum_name), record_type_map[key]))
+        
+    record_type_pairs.sort(key=lambda value: value[1])
+    for (enum_name, record_type_id) in record_type_pairs:
         # print 'enum_name', enum_name
         swift_body += '''    case %s = %s
-''' % ( str(enum_name), str(record_type_map[key]), )
+''' % ( enum_name, str(record_type_id), )
 
     swift_body += '''}
 '''

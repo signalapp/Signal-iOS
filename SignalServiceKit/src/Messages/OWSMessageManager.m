@@ -81,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+#pragma mark -
+
 - (void)startObserving
 {
     [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
@@ -1491,7 +1493,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         OWSIncomingSentMessageTranscript *_Nullable transcript =
-            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
+                                                    serverTimestamp:envelope.serverTimestamp
+                                                        transaction:transaction];
         if (!transcript) {
             OWSFailDebug(@"Couldn't parse transcript.");
             return;
@@ -1711,6 +1715,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.messageRequestResponse) {
         [self.syncManager processIncomingMessageRequestResponseSyncMessage:syncMessage.messageRequestResponse
                                                                transaction:transaction];
+    } else if (syncMessage.outgoingPayment) {
+        // An "incoming" sync message notifies us of an "outgoing" payment.
+        [self.payments processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
+                                        messageTimestamp:serverDeliveryTimestamp
+                                             transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -2031,8 +2040,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSString *body = dataMessage.body;
-
+    NSString *_Nullable body = dataMessage.body;
     MessageBodyRanges *_Nullable bodyRanges;
     if (dataMessage.bodyRanges.count > 0) {
         bodyRanges = [[MessageBodyRanges alloc] initWithProtos:dataMessage.bodyRanges];
@@ -2078,6 +2086,31 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
 
+    TSPaymentModels *_Nullable paymentModels = [TSPaymentModels parsePaymentProtosInDataMessage:dataMessage
+                                                                                         thread:thread];
+    if (paymentModels.request != nil) {
+        OWSLogInfo(@"Processing payment request.");
+        [self.payments processIncomingPaymentRequestWithThread:thread
+                                                paymentRequest:paymentModels.request
+                                                   transaction:transaction];
+        return nil;
+    } else if (paymentModels.notification != nil) {
+        OWSLogInfo(@"Processing payment notification.");
+        [self.payments processIncomingPaymentNotificationWithThread:thread
+                                                paymentNotification:paymentModels.notification
+                                                      senderAddress:envelope.sourceAddress
+                                                        transaction:transaction];
+        return nil;
+    } else if (paymentModels.cancellation != nil) {
+        OWSLogInfo(@"Processing payment cancellation.");
+        [self.payments processIncomingPaymentCancellationWithThread:thread
+                                                paymentCancellation:paymentModels.cancellation
+                                                        transaction:transaction];
+        return nil;
+    } else if (paymentModels != nil) {
+        OWSFailDebug(@"Unexpected payment model.");
+    }
+
     // Legit usage of senderTimestamp when creating an incoming group message record
     //
     // The builder() factory method requires us to specify every
@@ -2089,7 +2122,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      sourceDeviceId:envelope.sourceDevice
                                         messageBody:body
                                          bodyRanges:bodyRanges
-                                      attachmentIds:[NSMutableArray new]
+                                      attachmentIds:@[]
                                    expiresInSeconds:dataMessage.expireTimer
                                       quotedMessage:quotedMessage
                                        contactShare:contact
@@ -2102,6 +2135,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");
+        return nil;
+    }
+    if (!message.shouldBeSaved) {
+        OWSFailDebug(@"Incoming message should not be saved.");
         return nil;
     }
 

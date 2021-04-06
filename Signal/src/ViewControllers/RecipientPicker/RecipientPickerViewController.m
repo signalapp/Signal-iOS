@@ -161,11 +161,6 @@ const NSUInteger kMinimumSearchLength = 2;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 
     [self updateTableContents];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 - (void)dealloc
@@ -1279,16 +1274,11 @@ const NSUInteger kMinimumSearchLength = 2;
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self applyTheme];
-}
-
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
+
+    [super applyTheme];
 
     [self.tableViewController applyThemeToViewController:self];
     self.searchBar.searchFieldBackgroundColorOverride

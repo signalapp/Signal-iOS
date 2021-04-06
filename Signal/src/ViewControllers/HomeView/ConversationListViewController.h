@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -29,7 +29,6 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
 // Used by force-touch Springboard icon shortcut and key commands
 - (void)showNewConversationView;
 - (void)showNewGroupView;
-- (void)showAppSettings;
 - (void)focusSearch;
 - (void)selectPreviousConversation;
 - (void)selectNextConversation;

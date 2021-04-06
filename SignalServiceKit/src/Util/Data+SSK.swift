@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,5 +41,13 @@ public extension Data {
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
         return base64Url
+    }
+}
+
+// MARK: -
+
+public extension Array where Element == UInt8 {
+    var asData: Data {
+        return Data(self)
     }
 }

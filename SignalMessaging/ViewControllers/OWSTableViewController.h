@@ -45,6 +45,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 @property (nonatomic, readonly) NSArray<OWSTableItem *> *items;
 
+@property (nonatomic) BOOL shouldDisableCellSelection;
+
 + (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
 - (void)addItem:(OWSTableItem *)item NS_SWIFT_NAME(add(_:));

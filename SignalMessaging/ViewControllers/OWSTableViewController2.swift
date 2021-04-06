@@ -33,6 +33,9 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     open var topHeader: UIView?
 
+    @objc
+    open var bottomFooter: UIView? { nil }
+
     // TODO: Remove.
     @objc
     public var tableViewStyle: UITableView.Style {
@@ -80,6 +83,13 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     public override init() {
         super.init()
+
+        // We never want to show titles on back buttons, so we replace it with
+        // blank spaces. We pad it out slightly so that it's more tappable.
+        //
+        // We also do this in applyTheme(), but we also need to do it here
+        // for the case where we push multiple table views at the same time.
+        navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
     open override func viewDidLoad() {
@@ -92,6 +102,7 @@ open class OWSTableViewController2: OWSViewController {
 
         view.addSubview(tableView)
 
+        // Pin top edge of tableView.
         if let topHeader = topHeader {
             view.addSubview(topHeader)
             topHeader.autoPin(toTopLayoutGuideOf: self, withInset: 0)
@@ -99,48 +110,56 @@ open class OWSTableViewController2: OWSViewController {
             topHeader.autoPinEdge(toSuperviewSafeArea: .trailing)
 
             tableView.autoPinEdge(.top, to: .bottom, of: topHeader)
-            tableView.autoPinEdge(toSuperviewEdge: .leading)
-            tableView.autoPinEdge(toSuperviewEdge: .trailing)
-
-            if shouldAvoidKeyboard {
-                autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
-            } else {
-                tableView.autoPinEdge(toSuperviewEdge: .bottom)
-            }
 
             topHeader.setContentHuggingVerticalHigh()
             topHeader.setCompressionResistanceVerticalHigh()
-            tableView.setContentHuggingVerticalLow()
-            tableView.setCompressionResistanceVerticalLow()
         } else if tableView.applyInsetsFix() {
             // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
             // we need to pin to the top and bottom layout guides since UIKit
             // won't adjust our content insets.
             tableView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-            tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-            tableView.autoPinEdge(toSuperviewSafeArea: .leading)
-            tableView.autoPinEdge(toSuperviewSafeArea: .trailing)
 
             // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
             automaticallyAdjustsScrollViewInsets = false
         } else {
+            tableView.autoPinEdge(toSuperviewEdge: .top)
+        }
+
+        // Pin leading & trailing edges of tableView.
+        tableView.autoPinEdge(toSuperviewEdge: .leading)
+        tableView.autoPinEdge(toSuperviewEdge: .trailing)
+        tableView.setContentHuggingVerticalLow()
+        tableView.setCompressionResistanceVerticalLow()
+
+        // Pin bottom edge of tableView.
+        if let bottomFooter = bottomFooter {
+            view.addSubview(bottomFooter)
+            bottomFooter.autoPinEdge(.top, to: .bottom, of: tableView)
+            bottomFooter.autoPinEdge(toSuperviewSafeArea: .leading)
+            bottomFooter.autoPinEdge(toSuperviewSafeArea: .trailing)
             if shouldAvoidKeyboard {
-                tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-                autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+                autoPinView(toBottomOfViewControllerOrKeyboard: bottomFooter, avoidNotch: true)
             } else {
-                tableView.autoPinEdgesToSuperviewEdges()
+                bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
             }
+
+            bottomFooter.setContentHuggingVerticalHigh()
+            bottomFooter.setCompressionResistanceVerticalHigh()
+        } else if tableView.applyInsetsFix() {
+            // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
+            // we need to pin to the top and bottom layout guides since UIKit
+            // won't adjust our content insets.
+            tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        } else if shouldAvoidKeyboard {
+            autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+        } else {
+            tableView.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.cellIdentifier)
 
         applyContents()
         applyTheme()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
-                                               object: nil)
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -652,6 +671,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
     }
 
+    public func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        guard let section = contents.sections[safe: indexPath.section] else {
+            owsFailDebug("Missing section: \(indexPath.section)")
+            return true
+        }
+        return !section.shouldDisableCellSelection
+    }
+
     // MARK: - Index
 
     // tell table which section corresponds to section title/index (e.g. "B",1))
@@ -674,7 +701,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public func present(fromViewController: UIViewController) {
         let navigationController = OWSNavigationController(rootViewController: self)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                            target: self,
                                                            action: #selector(donePressed))
         fromViewController.present(navigationController, animated: true, completion: nil)
@@ -694,15 +721,27 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Theme
 
     @objc
-    open func themeDidChange() {
+    open override func themeDidChange() {
         AssertIsOnMainThread()
 
-        applyTheme()
+        super.themeDidChange()
+
         tableView.reloadData()
     }
 
     @objc
     public var tableBackgroundColor: UIColor {
+        AssertIsOnMainThread()
+
+        return Self.tableBackgroundColor(useNewStyle: useNewStyle,
+                                         isUsingPresentedStyle: isUsingPresentedStyle,
+                                         useThemeBackgroundColors: useThemeBackgroundColors)
+    }
+
+    @objc
+    public static func tableBackgroundColor(useNewStyle: Bool = true,
+                                            isUsingPresentedStyle: Bool,
+                                            useThemeBackgroundColors: Bool = false) -> UIColor {
         AssertIsOnMainThread()
 
         if useNewStyle {
@@ -718,6 +757,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     @objc
     public var cellBackgroundColor: UIColor {
+        Self.cellBackgroundColor(useNewStyle: useNewStyle,
+                                 isUsingPresentedStyle: isUsingPresentedStyle,
+                                 useThemeBackgroundColors: useThemeBackgroundColors)
+    }
+
+    public static func cellBackgroundColor(useNewStyle: Bool = true,
+                                           isUsingPresentedStyle: Bool,
+                                           useThemeBackgroundColors: Bool = false) -> UIColor {
         if useNewStyle {
             if isUsingPresentedStyle {
                 return Theme.tableCell2PresentedBackgroundColor
@@ -746,7 +793,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     @objc
-    open func applyTheme() {
+    open override func applyTheme() {
         AssertIsOnMainThread()
 
         applyTheme(to: self)
@@ -774,11 +821,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
         }
 
+        Self.removeBackButtonText(viewController: viewController)
+
+        if viewController != self { applyTheme() }
+    }
+
+    public static func removeBackButtonText(viewController: UIViewController) {
         // We never want to show titles on back buttons, so we replace it with
         // blank spaces. We pad it out slightly so that it's more tappable.
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
-
-        if viewController != self { applyTheme() }
     }
 
     @objc(removeThemeFromViewController:)
@@ -900,5 +951,17 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public override func viewSafeAreaInsetsDidChange() {
         tableView.reloadData()
+    }
+}
+
+// MARK: -
+
+public extension UITableViewCell {
+    func addBackgroundView(backgroundColor: UIColor) {
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = backgroundColor
+        contentView.addSubview(backgroundView)
+        contentView.sendSubviewToBack(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
     }
 }

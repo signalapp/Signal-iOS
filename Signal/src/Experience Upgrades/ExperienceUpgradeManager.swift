@@ -200,13 +200,6 @@ protocol ExperienceUpgradeView: class, Dependencies {
 
 extension ExperienceUpgradeView {
 
-    func presentToast(text: String, fromViewController: UIViewController) {
-        let toastController = ToastController(text: text)
-
-        let bottomInset = fromViewController.bottomLayoutGuide.length + 8
-        toastController.presentToastView(fromBottomOfView: fromViewController.view, inset: bottomInset)
-    }
-
     /// - Parameter transaction: An optional transaction to write the completion in.
     /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
     func markAsSnoozed(transaction: SDSAnyWriteTransaction? = nil) {

@@ -427,7 +427,7 @@ public class OWSUserProfileCursor: NSObject {
             return nil
         }
         let value = try OWSUserProfile.fromRecord(record)
-        Self.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
         return value
     }
 
@@ -668,7 +668,7 @@ public extension OWSUserProfile {
             }
 
             let value = try OWSUserProfile.fromRecord(record)
-            Self.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
             return value
         } catch {
             owsFailDebug("error: \(error)")

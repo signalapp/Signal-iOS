@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ByteParser.h"
@@ -29,9 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Short
+#pragma mark - UInt16
 
-- (uint16_t)shortAtIndex:(NSUInteger)index
+- (uint16_t)uint16AtIndex:(NSUInteger)index
 {
     uint16_t value;
     const size_t valueSize = sizeof(value);
@@ -48,16 +48,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (uint16_t)nextShort
+- (uint16_t)nextUInt16
 {
-    uint16_t value = [self shortAtIndex:self.cursor];
+    uint16_t value = [self uint16AtIndex:self.cursor];
     self.cursor += sizeof(value);
     return value;
 }
 
-#pragma mark - Int
+#pragma mark - UInt32
 
-- (uint32_t)intAtIndex:(NSUInteger)index
+- (uint32_t)uint32AtIndex:(NSUInteger)index
 {
     uint32_t value;
     const size_t valueSize = sizeof(value);
@@ -74,16 +74,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (uint32_t)nextInt
+- (uint32_t)nextUInt32
 {
-    uint32_t value = [self intAtIndex:self.cursor];
+    uint32_t value = [self uint32AtIndex:self.cursor];
     self.cursor += sizeof(value);
     return value;
 }
 
-#pragma mark - Long
+#pragma mark - UInt64
 
-- (uint64_t)longAtIndex:(NSUInteger)index
+- (uint64_t)uint64AtIndex:(NSUInteger)index
 {
     uint64_t value;
     const size_t valueSize = sizeof(value);
@@ -100,9 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (uint64_t)nextLong
+- (uint64_t)nextUInt64
 {
-    uint64_t value = [self longAtIndex:self.cursor];
+    uint64_t value = [self uint64AtIndex:self.cursor];
     self.cursor += sizeof(value);
     return value;
 }

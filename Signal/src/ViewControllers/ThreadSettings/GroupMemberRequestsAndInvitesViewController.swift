@@ -452,12 +452,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let text = String(format: format, userName)
         presentToast(text: text)
     }
-
-    private func presentToast(text: String) {
-        let toastController = ToastController(text: text)
-        let bottomInset = bottomLayoutGuide.length + 8
-        toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
-    }
 }
 
 // MARK: -

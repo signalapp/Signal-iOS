@@ -25,7 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
+                       serverTimestamp:(uint64_t)serverTimestamp
+                           transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
@@ -43,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     _timestamp = sentProto.timestamp;
+    _serverTimestamp = serverTimestamp;
     _expirationStartedAt = sentProto.expirationStartTimestamp;
     _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
@@ -213,6 +216,12 @@ NS_ASSUME_NONNULL_BEGIN
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
         }
+
+        TSPaymentModels *_Nullable paymentModels = [TSPaymentModels parsePaymentProtosInDataMessage:_dataMessage
+                                                                                             thread:_thread];
+        _paymentRequest = paymentModels.request;
+        _paymentNotification = paymentModels.notification;
+        _paymentCancellation = paymentModels.cancellation;
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {

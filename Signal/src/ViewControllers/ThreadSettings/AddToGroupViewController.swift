@@ -39,7 +39,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         navigationItem.title = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressCloseButton))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
     }
@@ -138,11 +138,8 @@ public class AddToGroupViewController: OWSTableViewController2 {
                 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT",
                 comment: "A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name}"
             )
-
-            let toastController = ToastController(
-                text: String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
-            )
-            toastController.presentToastView(fromBottomOfView: view, inset: bottomLayoutGuide.length + 8)
+            let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
+            presentToast(text: toastText)
             return
         }
 
@@ -201,17 +198,12 @@ public class AddToGroupViewController: OWSTableViewController2 {
         let toastInset = bottomLayoutGuide.length + 8
 
         dismiss(animated: true) { [presentingViewController] in
-            guard let presentingView = presentingViewController?.view else { return }
-
             let toastFormat = NSLocalizedString(
                 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT",
                 comment: "A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name}"
             )
-
-            let toastController = ToastController(
-                text: String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
-            )
-            toastController.presentToastView(fromBottomOfView: presentingView, inset: toastInset)
+            let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
+            presentingViewController?.presentToast(text: toastText)
         }
     }
 

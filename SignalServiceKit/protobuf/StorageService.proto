@@ -130,6 +130,11 @@ message AccountRecord {
     }
   }
 
+  message Payments {
+    bool  enabled         = 1;
+    bytes paymentsEntropy = 2;
+  }
+
            bytes                  profileKey                   = 1;
            string                 givenName                    = 2;
            string                 familyName                   = 3;
@@ -145,4 +150,5 @@ message AccountRecord {
            bool                   notDiscoverableByPhoneNumber = 13;
   repeated PinnedConversation     pinnedConversations          = 14;
            bool                   preferContactAvatars         = 15;
+           Payments               payments                     = 16;
 }

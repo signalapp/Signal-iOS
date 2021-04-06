@@ -82,13 +82,39 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    uint64_t messageTimestamp = (transcript.serverTimestamp > 0 ? transcript.serverTimestamp : transcript.timestamp);
+    OWSAssertDebug(messageTimestamp > 0);
+
+    if (transcript.paymentRequest != nil) {
+        OWSLogInfo(@"Processing payment request from sync transcript.");
+        [self.payments processReceivedTranscriptPaymentRequestWithThread:transcript.thread
+                                                          paymentRequest:transcript.paymentRequest
+                                                        messageTimestamp:messageTimestamp
+                                                             transaction:transaction];
+        return;
+    } else if (transcript.paymentNotification != nil) {
+        OWSLogInfo(@"Processing payment notification from sync transcript.");
+        [self.payments processReceivedTranscriptPaymentNotificationWithThread:transcript.thread
+                                                          paymentNotification:transcript.paymentNotification
+                                                             messageTimestamp:messageTimestamp
+                                                                  transaction:transaction];
+        return;
+    } else if (transcript.paymentCancellation != nil) {
+        OWSLogInfo(@"Processing payment cancellation from sync transcript.");
+        [self.payments processReceivedTranscriptPaymentCancellationWithThread:transcript.thread
+                                                          paymentCancellation:transcript.paymentCancellation
+                                                             messageTimestamp:messageTimestamp
+                                                                  transaction:transaction];
+        return;
+    }
+
     // The builder() factory method requires us to specify every
     // property so that this will break if we add any new properties.
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
                                                                             timestamp:transcript.timestamp
                                                                           messageBody:transcript.body
                                                                            bodyRanges:transcript.bodyRanges
-                                                                        attachmentIds:[NSMutableArray new]
+                                                                        attachmentIds:@[]
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt
                                                                        isVoiceMessage:false

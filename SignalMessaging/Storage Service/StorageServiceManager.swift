@@ -43,7 +43,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         }
     }
 
-    @objc private func willResignActive() {
+    @objc
+    private func willResignActive() {
         // If we have any pending changes, start a back up immediately
         // to try and make sure the service doesn't get stale. If for
         // some reason we aren't able to successfully complete this backup

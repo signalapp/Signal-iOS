@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,7 +23,7 @@ class OWSStackView: UIStackView {
         #endif
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     @objc
     public required init(coder aDecoder: NSCoder) {
         notImplemented()
@@ -76,5 +76,23 @@ class OWSStackView: UIStackView {
                           alignment: self.alignment,
                           spacing: self.spacing,
                           layoutMargins: self.layoutMargins)
+    }
+
+    public typealias TapBlock = () -> Void
+    private var tapBlock: TapBlock?
+
+    public func addTapGesture(_ tapBlock: @escaping TapBlock) {
+        owsAssertDebug(self.tapBlock == nil)
+
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+        self.tapBlock = tapBlock
+    }
+
+    @objc
+    private func didTap() {
+        owsAssertDebug(tapBlock != nil)
+
+        tapBlock?()
     }
 }

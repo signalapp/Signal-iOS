@@ -251,7 +251,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     // MARK: - instance methods
 
     @objc
-    func mostRecentInteractionForInbox(transaction: SDSAnyReadTransaction) -> TSInteraction? {
+    public func mostRecentInteractionForInbox(transaction: SDSAnyReadTransaction) -> TSInteraction? {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return grdbAdapter.mostRecentInteractionForInbox(transaction: grdbRead)
@@ -1013,7 +1013,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
-    func enumerateMessagesWithAttachments(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    public func enumerateMessagesWithAttachments(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
         let emptyArraySerializedDataString = NSKeyedArchiver.archivedData(withRootObject: [String]()).hexadecimalString
 

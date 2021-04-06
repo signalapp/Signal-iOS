@@ -24,10 +24,10 @@ struct StorageServiceProtos_StorageItem {
   // methods supported on all messages.
 
   /// @required
-  var key: Data = SwiftProtobuf.Internal.emptyData
+  var key: Data = Data()
 
   /// @required
-  var value: Data = SwiftProtobuf.Internal.emptyData
+  var value: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -56,7 +56,7 @@ struct StorageServiceProtos_StorageManifest {
   var version: UInt64 = 0
 
   /// @required
-  var value: Data = SwiftProtobuf.Internal.emptyData
+  var value: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -120,7 +120,7 @@ struct StorageServiceProtos_ManifestRecord {
     // methods supported on all messages.
 
     /// @required
-    var data: Data = SwiftProtobuf.Internal.emptyData
+    var data: Data = Data()
 
     /// @required
     var type: StorageServiceProtos_ManifestRecord.Key.TypeEnum = .unknown
@@ -234,11 +234,26 @@ struct StorageServiceProtos_StorageRecord {
 
   #if !swift(>=4.1)
     static func ==(lhs: StorageServiceProtos_StorageRecord.OneOf_Record, rhs: StorageServiceProtos_StorageRecord.OneOf_Record) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch (lhs, rhs) {
-      case (.contact(let l), .contact(let r)): return l == r
-      case (.groupV1(let l), .groupV1(let r)): return l == r
-      case (.groupV2(let l), .groupV2(let r)): return l == r
-      case (.account(let l), .account(let r)): return l == r
+      case (.contact, .contact): return {
+        guard case .contact(let l) = lhs, case .contact(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.groupV1, .groupV1): return {
+        guard case .groupV1(let l) = lhs, case .groupV1(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.groupV2, .groupV2): return {
+        guard case .groupV2(let l) = lhs, case .groupV2(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.account, .account): return {
+        guard case .account(let l) = lhs, case .account(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
       default: return false
       }
     }
@@ -258,9 +273,9 @@ struct StorageServiceProtos_ContactRecord {
 
   var serviceE164: String = String()
 
-  var profileKey: Data = SwiftProtobuf.Internal.emptyData
+  var profileKey: Data = Data()
 
-  var identityKey: Data = SwiftProtobuf.Internal.emptyData
+  var identityKey: Data = Data()
 
   var identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
 
@@ -335,7 +350,7 @@ struct StorageServiceProtos_GroupV1Record {
   // methods supported on all messages.
 
   /// @required
-  var id: Data = SwiftProtobuf.Internal.emptyData
+  var id: Data = Data()
 
   var blocked: Bool = false
 
@@ -358,7 +373,7 @@ struct StorageServiceProtos_GroupV2Record {
   // methods supported on all messages.
 
   /// @required
-  var masterKey: Data = SwiftProtobuf.Internal.emptyData
+  var masterKey: Data = Data()
 
   var blocked: Bool = false
 
@@ -380,36 +395,90 @@ struct StorageServiceProtos_AccountRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var profileKey: Data = SwiftProtobuf.Internal.emptyData
+  var profileKey: Data {
+    get {return _storage._profileKey}
+    set {_uniqueStorage()._profileKey = newValue}
+  }
 
-  var givenName: String = String()
+  var givenName: String {
+    get {return _storage._givenName}
+    set {_uniqueStorage()._givenName = newValue}
+  }
 
-  var familyName: String = String()
+  var familyName: String {
+    get {return _storage._familyName}
+    set {_uniqueStorage()._familyName = newValue}
+  }
 
-  var avatarURL: String = String()
+  var avatarURL: String {
+    get {return _storage._avatarURL}
+    set {_uniqueStorage()._avatarURL = newValue}
+  }
 
-  var noteToSelfArchived: Bool = false
+  var noteToSelfArchived: Bool {
+    get {return _storage._noteToSelfArchived}
+    set {_uniqueStorage()._noteToSelfArchived = newValue}
+  }
 
-  var readReceipts: Bool = false
+  var readReceipts: Bool {
+    get {return _storage._readReceipts}
+    set {_uniqueStorage()._readReceipts = newValue}
+  }
 
-  var sealedSenderIndicators: Bool = false
+  var sealedSenderIndicators: Bool {
+    get {return _storage._sealedSenderIndicators}
+    set {_uniqueStorage()._sealedSenderIndicators = newValue}
+  }
 
-  var typingIndicators: Bool = false
+  var typingIndicators: Bool {
+    get {return _storage._typingIndicators}
+    set {_uniqueStorage()._typingIndicators = newValue}
+  }
 
   /// Legacy link previews flag
-  var proxiedLinkPreviews: Bool = false
+  var proxiedLinkPreviews: Bool {
+    get {return _storage._proxiedLinkPreviews}
+    set {_uniqueStorage()._proxiedLinkPreviews = newValue}
+  }
 
-  var noteToSelfMarkedUnread: Bool = false
+  var noteToSelfMarkedUnread: Bool {
+    get {return _storage._noteToSelfMarkedUnread}
+    set {_uniqueStorage()._noteToSelfMarkedUnread = newValue}
+  }
 
-  var linkPreviews: Bool = false
+  var linkPreviews: Bool {
+    get {return _storage._linkPreviews}
+    set {_uniqueStorage()._linkPreviews = newValue}
+  }
 
-  var phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .everybody
+  var phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode {
+    get {return _storage._phoneNumberSharingMode}
+    set {_uniqueStorage()._phoneNumberSharingMode = newValue}
+  }
 
-  var notDiscoverableByPhoneNumber: Bool = false
+  var notDiscoverableByPhoneNumber: Bool {
+    get {return _storage._notDiscoverableByPhoneNumber}
+    set {_uniqueStorage()._notDiscoverableByPhoneNumber = newValue}
+  }
 
-  var pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
+  var pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] {
+    get {return _storage._pinnedConversations}
+    set {_uniqueStorage()._pinnedConversations = newValue}
+  }
 
-  var preferContactAvatars: Bool = false
+  var preferContactAvatars: Bool {
+    get {return _storage._preferContactAvatars}
+    set {_uniqueStorage()._preferContactAvatars = newValue}
+  }
+
+  var payments: StorageServiceProtos_AccountRecord.Payments {
+    get {return _storage._payments ?? StorageServiceProtos_AccountRecord.Payments()}
+    set {_uniqueStorage()._payments = newValue}
+  }
+  /// Returns true if `payments` has been explicitly set.
+  var hasPayments: Bool {return _storage._payments != nil}
+  /// Clears the value of `payments`. Subsequent reads from it will return its default value.
+  mutating func clearPayments() {_uniqueStorage()._payments = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -462,7 +531,7 @@ struct StorageServiceProtos_AccountRecord {
     var legacyGroupID: Data {
       get {
         if case .legacyGroupID(let v)? = identifier {return v}
-        return SwiftProtobuf.Internal.emptyData
+        return Data()
       }
       set {identifier = .legacyGroupID(newValue)}
     }
@@ -470,7 +539,7 @@ struct StorageServiceProtos_AccountRecord {
     var groupMasterKey: Data {
       get {
         if case .groupMasterKey(let v)? = identifier {return v}
-        return SwiftProtobuf.Internal.emptyData
+        return Data()
       }
       set {identifier = .groupMasterKey(newValue)}
     }
@@ -484,10 +553,22 @@ struct StorageServiceProtos_AccountRecord {
 
     #if !swift(>=4.1)
       static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) -> Bool {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch (lhs, rhs) {
-        case (.contact(let l), .contact(let r)): return l == r
-        case (.legacyGroupID(let l), .legacyGroupID(let r)): return l == r
-        case (.groupMasterKey(let l), .groupMasterKey(let r)): return l == r
+        case (.contact, .contact): return {
+          guard case .contact(let l) = lhs, case .contact(let r) = rhs else { preconditionFailure() }
+          return l == r
+        }()
+        case (.legacyGroupID, .legacyGroupID): return {
+          guard case .legacyGroupID(let l) = lhs, case .legacyGroupID(let r) = rhs else { preconditionFailure() }
+          return l == r
+        }()
+        case (.groupMasterKey, .groupMasterKey): return {
+          guard case .groupMasterKey(let l) = lhs, case .groupMasterKey(let r) = rhs else { preconditionFailure() }
+          return l == r
+        }()
         default: return false
         }
       }
@@ -511,7 +592,23 @@ struct StorageServiceProtos_AccountRecord {
     init() {}
   }
 
+  struct Payments {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var enabled: Bool = false
+
+    var paymentsEntropy: Data = Data()
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+  }
+
   init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 #if swift(>=4.2)
@@ -540,9 +637,12 @@ extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.key)
-      case 2: try decoder.decodeSingularBytesField(value: &self.value)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.key) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.value) }()
       default: break
       }
     }
@@ -574,8 +674,11 @@ extension StorageServiceProtos_StorageItems: SwiftProtobuf.Message, SwiftProtobu
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeRepeatedMessageField(value: &self.items)
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.items) }()
       default: break
       }
     }
@@ -604,9 +707,12 @@ extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProt
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self.version)
-      case 2: try decoder.decodeSingularBytesField(value: &self.value)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.version) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.value) }()
       default: break
       }
     }
@@ -638,8 +744,11 @@ extension StorageServiceProtos_ReadOperation: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeRepeatedBytesField(value: &self.readKey)
+      case 1: try { try decoder.decodeRepeatedBytesField(value: &self.readKey) }()
       default: break
       }
     }
@@ -670,11 +779,14 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._manifest)
-      case 2: try decoder.decodeRepeatedMessageField(value: &self.insertItem)
-      case 3: try decoder.decodeRepeatedBytesField(value: &self.deleteKey)
-      case 4: try decoder.decodeSingularBoolField(value: &self.deleteAll)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._manifest) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.insertItem) }()
+      case 3: try { try decoder.decodeRepeatedBytesField(value: &self.deleteKey) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.deleteAll) }()
       default: break
       }
     }
@@ -715,9 +827,12 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self.version)
-      case 2: try decoder.decodeRepeatedMessageField(value: &self.keys)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.version) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.keys) }()
       default: break
       }
     }
@@ -750,9 +865,12 @@ extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Message, SwiftP
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.data)
-      case 2: try decoder.decodeSingularEnumField(value: &self.type)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       default: break
       }
     }
@@ -797,8 +915,11 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1:
+      case 1: try {
         var v: StorageServiceProtos_ContactRecord?
         if let current = self.record {
           try decoder.handleConflictingOneOf()
@@ -806,7 +927,8 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {self.record = .contact(v)}
-      case 2:
+      }()
+      case 2: try {
         var v: StorageServiceProtos_GroupV1Record?
         if let current = self.record {
           try decoder.handleConflictingOneOf()
@@ -814,7 +936,8 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {self.record = .groupV1(v)}
-      case 3:
+      }()
+      case 3: try {
         var v: StorageServiceProtos_GroupV2Record?
         if let current = self.record {
           try decoder.handleConflictingOneOf()
@@ -822,7 +945,8 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {self.record = .groupV2(v)}
-      case 4:
+      }()
+      case 4: try {
         var v: StorageServiceProtos_AccountRecord?
         if let current = self.record {
           try decoder.handleConflictingOneOf()
@@ -830,21 +954,33 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {self.record = .account(v)}
+      }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every case branch when no optimizations are
+    // enabled. https://github.com/apple/swift-protobuf/issues/1034
     switch self.record {
-    case .contact(let v)?:
+    case .contact?: try {
+      guard case .contact(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    case .groupV1(let v)?:
+    }()
+    case .groupV1?: try {
+      guard case .groupV1(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    case .groupV2(let v)?:
+    }()
+    case .groupV2?: try {
+      guard case .groupV2(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    case .account(let v)?:
+    }()
+    case .account?: try {
+      guard case .account(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -877,20 +1013,23 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.serviceUuid)
-      case 2: try decoder.decodeSingularStringField(value: &self.serviceE164)
-      case 3: try decoder.decodeSingularBytesField(value: &self.profileKey)
-      case 4: try decoder.decodeSingularBytesField(value: &self.identityKey)
-      case 5: try decoder.decodeSingularEnumField(value: &self.identityState)
-      case 6: try decoder.decodeSingularStringField(value: &self.givenName)
-      case 7: try decoder.decodeSingularStringField(value: &self.familyName)
-      case 8: try decoder.decodeSingularStringField(value: &self.username)
-      case 9: try decoder.decodeSingularBoolField(value: &self.blocked)
-      case 10: try decoder.decodeSingularBoolField(value: &self.whitelisted)
-      case 11: try decoder.decodeSingularBoolField(value: &self.archived)
-      case 12: try decoder.decodeSingularBoolField(value: &self.markedUnread)
-      case 13: try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp)
+      case 1: try { try decoder.decodeSingularStringField(value: &self.serviceUuid) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.serviceE164) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self.identityKey) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.identityState) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.givenName) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.familyName) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.username) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
+      case 10: try { try decoder.decodeSingularBoolField(value: &self.whitelisted) }()
+      case 11: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
+      case 12: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
+      case 13: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       default: break
       }
     }
@@ -979,13 +1118,16 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.id)
-      case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
-      case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
-      case 4: try decoder.decodeSingularBoolField(value: &self.archived)
-      case 5: try decoder.decodeSingularBoolField(value: &self.markedUnread)
-      case 6: try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.whitelisted) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       default: break
       }
     }
@@ -1038,13 +1180,16 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.masterKey)
-      case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
-      case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
-      case 4: try decoder.decodeSingularBoolField(value: &self.archived)
-      case 5: try decoder.decodeSingularBoolField(value: &self.markedUnread)
-      case 6: try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.masterKey) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.whitelisted) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       default: break
       }
     }
@@ -1101,97 +1246,168 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     12: .same(proto: "phoneNumberSharingMode"),
     13: .same(proto: "notDiscoverableByPhoneNumber"),
     14: .same(proto: "pinnedConversations"),
-    15: .same(proto: "preferContactAvatars")
+    15: .same(proto: "preferContactAvatars"),
+    16: .same(proto: "payments")
   ]
 
+  fileprivate class _StorageClass {
+    var _profileKey: Data = Data()
+    var _givenName: String = String()
+    var _familyName: String = String()
+    var _avatarURL: String = String()
+    var _noteToSelfArchived: Bool = false
+    var _readReceipts: Bool = false
+    var _sealedSenderIndicators: Bool = false
+    var _typingIndicators: Bool = false
+    var _proxiedLinkPreviews: Bool = false
+    var _noteToSelfMarkedUnread: Bool = false
+    var _linkPreviews: Bool = false
+    var _phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .everybody
+    var _notDiscoverableByPhoneNumber: Bool = false
+    var _pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
+    var _preferContactAvatars: Bool = false
+    var _payments: StorageServiceProtos_AccountRecord.Payments?
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _profileKey = source._profileKey
+      _givenName = source._givenName
+      _familyName = source._familyName
+      _avatarURL = source._avatarURL
+      _noteToSelfArchived = source._noteToSelfArchived
+      _readReceipts = source._readReceipts
+      _sealedSenderIndicators = source._sealedSenderIndicators
+      _typingIndicators = source._typingIndicators
+      _proxiedLinkPreviews = source._proxiedLinkPreviews
+      _noteToSelfMarkedUnread = source._noteToSelfMarkedUnread
+      _linkPreviews = source._linkPreviews
+      _phoneNumberSharingMode = source._phoneNumberSharingMode
+      _notDiscoverableByPhoneNumber = source._notDiscoverableByPhoneNumber
+      _pinnedConversations = source._pinnedConversations
+      _preferContactAvatars = source._preferContactAvatars
+      _payments = source._payments
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.profileKey)
-      case 2: try decoder.decodeSingularStringField(value: &self.givenName)
-      case 3: try decoder.decodeSingularStringField(value: &self.familyName)
-      case 4: try decoder.decodeSingularStringField(value: &self.avatarURL)
-      case 5: try decoder.decodeSingularBoolField(value: &self.noteToSelfArchived)
-      case 6: try decoder.decodeSingularBoolField(value: &self.readReceipts)
-      case 7: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
-      case 8: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
-      case 9: try decoder.decodeSingularBoolField(value: &self.proxiedLinkPreviews)
-      case 10: try decoder.decodeSingularBoolField(value: &self.noteToSelfMarkedUnread)
-      case 11: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
-      case 12: try decoder.decodeSingularEnumField(value: &self.phoneNumberSharingMode)
-      case 13: try decoder.decodeSingularBoolField(value: &self.notDiscoverableByPhoneNumber)
-      case 14: try decoder.decodeRepeatedMessageField(value: &self.pinnedConversations)
-      case 15: try decoder.decodeSingularBoolField(value: &self.preferContactAvatars)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._givenName) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._familyName) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._avatarURL) }()
+        case 5: try { try decoder.decodeSingularBoolField(value: &_storage._noteToSelfArchived) }()
+        case 6: try { try decoder.decodeSingularBoolField(value: &_storage._readReceipts) }()
+        case 7: try { try decoder.decodeSingularBoolField(value: &_storage._sealedSenderIndicators) }()
+        case 8: try { try decoder.decodeSingularBoolField(value: &_storage._typingIndicators) }()
+        case 9: try { try decoder.decodeSingularBoolField(value: &_storage._proxiedLinkPreviews) }()
+        case 10: try { try decoder.decodeSingularBoolField(value: &_storage._noteToSelfMarkedUnread) }()
+        case 11: try { try decoder.decodeSingularBoolField(value: &_storage._linkPreviews) }()
+        case 12: try { try decoder.decodeSingularEnumField(value: &_storage._phoneNumberSharingMode) }()
+        case 13: try { try decoder.decodeSingularBoolField(value: &_storage._notDiscoverableByPhoneNumber) }()
+        case 14: try { try decoder.decodeRepeatedMessageField(value: &_storage._pinnedConversations) }()
+        case 15: try { try decoder.decodeSingularBoolField(value: &_storage._preferContactAvatars) }()
+        case 16: try { try decoder.decodeSingularMessageField(value: &_storage._payments) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.profileKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 1)
-    }
-    if !self.givenName.isEmpty {
-      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 2)
-    }
-    if !self.familyName.isEmpty {
-      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 3)
-    }
-    if !self.avatarURL.isEmpty {
-      try visitor.visitSingularStringField(value: self.avatarURL, fieldNumber: 4)
-    }
-    if self.noteToSelfArchived != false {
-      try visitor.visitSingularBoolField(value: self.noteToSelfArchived, fieldNumber: 5)
-    }
-    if self.readReceipts != false {
-      try visitor.visitSingularBoolField(value: self.readReceipts, fieldNumber: 6)
-    }
-    if self.sealedSenderIndicators != false {
-      try visitor.visitSingularBoolField(value: self.sealedSenderIndicators, fieldNumber: 7)
-    }
-    if self.typingIndicators != false {
-      try visitor.visitSingularBoolField(value: self.typingIndicators, fieldNumber: 8)
-    }
-    if self.proxiedLinkPreviews != false {
-      try visitor.visitSingularBoolField(value: self.proxiedLinkPreviews, fieldNumber: 9)
-    }
-    if self.noteToSelfMarkedUnread != false {
-      try visitor.visitSingularBoolField(value: self.noteToSelfMarkedUnread, fieldNumber: 10)
-    }
-    if self.linkPreviews != false {
-      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 11)
-    }
-    if self.phoneNumberSharingMode != .everybody {
-      try visitor.visitSingularEnumField(value: self.phoneNumberSharingMode, fieldNumber: 12)
-    }
-    if self.notDiscoverableByPhoneNumber != false {
-      try visitor.visitSingularBoolField(value: self.notDiscoverableByPhoneNumber, fieldNumber: 13)
-    }
-    if !self.pinnedConversations.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.pinnedConversations, fieldNumber: 14)
-    }
-    if self.preferContactAvatars != false {
-      try visitor.visitSingularBoolField(value: self.preferContactAvatars, fieldNumber: 15)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if !_storage._profileKey.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._profileKey, fieldNumber: 1)
+      }
+      if !_storage._givenName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._givenName, fieldNumber: 2)
+      }
+      if !_storage._familyName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._familyName, fieldNumber: 3)
+      }
+      if !_storage._avatarURL.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._avatarURL, fieldNumber: 4)
+      }
+      if _storage._noteToSelfArchived != false {
+        try visitor.visitSingularBoolField(value: _storage._noteToSelfArchived, fieldNumber: 5)
+      }
+      if _storage._readReceipts != false {
+        try visitor.visitSingularBoolField(value: _storage._readReceipts, fieldNumber: 6)
+      }
+      if _storage._sealedSenderIndicators != false {
+        try visitor.visitSingularBoolField(value: _storage._sealedSenderIndicators, fieldNumber: 7)
+      }
+      if _storage._typingIndicators != false {
+        try visitor.visitSingularBoolField(value: _storage._typingIndicators, fieldNumber: 8)
+      }
+      if _storage._proxiedLinkPreviews != false {
+        try visitor.visitSingularBoolField(value: _storage._proxiedLinkPreviews, fieldNumber: 9)
+      }
+      if _storage._noteToSelfMarkedUnread != false {
+        try visitor.visitSingularBoolField(value: _storage._noteToSelfMarkedUnread, fieldNumber: 10)
+      }
+      if _storage._linkPreviews != false {
+        try visitor.visitSingularBoolField(value: _storage._linkPreviews, fieldNumber: 11)
+      }
+      if _storage._phoneNumberSharingMode != .everybody {
+        try visitor.visitSingularEnumField(value: _storage._phoneNumberSharingMode, fieldNumber: 12)
+      }
+      if _storage._notDiscoverableByPhoneNumber != false {
+        try visitor.visitSingularBoolField(value: _storage._notDiscoverableByPhoneNumber, fieldNumber: 13)
+      }
+      if !_storage._pinnedConversations.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._pinnedConversations, fieldNumber: 14)
+      }
+      if _storage._preferContactAvatars != false {
+        try visitor.visitSingularBoolField(value: _storage._preferContactAvatars, fieldNumber: 15)
+      }
+      if let v = _storage._payments {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_AccountRecord, rhs: StorageServiceProtos_AccountRecord) -> Bool {
-    if lhs.profileKey != rhs.profileKey {return false}
-    if lhs.givenName != rhs.givenName {return false}
-    if lhs.familyName != rhs.familyName {return false}
-    if lhs.avatarURL != rhs.avatarURL {return false}
-    if lhs.noteToSelfArchived != rhs.noteToSelfArchived {return false}
-    if lhs.readReceipts != rhs.readReceipts {return false}
-    if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
-    if lhs.typingIndicators != rhs.typingIndicators {return false}
-    if lhs.proxiedLinkPreviews != rhs.proxiedLinkPreviews {return false}
-    if lhs.noteToSelfMarkedUnread != rhs.noteToSelfMarkedUnread {return false}
-    if lhs.linkPreviews != rhs.linkPreviews {return false}
-    if lhs.phoneNumberSharingMode != rhs.phoneNumberSharingMode {return false}
-    if lhs.notDiscoverableByPhoneNumber != rhs.notDiscoverableByPhoneNumber {return false}
-    if lhs.pinnedConversations != rhs.pinnedConversations {return false}
-    if lhs.preferContactAvatars != rhs.preferContactAvatars {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._givenName != rhs_storage._givenName {return false}
+        if _storage._familyName != rhs_storage._familyName {return false}
+        if _storage._avatarURL != rhs_storage._avatarURL {return false}
+        if _storage._noteToSelfArchived != rhs_storage._noteToSelfArchived {return false}
+        if _storage._readReceipts != rhs_storage._readReceipts {return false}
+        if _storage._sealedSenderIndicators != rhs_storage._sealedSenderIndicators {return false}
+        if _storage._typingIndicators != rhs_storage._typingIndicators {return false}
+        if _storage._proxiedLinkPreviews != rhs_storage._proxiedLinkPreviews {return false}
+        if _storage._noteToSelfMarkedUnread != rhs_storage._noteToSelfMarkedUnread {return false}
+        if _storage._linkPreviews != rhs_storage._linkPreviews {return false}
+        if _storage._phoneNumberSharingMode != rhs_storage._phoneNumberSharingMode {return false}
+        if _storage._notDiscoverableByPhoneNumber != rhs_storage._notDiscoverableByPhoneNumber {return false}
+        if _storage._pinnedConversations != rhs_storage._pinnedConversations {return false}
+        if _storage._preferContactAvatars != rhs_storage._preferContactAvatars {return false}
+        if _storage._payments != rhs_storage._payments {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1215,8 +1431,11 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1:
+      case 1: try {
         var v: StorageServiceProtos_AccountRecord.PinnedConversation.Contact?
         if let current = self.identifier {
           try decoder.handleConflictingOneOf()
@@ -1224,29 +1443,41 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {self.identifier = .contact(v)}
-      case 3:
+      }()
+      case 3: try {
         if self.identifier != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
         if let v = v {self.identifier = .legacyGroupID(v)}
-      case 4:
+      }()
+      case 4: try {
         if self.identifier != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
         if let v = v {self.identifier = .groupMasterKey(v)}
+      }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every case branch when no optimizations are
+    // enabled. https://github.com/apple/swift-protobuf/issues/1034
     switch self.identifier {
-    case .contact(let v)?:
+    case .contact?: try {
+      guard case .contact(let v)? = self.identifier else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    case .legacyGroupID(let v)?:
+    }()
+    case .legacyGroupID?: try {
+      guard case .legacyGroupID(let v)? = self.identifier else { preconditionFailure() }
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    case .groupMasterKey(let v)?:
+    }()
+    case .groupMasterKey?: try {
+      guard case .groupMasterKey(let v)? = self.identifier else { preconditionFailure() }
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -1268,9 +1499,12 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.uuid)
-      case 2: try decoder.decodeSingularStringField(value: &self.e164)
+      case 1: try { try decoder.decodeSingularStringField(value: &self.uuid) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.e164) }()
       default: break
       }
     }
@@ -1289,6 +1523,44 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
   static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact) -> Bool {
     if lhs.uuid != rhs.uuid {return false}
     if lhs.e164 != rhs.e164 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Payments"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "enabled"),
+    2: .same(proto: "paymentsEntropy")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.paymentsEntropy) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.enabled != false {
+      try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 1)
+    }
+    if !self.paymentsEntropy.isEmpty {
+      try visitor.visitSingularBytesField(value: self.paymentsEntropy, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.Payments, rhs: StorageServiceProtos_AccountRecord.Payments) -> Bool {
+    if lhs.enabled != rhs.enabled {return false}
+    if lhs.paymentsEntropy != rhs.paymentsEntropy {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -139,6 +139,14 @@ public extension NSObject {
     static var orphanDataCleaner: OWSOrphanDataCleaner {
         Environment.shared.orphanDataCleanerRef
     }
+
+    final var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -275,18 +283,24 @@ public extension Dependencies {
     static var orphanDataCleaner: OWSOrphanDataCleaner {
         Environment.shared.orphanDataCleanerRef
     }
+
+    var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension NSObject {
-
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
-
 }
 
 // MARK: -

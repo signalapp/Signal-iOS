@@ -114,8 +114,8 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
 
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
-        let oldTitle = oldGroupModel.groupName?.stripped ?? " "
-        let newTitle = newGroupModel.groupName?.stripped ?? " "
+        let oldTitle = oldGroupModel.groupName?.ows_stripped() ?? " "
+        let newTitle = newGroupModel.groupName?.ows_stripped() ?? " "
         if oldTitle != newTitle {
             setTitle(newTitle)
         }

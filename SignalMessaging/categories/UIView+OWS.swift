@@ -287,6 +287,28 @@ public extension UIView {
             subview.removeFromSuperview()
         }
     }
+
+    static func matchWidthsOfViews(_ views: [UIView]) {
+        var firstView: UIView?
+        for view in views {
+            if let otherView = firstView {
+                view.autoMatch(.width, to: .width, of: otherView)
+            } else {
+                firstView = view
+            }
+        }
+    }
+
+    static func matchHeightsOfViews(_ views: [UIView]) {
+        var firstView: UIView?
+        for view in views {
+            if let otherView = firstView {
+                view.autoMatch(.height, to: .height, of: otherView)
+            } else {
+                firstView = view
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -766,6 +788,8 @@ public extension UIView {
     }
 }
 
+// MARK: -
+
 public extension UIToolbar {
     static func clear() -> UIToolbar {
         let toolbar = UIToolbar()
@@ -835,5 +859,41 @@ public extension UIView {
             isHidden = newValue
             alpha = newValue ? 0 : 1
         }
+    }
+}
+
+// MARK: -
+
+public extension UIStackView {
+    func addArrangedSubviews(_ subviews: [UIView]) {
+        for subview in subviews {
+            addArrangedSubview(subview)
+        }
+    }
+
+    var layoutMarginsWidth: CGFloat {
+        guard isLayoutMarginsRelativeArrangement else {
+            return 0
+        }
+        return layoutMargins.left + layoutMargins.right
+    }
+
+    var layoutMarginsHeight: CGFloat {
+        guard isLayoutMarginsRelativeArrangement else {
+            return 0
+        }
+        return layoutMargins.top + layoutMargins.bottom
+    }
+
+    @discardableResult
+    func addPillBackgroundView(backgroundColor: UIColor) -> UIView {
+        let backgroundView = OWSLayerView.pillView()
+        backgroundView.backgroundColor = backgroundColor
+        addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+        backgroundView.setCompressionResistanceLow()
+        backgroundView.setContentHuggingLow()
+        sendSubviewToBack(backgroundView)
+        return backgroundView
     }
 }

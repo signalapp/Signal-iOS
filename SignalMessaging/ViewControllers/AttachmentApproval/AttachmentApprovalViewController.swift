@@ -94,7 +94,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message:"use attachment: constructor instead.")
+    @available(*, unavailable, message: "use attachment: constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
     }

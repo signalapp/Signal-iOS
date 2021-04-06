@@ -282,7 +282,62 @@ message DataMessage {
   message GroupCallUpdate {
     optional string eraId = 1;
   }
+    
+  message Payment {
+    message Amount {
+      message MobileCoin {
+        // @required
+        optional uint64 picoMob = 1;  // 1,000,000,000,000 picoMob per Mob
+      }
 
+      // oneof commented out
+      // oneof Amount {
+        optional MobileCoin mobileCoin = 1;
+      // }
+    }
+
+    message RequestId {
+      // @required
+      optional string uuid = 1;
+    }
+ 
+    message Request {
+      // @required
+      optional RequestId requestId = 1;
+      // @required
+      optional Amount    amount    = 2;
+      optional string    note      = 3;
+    }
+ 
+    message Notification {
+      message MobileCoin {
+        // @required
+        optional bytes  receipt = 1;
+      }
+ 
+      // oneof commented out
+      // oneof Transaction {
+        optional MobileCoin mobileCoin = 1;
+      // }
+ 
+      // Optional, Refers to the PaymentRequest message, if any.
+      optional string    note          = 2;
+      optional RequestId requestId     = 1003;
+    }
+ 
+    message Cancellation {
+      // @required
+      optional RequestId requestId = 1;
+    }
+ 
+    // oneof commented out
+    // oneof Item {
+      optional Notification notification = 1;
+      optional Request      request      = 1002;
+      optional Cancellation cancellation = 1003;
+    // }
+  }
+    
   enum ProtocolVersion {
     option allow_alias = true;
 
@@ -293,7 +348,8 @@ message DataMessage {
     REACTIONS                = 4;
     CDN_SELECTOR_ATTACHMENTS = 5;
     MENTIONS                 = 6;
-    CURRENT                  = 6;
+    PAYMENTS                 = 7;
+    CURRENT                  = 7;
   }
 
   optional string            body                    =  1;
@@ -314,7 +370,7 @@ message DataMessage {
   optional Delete            delete                  = 17;
   repeated BodyRange         bodyRanges              = 18;
   optional GroupCallUpdate   groupCallUpdate         = 19;
-  // Field 20 is reserved.
+  optional Payment           payment                 = 20;
 }
 
 message NullMessage {
@@ -352,6 +408,7 @@ message SyncMessage {
       optional string destinationUuid = 3;
       optional bool   unidentified    = 2;
     }
+
     optional string                     destinationE164          = 1;
     optional string                     destinationUuid          = 7;
     optional uint64                     timestamp                = 2;
@@ -454,21 +511,43 @@ message SyncMessage {
     optional bytes  groupId    = 3;
     optional Type   type       = 4;
   }
+  
+  message OutgoingPayment {
+    message MobileCoin {
+      optional bytes  recipientAddress     = 1;
+      // @required
+      optional uint64 amountPicoMob        = 2;
+      // @required
+      optional uint64 feePicoMob           = 3;
+      optional bytes  receipt              = 4;
+      optional uint64 ledgerBlockTimestamp = 5;
+      // @required
+      optional uint64 ledgerBlockIndex     = 6;
+      repeated bytes  spentKeyImages       = 7;
+      repeated bytes  outputPublicKeys     = 8;
+    }
+    optional string     recipientUuid = 1;
+    optional string     note          = 2;		
+    // oneof attachment_identifier {
+    optional MobileCoin mobileCoin    = 3;
+    // }
+  }
 
-  optional Sent                   sent                   =  1;
-  optional Contacts               contacts               =  2;
-  optional Groups                 groups                 =  3;
-  optional Request                request                =  4;
-  repeated Read                   read                   =  5;
-  optional Blocked                blocked                =  6;
-  optional Verified               verified               =  7;
-  optional Configuration          configuration          =  9;
-  optional bytes                  padding                =  8;
+  optional Sent                   sent                   = 1;
+  optional Contacts               contacts               = 2;
+  optional Groups                 groups                 = 3;
+  optional Request                request                = 4;
+  repeated Read                   read                   = 5;
+  optional Blocked                blocked                = 6;
+  optional Verified               verified               = 7;
+  optional Configuration          configuration          = 9;
+  optional bytes                  padding                = 8;
   repeated StickerPackOperation   stickerPackOperation   = 10;
   optional ViewOnceOpen           viewOnceOpen           = 11;
   optional FetchLatest            fetchLatest            = 12;
   optional Keys                   keys                   = 13;
   optional MessageRequestResponse messageRequestResponse = 14;
+  optional OutgoingPayment        outgoingPayment        = 15;
 }
 
 message AttachmentPointer {
@@ -485,19 +564,20 @@ message AttachmentPointer {
   optional fixed64 cdnId           = 1;
   optional string  cdnKey          = 15;
   // }
-  optional string  contentType     =  2;
-  optional bytes   key             =  3;
-  optional uint32  size            =  4;
-  optional bytes   thumbnail       =  5;
-  optional bytes   digest          =  6;
-  optional string  fileName        =  7;
-  optional uint32  flags           =  8;
-  optional uint32  width           =  9;
+  optional string  contentType     = 2;
+  optional bytes   key             = 3;
+  optional uint32  size            = 4;
+  optional bytes   thumbnail       = 5;
+  optional bytes   digest          = 6;
+  optional string  fileName        = 7;
+  optional uint32  flags           = 8;
+  optional uint32  width           = 9;
   optional uint32  height          = 10;
   optional string  caption         = 11;
   optional string  blurHash        = 12;
   optional uint64  uploadTimestamp = 13;
   optional uint32  cdnNumber       = 14;
+  // Next ID: 16
 }
 
 message GroupContext {
@@ -545,7 +625,7 @@ message ContactDetails {
   optional bool     blocked     = 7;
   optional uint32   expireTimer = 8;
   optional uint32   inboxPosition = 10;
-  optional bool archived = 11;
+  optional bool     archived      = 11;
 }
 
 message GroupDetails {
@@ -585,4 +665,18 @@ message Pack {
   optional string  author   = 2;
   optional Sticker cover    = 3;
   repeated Sticker stickers = 4;
+}
+
+message PaymentAddress {
+  message MobileCoin {
+    // @required
+    optional bytes publicAddress = 1;
+    // @required
+    optional bytes signature     = 2;
+  }
+  
+  // oneof commented out
+  // oneof Address {
+  optional MobileCoin mobileCoin = 1;
+  // }
 }

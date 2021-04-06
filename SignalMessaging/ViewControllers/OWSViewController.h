@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
                          bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
+- (void)themeDidChange;
+- (void)applyTheme;
+
 @end
 
 NS_ASSUME_NONNULL_END

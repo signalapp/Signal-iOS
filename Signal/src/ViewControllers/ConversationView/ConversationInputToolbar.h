@@ -53,11 +53,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)locationButtonPressed;
 
+- (void)paymentButtonPressed;
+
 - (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment;
 
 - (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock;
 
 - (BOOL)isBlockedConversation;
+
+- (BOOL)isGroup;
 
 @end
 

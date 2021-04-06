@@ -414,6 +414,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         conversationListVC.showAppSettings()
     }
 
+    func showAppSettingsWithMode(_ mode: ShowAppSettingsMode) {
+        conversationListVC.showAppSettings(mode: mode)
+    }
+
     @objc func focusSearch() {
         conversationListVC.focusSearch()
     }
@@ -619,7 +623,8 @@ private class NoSelectedConversationViewController: OWSViewController {
         applyTheme()
     }
 
-    @objc func applyTheme() {
+    @objc
+    override func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         titleLabel.textColor = Theme.primaryTextColor
         bodyLabel.textColor = Theme.secondaryTextAndIconColor

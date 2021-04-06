@@ -36,6 +36,7 @@
 #import <SignalServiceKit/OWSMessageDecryptJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSOperation.h>
+#import <SignalServiceKit/OWSOutgoingPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSReaction.h>
@@ -50,6 +51,7 @@
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RemoteAttestation.h>
@@ -77,6 +79,9 @@
 #import <SignalServiceKit/TSMention.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSPaymentModel.h>
+#import <SignalServiceKit/TSPaymentModels.h>
+#import <SignalServiceKit/TSPaymentRequestModel.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>

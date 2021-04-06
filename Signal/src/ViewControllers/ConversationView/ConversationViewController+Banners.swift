@@ -351,7 +351,7 @@ public class GestureView: UIView {
         self.layoutMargins = .zero
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     @objc
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

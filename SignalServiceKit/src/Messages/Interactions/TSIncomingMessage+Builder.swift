@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,8 +44,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    bodyRanges: bodyRanges,
                    attachmentIds: attachmentIds,
                    expiresInSeconds: expiresInSeconds,
-                   // expireStartedAt is always initialized to zero
-            // for incoming messages.
+                   // expireStartedAt is always initialized to zero for incoming messages.
             expireStartedAt: 0,
             quotedMessage: quotedMessage,
             contactShare: contactShare,
@@ -118,6 +117,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
+
         return TSIncomingMessage(incomingMessageWithBuilder: self)
     }
 }

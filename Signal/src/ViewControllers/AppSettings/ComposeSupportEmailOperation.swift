@@ -23,8 +23,12 @@ struct SupportEmailModel {
         case link(URL)
     }
 
+    public static let supportFilterDefault = "Signal iOS Support Request"
+    public static let supportFilterPayments = "Signal iOS Support Request - Payments"
+
     /// An unlocalized string used for filtering by support
-    var supportFilter: String = "Signal iOS Support Request"
+    var supportFilter: String = SupportEmailModel.supportFilterDefault
+
     var localizedSubject: String = NSLocalizedString(
         "SUPPORT_EMAIL_SUBJECT",
         comment: "Localized subject for support request emails"
@@ -43,6 +47,8 @@ struct SupportEmailModel {
     var debugLogPolicy: LogPolicy = .none
     fileprivate var resolvedDebugString: String?
 }
+
+// MARK: -
 
 @objc
 final class ComposeSupportEmailOperation: NSObject {

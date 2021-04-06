@@ -289,7 +289,7 @@ public class BaseGroupMemberViewController: OWSViewController {
             return
         }
         if navigationController.viewControllers.count == 1 {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                                target: self,
                                                                action: #selector(dismissPressed))
         }
