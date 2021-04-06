@@ -31,7 +31,7 @@ public class SendPaymentMemoViewController: OWSViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateContents()
+        createContents()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -50,11 +50,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
-    private func updateContents() {
-        AssertIsOnMainThread()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-
+    private func createContents() {
         navigationItem.title = NSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
                                                  comment: "Label for the 'add memo' ui in the 'send payment' UI.")
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
@@ -76,8 +72,19 @@ public class SendPaymentMemoViewController: OWSViewController {
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         autoPinView(toBottomOfViewControllerOrKeyboard: rootStack, avoidNotch: true)
 
+        updateContents()
+    }
+
+    private func updateContents() {
+        AssertIsOnMainThread()
+
+        rootStack.removeAllSubviews()
+
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+
         memoTextField.backgroundColor = .clear
         memoTextField.font = .ows_dynamicTypeBodyClamped
+        memoTextField.textColor = Theme.primaryTextColor
         let placeholder = NSAttributedString(string: NSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
                                                                        comment: "Placeholder for the new payment or payment request message."),
                                              attributes: [
@@ -113,6 +120,12 @@ public class SendPaymentMemoViewController: OWSViewController {
             memoRow,
             UIView.vStretchingSpacer()
         ])
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
     }
 
     // MARK: -

@@ -160,11 +160,6 @@ open class OWSTableViewController2: OWSViewController {
 
         applyContents()
         applyTheme()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
-                                               object: nil)
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -726,10 +721,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Theme
 
     @objc
-    open func themeDidChange() {
+    open override func themeDidChange() {
         AssertIsOnMainThread()
 
-        applyTheme()
+        super.themeDidChange()
+
         tableView.reloadData()
     }
 
@@ -797,7 +793,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     @objc
-    open func applyTheme() {
+    open override func applyTheme() {
         AssertIsOnMainThread()
 
         applyTheme(to: self)

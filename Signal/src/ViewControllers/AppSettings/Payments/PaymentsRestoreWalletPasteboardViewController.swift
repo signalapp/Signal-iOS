@@ -48,7 +48,26 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textField.becomeFirstResponder()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
+    private let rootView = UIStackView()
+
     private func createContents() {
+        rootView.axis = .vertical
+        rootView.alignment = .fill
+        view.addSubview(rootView)
+        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        rootView.autoPinWidthToSuperviewMargins()
+
+        updateContents()
+    }
+
+    private func updateContents() {
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
@@ -83,19 +102,14 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
                                               selector: #selector(didTapNextButton))
         nextButton.autoSetHeightUsingFont()
 
-        let rootView = UIStackView(arrangedSubviews: [
+        rootView.removeAllSubviews()
+        rootView.addArrangedSubviews([
             UIView.spacer(withHeight: 16),
             textfieldStack,
             UIView.vStretchingSpacer(),
             nextButton,
             UIView.spacer(withHeight: 8)
         ])
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        view.addSubview(rootView)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        rootView.autoPinWidthToSuperviewMargins()
     }
 
     // MARK: - Events

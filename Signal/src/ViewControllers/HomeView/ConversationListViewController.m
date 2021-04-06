@@ -161,10 +161,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OutageDetection.outageStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
@@ -235,11 +231,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(NSNotification *)notification
+- (void)themeDidChange
 {
     OWSAssertIsOnMainThread();
 
-    [self applyTheme];
+    [super themeDidChange];
+
     [self.tableView reloadData];
 
     self.hasThemeChanged = YES;
@@ -250,6 +247,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.tableView);
     OWSAssertDebug(self.searchBar);
+
+    [super applyTheme];
 
     if (self.splitViewController.isCollapsed) {
         self.view.backgroundColor = Theme.backgroundColor;

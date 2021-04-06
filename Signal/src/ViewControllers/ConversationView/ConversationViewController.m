@@ -274,10 +274,6 @@ typedef enum : NSUInteger {
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 - (BOOL)isGroupConversation
@@ -342,8 +338,10 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 }
 
-- (void)themeDidChange:(NSNotification *)notification
+- (void)themeDidChange
 {
+    [super themeDidChange];
+
     [self updateThemeIfNecessary];
 }
 
@@ -2981,6 +2979,8 @@ typedef enum : NSUInteger {
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
+
+    [super applyTheme];
 
     if (!self.hasViewWillAppearEverBegun) {
         OWSFailDebug(@"InputToolbar not yet ready.");

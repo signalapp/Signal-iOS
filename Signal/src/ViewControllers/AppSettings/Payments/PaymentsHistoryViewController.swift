@@ -34,12 +34,20 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
 
         dataSource.delegate = self
 
+        updateTableContents()
+
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateTableContent),
+            selector: #selector(updateTableContents),
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
             object: nil
         )
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
     }
 
     private func createSubviews() {
@@ -65,7 +73,7 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
     }
 
     @objc
-    private func updateTableContent() {
+    private func updateTableContents() {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
@@ -115,6 +123,6 @@ extension PaymentsHistoryViewController: PaymentsHistoryDataSourceDelegate {
     func didUpdateContent() {
         AssertIsOnMainThread()
 
-        updateTableContent()
+        updateTableContents()
     }
 }

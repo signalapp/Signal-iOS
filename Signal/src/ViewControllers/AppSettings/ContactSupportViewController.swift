@@ -155,6 +155,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     override func applyTheme() {
         super.applyTheme()
+
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
         // Rebuild the contents to force them to update their theme

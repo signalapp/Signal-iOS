@@ -36,7 +36,27 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         createContents()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
+    private let rootView = UIStackView()
+
     private func createContents() {
+
+        rootView.axis = .vertical
+        rootView.alignment = .fill
+        view.addSubview(rootView)
+        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        rootView.autoPinWidthToSuperviewMargins()
+
+        updateContents()
+    }
+
+    private func updateContents() {
 
         let backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
         view.backgroundColor = backgroundColor
@@ -89,7 +109,8 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
         let spacerFactory = SpacerFactory()
 
-        let rootView = UIStackView(arrangedSubviews: [
+        rootView.removeAllSubviews()
+        rootView.addArrangedSubviews([
             spacerFactory.buildVSpacer(),
             topStack,
             spacerFactory.buildVSpacer(),
@@ -98,12 +119,6 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             enterManuallyButton,
             UIView.spacer(withHeight: 8)
         ])
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        view.addSubview(rootView)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        rootView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        rootView.autoPinWidthToSuperviewMargins()
 
         spacerFactory.finalizeSpacers()
     }

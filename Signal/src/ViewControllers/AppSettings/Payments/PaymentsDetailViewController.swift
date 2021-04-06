@@ -56,6 +56,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
     private func updateTableContents() {
         AssertIsOnMainThread()
 

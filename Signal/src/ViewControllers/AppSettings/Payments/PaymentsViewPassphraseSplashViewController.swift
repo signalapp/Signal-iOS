@@ -50,6 +50,12 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         updateNavbar()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
     private func updateNavbar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
                                                            target: self,

@@ -31,13 +31,19 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
                                   comment: "Title for the 'restore payments wallet' view of the app settings.")
 
         buildBottomView()
-        updateContents()
+        updateTableContents()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateContents()
+        updateTableContents()
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
     }
 
     private func buildBottomView() {
@@ -68,10 +74,6 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
             editButton,
             UIView.spacer(withHeight: 8)
         ])
-    }
-
-    private func updateContents() {
-        updateTableContents()
     }
 
     private func updateTableContents() {

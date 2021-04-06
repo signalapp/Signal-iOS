@@ -335,6 +335,12 @@ public class SendPaymentViewController: OWSViewController {
         helper?.refreshObservedValues()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
     }

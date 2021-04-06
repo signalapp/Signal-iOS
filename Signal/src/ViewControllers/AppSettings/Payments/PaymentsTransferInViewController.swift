@@ -31,6 +31,12 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
     private func updateTableContents() {
         let contents = OWSTableContents()
 

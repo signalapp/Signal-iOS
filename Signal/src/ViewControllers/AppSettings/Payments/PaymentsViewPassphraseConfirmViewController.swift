@@ -104,6 +104,16 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         updateFirstResponder()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        wordTextfield0.textColor = Theme.primaryTextColor
+        wordTextfield1.textColor = Theme.primaryTextColor
+        buildBottomView()
+
+        updateTableContents()
+    }
+
     private func updateFirstResponder() {
         if !isWordCorrect0 {
             wordTextfield0.becomeFirstResponder()
@@ -159,6 +169,7 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         bottomStack.isLayoutMarginsRelativeArrangement = true
         let hMargin = 20 + OWSTableViewController2.cellHOuterMargin
         bottomStack.layoutMargins = UIEdgeInsets(top: 8, leading: hMargin, bottom: 0, trailing: hMargin)
+        bottomStack.removeAllSubviews()
         bottomStack.addArrangedSubviews([
             confirmButton,
             UIView.spacer(withHeight: 8),

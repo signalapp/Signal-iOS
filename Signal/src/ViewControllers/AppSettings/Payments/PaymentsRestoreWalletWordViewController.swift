@@ -71,7 +71,26 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.becomeFirstResponder()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
+    private let rootView = UIStackView()
+
     private func createContents() {
+        rootView.axis = .vertical
+        rootView.alignment = .fill
+        view.addSubview(rootView)
+        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        rootView.autoPinWidthToSuperviewMargins()
+
+        updateContents()
+    }
+
+    private func updateContents() {
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
@@ -153,7 +172,8 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
                                               selector: #selector(didTapNextButton))
         nextButton.autoSetHeightUsingFont()
 
-        let rootView = UIStackView(arrangedSubviews: [
+        rootView.removeAllSubviews()
+        rootView.addArrangedSubviews([
             UIView.spacer(withHeight: 20),
             topStack,
             UIView.spacer(withHeight: 60),
@@ -164,13 +184,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
             nextButton,
             UIView.spacer(withHeight: 8)
         ])
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        view.addSubview(rootView)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
-        rootView.autoPinWidthToSuperviewMargins()
-    }
+   }
 
     // MARK: - Events
 

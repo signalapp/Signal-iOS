@@ -12,16 +12,14 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
 
         updateTableContents()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateTableContents),
-            name: .ThemeDidChange,
-            object: nil
-        )
     }
 
-    @objc
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        updateTableContents()
+    }
+
     func updateTableContents() {
         let contents = OWSTableContents()
 

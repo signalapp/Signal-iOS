@@ -41,6 +41,12 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
         )
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 

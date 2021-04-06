@@ -43,6 +43,12 @@ public class PaymentsDeactivateViewController: OWSViewController {
         updateContents()
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateContents()
+    }
+
     private func addListeners() {
         NotificationCenter.default.addObserver(
             self,

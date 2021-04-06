@@ -165,7 +165,9 @@ public class FindByPhoneNumberViewController: OWSViewController {
         applyTheme()
     }
 
-    private func applyTheme() {
+    public override func applyTheme() {
+        super.applyTheme()
+
         view.backgroundColor = backgroundColor
         countryRowTitleLabel.textColor = Theme.primaryTextColor
         phoneNumberRowTitleLabel.textColor = Theme.primaryTextColor

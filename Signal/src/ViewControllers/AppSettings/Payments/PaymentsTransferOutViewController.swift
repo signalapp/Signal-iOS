@@ -77,22 +77,29 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
 
     private func createViews() {
         addressTextfield.delegate = self
-        addressTextfield.textColor = Theme.primaryTextColor
         addressTextfield.font = .ows_dynamicTypeBodyClamped
         addressTextfield.keyboardAppearance = Theme.keyboardAppearance
         addressTextfield.accessibilityIdentifier = "payments.transfer.out.addressTextfield"
         addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
+    @objc
+    private func updateTableContents() {
+        AssertIsOnMainThread()
+
+        addressTextfield.textColor = Theme.primaryTextColor
         let placeholder = NSAttributedString(string: NSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
                                                                        comment: "Placeholder text for the address text field in the 'transfer currency out' settings view."),
                                              attributes: [
                                                 .foregroundColor: Theme.secondaryTextAndIconColor
                                              ])
         addressTextfield.attributedPlaceholder = placeholder
-    }
-
-    @objc
-    private func updateTableContents() {
-        AssertIsOnMainThread()
 
         let contents = OWSTableContents()
 

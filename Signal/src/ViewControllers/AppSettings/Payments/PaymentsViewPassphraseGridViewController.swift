@@ -31,13 +31,19 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
                                   comment: "Title for the 'view payments passphrase' view of the app settings.")
 
         buildBottomView()
-        updateContents()
+        updateTableContents()
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateContents()
+        updateTableContents()
+    }
+
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
     }
 
     private func buildBottomView() {
@@ -58,10 +64,6 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
             nextButton,
             UIView.spacer(withHeight: 8)
         ])
-    }
-
-    private func updateContents() {
-        updateTableContents()
     }
 
     private func updateTableContents() {

@@ -173,6 +173,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
     private func addListeners() {
         NotificationCenter.default.addObserver(
             self,

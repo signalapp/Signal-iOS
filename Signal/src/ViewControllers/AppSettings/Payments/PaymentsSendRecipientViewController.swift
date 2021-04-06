@@ -59,6 +59,12 @@ class PaymentsSendRecipientViewController: OWSViewController {
         recipientPicker.removeTheme(from: self)
     }
 
+    public override func applyTheme() {
+        super.applyTheme()
+
+        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+    }
+
     @objc
     func didTapDismiss() {
         dismiss(animated: true)
