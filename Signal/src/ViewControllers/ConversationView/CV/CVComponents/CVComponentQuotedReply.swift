@@ -66,11 +66,11 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         owsAssertDebug(maxWidth > 0)
 
         let quotedMessageSize = QuotedMessageView.measure(state: quotedReply.viewState, maxWidth: maxWidth).ceil
-        let outerStackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_stackView,
-                                                            subviewInfos: [ quotedMessageSize.asManualSubviewInfo ])
-        return outerStackMeasurement.measuredSize
+        let stackMeasurement = ManualStackView.measure(config: stackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ quotedMessageSize.asManualSubviewInfo ])
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -94,7 +94,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         // For now we simply use this view to host QuotedMessageView.
         //
         // TODO: Reuse QuotedMessageView.
-        fileprivate let stackView = ManualStackView(name: "CVComponentViewQuotedReply.stackView")
+        fileprivate let stackView = ManualStackView(name: "QuotedReply.stackView")
 
         public var isDedicatedCellView = false
 
