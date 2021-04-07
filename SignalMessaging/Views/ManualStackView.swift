@@ -617,6 +617,13 @@ public struct ManualStackSubviewInfo: Equatable {
         self.hasFixedHeight = hasFixedSize
     }
 
+    private static func setSubviewFrame(subview: UIView, frame: CGRect) {
+        guard subview.frame != frame else {
+            return
+        }
+        subview.frame = frame
+    }
+
     public init(measuredSize: CGSize, subview: UIView) {
         self.measuredSize = measuredSize
 
