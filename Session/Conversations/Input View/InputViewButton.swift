@@ -2,7 +2,7 @@
 final class InputViewButton : UIView {
     private let icon: UIImage
     private let isSendButton: Bool
-    private let delegate: InputViewButtonDelegate
+    private weak var delegate: InputViewButtonDelegate?
     private let hasOpaqueBackground: Bool
     private lazy var widthConstraint = set(.width, to: InputViewButton.size)
     private lazy var heightConstraint = set(.height, to: InputViewButton.size)
@@ -103,22 +103,22 @@ final class InputViewButton : UIView {
         longPressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
             guard let self = self else { return }
             self.isLongPress = true
-            self.delegate.handleInputViewButtonLongPressBegan(self)
+            self.delegate?.handleInputViewButtonLongPressBegan(self)
         })
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if isLongPress {
-            delegate.handleInputViewButtonLongPressMoved(self, with: touches.first!)
+            delegate?.handleInputViewButtonLongPressMoved(self, with: touches.first!)
         }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         collapse()
         if !isLongPress {
-            delegate.handleInputViewButtonTapped(self)
+            delegate?.handleInputViewButtonTapped(self)
         } else {
-            delegate.handleInputViewButtonLongPressEnded(self, with: touches.first!)
+            delegate?.handleInputViewButtonLongPressEnded(self, with: touches.first!)
         }
         invalidateLongPressIfNeeded()
     }
@@ -135,7 +135,7 @@ final class InputViewButton : UIView {
 }
 
 // MARK: Delegate
-protocol InputViewButtonDelegate {
+protocol InputViewButtonDelegate : class {
     
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)

@@ -218,10 +218,16 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         if let senderSessionID = senderSessionID {
             profilePictureView.update(for: senderSessionID)
         }
-        if let thread = thread as? TSGroupThread, thread.isOpenGroup,
-            let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!), let senderSessionID = senderSessionID {
-            let isUserModerator = OpenGroupAPI.isUserModerator(senderSessionID, for: openGroup.channel, on: openGroup.server)
-            moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
+        if let thread = thread as? TSGroupThread, thread.isOpenGroup, let senderSessionID = senderSessionID {
+            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+                let isUserModerator = OpenGroupAPIV2.isUserModerator(senderSessionID, for: openGroupV2.room, on: openGroupV2.server)
+                moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
+            } else if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
+                let isUserModerator = OpenGroupAPI.isUserModerator(senderSessionID, for: openGroup.channel, on: openGroup.server)
+                moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
+            } else {
+                moderatorIconImageView.isHidden = true
+            }
         } else {
             moderatorIconImageView.isHidden = true
         }
@@ -562,7 +568,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         switch viewItem.interaction.interactionType() {
         case .outgoingMessage: return screen.width - contactThreadHSpacing - gutterSize
         case .incomingMessage:
-            let leftGutterSize = shouldShowProfilePicture(for: viewItem) ? gutterSize : contactThreadHSpacing
+            let isGroupThread = viewItem.isGroupThread
+            let leftGutterSize = isGroupThread ? gutterSize : contactThreadHSpacing
             return screen.width - leftGutterSize - gutterSize
         default: preconditionFailure()
         }

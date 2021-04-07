@@ -49,7 +49,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
-        scrollToBottom(isAnimated: false)
         resetMentions()
         self.snInputView.text = ""
         dismiss(animated: true) { }
@@ -209,9 +208,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
         }, completion: { [weak self] in
             tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-            Storage.shared.write { transaction in
+            Storage.shared.write(with: { transaction in
                 tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
-            }
+            }, completion: { [weak self] in
+                // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
+                // the height of the new message cell
+                self?.scrollToBottom(isAnimated: false)
+            })
             Storage.shared.write { transaction in
                 MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
@@ -233,10 +236,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         Storage.write(with: { transaction in
             tsMessage.save(with: transaction)
+            // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
         }, completion: { [weak self] in
-            Storage.write { transaction in
+            Storage.write(with: { transaction in
                 MessageSender.send(message, with: attachments, in: thread, using: transaction)
-            }
+            }, completion: { [weak self] in
+                // At this point the TSOutgoingMessage should have its attachments set, so we can scroll to the bottom knowing
+                // the height of the new message cell
+                self?.scrollToBottom(isAnimated: false)
+            })
             self?.handleMessageSent()
         })
     }
@@ -502,9 +510,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let alert = UIAlertController(title: "Ban This User?", message: nil, preferredStyle: .alert)
         let threadID = thread.uniqueId!
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
             let publicKey = message.authorId
-            OpenGroupAPI.ban(publicKey, from: openGroup.server).retainUntilComplete()
+            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) {
+                OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            } else if let openGroup = Storage.shared.getOpenGroup(for: threadID) {
+                OpenGroupAPI.ban(publicKey, from: openGroup.server).retainUntilComplete()
+            }
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

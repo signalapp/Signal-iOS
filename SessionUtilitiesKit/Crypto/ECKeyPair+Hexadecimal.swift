@@ -13,8 +13,7 @@ public extension ECKeyPair {
     
     @objc static func isValidHexEncodedPublicKey(candidate: String) -> Bool {
         // Check that it's a valid hexadecimal encoding
-        let allowedCharacters = CharacterSet(charactersIn: "0123456789ABCDEF")
-        guard candidate.uppercased().unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) else { return false }
+        guard Hex.isValid(candidate) else { return false }
         // Check that it has length 66 and a leading "05"
         guard candidate.count == 66 && candidate.hasPrefix("05") else { return false }
         // It appears to be a valid public key

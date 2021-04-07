@@ -18,7 +18,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
     private static let minimumSwarmSnodeCount = 3
-    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
+    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
     private static let snodeFailureThreshold = 3
     private static let targetSwarmSnodeCount = 2
 
@@ -154,7 +154,7 @@ public final class SnodeAPI : NSObject {
             let (promise, seal) = Promise<Snode>.pending()
             Threading.workQueue.async {
                 attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                    HTTP.execute(.post, url, parameters: parameters, useSSLURLSession: true).map2 { json -> Snode in
+                    HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Snode in
                         guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
                         let snodePool: Set<Snode> = Set(rawSnodes.compactMap { rawSnode in
                             guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
@@ -376,18 +376,19 @@ public final class SnodeAPI : NSObject {
     
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
         var receivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
-        return rawMessages.filter { rawMessage in
+        let result = rawMessages.filter { rawMessage in
             guard let hash = rawMessage["hash"] as? String else {
                 SNLog("Missing hash value for message: \(rawMessage).")
                 return false
             }
             let isDuplicate = receivedMessages.contains(hash)
             receivedMessages.insert(hash)
-            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: receivedMessages, for: publicKey, using: transaction)
-            }
             return !isDuplicate
         }
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+            SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: receivedMessages, for: publicKey, using: transaction)
+        }
+        return result
     }
 
     // MARK: Error Handling

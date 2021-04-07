@@ -37,14 +37,14 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Authorization
 
-    func getAuthToken(for server: String) -> String?
-    func setAuthToken(for server: String, to newValue: String, using transaction: Any)
-    func removeAuthToken(for server: String, using transaction: Any)
+    func getAuthToken(for room: String, on server: String) -> String?
+    func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any)
+    func removeAuthToken(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Open Groups
 
-    func getAllUserOpenGroups() -> [String:OpenGroup]
-    func getOpenGroup(for threadID: String) -> OpenGroup?
+    func getAllV2OpenGroups() -> [String:OpenGroupV2]
+    func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
     func getThreadID(for openGroupID: String) -> String?
     func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
@@ -55,19 +55,19 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Last Message Server ID
 
-    func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
-    func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
-    func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)
+    func getLastMessageServerID(for room: String, on server: String) -> Int64?
+    func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
+    func removeLastMessageServerID(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Last Deletion Server ID
 
-    func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64?
-    func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
-    func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any)
+    func getLastDeletionServerID(for room: String, on server: String) -> Int64?
+    func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
+    func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Open Group Metadata
 
-    func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any)
+    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
     func getIDForMessage(withServerID serverID: UInt64) -> String?
     func setIDForMessage(withServerID serverID: UInt64, to messageID: String, using transaction: Any)
     func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any)
@@ -87,4 +87,23 @@ public protocol SessionMessagingKitStorageProtocol {
     func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any)
     /// Also touches the associated message.
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
+
+    // MARK: - Deprecated
+
+    func getAuthToken(for server: String) -> String?
+    func setAuthToken(for server: String, to newValue: String, using transaction: Any)
+    func removeAuthToken(for server: String, using transaction: Any)
+
+    func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
+    func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
+    func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)
+
+    func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64?
+    func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
+    func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any)
+
+    func getAllUserOpenGroups() -> [String:OpenGroup]
+    func getOpenGroup(for threadID: String) -> OpenGroup?
+    
+    func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any)
 }

@@ -41,6 +41,13 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
             guard components.count == 2, let channel = UInt64(components[0]) else { return nil }
             let server = components[1]
             destination = .openGroup(channel: channel, server: server)
+        } else if rawDestination.removePrefix("openGroupV2(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            let components = rawDestination.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            guard components.count == 2 else { return nil }
+            let room = components[0]
+            let server = components[1]
+            destination = .openGroupV2(room: room, server: server)
         } else {
             return nil
         }
@@ -54,6 +61,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
         case .contact(let publicKey): coder.encode("contact(\(publicKey))", forKey: "destination")
         case .closedGroup(let groupPublicKey): coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
         case .openGroup(let channel, let server): coder.encode("openGroup(\(channel), \(server))", forKey: "destination")
+        case .openGroupV2(let room, let server): coder.encode("openGroupV2(\(room), \(server))", forKey: "destination")
         }
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")

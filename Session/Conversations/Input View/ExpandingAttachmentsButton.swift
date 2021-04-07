@@ -1,6 +1,6 @@
 
 final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
-    private let delegate: ExpandingAttachmentsButtonDelegate
+    private weak var delegate: ExpandingAttachmentsButtonDelegate?
     private var isExpanded = false { didSet { expandOrCollapse() } }
     
     // MARK: Constraints
@@ -22,7 +22,7 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     lazy var mainButtonContainer = container(for: mainButton)
     
     // MARK: Lifecycle
-    init(delegate: ExpandingAttachmentsButtonDelegate) {
+    init(delegate: ExpandingAttachmentsButtonDelegate?) {
         self.delegate = delegate
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
@@ -93,10 +93,10 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     
     // MARK: Interaction
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton) {
-        if inputViewButton == gifButton { delegate.handleGIFButtonTapped(); isExpanded = false }
-        if inputViewButton == documentButton { delegate.handleDocumentButtonTapped(); isExpanded = false }
-        if inputViewButton == libraryButton { delegate.handleLibraryButtonTapped(); isExpanded = false }
-        if inputViewButton == cameraButton { delegate.handleCameraButtonTapped(); isExpanded = false }
+        if inputViewButton == gifButton { delegate?.handleGIFButtonTapped(); isExpanded = false }
+        if inputViewButton == documentButton { delegate?.handleDocumentButtonTapped(); isExpanded = false }
+        if inputViewButton == libraryButton { delegate?.handleLibraryButtonTapped(); isExpanded = false }
+        if inputViewButton == cameraButton { delegate?.handleCameraButtonTapped(); isExpanded = false }
         if inputViewButton == mainButton { isExpanded = !isExpanded }
     }
     
@@ -112,7 +112,7 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
 }
 
 // MARK: Delegate
-protocol ExpandingAttachmentsButtonDelegate {
+protocol ExpandingAttachmentsButtonDelegate : class {
 
     func handleGIFButtonTapped()
     func handleDocumentButtonTapped()

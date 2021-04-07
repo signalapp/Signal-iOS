@@ -178,7 +178,9 @@ final class QuoteView : UIView {
             imageView.set(.width, to: thumbnailSize)
             imageView.set(.height, to: thumbnailSize)
             mainStackView.addArrangedSubview(imageView)
-            body = (thumbnail != nil) ? "Image" : (isAudio ? "Audio" : "Document")
+            if (body ?? "").isEmpty {
+                body = (thumbnail != nil) ? "Image" : (isAudio ? "Audio" : "Document")
+            }
         }
         // Body label
         let bodyLabel = UILabel()
@@ -189,9 +191,6 @@ final class QuoteView : UIView {
         bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: threadID, attributes: [:]) }
             ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
         bodyLabel.textColor = textColor
-        if hasAttachments {
-            bodyLabel.numberOfLines = 1
-        }
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         // Label stack view
         var authorLabelHeight: CGFloat?
@@ -208,6 +207,7 @@ final class QuoteView : UIView {
             let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
             labelStackView.axis = .vertical
             labelStackView.spacing = labelStackViewSpacing
+            labelStackView.distribution = .equalCentering
             labelStackView.set(.width, to: max(bodyLabelSize.width, authorLabelSize.width))
             labelStackView.isLayoutMarginsRelativeArrangement = true
             labelStackView.layoutMargins = UIEdgeInsets(top: labelStackViewVMargin, left: 0, bottom: labelStackViewVMargin, right: 0)
@@ -232,6 +232,7 @@ final class QuoteView : UIView {
         let contentViewHeight: CGFloat
         if hasAttachments {
             contentViewHeight = thumbnailSize + 8 // Add a small amount of spacing above and below the thumbnail
+            bodyLabel.set(.height, to: 18) // Experimentally determined
         } else {
             if let authorLabelHeight = authorLabelHeight { // Group thread
                 contentViewHeight = bodyLabelHeight + (authorLabelHeight + labelStackViewSpacing) + 2 * labelStackViewVMargin

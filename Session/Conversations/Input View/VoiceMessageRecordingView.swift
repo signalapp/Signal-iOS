@@ -1,7 +1,7 @@
 
 final class VoiceMessageRecordingView : UIView {
     private let voiceMessageButtonFrame: CGRect
-    private let delegate: VoiceMessageRecordingViewDelegate
+    private weak var delegate: VoiceMessageRecordingViewDelegate?
     private lazy var slideToCancelStackViewRightConstraint = slideToCancelStackView.pin(.right, to: .right, of: self)
     private lazy var slideToCancelLabelCenterHorizontalConstraint = slideToCancelLabel.center(.horizontal, in: self)
     private lazy var pulseViewWidthConstraint = pulseView.set(.width, to: VoiceMessageRecordingView.circleSize)
@@ -115,7 +115,7 @@ final class VoiceMessageRecordingView : UIView {
     private static let lockViewHitMargin: CGFloat = 40
 
     // MARK: Lifecycle
-    init(voiceMessageButtonFrame: CGRect, delegate: VoiceMessageRecordingViewDelegate) {
+    init(voiceMessageButtonFrame: CGRect, delegate: VoiceMessageRecordingViewDelegate?) {
         self.voiceMessageButtonFrame = voiceMessageButtonFrame
         self.delegate = delegate
         super.init(frame: CGRect.zero)
@@ -269,7 +269,7 @@ final class VoiceMessageRecordingView : UIView {
 
     func handleLongPressEnded(at location: CGPoint) {
         if pulseView.frame.contains(location) {
-            delegate.endVoiceMessageRecording()
+            delegate?.endVoiceMessageRecording()
         } else if isValidLockViewLocation(location) {
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCircleViewTap))
             circleView.addGestureRecognizer(tapGestureRecognizer)
@@ -282,16 +282,16 @@ final class VoiceMessageRecordingView : UIView {
                 // Do nothing
             })
         } else {
-            delegate.cancelVoiceMessageRecording()
+            delegate?.cancelVoiceMessageRecording()
         }
     }
 
     @objc private func handleCircleViewTap() {
-        delegate.endVoiceMessageRecording()
+        delegate?.endVoiceMessageRecording()
     }
 
     @objc private func handleCancelButtonTapped() {
-        delegate.cancelVoiceMessageRecording()
+        delegate?.cancelVoiceMessageRecording()
     }
 
     // MARK: Convenience
@@ -397,7 +397,7 @@ extension VoiceMessageRecordingView {
 }
 
 // MARK: Delegate
-protocol VoiceMessageRecordingViewDelegate {
+protocol VoiceMessageRecordingViewDelegate : class {
 
     func startVoiceMessageRecording()
     func endVoiceMessageRecording()

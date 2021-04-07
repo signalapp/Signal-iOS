@@ -3,8 +3,8 @@ final class ContextMenuVC : UIViewController {
     private let snapshot: UIView
     private let viewItem: ConversationViewItem
     private let frame: CGRect
-    private let delegate: ContextMenuActionDelegate
     private let dismiss: () -> Void
+    private weak var delegate: ContextMenuActionDelegate?
 
     // MARK: UI Components
     private lazy var blurView = UIVisualEffectView(effect: nil)

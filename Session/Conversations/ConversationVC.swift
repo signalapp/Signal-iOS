@@ -28,6 +28,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var didFinishInitialLayout = false
     var isLoadingMore = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
+    var baselineKeyboardHeight: CGFloat = 0
 
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
@@ -179,7 +180,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         addOrRemoveBlockedBanner()
         // Notifications
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
@@ -195,6 +196,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if !draft.isEmpty {
             snInputView.text = draft
         }
+        // Update member count if this is a V2 open group
+        if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+            OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -208,11 +213,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             DispatchQueue.main.async {
                 if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
-                    self.scrollButton.alpha = self.getScrollButtonOpacity()
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
                     self.scrollToBottom(isAnimated: false)
                 }
+                self.scrollButton.alpha = self.getScrollButtonOpacity()
             }
         }
     }
@@ -231,6 +236,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 self.thread.setDraft(text, transaction: transaction)
             }
         }
+        inputAccessoryView?.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -282,29 +288,28 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
     }
     
-    @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+    @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        if (newHeight > 0 && baselineKeyboardHeight == 0) {
+            baselineKeyboardHeight = newHeight
+            self.messagesTableView.keyboardHeight = newHeight
+        }
         if !didConstrainScrollButton {
             // HACK: Part of a workaround to get the scroll button to show up in the right place
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        let shouldScroll = (newHeight > 200) // Arbitrary value that's higher than the collapsed size and lower than the expanded size
-        UIView.animate(withDuration: 0.25) {
-            if shouldScroll {
-                self.messagesTableView.contentOffset.y += (newHeight - self.messagesTableView.keyboardHeight)
-            }
-            self.messagesTableView.keyboardHeight = newHeight
-            self.scrollButton.alpha = 0
-        }
+        let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
+        self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
+        self.messagesTableView.keyboardHeight = newHeight
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        UIView.animate(withDuration: 0.25) {
-            self.messagesTableView.keyboardHeight = 0
-            self.scrollButton.alpha = self.getScrollButtonOpacity()
-            self.unreadCountView.alpha = self.scrollButton.alpha
-        }
+        self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.baselineKeyboardHeight)
+        self.messagesTableView.keyboardHeight = self.baselineKeyboardHeight
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
+        self.unreadCountView.alpha = self.scrollButton.alpha
     }
     
     func conversationViewModelWillUpdate() {
@@ -341,6 +346,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let batchUpdatesCompletion: (Bool) -> Void = { isFinished in
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: true)
+            } else {
+                // This is a workaround for an issue where after an attachment is sent without the keyboard showing before,
+                // once the keyboard shows, the table view's content offset can be wrong and the last message won't completely show.
+                // This is caused by the main run loop calling some table view update method that sets the content offset back to
+                // the previous value when the keyboard is shown.
+                self.messagesTableView.reloadData()
             }
         }
         if shouldAnimate {
