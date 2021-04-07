@@ -234,8 +234,7 @@ public class DebugFlags: BaseFlags {
     public static let reduceLogChatter = build.includes(.dev) && false
 
     @objc
-//    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
-    public static let logSQLQueries = false
+    public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
 
     @objc
     public static let groupsV2IgnoreCapability = false
