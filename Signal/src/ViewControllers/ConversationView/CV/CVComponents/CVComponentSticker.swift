@@ -129,9 +129,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         let size: CGFloat = ceil(min(maxWidth, Self.stickerSize))
         let stickerSize = CGSize.square(size)
-        let stickerInfo = ManualStackSubviewInfo(measuredSize: stickerSize,
-                                                 hasFixedWidth: true,
-                                                 hasFixedHeight: true)
+        let stickerInfo = stickerSize.asManualSubviewInfo(hasFixedSize: true)
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,
