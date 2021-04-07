@@ -126,15 +126,11 @@ public class BulkProfileFetch: NSObject {
     private func process() {
         assertOnQueue(serialQueue)
 
-        guard !CurrentAppContext().isRunningTests else {  return }
-
-        guard CurrentAppContext().isMainApp else {
-            return
-        }
-        guard reachabilityManager.isReachable else {
-            return
-        }
-        guard tsAccountManager.isRegisteredAndReady else {
+        guard !CurrentAppContext().isRunningTests,
+              CurrentAppContext().isMainApp,
+              reachabilityManager.isReachable,
+              tsAccountManager.isRegisteredAndReady,
+              !DebugFlags.reduceLogChatter else {
             return
         }
 

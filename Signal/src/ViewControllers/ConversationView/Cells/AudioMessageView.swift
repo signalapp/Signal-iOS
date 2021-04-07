@@ -121,6 +121,8 @@ class AudioMessageView: ManualStackView {
         let waveformContainer = self.waveformContainer
         let playbackTimeLabel = self.playbackTimeLabel
         let waveformHeight = Self.waveformHeight
+        waveformAndLabelContainer.addSubview(waveformContainer)
+        waveformAndLabelContainer.addSubview(playbackTimeLabel)
         waveformAndLabelContainer.layoutCallback = { view in
             // The size of playbackTimeLabel is constantly fluctuating,
             // so we can't use a pre-measured, fixed size.
