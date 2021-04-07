@@ -1,5 +1,6 @@
 import CoreServices
 import Photos
+import PhotosUI
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
     SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
@@ -727,16 +728,40 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func requestLibraryPermissionIfNeeded() -> Bool {
-        switch PHPhotoLibrary.authorizationStatus() {
+        let authorizationStatus: PHAuthorizationStatus
+        if #available(iOS 14, *) {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+            if (authorizationStatus == .notDetermined) {
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { newStatus in
+                    switch newStatus {
+                    case .authorized:
+                        print("RYAN: Full access.")
+                        break
+                    case .limited:
+                        print("RYAN: Limited access.")
+                        break
+                    case .denied:
+                        break
+                    default:
+                        break
+                    }
+                }
+                return false
+            }
+        } else {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus()
+            if (authorizationStatus == .notDetermined) {
+                PHPhotoLibrary.requestAuthorization { _ in }
+                return false
+            }
+        }
+        switch authorizationStatus {
         case .authorized, .limited: return true
         case .denied, .restricted:
             let modal = PermissionMissingModal(permission: "library") { }
             modal.modalPresentationStyle = .overFullScreen
             modal.modalTransitionStyle = .crossDissolve
             present(modal, animated: true, completion: nil)
-            return false
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization { _ in }
             return false
         default: return false
         }
