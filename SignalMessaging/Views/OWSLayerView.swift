@@ -119,4 +119,16 @@ open class OWSLayerView: UIView {
         }
         tapBlock()
     }
+
+    public func reset() {
+        removeAllSubviews()
+
+        self.layoutCallback = { _ in }
+
+        if let gestureRecognizers = self.gestureRecognizers {
+            for gestureRecognizer in gestureRecognizers {
+                removeGestureRecognizer(gestureRecognizer)
+            }
+        }
+    }
 }
