@@ -411,7 +411,7 @@ static NSTimeInterval launchStartedAt;
                 } requiresSync:YES];
             }
             
-            if (CurrentAppContext().isMainApp) {
+            if (CurrentAppContext().isMainApp && SNOpenGroupManagerV2.useV2OpenGroups) {
                 [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
 
