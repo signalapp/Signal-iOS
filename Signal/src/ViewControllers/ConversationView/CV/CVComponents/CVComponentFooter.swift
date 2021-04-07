@@ -7,11 +7,16 @@ import Foundation
 @objc
 public class CVComponentFooter: CVComponentBase, CVComponent {
 
+    struct StatusIndicator: Equatable {
+        let imageName: String
+        let imageSize: CGSize
+        let isAnimated: Bool
+    }
+
     struct State: Equatable {
         let timestampText: String
         let isFailedOutgoingMessage: Bool
-        let statusIndicatorImageName: String?
-        let isStatusIndicatorAnimated: Bool
+        let statusIndicator: StatusIndicator?
         let accessibilityLabel: String?
         let hasTapForMore: Bool
 
@@ -30,14 +35,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private var isFailedOutgoingMessage: Bool {
         footerState.isFailedOutgoingMessage
     }
-    private var statusIndicatorImageName: String? {
-        footerState.statusIndicatorImageName
-    }
-    private var isStatusIndicatorAnimated: Bool {
-        footerState.isStatusIndicatorAnimated
-    }
-    private var hasStatusIndicator: Bool {
-        statusIndicatorImageName != nil
+    private var statusIndicator: StatusIndicator? {
+        footerState.statusIndicator
     }
     public var hasTapForMore: Bool {
         footerState.hasTapForMore
@@ -81,8 +80,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let outerStack = componentView.outerStack
         let innerStack = componentView.innerStack
         let innerStackBackground = componentView.innerStackBackground
-        outerStack.apply(config: outerStackConfig)
-        innerStack.apply(config: innerStackConfig)
 
         var outerViews = [UIView]()
         var innerViews = [UIView]()
@@ -97,8 +94,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
             let tapForMoreLabel = componentView.tapForMoreLabel
             tapForMoreLabelConfig.applyForRendering(label: tapForMoreLabel)
-            let tapForMoreHeight = tapForMoreLabelConfig.font.lineHeight * tapForMoreHeightFactor
-            componentView.constraints.append(tapForMoreLabel.autoSetDimension(.height, toSize: tapForMoreHeight))
             outerViews.append(tapForMoreLabel)
         }
 
@@ -118,7 +113,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         } else {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
         }
-        timestampLabelConfig(textColor: textColor).applyForRendering(label: componentView.timestampLabel)
+        timestampLabelConfig(textColor: textColor).applyForRendering(label: timestampLabel)
         innerViews.append(timestampLabel)
 
         if let expiration = expiration {
@@ -129,15 +124,15 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerViews.append(messageTimerView)
         }
 
-        if let statusIndicatorImageName = self.statusIndicatorImageName {
-            if let icon = UIImage(named: statusIndicatorImageName) {
+        if let statusIndicator = self.statusIndicator {
+            if let icon = UIImage(named: statusIndicator.imageName) {
                 let statusIndicatorImageView = componentView.statusIndicatorImageView
-                owsAssertDebug(icon.size.width <= CVComponentFooter.maxImageWidth)
+                owsAssertDebug(icon.size == statusIndicator.imageSize)
                 statusIndicatorImageView.image = icon.withRenderingMode(.alwaysTemplate)
                 statusIndicatorImageView.tintColor = textColor
                 innerViews.append(statusIndicatorImageView)
 
-                if isStatusIndicatorAnimated {
+                if statusIndicator.isAnimated {
                     componentView.animateSpinningIcon()
                 }
             } else {
@@ -145,8 +140,19 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             }
         }
 
-        outerStack.addArrangedSubviews(outerViews, reverseOrder: isIncoming)
-        innerStack.addArrangedSubviews(innerViews)
+        innerStack.reset()
+        innerStack.configure(config: innerStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_innerStack,
+                             subviews: innerViews)
+        if isIncoming {
+            outerViews.reverse()
+        }
+        outerStack.reset()
+        outerStack.configure(config: outerStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_outerStack,
+                             subviews: outerViews)
     }
 
     static func isFailedOutgoingMessage(interaction: TSInteraction) -> Bool {
@@ -188,29 +194,36 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let timestampText = Self.timestampText(forInteraction: interaction,
                                                shouldUseLongFormat: false)
 
-        var statusIndicatorImageName: String?
-        var isStatusIndicatorAnimated: Bool = false
+        var statusIndicator: StatusIndicator?
         var accessibilityLabel: String?
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
             accessibilityLabel = MessageRecipientStatusUtils.receiptMessage(outgoingMessage: outgoingMessage)
+
             switch messageStatus {
             case .uploading, .sending:
-                statusIndicatorImageName = "message_status_sending"
-                isStatusIndicatorAnimated = true
+                statusIndicator = StatusIndicator(imageName: "message_status_sending",
+                                                  imageSize: .square(12),
+                                                  isAnimated: true)
             case .sent, .skipped:
-                statusIndicatorImageName = "message_status_sent"
+                statusIndicator = StatusIndicator(imageName: "message_status_sent",
+                                                  imageSize: .square(12),
+                                                  isAnimated: false)
             case .delivered:
-                statusIndicatorImageName = "message_status_delivered"
+                statusIndicator = StatusIndicator(imageName: "message_status_delivered",
+                                                  imageSize: .init(width: 18, height: 12),
+                                                  isAnimated: false)
             case .read:
-                statusIndicatorImageName = "message_status_read"
+                statusIndicator = StatusIndicator(imageName: "message_status_read",
+                                                  imageSize: .init(width: 18, height: 12),
+                                                  isAnimated: false)
             case .failed:
                 // No status indicator icon.
                 break
             }
 
             if outgoingMessage.wasRemotelyDeleted {
-                statusIndicatorImageName = nil
+                statusIndicator = nil
             }
         }
 
@@ -223,8 +236,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         return State(timestampText: timestampText,
                      isFailedOutgoingMessage: isFailedOutgoingMessage,
-                     statusIndicatorImageName: statusIndicatorImageName,
-                     isStatusIndicatorAnimated: isStatusIndicatorAnimated,
+                     statusIndicator: statusIndicator,
                      accessibilityLabel: accessibilityLabel,
                      hasTapForMore: hasTapForMore,
                      expiration: expiration)
@@ -269,41 +281,63 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                           layoutMargins: layoutMargins)
     }
 
+    private static let measurementKey_outerStack = "CVComponentBodyText.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentBodyText.measurementKey_innerStack"
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        var subviewSizes = [CGSize]()
+        var outerSubviewInfos = [ManualStackSubviewInfo]()
+        var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
             var tapForMoreSize = CVText.measureLabel(config: tapForMoreLabelConfig,
                                                      maxWidth: maxWidth)
             tapForMoreSize.height *= tapForMoreHeightFactor
-            subviewSizes.append(tapForMoreSize)
+            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: tapForMoreSize,
+                                                            hasFixedWidth: true))
         }
 
         // We always use a stretching spacer.
-        subviewSizes.append(.zero)
+        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .zero))
 
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
-        subviewSizes.append(CVText.measureLabel(config: timestampLabelConfig,
-                                                maxWidth: maxWidth))
+        let timestampLabelSize = CVText.measureLabel(config: timestampLabelConfig,
+                                                 maxWidth: maxWidth)
+        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: timestampLabelSize,
+                                                        hasFixedWidth: true))
 
         if hasPerConversationExpiration,
            nil != interaction as? TSMessage {
-            subviewSizes.append(OWSMessageTimerView.measureSize())
+            let timerSize = OWSMessageTimerView.measureSize()
+            innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: timerSize,
+                                                            hasFixedWidth: true))
         }
 
-        if hasStatusIndicator {
-            subviewSizes.append(CGSize(width: Self.maxImageWidth, height: 0))
+        if let statusIndicator = self.statusIndicator {
+            let statusSize = statusIndicator.imageSize
+            innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: statusSize,
+                                                            hasFixedWidth: true))
         }
 
-        return CVStackView.measure(config: innerStackConfig, subviewSizes: subviewSizes).ceil
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: innerSubviewInfos)
+        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackMeasurement.measuredSize,
+                                                        hasFixedWidth: true))
+        if isIncoming {
+            outerSubviewInfos.reverse()
+        }
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
     }
 
     private static let hSpacing: CGFloat = 4
-    private static let maxImageWidth: CGFloat = 18
-    private static let imageHeight: CGFloat = 12
 
     // MARK: - Events
 
@@ -326,15 +360,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewFooter: NSObject, CVComponentView {
 
-        fileprivate let outerStack = OWSStackView(name: "footer.outerStack")
-        fileprivate let innerStack = OWSStackView(name: "footer.innerStack")
+        fileprivate let outerStack = ManualStackView(name: "footer.outerStack")
+        fileprivate let innerStack = ManualStackView(name: "footer.innerStack")
         fileprivate let tapForMoreLabel = UILabel()
         fileprivate let timestampLabel = UILabel()
         fileprivate let statusIndicatorImageView = UIImageView()
+        // TODO:
         fileprivate let messageTimerView = OWSMessageTimerView()
         fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 11)
-
-        fileprivate var constraints = [NSLayoutConstraint]()
 
         public var isDedicatedCellView = false
 
@@ -359,9 +392,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             statusIndicatorImageView.layer.removeAllAnimations()
             messageTimerView.prepareForReuse()
-
-            NSLayoutConstraint.deactivate(constraints)
-            constraints = []
         }
 
         fileprivate func animateSpinningIcon() {
