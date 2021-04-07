@@ -139,6 +139,7 @@ open class ManualStackView: OWSStackView {
         invalidateArrangement()
     }
 
+    // NOTE: This method does _NOT_ call the superclass implementation.
     @objc
     public override func addArrangedSubview(_ view: UIView) {
         addSubview(view)
@@ -540,6 +541,21 @@ open class ManualStackView: OWSStackView {
 
     // MARK: -
 
+    public func addSubview(_ subview: UIView,
+                           withLayoutBlock layoutBlock: @escaping LayoutBlock) {
+        owsAssertDebug(subview.superview == nil)
+
+        subview.translatesAutoresizingMaskIntoConstraints = false
+
+        addSubview(subview)
+
+        addLayoutBlock(layoutBlock)
+    }
+
+    public func addLayoutBlock(_ layoutBlock: @escaping LayoutBlock) {
+        layoutBlocks.append(layoutBlock)
+    }
+
     public func centerSubviewWithLayoutBlock(_ subview: UIView,
                                              onSiblingView siblingView: UIView,
                                              size: CGSize) {
@@ -548,7 +564,7 @@ open class ManualStackView: OWSStackView {
 
         subview.translatesAutoresizingMaskIntoConstraints = false
 
-        layoutBlocks.append { _ in
+        addLayoutBlock { _ in
             guard let superview = subview.superview else {
                 owsFailDebug("Missing superview.")
                 return
@@ -558,7 +574,7 @@ open class ManualStackView: OWSStackView {
             let siblingCenter = superview.convert(siblingView.center,
                                                   from: siblingView.superview)
             let subviewFrame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
-                                                   y: siblingCenter.y - subview.height * 0.5),
+                                                      y: siblingCenter.y - subview.height * 0.5),
                                       size: size)
             Self.setSubviewFrame(subview: subview,
                                  frame: subviewFrame)
@@ -579,7 +595,7 @@ open class ManualStackView: OWSStackView {
 
         subview.translatesAutoresizingMaskIntoConstraints = false
 
-        layoutBlocks.append { _ in
+        addLayoutBlock { _ in
             guard let superview = subview.superview else {
                 owsFailDebug("Missing superview.")
                 return
@@ -599,7 +615,7 @@ open class ManualStackView: OWSStackView {
 
         subview.translatesAutoresizingMaskIntoConstraints = false
 
-        layoutBlocks.append { _ in
+        addLayoutBlock { _ in
             guard let superview = subview.superview else {
                 owsFailDebug("Missing superview.")
                 return

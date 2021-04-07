@@ -55,106 +55,97 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             return
         }
 
-        let stackView = componentView.stackView
-        let bubbleView = componentView.bubbleView
+        let outerStackView = componentView.outerStackView
+        let innerStackView = componentView.innerStackView
 
-        stackView.apply(config: outerStackViewConfig)
+        innerStackView.reset()
+        outerStackView.reset()
 
-        bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
+        var outerViews = [UIView]()
 
-        typealias AvatarLayoutBlock = () -> Void
-        let avatarView = componentView.avatarView
-
-        var hasAvatar = false
         if let avatarImage = typingIndicator.avatar {
+            let avatarView = componentView.avatarView
             avatarView.image = avatarImage
-            hasAvatar = true
+            outerViews.append(avatarView)
         }
-        avatarView.isHidden = !hasAvatar
+
+        let bubbleView = componentView.bubbleView
+        bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
+        innerStackView.addSubview(bubbleView) { view in
+            bubbleView.frame = view.bounds
+        }
 
         let typingIndicatorView = componentView.typingIndicatorView
 
-        let isReusing = stackView.superview != nil
-        if !isReusing {
-            stackView.addSubview(avatarView)
-            stackView.addSubview(bubbleView)
-            stackView.addSubview(typingIndicatorView)
-        }
+        outerViews.append(innerStackView)
 
-        let outerStackViewConfig = self.outerStackViewConfig
-        let innerLayoutMargins = self.innerLayoutMargins
-        let outerLayoutMargins = self.outerLayoutMargins
-        let avatarDiameter = ConversationStyle.groupMessageAvatarDiameter
-        let avatarSize = CGSize(square: avatarDiameter)
-        let typingIndicatorSize = TypingIndicatorView.measureSize
-        let minBubbleHeight = self.minBubbleHeight
-        stackView.layoutBlock = { (superview: UIView) in
-            var outerFrame = superview.bounds.inset(by: outerLayoutMargins)
+        // We always use a stretching spacer.
+        outerViews.append(UIView.hStretchingSpacer())
 
-            if hasAvatar {
-                var avatarFrame = CGRect.zero
-                avatarFrame.x = outerFrame.x
-                avatarFrame.y = (outerFrame.height - avatarDiameter) * 0.5
-                avatarFrame.size = avatarSize
-                avatarView.frame = avatarFrame
-
-                let inset = avatarDiameter + outerStackViewConfig.spacing
-                outerFrame.x += inset
-                outerFrame.width -= inset
-            }
-
-            var bubbleFrame = CGRect.zero
-            bubbleFrame.size = typingIndicatorSize.plus(innerLayoutMargins.asSize)
-            bubbleFrame.height = max(bubbleFrame.height, minBubbleHeight)
-            bubbleFrame.x = outerFrame.x
-            bubbleFrame.y = (outerFrame.height - bubbleFrame.height) * 0.5
-            bubbleView.frame = bubbleFrame
-
-            var typingIndicatorViewFrame = CGRect.zero
-            typingIndicatorViewFrame.width = typingIndicatorSize.width
-            typingIndicatorViewFrame.height = bubbleFrame.height - innerLayoutMargins.asSize.height
-            typingIndicatorViewFrame.x = outerFrame.x + innerLayoutMargins.left
-            typingIndicatorViewFrame.y = (outerFrame.height - typingIndicatorViewFrame.height) * 0.5
-            typingIndicatorView.frame = typingIndicatorViewFrame
-        }
+        innerStackView.configure(config: innerStackViewConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_innerStack,
+                             subviews: [ typingIndicatorView ])
+        outerStackView.configure(config: outerStackViewConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_outerStack,
+                                 subviews: outerViews)
     }
 
     private var outerStackViewConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
-                          alignment: .fill,
+                          alignment: .center,
                           spacing: ConversationStyle.messageStackSpacing,
-                          layoutMargins: outerLayoutMargins)
+                          layoutMargins: UIEdgeInsets(top: 0,
+                                                      leading: conversationStyle.gutterLeading,
+                                                      bottom: 0,
+                                                      trailing: conversationStyle.gutterTrailing))
     }
 
-    private var outerLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: 0,
-                     leading: conversationStyle.gutterLeading,
-                     bottom: 0,
-                     trailing: conversationStyle.gutterTrailing)
-    }
-
-    private var innerLayoutMargins: UIEdgeInsets {
-        conversationStyle.textInsets
+    private var innerStackViewConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 0,
+                          layoutMargins: conversationStyle.textInsets)
     }
 
     private let minBubbleHeight: CGFloat = 36
 
+    private static let measurementKey_outerStack = "CVComponentTypingIndicator.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentTypingIndicator.measurementKey_innerStack"
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let insetsSize = innerLayoutMargins.asSize
-        let typingIndicatorSize = TypingIndicatorView.measureSize
-        let bubbleSize = CGSizeAdd(insetsSize, typingIndicatorSize)
+        var outerSubviewInfos = [ManualStackSubviewInfo]()
+        var innerSubviewInfos = [ManualStackSubviewInfo]()
 
-        let width: CGFloat
         if typingIndicator.avatar != nil {
-            width = ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing + bubbleSize.width
-        } else {
-            width = bubbleSize.width
+            let avatarSize = ConversationStyle.groupMessageAvatarDiameter
+            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .square(avatarSize),
+                                                            hasFixedSize: true))
         }
 
-        let height = max(minBubbleHeight, bubbleSize.height)
-        return CGSize(width: width, height: height).ceil
+        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: TypingIndicatorView.measureSize,
+                                                        hasFixedSize: true))
+
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackViewConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: innerSubviewInfos)
+        var innerStackSize = innerStackMeasurement.measuredSize
+        innerStackSize.height = max(minBubbleHeight, innerStackSize.height)
+        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackSize,
+                                                        hasFixedWidth: true))
+
+        // We always use a stretching spacer.
+        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .zero))
+
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackViewConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
     }
 
     // MARK: -
@@ -164,16 +155,19 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewTypingIndicator: NSObject, CVComponentView {
 
-        fileprivate let stackView = OWSStackView(name: "Typing indicator")
+        fileprivate let outerStackView = ManualStackView(name: "Typing indicator outer")
+        fileprivate let innerStackView = ManualStackView(name: "Typing indicator inner")
 
+        // TODO:
         fileprivate let avatarView = AvatarImageView()
         fileprivate let bubbleView = OWSBubbleView()
+        // TODO:
         fileprivate let typingIndicatorView = TypingIndicatorView()
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            stackView
+            outerStackView
         }
 
         // MARK: -
@@ -189,10 +183,11 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         public func reset() {
             owsAssertDebug(isDedicatedCellView)
 
-            if !isDedicatedCellView {
-                stackView.reset()
-            }
-            stackView.layoutBlock = nil
+            outerStackView.reset()
+            innerStackView.reset()
+
+            // TODO: Remove all usage of layoutBlock (singular) in ManualStackView.
+            // stackView.layoutBlock = nil
 
             avatarView.image = nil
 

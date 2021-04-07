@@ -281,8 +281,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                           layoutMargins: layoutMargins)
     }
 
-    private static let measurementKey_outerStack = "CVComponentBodyText.measurementKey_outerStack"
-    private static let measurementKey_innerStack = "CVComponentBodyText.measurementKey_innerStack"
+    private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentFooter.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
