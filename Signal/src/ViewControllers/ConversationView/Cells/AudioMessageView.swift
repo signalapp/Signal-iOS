@@ -5,7 +5,7 @@
 import Foundation
 import Lottie
 
-class AudioMessageView: OWSStackView {
+class AudioMessageView: ManualStackView {
 
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
@@ -28,12 +28,13 @@ class AudioMessageView: OWSStackView {
     }
 
     private let isIncoming: Bool
-    private let conversationStyle: ConversationStyle
 
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
     private let playbackTimeLabel = UILabel()
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
+    private let waveformContainer = OWSLayerView()
+    private let waveformAndLabelContainer = OWSLayerView()
 
     private var audioPlaybackState: AudioPlaybackState {
         cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
@@ -47,41 +48,47 @@ class AudioMessageView: OWSStackView {
     }
 
     @objc
-    init(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle) {
+    init(audioAttachment: AudioAttachment, isIncoming: Bool) {
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
-        self.conversationStyle = conversationStyle
 
         super.init(name: "AudioMessageView")
+    }
 
-        self.apply(config: Self.outerStackConfig)
+    public func configureForRendering(cellMeasurement: CVCellMeasurement,
+                                      conversationStyle: ConversationStyle) {
+
+        var outerSubviews = [UIView]()
 
         if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
-                                           isIncoming: isIncoming,
-                                           conversationStyle: conversationStyle) {
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle) {
             let topLabel = UILabel()
             topLabelConfig.applyForRendering(label: topLabel)
-            addArrangedSubview(topLabel)
+            outerSubviews.append(topLabel)
         }
-
-        let waveformContainer = UIView.container()
-        waveformContainer.autoSetDimension(.height, toSize: AudioMessageView.waveformHeight)
 
         waveformProgress.playedColor = playedColor
         waveformProgress.unplayedColor = unplayedColor
         waveformProgress.thumbColor = thumbColor
         waveformContainer.addSubview(waveformProgress)
-        waveformProgress.autoPinEdgesToSuperviewEdges()
 
         progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.asTintedImage(color: thumbColor), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: playedColor), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: unplayedColor), for: .normal)
-
         waveformContainer.addSubview(progressSlider)
-        progressSlider.autoPinWidthToSuperview()
-        progressSlider.autoSetDimension(.height, toSize: 12)
-        progressSlider.autoVCenterInSuperview()
         progressSlider.isEnabled = isDownloaded
+
+        let waveformProgress = self.waveformProgress
+        let progressSlider = self.progressSlider
+        waveformContainer.layoutCallback = { view in
+            waveformProgress.frame = view.bounds
+
+            var sliderFrame = view.bounds
+            sliderFrame.height = 12
+            sliderFrame.y = (view.bounds.height - sliderFrame.height) * 0.5
+            progressSlider.frame = sliderFrame
+        }
 
         Self.playbackTimeLabelConfig(isIncoming: isIncoming,
                                      conversationStyle: conversationStyle).applyForRendering(label: playbackTimeLabel)
@@ -97,8 +104,6 @@ class AudioMessageView: OWSStackView {
             playPauseAnimation.animationSpeed = 3
             playPauseAnimation.backgroundBehavior = .forceFinish
             playPauseAnimation.contentMode = .scaleAspectFit
-            playPauseAnimation.autoSetDimensions(to: CGSize(square: Self.animationSize))
-            playPauseAnimation.setContentHuggingHigh()
 
             let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
             playPauseAnimation.setValueProvider(ColorValueProvider(thumbColor.lottieColorValue), keypath: fillColorKeypath)
@@ -113,14 +118,91 @@ class AudioMessageView: OWSStackView {
             leftView = UIView()
         }
 
-        let innerStack = OWSStackView(name: "playerStack",
-                                      arrangedSubviews: [leftView, waveformContainer, playbackTimeLabel])
-        innerStack.apply(config: Self.innerStackConfig)
-        addArrangedSubview(innerStack)
+        let waveformContainer = self.waveformContainer
+        let playbackTimeLabel = self.playbackTimeLabel
+        let waveformHeight = Self.waveformHeight
+        waveformAndLabelContainer.layoutCallback = { view in
+            // The size of playbackTimeLabel is constantly fluctuating,
+            // so we can't use a pre-measured, fixed size.
+            let spacing = Self.innerStackConfig.spacing
+            var labelSize = playbackTimeLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
+                                                                  height: CGFloat.greatestFiniteMagnitude))
+            labelSize.width = min(labelSize.width,
+                                  view.bounds.width - spacing)
+            labelSize.height = min(labelSize.height,
+                                   view.bounds.height)
+            let labelFrame = CGRect(origin: CGPoint(x: view.bounds.width - labelSize.width,
+                                                    y: (view.bounds.height - labelSize.height) * 0.5),
+                                    size: labelSize)
+            playbackTimeLabel.frame = labelFrame
+
+            let waveformContainerFrame = CGRect(x: 0,
+                                                y: (view.bounds.height - waveformHeight) * 0.5,
+                                                width: labelFrame.x - spacing,
+                                                height: waveformHeight)
+            waveformContainer.frame = waveformContainerFrame
+        }
+
+        let innerStack = ManualStackView(name: "playerStack")
+        innerStack.configure(config: Self.innerStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_innerStack,
+                             subviews: [
+                                leftView, waveformAndLabelContainer
+                             ])
+        outerSubviews.append(innerStack)
+
+        self.configure(config: Self.outerStackConfig,
+                       cellMeasurement: cellMeasurement,
+                       measurementKey: Self.measurementKey_outerStack,
+                       subviews: outerSubviews)
 
         updateContents(animated: false)
 
         cvAudioPlayer.addListener(self)
+    }
+
+    private static let measurementKey_innerStack = "CVComponentAudioAttachment.measurementKey_innerStack"
+    private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
+
+    public static func measure(maxWidth: CGFloat,
+                               audioAttachment: AudioAttachment,
+                               isIncoming: Bool,
+                               conversationStyle: ConversationStyle,
+                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+        owsAssertDebug(maxWidth > 0)
+
+        var outerSubviewInfos = [ManualStackSubviewInfo]()
+        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle) {
+            let topLabelSize = CGSize(width: 0, height: topLabelConfig.font.lineHeight)
+            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: topLabelSize))
+        }
+
+        var innerSubviewInfos = [ManualStackSubviewInfo]()
+        let leftViewSize = CGSize(square: animationSize)
+        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: leftViewSize,
+                                                        hasFixedSize: true))
+
+        let waveformAndLabelSize = CGSize(width: 0,
+                                          height: max(waveformHeight,
+                                                      playbackTimeLabelConfig(isIncoming: isIncoming,
+                                                                              conversationStyle: conversationStyle).font.lineHeight))
+        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: waveformAndLabelSize))
+
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: innerSubviewInfos)
+        let innerStackSize = innerStackMeasurement.measuredSize
+        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackSize.ceil))
+
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
     }
 
     @available(swift, obsoleted: 1.0)
@@ -168,30 +250,6 @@ class AudioMessageView: OWSStackView {
         return CVLabelConfig(text: " ",
                              font: UIFont.ows_dynamicTypeCaption1.ows_monospaced,
                              textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
-    }
-
-    @objc
-    static func measureHeight(audioAttachment: AudioAttachment,
-                              isIncoming: Bool,
-                              conversationStyle: ConversationStyle) -> CGFloat {
-
-        var outerSubviewSizes = [CGSize]()
-        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
-                                                    isIncoming: isIncoming,
-                                                    conversationStyle: conversationStyle) {
-            outerSubviewSizes.append(CGSize(width: 0, height: topLabelConfig.font.lineHeight))
-        }
-
-        let playPauseAnimationSize = CGSize(square: animationSize)
-        let waveformSize = CGSize(width: 0, height: waveformHeight)
-        let playbackTimeLabelSize = CGSize(width: 0, height: playbackTimeLabelConfig(isIncoming: isIncoming,
-                                                                                     conversationStyle: conversationStyle).font.lineHeight)
-        let innerSubviewSizes = [playPauseAnimationSize, waveformSize, playbackTimeLabelSize]
-        let innerStackSize = CVStackView.measure(config: innerStackConfig, subviewSizes: innerSubviewSizes)
-        outerSubviewSizes.append(innerStackSize)
-
-        let outerStackSize = CVStackView.measure(config: outerStackConfig, subviewSizes: outerSubviewSizes)
-        return outerStackSize.height
     }
 
     // MARK: - Scrubbing
@@ -291,6 +349,7 @@ class AudioMessageView: OWSStackView {
     private func updateElapsedTime(_ elapsedSeconds: TimeInterval) {
         let timeRemaining = Int(durationSeconds - elapsedSeconds)
         playbackTimeLabel.text = OWSFormat.formatDurationSeconds(timeRemaining)
+        waveformAndLabelContainer.setNeedsLayout()
     }
 
     private func updateAudioProgress() {

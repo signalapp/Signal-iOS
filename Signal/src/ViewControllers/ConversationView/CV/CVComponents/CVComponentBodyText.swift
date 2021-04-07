@@ -254,8 +254,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             return
         }
 
-        let stackView = componentView.stackView
-
         switch bodyText {
         case .bodyText(let displayableText):
             configureForBodyText(componentView: componentView,

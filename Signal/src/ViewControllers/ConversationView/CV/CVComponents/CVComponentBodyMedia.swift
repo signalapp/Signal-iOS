@@ -65,6 +65,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let conversationStyle = self.conversationStyle
 
+        // TODO:
         let albumView = componentView.albumView
         albumView.configure(mediaCache: self.mediaCache,
                             items: self.items,
@@ -94,6 +95,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                                 cellMeasurement: cellMeasurement,
                                                 componentDelegate: componentDelegate)
             stackView.addSubview(footerView.rootView)
+            // TODO:
             footerView.rootView.autoPinEdge(toSuperviewEdge: .leading,
                                             withInset: conversationStyle.textInsetHorizontal)
             footerView.rootView.autoPinEdge(toSuperviewEdge: .trailing,
@@ -147,6 +149,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let pillView = OWSLayerView.pillView()
                 pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
                 downloadStack.addSubview(pillView)
+                // TODO:
                 pillView.autoPinEdgesToSuperviewEdges()
 
                 iconView.autoSetDimensions(to: CGSize.square(20))
@@ -164,6 +167,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addArrangedSubview(downloadLabel)
 
                 stackView.addSubview(downloadStack)
+                // TODO:
                 downloadStack.autoCenterInSuperview()
             } else {
                 let circleSize: CGFloat = 44
@@ -205,9 +209,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     downloadSizeLabel.textColor = UIColor.ows_white
                     downloadSizeLabel.font = .ows_dynamicTypeCaption1
                     downloadSizeView.addSubview(downloadSizeLabel)
+                    // TODO:
                     downloadSizeLabel.autoPinEdgesToSuperviewMargins()
 
                     componentView.rootView.addSubview(downloadSizeView)
+                    // TODO:
                     downloadSizeView.autoPinEdge(toSuperviewEdge: .top, withInset: 9)
                     downloadSizeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
                 }

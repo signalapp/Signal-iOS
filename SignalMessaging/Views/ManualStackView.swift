@@ -17,6 +17,12 @@ public struct ManualStackSubviewInfo: Equatable {
         self.hasFixedHeight = hasFixedHeight
     }
 
+    public init(measuredSize: CGSize, hasFixedSize: Bool) {
+        self.measuredSize = measuredSize
+        self.hasFixedWidth = hasFixedSize
+        self.hasFixedHeight = hasFixedSize
+    }
+
     public init(measuredSize: CGSize, subview: UIView) {
         self.measuredSize = measuredSize
 
@@ -73,7 +79,8 @@ open class ManualStackView: OWSStackView {
 
         func apply() {
             if subview.frame != frame {
-                subview.frame = frame
+                ManualStackView.setSubviewFrame(subview: subview,
+                                                frame: frame)
             }
         }
     }
@@ -225,8 +232,21 @@ open class ManualStackView: OWSStackView {
 
     // An alignment enum that can be used whether the layout axis
     // is horizontal or vertical.
-    private enum OffAxisAlignment {
+    private enum OffAxisAlignment: CustomStringConvertible {
         case minimum, center, maximum, fill
+
+        public var description: String {
+            switch self {
+            case .minimum:
+                return ".minimum"
+            case .center:
+                return ".center"
+            case .maximum:
+                return ".maximum"
+            case .fill:
+                return ".fill"
+            }
+        }
     }
 
     private func buildArrangement(measurement: Measurement,
@@ -309,7 +329,7 @@ open class ManualStackView: OWSStackView {
             }
 
             let adjustment = underflow / CGFloat(underflowLayoutItems.count)
-            for layoutItem in layoutItems {
+            for layoutItem in underflowLayoutItems {
                 layoutItem.onAxisSize = max(0, layoutItem.onAxisSize + adjustment)
             }
         } else if onAxisSizeTotal > onAxisMaxSize {
@@ -327,7 +347,7 @@ open class ManualStackView: OWSStackView {
             }
 
             let adjustment = overflow / CGFloat(overflowLayoutItems.count)
-            for layoutItem in layoutItems {
+            for layoutItem in overflowLayoutItems {
                 layoutItem.onAxisSize = max(0, layoutItem.onAxisSize - adjustment)
             }
         }
@@ -340,13 +360,13 @@ open class ManualStackView: OWSStackView {
         }
 
         // Determine offAxisSize and offAxisLocation.
-        for layoutItem in layoutItems {
+        for (index, layoutItem) in layoutItems.enumerated() {
             if layoutItem.offAxisMeasuredSize > offAxisMaxSize {
                 Logger.warn("\(name): Off-axis overflow: offAxisMeasuredSize: \(layoutItem.offAxisMeasuredSize) > offAxisMaxSize: \(offAxisMaxSize)")
             }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
-               layoutItem.subviewInfo.hasFixedSizeOffAxis(isHorizontalLayout: isHorizontal) {
+               !layoutItem.subviewInfo.hasFixedSizeOffAxis(isHorizontalLayout: isHorizontal) {
                 offAxisSize = offAxisMaxSize
             }
             layoutItem.offAxisSize = offAxisSize
@@ -367,11 +387,6 @@ open class ManualStackView: OWSStackView {
             layoutItem.frame.y += layoutMargins.top
         }
 
-        // Apply layoutMargins.
-        for layoutItem in layoutItems {
-            layoutItem.frame.x += layoutMargins.left
-            layoutItem.frame.y += layoutMargins.top
-        }
         let arrangementItems = layoutItems.map { $0.asArrangementItem }
         return Arrangement(items: arrangementItems)
     }
@@ -542,10 +557,20 @@ open class ManualStackView: OWSStackView {
 
             let siblingCenter = superview.convert(siblingView.center,
                                                   from: siblingView.superview)
-            subview.frame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
+            let subviewFrame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
                                                    y: siblingCenter.y - subview.height * 0.5),
-                                   size: size)
+                                      size: size)
+            Self.setSubviewFrame(subview: subview,
+                                 frame: subviewFrame)
         }
+    }
+
+    private static func setSubviewFrame(subview: UIView, frame: CGRect) {
+        guard subview.frame != frame else {
+            return
+        }
+        subview.frame = frame
+        subview.setNeedsLayout()
     }
 
     public func centerSubviewOnSuperviewWithLayoutBlock(_ subview: UIView,
@@ -561,9 +586,11 @@ open class ManualStackView: OWSStackView {
             }
 
             let superviewBounds = superview.bounds
-            subview.frame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
-                                                   y: (superviewBounds.height - subview.height) * 0.5),
-                                   size: size)
+            let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
+                                                      y: (superviewBounds.height - subview.height) * 0.5),
+                                      size: size)
+            Self.setSubviewFrame(subview: subview,
+                                 frame: subviewFrame)
         }
     }
 
@@ -578,7 +605,8 @@ open class ManualStackView: OWSStackView {
                 return
             }
 
-            subview.frame = superview.bounds
+            Self.setSubviewFrame(subview: subview,
+                                 frame: superview.bounds)
         }
     }
 }
