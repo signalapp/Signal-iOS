@@ -41,13 +41,18 @@ public enum HTTP {
             guard SecTrustSetAnchorCertificates(trust, certificates as CFArray) == errSecSuccess else {
                 return completionHandler(.cancelAuthenticationChallenge, nil)
             }
-            // Check that the presented certificate is one of the trusted seed node certificates
+            // Check that the presented certificate is one of the seed node certificates
             var result: SecTrustResultType = .invalid
             guard SecTrustEvaluate(trust, &result) == errSecSuccess else {
                 return completionHandler(.cancelAuthenticationChallenge, nil)
             }
             switch result {
-            case .proceed: return completionHandler(.useCredential, URLCredential(trust: trust))
+            case .proceed, .unspecified:
+                // Unspecified indicates that evaluation reached an (implicitly trusted) anchor certificate without
+                // any evaluation failures, but never encountered any explicitly stated user-trust preference. This
+                // is the most common return value. The Keychain Access utility refers to this value as the "Use System
+                // Policy," which is the default user setting.
+                return completionHandler(.useCredential, URLCredential(trust: trust))
             default: return completionHandler(.cancelAuthenticationChallenge, nil)
             }
         }
