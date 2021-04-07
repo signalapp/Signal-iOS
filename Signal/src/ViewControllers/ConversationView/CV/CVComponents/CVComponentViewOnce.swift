@@ -84,14 +84,14 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             return
         }
 
-        componentView.hStackView.apply(config: hStackViewConfig)
+        var subviews = [UIView]()
 
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer):
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withoutCircle(diameter: iconSize),
                                                         conversationStyle: conversationStyle)
-            componentView.hStackView.addArrangedSubview(progressView)
+            subviews.append(progressView)
         default:
             if shouldShowIcon, let iconName = self.iconName {
                 let iconView = componentView.iconView
@@ -99,12 +99,20 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
                 iconView.autoSetDimensions(to: CGSize(square: iconSize))
                 iconView.setContentHuggingHigh()
                 iconView.setCompressionResistanceHigh()
-                componentView.hStackView.addArrangedSubview(iconView)
+                subviews.append(iconView)
             }
         }
 
-        labelConfig.applyForRendering(label: componentView.label)
-        componentView.hStackView.addArrangedSubview(componentView.label)
+        let label = componentView.label
+        labelConfig.applyForRendering(label: label)
+        subviews.append(label)
+
+        let stackView = componentView.stackView
+        stackView.reset()
+        stackView.configure(config: stackViewConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: subviews)
     }
 
     private let iconSize: CGFloat = 24
@@ -113,39 +121,42 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         iconSize * 0.5
     }
 
-    private var hStackViewConfig: CVStackViewConfig {
+    private var stackViewConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
                           spacing: 8,
                           layoutMargins: .zero)
     }
 
+    private static let measurementKey_stackView = "CVComponentViewOnce.measurementKey_stackView"
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
+
+        var subviewInfos = [ManualStackSubviewInfo]()
 
         let hasIcon = shouldShowIcon && iconName != nil
         let hasIconOrProgress = hasIcon || shouldShowProgress
 
         var availableWidth = maxWidth
         if hasIconOrProgress {
-            availableWidth = max(0, availableWidth - (iconSize + hStackViewConfig.spacing))
+            availableWidth = max(0, availableWidth - (iconSize + stackViewConfig.spacing))
+            subviewInfos.append(ManualStackSubviewInfo(measuredSize: .square(iconSize),
+                                                       hasFixedSize: true))
         }
         let textSize = CVText.measureLabel(config: labelConfig, maxWidth: availableWidth)
-        var width = textSize.width
-        var height = textSize.height
-        if hasIconOrProgress {
-            width += iconSize + hStackViewConfig.spacing
-            height = max(height, iconSize)
-        }
-        width += hStackViewConfig.layoutMargins.totalWidth
-        height += hStackViewConfig.layoutMargins.totalHeight
+        subviewInfos.append(ManualStackSubviewInfo(measuredSize: textSize))
 
+        let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: subviewInfos)
+        var result = stackMeasurement.measuredSize.ceil
         // We use this "min width" to reduce/avoid "flutter"
         // in the bubble's size as the message changes states.
         let minContentWidth: CGFloat = maxWidth * 0.4
-        width = max(width, minContentWidth)
-
-        return CGSize(width: width, height: height).ceil
+        result.width = max(result.width, minContentWidth)
+        return result
     }
 
     // MARK: - Events
@@ -187,20 +198,20 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewViewOnce: NSObject, CVComponentView {
 
-        fileprivate let hStackView = OWSStackView(name: "viewOnce")
+        fileprivate let stackView = ManualStackView(name: "viewOnce")
         fileprivate let iconView = UIImageView()
         fileprivate let label = UILabel()
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            hStackView
+            stackView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            hStackView.reset()
+            stackView.reset()
             iconView.image = nil
             label.text = nil
         }

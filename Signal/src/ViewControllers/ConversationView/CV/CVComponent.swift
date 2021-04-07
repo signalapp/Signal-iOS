@@ -113,14 +113,20 @@ public struct CVCellMeasurement: Equatable {
         }
 
         func setSize(key: String, size: CGSize) {
+            owsAssertDebug(sizes[key] == nil)
+
             sizes[key] = size
         }
 
         func setValue(key: String, value: CGFloat) {
+            owsAssertDebug(values[key] == nil)
+
             values[key] = value
         }
 
         func setMeasurement(key: String, value: Measurement) {
+            owsAssertDebug(measurements[key] == nil)
+
             measurements[key] = value
         }
     }
