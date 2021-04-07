@@ -64,7 +64,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
         let subviewSize = CGSize(width: maxWidth, height: Self.buttonHeight)
         var subviewInfos = [ManualStackSubviewInfo]()
         for _ in 0 ..< actions.count {
-            subviewInfos.append(ManualStackSubviewInfo(measuredSize: subviewSize))
+            subviewInfos.append(subviewSize.asManualSubviewInfo)
         }
         let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                        measurementBuilder: measurementBuilder,

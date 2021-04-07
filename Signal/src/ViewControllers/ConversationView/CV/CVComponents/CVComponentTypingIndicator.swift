@@ -55,6 +55,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             return
         }
 
+        // TODO: Reuse?
+
         let outerStackView = componentView.outerStackView
         let innerStackView = componentView.innerStackView
 
@@ -71,9 +73,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
         let bubbleView = componentView.bubbleView
         bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
-        innerStackView.addSubview(bubbleView) { view in
-            bubbleView.frame = view.bounds
-        }
+        innerStackView.addSubviewToFillSuperviewEdges(bubbleView)
 
         let typingIndicatorView = componentView.typingIndicatorView
 
@@ -121,13 +121,11 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         if typingIndicator.avatar != nil {
-            let avatarSize = ConversationStyle.groupMessageAvatarDiameter
-            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .square(avatarSize),
-                                                            hasFixedSize: true))
+            let avatarSize: CGSize = .square(ConversationStyle.groupMessageAvatarDiameter)
+            outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
 
-        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: TypingIndicatorView.measureSize,
-                                                        hasFixedSize: true))
+        innerSubviewInfos.append(TypingIndicatorView.measureSize.asManualSubviewInfo(hasFixedSize: true))
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackViewConfig,
                                                             measurementBuilder: measurementBuilder,
@@ -135,11 +133,10 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
                                                             subviewInfos: innerSubviewInfos)
         var innerStackSize = innerStackMeasurement.measuredSize
         innerStackSize.height = max(minBubbleHeight, innerStackSize.height)
-        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackSize,
-                                                        hasFixedWidth: true))
+        outerSubviewInfos.append(innerStackSize.asManualSubviewInfo(hasFixedWidth: true))
 
         // We always use a stretching spacer.
-        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .zero))
+        outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
         let outerStackMeasurement = ManualStackView.measure(config: outerStackViewConfig,
                                                             measurementBuilder: measurementBuilder,

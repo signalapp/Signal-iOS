@@ -30,12 +30,35 @@ public struct ManualStackSubviewInfo: Equatable {
         self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
     }
 
+    public static var empty: ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: .zero)
+    }
+
     func hasFixedSizeOnAxis(isHorizontalLayout: Bool) -> Bool {
         isHorizontalLayout ? hasFixedWidth : hasFixedHeight
     }
 
     func hasFixedSizeOffAxis(isHorizontalLayout: Bool) -> Bool {
         isHorizontalLayout ? hasFixedHeight : hasFixedWidth
+    }
+}
+
+// MARK: -
+
+public extension CGSize {
+    var asManualSubviewInfo: ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self)
+    }
+
+    func asManualSubviewInfo(hasFixedWidth: Bool = false,
+                             hasFixedHeight: Bool = false) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               hasFixedWidth: hasFixedWidth,
+                               hasFixedHeight: hasFixedHeight)
+    }
+
+    func asManualSubviewInfo(hasFixedSize: Bool) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self, hasFixedSize: hasFixedSize)
     }
 }
 
@@ -79,8 +102,7 @@ open class ManualStackView: OWSStackView {
 
         func apply() {
             if subview.frame != frame {
-                ManualStackView.setSubviewFrame(subview: subview,
-                                                frame: frame)
+                ManualStackView.setSubviewFrame(subview: subview, frame: frame)
             }
         }
     }
@@ -576,8 +598,7 @@ open class ManualStackView: OWSStackView {
             let subviewFrame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
                                                       y: siblingCenter.y - subview.height * 0.5),
                                       size: size)
-            Self.setSubviewFrame(subview: subview,
-                                 frame: subviewFrame)
+            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }
 
@@ -605,9 +626,16 @@ open class ManualStackView: OWSStackView {
             let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
                                                       y: (superviewBounds.height - subview.height) * 0.5),
                                       size: size)
-            Self.setSubviewFrame(subview: subview,
-                                 frame: subviewFrame)
+            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
+    }
+
+    public func addSubviewToFillSuperviewEdges(_ subview: UIView) {
+        owsAssertDebug(subview.superview == nil)
+
+        addSubview(subview)
+
+        layoutSubviewToFillSuperviewBoundsWithLayoutBlock(subview)
     }
 
     public func layoutSubviewToFillSuperviewBoundsWithLayoutBlock(_ subview: UIView) {
@@ -621,8 +649,7 @@ open class ManualStackView: OWSStackView {
                 return
             }
 
-            Self.setSubviewFrame(subview: subview,
-                                 frame: superview.bounds)
+            Self.setSubviewFrame(subview: subview, frame: superview.bounds)
         }
     }
 }

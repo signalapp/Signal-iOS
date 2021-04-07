@@ -179,26 +179,25 @@ class AudioMessageView: ManualStackView {
                                                     isIncoming: isIncoming,
                                                     conversationStyle: conversationStyle) {
             let topLabelSize = CGSize(width: 0, height: topLabelConfig.font.lineHeight)
-            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: topLabelSize))
+            outerSubviewInfos.append(topLabelSize.asManualSubviewInfo)
         }
 
         var innerSubviewInfos = [ManualStackSubviewInfo]()
         let leftViewSize = CGSize(square: animationSize)
-        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: leftViewSize,
-                                                        hasFixedSize: true))
+        innerSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
 
         let waveformAndLabelSize = CGSize(width: 0,
                                           height: max(waveformHeight,
                                                       playbackTimeLabelConfig(isIncoming: isIncoming,
                                                                               conversationStyle: conversationStyle).font.lineHeight))
-        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: waveformAndLabelSize))
+        innerSubviewInfos.append(waveformAndLabelSize.asManualSubviewInfo)
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: innerSubviewInfos)
         let innerStackSize = innerStackMeasurement.measuredSize
-        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackSize.ceil))
+        outerSubviewInfos.append(innerStackSize.ceil.asManualSubviewInfo)
 
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,

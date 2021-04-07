@@ -481,7 +481,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return CVText.measureLabel(config: labelConfigForRemotelyDeleted, maxWidth: maxWidth).ceil
             }
         }()
-        let textInfo = ManualStackSubviewInfo(measuredSize: textSize)
+        let textInfo = textSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_stackView,

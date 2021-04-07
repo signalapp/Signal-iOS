@@ -63,7 +63,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                                  isIncoming: isIncoming,
                                                  conversationStyle: conversationStyle,
                                                  measurementBuilder: measurementBuilder).ceil
-        let audioInfo = ManualStackSubviewInfo(measuredSize: audioSize)
+        let audioInfo = audioSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,

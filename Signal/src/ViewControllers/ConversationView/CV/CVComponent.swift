@@ -273,13 +273,13 @@ extension CVComponentBase: CVNode {
 // MARK: -
 
 extension CVComponentBase {
-    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        let blurOverlay = UIView()
-        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-        blurView.contentView.addSubview(blurOverlay)
-        blurOverlay.autoPinEdgesToSuperviewEdges()
-        return blurView
+    public func buildBlurView(conversationStyle: ConversationStyle) -> OWSVisualEffectView {
+        let effect = UIBlurEffect(style: .regular)
+        let overlayBackgroundColor: UIColor = (conversationStyle.isDarkThemeEnabled
+                                                ? .ows_blackAlpha40
+                                                : .ows_whiteAlpha60)
+        return OWSVisualEffectView(effect: effect,
+                                   overlayBackgroundColor: overlayBackgroundColor)
     }
 }
 

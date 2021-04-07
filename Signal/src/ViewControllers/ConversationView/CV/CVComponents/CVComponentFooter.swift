@@ -294,39 +294,34 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             var tapForMoreSize = CVText.measureLabel(config: tapForMoreLabelConfig,
                                                      maxWidth: maxWidth)
             tapForMoreSize.height *= tapForMoreHeightFactor
-            outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: tapForMoreSize,
-                                                            hasFixedWidth: true))
+            outerSubviewInfos.append(tapForMoreSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         // We always use a stretching spacer.
-        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: .zero))
+        outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
         let timestampLabelSize = CVText.measureLabel(config: timestampLabelConfig,
                                                  maxWidth: maxWidth)
-        innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: timestampLabelSize,
-                                                        hasFixedWidth: true))
+        innerSubviewInfos.append(timestampLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
         if hasPerConversationExpiration,
            nil != interaction as? TSMessage {
             let timerSize = OWSMessageTimerView.measureSize()
-            innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: timerSize,
-                                                            hasFixedWidth: true))
+            innerSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         if let statusIndicator = self.statusIndicator {
             let statusSize = statusIndicator.imageSize
-            innerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: statusSize,
-                                                            hasFixedWidth: true))
+            innerSubviewInfos.append(statusSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: innerSubviewInfos)
-        outerSubviewInfos.append(ManualStackSubviewInfo(measuredSize: innerStackMeasurement.measuredSize,
-                                                        hasFixedWidth: true))
+        outerSubviewInfos.append(innerStackMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true))
         if isIncoming {
             outerSubviewInfos.reverse()
         }

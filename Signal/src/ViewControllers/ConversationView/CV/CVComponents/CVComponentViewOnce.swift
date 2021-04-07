@@ -141,11 +141,10 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         var availableWidth = maxWidth
         if hasIconOrProgress {
             availableWidth = max(0, availableWidth - (iconSize + stackViewConfig.spacing))
-            subviewInfos.append(ManualStackSubviewInfo(measuredSize: .square(iconSize),
-                                                       hasFixedSize: true))
+            subviewInfos.append(CGSize.square(iconSize).asManualSubviewInfo(hasFixedSize: true))
         }
         let textSize = CVText.measureLabel(config: labelConfig, maxWidth: availableWidth)
-        subviewInfos.append(ManualStackSubviewInfo(measuredSize: textSize))
+        subviewInfos.append(textSize.asManualSubviewInfo)
 
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,

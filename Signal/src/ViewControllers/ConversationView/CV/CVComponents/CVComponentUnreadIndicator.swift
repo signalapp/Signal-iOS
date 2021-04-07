@@ -121,7 +121,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
     private var vStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
+                          alignment: .center,
                           spacing: 12,
                           layoutMargins: UIEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
     }
@@ -147,14 +147,14 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         let labelSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: availableWidth)
         let strokeSize = CGSize(width: 0, height: 1)
 
-        let labelInfo = ManualStackSubviewInfo(measuredSize: labelSize)
+        let labelInfo = labelSize.asManualSubviewInfo
         let noBlurMeasurement = ManualStackView.measure(config: noBlurConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_noBlur,
         subviewInfos: [ labelInfo ])
 
-        let strokeInfo = ManualStackSubviewInfo(measuredSize: strokeSize, hasFixedHeight: true)
-        let noBlurInfo = ManualStackSubviewInfo(measuredSize: noBlurMeasurement.measuredSize)
+        let strokeInfo = strokeSize.asManualSubviewInfo(hasFixedHeight: true)
+        let noBlurInfo = noBlurMeasurement.measuredSize.asManualSubviewInfo
         let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_vStackView,

@@ -269,7 +269,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                                     minWidth: minWidth,
                                                     items: self.items,
                                                     measurementBuilder: measurementBuilder).ceil
-        let albumInfo = ManualStackSubviewInfo(measuredSize: albumSize)
+        let albumInfo = albumSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,

@@ -58,31 +58,30 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return
         }
 
-        let outerView = componentView.outerView
-        outerView.insetsLayoutMarginsFromSafeArea = false
-        outerView.layoutMargins = outerViewLayoutMargins
+        let outerStackView = componentView.outerStackView
+        let innerStackView = componentView.innerStackView
 
-        let stackView = componentView.stackView
-        stackView.insetsLayoutMarginsFromSafeArea = false
-        stackView.apply(config: stackViewConfig)
+        innerStackView.reset()
+        outerStackView.reset()
 
-        outerView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        outerStackView.insetsLayoutMarginsFromSafeArea = false
+        innerStackView.insetsLayoutMarginsFromSafeArea = false
+
+        var innerViews = [UIView]()
 
         let avatarView = AvatarImageView(image: self.avatarImage)
         componentView.avatarView = avatarView
         avatarView.autoSetDimensions(to: CGSize(square: avatarDiameter))
         avatarView.setContentHuggingHigh()
         avatarView.setCompressionResistanceHigh()
-        stackView.addArrangedSubview(avatarView)
-        stackView.addArrangedSubview(UIView.spacer(withHeight: 1))
+        innerViews.append(avatarView)
+        innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
             let blurView = buildBlurView(conversationStyle: conversationStyle)
             componentView.blurView = blurView
 
-            stackView.insertSubview(blurView, at: 0)
-            blurView.autoPinEdgesToSuperviewEdges()
+            innerStackView.addSubviewToFillSuperviewEdges(blurView)
 
             blurView.clipsToBounds = true
             blurView.layer.cornerRadius = 12
@@ -90,28 +89,38 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
-        stackView.addArrangedSubview(titleLabel)
+        innerViews.append(titleLabel)
 
         if let bioText = self.bioText {
             let bioLabel = componentView.bioLabel
             bioLabelConfig(text: bioText).applyForRendering(label: bioLabel)
-            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingSubtitle))
-            stackView.addArrangedSubview(bioLabel)
+            innerViews.append(UIView.spacer(withHeight: vSpacingSubtitle))
+            innerViews.append(bioLabel)
         }
 
         if let detailsText = self.detailsText {
             let detailsLabel = componentView.detailsLabel
             detailsLabelConfig(text: detailsText).applyForRendering(label: detailsLabel)
-            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingSubtitle))
-            stackView.addArrangedSubview(detailsLabel)
+            innerViews.append(UIView.spacer(withHeight: vSpacingSubtitle))
+            innerViews.append(detailsLabel)
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
             let mutualGroupsLabel = componentView.mutualGroupsLabel
             mutualGroupsLabelConfig(attributedText: mutualGroupsText).applyForRendering(label: mutualGroupsLabel)
-            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingMutualGroups))
-            stackView.addArrangedSubview(mutualGroupsLabel)
+            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
+            innerViews.append(mutualGroupsLabel)
         }
+
+        innerStackView.configure(config: innerStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_innerStack,
+                                 subviews: innerViews)
+        let outerViews = [ innerStackView ]
+        outerStackView.configure(config: outerStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_outerStack,
+                                 subviews: outerViews)
     }
 
     private let vSpacingSubtitle: CGFloat = 2
@@ -343,52 +352,68 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                               mutualGroupsText: nil)
     }
 
-    private var stackViewConfig: CVStackViewConfig {
+    private var outerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
+                          layoutMargins: UIEdgeInsets(top: 32, left: 32, bottom: 16, right: 32))
+    }
+
+    private var innerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 3,
                           layoutMargins: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
     }
 
-    private var outerViewLayoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 16, right: 32)
+    private static let measurementKey_outerStack = "CVComponentThreadDetails.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentThreadDetails.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let maxContentWidth = maxWidth - (stackViewConfig.layoutMargins.totalWidth + outerViewLayoutMargins.totalWidth)
+        var innerSubviewInfos = [ManualStackSubviewInfo]()
 
-        var subviewSizes = [CGSize]()
-        subviewSizes.append(CGSize(square: avatarDiameter))
-        subviewSizes.append(CGSize(square: 1))
+        let maxContentWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
+                                            innerStackConfig.layoutMargins.totalWidth)
+
+        innerSubviewInfos.append(CGSize(square: avatarDiameter).asManualSubviewInfo)
+        innerSubviewInfos.append(CGSize(square: 1).asManualSubviewInfo)
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
-        subviewSizes.append(titleSize)
+        innerSubviewInfos.append(titleSize.asManualSubviewInfo)
 
         if let bioText = self.bioText {
             let bioSize = CVText.measureLabel(config: bioLabelConfig(text: bioText),
                                               maxWidth: maxContentWidth)
-            subviewSizes.append(CGSize(square: vSpacingSubtitle))
-            subviewSizes.append(bioSize)
+            innerSubviewInfos.append(CGSize(square: vSpacingSubtitle).asManualSubviewInfo)
+            innerSubviewInfos.append(bioSize.asManualSubviewInfo)
         }
 
         if let detailsText = self.detailsText {
             let detailsSize = CVText.measureLabel(config: detailsLabelConfig(text: detailsText),
                                                   maxWidth: maxContentWidth)
-            subviewSizes.append(CGSize(square: vSpacingSubtitle))
-            subviewSizes.append(detailsSize)
+            innerSubviewInfos.append(CGSize(square: vSpacingSubtitle).asManualSubviewInfo)
+            innerSubviewInfos.append(detailsSize.asManualSubviewInfo)
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
             let mutualGroupsSize = CVText.measureLabel(config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
                                                        maxWidth: maxContentWidth)
-            subviewSizes.append(CGSize(square: vSpacingMutualGroups))
-            subviewSizes.append(mutualGroupsSize)
+            innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+            innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
         }
 
-        var size = CVStackView.measure(config: stackViewConfig, subviewSizes: subviewSizes)
-        size.height += outerViewLayoutMargins.totalHeight
-        size.width += outerViewLayoutMargins.totalWidth
-        return size.ceil
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: innerSubviewInfos)
+        let outerSubviewInfos = [ innerStackMeasurement.measuredSize.asManualSubviewInfo ]
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
     }
 
     // MARK: -
@@ -406,15 +431,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         fileprivate let mutualGroupsLabel = UILabel()
 
-        fileprivate let stackView = OWSStackView(name: "threadDetails")
-        fileprivate let outerView = UIView()
+        fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
+        fileprivate let innerStackView = ManualStackView(name: "Thread details inner")
 
         fileprivate var blurView: UIVisualEffectView?
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            outerView
+            outerStackView
         }
 
         // MARK: -
@@ -422,7 +447,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            stackView.reset()
+            outerStackView.reset()
+            innerStackView.reset()
 
             titleLabel.text = nil
             bioLabel.text = nil

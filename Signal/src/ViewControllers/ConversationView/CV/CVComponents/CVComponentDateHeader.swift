@@ -41,16 +41,9 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             owsAssertDebug(cellView.subviews.isEmpty)
 
             cellView.addSubview(rootView)
-            cellView.layoutMargins = cellLayoutMargins
-            rootView.autoPinEdgesToSuperviewMargins()
+            cellView.layoutMargins = .zero
+            rootView.autoPinEdgesToSuperviewEdges()
         }
-    }
-
-    private var cellLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: 0,
-                     leading: conversationStyle.headerGutterLeading,
-                     bottom: 0,
-                     trailing: conversationStyle.headerGutterTrailing)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -65,10 +58,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             return
         }
 
-        titleLabelConfig.applyForRendering(label: componentView.titleLabel)
+        let outerStack = componentView.outerStack
+        let innerStack = componentView.innerStack
 
-        let vStackView = componentView.vStackView
         let titleLabel = componentView.titleLabel
+        titleLabelConfig.applyForRendering(label: titleLabel)
 
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
         componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
@@ -80,34 +74,34 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let isReusing = componentView.rootView.superview != nil
 
         if !isReusing || themeHasChanged || wallpaperModeHasChanged {
+            innerStack.reset()
+            outerStack.reset()
             titleLabel.removeFromSuperview()
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
             let contentView: UIView = {
                 if hasWallpaper {
+                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
                     let blurView = buildBlurView(conversationStyle: conversationStyle)
                     componentView.blurView = blurView
-                    blurView.autoPinEdgesToSuperviewEdges()
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
-                    blurView.contentView.addSubview(titleLabel)
-                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: titleMargins)
+                    blurView.addContentSubview(titleLabel,
+                                               withInsets: innerStackConfig.layoutMargins)
                     return blurView
                 } else {
-                    let noBlurView = componentView.noBlurView
-                    noBlurView.reset()
-                    noBlurView.configure(config: noBlurConfig,
+                    innerStack.configure(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_noBlur,
+                                         measurementKey: Self.measurementKey_innerStack,
                                          subviews: [ titleLabel ])
-                    return noBlurView
+                    return innerStack
                 }
             }()
-            vStackView.reset()
-            vStackView.configure(config: vStackConfig,
+
+            outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_vStackView,
+                                 measurementKey: Self.measurementKey_outerStack,
                                  subviews: [ contentView ])
         }
 
@@ -130,49 +124,45 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                              textAlignment: .center)
     }
 
-    private var titleMargins: UIEdgeInsets { UIEdgeInsets(hMargin: 10, vMargin: 4) }
-
-    private var vStackConfig: CVStackViewConfig {
+    private var outerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 0,
-                          layoutMargins: .zero)
+                          layoutMargins: UIEdgeInsets(top: 0,
+                                                      leading: conversationStyle.headerGutterLeading,
+                                                      bottom: 0,
+                                                      trailing: conversationStyle.headerGutterTrailing))
     }
 
-    private var noBlurConfig: CVStackViewConfig {
+    private var innerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 0,
-                          layoutMargins: titleMargins)
+                          layoutMargins: UIEdgeInsets(hMargin: 10, vMargin: 4))
     }
 
-    private static let measurementKey_vStackView = "CVComponentDateHeader.measurementKey_vStackView"
-    private static let measurementKey_noBlur = "CVComponentDateHeader.measurementKey_noBlur"
+    private static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentDateHeader.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let cellLayoutMargins = self.cellLayoutMargins
-
         let availableWidth = max(0, maxWidth -
-                                    (cellLayoutMargins.totalWidth +
-                                        noBlurConfig.layoutMargins.totalWidth +
-                                        vStackConfig.layoutMargins.totalWidth))
+                                    (innerStackConfig.layoutMargins.totalWidth +
+                                        outerStackConfig.layoutMargins.totalWidth))
         let labelSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: availableWidth)
 
-        let labelInfo = ManualStackSubviewInfo(measuredSize: labelSize)
-        let noBlurMeasurement = ManualStackView.measure(config: noBlurConfig,
+        let labelInfo = labelSize.asManualSubviewInfo
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: [ labelInfo ])
+        let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_noBlur,
-                                                        subviewInfos: [ labelInfo ])
-
-        let noBlurInfo = ManualStackSubviewInfo(measuredSize: noBlurMeasurement.measuredSize)
-        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
-                                                        measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_vStackView,
-                                                        subviewInfos: [ noBlurInfo ])
-
-        return vStackMeasurement.measuredSize + cellLayoutMargins.totalSize
+                                                        measurementKey: Self.measurementKey_outerStack,
+                                                        subviewInfos: [ innerStackInfo ])
+        return outerStackMeasurement.measuredSize
     }
 
     // MARK: -
@@ -182,11 +172,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewDateHeader: NSObject, CVComponentView {
 
-        fileprivate let vStackView = ManualStackView(name: "dateHeader.vStackView")
+        fileprivate let outerStack = ManualStackView(name: "dateHeader.outerStackView")
+        fileprivate let innerStack = ManualStackView(name: "dateHeader.innerStackView")
         fileprivate let titleLabel = UILabel()
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate let noBlurView = ManualStackView(name: "dateHeader.noBlurView")
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -194,7 +184,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            vStackView
+            outerStack
         }
 
         // MARK: -
@@ -208,15 +198,13 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             owsAssertDebug(isDedicatedCellView)
 
             if !isDedicatedCellView {
-                vStackView.reset()
+                outerStack.reset()
+                innerStack.reset()
 
                 titleLabel.removeFromSuperview()
 
                 blurView?.removeFromSuperview()
                 blurView = nil
-
-                noBlurView.reset()
-                noBlurView.removeFromSuperview()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false
