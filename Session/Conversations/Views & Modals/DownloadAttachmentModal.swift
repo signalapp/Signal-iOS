@@ -37,17 +37,17 @@ final class DownloadAttachmentModal : Modal {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textAlignment = .center
-        // Unblock button
-        let unblockButton = UIButton()
-        unblockButton.set(.height, to: Values.mediumButtonHeight)
-        unblockButton.layer.cornerRadius = Modal.buttonCornerRadius
-        unblockButton.backgroundColor = Colors.buttonBackground
-        unblockButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        unblockButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        unblockButton.setTitle("Download", for: UIControl.State.normal)
-        unblockButton.addTarget(self, action: #selector(trust), for: UIControl.Event.touchUpInside)
+        // Download button
+        let downloadButton = UIButton()
+        downloadButton.set(.height, to: Values.mediumButtonHeight)
+        downloadButton.layer.cornerRadius = Modal.buttonCornerRadius
+        downloadButton.backgroundColor = Colors.buttonBackground
+        downloadButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
+        downloadButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        downloadButton.setTitle("Download", for: UIControl.State.normal)
+        downloadButton.addTarget(self, action: #selector(trust), for: UIControl.Event.touchUpInside)
         // Button stack view
-        let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, unblockButton ])
+        let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, downloadButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually

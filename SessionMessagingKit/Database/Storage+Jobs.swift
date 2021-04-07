@@ -88,6 +88,7 @@ extension Storage {
         let jobs = getAttachmentDownloadJobs(for: tsMessageID)
         jobs.forEach { job in
             job.delegate = JobQueue.shared
+            job.isDeferred = false
             job.execute()
         }
     }

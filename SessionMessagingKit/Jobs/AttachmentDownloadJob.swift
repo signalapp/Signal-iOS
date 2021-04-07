@@ -36,13 +36,12 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
             let tsMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
-            let id = coder.decodeObject(forKey: "id") as! String?,
-            let isDeferred = coder.decodeObject(forKey: "isDeferred") as! Bool? else { return nil }
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
-        self.isDeferred = isDeferred
+        self.isDeferred = coder.decodeBool(forKey: "isDeferred")
     }
 
     public func encode(with coder: NSCoder) {
