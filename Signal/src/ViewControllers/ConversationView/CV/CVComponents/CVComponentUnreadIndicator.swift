@@ -34,7 +34,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             owsAssertDebug(cellView.subviews.isEmpty)
 
             cellView.addSubview(rootView)
-            rootView.autoPinEdgesToSuperviewMargins()
+            cellView.layoutMargins = .zero
+            rootView.autoPinEdgesToSuperviewEdges()
         }
     }
 
@@ -50,7 +51,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             return
         }
 
-        let vStackView = componentView.vStackView
+        let outerStack = componentView.outerStack
         let contentView = componentView.contentView
         let strokeView = componentView.strokeView
         let titleLabel = componentView.titleLabel
@@ -73,35 +74,31 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 if hasWallpaper {
                     strokeView.backgroundColor = .ows_blackAlpha80
 
+                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
                     let blurView = buildBlurView(conversationStyle: conversationStyle)
                     componentView.blurView = blurView
-
-                    contentView.insertSubview(blurView, at: 0)
-                    blurView.autoPinEdgesToSuperviewEdges()
-
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
-
-                    blurView.contentView.addSubview(titleLabel)
-                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: titleMargins)
+                    blurView.addContentSubview(titleLabel,
+                                               withInsets: innerStackConfig.layoutMargins)
                     return blurView
                 } else {
                     strokeView.backgroundColor = .ows_gray45
 
-                    let noBlurView = componentView.noBlurView
-                    noBlurView.reset()
-                    noBlurView.configure(config: noBlurConfig,
+                    let innerStack = componentView.innerStack
+                    innerStack.reset()
+                    innerStack.configure(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_noBlur,
+                                         measurementKey: Self.measurementKey_innerStack,
                                          subviews: [ titleLabel ])
-                    return noBlurView
+                    return innerStack
                 }
             }()
 
-            vStackView.reset()
-            vStackView.configure(config: vStackConfig,
+            outerStack.reset()
+            outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_vStackView,
+                                 measurementKey: Self.measurementKey_outerStack,
                                  subviews: [
                                     strokeView,
                                     contentView
@@ -119,48 +116,46 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
-    private var vStackConfig: CVStackViewConfig {
+    private var outerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 12,
                           layoutMargins: UIEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
     }
 
-    private var titleMargins: UIEdgeInsets { UIEdgeInsets(hMargin: 10, vMargin: 4) }
-
-    private var noBlurConfig: CVStackViewConfig {
+    private var innerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 0,
-                          layoutMargins: titleMargins)
+                          layoutMargins: UIEdgeInsets(hMargin: 10, vMargin: 4))
     }
 
-    private static let measurementKey_vStackView = "CVComponentUnreadIndicator.measurementKey_vStackView"
-    private static let measurementKey_noBlur = "CVComponentUnreadIndicator.measurementKey_noBlur"
+    private static let measurementKey_outerStack = "CVComponentUnreadIndicator.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentUnreadIndicator.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let availableWidth = max(0, maxWidth -
-                                    (noBlurConfig.layoutMargins.totalWidth +
-                                        vStackConfig.layoutMargins.totalWidth))
+                                    (innerStackConfig.layoutMargins.totalWidth +
+                                        outerStackConfig.layoutMargins.totalWidth))
         let labelSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: availableWidth)
         let strokeSize = CGSize(width: 0, height: 1)
 
         let labelInfo = labelSize.asManualSubviewInfo
-        let noBlurMeasurement = ManualStackView.measure(config: noBlurConfig,
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
                                                         measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_noBlur,
+                                                        measurementKey: Self.measurementKey_innerStack,
         subviewInfos: [ labelInfo ])
 
         let strokeInfo = strokeSize.asManualSubviewInfo(hasFixedHeight: true)
-        let noBlurInfo = noBlurMeasurement.measuredSize.asManualSubviewInfo
-        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
+        let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
+        let vStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_vStackView,
+                                                        measurementKey: Self.measurementKey_outerStack,
         subviewInfos: [
             strokeInfo,
-            noBlurInfo
+            innerStackInfo
                                                         ])
 
         return vStackMeasurement.measuredSize
@@ -173,8 +168,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewUnreadIndicator: NSObject, CVComponentView {
 
-        fileprivate let vStackView = ManualStackView(name: "unreadIndicator.vStackView")
-        fileprivate let noBlurView = ManualStackView(name: "unreadIndicator.noBlurView")
+        fileprivate let outerStack = ManualStackView(name: "unreadIndicator.outerStack")
+        fileprivate let innerStack = ManualStackView(name: "unreadIndicator.innerStack")
 
         fileprivate let contentView = UIView.container()
         fileprivate let titleLabel = UILabel()
@@ -189,7 +184,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            vStackView
+            outerStack
         }
 
         // MARK: -
@@ -202,8 +197,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             titleLabel.text = nil
 
             if !isDedicatedCellView {
-                vStackView.reset()
-                noBlurView.reset()
+                outerStack.reset()
+                innerStack.reset()
 
                 blurView?.removeFromSuperview()
                 blurView = nil
