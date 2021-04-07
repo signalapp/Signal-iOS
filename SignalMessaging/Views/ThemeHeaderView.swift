@@ -30,7 +30,7 @@ public class ThemeHeaderView: UIView {
     }
 
     static var labelFont: UIFont {
-        return UIFont.ows_dynamicTypeBody.ows_semibold
+        return UIFont.ows_dynamicTypeBodyClamped.ows_semibold
     }
 
     static var desiredHeight: CGFloat {
@@ -39,8 +39,10 @@ public class ThemeHeaderView: UIView {
 
     init(alwaysDark: Bool = false) {
         label = UILabel()
-        label.textColor = alwaysDark ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-        label.font = type(of: self).labelFont
+        label.textColor = alwaysDark
+            ? Theme.darkThemeSecondaryTextAndIconColor
+            : (Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90)
+        label.font = Self.labelFont
 
         let blurEffect = alwaysDark ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
         let blurEffectView = UIVisualEffectView(effect: blurEffect)

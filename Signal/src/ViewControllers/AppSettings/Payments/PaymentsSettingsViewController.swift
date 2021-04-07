@@ -479,8 +479,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 cell.selectionStyle = .none
 
                 let label = UILabel()
-                label.text = NSLocalizedString("SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON",
-                                               comment: "Label for the 'show all payments' button in the payment settings.")
+                label.text = CommonStrings.seeAllButton
                 label.font = .ows_dynamicTypeBodyClamped
                 label.textColor = Theme.primaryTextColor
 

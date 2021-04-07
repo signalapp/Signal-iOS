@@ -67,13 +67,14 @@ extension ConversationSettingsViewController {
 
         contents.addSection(mainSection)
 
-        if let groupModel = currentGroupModel,
-            !groupModel.isPlaceholder {
+        addAllMediaSectionIfNecessary(to: contents)
+
+        if let groupModel = currentGroupModel, !groupModel.isPlaceholder {
+            contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
+
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
             }
-
-            contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
         }
 
         if !isNoteToSelf {
@@ -87,6 +88,66 @@ extension ConversationSettingsViewController {
         self.contents = contents
 
         updateNavigationBar()
+    }
+
+    private func addAllMediaSectionIfNecessary(to contents: OWSTableContents) {
+        guard !recentMedia.isEmpty else { return }
+
+        let section = OWSTableSection()
+        section.headerTitle = MediaStrings.allMedia
+
+        section.add(.init(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                guard let self = self else { return cell }
+
+                cell.selectionStyle = .none
+
+                let stackView = UIStackView()
+                stackView.axis = .horizontal
+                stackView.spacing = 5
+                cell.contentView.addSubview(stackView)
+                stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+
+                let spacerWidth = CGFloat(self.maximumRecentMedia - 1) * stackView.spacing
+                let imageWidth = ((self.view.width - (Self.cellHInnerMargin + Self.cellHOuterMargin)) / CGFloat(self.maximumRecentMedia)) - spacerWidth
+
+                for (attachmentStream, imageView) in self.recentMedia.orderedValues {
+                    let button = OWSButton { [weak self] in
+                        self?.showMediaPageView(for: attachmentStream)
+                    }
+                    stackView.addArrangedSubview(button)
+
+                    imageView.backgroundColor = Theme.middleGrayColor
+                    imageView.autoSetDimensions(to: CGSize(square: imageWidth))
+
+                    button.addSubview(imageView)
+                    imageView.autoPinEdgesToSuperviewEdges()
+                }
+
+                if self.recentMedia.count < self.maximumRecentMedia {
+                    stackView.addArrangedSubview(.hStretchingSpacer())
+                    stackView.autoPinEdge(toSuperviewMargin: .bottom)
+                } else {
+                    let seeAllButton = OWSButton { [weak self] in
+                        self?.showMediaGallery()
+                    }
+                    seeAllButton.setTitle(CommonStrings.seeAllButton, for: .normal)
+                    seeAllButton.setTitleColor(Theme.primaryTextColor, for: .normal)
+                    seeAllButton.contentHorizontalAlignment = .leading
+                    seeAllButton.titleLabel?.font = OWSTableItem.primaryLabelFont
+                    seeAllButton.autoSetDimension(.height, toSize: OWSTableItem.primaryLabelFont.lineHeight)
+                    cell.contentView.addSubview(seeAllButton)
+                    seeAllButton.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+                    seeAllButton.autoPinEdge(.top, to: .bottom, of: stackView, withOffset: 14)
+                }
+
+                return cell
+            },
+            actionBlock: {}
+        ))
+
+        contents.addSection(section)
     }
 
     private func addBasicItems(to section: OWSTableSection) {
@@ -532,7 +593,7 @@ extension ConversationSettingsViewController {
                 if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else if !memberAddress.isLocalAddress,
-                          let bioForDisplay = (Self.databaseStorage.read { transaction in
+                          let bioForDisplay = (Self.databaseStorage.uiRead { transaction in
                     Self.profileManagerImpl.profileBioForDisplay(for: memberAddress, transaction: transaction)
                 }) {
                     cell.setAttributedSubtitle(NSAttributedString(string: bioForDisplay))
@@ -565,8 +626,7 @@ extension ConversationSettingsViewController {
                                                                   iconTintColor: Theme.primaryTextColor)
 
                 let rowLabel = UILabel()
-                rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
-                                                  comment: "Label for 'view all members' button in conversation settings view.")
+                rowLabel.text = CommonStrings.seeAllButton
                 rowLabel.textColor = Theme.primaryTextColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
                 rowLabel.lineBreakMode = .byTruncatingTail

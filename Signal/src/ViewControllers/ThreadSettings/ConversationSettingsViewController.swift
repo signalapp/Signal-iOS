@@ -71,13 +71,14 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         self.threadViewModel = threadViewModel
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
-        disappearingMessagesConfiguration = Self.databaseStorage.read { transaction in
+        disappearingMessagesConfiguration = Self.databaseStorage.uiRead { transaction in
             OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: threadViewModel.threadRecord,
                                                                      transaction: transaction)
         }
 
         super.init()
 
+        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
@@ -201,13 +202,14 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             tableView.deselectRow(at: selectedPath, animated: animated)
         }
 
+        updateRecentAttachments()
         updateTableContents()
     }
 
     // MARK: -
 
     func reloadThreadAndUpdateContent() {
-        let didUpdate = self.databaseStorage.read { transaction -> Bool in
+        let didUpdate = self.databaseStorage.uiRead { transaction -> Bool in
             guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId,
                                                     transaction: transaction) else {
                 return false
@@ -715,6 +717,36 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(tileVC, animated: true)
     }
 
+    func showMediaPageView(for attachmentStream: TSAttachmentStream) {
+        let vc = MediaPageViewController(initialMediaAttachment: attachmentStream, thread: thread)
+        present(vc, animated: true)
+    }
+
+    let maximumRecentMedia = 4
+    private(set) var recentMedia = OrderedDictionary<String, (attachment: TSAttachmentStream, imageView: UIImageView)>() {
+        didSet { AssertIsOnMainThread() }
+    }
+    private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread)
+    func updateRecentAttachments() {
+        let recentAttachments = databaseStorage.uiRead { transaction in
+            mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, transaction: transaction.unwrapGrdbRead)
+        }
+        recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
+            guard let attachmentStream = attachment as? TSAttachmentStream else {
+                return owsFailDebug("Unexpected type of attachment")
+            }
+
+            let imageView = UIImageView()
+            imageView.clipsToBounds = true
+            imageView.layer.cornerRadius = 4
+            imageView.contentMode = .scaleAspectFill
+
+            imageView.image = attachmentStream.thumbnailImageSmall { imageView.image = $0 } failure: {}
+
+            result.append(key: attachmentStream.uniqueId, value: (attachmentStream, imageView))
+        })
+    }
+
     func tappedConversationSearch() {
         conversationSettingsViewDelegate?.conversationSettingsDidRequestConversationSearch()
     }
@@ -956,15 +988,24 @@ extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate
 
 extension ConversationSettingsViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-        guard let avatarView = self.avatarView, let superview = avatarView.superview else {
+        let mediaView: UIView
+        switch item {
+        case .gallery(let galleryItem):
+            guard let imageView = recentMedia[galleryItem.attachmentStream.uniqueId]?.imageView else { return nil }
+            mediaView = imageView
+        case .image:
+            guard let avatarView = self.avatarView else { return nil }
+            mediaView = avatarView
+        }
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
             return nil
         }
 
-        let presentationFrame = coordinateSpace.convert(avatarView.frame, from: superview)
-        return MediaPresentationContext(
-            mediaView: avatarView,
-            presentationFrame: presentationFrame,
-            cornerRadius: presentationFrame.width / 2)
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
@@ -975,5 +1016,32 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
 extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
     func groupPermissionSettingsDidUpdate() {
         reloadThreadAndUpdateContent()
+    }
+}
+
+extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
+    public func uiDatabaseSnapshotWillUpdate() {}
+
+    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+        AssertIsOnMainThread()
+
+        guard databaseChanges.didUpdateModel(collection: TSAttachment.collection()) else { return }
+
+        updateRecentAttachments()
+        updateTableContents()
+    }
+
+    public func uiDatabaseSnapshotDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        updateRecentAttachments()
+        updateTableContents()
+    }
+
+    public func uiDatabaseSnapshotDidReset() {
+        AssertIsOnMainThread()
+
+        updateRecentAttachments()
+        updateTableContents()
     }
 }
