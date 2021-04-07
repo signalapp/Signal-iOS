@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,6 +66,7 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewReactions: NSObject, CVComponentView {
 
+        // TODO:
         fileprivate let reactionCountsView = CVReactionCountsView()
 
         public var isDedicatedCellView = false

@@ -607,6 +607,7 @@ open class ManualStackView: OWSStackView {
             return
         }
         subview.frame = frame
+        // TODO: Remove?
         subview.setNeedsLayout()
     }
 
