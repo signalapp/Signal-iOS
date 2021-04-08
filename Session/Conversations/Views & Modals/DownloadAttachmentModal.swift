@@ -72,7 +72,7 @@ final class DownloadAttachmentModal : Modal {
             Storage.shared.setContact(contact, using: transaction)
             message.touch(with: transaction)
         }, completion: {
-            Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueId!)
+            Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueThreadId)
         })
         presentingViewController?.dismiss(animated: true, completion: nil)
     }

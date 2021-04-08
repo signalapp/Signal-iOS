@@ -281,7 +281,7 @@ extension MessageReceiver {
         let isContactTrusted = Storage.shared.getContact(with: message.sender!)?.isTrusted ?? false
         let isGroup = message.groupPublicKey != nil || openGroupID != nil
         attachmentsToDownload.forEach { attachmentID in
-            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID)
+            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID, threadID: threadID)
             downloadJob.isDeferred = !isContactTrusted && !isGroup
             if isMainAppAndActive {
                 JobQueue.shared.add(downloadJob, using: transaction)

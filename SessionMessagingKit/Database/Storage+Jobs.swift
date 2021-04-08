@@ -73,19 +73,19 @@ extension Storage {
         return result.first
     }
     
-    public func getAttachmentDownloadJobs(for tsMessageID: String) -> [AttachmentDownloadJob] {
+    public func getAttachmentDownloadJobs(for threadID: String) -> [AttachmentDownloadJob] {
         var result: [AttachmentDownloadJob] = []
         Storage.read { transaction in
             transaction.enumerateRows(inCollection: AttachmentDownloadJob.collection) { _, object, _, _ in
-                guard let job = object as? AttachmentDownloadJob, job.tsMessageID == tsMessageID else { return }
+                guard let job = object as? AttachmentDownloadJob, job.threadID == threadID else { return }
                 result.append(job)
             }
         }
         return result
     }
     
-    public func resumeAttachmentDownloadJobsIfNeeded(for tsMessageID: String) {
-        let jobs = getAttachmentDownloadJobs(for: tsMessageID)
+    public func resumeAttachmentDownloadJobsIfNeeded(for threadID: String) {
+        let jobs = getAttachmentDownloadJobs(for: threadID)
         jobs.forEach { job in
             job.delegate = JobQueue.shared
             job.isDeferred = false
