@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 static const int kYapDatabasePageSize = 100;
 
 // Never show more than n messages in conversation view when user arrives.
-static const int kConversationInitialMaxRangeSize = 25000; // TODO: Does it cause issues to set this so high?
+static const int kConversationInitialMaxRangeSize = 100;
 
 // Never show more than n messages in conversation view at a time.
 static const int kYapDatabaseRangeMaxLength = 25000;

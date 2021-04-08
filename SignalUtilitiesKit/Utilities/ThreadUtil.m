@@ -169,6 +169,12 @@ NS_ASSUME_NONNULL_BEGIN
     // the messages view the position of the unread indicator,
     // so that it can widen its "load window" to always show
     // the unread indicator.
+    //
+    // We'll load all of the unread messages. This number may be larger
+    // than the maxRangeSize. This is not the idealest solution for the
+    // crash when unread message number is over 100. We can do better if
+    // we just load maxRangeSize number of unread messages, but the unread
+    // indicator can still be at the correct position.
     __block long visibleUnseenMessageCount = 0;
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
     __block BOOL hasMoreUnseenMessages = NO;
@@ -198,14 +204,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 visibleUnseenMessageCount++;
 
                                 interactionAfterUnreadIndicator = interaction;
-
-                                if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
-                                    // If there are more unseen messages than can be displayed in the
-                                    // messages view, show the unread indicator at the top of the
-                                    // displayed messages.
-                                    *stop = YES;
-                                    hasMoreUnseenMessages = YES;
-                                }
                             }];
 
     if (!interactionAfterUnreadIndicator) {
