@@ -75,6 +75,8 @@ extension ConversationSettingsViewController {
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
             }
+        } else if isContactThread, hasGroupThreads {
+            contents.addSection(buildMutualGroupsSection())
         }
 
         if !isNoteToSelf {
@@ -696,5 +698,129 @@ extension ConversationSettingsViewController {
         }
 
         contents.addSection(section)
+    }
+
+    private func buildMutualGroupsSection() -> OWSTableSection {
+        let section = OWSTableSection()
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
+
+        // "Add to a Group" cell.
+        section.add(OWSTableItem(
+            customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+                let cell = OWSTableItem.newCell()
+                cell.preservesSuperviewLayoutMargins = true
+                cell.contentView.preservesSuperviewLayoutMargins = true
+
+                let iconView = OWSTableItem.buildIconInCircleView(
+                    icon: .settingsAddMembers,
+                    iconSize: kSmallAvatarSize,
+                    innerIconSize: 24,
+                    iconTintColor: Theme.primaryTextColor
+                )
+
+                let rowLabel = UILabel()
+                rowLabel.text = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
+                rowLabel.textColor = Theme.primaryTextColor
+                rowLabel.font = OWSTableItem.primaryLabelFont
+                rowLabel.lineBreakMode = .byTruncatingTail
+
+                let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                contentRow.spacing = self.iconSpacingSmall
+
+                cell.contentView.addSubview(contentRow)
+                contentRow.autoPinWidthToSuperviewMargins()
+                contentRow.autoPinHeightToSuperview(withMargin: 7)
+
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.showAddToGroupView()
+            }
+        ))
+
+        if mutualGroupThreads.count > 1 {
+            let headerFormat = NSLocalizedString(
+                "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT",
+                comment: "Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}."
+            )
+            section.headerTitle = String(format: headerFormat, OWSFormat.formatInt(mutualGroupThreads.count))
+        } else if mutualGroupThreads.count == 1 {
+            section.headerTitle = NSLocalizedString(
+                "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE",
+                comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group."
+            )
+        } else {
+            section.headerTitle = NSLocalizedString(
+                "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE",
+                comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups."
+            )
+        }
+
+        let maxGroupsToShow = 6
+        let hasMoreGroups = !isShowingAllMutualGroups && mutualGroupThreads.count > maxGroupsToShow
+        let groupThreadsToRender: [TSGroupThread]
+        if hasMoreGroups {
+            groupThreadsToRender = Array(mutualGroupThreads.prefix(maxGroupsToShow - 1))
+        } else {
+            groupThreadsToRender = mutualGroupThreads
+        }
+
+        for groupThread in groupThreadsToRender {
+            section.add(OWSTableItem(
+                customCellBlock: {
+                    let cell = GroupTableViewCell()
+                    cell.configure(thread: groupThread)
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.signalApp.presentConversation(for: groupThread, animated: true)
+                }
+            ))
+        }
+
+        if hasMoreGroups {
+            section.add(OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self = self else {
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
+                    }
+                    let cell = OWSTableItem.newCell()
+                    cell.preservesSuperviewLayoutMargins = true
+                    cell.contentView.preservesSuperviewLayoutMargins = true
+
+                    let iconView = OWSTableItem.buildIconInCircleView(
+                        icon: .settingsShowAllMembers,
+                                                                      iconSize: kSmallAvatarSize,
+                                                                      innerIconSize: 24,
+                                                                      iconTintColor: Theme.primaryTextColor
+                    )
+
+                    let rowLabel = UILabel()
+                    rowLabel.text = CommonStrings.seeAllButton
+                    rowLabel.textColor = Theme.primaryTextColor
+                    rowLabel.font = OWSTableItem.primaryLabelFont
+                    rowLabel.lineBreakMode = .byTruncatingTail
+
+                    let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                    contentRow.spacing = self.iconSpacingSmall
+
+                    cell.contentView.addSubview(contentRow)
+                    contentRow.autoPinWidthToSuperviewMargins()
+                    contentRow.autoPinHeightToSuperview(withMargin: 7)
+
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.showAllMutualGroups()
+                }
+            ))
+        }
+
+        return section
     }
 }

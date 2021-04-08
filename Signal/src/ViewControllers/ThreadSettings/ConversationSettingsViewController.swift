@@ -65,6 +65,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     private var colorPicker: ColorPicker?
 
     var isShowingAllGroupMembers = false
+    var isShowingAllMutualGroups = false
 
     @objc
     public required init(threadViewModel: ThreadViewModel) {
@@ -156,6 +157,8 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
         observeNotifications()
 
+        updateRecentAttachments()
+        updateMutualGroupThreads()
         reloadThreadAndUpdateContent()
 
         updateNavigationBar()
@@ -202,7 +205,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             tableView.deselectRow(at: selectedPath, animated: animated)
         }
 
-        updateRecentAttachments()
         updateTableContents()
     }
 
@@ -352,7 +354,14 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     func showAllGroupMembers() {
+        // TODO: Animate
         isShowingAllGroupMembers = true
+        updateTableContents()
+    }
+
+    func showAllMutualGroups() {
+        // TODO: Animate
+        isShowingAllMutualGroups = true
         updateTableContents()
     }
 
@@ -386,6 +395,14 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         let addGroupMembersViewController = AddGroupMembersViewController(groupThread: groupThread)
         addGroupMembersViewController.addGroupMembersViewControllerDelegate = self
         navigationController?.pushViewController(addGroupMembersViewController, animated: true)
+    }
+
+    func showAddToGroupView() {
+        guard let thread = thread as? TSContactThread else {
+            return owsFailDebug("Tried to present for unexpected thread")
+        }
+        let vc = AddToGroupViewController(address: thread.contactAddress)
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
     func showMemberRequestsAndInvitesView() {
@@ -747,6 +764,23 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         })
     }
 
+    private(set) var mutualGroupThreads = [TSGroupThread]() {
+        didSet { AssertIsOnMainThread() }
+    }
+    private(set) var hasGroupThreads = false {
+        didSet { AssertIsOnMainThread() }
+    }
+    func updateMutualGroupThreads() {
+        guard let contactThread = thread as? TSContactThread else { return }
+        databaseStorage.uiRead { transaction in
+            self.hasGroupThreads = GRDBThreadFinder.existsGroupThread(transaction: transaction.unwrapGrdbRead)
+            self.mutualGroupThreads = TSGroupThread.groupThreads(
+                with: contactThread.contactAddress,
+                transaction: transaction
+            ).filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }
+        }
+    }
+
     func tappedConversationSearch() {
         conversationSettingsViewDelegate?.conversationSettingsDidRequestConversationSearch()
     }
@@ -1025,16 +1059,28 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
     public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
-        guard databaseChanges.didUpdateModel(collection: TSAttachment.collection()) else { return }
+        var didUpdate = false
 
-        updateRecentAttachments()
-        updateTableContents()
+        if databaseChanges.didUpdateModel(collection: TSAttachment.collection()) {
+            updateRecentAttachments()
+            didUpdate = true
+        }
+
+        if databaseChanges.didUpdateModel(collection: TSGroupMember.collection()) {
+            updateMutualGroupThreads()
+            didUpdate = true
+        }
+
+        if didUpdate {
+            updateTableContents()
+        }
     }
 
     public func uiDatabaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateRecentAttachments()
+        updateMutualGroupThreads()
         updateTableContents()
     }
 
@@ -1042,6 +1088,7 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
         AssertIsOnMainThread()
 
         updateRecentAttachments()
+        updateMutualGroupThreads()
         updateTableContents()
     }
 }

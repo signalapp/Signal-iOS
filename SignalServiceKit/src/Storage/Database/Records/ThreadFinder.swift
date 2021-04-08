@@ -256,4 +256,18 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         }
         return threads
     }
+
+    @objc
+    public class func existsGroupThread(transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .recordType) = ?
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [SDSRecordType.groupThread.rawValue]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
 }

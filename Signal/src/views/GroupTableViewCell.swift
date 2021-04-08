@@ -19,9 +19,7 @@ import SignalServiceKit
 
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
-        nameLabel.textColor = Theme.primaryTextColor
         subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
 
         // Layout
 
@@ -53,7 +51,7 @@ import SignalServiceKit
     }
 
     @objc
-    public func configure(thread: TSGroupThread) {
+    public func configure(thread: TSGroupThread, customSubtitle: String? = nil, customTextColor: UIColor? = nil) {
         OWSTableItem.configureCell(self)
 
         if let groupName = thread.groupModel.groupName, !groupName.isEmpty {
@@ -63,7 +61,7 @@ import SignalServiceKit
         }
 
         let groupMembersCount = thread.groupModel.groupMembership.fullMembers.count
-        self.subtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
+        self.subtitleLabel.text = customSubtitle ?? GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
 
         self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kSmallAvatarSize)
 
@@ -73,6 +71,9 @@ import SignalServiceKit
         } else {
             accessoryLabel.isHidden = true
         }
+
+        nameLabel.textColor = customTextColor ?? Theme.primaryTextColor
+        subtitleLabel.textColor = customTextColor ?? Theme.secondaryTextAndIconColor
     }
 
 }
