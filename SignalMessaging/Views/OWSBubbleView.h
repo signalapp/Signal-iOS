@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +12,9 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
     OWSDirectionalRectCornerTopTrailing = 1 << 1,
     OWSDirectionalRectCornerBottomLeading = 1 << 2,
     OWSDirectionalRectCornerBottomTrailing = 1 << 3,
-    OWSDirectionalRectCornerAllCorners = ~0UL
+
+    OWSDirectionalRectCornerAllCorners = OWSDirectionalRectCornerTopLeading | OWSDirectionalRectCornerTopTrailing
+        | OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing
 };
 
 @class OWSBubbleView;

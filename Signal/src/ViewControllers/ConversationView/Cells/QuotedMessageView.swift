@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -167,6 +167,42 @@ public class QuotedMessageView: UIView {
                         : conversationStyle.quotingSelfHighlightColor())
         }
 
+        func createInnerBubbleView(sharpCorners: OWSDirectionalRectCorner) -> UIView {
+            let sharpCornerRadius: CGFloat = 4
+            let wideCornerRadius: CGFloat = 12
+
+            let innerBubbleView: UIView
+            if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
+                innerBubbleView = UIView()
+                innerBubbleView.layer.maskedCorners = .all
+                innerBubbleView.layer.cornerRadius = sharpCorners.isEmpty ? wideCornerRadius : sharpCornerRadius
+
+            } else {
+                // Slow path. CA isn't optimized to handle corners of multiple radii
+                // Let's do it by hand with a CAShapeLayer
+                let maskLayer = CAShapeLayer()
+                innerBubbleView = OWSLayerView(frame: .zero) { (layerView: UIView) in
+                    let layerFrame = layerView.bounds
+
+                    let bubbleLeft: CGFloat = 0
+                    let bubbleRight = layerFrame.width
+                    let bubbleTop: CGFloat = 0
+                    let bubbleBottom = layerFrame.height
+                    let bezierPath = OWSBubbleView.roundedBezierRect(withBubbleTop: bubbleTop,
+                                                                     bubbleLeft: bubbleLeft,
+                                                                     bubbleBottom: bubbleBottom,
+                                                                     bubbleRight: bubbleRight,
+                                                                     sharpCornerRadius: sharpCornerRadius,
+                                                                     wideCornerRadius: wideCornerRadius,
+                                                                     sharpCorners: sharpCorners)
+                    maskLayer.path = bezierPath.cgPath
+                }
+                innerBubbleView.layer.mask = maskLayer
+            }
+            innerBubbleView.backgroundColor = conversationStyle.quotedReplyBubbleColor
+            return innerBubbleView
+        }
+
         func createContents(rootView: UIView,
                             quotedAuthorLabel: UILabel,
                             quotedTextLabel: UILabel,
@@ -179,32 +215,7 @@ public class QuotedMessageView: UIView {
             rootView.layoutMargins = .zero
             rootView.clipsToBounds = true
 
-            let maskLayer = CAShapeLayer()
-
-            let innerBubbleView = OWSLayerView(frame: .zero) { (layerView: UIView) in
-                let layerFrame = layerView.bounds
-
-                let bubbleLeft: CGFloat = 0
-                let bubbleRight = layerFrame.width
-                let bubbleTop: CGFloat = 0
-                let bubbleBottom = layerFrame.height
-
-                let sharpCornerRadius: CGFloat = 4
-                let wideCornerRadius: CGFloat = 12
-
-                let bezierPath = OWSBubbleView.roundedBezierRect(withBubbleTop: bubbleTop,
-                                                                 bubbleLeft: bubbleLeft,
-                                                                 bubbleBottom: bubbleBottom,
-                                                                 bubbleRight: bubbleRight,
-                                                                 sharpCornerRadius: sharpCornerRadius,
-                                                                 wideCornerRadius: wideCornerRadius,
-                                                                 sharpCorners: sharpCorners)
-
-                maskLayer.path = bezierPath.cgPath
-            }
-
-            innerBubbleView.layer.mask = maskLayer
-            innerBubbleView.backgroundColor = conversationStyle.quotedReplyBubbleColor
+            let innerBubbleView = createInnerBubbleView(sharpCorners: sharpCorners)
             rootView.addSubview(innerBubbleView)
             innerBubbleView.autoPinLeadingToSuperviewMargin(withInset: bubbleHMargin)
             innerBubbleView.autoPinTrailingToSuperviewMargin(withInset: bubbleHMargin)

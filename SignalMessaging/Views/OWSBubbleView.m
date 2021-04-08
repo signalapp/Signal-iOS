@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBubbleView.h"
@@ -73,8 +73,8 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [self.layer addSublayer:self.gradientLayer];
     self.gradientLayer.hidden = YES;
 
+    self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
-    self.layer.mask = self.maskLayer;
 
     _partnerViews = [NSMutableArray new];
 
@@ -210,6 +210,24 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     self.gradientLayer.frame = self.bounds;
 
     self.maskLayer.path = bezierPath.CGPath;
+
+    BOOL noSharpCorners = (self.sharpCorners == 0);
+    BOOL allSharpCorners
+        = (self.sharpCorners & OWSDirectionalRectCornerAllCorners) == OWSDirectionalRectCornerAllCorners;
+
+    if (noSharpCorners || allSharpCorners) {
+        // Although we have a bubble bezier path, it's just a simple rounded rect
+        // It's more performant to use the CA corner mask property than a layer mask
+        CGFloat sharpRadius = kOWSMessageCellCornerRadius_Small;
+        CGFloat wideRadius = kOWSMessageCellCornerRadius_Large;
+
+        self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
+        self.layer.mask = nil;
+    } else {
+        self.layer.cornerRadius = 0;
+        self.layer.mask = self.maskLayer;
+    }
+
 
     [CATransaction commit];
 }
