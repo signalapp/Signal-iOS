@@ -58,6 +58,7 @@ static Environment *sharedEnvironment = nil;
     _proximityMonitoringManager = proximityMonitoringManager;
     _sounds = sounds;
     _windowManager = windowManager;
+    _isRequestingPermission = false;
 
     return self;
 }
