@@ -43,6 +43,12 @@ extension ConversationSettingsViewController {
 
     // MARK: - Table
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
+    @objc
     func updateTableContents() {
 
         let contents = OWSTableContents()
@@ -150,65 +156,6 @@ extension ConversationSettingsViewController {
         ))
 
         contents.addSection(section)
-    }
-
-    private func addBasicItems(to section: OWSTableSection) {
-        let isNoteToSelf = thread.isNoteToSelf
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            return OWSTableItem.buildDisclosureCell(name: MediaStrings.allMedia,
-                                                    icon: .settingsAllMedia,
-                                                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "all_media"))
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showMediaGallery()
-        }))
-
-        if !groupViewHelper.isBlockedByMigration {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-                let title = NSLocalizedString("CONVERSATION_SETTINGS_SEARCH",
-                                              comment: "Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated")
-                return OWSTableItem.buildDisclosureCell(name: title,
-                                                        icon: .settingsSearch,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "search"))
-            },
-            actionBlock: { [weak self] in
-                self?.tappedConversationSearch()
-            }))
-        }
-
-        // Indicate if the user is in the system contacts
-        if !isNoteToSelf && !isGroupThread && hasExistingContact {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString(
-                    "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
-                    comment: "Indicates that user is in the system contacts list."),
-                                                        icon: .settingsUserInContacts,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts"))
-                },
-                                     actionBlock: { [weak self] in
-                                        guard let self = self else {
-                                            owsFailDebug("Missing self")
-                                            return
-                                        }
-                                        if self.contactsManagerImpl.supportsContactEditing {
-                                            self.presentContactViewController()
-                                        }
-            }))
-        }
     }
 
     private func addSafetyNumberItemIfNecessary(to section: OWSTableSection) {
@@ -434,9 +381,9 @@ extension ConversationSettingsViewController {
             },
                                  actionBlock: { [weak self] in
                                     if isCurrentlyBlocked {
-                                        self?.didTapUnblockGroup()
+                                        self?.didTapUnblockThread()
                                     } else {
-                                        self?.didTapBlockGroup()
+                                        self?.didTapBlockThread()
                                     }
         }))
 

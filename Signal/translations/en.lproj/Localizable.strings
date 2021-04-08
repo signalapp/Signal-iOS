@@ -820,6 +820,9 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
+/* Button to start a audio call */
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
 
@@ -892,6 +895,9 @@
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
 
+/* Button to mute the chat */
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
@@ -915,6 +921,9 @@
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+
+/* Button to unmute the chat */
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
@@ -946,8 +955,8 @@
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
 
-/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
+/* Button to search the chat */
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
@@ -963,6 +972,9 @@
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+
+/* Button to start a video call */
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";

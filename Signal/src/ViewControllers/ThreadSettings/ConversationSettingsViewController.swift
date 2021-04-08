@@ -38,7 +38,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
-    private var threadViewModel: ThreadViewModel
+    private(set) var threadViewModel: ThreadViewModel
 
     var thread: TSThread {
         threadViewModel.threadRecord
@@ -96,6 +96,10 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(profileWhitelistDidChange(notification:)),
                                                name: .profileWhitelistDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateTableContents),
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
     }
 
@@ -206,6 +210,13 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         }
 
         updateTableContents()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in } completion: { _ in
+            self.updateTableContents()
+        }
     }
 
     // MARK: -
@@ -602,7 +613,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    func didTapUnblockGroup() {
+    func didTapUnblockThread(completion: @escaping () -> Void = {}) {
         let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
         if !isCurrentlyBlocked {
             owsFailDebug("Not blocked.")
@@ -610,10 +621,11 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         }
         BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] _ in
             self?.updateTableContents()
+            completion()
         }
     }
 
-    func didTapBlockGroup() {
+    func didTapBlockThread() {
         let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
         if isCurrentlyBlocked {
             owsFailDebug("Already blocked.")
