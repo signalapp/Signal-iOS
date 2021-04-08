@@ -733,28 +733,30 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let authorizationStatus: PHAuthorizationStatus
         if #available(iOS 14, *) {
             authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-            if (authorizationStatus == .notDetermined) {
+            if authorizationStatus == .notDetermined {
                 // When the user chooses to select photos (which is the .limit status),
                 // the PHPhotoUI will present the picker view on the top of the front view.
-                // Since we have this ScreenLockUI showing when we request premissions,
-                // the picker view will be presented on the top of ScreenLockUI.
-                // However, the ScreenLockUI will dismiss with the permission request alert view,
-                // the picker view then will dissmiss, too. The selection process cannot be finished
+                // Since we have the ScreenLockUI showing when we request premissions,
+                // the picker view will be presented on the top of the ScreenLockUI.
+                // However, the ScreenLockUI will dismiss with the permission request alert view, so
+                // the picker view then will dismiss, too. The selection process cannot be finished
                 // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
                 // from showing when we request the photo library permission.
                 Environment.shared.isRequestingPermission = true
+                SNAppearance.switchToImagePickerAppearance()
                 PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                    SNAppearance.switchToSessionAppearance()
                     Environment.shared.isRequestingPermission = false
-                    if ([PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited].contains(status)) {
+                    if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
                         handler()
                     }
                 }
             }
         } else {
             authorizationStatus = PHPhotoLibrary.authorizationStatus()
-            if (authorizationStatus == .notDetermined) {
+            if authorizationStatus == .notDetermined {
                 PHPhotoLibrary.requestAuthorization { status in
-                    if (status == .authorized) {
+                    if status == .authorized {
                         handler()
                     }
                 }
