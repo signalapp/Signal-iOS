@@ -347,6 +347,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogVerbose(@"desiredUIState: none 3.");
         return ScreenLockUIStateNone;
     }
+    
+    if (Environment.shared.isRequestingPermission) {
+        return ScreenLockUIStateNone;
+    }
 
     if (Environment.shared.preferences.screenSecurityIsEnabled) {
         OWSLogVerbose(@"desiredUIState: screen protection 4.");
