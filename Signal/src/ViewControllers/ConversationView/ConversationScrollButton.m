@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationScrollButton.h"
@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     iconView.userInteractionEnabled = NO;
 
     const CGFloat circleSize = self.class.circleSize;
+    CGRect shadowRect = CGRectMake(0, 0, circleSize, circleSize);
 
     UIView *shadowView = [[OWSCircleView alloc] initWithDiameter:circleSize];
     self.shadowView = shadowView;
@@ -75,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     shadowView.layer.shadowRadius = 4;
     shadowView.layer.shadowOpacity = 0.05f;
     shadowView.layer.shadowColor = UIColor.blackColor.CGColor;
+    shadowView.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:shadowRect].CGPath;
 
     UIView *circleView = [[OWSCircleView alloc] initWithDiameter:circleSize];
     self.circleView = circleView;
@@ -83,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     circleView.layer.shadowRadius = 12.f;
     circleView.layer.shadowOpacity = 0.3f;
     circleView.layer.shadowColor = UIColor.blackColor.CGColor;
+    circleView.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:shadowRect].CGPath;
 
     UIView *unreadBadge = [UIView new];
     self.unreadBadge = unreadBadge;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,6 +117,7 @@ open class TooltipView: UIView {
             bezierPath.addLine(to: tailPoint)
 
             shapeLayer.path = bezierPath.cgPath
+            shapeLayer.shadowPath = bezierPath.cgPath
             shapeLayer.frame = view.bounds
         }
 

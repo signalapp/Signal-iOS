@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBubbleShapeView.h"
@@ -255,9 +255,6 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
             self.layer.mask = self.maskLayer;
             break;
         case OWSBubbleShapeViewMode_InnerShadow: {
-            self.maskLayer.path = bezierPath.CGPath;
-            self.layer.mask = self.maskLayer;
-
             // Inner shadow.
             // This should usually not be visible; it is used to distinguish
             // profile pics from the background if they are similar.
@@ -267,16 +264,21 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
             UIBezierPath *shadowPath = [bezierPath copy];
             // This can be any value large enough to cast a sufficiently large shadow.
             CGFloat shadowInset = -(self.innerShadowRadius * 4.f);
-            [shadowPath
-                appendPath:[UIBezierPath bezierPathWithRect:CGRectInset(shadowBounds, shadowInset, shadowInset)]];
+
+            CGRect outerRect = CGRectInset(shadowBounds, shadowInset, shadowInset);
+            UIBezierPath *outerPath = [UIBezierPath bezierPathWithRect:outerRect];
+            // -[CALayer shadowPath] uses the non-zero winding rule
+            // Reverse the path to make the directions line up correctly.
+            [shadowPath appendPath:[outerPath bezierPathByReversingPath]];
+
             // This can be any color since the fill should be clipped.
             self.shapeLayer.fillColor = UIColor.blackColor.CGColor;
             self.shapeLayer.path = shadowPath.CGPath;
-            self.shapeLayer.fillRule = kCAFillRuleEvenOdd;
             self.shapeLayer.shadowColor = self.innerShadowColor.CGColor;
             self.shapeLayer.shadowRadius = self.innerShadowRadius;
             self.shapeLayer.shadowOpacity = self.innerShadowOpacity;
             self.shapeLayer.shadowOffset = CGSizeZero;
+            self.shapeLayer.shadowPath = shadowPath.CGPath;
 
             break;
         }

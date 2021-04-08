@@ -339,13 +339,9 @@ public protocol LinkPreviewViewDraftDelegate {
 
 // MARK: -
 
-@objc
-public class LinkPreviewImageView: UIImageView {
-    private let maskLayer = CAShapeLayer()
-
-    @objc
-    public enum Rounding: UInt {
-        case none
+private class LinkPreviewImageView: UIImageView {
+    fileprivate enum Rounding: UInt {
+        case standard
         case asymmetrical
         case circular
     }
@@ -353,34 +349,38 @@ public class LinkPreviewImageView: UIImageView {
     private let rounding: Rounding
     fileprivate var isHero = false
 
-    @objc
-    public init(rounding: Rounding) {
-        self.rounding = rounding
+    // We only need to use a more complicated corner mask if we're
+    // drawing asymmetric corners. This is an exceptional case to match
+    // the input toolbar curve.
+    private let asymmetricCornerMask = CAShapeLayer()
 
+    init(rounding: Rounding) {
+        self.rounding = rounding
         super.init(frame: .zero)
 
-        self.layer.mask = maskLayer
+        if rounding == .asymmetrical {
+            layer.mask = asymmetricCornerMask
+        }
     }
 
-    public required init?(coder aDecoder: NSCoder) {
-        self.rounding = .none
-
+    required init?(coder aDecoder: NSCoder) {
+        self.rounding = .standard
         super.init(coder: aDecoder)
     }
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             updateMaskLayer()
         }
     }
 
-    public override var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             updateMaskLayer()
         }
     }
 
-    public override var center: CGPoint {
+    override var center: CGPoint {
         didSet {
             updateMaskLayer()
         }
@@ -388,62 +388,62 @@ public class LinkPreviewImageView: UIImageView {
 
     private func updateMaskLayer() {
         let layerBounds = self.bounds
-
-        guard rounding != .circular else {
-            maskLayer.path = UIBezierPath(ovalIn: layerBounds).cgPath
-            return
-        }
-
-        // One of the corners has assymetrical rounding to match the input toolbar border.
-        // This is somewhat inconvenient.
-        let upperLeft = CGPoint(x: 0, y: 0)
-        let upperRight = CGPoint(x: layerBounds.size.width, y: 0)
-        let lowerRight = CGPoint(x: layerBounds.size.width, y: layerBounds.size.height)
-        let lowerLeft = CGPoint(x: 0, y: layerBounds.size.height)
-
         let bigRounding: CGFloat = 14
         let smallRounding: CGFloat = 6
 
-        let upperLeftRounding: CGFloat
-        let upperRightRounding: CGFloat
-        if rounding == .asymmetrical {
-            upperLeftRounding = CurrentAppContext().isRTL ? smallRounding : bigRounding
-            upperRightRounding = CurrentAppContext().isRTL ? bigRounding : smallRounding
-        } else {
-            upperLeftRounding = smallRounding
-            upperRightRounding = smallRounding
+        switch rounding {
+        case .standard:
+            layer.cornerRadius = smallRounding
+            layer.maskedCorners = isHero ? .top : .all
+        case .circular:
+            layer.cornerRadius = bounds.size.smallerAxis
+            layer.maskedCorners = .all
+        case .asymmetrical:
+            // This uses a more expensive layer mask to clip corners
+            // with different radii.
+            // This should only be used in the input toolbar so perf is
+            // less of a concern here.
+            owsAssertDebug(!isHero, "Link preview drafts never use hero images")
+
+            let upperLeft = CGPoint(x: 0, y: 0)
+            let upperRight = CGPoint(x: layerBounds.size.width, y: 0)
+            let lowerRight = CGPoint(x: layerBounds.size.width, y: layerBounds.size.height)
+            let lowerLeft = CGPoint(x: 0, y: layerBounds.size.height)
+
+            let upperLeftRounding: CGFloat = CurrentAppContext().isRTL ? smallRounding : bigRounding
+            let upperRightRounding: CGFloat = CurrentAppContext().isRTL ? bigRounding : smallRounding
+            let lowerRightRounding = smallRounding
+            let lowerLeftRounding = smallRounding
+
+            let path = UIBezierPath()
+
+            // It's sufficient to "draw" the rounded corners and not the edges that connect them.
+            path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
+                        radius: upperLeftRounding,
+                        startAngle: CGFloat.pi * 1.0,
+                        endAngle: CGFloat.pi * 1.5,
+                        clockwise: true)
+
+            path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
+                        radius: upperRightRounding,
+                        startAngle: CGFloat.pi * 1.5,
+                        endAngle: CGFloat.pi * 0.0,
+                        clockwise: true)
+
+            path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
+                        radius: lowerRightRounding,
+                        startAngle: CGFloat.pi * 0.0,
+                        endAngle: CGFloat.pi * 0.5,
+                        clockwise: true)
+
+            path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
+                        radius: lowerLeftRounding,
+                        startAngle: CGFloat.pi * 0.5,
+                        endAngle: CGFloat.pi * 1.0,
+                        clockwise: true)
+
+            asymmetricCornerMask.path = path.cgPath
         }
-        let lowerRightRounding = isHero ? 0 : smallRounding
-        let lowerLeftRounding = isHero ? 0 : smallRounding
-
-        let path = UIBezierPath()
-
-        // It's sufficient to "draw" the rounded corners and not the edges that connect them.
-        path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
-                    radius: upperLeftRounding,
-                    startAngle: CGFloat.pi * 1.0,
-                    endAngle: CGFloat.pi * 1.5,
-                    clockwise: true)
-
-        path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
-                    radius: upperRightRounding,
-                    startAngle: CGFloat.pi * 1.5,
-                    endAngle: CGFloat.pi * 0.0,
-                    clockwise: true)
-
-        path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
-                    radius: lowerRightRounding,
-                    startAngle: CGFloat.pi * 0.0,
-                    endAngle: CGFloat.pi * 0.5,
-                    clockwise: true)
-
-        path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
-                    radius: lowerLeftRounding,
-                    startAngle: CGFloat.pi * 0.5,
-                    endAngle: CGFloat.pi * 1.0,
-                    clockwise: true)
-
-        maskLayer.path = path.cgPath
     }
 }
 
@@ -472,6 +472,7 @@ public class LinkPreviewView: UIStackView {
     public var hasAsymmetricalRounding: Bool = false {
         didSet {
             AssertIsOnMainThread()
+            owsAssertDebug(isDraft)
 
             if hasAsymmetricalRounding != oldValue {
                 updateContents()
@@ -1016,13 +1017,7 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let rounding: LinkPreviewImageView.Rounding = {
-            if let roundingParam = roundingParam {
-                return roundingParam
-            }
-            return self.hasAsymmetricalRounding ? .asymmetrical : .none
-        }()
-        let imageView = LinkPreviewImageView(rounding: rounding)
+        let imageView = LinkPreviewImageView(rounding: roundingParam ?? .standard)
         imageView.image = image
         imageView.isHero = Self.sentIsHero(state: state)
         return imageView
@@ -1041,7 +1036,7 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let rounding: LinkPreviewImageView.Rounding = hasAsymmetricalRounding ? .asymmetrical : .none
+        let rounding: LinkPreviewImageView.Rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
         let imageView = LinkPreviewImageView(rounding: rounding)
         imageView.image = image
         return imageView
@@ -1266,29 +1261,6 @@ public class LinkPreviewView: UIStackView {
         let width = labelSizes.map { $0.width }.reduce(0, max)
         let height = labelSizes.map { $0.height }.reduce(0, +) + CGFloat(labelSizes.count - 1) * sentVSpacing
         return CGSize(width: width, height: height)
-    }
-
-    @objc
-    public func addBorderViews(bubbleView: OWSBubbleView) {
-        if let heroImageView = self.heroImageView {
-            let borderView = OWSBubbleShapeView(draw: ())
-            borderView.strokeColor = Theme.primaryTextColor
-            borderView.strokeThickness = CGHairlineWidthFraction(1.8)
-            heroImageView.addSubview(borderView)
-            bubbleView.addPartnerView(borderView)
-            borderView.autoPinEdgesToSuperviewEdges()
-        }
-        if let sentBodyView = self.sentBodyView {
-            let borderView = OWSBubbleShapeView(draw: ())
-            let borderColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray60 : UIColor.ows_gray15)
-            borderView.strokeColor = borderColor
-            borderView.strokeThickness = CGHairlineWidthFraction(1.8)
-            sentBodyView.addSubview(borderView)
-            bubbleView.addPartnerView(borderView)
-            borderView.autoPinEdgesToSuperviewEdges()
-        } else {
-            owsFailDebug("Missing sentBodyView")
-        }
     }
 
     @objc func didTapCancel(sender: UIButton) {

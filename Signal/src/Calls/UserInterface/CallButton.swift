@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -120,6 +120,9 @@ class CallButton: UIButton {
         currentConstraints.removeAll()
 
         currentConstraints += circleView.autoSetDimensions(to: CGSize(square: currentIconSize))
+        circleView.layer.shadowPath = UIBezierPath(
+            ovalIn: CGRect(origin: .zero, size: .square(currentIconSize))
+        ).cgPath
         currentConstraints += iconView.autoPinEdgesToSuperviewEdges(with: currentIconInsets)
         if let dropdownIconView = dropdownIconView {
             currentConstraints.append(dropdownIconView.autoPinEdge(.leading, to: .trailing, of: iconView, withOffset: isSmall ? 0 : 2))
