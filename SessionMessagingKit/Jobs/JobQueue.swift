@@ -3,6 +3,8 @@ import SessionUtilitiesKit
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
 
+    private static var jobIDs: [UInt64:UInt64] = [:]
+    
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
@@ -14,7 +16,15 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     @objc public func addWithoutExecuting(_ job: Job, using transaction: Any) {
-        job.id = String(NSDate.millisecondTimestamp())
+        let timestamp = NSDate.millisecondTimestamp()
+        let count = JobQueue.jobIDs[timestamp] ?? 0
+        // When adding multiple jobs in rapid succession, timestamps might not be good enough as a unique ID. To
+        // deal with this we keep track of the number of jobs with a given timestamp and that to the end of the
+        // timestamp to make it a unique ID. We can't use a random number because we do still want to keep track
+        // of the order in which the jobs were added.
+        let id = String(timestamp) + String(count)
+        job.id = id
+        JobQueue.jobIDs[timestamp] = count + 1
         SNMessagingKitConfiguration.shared.storage.persist(job, using: transaction)
         job.delegate = self
     }
