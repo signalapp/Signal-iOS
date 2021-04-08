@@ -302,6 +302,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     
     private func populateContentView(for viewItem: ConversationViewItem) {
         snContentView.subviews.forEach { $0.removeFromSuperview() }
+        func showMediaPlaceholder() {
+            let mediaPlaceholderView = MediaPlaceholderView(viewItem: viewItem, textColor: bodyLabelTextColor)
+            snContentView.addSubview(mediaPlaceholderView)
+            mediaPlaceholderView.pin(to: snContentView)
+        }
         albumView = nil
         bodyTextView = nil
         mediaTextOverlayView = nil
@@ -340,9 +345,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             if viewItem.interaction is TSIncomingMessage,
                 let thread = viewItem.interaction.thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
-                let mediaPlaceholderView = MediaPlaceholderView(viewItem: viewItem, textColor: bodyLabelTextColor)
-                snContentView.addSubview(mediaPlaceholderView)
-                mediaPlaceholderView.pin(to: snContentView)
+                showMediaPlaceholder()
             } else {
                 guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
                 let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
@@ -365,14 +368,26 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 unloadContent = { albumView.unloadMedia() }
             }
         case .audio:
-            let voiceMessageView = VoiceMessageView(viewItem: viewItem)
-            snContentView.addSubview(voiceMessageView)
-            voiceMessageView.pin(to: snContentView)
-            viewItem.lastAudioMessageView = voiceMessageView
+            if viewItem.interaction is TSIncomingMessage,
+                let thread = viewItem.interaction.thread as? TSContactThread,
+                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                showMediaPlaceholder()
+            } else {
+                let voiceMessageView = VoiceMessageView(viewItem: viewItem)
+                snContentView.addSubview(voiceMessageView)
+                voiceMessageView.pin(to: snContentView)
+                viewItem.lastAudioMessageView = voiceMessageView
+            }
         case .genericAttachment:
-            let documentView = DocumentView(viewItem: viewItem, textColor: bodyLabelTextColor)
-            snContentView.addSubview(documentView)
-            documentView.pin(to: snContentView)
+            if viewItem.interaction is TSIncomingMessage,
+                let thread = viewItem.interaction.thread as? TSContactThread,
+                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                showMediaPlaceholder()
+            } else {
+                let documentView = DocumentView(viewItem: viewItem, textColor: bodyLabelTextColor)
+                snContentView.addSubview(documentView)
+                documentView.pin(to: snContentView)
+            }
         default: return
         }
     }

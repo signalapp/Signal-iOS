@@ -31,7 +31,7 @@ final class MediaPlaceholderView : UIView {
                 attachments = message.attachments(with: transaction)
             }
             guard let contentType = attachments.first?.contentType else { return ("actionsheet_document_black", "file") } // Should never occur
-            if MIMETypeUtil.isAudio(contentType) { return ("Microphone", "audio") }
+            if MIMETypeUtil.isAudio(contentType) { return ("attachment_audio", "audio") }
             if MIMETypeUtil.isImage(contentType) || MIMETypeUtil.isVideo(contentType) { return ("actionsheet_camera_roll_black", "media") }
             return ("actionsheet_document_black", "file")
         }()

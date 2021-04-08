@@ -373,23 +373,32 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {
+        func confirmDownload() {
+            let modal = DownloadAttachmentModal(viewItem: viewItem)
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        }
         if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
             // Show the failed message sheet
             showFailedMessageSheet(for: message)
         } else {
             switch viewItem.messageCellType {
-            case .audio: playOrPauseAudio(for: viewItem)
+            case .audio:
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
+                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    confirmDownload()
+                } else {
+                    playOrPauseAudio(for: viewItem)
+                }
             case .mediaMessage:
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
                 if viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
                     Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
-                    // Ask the user whether they want to download this attachment
-                    let modal = DownloadAttachmentModal(viewItem: viewItem)
-                    modal.modalPresentationStyle = .overFullScreen
-                    modal.modalTransitionStyle = .crossDissolve
-                    present(modal, animated: true, completion: nil)
+                    confirmDownload()
                 } else {
                     guard let albumView = cell.albumView else { return }
                     let locationInCell = gestureRecognizer.location(in: cell)
@@ -417,10 +426,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
                 }
             case .genericAttachment:
-                // Open the document if possible
-                guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
-                let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
-                navigationController!.present(shareVC, animated: true, completion: nil)
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
+                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    confirmDownload()
+                } else {
+                    // Open the document if possible
+                    guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
+                    let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
+                    navigationController!.present(shareVC, animated: true, completion: nil)
+                }
             case .textOnlyMessage:
                 if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
                     // Open the link preview URL
