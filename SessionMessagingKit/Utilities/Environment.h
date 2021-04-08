@@ -29,6 +29,8 @@
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
+// We don't want to cover the window when we request the photo library permission
+@property (nonatomic, readwrite) BOOL isRequestingPermission;
 
 @property (class, nonatomic) Environment *shared;
 
