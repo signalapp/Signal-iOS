@@ -24,9 +24,15 @@ final class MediaPlaceholderView : UIView {
     }
     
     private func setUpViewHierarchy() {
+        let (iconName, attachmentDescription): (String, String) = {
+            guard let contentType = viewItem.attachmentPointer?.contentType else { return ("actionsheet_document_black", "file") } // Should never occur
+            if MIMETypeUtil.isAudio(contentType) { return ("Microphone", "audio") }
+            if MIMETypeUtil.isImage(contentType) || MIMETypeUtil.isVideo(contentType) { return ("actionsheet_camera_roll_black", "media") }
+            return ("actionsheet_document_black", "file")
+        }()
         // Image view
         let iconSize = MediaPlaceholderView.iconSize
-        let icon = UIImage(named: "actionsheet_camera_roll_black")?.withTint(textColor)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
+        let icon = UIImage(named: iconName)?.withTint(textColor)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
         let imageView = UIImageView(image: icon)
         imageView.contentMode = .center
         let iconImageViewSize = MediaPlaceholderView.iconImageViewSize
@@ -35,7 +41,7 @@ final class MediaPlaceholderView : UIView {
         // Body label
         let titleLabel = UILabel()
         titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = "Download Media?"
+        titleLabel.text = "Tap to download \(attachmentDescription)"
         titleLabel.textColor = textColor
         titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         // Stack view
