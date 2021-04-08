@@ -25,7 +25,12 @@ final class MediaPlaceholderView : UIView {
     
     private func setUpViewHierarchy() {
         let (iconName, attachmentDescription): (String, String) = {
-            guard let contentType = viewItem.attachmentPointer?.contentType else { return ("actionsheet_document_black", "file") } // Should never occur
+            guard let message = viewItem.interaction as? TSIncomingMessage else { return ("actionsheet_document_black", "file") } // Should never occur
+            var attachments: [TSAttachment] = []
+            Storage.read { transaction in
+                attachments = message.attachments(with: transaction)
+            }
+            guard let contentType = attachments.first?.contentType else { return ("actionsheet_document_black", "file") } // Should never occur
             if MIMETypeUtil.isAudio(contentType) { return ("Microphone", "audio") }
             if MIMETypeUtil.isImage(contentType) || MIMETypeUtil.isVideo(contentType) { return ("actionsheet_camera_roll_black", "media") }
             return ("actionsheet_document_black", "file")
