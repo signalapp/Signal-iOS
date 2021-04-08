@@ -542,16 +542,13 @@ extension ConversationSettingsViewController {
                                                     comment: "Section title of the 'members' section in conversation settings view.")
         }
 
-        // TODO: Do we show pending members here? How?
-        var hasMoreMembers = false
-        for memberAddress in membersToRender {
-            let maxMembersToShow = 5
-            // Note that we use <= to account for the header cell.
-            guard isShowingAllGroupMembers || section.itemCount() <= maxMembersToShow else {
-                hasMoreMembers = true
-                break
-            }
+        let maxMembersToShow = 6
+        let hasMoreMembers = !isShowingAllGroupMembers && membersToRender.count > maxMembersToShow
+        if hasMoreMembers {
+            membersToRender = Array(membersToRender.prefix(maxMembersToShow - 1))
+        }
 
+        for memberAddress in membersToRender {
             guard let verificationState = verificationStateMap[memberAddress] else {
                 owsFailDebug("Missing verificationState.")
                 continue
