@@ -98,8 +98,8 @@ extension ConversationSettingsViewController {
             avatarView.autoPinEdgesToSuperviewEdges()
 
             if let groupThread = viewController.thread as? TSGroupThread,
-                groupThread.groupModel.groupAvatarData == nil,
-                viewController.canEditConversationAttributes {
+               groupThread.groupModel.groupAvatarData == nil,
+               viewController.canEditConversationAttributes {
                 let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
                 avatarWrapper.addSubview(cameraButton)
                 cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
@@ -115,16 +115,20 @@ extension ConversationSettingsViewController {
             var buttons = [UIView]()
 
             if ConversationViewController.canCall(threadViewModel: viewController.threadViewModel) {
-                    buttons.append(buildIconButton(
-                        icon: .videoCall,
-                        text: NSLocalizedString(
-                            "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
-                            comment: "Button to start a video call"
-                        ),
-                        action: { [weak viewController] in
-                            viewController?.startCall(withVideo: true)
-                        }
-                    ))
+                let isCurrentCallForThread = callService.currentCall?.thread.uniqueId == viewController.thread.uniqueId
+                let hasCurrentCall = callService.currentCall != nil
+
+                buttons.append(buildIconButton(
+                    icon: .videoCall,
+                    text: NSLocalizedString(
+                        "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
+                        comment: "Button to start a video call"
+                    ),
+                    isEnabled: isCurrentCallForThread || !hasCurrentCall,
+                    action: { [weak viewController] in
+                        viewController?.startCall(withVideo: true)
+                    }
+                ))
 
                 if !viewController.isGroupThread {
                     buttons.append(buildIconButton(
@@ -133,6 +137,7 @@ extension ConversationSettingsViewController {
                             "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
                             comment: "Button to start a audio call"
                         ),
+                        isEnabled: isCurrentCallForThread || !hasCurrentCall,
                         action: { [weak viewController] in
                             viewController?.startCall(withVideo: false)
                         }
@@ -166,9 +171,9 @@ extension ConversationSettingsViewController {
                 buttons.append(buildIconButton(
                     icon: .settingsSearch,
                     text: NSLocalizedString(
-                            "CONVERSATION_SETTINGS_SEARCH_BUTTON",
-                            comment: "Button to search the chat"
-                        ),
+                        "CONVERSATION_SETTINGS_SEARCH_BUTTON",
+                        comment: "Button to search the chat"
+                    ),
                     action: { [weak viewController] in
                         viewController?.tappedConversationSearch()
                     }
@@ -206,8 +211,9 @@ extension ConversationSettingsViewController {
         }
 
         private var maxIconButtonWidth: CGFloat = 0
-        mutating func buildIconButton(icon: ThemeIcon, text: String, action: @escaping () -> Void) -> UIView {
+        mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
             let button = OWSButton(block: action)
+            button.isEnabled = isEnabled
             button.layer.cornerRadius = 10
             button.clipsToBounds = true
             button.setBackgroundImage(UIImage(color: viewController.cellBackgroundColor), for: .normal)
@@ -379,8 +385,8 @@ extension ConversationSettingsViewController {
                                     transaction: transaction)
 
         if !contactThread.contactAddress.isLocalAddress,
-            let bioText = profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
-                                                                  transaction: transaction) {
+           let bioText = profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
+                                                                 transaction: transaction) {
             let label = builder.addSubtitleLabel(text: bioText)
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -398,9 +404,9 @@ extension ConversationSettingsViewController {
         }
 
         if let username = profileManagerImpl.username(for: recipientAddress, transaction: transaction),
-            username.count > 0 {
+           username.count > 0 {
             if let formattedUsername = CommonFormats.formatUsername(username),
-                threadName != formattedUsername {
+               threadName != formattedUsername {
                 builder.addSubtitleLabel(text: formattedUsername)
             }
         }

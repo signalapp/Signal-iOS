@@ -79,6 +79,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
         super.init()
 
+        callService.addObserver(observer: self, syncStateImmediately: false)
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
@@ -1101,6 +1102,12 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
 
         updateRecentAttachments()
         updateMutualGroupThreads()
+        updateTableContents()
+    }
+}
+
+extension ConversationSettingsViewController: CallServiceObserver {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         updateTableContents()
     }
 }
