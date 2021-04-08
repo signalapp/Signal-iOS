@@ -8,9 +8,7 @@ import UIKit
 // TODO: We should describe which state updates & when it is committed.
 extension ConversationSettingsViewController {
 
-    private var subtitlePointSize: CGFloat {
-        UIFont.ows_dynamicTypeBody2.pointSize
-    }
+    private var subtitleFont: UIFont { .ows_dynamicTypeSubheadlineClamped }
 
     private var threadName: String {
         databaseStorage.read { transaction in
@@ -29,6 +27,52 @@ extension ConversationSettingsViewController {
         }
 
         return threadName
+    }
+
+    // MARK: - Calls
+
+    private func startCall(withVideo: Bool) {
+        guard ConversationViewController.canCall(threadViewModel: threadViewModel) else {
+            return owsFailDebug("Tried to start a can when calls are disabled")
+        }
+        guard withVideo || !isGroupThread else {
+            return owsFailDebug("Tried to start an audio only group call")
+        }
+
+        guard !blockingManager.isThreadBlocked(thread) else {
+            didTapUnblockThread { [weak self] in
+                self?.startCall(withVideo: withVideo)
+            }
+            return
+        }
+
+        if let currentCall = callService.currentCall {
+            if currentCall.thread.uniqueId == thread.uniqueId {
+                windowManager.returnToCallView()
+            } else {
+                owsFailDebug("Tried to start call while call was ongoing")
+            }
+        } else if let groupThread = thread as? TSGroupThread {
+            // We initiated a call, so if there was a pending message request we should accept it.
+            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+            GroupCallViewController.presentLobby(thread: groupThread)
+        } else if let contactThread = thread as? TSContactThread {
+
+            let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
+                address: contactThread.contactAddress,
+                confirmationText: CallStrings.confirmAndCallButtonTitle
+            ) { [weak self] didConfirmIdentity in
+                guard didConfirmIdentity else { return }
+                self?.startCall(withVideo: withVideo)
+            }
+
+            guard !didShowSNAlert else { return }
+
+            // We initiated a call, so if there was a pending message request we should accept it.
+            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+
+            outboundIndividualCallInitiator.initiateCall(address: contactThread.contactAddress, isVideo: withVideo)
+        }
     }
 
     private struct HeaderBuilder {
@@ -54,8 +98,8 @@ extension ConversationSettingsViewController {
             avatarView.autoPinEdgesToSuperviewEdges()
 
             if let groupThread = viewController.thread as? TSGroupThread,
-                groupThread.groupModel.groupAvatarData == nil,
-                viewController.canEditConversationAttributes {
+               groupThread.groupModel.groupAvatarData == nil,
+               viewController.canEditConversationAttributes {
                 let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
                 avatarWrapper.addSubview(cameraButton)
                 cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
@@ -65,6 +109,144 @@ extension ConversationSettingsViewController {
             subviews.append(avatarWrapper)
             subviews.append(UIView.spacer(withHeight: 8))
             subviews.append(buildThreadNameLabel())
+        }
+
+        mutating func addLastSubviews() {
+            var buttons = [UIView]()
+
+            if ConversationViewController.canCall(threadViewModel: viewController.threadViewModel) {
+                let isCurrentCallForThread = callService.currentCall?.thread.uniqueId == viewController.thread.uniqueId
+                let hasCurrentCall = callService.currentCall != nil
+
+                buttons.append(buildIconButton(
+                    icon: .videoCall,
+                    text: NSLocalizedString(
+                        "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
+                        comment: "Button to start a video call"
+                    ),
+                    isEnabled: isCurrentCallForThread || !hasCurrentCall,
+                    action: { [weak viewController] in
+                        viewController?.startCall(withVideo: true)
+                    }
+                ))
+
+                if !viewController.isGroupThread {
+                    buttons.append(buildIconButton(
+                        icon: .audioCall,
+                        text: NSLocalizedString(
+                            "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
+                            comment: "Button to start a audio call"
+                        ),
+                        isEnabled: isCurrentCallForThread || !hasCurrentCall,
+                        action: { [weak viewController] in
+                            viewController?.startCall(withVideo: false)
+                        }
+                    ))
+                }
+            }
+
+            buttons.append(buildIconButton(
+                icon: .settingsMuted,
+                text: viewController.thread.isMuted
+                    ? NSLocalizedString(
+                        "CONVERSATION_SETTINGS_MUTED_BUTTON",
+                        comment: "Button to unmute the chat"
+                    )
+                    : NSLocalizedString(
+                        "CONVERSATION_SETTINGS_MUTE_BUTTON",
+                        comment: "Button to mute the chat"
+                    ),
+                action: { [weak viewController] in
+                    guard let viewController = viewController else { return }
+                    ConversationSettingsViewController.showMuteUnmuteActionSheet(
+                        for: viewController.thread,
+                        from: viewController
+                    ) {
+                        viewController.updateTableContents()
+                    }
+                }
+            ))
+
+            if !viewController.groupViewHelper.isBlockedByMigration {
+                buttons.append(buildIconButton(
+                    icon: .settingsSearch,
+                    text: NSLocalizedString(
+                        "CONVERSATION_SETTINGS_SEARCH_BUTTON",
+                        comment: "Button to search the chat"
+                    ),
+                    action: { [weak viewController] in
+                        viewController?.tappedConversationSearch()
+                    }
+                ))
+            }
+
+            let spacerWidth: CGFloat = 8
+            let totalSpacerWidth = CGFloat(buttons.count - 1) * spacerWidth
+            let maxAvailableButtonWidth = viewController.view.width - (OWSTableViewController2.cellHOuterMargin + totalSpacerWidth)
+            let minButtonWidth = maxAvailableButtonWidth / 4
+
+            var buttonWidth = max(maxIconButtonWidth, minButtonWidth)
+            let needsTwoRows = buttonWidth * CGFloat(buttons.count) > maxAvailableButtonWidth
+            if needsTwoRows { buttonWidth = buttonWidth * 2 }
+            buttons.forEach { $0.autoSetDimension(.width, toSize: buttonWidth) }
+
+            func addButtonRow(_ buttons: [UIView]) {
+                let stackView = UIStackView()
+                stackView.axis = .horizontal
+                stackView.distribution = .fillEqually
+                stackView.spacing = spacerWidth
+                buttons.forEach { stackView.addArrangedSubview($0) }
+                subviews.append(stackView)
+            }
+
+            subviews.append(.spacer(withHeight: 24))
+
+            if needsTwoRows {
+                addButtonRow(Array(buttons.prefix(Int(ceil(CGFloat(buttons.count) / 2)))))
+                subviews.append(.spacer(withHeight: 8))
+                addButtonRow(buttons.suffix(Int(floor(CGFloat(buttons.count) / 2))))
+            } else {
+                addButtonRow(buttons)
+            }
+        }
+
+        private var maxIconButtonWidth: CGFloat = 0
+        mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
+            let button = OWSButton(block: action)
+            button.isEnabled = isEnabled
+            button.layer.cornerRadius = 10
+            button.clipsToBounds = true
+            button.setBackgroundImage(UIImage(color: viewController.cellBackgroundColor), for: .normal)
+            button.setBackgroundImage(UIImage(color: viewController.cellSelectedBackgroundColor), for: .highlighted)
+
+            let imageView = UIImageView()
+            imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
+            imageView.autoSetDimension(.height, toSize: 24)
+            imageView.contentMode = .scaleAspectFit
+
+            button.addSubview(imageView)
+            imageView.autoPinWidthToSuperview()
+            imageView.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
+
+            let label = UILabel()
+            label.font = .ows_dynamicTypeCaption2Clamped
+            label.textColor = Theme.primaryTextColor
+            label.textAlignment = .center
+            label.text = text
+            label.sizeToFit()
+            label.setCompressionResistanceHorizontalHigh()
+
+            let buttonMinimumWidth = label.width + 24
+            if maxIconButtonWidth < buttonMinimumWidth {
+                maxIconButtonWidth = buttonMinimumWidth
+            }
+
+            button.addSubview(label)
+            label.autoPinWidthToSuperview(withMargin: 12)
+            label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 6)
+            label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 2)
+
+            return button
         }
 
         func buildAvatarView() -> UIView {
@@ -83,7 +265,8 @@ extension ConversationSettingsViewController {
             let label = UILabel()
             label.text = viewController.threadName(transaction: transaction)
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
+            // TODO: See if design really wants this custom font size.
+            label.font = UIFont.ows_semiboldFont(withSize: UIFont.ows_dynamicTypeTitle1Clamped.pointSize * (13/14))
             label.lineBreakMode = .byTruncatingTail
             return label
         }
@@ -125,7 +308,7 @@ extension ConversationSettingsViewController {
             if let font = font {
                 label.font = font
             } else {
-                label.font = UIFont.ows_regularFont(withSize: viewController.subtitlePointSize)
+                label.font = viewController.subtitleFont
             }
 
             label.attributedText = attributedText
@@ -133,34 +316,16 @@ extension ConversationSettingsViewController {
             return label
         }
 
-        mutating func addLastSubviews() {
-            // TODO Message Request: In order to debug the profile is getting shared in the right moments,
-            // display the thread whitelist state in settings. Eventually we can probably delete this.
-            if DebugFlags.showWhitelisted {
-                let thread = viewController.thread
-                let databaseStorage = viewController.databaseStorage
-                let payments = viewController.paymentsSwift
-                let isThreadInProfileWhitelist = UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
-                                                                                transaction: transaction)
-                let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
-                addSubtitleLabel(text: hasSharedProfile)
-
-                if let contactThread = thread as? TSContactThread {
-                    let arePaymentsEnabled = databaseStorage.uiRead { transaction in
-                        payments.arePaymentsEnabled(for: contactThread.contactAddress,
-                                                    transaction: transaction)
-                    }
-                    addSubtitleLabel(text: String(format: "Payments Enabled: %@",
-                                                  arePaymentsEnabled ? "Yes" : "No"))
-                }
-            }
-        }
-
         func build() -> UIView {
             let header = UIStackView(arrangedSubviews: subviews)
             header.axis = .vertical
             header.alignment = .center
-            header.layoutMargins = UIEdgeInsets(top: 8, leading: 18, bottom: 24, trailing: 18)
+            header.layoutMargins = UIEdgeInsets(
+                top: 0,
+                leading: OWSTableViewController2.cellHOuterMargin,
+                bottom: 24,
+                trailing: OWSTableViewController2.cellHOuterMargin
+            )
             header.isLayoutMarginsRelativeArrangement = true
 
             header.addGestureRecognizer(UITapGestureRecognizer(target: viewController, action: #selector(conversationNameTouched)))
@@ -205,21 +370,7 @@ extension ConversationSettingsViewController {
 
         builder.addLastSubviews()
 
-        let header = builder.build()
-
-        // This will not appear in public builds.
-        if DebugFlags.groupsV2showV2Indicator,
-            thread.isGroupV2Thread {
-            let indicatorLabel = UILabel()
-            indicatorLabel.text = thread.isGroupV2Thread ? "v2" : "v1"
-            indicatorLabel.textColor = Theme.secondaryTextAndIconColor
-            indicatorLabel.font = .ows_dynamicTypeBody
-            header.addSubview(indicatorLabel)
-            indicatorLabel.autoPinEdge(toSuperviewMargin: .trailing)
-            indicatorLabel.autoPinEdge(toSuperviewMargin: .bottom)
-        }
-
-        return header
+        return builder.build()
     }
 
     private func buildHeaderForContact(contactThread: TSContactThread) -> UIView {
@@ -234,8 +385,8 @@ extension ConversationSettingsViewController {
                                     transaction: transaction)
 
         if !contactThread.contactAddress.isLocalAddress,
-            let bioText = profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
-                                                                  transaction: transaction) {
+           let bioText = profileManagerImpl.profileBioForDisplay(for: contactThread.contactAddress,
+                                                                 transaction: transaction) {
             let label = builder.addSubtitleLabel(text: bioText)
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -253,49 +404,22 @@ extension ConversationSettingsViewController {
         }
 
         if let username = profileManagerImpl.username(for: recipientAddress, transaction: transaction),
-            username.count > 0 {
+           username.count > 0 {
             if let formattedUsername = CommonFormats.formatUsername(username),
-                threadName != formattedUsername {
+               threadName != formattedUsername {
                 builder.addSubtitleLabel(text: formattedUsername)
             }
-        }
-
-        if DebugFlags.showProfileKeyAndUuidsIndicator {
-            let uuidText = String(format: "UUID: %@", contactThread.contactAddress.uuid?.uuidString ?? "Unknown")
-            builder.addSubtitleLabel(text: uuidText)
         }
 
         let isVerified = identityManager.verificationState(for: recipientAddress,
                                                            transaction: transaction) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
-            subtitle.appendTemplatedImage(named: "check-12", font: UIFont.ows_regularFont(withSize: builder.viewController.subtitlePointSize))
+            subtitle.appendTemplatedImage(named: "check-12", font: builder.viewController.subtitleFont)
             subtitle.append(" ")
             subtitle.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
             builder.addSubtitleLabel(attributedText: subtitle)
-        }
-
-        // This will not appear in public builds.
-        if DebugFlags.showProfileKeyAndUuidsIndicator {
-            let profileKey = profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
-            let text = String(format: "Profile Key: %@", profileKey?.hexadecimalString ?? "Unknown")
-            builder.addSubtitleLabel(attributedText: text.asAttributedString)
-        }
-
-        // This will not appear in public builds.
-        if DebugFlags.showCapabilityIndicators {
-            var capabilities = [String]()
-            if GroupManager.doesUserHaveGroupsV2Capability(address: recipientAddress,
-                                                           transaction: transaction) {
-                capabilities.append("gv2")
-            }
-            if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: recipientAddress,
-                                                                    transaction: transaction) {
-                capabilities.append("migration")
-            }
-            let text = String(format: "Capabilities: %@", capabilities.joined(separator: ", "))
-            builder.addSubtitleLabel(attributedText: text.asAttributedString)
         }
 
         builder.addLastSubviews()

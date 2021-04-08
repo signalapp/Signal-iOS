@@ -246,9 +246,6 @@ public class DebugFlags: BaseFlags {
                                                              details: LocalizationNotNeeded("The app will not send 'group update' messages for v2 groups. " +
                                                                                                 "Other group members will only learn of group changes from normal group messages."))
 
-    @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2Supported && build.includes(.qa)
-
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
     @objc
@@ -344,15 +341,6 @@ public class DebugFlags: BaseFlags {
     // bug we want to be able to test them using the debug UI.
     @objc
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
-
-    @objc
-    public static let showProfileKeyAndUuidsIndicator = false
-
-    @objc
-    public static let showCapabilityIndicators = false
-
-    @objc
-    public static let showWhitelisted = false
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)

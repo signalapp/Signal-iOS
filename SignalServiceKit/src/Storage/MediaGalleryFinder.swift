@@ -235,7 +235,7 @@ extension MediaGalleryFinder {
     private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
                                    for interaction: TSInteraction? = nil,
                                    in dateInterval: DateInterval? = nil,
-                                   excluding deletedAttachmentIds: Set<String>,
+                                   excluding deletedAttachmentIds: Set<String> = Set(),
                                    order: Order = .ascending,
                                    limit: Int? = nil,
                                    offset: Int? = nil) -> String {
@@ -255,6 +255,16 @@ extension MediaGalleryFinder {
                                                           end: .distantFutureForMillisecondTimestamp)
         let sql = Self.itemsQuery(result: "COUNT(*)", in: interval, excluding: deletedAttachmentIds)
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
+    }
+
+    public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [TSAttachment] {
+        let sql = Self.itemsQuery(order: .descending, limit: limit)
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
+        var attachments = [TSAttachment]()
+        while let next = try! cursor.next() {
+            attachments.append(next)
+        }
+        return attachments
     }
 
     public func enumerateMediaAttachments(in dateInterval: DateInterval,

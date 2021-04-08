@@ -141,6 +141,36 @@ public extension TSGroupThread {
         let threadUniqueId = buildThreadUniqueId()
         setGroupIdMapping(threadUniqueId, forGroupId: groupId, transaction: transaction)
     }
+
+    func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
+        let memberAddresses = Set(groupMembership.fullMembers)
+        let previousMembers = TSGroupMember.groupMembers(in: uniqueId, transaction: transaction)
+        let membersToDelete = previousMembers.filter { !memberAddresses.contains($0.address) }
+        let addressesToAdd = memberAddresses.subtracting(previousMembers.map { $0.address })
+
+        guard !membersToDelete.isEmpty || !addressesToAdd.isEmpty else { return }
+
+        Logger.info("Updating group members with \(membersToDelete.count) removed members and \(addressesToAdd.count) added members.")
+
+        for member in membersToDelete {
+            member.anyRemove(transaction: transaction)
+        }
+
+        let interactionFinder = InteractionFinder(threadUniqueId: uniqueId)
+        for address in addressesToAdd {
+            // We look up the latest interaction by this user, because they could
+            // have been a member of the group previously.
+            let lastInteraction = interactionFinder.latestInteraction(
+                from: address,
+                transaction: transaction
+            )
+            TSGroupMember(
+                address: address,
+                groupThreadId: uniqueId,
+                lastInteractionTimestamp: lastInteraction?.timestamp ?? 0
+            ).anyInsert(transaction: transaction)
+        }
+    }
 }
 
 // MARK: -

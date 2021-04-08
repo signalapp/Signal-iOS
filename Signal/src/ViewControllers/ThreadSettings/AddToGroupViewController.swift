@@ -10,7 +10,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private let address: SignalServiceAddress
     private let collation = UILocalizedIndexedCollation.current()
-    private let maxRecentGroups = 5
+    private let maxRecentGroups = 7
 
     private lazy var threadViewHelper: ThreadViewHelper = {
         let threadViewHelper = ThreadViewHelper()
@@ -143,14 +143,15 @@ public class AddToGroupViewController: OWSTableViewController2 {
             return
         }
 
-        let titleFormat = NSLocalizedString("ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT",
-                                            comment: "The title on the 'add to group' confirmation action sheet. Embeds {group name}")
         let messageFormat = NSLocalizedString("ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT",
-                                            comment: "The title on the 'add to group' confirmation action sheet. Embeds {contact name}")
+                                            comment: "The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name}")
 
         OWSActionSheets.showConfirmationAlert(
-            title: String(format: titleFormat, groupThread.groupNameOrDefault),
-            message: String(format: messageFormat, shortName),
+            title: NSLocalizedString(
+                "ADD_TO_GROUP_ACTION_SHEET_TITLE",
+                comment: "The title on the 'add to group' confirmation action sheet."
+            ),
+            message: String(format: messageFormat, shortName, groupThread.groupNameOrDefault),
             proceedTitle: NSLocalizedString("ADD_TO_GROUP_ACTION_PROCEED_BUTTON",
                                             comment: "The button on the 'add to group' confirmation to add the user to the group."),
             proceedStyle: .default) { _ in
@@ -254,10 +255,21 @@ public class AddToGroupViewController: OWSTableViewController2 {
     // MARK: -
 
     private func item(forGroupThread  groupThread: TSGroupThread) -> OWSTableItem {
+        let alreadyAMemberText = NSLocalizedString(
+            "ADD_TO_GROUP_ALREADY_A_MEMBER",
+            comment: "Text indicating your contact is already a member of the group on the 'add to group' view."
+        )
+        let isAlreadyAMember = groupThread.groupMembership.isFullMember(address)
+
         return OWSTableItem(
             customCellBlock: {
                 let cell = GroupTableViewCell()
-                cell.configure(thread: groupThread)
+                cell.configure(
+                    thread: groupThread,
+                    customSubtitle: isAlreadyAMember ? alreadyAMemberText : nil,
+                    customTextColor: isAlreadyAMember ? Theme.ternaryTextColor : nil
+                )
+                cell.isUserInteractionEnabled = !isAlreadyAMember
                 return cell
             },
             actionBlock: { [weak self] in

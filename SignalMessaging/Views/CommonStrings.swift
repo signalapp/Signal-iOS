@@ -125,6 +125,9 @@ import Foundation
     static public let startButton = NSLocalizedString("BUTTON_START", comment: "Label for the 'start' button.")
 
     @objc
+    static public let seeAllButton = NSLocalizedString("SEE_ALL_BUTTON", comment: "Label for the 'see all' button.")
+
+    @objc
     static public let genericError = NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
 
     @objc
