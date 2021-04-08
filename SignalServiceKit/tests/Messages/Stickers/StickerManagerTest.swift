@@ -48,9 +48,11 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)
+        let temporaryFile = OWSFileSystem.temporaryFileUrl()
+        try! stickerData.write(to: temporaryFile)
 
         let success = StickerManager.installSticker(stickerInfo: stickerInfo,
-                                                    stickerData: stickerData,
+                                                    stickerUrl: temporaryFile,
                                                     contentType: OWSMimeTypeImageWebp,
                                                     emojiString: "🌼🇨🇦")
         XCTAssertTrue(success)
@@ -94,9 +96,11 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)
+        let temporaryFile = OWSFileSystem.temporaryFileUrl()
+        try! stickerData.write(to: temporaryFile)
 
         let success = StickerManager.installSticker(stickerInfo: stickerInfo,
-                                                    stickerData: stickerData,
+                                                    stickerUrl: temporaryFile,
                                                     contentType: OWSMimeTypeImageWebp,
                                                     emojiString: "🌼🇨🇦")
         XCTAssertTrue(success)
@@ -152,11 +156,12 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let bundle = Bundle(for: StickerManagerTest.self)
         let encryptedStickerURL = bundle.url(forResource: "sample-sticker", withExtension: "encrypted")!
-        let encryptedStickerData = try! Data(contentsOf: encryptedStickerURL)
 
         let decryptedStickerURL = bundle.url(forResource: "sample-sticker", withExtension: "webp")!
         let decryptedStickerData = try! Data(contentsOf: decryptedStickerURL)
-        XCTAssertEqual(try! StickerManager.decrypt(ciphertext: encryptedStickerData, packKey: packKey),
-                       decryptedStickerData)
+
+        let outputUrl = try! StickerManager.decrypt(at: encryptedStickerURL, packKey: packKey)
+        let outputData = try! Data(contentsOf: outputUrl)
+        XCTAssertEqual(outputData, decryptedStickerData)
     }
 }
