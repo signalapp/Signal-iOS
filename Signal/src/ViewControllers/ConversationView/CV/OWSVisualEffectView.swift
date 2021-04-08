@@ -28,6 +28,7 @@ public class OWSVisualEffectView: UIVisualEffectView {
 
     public func addContentSubview(_ subview: UIView,
                                   withInsets insets: UIEdgeInsets = .zero) {
+        subview.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(subview)
         contentSubviews.append(.init(subview: subview, insets: insets))
     }
