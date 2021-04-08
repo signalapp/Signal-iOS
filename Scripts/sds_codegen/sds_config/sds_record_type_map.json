@@ -52,6 +52,7 @@
     "TSCall": 20, 
     "TSContactThread": 27, 
     "TSErrorMessage": 9, 
+    "TSGroupMember": 69, 
     "TSGroupThread": 26, 
     "TSIncomingMessage": 19, 
     "TSInfoMessage": 10, 

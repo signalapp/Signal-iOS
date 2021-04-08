@@ -1021,3 +1021,43 @@ CREATE
         ON "model_TSPaymentModel"("isUnread"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSGroupMember" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"groupThreadId" TEXT NOT NULL
+            ,"phoneNumber" TEXT
+            ,"uuidString" TEXT
+            ,"lastInteractionTimestamp" INTEGER NOT NULL DEFAULT 0
+        )
+;
+
+CREATE
+    INDEX "index_model_TSGroupMember_on_uniqueId"
+        ON "model_TSGroupMember"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSGroupMember_on_groupThreadId"
+        ON "model_TSGroupMember"("groupThreadId"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_model_TSGroupMember_on_uuidString_and_groupThreadId"
+        ON "model_TSGroupMember"("uuidString"
+    ,"groupThreadId"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_model_TSGroupMember_on_phoneNumber_and_groupThreadId"
+        ON "model_TSGroupMember"("phoneNumber"
+    ,"groupThreadId"
+)
+;

@@ -70,6 +70,7 @@
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
+#import <SignalServiceKit/TSGroupMember.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>

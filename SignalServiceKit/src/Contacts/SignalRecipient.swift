@@ -34,6 +34,32 @@ extension SignalRecipient {
             transaction.executeUpdate(sql: sql, arguments: arguments)
         }
 
+        // Update TSGroupMember
+        do {
+            let sql = """
+            UPDATE \(GroupMemberRecord.databaseTableName)
+            SET \(groupMemberColumn: .uuidString) = ?, \(groupMemberColumn: .phoneNumber) = ?
+            WHERE (\(groupMemberColumn: .uuidString) IS ? OR \(groupMemberColumn: .uuidString) IS NULL)
+            AND (\(groupMemberColumn: .phoneNumber) IS ? OR \(groupMemberColumn: .phoneNumber) IS NULL)
+            AND NOT (\(groupMemberColumn: .uuidString) IS NULL AND \(groupMemberColumn: .phoneNumber) IS NULL)
+            """
+
+            transaction.executeUpdate(sql: sql, arguments: arguments)
+        }
+
+        // Update OWSReaction
+        do {
+            let sql = """
+            UPDATE \(ReactionRecord.databaseTableName)
+            SET \(reactionColumn: .reactorUUID) = ?, \(reactionColumn: .reactorE164) = ?
+            WHERE (\(reactionColumn: .reactorUUID) IS ? OR \(reactionColumn: .reactorUUID) IS NULL)
+            AND (\(reactionColumn: .reactorE164) IS ? OR \(reactionColumn: .reactorE164) IS NULL)
+            AND NOT (\(reactionColumn: .reactorUUID) IS NULL AND \(reactionColumn: .reactorE164) IS NULL)
+            """
+
+            transaction.executeUpdate(sql: sql, arguments: arguments)
+        }
+
         // Update TSInteraction
         do {
             let sql = """

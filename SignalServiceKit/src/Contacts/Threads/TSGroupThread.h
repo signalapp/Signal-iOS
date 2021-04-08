@@ -75,10 +75,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 @property (nonatomic, readonly, class) NSString *defaultGroupName;
 
-// all group threads containing recipient as a member
-+ (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
-                                          transaction:(SDSAnyReadTransaction *)transaction;
-
 #pragma mark - Update With...
 
 // This method should only be called by GroupManager.
