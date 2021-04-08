@@ -729,7 +729,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
 
-    func requestLibraryPermissionIfNeeded(handler: @escaping () -> Void) {
+    func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void) {
         let authorizationStatus: PHAuthorizationStatus
         if #available(iOS 14, *) {
             authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -743,12 +743,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
                 // from showing when we request the photo library permission.
                 Environment.shared.isRequestingPermission = true
-                SNAppearance.switchToImagePickerAppearance()
+                let appMode = AppModeManager.shared.currentAppMode
+                // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
+                // it'd be better to just customize the appearance of the image picker. There doesn't currently
+                // appear to be a good way to do so though...
+                AppModeManager.shared.setCurrentAppMode(to: .light)
                 PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
-                    SNAppearance.switchToSessionAppearance()
+                    DispatchQueue.main.async {
+                        AppModeManager.shared.setCurrentAppMode(to: appMode)
+                    }
                     Environment.shared.isRequestingPermission = false
                     if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
-                        handler()
+                        onAuthorized()
                     }
                 }
             }
@@ -757,14 +763,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             if authorizationStatus == .notDetermined {
                 PHPhotoLibrary.requestAuthorization { status in
                     if status == .authorized {
-                        handler()
+                        onAuthorized()
                     }
                 }
             }
         }
         switch authorizationStatus {
         case .authorized, .limited:
-            handler()
+            onAuthorized()
         case .denied, .restricted:
             let modal = PermissionMissingModal(permission: "library") { }
             modal.modalPresentationStyle = .overFullScreen
