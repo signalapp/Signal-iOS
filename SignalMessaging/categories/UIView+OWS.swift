@@ -515,6 +515,11 @@ public extension CGSize {
         CGSize(width: left.width - right.width,
                height: left.height - right.height)
     }
+
+    static func * (left: CGSize, right: CGFloat) -> CGSize {
+        CGSize(width: left.width * right,
+               height: left.height * right)
+    }
 }
 
 // MARK: -

@@ -33,10 +33,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         let hStackView = componentView.hStackView
-        hStackView.apply(config: hStackConfig)
+        let vStackView = componentView.vStackView
 
-        if let downloadView = tryToBuildDownloadView() {
-            hStackView.addArrangedSubview(downloadView)
+        var hSubviews = [UIView]()
+
+        if let downloadView = tryToBuildProgressView() {
+            hSubviews.append(downloadView)
         } else {
             let iconImageView = componentView.iconImageView
             if let icon = UIImage(named: "generic-attachment") {
@@ -45,10 +47,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             } else {
                 owsFailDebug("Missing icon.")
             }
-            iconImageView.autoSetDimensions(to: iconSize)
-            iconImageView.setCompressionResistanceHigh()
-            iconImageView.setContentHuggingHigh()
-            hStackView.addArrangedSubview(iconImageView)
+            hSubviews.append(iconImageView)
 
             let fileTypeLabel = componentView.fileTypeLabel
             fileTypeLabelConfig.applyForRendering(label: fileTypeLabel)
@@ -57,35 +56,51 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             fileTypeLabel.textAlignment = .center
             // Center on icon.
             iconImageView.addSubview(fileTypeLabel)
-            fileTypeLabel.autoCenterInSuperview()
-            fileTypeLabel.autoSetDimension(.width, toSize: iconSize.width - 15)
+            vStackView.addLayoutBlock { _ in
+                guard let superview = fileTypeLabel.superview else {
+                    owsFailDebug("Missing superview.")
+                    return
+                }
+                var labelSize = fileTypeLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
+                                                                      height: CGFloat.greatestFiniteMagnitude))
+                labelSize.width = min(labelSize.width,
+                                      superview.bounds.width - 15)
+
+                let labelFrame = CGRect(origin: ((superview.bounds.size - labelSize) * 0.5).asPoint,
+                                        size: labelSize)
+                fileTypeLabel.frame = labelFrame
+            }
         }
 
-        let vStackView = componentView.vStackView
-        vStackView.apply(config: vStackViewConfig)
-        hStackView.addArrangedSubview(vStackView)
-
         let topLabel = componentView.topLabel
-        topLabelConfig.applyForRendering(label: topLabel)
-        vStackView.addArrangedSubview(topLabel)
-
         let bottomLabel = componentView.bottomLabel
-        bottomLabelConfig.applyForRendering(label: bottomLabel)
-        vStackView.addArrangedSubview(bottomLabel)
-    }
 
-    private var hStackLayoutMargins: UIEdgeInsets {
-        return UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)
+        topLabelConfig.applyForRendering(label: topLabel)
+        bottomLabelConfig.applyForRendering(label: bottomLabel)
+
+        let vSubviews = [
+            componentView.topLabel,
+            componentView.bottomLabel
+        ]
+        vStackView.configure(config: vStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_vStack,
+                             subviews: vSubviews)
+        hSubviews.append(vStackView)
+        hStackView.configure(config: hStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_hStack,
+                                 subviews: hSubviews)
     }
 
     private var hStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
                           spacing: hSpacing,
-                          layoutMargins: hStackLayoutMargins)
+                          layoutMargins: UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
     }
 
-    private var vStackViewConfig: CVStackViewConfig {
+    private var vStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .leading,
                           spacing: labelVSpacing,
@@ -171,7 +186,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                              lineBreakMode: .byTruncatingTail)
     }
 
-    private func tryToBuildDownloadView() -> UIView? {
+    private func tryToBuildProgressView() -> UIView? {
 
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(forAttachment: attachment,
@@ -194,32 +209,71 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return nil
         }
 
-        let downloadViewSize = min(iconSize.width, iconSize.height)
+        // TODO:
         return CVAttachmentProgressView(direction: direction,
-                                        style: .withoutCircle(diameter: downloadViewSize),
+                                        style: .withoutCircle(diameter: progressSize),
                                         conversationStyle: conversationStyle)
+    }
+
+    private var hasProgressView: Bool {
+        switch CVAttachmentProgressView.progressType(forAttachment: attachment,
+                                                     interaction: interaction) {
+        case .none,
+             .uploading:
+            // We currently only show progress for downloads here.
+            return false
+        case .pendingDownload,
+             .downloading:
+            return true
+        case .restoring:
+            // TODO: We could easily show progress for restores.
+            owsFailDebug("Restoring progress type.")
+            return false
+        case .unknown:
+            owsFailDebug("Unknown progress type.")
+            return false
+        }
     }
 
     private let hSpacing: CGFloat = 8
     private let labelVSpacing: CGFloat = 2
     private let iconSize = CGSize(width: 36, height: CGFloat(kStandardAvatarSize))
+    private let progressSize: CGFloat = 36
+
+    private static let measurementKey_hStack = "CVComponentGenericAttachment.measurementKey_hStack"
+    private static let measurementKey_vStack = "CVComponentGenericAttachment.measurementKey_vStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let labelsHeight = (topLabelConfig.font.lineHeight +
-                                bottomLabelConfig.font.lineHeight + labelVSpacing)
-        let contentHeight = max(iconSize.height, labelsHeight)
-        let height = contentHeight + hStackLayoutMargins.totalHeight
+        let leftViewSize: CGSize = (hasProgressView
+                                        ? .square(progressSize)
+                                        : iconSize)
 
-        let maxLabelWidth = max(0, maxWidth - (iconSize.width + hSpacing + hStackLayoutMargins.totalWidth))
+        let maxLabelWidth = max(0, maxWidth - (leftViewSize.width +
+                                                hSpacing +
+                                                hStackConfig.layoutMargins.totalWidth +
+                                                vStackConfig.layoutMargins.totalWidth))
         let topLabelSize = CVText.measureLabel(config: topLabelConfig, maxWidth: maxLabelWidth)
         let bottomLabelSize = CVText.measureLabel(config: bottomLabelConfig, maxWidth: maxLabelWidth)
-        let labelsWidth = max(topLabelSize.width, bottomLabelSize.width)
-        let contentWidth = iconSize.width + labelsWidth + hSpacing
-        let width = min(maxLabelWidth, contentWidth)
 
-        return CGSize(width: width, height: height).ceil
+        var vSubviewInfos = [ManualStackSubviewInfo]()
+        vSubviewInfos.append(topLabelSize.asManualSubviewInfo())
+        vSubviewInfos.append(bottomLabelSize.asManualSubviewInfo())
+
+        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_vStack,
+                                                            subviewInfos: vSubviewInfos)
+
+        var hSubviewInfos = [ManualStackSubviewInfo]()
+        hSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
+        hSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
+        let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_hStack,
+                                                            subviewInfos: hSubviewInfos)
+        return hStackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -282,8 +336,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewGenericAttachment: NSObject, CVComponentView {
 
-        fileprivate let hStackView = OWSStackView(name: "GenericAttachment.hStackView")
-        fileprivate let vStackView = OWSStackView(name: "GenericAttachment.vStackView")
+        fileprivate let hStackView = ManualStackView(name: "GenericAttachment.hStackView")
+        fileprivate let vStackView = ManualStackView(name: "GenericAttachment.vStackView")
         fileprivate let topLabel = UILabel()
         fileprivate let bottomLabel = UILabel()
         fileprivate let fileTypeLabel = UILabel()
@@ -300,6 +354,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         public func reset() {
             hStackView.reset()
             vStackView.reset()
+
             topLabel.text = nil
             bottomLabel.text = nil
             fileTypeLabel.text = nil
