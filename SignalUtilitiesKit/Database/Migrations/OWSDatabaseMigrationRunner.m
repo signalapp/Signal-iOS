@@ -25,9 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This should all migrations which do NOT qualify as safeBlockingMigrations:
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
-    return @[
-        [SNContactsMigration new]
-    ];
+    return @[];
 }
 
 - (void)assumeAllExistingMigrationsRun

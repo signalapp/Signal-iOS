@@ -58,7 +58,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public required init?(coder: NSCoder) {
         guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
         self.sessionID = sessionID
-        self.isTrusted = coder.decodeBool(forKey: "isTrusted")
+        isTrusted = coder.decodeBool(forKey: "isTrusted")
         if let name = coder.decodeObject(forKey: "displayName") as! String? { self.name = name }
         if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
         if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
