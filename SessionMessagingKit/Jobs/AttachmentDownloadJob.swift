@@ -108,9 +108,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     return handleFailure(error)
                 }
                 OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write { transaction in
+                storage.write(with: { transaction in
                     storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }
+                }, completion: {
+                    self.handleSuccess()
+                })
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
@@ -138,9 +140,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     return handleFailure(error)
                 }
                 OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write { transaction in
+                storage.write(with: { transaction in
                     storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }
+                }, completion: {
+                    self.handleSuccess()
+                })
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
