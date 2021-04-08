@@ -337,7 +337,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 stackView.pin(to: snContentView, withInset: inset)
             }
         case .mediaMessage:
-            if let thread = viewItem.interaction.thread as? TSContactThread,
+            if viewItem.interaction is TSIncomingMessage,
+                let thread = viewItem.interaction.thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
                 let mediaPlaceholderView = MediaPlaceholderView(viewItem: viewItem, textColor: bodyLabelTextColor)
                 snContentView.addSubview(mediaPlaceholderView)

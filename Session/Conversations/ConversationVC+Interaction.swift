@@ -382,7 +382,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             case .mediaMessage:
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
-                if let thread = self.thread as? TSContactThread,
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
                     Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
                     // Ask the user whether they want to download this attachment
                     let modal = DownloadAttachmentModal(viewItem: viewItem)
