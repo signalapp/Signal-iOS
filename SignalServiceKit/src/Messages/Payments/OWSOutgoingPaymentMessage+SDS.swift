@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension TSOutgoingMessage {
+public extension OWSOutgoingPaymentMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchOutgoingMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSOutgoingMessage? {
+    class func anyFetchOutgoingPaymentMessage(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSOutgoingPaymentMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? TSOutgoingMessage else {
+        guard let instance = object as? OWSOutgoingPaymentMessage else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension TSOutgoingMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateOutgoingMessage(transaction: SDSAnyWriteTransaction, block: (TSOutgoingMessage) -> Void) {
+    func anyUpdateOutgoingPaymentMessage(transaction: SDSAnyWriteTransaction, block: (OWSOutgoingPaymentMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? TSOutgoingMessage else {
+            guard let instance = object as? OWSOutgoingPaymentMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension TSOutgoingMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSOutgoingMessageSerializer: SDSSerializer {
+class OWSOutgoingPaymentMessageSerializer: SDSSerializer {
 
-    private let model: TSOutgoingMessage
-    public required init(model: TSOutgoingMessage) {
+    private let model: OWSOutgoingPaymentMessage
+    public required init(model: OWSOutgoingPaymentMessage) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class TSOutgoingMessageSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .outgoingMessage
+        let recordType: SDSRecordType = .outgoingPaymentMessage
         let uniqueId: String = model.uniqueId
 
         // Properties
@@ -120,9 +120,9 @@ class TSOutgoingMessageSerializer: SDSSerializer {
         let creatorUuid: String? = nil
         let joinedMemberUuids: Data? = nil
         let wasIdentityVerified: Bool? = nil
-        let paymentCancellation: Data? = nil
-        let paymentNotification: Data? = nil
-        let paymentRequest: Data? = nil
+        let paymentCancellation: Data? = optionalArchive(model.paymentCancellation)
+        let paymentNotification: Data? = optionalArchive(model.paymentNotification)
+        let paymentRequest: Data? = optionalArchive(model.paymentRequest)
 
         return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest)
     }

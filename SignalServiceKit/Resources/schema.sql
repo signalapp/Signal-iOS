@@ -110,6 +110,9 @@ CREATE
             ,"creatorUuid" TEXT
             ,"joinedMemberUuids" BLOB
             ,"wasIdentityVerified" BOOLEAN
+            ,"paymentCancellation" BLOB
+            ,"paymentNotification" BLOB
+            ,"paymentRequest" BLOB
         )
 ;
 
@@ -964,21 +967,22 @@ CREATE
     TABLE
         IF NOT EXISTS "model_TSPaymentModel" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT
-            , "recordType" INTEGER NOT NULL
-            , "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
-            , "addressUuidString" TEXT
-            , "createdTimestamp" INTEGER NOT NULL
-            , "isUnread" BOOLEAN NOT NULL
-            , "mcLedgerBlockIndex" INTEGER NOT NULL
-            , "mcReceiptData" BLOB
-            , "mcTransactionData" BLOB
-            , "memoMessage" TEXT
-            , "mobileCoin" BLOB
-            , "paymentAmount" BLOB
-            , "paymentFailure" INTEGER NOT NULL
-            , "paymentState" INTEGER NOT NULL
-            , "paymentType" INTEGER NOT NULL
-            , "requestUuidString" TEXT
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"addressUuidString" TEXT
+            ,"createdTimestamp" INTEGER NOT NULL
+            ,"isUnread" BOOLEAN NOT NULL
+            ,"mcLedgerBlockIndex" INTEGER NOT NULL
+            ,"mcReceiptData" BLOB
+            ,"mcTransactionData" BLOB
+            ,"memoMessage" TEXT
+            ,"mobileCoin" BLOB
+            ,"paymentAmount" BLOB
+            ,"paymentFailure" INTEGER NOT NULL
+            ,"paymentState" INTEGER NOT NULL
+            ,"paymentType" INTEGER NOT NULL
+            ,"requestUuidString" TEXT
         )
 ;
 
