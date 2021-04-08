@@ -100,6 +100,7 @@ public class GRDBSchemaMigrator: NSObject {
         case storeMutedUntilDateAsMillisecondTimestamp
         case addPaymentModels15
         case addPaymentModels40
+        case fixPaymentModels
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1004,6 +1005,23 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.create(index: "index_model_TSPaymentModel_on_isUnread", on: "model_TSPaymentModel", columns: ["isUnread"])
             } catch {
                 owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.fixPaymentModels.rawValue) { db in
+            // We released a build with an out-of-date schema that didn't reflect
+            // `addPaymentModels15`. To fix this, we need to run the column adds
+            // again to get all users in a consistent state. We can safely skip
+            // this migration if it fails.
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "paymentCancellation", .blob)
+                    table.add(column: "paymentNotification", .blob)
+                    table.add(column: "paymentRequest", .blob)
+                }
+            } catch {
+                // We can safely skip this if it fails.
+                Logger.info("Skipping re-add of interaction payment columns.")
             }
         }
 
