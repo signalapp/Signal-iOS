@@ -1,10 +1,21 @@
-
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
 
 #import "AppDelegate.h"
 
 int main(int argc, char *argv[])
 {
+    NSString *appDelegateName;
+
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass(AppDelegate.class));
+        // Any setup work pre-UIApplicationMain() should be placed
+        // inside this autoreleasepool.
+        appDelegateName = NSStringFromClass(AppDelegate.class);
     }
+
+    // UIApplicationMain is intentionally called outside of the above
+    // autoreleasepool. The function never returns, so its parent
+    // autoreleasepool will never be drained.
+    return UIApplicationMain(argc, argv, nil, appDelegateName);
 }
