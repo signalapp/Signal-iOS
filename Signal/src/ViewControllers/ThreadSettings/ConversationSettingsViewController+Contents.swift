@@ -458,7 +458,7 @@ extension ConversationSettingsViewController {
         let allMembers = groupMembership.fullMembers
         var allMembersSorted = [SignalServiceAddress]()
         var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             for memberAddress in allMembers {
                 verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
                                                                                              transaction: transaction)
@@ -539,7 +539,7 @@ extension ConversationSettingsViewController {
                 if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else if !memberAddress.isLocalAddress,
-                          let bioForDisplay = (Self.databaseStorage.uiRead { transaction in
+                          let bioForDisplay = (Self.databaseStorage.read { transaction in
                     Self.profileManagerImpl.profileBioForDisplay(for: memberAddress, transaction: transaction)
                 }) {
                     cell.setAttributedSubtitle(NSAttributedString(string: bioForDisplay))

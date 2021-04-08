@@ -72,7 +72,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         self.threadViewModel = threadViewModel
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
-        disappearingMessagesConfiguration = Self.databaseStorage.uiRead { transaction in
+        disappearingMessagesConfiguration = Self.databaseStorage.read { transaction in
             OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: threadViewModel.threadRecord,
                                                                      transaction: transaction)
         }
@@ -223,7 +223,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     // MARK: -
 
     func reloadThreadAndUpdateContent() {
-        let didUpdate = self.databaseStorage.uiRead { transaction -> Bool in
+        let didUpdate = self.databaseStorage.read { transaction -> Bool in
             guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId,
                                                     transaction: transaction) else {
                 return false
@@ -300,7 +300,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     // MARK: -
 
     private var hasUnsavedChangesToDisappearingMessagesConfiguration: Bool {
-        return databaseStorage.uiRead { transaction in
+        return databaseStorage.read { transaction in
             if let groupThread = self.thread as? TSGroupThread {
                 guard let latestThread = TSGroupThread.fetch(groupId: groupThread.groupModel.groupId, transaction: transaction) else {
                     // Thread no longer exists.
@@ -473,7 +473,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.image != nil else { return }
-        guard let vc = databaseStorage.uiRead(block: { readTx in
+        guard let vc = databaseStorage.read(block: { readTx in
             AvatarViewController(thread: self.thread, readTx: readTx)
         }) else {
             return
