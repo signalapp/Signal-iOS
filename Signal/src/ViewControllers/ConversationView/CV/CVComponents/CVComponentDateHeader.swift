@@ -83,12 +83,13 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             let contentView: UIView = {
                 if hasWallpaper {
                     // blurView replaces innerStack, using the same size, layoutMargins, etc.
+
                     let blurView = buildBlurView(conversationStyle: conversationStyle)
                     componentView.blurView = blurView
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
-                    blurView.addContentSubview(titleLabel,
-                                               withInsets: innerStackConfig.layoutMargins)
+                    blurView.contentView.addSubview(titleLabel)
+                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
                     return blurView
                 } else {
                     innerStack.configure(config: innerStackConfig,

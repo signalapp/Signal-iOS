@@ -454,6 +454,18 @@ public extension CGPoint {
         CGPoint(x: x.clamp(rect.minX, rect.maxX),
                 y: y.clamp(rect.minY, rect.maxY))
     }
+
+    static func + (left: CGPoint, right: CGPoint) -> CGPoint {
+        left.plus(right)
+    }
+
+    static func - (left: CGPoint, right: CGPoint) -> CGPoint {
+        CGPoint(x: left.x - right.x, y: left.y - right.y)
+    }
+
+    static func * (left: CGPoint, right: CGFloat) -> CGPoint {
+        CGPoint(x: left.x * right, y: left.y * right)
+    }
 }
 
 // MARK: -

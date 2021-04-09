@@ -231,7 +231,7 @@ public class DebugFlags: BaseFlags {
     public static let suppressBackgroundActivity = false
 
     @objc
-    public static let reduceLogChatter = true
+    public static let reduceLogChatter = build.includes(.dev) && false
 
     @objc
     public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter

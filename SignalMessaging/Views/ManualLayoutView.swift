@@ -170,9 +170,8 @@ open class ManualLayoutView: UIView {
 
             let siblingCenter = superview.convert(siblingView.center,
                                                   from: siblingView.superview)
-            let subviewFrame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
-                                                      y: siblingCenter.y - subview.height * 0.5),
-                                      size: size)
+            let subviewOrigin = siblingCenter - (size.asPoint * 0.5)
+            let subviewFrame = CGRect(origin: subviewOrigin, size: size)
             Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }
@@ -197,9 +196,8 @@ open class ManualLayoutView: UIView {
             }
 
             let superviewBounds = superview.bounds
-            let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
-                                                      y: (superviewBounds.height - subview.height) * 0.5),
-                                      size: size)
+            let subviewOrigin = ((superviewBounds.size - size) * 0.5).asPoint
+            let subviewFrame = CGRect(origin: subviewOrigin, size: size)
             Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }
@@ -225,9 +223,8 @@ open class ManualLayoutView: UIView {
 
             let size = subview.sizeThatFitsMaxSize
             let superviewBounds = superview.bounds
-            let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - size.width) * 0.5,
-                                                      y: (superviewBounds.height - size.height) * 0.5),
-                                      size: size)
+            let subviewOrigin = ((superviewBounds.size - size) * 0.5).asPoint
+            let subviewFrame = CGRect(origin: subviewOrigin, size: size)
             Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }

@@ -413,7 +413,6 @@
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */; };
 		34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C529082361D3530009DB2A /* ApprovalFooterView.swift */; };
-		34C53A78261E275900B18285 /* OWSVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C53A77261E275900B18285 /* OWSVisualEffectView.swift */; };
 		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
@@ -1449,7 +1448,6 @@
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
 		34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioPlayer.m; sourceTree = "<group>"; };
 		34C529082361D3530009DB2A /* ApprovalFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApprovalFooterView.swift; sourceTree = "<group>"; };
-		34C53A77261E275900B18285 /* OWSVisualEffectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSVisualEffectView.swift; sourceTree = "<group>"; };
 		34C6B0A51FA0E46F00D35993 /* test-gif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "test-gif.gif"; sourceTree = "<group>"; };
 		34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-mp3.mp3"; sourceTree = "<group>"; };
 		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
@@ -2676,7 +2674,6 @@
 				347C381C252CE69400F3D941 /* CVStackView.swift */,
 				3470C8812559B23F00F5847C /* CVUpdate.swift */,
 				345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */,
-				34C53A77261E275900B18285 /* OWSVisualEffectView.swift */,
 			);
 			path = CV;
 			sourceTree = "<group>";
@@ -5277,7 +5274,6 @@
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,
-				34C53A78261E275900B18285 /* OWSVisualEffectView.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				347C3832252CE69400F3D941 /* CVCell.swift in Sources */,

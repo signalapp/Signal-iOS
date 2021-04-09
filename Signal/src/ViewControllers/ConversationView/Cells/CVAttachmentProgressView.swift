@@ -349,8 +349,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
         case .withCircle:
             let circleView = ManualLayoutView.circleView(name: "circleView")
             circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-            innerContentView.addSubviewToCenterOnSuperview(circleView,
-                                                           size: .square(Self.outerDiameter(style: style)))
+            circleView.addSubviewToCenterOnSuperview(innerContentView,
+                                                     size: .square(Self.outerDiameter(style: style)))
             addSubviewToFillSuperviewEdges(circleView)
         case .withoutCircle:
             addSubviewToFillSuperviewEdges(innerContentView)

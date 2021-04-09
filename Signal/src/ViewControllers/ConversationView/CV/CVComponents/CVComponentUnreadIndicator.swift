@@ -52,7 +52,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         }
 
         let outerStack = componentView.outerStack
-        let contentView = componentView.contentView
         let strokeView = componentView.strokeView
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
@@ -79,8 +78,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                     componentView.blurView = blurView
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
-                    blurView.addContentSubview(titleLabel,
-                                               withInsets: innerStackConfig.layoutMargins)
+                    blurView.contentView.addSubview(titleLabel)
+                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
                     return blurView
                 } else {
                     strokeView.backgroundColor = .ows_gray45
@@ -171,7 +170,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         fileprivate let outerStack = ManualStackView(name: "unreadIndicator.outerStack")
         fileprivate let innerStack = ManualStackView(name: "unreadIndicator.innerStack")
 
-        fileprivate let contentView = UIView.container()
         fileprivate let titleLabel = UILabel()
 
         fileprivate var blurView: UIVisualEffectView?
