@@ -1142,16 +1142,16 @@
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "במקרה שהשתמשת קודם לכן ב־Signal על iPad מקושר, אתה יכול להעביר בבטחה את החשבון וההודעות שלך אל מכשיר זה.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "המשך בלי העברה של החשבון וההודעות שלך";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "המשך בלי להעביר את החשבון וההודעות שלך";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "הוסף iPad זה כמכשיר מקושר חדש בלי העברת היסטורית הודעות";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "הוסף iPad זה כמכשיר מקושר חדש בלי להעביר היסטורית הודעות";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "הוסף כמכשיר חדש";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "הירשם בלי העברה";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "הירשם בלי להעביר";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "העבר חשבון והודעות";
