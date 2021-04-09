@@ -291,19 +291,4 @@ open class ManualLayoutView: UIView {
         }
         tapBlock()
     }
-
-    // MARK: - Gestures
-
-    // TODO: Ideally ManualLayoutView will be transparent by default.
-    // But we should be able to disable transparency so that a separate
-    // background view isn't necessary.
-    @discardableResult
-    public func addBackgroundView(backgroundColor: UIColor, cornerRadius: CGFloat = 0) -> UIView {
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = backgroundColor
-        backgroundView.layer.cornerRadius = cornerRadius
-        addSubviewToFillSuperviewEdges(backgroundView)
-        sendSubviewToBack(backgroundView)
-        return backgroundView
-    }
 }

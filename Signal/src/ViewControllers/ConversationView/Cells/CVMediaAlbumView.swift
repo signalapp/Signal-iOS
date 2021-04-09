@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMediaAlbumView: ManualStackView {
+public class CVMediaAlbumView: ManualStackViewWithLayer {
     private var items = [CVMediaAlbumItem]()
     private var isBorderless = false
 
@@ -60,11 +60,7 @@ public class CVMediaAlbumView: ManualStackView {
                         conversationStyle: conversationStyle)
         }
         self.isBorderless = isBorderless
-
-        // UIStackView's backgroundColor property has no effect.
-        if !isBorderless {
-            addBackgroundView(backgroundColor: Theme.backgroundColor)
-        }
+        self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
 
         createContents(imageArrangement: imageArrangement,
                        cellMeasurement: cellMeasurement)
