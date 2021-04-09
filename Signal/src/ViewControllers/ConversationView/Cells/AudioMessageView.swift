@@ -127,8 +127,7 @@ class AudioMessageView: ManualStackView {
             // The size of playbackTimeLabel is constantly fluctuating,
             // so we can't use a pre-measured, fixed size.
             let spacing = Self.innerStackConfig.spacing
-            var labelSize = playbackTimeLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
-                                                                  height: CGFloat.greatestFiniteMagnitude))
+            var labelSize = playbackTimeLabel.sizeThatFitsMaxSize
             labelSize.width = min(labelSize.width,
                                   view.bounds.width - spacing)
             labelSize.height = min(labelSize.height,

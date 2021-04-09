@@ -316,6 +316,11 @@ public extension UIView {
             }
         }
     }
+
+    var sizeThatFitsMaxSize: CGSize {
+        sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
+                            height: CGFloat.greatestFiniteMagnitude))
+    }
 }
 
 // MARK: -

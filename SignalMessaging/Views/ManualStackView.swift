@@ -72,6 +72,10 @@ public struct ManualStackMeasurement: Equatable {
     fileprivate var subviewMeasuredSizes: [CGSize] {
         subviewInfos.map { $0.measuredSize }
     }
+
+    public static func build(measuredSize: CGSize) -> ManualStackMeasurement {
+        ManualStackMeasurement(measuredSize: measuredSize, subviewInfos: [])
+    }
 }
 
 // MARK: -
@@ -611,8 +615,15 @@ open class ManualStackView: OWSStackView {
         subview.setNeedsLayout()
     }
 
-    public func centerSubviewOnSuperviewWithLayoutBlock(_ subview: UIView,
-                                                        size: CGSize) {
+    public func addSubviewToCenterOnSuperview(_ subview: UIView, size: CGSize) {
+        owsAssertDebug(subview.superview == nil)
+
+        addSubview(subview)
+
+        centerSubviewOnSuperviewWithLayoutBlock(subview, size: size)
+    }
+
+    public func centerSubviewOnSuperviewWithLayoutBlock(_ subview: UIView, size: CGSize) {
         owsAssertDebug(subview.superview != nil)
 
         subview.translatesAutoresizingMaskIntoConstraints = false

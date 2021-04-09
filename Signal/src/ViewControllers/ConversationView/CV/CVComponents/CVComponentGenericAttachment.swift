@@ -61,8 +61,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                     owsFailDebug("Missing superview.")
                     return
                 }
-                var labelSize = fileTypeLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
-                                                                      height: CGFloat.greatestFiniteMagnitude))
+                var labelSize = fileTypeLabel.sizeThatFitsMaxSize
                 labelSize.width = min(labelSize.width,
                                       superview.bounds.width - 15)
 

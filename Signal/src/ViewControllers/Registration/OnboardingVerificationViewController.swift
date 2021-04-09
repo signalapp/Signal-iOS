@@ -411,7 +411,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         [subtitleLabel, onboardingCodeView, errorRow].forEach { $0.setCompressionResistanceVerticalHigh() }
 
         // We need at least one line of text for the back link. We don't care about the insets
-        let minimumHeight = backLink.sizeThatFits(CGSize(square: .infinity)).height - backLink.contentEdgeInsets.totalHeight
+        let minimumHeight = backLink.sizeThatFitsMaxSize.height - backLink.contentEdgeInsets.totalHeight
         backLink.autoSetDimension(.height, toSize: minimumHeight, relation: .greaterThanOrEqual)
 
         // Once we satisfied the above constraints, start to add back in padding/insets. First the buttons and title

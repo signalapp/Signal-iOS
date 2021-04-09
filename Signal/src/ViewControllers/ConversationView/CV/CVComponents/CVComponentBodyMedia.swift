@@ -94,17 +94,24 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             footerOverlay.configureForRendering(componentView: footerView,
                                                 cellMeasurement: cellMeasurement,
                                                 componentDelegate: componentDelegate)
-            stackView.addSubview(footerView.rootView)
-            // TODO:
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .leading,
-                                            withInset: conversationStyle.textInsetHorizontal)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .trailing,
-                                            withInset: conversationStyle.textInsetHorizontal)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .bottom,
-                                            withInset: conversationStyle.textInsetBottom)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .top,
-                                            withInset: conversationStyle.textInsetTop,
-                                            relation: .greaterThanOrEqual)
+            let footerRootView = footerView.rootView
+            stackView.addSubview(footerRootView)
+            let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
+            stackView.addLayoutBlock { view in
+                var footerFrame = view.bounds
+                // Apply h-insets.
+                footerFrame.x += conversationStyle.textInsetHorizontal
+                footerFrame.width -= conversationStyle.textInsetHorizontal * 2
+                // Ensure footer height fits within text insets.
+                let maxFooterHeight = (view.bounds.height -
+                                        (conversationStyle.textInsetTop + conversationStyle.textInsetBottom))
+                footerFrame.height = min(maxFooterHeight, footerSize.height)
+                // Bottom align.
+                footerFrame.y = (view.bounds.height -
+                                    (footerFrame.height +
+                                        conversationStyle.textInsetBottom))
+                footerRootView.frame = footerFrame
+            }
 
             let maxGradientHeight: CGFloat = 40
             let gradientLayer = CAGradientLayer()
@@ -249,6 +256,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     }
 
     private static let measurementKey_stackView = "CVComponentBodyMedia.measurementKey_stackView"
+    private static let measurementKey_footerSize = "CVComponentBodyMedia.measurementKey_footerSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -261,14 +269,15 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
                                                    measurementBuilder: measurementBuilder)
             minWidth = min(maxWidth, footerSize.width + conversationStyle.textInsets.totalWidth)
+            measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
         let maxWidth = min(maxWidth, maxMediaMessageWidth)
 
-        let albumSize = CVMediaAlbumView.layoutSize(maxWidth: maxWidth,
-                                                    minWidth: minWidth,
-                                                    items: self.items,
-                                                    measurementBuilder: measurementBuilder).ceil
+        let albumSize = CVMediaAlbumView.measure(maxWidth: maxWidth,
+                                                 minWidth: minWidth,
+                                                 items: self.items,
+                                                 measurementBuilder: measurementBuilder)
         let albumInfo = albumSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                        measurementBuilder: measurementBuilder,
