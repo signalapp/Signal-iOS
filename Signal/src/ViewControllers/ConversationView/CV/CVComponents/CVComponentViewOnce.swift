@@ -96,9 +96,6 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             if shouldShowIcon, let iconName = self.iconName {
                 let iconView = componentView.iconView
                 iconView.setTemplateImageName(iconName, tintColor: iconColor)
-                iconView.autoSetDimensions(to: CGSize(square: iconSize))
-                iconView.setContentHuggingHigh()
-                iconView.setCompressionResistanceHigh()
                 subviews.append(iconView)
             }
         }

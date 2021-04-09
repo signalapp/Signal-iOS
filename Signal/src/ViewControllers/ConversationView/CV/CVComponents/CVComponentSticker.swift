@@ -101,7 +101,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                 measurementKey: Self.measurementKey_stackView,
                                 subviews: [ placeholderView ])
 
-            // TODO:
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withCircle,
                                                         conversationStyle: conversationStyle)

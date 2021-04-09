@@ -208,7 +208,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return nil
         }
 
-        // TODO:
         return CVAttachmentProgressView(direction: direction,
                                         style: .withoutCircle(diameter: progressSize),
                                         conversationStyle: conversationStyle)

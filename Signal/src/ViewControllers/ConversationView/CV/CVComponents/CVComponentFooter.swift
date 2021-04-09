@@ -79,16 +79,16 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         let outerStack = componentView.outerStack
         let innerStack = componentView.innerStack
-        let innerStackBackground = componentView.innerStackBackground
 
         var outerViews = [UIView]()
         var innerViews = [UIView]()
 
         if isBorderless && conversationStyle.hasWallpaper {
-            innerStackBackground.isHidden = false
-            innerStackBackground.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            innerStack.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            innerStack.layer.cornerRadius = 11
         } else {
-            innerStackBackground.isHidden = true
+            innerStack.backgroundColor = .clear
+            innerStack.layer.cornerRadius = 0
         }
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
@@ -362,7 +362,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let statusIndicatorImageView = UIImageView()
         // TODO:
         fileprivate let messageTimerView = OWSMessageTimerView()
-        fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(backgroundColor: .clear, cornerRadius: 11)
 
         public var isDedicatedCellView = false
 
@@ -379,7 +378,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         public func reset() {
             outerStack.reset()
             innerStack.reset()
-            innerStackBackground.isHidden = true
+            innerStack.backgroundColor = nil
 
             tapForMoreLabel.text = nil
             timestampLabel.text = nil
