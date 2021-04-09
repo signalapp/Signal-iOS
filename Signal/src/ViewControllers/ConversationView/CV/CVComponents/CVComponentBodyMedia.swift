@@ -128,7 +128,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentView.bodyMediaGradientView = gradientView
             gradientView.layer.addSublayer(gradientLayer)
             albumView.addSubview(gradientView)
-            stackView.layoutSubviewToFillSuperviewBoundsWithLayoutBlock(gradientView)
+            stackView.layoutSubviewToFillSuperviewBounds(gradientView)
         }
 
         // Only apply "inner shadow" for single media, not albums.
@@ -139,7 +139,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let innerShadowView = OWSBubbleShapeView(innerShadowWith: shadowColor, radius: 0.5, opacity: 0.15)
             componentView.innerShadowView = innerShadowView
             firstMediaView.addSubview(innerShadowView)
-            stackView.layoutSubviewToFillSuperviewBoundsWithLayoutBlock(innerShadowView)
+            stackView.layoutSubviewToFillSuperviewBounds(innerShadowView)
         }
 
         if hasDownloadButton {
@@ -181,11 +181,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let circleView = OWSLayerView.circleView(size: circleSize)
                 circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
                 stackView.addSubview(circleView)
-                stackView.centerSubviewOnSuperviewWithLayoutBlock(circleView,
-                                                                  size: .square(circleSize))
+                stackView.centerSubviewOnSuperview(circleView, size: .square(circleSize))
                 stackView.addSubview(iconView)
-                stackView.centerSubviewOnSuperviewWithLayoutBlock(iconView,
-                                                                  size: .square(24))
+                stackView.centerSubviewOnSuperview(iconView, size: .square(24))
             }
 
             if mediaAlbumHasPendingAttachment {

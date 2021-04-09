@@ -362,7 +362,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let statusIndicatorImageView = UIImageView()
         // TODO:
         fileprivate let messageTimerView = OWSMessageTimerView()
-        fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 11)
+        fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(backgroundColor: .clear, cornerRadius: 11)
 
         public var isDedicatedCellView = false
 

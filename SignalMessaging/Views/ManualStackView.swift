@@ -4,101 +4,59 @@
 
 import Foundation
 
-public struct ManualStackSubviewInfo: Equatable {
-    let measuredSize: CGSize
-    let hasFixedWidth: Bool
-    let hasFixedHeight: Bool
-
-    public init(measuredSize: CGSize,
-                hasFixedWidth: Bool = false,
-                hasFixedHeight: Bool = false) {
-        self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedWidth
-        self.hasFixedHeight = hasFixedHeight
-    }
-
-    public init(measuredSize: CGSize, hasFixedSize: Bool) {
-        self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedSize
-        self.hasFixedHeight = hasFixedSize
-    }
-
-    public init(measuredSize: CGSize, subview: UIView) {
-        self.measuredSize = measuredSize
-
-        self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
-        self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
-    }
-
-    public static var empty: ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: .zero)
-    }
-
-    func hasFixedSizeOnAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedWidth : hasFixedHeight
-    }
-
-    func hasFixedSizeOffAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedHeight : hasFixedWidth
-    }
-}
-
-// MARK: -
-
-public extension CGSize {
-    var asManualSubviewInfo: ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self)
-    }
-
-    func asManualSubviewInfo(hasFixedWidth: Bool = false,
-                             hasFixedHeight: Bool = false) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self,
-                               hasFixedWidth: hasFixedWidth,
-                               hasFixedHeight: hasFixedHeight)
-    }
-
-    func asManualSubviewInfo(hasFixedSize: Bool) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self, hasFixedSize: hasFixedSize)
-    }
-}
-
-// MARK: -
-
-public struct ManualStackMeasurement: Equatable {
-    public let measuredSize: CGSize
-
-    fileprivate let subviewInfos: [ManualStackSubviewInfo]
-
-    fileprivate var subviewMeasuredSizes: [CGSize] {
-        subviewInfos.map { $0.measuredSize }
-    }
-
-    public static func build(measuredSize: CGSize) -> ManualStackMeasurement {
-        ManualStackMeasurement(measuredSize: measuredSize, subviewInfos: [])
-    }
-}
-
-// MARK: -
-
 @objc
-open class ManualStackView: OWSStackView {
+open class ManualStackView: ManualLayoutView {
 
     public typealias Measurement = ManualStackMeasurement
 
-    public var name: String { accessibilityLabel ?? "Unknown" }
-
-    private var managedSubviews = [UIView]()
+    private var arrangedSubviews = [UIView]()
 
     public var measurement: Measurement?
 
-    private var layoutBlocks = [LayoutBlock]()
-
     @objc
     public required init(name: String, arrangedSubviews: [UIView] = []) {
-        super.init(name: name, arrangedSubviews: arrangedSubviews)
+        super.init(name: name)
 
-        translatesAutoresizingMaskIntoConstraints = false
+        addArrangedSubviews(arrangedSubviews)
     }
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
+        notImplemented()
+    }
+
+    // MARK: - Config
+
+    public var axis: NSLayoutConstraint.Axis = .horizontal
+    public var alignment: UIStackView.Alignment = .center
+    public var spacing: CGFloat = 0
+
+    public typealias Config = OWSStackView.Config
+
+    public func apply(config: Config) {
+        if self.axis != config.axis {
+            self.axis = config.axis
+        }
+        if self.alignment != config.alignment {
+            self.alignment = config.alignment
+        }
+        if self.spacing != config.spacing {
+            self.spacing = config.spacing
+        }
+        if self.layoutMargins != config.layoutMargins {
+            self.layoutMargins = config.layoutMargins
+        }
+    }
+
+    public var asConfig: Config {
+        Config(axis: self.axis,
+               alignment: self.alignment,
+               spacing: self.spacing,
+               layoutMargins: self.layoutMargins)
+    }
+
+    // MARK: - Arrangement
 
     private struct ArrangementItem {
         let subview: UIView
@@ -106,7 +64,7 @@ open class ManualStackView: OWSStackView {
 
         func apply() {
             if subview.frame != frame {
-                ManualStackView.setSubviewFrame(subview: subview, frame: frame)
+                ManualLayoutView.setSubviewFrame(subview: subview, frame: frame)
             }
         }
     }
@@ -124,20 +82,10 @@ open class ManualStackView: OWSStackView {
     // We cache the resolved layout of the subviews.
     private var arrangement: Arrangement?
 
-    public override var bounds: CGRect {
-        didSet {
-            if oldValue.size != bounds.size {
-                invalidateArrangement()
-            }
-        }
-    }
+    override func viewSizeDidChange() {
+        invalidateArrangement()
 
-    public override var frame: CGRect {
-        didSet {
-            if oldValue.size != frame.size {
-                invalidateArrangement()
-            }
-        }
+        super.viewSizeDidChange()
     }
 
     public func invalidateArrangement() {
@@ -154,10 +102,6 @@ open class ManualStackView: OWSStackView {
         return measurement.measuredSize
     }
 
-    public override var intrinsicContentSize: CGSize {
-        return sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude))
-    }
-
     @objc
     public override func addSubview(_ view: UIView) {
         owsAssertDebug(!subviews.contains(view))
@@ -167,45 +111,49 @@ open class ManualStackView: OWSStackView {
 
     // NOTE: This method does _NOT_ call the superclass implementation.
     @objc
-    public override func addArrangedSubview(_ view: UIView) {
+    public func addArrangedSubview(_ view: UIView) {
         addSubview(view)
-        owsAssertDebug(!managedSubviews.contains(view))
+        owsAssertDebug(!arrangedSubviews.contains(view))
 
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        managedSubviews.append(view)
+        arrangedSubviews.append(view)
+    }
+
+    func addArrangedSubviews(_ subviews: [UIView], reverseOrder: Bool = false) {
+        var subviews = subviews
+        if reverseOrder {
+            subviews.reverse()
+        }
+        for subview in subviews {
+            addArrangedSubview(subview)
+        }
     }
 
     @objc
     public override func willRemoveSubview(_ view: UIView) {
-        managedSubviews = self.managedSubviews.filter { view != $0 }
+        arrangedSubviews = self.arrangedSubviews.filter { view != $0 }
         super.willRemoveSubview(view)
         invalidateArrangement()
     }
 
     @objc
-    public override func removeArrangedSubview(_ view: UIView) {
+    public func removeArrangedSubview(_ view: UIView) {
         view.removeFromSuperview()
-    }
 
-    @objc
-    public override func setNeedsLayout() {
-        super.setNeedsLayout()
+        arrangedSubviews = arrangedSubviews.filter { $0 != view }
     }
 
     @objc
     public override func layoutSubviews() {
         AssertIsOnMainThread()
 
-        super.layoutSubviews()
+        // We apply the layout blocks _after_ the arrangement.
+        super.layoutSubviews(skipLayoutBlocks: true)
 
         ensureArrangement()?.apply()
 
-        layoutBlock?(self)
-
-        for layoutBlock in layoutBlocks {
-            layoutBlock(self)
-        }
+        applyLayoutBlocks()
     }
 
     public func configure(config: Config,
@@ -230,15 +178,15 @@ open class ManualStackView: OWSStackView {
             owsFailDebug("\(name): Missing measurement.")
             return nil
         }
-        if managedSubviews.count > measurement.subviewInfos.count {
-            owsFailDebug("\(name): managedSubviews: \(managedSubviews.count) != subviewInfos: \(measurement.subviewInfos.count)")
+        if arrangedSubviews.count > measurement.subviewInfos.count {
+            owsFailDebug("\(name): arrangedSubviews: \(arrangedSubviews.count) != subviewInfos: \(measurement.subviewInfos.count)")
         }
         let isHorizontal = axis == .horizontal
-        let count = min(managedSubviews.count, measurement.subviewInfos.count)
+        let count = min(arrangedSubviews.count, measurement.subviewInfos.count)
         // Build the list of subviews to layout and find their layout info.
         var layoutItems = [LayoutItem]()
         for index in 0..<count {
-            guard let subview = managedSubviews[safe: index] else {
+            guard let subview = arrangedSubviews[safe: index] else {
                 owsFailDebug("\(name): Missing subview.")
                 break
             }
@@ -561,108 +509,11 @@ open class ManualStackView: OWSStackView {
     open override func reset() {
         super.reset()
 
+        alignment = .fill
+        axis = .vertical
+        spacing = 0
+
         self.measurement = nil
-        self.layoutBlocks.removeAll()
-    }
-
-    // MARK: -
-
-    public func addSubview(_ subview: UIView,
-                           withLayoutBlock layoutBlock: @escaping LayoutBlock) {
-        owsAssertDebug(subview.superview == nil)
-
-        subview.translatesAutoresizingMaskIntoConstraints = false
-
-        addSubview(subview)
-
-        addLayoutBlock(layoutBlock)
-    }
-
-    public func addLayoutBlock(_ layoutBlock: @escaping LayoutBlock) {
-        layoutBlocks.append(layoutBlock)
-    }
-
-    public func centerSubviewWithLayoutBlock(_ subview: UIView,
-                                             onSiblingView siblingView: UIView,
-                                             size: CGSize) {
-        owsAssertDebug(subview.superview != nil)
-        owsAssertDebug(subview.superview == siblingView.superview)
-
-        subview.translatesAutoresizingMaskIntoConstraints = false
-
-        addLayoutBlock { _ in
-            guard let superview = subview.superview else {
-                owsFailDebug("Missing superview.")
-                return
-            }
-            owsAssertDebug(superview == siblingView.superview)
-
-            let siblingCenter = superview.convert(siblingView.center,
-                                                  from: siblingView.superview)
-            let subviewFrame = CGRect(origin: CGPoint(x: siblingCenter.x - subview.width * 0.5,
-                                                      y: siblingCenter.y - subview.height * 0.5),
-                                      size: size)
-            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
-        }
-    }
-
-    private static func setSubviewFrame(subview: UIView, frame: CGRect) {
-        guard subview.frame != frame else {
-            return
-        }
-        subview.frame = frame
-        // TODO: Remove?
-        subview.setNeedsLayout()
-    }
-
-    public func addSubviewToCenterOnSuperview(_ subview: UIView, size: CGSize) {
-        owsAssertDebug(subview.superview == nil)
-
-        addSubview(subview)
-
-        centerSubviewOnSuperviewWithLayoutBlock(subview, size: size)
-    }
-
-    public func centerSubviewOnSuperviewWithLayoutBlock(_ subview: UIView, size: CGSize) {
-        owsAssertDebug(subview.superview != nil)
-
-        subview.translatesAutoresizingMaskIntoConstraints = false
-
-        addLayoutBlock { _ in
-            guard let superview = subview.superview else {
-                owsFailDebug("Missing superview.")
-                return
-            }
-
-            let superviewBounds = superview.bounds
-            let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
-                                                      y: (superviewBounds.height - subview.height) * 0.5),
-                                      size: size)
-            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
-        }
-    }
-
-    public func addSubviewToFillSuperviewEdges(_ subview: UIView) {
-        owsAssertDebug(subview.superview == nil)
-
-        addSubview(subview)
-
-        layoutSubviewToFillSuperviewBoundsWithLayoutBlock(subview)
-    }
-
-    public func layoutSubviewToFillSuperviewBoundsWithLayoutBlock(_ subview: UIView) {
-        owsAssertDebug(subview.superview != nil)
-
-        subview.translatesAutoresizingMaskIntoConstraints = false
-
-        addLayoutBlock { _ in
-            guard let superview = subview.superview else {
-                owsFailDebug("Missing superview.")
-                return
-            }
-
-            Self.setSubviewFrame(subview: subview, frame: superview.bounds)
-        }
     }
 }
 
@@ -687,5 +538,81 @@ fileprivate extension CGRect {
         set {
             size.height = newValue
         }
+    }
+}
+
+// MARK: -
+
+public struct ManualStackSubviewInfo: Equatable {
+    let measuredSize: CGSize
+    let hasFixedWidth: Bool
+    let hasFixedHeight: Bool
+
+    public init(measuredSize: CGSize,
+                hasFixedWidth: Bool = false,
+                hasFixedHeight: Bool = false) {
+        self.measuredSize = measuredSize
+        self.hasFixedWidth = hasFixedWidth
+        self.hasFixedHeight = hasFixedHeight
+    }
+
+    public init(measuredSize: CGSize, hasFixedSize: Bool) {
+        self.measuredSize = measuredSize
+        self.hasFixedWidth = hasFixedSize
+        self.hasFixedHeight = hasFixedSize
+    }
+
+    public init(measuredSize: CGSize, subview: UIView) {
+        self.measuredSize = measuredSize
+
+        self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
+        self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
+    }
+
+    public static var empty: ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: .zero)
+    }
+
+    func hasFixedSizeOnAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedWidth : hasFixedHeight
+    }
+
+    func hasFixedSizeOffAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedHeight : hasFixedWidth
+    }
+}
+
+// MARK: -
+
+public extension CGSize {
+    var asManualSubviewInfo: ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self)
+    }
+
+    func asManualSubviewInfo(hasFixedWidth: Bool = false,
+                             hasFixedHeight: Bool = false) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               hasFixedWidth: hasFixedWidth,
+                               hasFixedHeight: hasFixedHeight)
+    }
+
+    func asManualSubviewInfo(hasFixedSize: Bool) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self, hasFixedSize: hasFixedSize)
+    }
+}
+
+// MARK: -
+
+public struct ManualStackMeasurement: Equatable {
+    public let measuredSize: CGSize
+
+    fileprivate let subviewInfos: [ManualStackSubviewInfo]
+
+    fileprivate var subviewMeasuredSizes: [CGSize] {
+        subviewInfos.map { $0.measuredSize }
+    }
+
+    public static func build(measuredSize: CGSize) -> ManualStackMeasurement {
+        ManualStackMeasurement(measuredSize: measuredSize, subviewInfos: [])
     }
 }

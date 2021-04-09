@@ -63,7 +63,7 @@ public class CVMediaAlbumView: ManualStackView {
 
         // UIStackView's backgroundColor property has no effect.
         if !isBorderless {
-            addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+            addBackgroundView(backgroundColor: Theme.backgroundColor)
         }
 
         createContents(imageArrangement: imageArrangement,
@@ -96,9 +96,6 @@ public class CVMediaAlbumView: ManualStackView {
         var outerViews = [UIView]()
         let imageGroup1 = imageArrangement.imageGroup1
         let itemViews1 = Array(itemViews.prefix(imageGroup1.imageCount))
-        for itemView in itemViews1 {
-            itemView.measurement = ManualStackMeasurement.build(measuredSize: imageGroup1.imageSize)
-        }
         subStack1.configure(config: imageArrangement.innerStackConfig,
                             cellMeasurement: cellMeasurement,
                             measurementKey: Self.measurementKey_substack1,
@@ -109,9 +106,6 @@ public class CVMediaAlbumView: ManualStackView {
             owsAssertDebug(itemViews.count == imageGroup1.imageCount + imageGroup2.imageCount)
 
             let itemViews2 = Array(itemViews.suffix(from: imageGroup1.imageCount))
-            for itemView in itemViews2 {
-                itemView.measurement = ManualStackMeasurement.build(measuredSize: imageGroup2.imageSize)
-            }
 
             if items.count > CVMediaAlbumView.kMaxItems {
                 guard let lastView = itemViews2.last else {
@@ -124,7 +118,7 @@ public class CVMediaAlbumView: ManualStackView {
                 let tintView = UIView()
                 tintView.backgroundColor = UIColor(white: 0, alpha: 0.4)
                 lastView.addSubview(tintView)
-                subStack2.layoutSubviewToFillSuperviewBoundsWithLayoutBlock(tintView)
+                subStack2.layoutSubviewToFillSuperviewBounds(tintView)
 
                 let moreCount = max(1, items.count - CVMediaAlbumView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(moreCount)

@@ -77,8 +77,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)
                 stackView.addSubview(progressView)
-                stackView.centerSubviewOnSuperviewWithLayoutBlock(progressView,
-                                                                  size: progressView.layoutSize)
+                stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
             case .pendingDownload:
                 break
             case .downloading:
@@ -107,8 +106,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                                         style: .withCircle,
                                                         conversationStyle: conversationStyle)
             stackView.addSubview(progressView)
-            stackView.centerSubviewOnSuperviewWithLayoutBlock(progressView,
-                                                              size: progressView.layoutSize)
+            stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
         } else {
             owsFailDebug("Invalid attachment.")
             return

@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class CVMediaView: ManualStackView {
+public class CVMediaView: ManualLayoutView {
 
     private enum MediaError {
         case missing
@@ -46,14 +46,10 @@ public class CVMediaView: ManualStackView {
         createContents()
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
         notImplemented()
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        owsFail("Do not use this initializer.")
     }
 
     // MARK: -
@@ -132,6 +128,7 @@ public class CVMediaView: ManualStackView {
         self.reusableMediaView = reusableMediaView
         let mediaView = reusableMediaView.mediaView
 
+        mediaView.removeFromSuperview()
         addSubviewToFillSuperviewEdges(mediaView)
 
         if let imageView = mediaView as? UIImageView {
@@ -222,13 +219,13 @@ public class CVMediaView: ManualStackView {
         playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
         playVideoCircleView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoCircleView)
-        layoutSubviewToFillSuperviewBoundsWithLayoutBlock(playVideoCircleView)
+        layoutSubviewToFillSuperviewBounds(playVideoCircleView)
 
         let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
                                                                   tintColor: UIColor.ows_white)
         playVideoIconView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoIconView)
-        centerSubviewOnSuperviewWithLayoutBlock(playVideoIconView, size: CGSize(square: playVideoIconWidth))
+        centerSubviewOnSuperview(playVideoIconView, size: CGSize(square: playVideoIconWidth))
     }
 
     private var hasBlurHash: Bool {
