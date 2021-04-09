@@ -67,7 +67,7 @@ open class ManualLayoutView: UIView {
 
     public override var bounds: CGRect {
         didSet {
-            if oldValue != bounds {
+            if oldValue.size != bounds.size {
                 viewSizeDidChange()
             }
         }
@@ -75,7 +75,7 @@ open class ManualLayoutView: UIView {
 
     public override var frame: CGRect {
         didSet {
-            if oldValue != frame {
+            if oldValue.size != frame.size {
                 viewSizeDidChange()
             }
         }
@@ -199,6 +199,34 @@ open class ManualLayoutView: UIView {
             let superviewBounds = superview.bounds
             let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - subview.width) * 0.5,
                                                       y: (superviewBounds.height - subview.height) * 0.5),
+                                      size: size)
+            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
+        }
+    }
+
+    public func addSubviewToCenterOnSuperviewWithDesiredSize(_ subview: UIView) {
+        owsAssertDebug(subview.superview == nil)
+
+        addSubview(subview)
+
+        centerSubviewOnSuperviewWithDesiredSize(subview)
+    }
+
+    public func centerSubviewOnSuperviewWithDesiredSize(_ subview: UIView) {
+        owsAssertDebug(subview.superview != nil)
+
+        subview.translatesAutoresizingMaskIntoConstraints = false
+
+        addLayoutBlock { _ in
+            guard let superview = subview.superview else {
+                owsFailDebug("Missing superview.")
+                return
+            }
+
+            let size = subview.sizeThatFitsMaxSize
+            let superviewBounds = superview.bounds
+            let subviewFrame = CGRect(origin: CGPoint(x: (superviewBounds.width - size.width) * 0.5,
+                                                      y: (superviewBounds.height - size.height) * 0.5),
                                       size: size)
             Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }

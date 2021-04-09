@@ -176,7 +176,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         fileprivate let innerStack = ManualStackView(name: "dateHeader.innerStackView")
         fileprivate let titleLabel = UILabel()
 
-        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var blurView: UIView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
