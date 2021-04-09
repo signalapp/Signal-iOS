@@ -266,6 +266,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let conversionRefreshIcon = UIImageView.withTemplateImageName("refresh-20",
                                                                       tintColor: Theme.primaryIconColor)
         conversionRefreshIcon.autoSetDimensions(to: .square(conversionRefreshSize))
+        conversionRefreshIcon.isUserInteractionEnabled = true
+        conversionRefreshIcon.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapConversionRefresh)))
 
         let conversionLabel = UILabel()
         conversionLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
@@ -798,6 +800,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
+    }
+
+    @objc
+    private func didTapConversionRefresh() {
+        paymentsSwift.updateCurrentPaymentBalance()
+        paymentsCurrencies.updateConversationRatesIfStale()
     }
 
     @objc
