@@ -20,7 +20,7 @@
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Tengiliður fyrir %@";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Myndefni";
+"ACCESSIBILITY_LABEL_MEDIA" = "Gögn";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Þú";
@@ -47,10 +47,10 @@
 "ACTION_SHARE_CONTACT" = "Deila tengilið";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Ýttu til að sækja";
+"ACTION_TAP_TO_DOWNLOAD" = "Banka til að sækja";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Myndsímtal";
+"ACTION_VIDEO_CALL" = "Myndsamtal";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Bæta við meðlimi";
@@ -83,13 +83,13 @@
 "ADD_TO_GROUP" = "Bæta við annan hóp";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Bæta við hóp";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Bæta í hóp";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Bæta %@ við þennan hóp?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Bæta við %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Bæta í %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ er þegar meðlimur í %@";
@@ -107,10 +107,10 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Hefur þú áhuga á að deila notandasniðinu þínu með þessum notanda?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Náði því!";
+"ALERT_ACTION_ACKNOWLEDGE" = "Náði því";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Eyða";
+"ALERT_DISCARD_BUTTON" = "Henda";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ekki vista";
@@ -122,7 +122,7 @@
 "ALERT_SAVE" = "Vista";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Svara";
+"ANSWER_CALL_BUTTON_TITLE" = "Svar";
 
 /* notification body */
 "APN_Message" = "Ný skilaboð!";
@@ -149,7 +149,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Gat ekki lokið við flutning";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skráðu inn nafn";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Settu inn nafnið þitt";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ekki núna";
@@ -167,7 +167,7 @@
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Dökkt";
 
 /* Name indicating that the light theme is enabled. */
-"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Ljóst";
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Létt";
 
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Kerfi";
@@ -176,7 +176,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Label for the archive button for conversations list view */
-"ARCHIVE_ACTION" = "Geymsla";
+"ARCHIVE_ACTION" = "Safn";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Takmörkum á skýringatexta er náð.";
@@ -191,13 +191,13 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Útflutningur viðhengis mistókst.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Mistókst að vista";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Mistókst að vista!";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tegund skráar: %@ ";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Skráartegund: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Stærð %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Stærð: %@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Vistað";
@@ -254,7 +254,7 @@
 "ATTACHMENT_KEYBOARD_FILE" = "Skrá";
 
 /* A button to select a GIF from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_GIF" = "GIF-mynd";
+"ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Staðsetning";
@@ -266,7 +266,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Eftir að þú hefur tekið myndir, muntu geta sent hér úr nýlegum atriðum.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Greiðsla";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Viðhengi";
@@ -278,7 +278,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Búa til þjappaða safnskrá með þessari skrá eða möppu og prófaðu að senda hana í staðinn.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Óstudd skrá";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Óstudd skrá!";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Hljóð";
@@ -287,16 +287,16 @@
 "ATTACHMENT_TYPE_FILE" = "Skrá";
 
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_GIF" = "GIF-mynd";
+"ATTACHMENT_TYPE_GIF" = "GIF";
 
 /* Short text label for an image attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_IMAGE" = "Mynd";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "Ljósmynd";
+"ATTACHMENT_TYPE_PHOTO" = "Mynd";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VIDEO" = "Myndmerki";
+"ATTACHMENT_TYPE_VIDEO" = "Myndskeið";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Talskilaboð";
@@ -332,7 +332,7 @@
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Útilokaðir hópar";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Útilokaðir notendur";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Bannaðir notendur og vistföng";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Hópar sem eru þegar útilokaðir.";
@@ -341,7 +341,7 @@
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Notandi er nú þegar útilokaður.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Aflétta útilokun";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Afbanna";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Þið munuð geta sent hverju/m/ri öðru skilaboð og hringt.";
@@ -356,7 +356,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Opna á þennan hóp?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Aflétta útilokun á %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Opna á %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Loka á";
@@ -377,7 +377,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Villa";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Opnað hefur verið á %@.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Opnað hefur verið á \"%@\".";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Fyrirliggjandi meðlimir hópsins munu aftur geta bætt þér í hópinn.";
@@ -398,13 +398,13 @@
 "BUTTON_COPY" = "Afrita";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Búin/n";
+"BUTTON_DONE" = "Lokið";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Breyta";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "Næst";
+"BUTTON_NEXT" = "Næsta";
 
 /* Label for the 'no' button. */
 "BUTTON_NO" = "Nei";
@@ -416,16 +416,16 @@
 "BUTTON_OKAY" = "Í lagi";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Fyrra";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Velja";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Byrja";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "Senda";
+"BUTTON_SUBMIT" = "Senda inn";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Skoða";
@@ -461,16 +461,16 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Hringja?";
+"CALL_USER_ALERT_CALL_BUTTON" = "Birtingarnafn";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "Viltu hringja í %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Hringja?";
+"CALL_USER_ALERT_TITLE" = "birtingarnafn";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Innhringing myndsamtals…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "Innhringing myndsamtals";
 
 /* notification body */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Ósvarað myndsímtal";
@@ -479,7 +479,7 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Svara án myndmerkis";
 
 /* label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Svara";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Svar";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Hljóð";
@@ -491,7 +491,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Ljúka símtali";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Þagga";
+"CALL_VIEW_MUTE_LABEL" = "Hljóð af";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ fær beiðni um skilaboð frá þér. Þú getur hringt þegar skilaboðabeiðnin hefur verið samþykkt.";
@@ -545,7 +545,7 @@
 "COMPOSE_BUTTON_HINT" = "Veldu eða leitaðu að Signal notanda til að spjalla við.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Semja";
+"COMPOSE_BUTTON_LABEL" = "Semja skilaboð";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Tengiliðir";
@@ -590,10 +590,10 @@
 "CONTACT_ADDRESS" = "Heimilisfang";
 
 /* An indicator that a contact or group has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Útilokaður";
+"CONTACT_CELL_IS_BLOCKED" = "Bannaður";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ekki staðfest";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ekki sannreynt";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Afskrá númer";
@@ -611,7 +611,7 @@
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Land";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Hverfi";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Nágrenni";
 
 /* Label for the 'pobox' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POBOX" = "Pósthólf";
@@ -626,10 +626,10 @@
 "CONTACT_FIELD_ADDRESS_STREET" = "Gata";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Eftirnafn";
+"CONTACT_FIELD_FAMILY_NAME" = "Heiti leturgerðar:";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Fornafn";
+"CONTACT_FIELD_GIVEN_NAME" = "Eiginnafn";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "Millinafn";
@@ -638,7 +638,7 @@
 "CONTACT_FIELD_NAME_PREFIX" = "Forskeyti";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Viðskeyti";
+"CONTACT_FIELD_NAME_SUFFIX" = "Ending";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Stofnun";
@@ -650,7 +650,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ýttu á “Fara í stillingar” hér fyrir neðan";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Virkja \"Tengiliði\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Virkja \"Tengiliðir\"";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Virkja tengiliði";
@@ -659,7 +659,7 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ekki núna";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Virkja";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Kveikja";
 
 /* Body for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Sjá nöfn og myndir tengiliða í spjöllunum þínum.";
@@ -683,7 +683,7 @@
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Deila tengilið";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Breyta nafni";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Breyta heiti";
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Ógildur tengiliður.";
@@ -692,46 +692,46 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Engir tengiliðareitir valdir.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Hafa samband við aðstoðarteymi";
+"CONTACT_SUPPORT" = "Hafa samband við hjálparteymi";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Ég myndi vilja biðja um nýjan eiginleika";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Feature Request";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Beiðni um nýja eiginleika";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Ég er með umsögn um forritið";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Umsögn um forritið";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "Eitthvað annað";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Annað";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Greiðslur";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Greiðslur";
 
 /* Prompt telling the user to select a filter for their support request. */
-"CONTACT_SUPPORT_FILTER_PROMPT" = "How can we help?";
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Hvernig getum við aðstoðað?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "Ég er með spurningu";
 
 /* A brief localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Spurning";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Eitthvað er ekki að virka";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Eitthvað virkar ekki";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal gat ekki klárað beiðni þína um aðstoð.";
@@ -746,7 +746,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Senda villumeldingaskrá?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Veldu ástæðu";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Senda með villumeldingaskrá";
@@ -755,7 +755,7 @@
 "CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Senda án villumeldingaskrá";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Opna á landakorti";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Opna í Kortum";
 
 /* Label for 'open email in email app' button in contact view. */
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Senda tölvupóst";
@@ -779,19 +779,19 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Nýlegt spjall";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Einstaklingar";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Fólk";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Velja móttaka";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "Engin niðurstaða";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Engar samsvaranir";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 niðurstaða";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 samsvörun";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d af %d niðurstöðum";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d af %d samsvörunum";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Stillingar á spjalli";
@@ -806,10 +806,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Bæta í tengiliði kerfisins";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Stjórnendur";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Kerfisstjórar";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Allir";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Allt";
 
 /* Label indicating that no member can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Óvirkt";
@@ -827,7 +827,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Útiloka hóp";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Loka á notanda";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Banna notanda";
 
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Litur spjalls";
@@ -863,7 +863,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Tengill hóps";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Virkja stjórnanda";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Gera að stjórnanda";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ verður mögulegt að breyta þessum hóp og hverjir eru meðlimir.";
@@ -890,19 +890,19 @@
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Fá tilkynningu þegar nafn þitt er nefnt í þögguðum umræðum?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Minnst á";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Tilvísanir";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Þagga þetta spjall í…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Alltaf";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 klukkustundir";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Þagga";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Hljóð af";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ekki þaggað";
@@ -923,10 +923,10 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Alltaf";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "þar til %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "til %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Stofna nýjan tengilið";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Búa til nýjan tengilið";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Fjarlægja úr hóp";
@@ -947,10 +947,10 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Opna á hóp";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Opna á notanda";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Afbanna notanda";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Virkja hljóði";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Hljóð á";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Viltu vista breytingarnar sem þú gerðir á þessu spjalli?";
@@ -974,13 +974,13 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Deila notandasniðinu þínu";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Bæta við tengiliði";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Bæta í tengiliði";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sendi:";
 
 /* Format for sender info for outgoing messages. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Þú sendir:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Þú sendir";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Eyða öllu";
@@ -1010,7 +1010,7 @@
 "DATE_HOURS_AGO_FORMAT" = "%@klst";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@mín";
+"DATE_MINUTES_AGO_FORMAT" = "%@m";
 
 /* The present; the current time. */
 "DATE_NOW" = "Núna";
@@ -1094,7 +1094,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Staðfestu símanúmer þitt á Signal";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Eyða aðgangi";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Eyða notandaaðgangi";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Símanúmerið sem þú settir inn samsvarar ekki því sem er á aðgangnum þínum.";
@@ -1109,7 +1109,7 @@
 "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Eyða %ld skilaboðum?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Eyða skilaboðum?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Eyða skilaboðum";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Endurskrá þetta símanúmer";
@@ -1121,7 +1121,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Síðasta virkni %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Tengdi %@";
+"DEVICE_LINKED_AT_LABEL" = "Tengt %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Mistókst að uppfæra lista yfir tæki.";
@@ -1211,7 +1211,7 @@
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Haltu tækjunum nálægt hvoru öðru. Ekki slökkva á tækjunum og haltu Signal opnu. Yfirfærslur eru tryggðar með enda-í-enda dulritun.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Tek við gögnum";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving data...";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Tengist…";
@@ -1259,7 +1259,7 @@
 "EDIT_GROUP_CLEAR_AVATAR" = "Fjarlægja mynd";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Breyta hópi";
+"EDIT_GROUP_DEFAULT_TITLE" = "Breyta hóp";
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Þessum aðila er ekki hægt að bæta í hópinn fyrr en hann uppfærir Signal.";
@@ -1298,13 +1298,13 @@
 "EMAIL_SIGNAL_TITLE" = "Tölvupóstur ekki aðgengilegur";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Afþreying";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aðgerðir";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Dýr og náttúra";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Fánar";
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flögg";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Matur og drykkur";
@@ -1334,10 +1334,10 @@
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Mistókst að virkja skráningarlæsingu.";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Upptekið";
+"END_CALL_RESPONDER_IS_BUSY" = "Upptekinn";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Símtal mistókst.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Gat ekki hlaðið inn tengiliðalista.";
@@ -1364,7 +1364,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Mistókst að senda skilaboð á notanda því þú lokar á hann.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Gat ekki tengst internetinu. Reyndu aftur.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal tókst ekki að tengjast internetinu. Reyndu aftur.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Mistókst að senda skilaboð því það vantaði gilda viðtakendur.";
@@ -1373,7 +1373,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Netbeiðni mistókst.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Netbeiðni rann út á tíma.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Netbeiðni %1 rann út á tíma";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ógilt svar frá þjónustu.";
@@ -1427,7 +1427,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Öryggisnúmer breyttist.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Villa í netkerfi.";
+"ERROR_NETWORK_FAILURE" = "Villa í nettengingu";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Þetta tæki er ekki lengur tengt. Tengdu það aftur til að eiga í frekari samskiptum.";
@@ -1472,7 +1472,7 @@
 "FORWARD_CONTACT" = "Áframsenda tengilið";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Áframsenda skilaboð";
+"FORWARD_MESSAGE" = "Áframsenda skeyti";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Þú ert ekki með neitt myndefni í þessu spjalli.";
@@ -1487,10 +1487,10 @@
 "GENERIC_ATTACHMENT_LABEL" = "Viðhengi";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Til að komast í gang";
+"GET_STARTED_BANNER_TITLE" = "Komast í gang";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Bjóða vinum";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Bjóða vinum aðgang";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nýr hópur";
@@ -1511,10 +1511,10 @@
 "GIF_PICKER_VIEW_TITLE" = "Leita að GIF-mynd";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Villa. Ýttu til að reyna aftur.";
+"GIF_VIEW_SEARCH_ERROR" = "Villa, bankaðu til að reyna aftur";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Engar niðurstöður.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Engar niðurstöður";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Settu inn leitarorð";
@@ -1580,7 +1580,7 @@
 "GROUP_CALL_ENDED_MESSAGE" = "Hópsímtalinu er lokið";
 
 /* A button to receive more info about not seeing a participant in group call grid */
-"GROUP_CALL_ERROR_DETAILS" = "Fleiri uppl.";
+"GROUP_CALL_ERROR_DETAILS" = "Frekari upplýsingar";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
 "GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Takmörkum á hámarksfjöldanum %ld þátttakendum hefur verið náð. Reyndu aftur síðar.";
@@ -1595,7 +1595,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Taka þátt í símtali";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Hætta í símtalinu";
+"GROUP_CALL_LEAVE_BUTTON" = "Hætta símtali";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Í þessi símtali · %ld aðilar";
@@ -1655,7 +1655,7 @@
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Strjúka upp til að breyta sýnum";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Hefja símtal";
+"GROUP_CALL_START_BUTTON" = "Hefja samtal";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Ýttu hér til að byrja hópsímtal";
@@ -1691,7 +1691,7 @@
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Kynning á hópsímtölum";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "Þú bjóst til hópinn.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Þú bjóst til hópinn";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ bætti þér í hópinn.";
@@ -1796,7 +1796,7 @@
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Þú getur ekki bætt \"%@\" sjálfvirkt í þennan hóp. Notandanum hefur verið boðið að ganga í hópinn en mun ekki fá skilaboð hópsins fyrr en hann hefur samþykkt boðið.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Boð send";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Boð var sent";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ boð send";
@@ -1817,10 +1817,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Hópur";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Taka þátt";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Samsetning";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Hleð inn...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Hleð inn…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Viltu ganga í þennan hóp og deila nafninu þínu og mynd með meðlimum hans?";
@@ -1829,7 +1829,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Athugaðu hvort þú sért með nettengingu og prófaðu svo aftur.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Endilega reyndu aftur.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Vinsamlegast reyndu aftur.";
 
 /* Message for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Þetta er ekki gildur hóptengill. Gakktu úr skugga um að allur tengillinn sé réttur og óskemmdur áður en þú reynir að nota hann.";
@@ -1856,7 +1856,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Deildu þessum tengli með vinum þínum svo þeir geti gengið fljótt í hópinn.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Bjóða vinum";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Bjóða vinum aðgang";
 
 /* Suggestion to invite more group members via the group invite link. */
 "GROUP_LINK_PROMOTION_UPDATE" = "Bjóddu vinum að ganga í þennan hóp með hóptengli";
@@ -1901,7 +1901,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Deila";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR-kóði";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR kóði";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Deila í gegnum Signal";
@@ -1946,7 +1946,7 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Þér var boðið að ganga í hópinn.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Þú gekkst í hópinn.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Þú gekkst í hópinn";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Þú gekkst í hópinn með hóptengli.";
@@ -1982,7 +1982,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Stjórnandi";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Engir meðlimir";
+"GROUP_MEMBER_COUNT_LABEL_0" = "engir meðlimir";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 meðlimur";
@@ -2006,10 +2006,10 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Meðlimir";
 
 /* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Skilaboð";
+"GROUP_MEMBERS_SEND_MESSAGE" = "Póstur";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Myndsímtal";
+"GROUP_MEMBERS_VIDEO_CALL" = "Myndsamtal";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ meðlimir hóps eru með svipuð nöfn.";
@@ -2159,7 +2159,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Beiðnir um inngöngu og boð";
 
 /* Info message indicating that the group was updated by an unknown user. */
-"GROUP_UPDATED" = "Hópur uppfærður.";
+"GROUP_UPDATED" = "Hópur uppfærður";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED" = "Auðkennismynd hópsins var fjarlægð.";
@@ -2243,10 +2243,10 @@
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Útiloka hóp og %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Útiloka %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Loka á %@";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Bjóða vinum";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Bjóða vinum aðgang";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Eldri gerð hópa er ekki samhæfð við nýju hópana vegna eiginleika á borð við hópstjóra og meira lýsandi uppfærslur hópa.";
@@ -2351,7 +2351,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Bæta við meðlimum";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Bæta við meðlimi?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Bæta við meðlimi";
 
 /* Title for the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Bæta við meðlimum?";
@@ -2426,22 +2426,22 @@
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Bæta samt við meðlimi?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "Skoða beiðnir";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Skoða beiðni";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Skoða beiðnir";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Hafa samband";
+"HELP_CONTACT_US" = "Hafðu samband við okkur";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Aðstoðarmiðstöð";
+"HELP_SUPPORT_CENTER" = "Hjálparmiðstöð";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Spjall í geymslu";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Útilokaður";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Bannaður";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Leita";
@@ -2471,7 +2471,7 @@
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Engar niðurstöður fundust fyrir '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Geymsla";
+"HOME_VIEW_TITLE_ARCHIVE" = "Safn";
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -2522,13 +2522,13 @@
 "IN_CALL_RINGING_AUDIO" = "Hljóðsímtal…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Myndsímtal…";
+"IN_CALL_RINGING_VIDEO" = "Myndsamtal";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Svarað. Tryggi öryggi…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Símtali lokið.";
+"IN_CALL_TERMINATED" = "Samtali lokið";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Þessi samtöl eru í geymslu og munu aðeins birtast í innhólfinu ef ný skilaboð berast.";
@@ -2546,7 +2546,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ er á Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Límmerki";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Límmiðar";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Talskilaboð";
@@ -2567,13 +2567,13 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Leita";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Bjóða vinum";
+"INVITE_FRIENDS_PICKER_TITLE" = "Bjóða vinum aðgang";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Ef mörgum notendum er boðið á sama tíma verða til hópskilaboð og viðtakendurnir munu geta séð hvern annan.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Taka þátt";
+"JOIN_CALL_PILL_BUTTON" = "Samsetning";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Fara í 'Allt myndefni'";
@@ -2618,10 +2618,10 @@
 "KEY_COMMAND_UNARCHIVE" = "Taka spjall úr geymslu";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Kanna nánar";
+"LEARN_MORE" = "Vita meira";
 
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "Yfirgefa";
+"LEAVE_BUTTON_TITLE" = "Fara";
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Yfirgefa hóp";
@@ -2693,16 +2693,16 @@
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Leitaðu eftir nafni eða heimilisfangi";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Veldu staðsetningu";
+"LOCATION_PICKER_TITLE" = "Veljið staðsetningu";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "Atvikaskráning";
+"LOGGING_SECTION" = "Skráning annáls";
 
 /* Footer for the 'logging' help section. */
 "LOGGING_SECTION_FOOTER" = "Villumeldingaskrár geta hjálpað Signal við að laga vandamál og hrun.";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Skilaboð";
+"LONG_TEXT_VIEW_TITLE" = "Póstur";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
 "MANY_GROUPS_IN_COMMON" = "%@ hópar sameiginlegir";
@@ -2714,7 +2714,7 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Myndavél";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Ljósmyndasafn";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Myndasafn";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Eyða %d skilaboðum";
@@ -2735,7 +2735,7 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Þú";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Þessi mánuður";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Í þessum mánuði";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Áminna mig síðar";
@@ -2765,7 +2765,7 @@
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Eyða völdum skilaboðum";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "Frekari uppl.";
+"MESSAGE_ACTION_DETAILS" = "Frekari upplýsingar";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Áframsenda þessi skilaboð";
@@ -2780,13 +2780,13 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Deila myndefni";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Skilaboð";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Póstur";
 
 /* Title for the compose view. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Ný skilaboð";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sendingartími afritaður";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Sent frá";
@@ -2795,7 +2795,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Skráarstærð";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME-tegund";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME tegund";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Afhent til";
@@ -2807,7 +2807,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lesið af";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sendi til";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent til";
@@ -2828,10 +2828,10 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Skráarheiti";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "Nánar um skilaboð";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "Útiloka";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "Loka á";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Útiloka og eyða";
@@ -2891,7 +2891,7 @@
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Samþykkja";
 
 /* A button used to block a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Útiloka";
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Loka á";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Viltu leyfa %@ að senda þér skilaboð og deila nafninu þínu og mynd með viðkomandi notanda? Hann mun ekki vita hvort þú hafir séð skilaboðin hans fyrr en þú opnar á hann.";
@@ -2903,7 +2903,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Viltu opna á þennan hóp? Meðlimir hópsins munu ekki vita hvort þú hafir séð skilaboðin þeirra fyrr en þú samþykkir þetta.";
 
 /* A button used to continue a conversation and share your profile. */
-"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Halda áfram";
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Áfram";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Eyða";
@@ -2924,7 +2924,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Viltu ganga í þennan hóp? Meðlimir hópsins munu ekki vita hvort þú hafir séð skilaboðin þeirra fyrr en þú samþykkir þetta.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Aflétta útilokun";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Afbanna";
 
 /* Label for button to cancel your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Hætta við beiðni";
@@ -2939,10 +2939,10 @@
 "MESSAGE_STATUS_DELIVERED" = "Afhent";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Sæki";
+"MESSAGE_STATUS_DOWNLOADING" = "Sæki gögn";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending mistókst.";
+"MESSAGE_STATUS_FAILED" = "Sending mistókst";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Mistókst";
@@ -2951,7 +2951,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Sent að hluta, smelltu fyrir nánari upplýsingar";
 
 /* status message for read messages */
-"MESSAGE_STATUS_READ" = "Lesið";
+"MESSAGE_STATUS_READ" = "Lesa";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Sleppt";
@@ -2960,7 +2960,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Sending mistókst";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sendi…";
+"MESSAGE_STATUS_SENDING" = "Sendi...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Sent";
@@ -3017,7 +3017,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Þú hefur náð hámarksfjölda tækja sem þú getur tengt inn á notandaaðganginn þinn. Þú þarft að fjarlægja tæki og prófa aftur.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Þaggað";
+"MUTED_BADGE" = "Þaggað niður";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Breytti birtingarnafni notandasniðsins síns úr %1$@ yfir í %2$@.";
@@ -3071,7 +3071,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Nýr hópur";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ til %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ í %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Nefna hóp";
@@ -3137,19 +3137,19 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Ýttu á tilkynningar";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Kveiktu á tilkynningum";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Kveikja á tilkynningum";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Ekki núna";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Virkja";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Kveikja";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Misstu aldrei af skilaboðum frá tengiliðunum þinum eða hópum.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Kveikja á tilkynningum?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Kveikja á tilkynningum";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Aðgerðir innifela “Merkja sem lesið”, “Svara” og “Hringja til baka”.";
@@ -3167,7 +3167,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nafn, efni og aðgerðir";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Einungis nafn";
+"NOTIFICATIONS_SENDER_ONLY" = "Einungis heiti";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Sýna";
@@ -3191,7 +3191,7 @@
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Þarftu hjálp?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Rangt PIN-númer";
+"ONBOARDING_2FA_INVALID_PIN" = "Rangt PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Rangt PIN-númer. %lu tilraunir eftir.";
@@ -3212,10 +3212,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Bættu smávegis mennsku í skilaboðin þín";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Þar sem þú hefur verið óvirk/ur í lengri tíma, verður þú að skrá þig aftur til að nota Signal.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Nýskrá á Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Nýskrá iPad";
@@ -3284,13 +3284,13 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Aðgangur er læstur";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Rangt PIN-númer";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Rangt PIN";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_EXPLANATION" = "Settu inn PIN-númerið sem þú útbjóst fyrir þennan aðgang. Það er ekki það sama og SMS-sannvottunarkóðinn.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Settu inn PIN-númerið þitt";
+"ONBOARDING_PIN_TITLE" = "Settu inn PIN-kóðann þinn";
 
 /* Title label for profile creation step of onboarding */
 "ONBOARDING_PROFILE_CREATION_TITLE" = "Notandasniðið þitt";
@@ -3299,7 +3299,7 @@
 "ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Kenninafn (eftirnafn - valfrjálst)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Eiginnafn (fornafn - nauðsynlegt)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Eiginnafn (nauðsynlegt)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Skilmálar og meðferð persónuupplýsinga";
@@ -3350,211 +3350,211 @@
 "OUTGOING_CALL_FORMAT" = "Þú hringdir í %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Hafna beiðni";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ kl. %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ verður látinn vita að þú hafnaðir.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Hafna þessari beiðni?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Gjald fyrir hreinsun mynta";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Ekki var hægt að hætta við beiðnina.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Ekki var hægt að hafna beiðninni.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Mistókst";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Ógilt";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "Ógilt";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "Mistókst";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Ekki er næg innistæða";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Ekki var hægt að senda kvittun til viðtakanda";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Ógilt";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Bæta við minnispunkti";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Tiltæk innistæða: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Staðfesta greiðslu";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Borga";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Gat ekki náð sambandi við við þjónustu";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Þú átt ekki nægilega mikið af MOB til að ljúka þessari greiðslu.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Þú átt ekki nægilega mikið af MOB til að ljúka þessari greiðslu. Fyrirliggjandi inneign þín er núna %@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Ógild millifærsla";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Uppfærðu Signal til að geta notað greiðslur.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Ekki var hægt að ljúka greiðslu. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Gjald fyrir netnotkun";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Áætlað %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Ógild upphæð";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Athugasemd";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Borga";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Heildarupphæð";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Í vinnslu";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Til %@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Beiðni";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 ný skilaboð um greiðslu";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sendi þér %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ nýjar tilkynningar um greiðslu";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Greiðslu lokið";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Óstaðfest";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Sannreynt";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Greiðslu lokið";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sendi…";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sendi...";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Sent";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Undirbý";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Óstaðfest";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Sannreynt";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Óþekkt bilun";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Lokið";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Óstaðfest";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Sannreynt";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Lokið";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sendi…";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sendi...";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Sent";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Undirbý";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Óstaðfest";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Sannreynt";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Óþekkt bilun";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Til að senda greiðslu til þessa notanda þarf hann að samþykkja skilaboðabeiðni frá þér.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Til að senda greiðslu til þessa notanda þarf hann að samþykkja skilaboðabeiðni frá þér. Sendu honum skilaboð til að útbúa skilaboðabeiðni.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Gat ekki sent greiðslu";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Þessi aðili hefur ekki virkjað greiðslur.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Ógildur viðtakandi";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Millifærsla út";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Móttekin greiðsla";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Send greiðsla";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "Ógild greiðsla";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Bæta við hóp";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Bæta í hóp";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Bæta “%@” í hópinn?";
@@ -3578,7 +3578,7 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Engin boð til að birta.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Bætti við “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Bætti við \"%@\".";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ inngöngubeiðnir sem bíða.";
@@ -3587,7 +3587,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Skoða beiðnir";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Hafnaði “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Hafnaði \"%@\".";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Afturkalla ógilt boð";
@@ -3635,7 +3635,7 @@
 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Skoða-einu-sinni margmiðlunarefni";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Myndefni";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Margmiðlun";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Skoða-einu-sinni ljósmynd";
@@ -3689,7 +3689,7 @@
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Heima";
+"PHONE_NUMBER_TYPE_HOME" = "Heim";
 
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Heimafax";
@@ -3878,13 +3878,13 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN-númer óvirkt.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spila myndefni";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spila margmiðlunarskrá";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Þú hefur ekki merkt %@ sem sannreynt.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Staðfest";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Sannreynt";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ er staðfest.";
@@ -3932,7 +3932,7 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Skrifaðu nokkur orð um sjálfa/n þig...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Vertu vinaleg/ur";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Vertu vinsamleg/ur";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kaffifíkill";
@@ -3950,13 +3950,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Er í pásu";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Vinn í einhverju nýju";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Vinn við eitthvað nýtt";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "Nánar um";
+"PROFILE_BIO_VIEW_TITLE" = "Um hugbúnaðinn";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Nánar um (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Nánar (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ breytti birtingarnafni notandasniðsins síns úr %@ yfir í %@.";
@@ -3968,10 +3968,10 @@
 "PROFILE_NAME_VIEW_TITLE" = "Nafnið þitt";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Nánar um";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Um hugbúnaðinn";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nafn";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Heiti";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Notandanafn";
@@ -3995,7 +3995,7 @@
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Kenninafn (eftirnafn - valfrjálst)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Eiginnafn (fornafn - nauðsynlegt)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Eiginnafn (nauðsynlegt)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Notandasnið er aðeins hægt að uppfæra þegar tengt er við internetið.";
@@ -4007,7 +4007,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Vista";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Notandasnið";
+"PROFILE_VIEW_TITLE" = "Snið";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Merkja sem lesið";
@@ -4046,13 +4046,13 @@
 "QUOTED_REPLY_TYPE_AUDIO" = "Hljóð";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
-"QUOTED_REPLY_TYPE_GIF" = "GIF-mynd";
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Mynd";
 
 /* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "Myndmerki";
+"QUOTED_REPLY_TYPE_VIDEO" = "Myndskeið";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "Allt · %@";
@@ -4097,7 +4097,7 @@
 "REACTIONS_DETAIL_YOU" = "Þú";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Lesið";
+"READ_ACTION" = "Lesa";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Ekki er hægt að velja notanda.";
@@ -4130,13 +4130,13 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Þú átt eftir 1 tilraun. Ef þú færð ekki fleiri tilraunir, geturðu búið til nýtt PIN-númer. Þú getur skráð og notað aðganginn þinn, en þú munt tapa einhverju af vistuðum stillingum á borð við upplýsingar í notandasniðinu þínu.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Rangt PIN-númer";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Rangt PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
 "REGISTER_2FA_PIN_PROGRESS" = "Sannreyni PIN-númer…";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Senda";
+"REGISTER_2FA_SUBMIT_BUTTON" = "Senda inn";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Velkomin!";
@@ -4154,7 +4154,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskóði";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Settu inn símanúmer";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Sláðu inn númer";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Skráningarvilla";
@@ -4178,7 +4178,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Þú þarft að vera skráður notandi til að geta sent skilaboð.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Sannvottun mistókst";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Staðfesting mistókst";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Númerin sem þú sendir inn samsvara ekki þeim sem við sendum. Viltu yfirfar þetta?";
@@ -4196,7 +4196,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Settu inn símanúmer til að skrá þig.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Ekkert símanúmer";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Ekkert símanúmer.";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Við munum senda sannvottunarkóða á þetta símanúmer. Er símanúmerið hér fyrir ofan rétt?";
@@ -4232,7 +4232,7 @@
 "RESEARCH_MODAL_FOOTER" = "Könnunin er hýst hjá Surveygizmo á örugga léninu surveys.signalusers.org";
 
 /* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Nei takk";
+"RESEARCH_MODAL_NO_THANKS" = "Nei, takk";
 
 /* Text explaining why the user should take the survey */
 "RESEARCH_MODAL_PLEA" = "<bold>Við trúum á verndun persónulegra gagna.</bold>\n\nSignal fylgist ekki með þér eða safnar neinum gögnum. Til að bæta Signal fyrir alla reiðum við okkur á umsagnir notendanna <bold>og við myndum gjarnan vilja heyra frá þér.</bold>\n\nVið erum með könnun í gangi til að reyna að skilja hvernig þú notar Signal. Könnunin safnar engum persónugreinanlegum gögnum. Ef þú ert til í að deila með okkur ýmsum viðbótarupplýsingum, geturðu líka gefið okkur upplýsingar um hvernig hægt sé að ná í þig.\n\nEf þú hefur nokkrar mínútur aflögu og ert til í að gefa okkur umsögn, væri gaman að sjá eitthvað frá þér.";
@@ -4253,7 +4253,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Bæta samt í hóp";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Hringja samt";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "hringja samt";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Senda samt";
@@ -4397,7 +4397,7 @@
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Kíktu á þetta!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "Nýja-Sjáland!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "Nýja Sjáland";
 
 /* This is a message after an image of mountains + a lake. */
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Hvar ertu ?";
@@ -4472,7 +4472,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Uppfærðu Signal á þessu tæki til að tengja það við símann þinn.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Óstudd útgáfa";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "óstudd útgáfa.";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Hitt tækið þitt er að keyra eldri útgáfu af Signal sem styður ekki skönnun á QR-kóðum fyrir iPad. Settu upp nýjustu útgáfu Signal og reyndu svo aftur.";
@@ -4577,7 +4577,7 @@
 "SETTINGS_ACCOUNT" = "Notandaaðgangur";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Útiloka";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Loka á";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Leiðir framhjá ritskoðun";
@@ -4646,7 +4646,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Engar leitarniðurstöður";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Útilokaður";
+"SETTINGS_BLOCK_LIST_TITLE" = "Bannaður";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alltaf endurbeina símtölum";
@@ -4673,13 +4673,13 @@
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Að nota minna gagnamagn getur bætt símtöl á lélegum netkerfum.";
 
 /* Section header for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_HEADER" = "Símtöl";
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Köll: ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Talskilaboð, skoða-einu-sinni myndefni og límmerki (undir 100kb) er alltaf sótt sjálfkrafa.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Sækja sjálfkrafa";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Sækja sjálfvirkt";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Frumstilla stillingar á sjálfvirku niðurhali";
@@ -4691,16 +4691,16 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eyða notandaaðgangi";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Ekki millifæra";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Þú ert með innistæðu upp á %@. Ef þú millifærir ekki sjóðina þína á annað veskisvistfang áður en þú eyðir aðgangnum þínum, tapast þessi upphæð endanlega.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Millifæra innistæðu greiðslna?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Millifæra innistæðu";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Eyða öllum gögnum";
@@ -4745,7 +4745,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi og farsímanet";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Þráðlaust net";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Hljóð";
@@ -4790,178 +4790,178 @@
 "SETTINGS_NOTIFICATIONS" = "Tilkynningar";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Virkja";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Þú getur notað Signal til að senda og taka við MobileCoin-rafmynt - MOB. Allar greiðslur eru háðar skilmálum fyrir notkun MobileCoin og MobileCoin Wallet veskisins. Þetta er beta-prófunareiginleiki þannig að þú gætir rekist á einhver vandamál og mögulega geta færslur og greiðslur tapast sem ekki væri hægt að endurheimta.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Virkja";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Skoða skilmála MobileCoin";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "Bæta við innistæðu";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Til að bæta við fjármunum, skaltu senda MobileCoin-mynt á vistfang veskisins þíns. Framkvæmdu millifærslu frá aðgangi þínum á greiðslumiðlun sem styður MobileCoin, skannaðu síðan QR-kóða eða afritaðu vistfang veskisins þíns.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Vistfang veskis afritað á klippispjaldið";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "Allar greiðslur";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ kl. %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Greiðslur í Signal eru ekki lengur í boði. Þú getur ennþá millifært fjármuni til greiðslumiðlunar, en þú getur ekki lengur sent eða tekið við greiðslum eða bætt við fjármagni.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Ekki er hægt að gera greiðslur óvirkar vegna þess að upplýsingar um inneign þína eru ekki tiltækar. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Ekki var hægt að ljúka greiðslu vegna þess að uć. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Greiðslur í Signal eru ekki lengur í boði. Þú getur ennþá millifært fjármuni til greiðslumiðlunar, en þú getur ekki lengur sent eða tekið við greiðslum eða bætt við fjármagni.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Greiðslur í Signal eru ekki lengur í boði. Þú getur ennþá millifært fjármuni til greiðslumiðlunar, en þú getur ekki lengur sent eða tekið við greiðslum eða bætt við fjármagni.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Útreikningar eru bara áætlaðir og þurfa ekki að vera mjög nákvæmir.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Allir gjaldmiðlar";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Millifæra eftirstandandi innistæðu";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Gera óvirkt";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Gera greiðslur óvirkar";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Þú munt ekki lengur geta tekið við eða sent MobileCoin í Signal ef þú gerir greiðslur óvirkar.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Gera greiðslur óvirkar?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Gera greiðslur óvirkar";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Mælt er með að þú millifærir sjóði þína yfir í annað veskisvistfang áður en þú gerir greiðslur óvirkar. Ef þú kýst að millifæra sjóðina ekki núna, munu þeir haldast í veskinu sem tengt er Signal ef þú virkjar greiðslur aftur.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Inneign þín mun haldast í veskinu sem tengt er Signal ef þú virkjar greiðslur aftur.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Gera óvirkt án þess að millifæra?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Gera óvirkt án þess að millifæra";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Ekki var hægt að gera greiðslur óvirkar";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Nánar";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Virkja greiðslur";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin er nýr stafrænn gjaldmiðill sem leggur áherslu á gagnaleynd.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Um MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Þú getur bætt við fjármagni til að nota í Signal með því að senda MobileCoin-mynt á vistfang veskisins þíns.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Bæti við innistæðu";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Þú getur hvenær sem er tekið út MobileCoin myntina þína í greiðslumiðlun sem styður MobileCoin - MOB. Framkvæmdu einfaldlega millifærslu á greiðsluaðganginn þinn á þeirri greiðslumiðlun.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Taka út innistæðu";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Uppfæra PIN-númer";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Þegar um háar innistæður er að ræða, gætirðu viljað uppfæra í PIN-númer með tölu- og bókstöfum til að verja greiðsluaðganginn þinn enn betur.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Uppfærðu PIN-númerið þitt";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Skrá endurheimtufrasa";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Endurheimtufrasinn þinn gefur þér aðra leið til að endurheimta greiðsluaðganginn þinn.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Skrá endurheimtufrasa";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ógilt vistfang veskis";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Engin nýleg virkni.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Myndirðu vilja virkja greiðslur?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Greiðslur ekki virkar";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Virkja greiðslur";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Greiðslur virkjaðar.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Notaðu Signal til að senda og taka við MobileCoin, sem er nýr stafrænn gjaldmiðill sem leggur áherslu á gagnaleynd. Virkjaðu þetta til að komast í gang.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Endurvirkja greiðslur";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Við kynnum greiðslur (Beta-prófunarútgáfa)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Innistæðan þín mun endurheimtast sjálfkrafa eftir að þú setur Signal upp aftur, þegar þú staðfestir PIN-númerið þitt í Signal. Þú getur einnig endurheimt innistæðu þína með því að nota endurheimtufrasa, sem er 24-orða setning sem einungis þú átt að vita. Skrifaðu hana niður og geymdu á öruggum stað.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Bæta við innistæðu";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Númer blokkar";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Gjald fyrir netnotkun";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Móttekið";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Barst frá %@";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent af";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@, %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Þú";
@@ -4970,31 +4970,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Sent";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent til %@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Staða";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Nánari upplýsingar um millifærslur, eins og t.d. upphæð og tímasetning millifærslu, eru hluti af hreyfingaskrá / ledger MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "“Gjald fyrir hreinsun mynta” er innheimt þegar ekki er hægt að sameina myntir í þinni eigu til að ljúka millifærslu. Hreinsun gerir þér kleift að halda áfram að senda greiðslur.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Þú átt ekki nægilega mikið af MOB til að ljúka þessari greiðslu. Fyrirliggjandi inneign þín er núna %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Ónóg innistæða";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Frá %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Til %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Greiðslur eru óvirkar.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Allt";
@@ -5006,181 +5006,181 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Sent";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Nýlegar greiðslur";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Áður en þú getur gert PIN-númerið þitt óvirkt, verðurðu að skrá endurheimtufrasa fyrir greiðslurnar þínar til að tryggja að þú getir endurheimt greiðsluaðganginn þinn.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Skrá endurheimtufrasa";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Skrá frasa fyrir endurheimtu greiðslna";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Eftirstandandi innistæða";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Fjarlægja";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Endurheimta greiðsluaðgang";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Gakktu úr skugga um að þú hafir sett frasann þinn rétt inn .";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Staðfestu endurheimtufrasa";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Greiðsluaðgangur endurheimtur";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Settu inn handvirkt";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Endurheimting mistókst";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Þetta er ekki gildur endurheimtufrasi.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Ógildur frasi";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Líma af klippispjaldi";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Endurheimtufrasi";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Líma endurheimtufrasa";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Endurheimtufrasinn þinn er 12-orða setning sem einungis þú átt að vita. Notaðu hana til að endurheimta greiðsluaðganginn þinn.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Settu inn endurheimtufrasa";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Endurheimtufrasi";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Settu inn orð %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Ógildur endurheimtufrasi.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Orðið er rangt stafsett.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Settu inn endurheimtufrasa";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Skannaðu QR-kóða viðtakanda millifærslunnar.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Ógilt vistfang";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Ógild slóð";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Skanna QR-kóða";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Senda greiðslu";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Veldu viðtakanda";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "Umbreyting gjaldmiðla";
 
 /* Label for the 'show all payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "Sjá allt";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "Greiðslur";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Þú getur ekki millifært á þitt eigið Signal veskisvistfang. Settu inn veskisvistfang greiðsluaðgangs sem þú ert með á studdri greiðslumiðlun.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Þú getur millifært MobileCoin-mynt með því að ljúka millifærslu á vistfang veskisins þíns sem gefið er upp af greiðslumiðluninni. Vistfang veskisins er strengur tölu- og bókstafa sem oft er fyrir neðan QR-kóðann.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Athugaðu vistfang veskisins sem þú ert að reyna að millifæra á og prófaðu svo aftur.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Rangt vistfang";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Til: Skannaðu eða skrifaðu vistfang veskis";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Millifæra á greiðslumiðlun";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Millifæra á greiðslumiðlun";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Uppsetning endurheimtufrasa lokið.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Staðfesta";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Settu inn orðin %1$@ og %2$@ úr endurheimtufrasanum þínum.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Eitt orð er rangt. Reyndu aftur.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Bæði orðin eru röng. Reyndu aftur.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Orð %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Staðfestu endurheimtufrasa";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Endurheimtufrasi afritaður";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Afrita á klippispjald";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Ef þú kýst að geyma endurheimtufrasann þinn á stafrænu formi, gakktu þá úr skugga um að hann sé geymdur á stað sem þú treystir.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Afrita á klippispjald?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Sjá frasa aftur";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Skoða endurheimtufrasa";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Endurheimtufrasi";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Skrifaðu niður eftirfarandi 24 orð í réttri röð. Geymdu þetta á öruggum stað.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Ekki taka skjámynd eða senda með tölvupósti.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Endurheimtufrasi";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Greiðslur (Beta-prófunarútgáfa)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Vistfang veskisins þíns";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Finna mig með símanúmerinu";
@@ -5222,7 +5222,7 @@
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Stillingar fyrir leiðir framhjá ritskoðun, endurvörpun hringinga og innsiglaða sendendur.";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Ítarlegt";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "Meira";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Birta símtöl í lista yfir nýlegt";
@@ -5240,7 +5240,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Slökkva á skráningarlæsingu?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Virkja";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Kveikja";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Ef þú gleymir Signal PIN-númerinu og ert að skrá þig aftur inn á Signal, verðurðu læst/ur út af aðgangnum þínum í 7 daga.";
@@ -5324,7 +5324,7 @@
 "SHARE_ACTION_MAIL" = "Póstur";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Skilaboð";
+"SHARE_ACTION_MESSAGE" = "Póstur";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
@@ -5333,7 +5333,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Öryggisnúmerið með %@ hefur breyst nýlega. Þú gætir viljað sannreyna það í aðalforritinu áður en þú sendir aftur.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Hleð inn...";
+"SHARE_EXTENSION_LOADING" = "Hleð inn…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Ræstu Signal-forritið til að skrá.";
@@ -5345,7 +5345,7 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Ræstu Signal-forritið til að uppfæra eða skrá.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ekki tilbúið";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ekki tilbúin";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Get ekki sent viðhengi";
@@ -5423,7 +5423,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Uppsett límmerki";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Hleð inn...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Hleð inn…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Engin límmerki uppsett";
@@ -5432,19 +5432,19 @@
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Límmerki úr skilaboðum sem þú hefur fengið munu birtast hér";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Límmerki";
+"STICKERS_MANAGE_VIEW_TITLE" = "Límmiðar";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Límmerkjapakki";
+"STICKERS_PACK_DEFAULT_TITLE" = "Límmiðapakki";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Límmerkjapakki";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Límmiðapakki";
 
 /* Label indicating that the sticker pack failed to load. */
 "STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Mistókst að hlaða inn límmerkjapakka";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Taka út";
+"STICKERS_UNINSTALL_BUTTON" = "Fjarlægja";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Öryggisnúmer þitt með %@ samsvarar. Þú getur merkt þennan tengilið sem sannreyndan.";
@@ -5453,10 +5453,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Öryggisnúmer samsvara!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Hafa samband";
+"SUPPORT_CONTACT_US_HEADER" = "Hafðu samband við okkur";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Segðu okkur hvað er í gangi";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Segðu okkur frá vandamálinu: ";
@@ -5540,34 +5540,34 @@
 "TIME_AMOUNT_HOURS" = "%@ klukkustundir";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@klst. ";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@klst";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ mínútur";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@mín";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ sekúndur";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@sek";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ dagur";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ daga";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_HOUR" = "%@ klukkustund";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ mínúta";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ mínútu";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ sekúnda";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ sekúndu";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ vika";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ viku";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_YEAR" = "%@ ár";
@@ -5576,7 +5576,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ vikur";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@v";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@vk";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_YEARS_FORMAT" = "%@ ár";
@@ -5636,13 +5636,13 @@
 "UNKNOWN_VALUE" = "Óþekkt";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Aftengja";
+"UNLINK_ACTION" = "Losa krækju";
 
 /* Alert message to confirm unlinking a device */
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Með því að aftengja þetta tæki mun það ekki lengur geta tekið á móti eða sent skilaboðum.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Aftengja \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Aftengja '%@'?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Þetta tæki er ekki lengur tengt. Tengdu Signal aftur við símann til að eiga í frekari samskiptum.";
@@ -5669,7 +5669,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Tækið þitt styður ekki þennan eiginleika.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Öryggisnúmer þitt með %@ hefur breyst, líklega vegna þess að viðkomandi hefur sett Signal upp aftur eða hefur skipt um tæki. Ýttu á 'Sannreyna' til að sannreyna nýja öryggisnúmerið. Þetta er valkvætt.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Sannreyna";
@@ -5720,7 +5720,7 @@
 "USERNAME_NOT_FOUND_TITLE" = "Notandi fannst ekki";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Settu inn notandanafn";
+"USERNAME_PLACEHOLDER" = "Skráðu notandanafn:";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -5768,7 +5768,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Yfirfara öryggisnúmer";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "Myndsímtal";
+"VIDEO_CALL_LABEL" = "Myndsamtal";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Þú hefur þegar skoðað þessi skilaboð.";
@@ -5804,7 +5804,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Klíptu til að renna að, dragðu til að aðlaga.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Strjúktu til hliðar til að forskoða fleiri bakgrunnsmyndir.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Strjúktu til hliðar til að forskoða fleii bakgrunnsmyndir";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Setja bakgrunnsmynd fyrir allar spjallrásir.";

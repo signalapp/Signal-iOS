@@ -692,7 +692,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nenhum campo de contato selecionado.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contactar suporte";
+"CONTACT_SUPPORT" = "Entre em contato com o suporte";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Gostaria de pedir uma nova funcionalidade";
@@ -968,10 +968,10 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Compartilhar perfil";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Compartilhar o seu perfil";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Compartilhar seu perfil";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Compartilhar o seu perfil";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Compartilhar seu perfil";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Adicionar aos Contatos";
@@ -1061,7 +1061,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecionando para o GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Informação sobre os registros de depuração";
+"DEBUG_LOG_INFO_BUTTON" = "Informações sobre os registros de depuração";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Excluir conta";
@@ -2699,7 +2699,7 @@
 "LOGGING_SECTION" = "Registros";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Os relatórios de depuração podem ajudar o Signal a corrigir problemas e travamentos.";
+"LOGGING_SECTION_FOOTER" = "Os registros de depuração podem ajudar o Signal a corrigir problemas e travamentos.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mensagem";
@@ -4001,7 +4001,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "O perfil só pode ser atualizado quando conectado à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão ver seu perfil, as  mudanças feitas nele e quando você iniciar ou aceitas novas conversas.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão ver seu perfil, as mudanças feitas nele e quando você iniciar ou aceitar novas conversas.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvar";
@@ -4169,7 +4169,7 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Verifique a sua conexão";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Este formato de número de telefone não possui suporte. Por favor, contactar o suporte. ";
+"REGISTRATION_NON_VALID_NUMBER" = "Este formato de número de telefone não possui suporte. Por favor, entre em contato com o suporte. ";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Número de telefone";
@@ -4199,7 +4199,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nenhum número de telefone";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Um código de verificação ser enviado para esse número. O seu número de telefone acima está correto?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Um código de verificação será enviado para esse número. O seu número de telefone acima está correto?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Número de confirmação: %@";
@@ -4508,7 +4508,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instalar o Signal no seu telefone";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toque na sua imagem de perfil para abrir as Configurações do Signal no seu telefone. Então, em \"Aparelhos vinculados\" e \"Vincular novo aparelho\" para escanear este código com o seu telefone.";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toque na imagem do seu perfil para abrir as Configurações do Signal no seu telefone. Em seguida, em \"Aparelhos vinculados\" e \"Vincular novo aparelho\" para escanear este código com o seu telefone.";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenha ajuda para vincular seu iPad ";
@@ -5312,7 +5312,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir a qualquer pessoa";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Habilitar remetente oculto para mensagens recebidas de não-contatos e pessoas com quem você não compartilhou seu perfil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Habilitar remetente oculto para mensagens recebidas de pessoas que não figuram nos seus contatos ou com quem você não compartilhou seu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versão";

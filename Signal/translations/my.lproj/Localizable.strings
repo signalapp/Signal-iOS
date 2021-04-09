@@ -266,7 +266,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ရုပ်ပုံများယူပြီးလျှင် သင်သည် နောက်ဆုံးအရာများ ဤနေရာမှ ပေးပို့နိုင်ပါသည်";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "ငွေပေးချေမှု";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ပူးတွဲ ";
@@ -317,7 +317,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "၎င်းအဖွဲ့ထံမှ မက်ဆေ့ချ်များ သို့မဟုတ် အပ်ဒိတ်များ သင် မရရှိတော့ပါ။";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ပိတ်ပင်သည် ";
@@ -413,16 +413,16 @@
 "BUTTON_NOT_NOW" = "မအားသေးပါ";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "အိုကေ";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "နောက်သို့";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "ရွေးမည်";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "စမယ်";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "တင်မည်";
@@ -434,7 +434,7 @@
 "BUTTON_YES" = "ဟုတ်ကဲ့";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "ပြန်ခေါ်ဆိုပါ";
 
 /* notification body */
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ဖုန်းခေါ်ခြင်း အဝင်ရှိသည်…";
@@ -455,7 +455,7 @@
 "CALL_RETURN_BUTTON" = "Return To Call";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "ဖြေဆိုမှု မရှိပါ";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal%@";
@@ -698,40 +698,40 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Feature Request";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "အင်္ဂါရပ် တောင်းဆိုမှု";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "ကျွန်ုပ်သည် အပ္ပလီကေးရှင်း အပေါ်တုံ့ပြန်ချက်ရှိသည်";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "အပ္ပလီကေးရှင်း တုံ့ပြန်ချက်";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "အခြားအရာ";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "အခ";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "ငွေပေးချေမှုများ";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "ငွေပေးချေမှုများ";
 
 /* Prompt telling the user to select a filter for their support request. */
-"CONTACT_SUPPORT_FILTER_PROMPT" = "How can we help?";
+"CONTACT_SUPPORT_FILTER_PROMPT" = "ကျွန်ုပ်တို့ မည်ကဲ့သို့ ကူညီနိုင်သနည်း?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "ကျွန်ုပ်သည် မေးခွန်းရှိပါသည်";
 
 /* A brief localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "မေးခွန်း";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "အရာရာ တစ်ခုခု အလုပ်မလုပ်နေပါ";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "အရာရာ တစ်ခုခု အလုပ်မလုပ်နေပါ";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal မှ သင့် အကူအညီ တောင်းဆိုစာတင်ခြင်း မအောင်မြင်ပါ။";
@@ -746,7 +746,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ တင်မလား?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "အကြောင်းရင်း ရွေးပါ";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ပျက်ကွက်မှုဖြင်ရှင်းခြင်း မှတ်တမ်းစာ တင်မယ်";
@@ -764,7 +764,7 @@
 "CONTACT_WITHOUT_NAME" = "အမည်မပေးထားသော အဆက်အသွယ်";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "၎င်းစက်မှ ၎င်းစကားပြောဆိုမှုကို ဖျက်သိမ်းလိုက်ပါမည်။";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "စကားပြောဆိုမှုကို ဖျက်သိမ်းမည်လား?";
@@ -815,13 +815,13 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "မလုပ်ဆောင်သော";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "အဖွဲ့ အမည်၊ ရုပ်ပုံ နှင့် မက်ဆေ့ချ်များ ပြန်ဖျောက်မည့် အချိန်ကာလ ကို မည်သူက ပြောင်းလဲနိုင်သည်ကို ရွေးပါ။";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "၎င်းသုံးသူမှ မက်ဆေ့ချ်များ သို့မဟုတ် အပ်ဒိတ်များ သင် မရရှိတော့ပါ။";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "You will no longer receive messages or updates from this group.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "၎င်းအဖွဲ့ထံမှ မက်ဆေ့ချ်များ သို့မဟုတ် အပ်ဒိတ်များ သင် မရရှိတော့ပါ။";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်မယ်";
@@ -836,13 +836,13 @@
 "CONVERSATION_SETTINGS_EDIT" = "ပြင်ရန်";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "အဖွဲ့၏ အချက်အလက်ကို မည်သူ ပြောင်းလဲနိုင်မည်လဲ?";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "စီမံသူများသာ";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "အဖွဲ့ အမည်၊ ရုပ်ပုံ နှင့် မက်ဆေ့ချ်များ ပြန်ဖျောက်မည့် အချိန်ကာလ ကို မည်သူက ပြောင်းလဲနိုင်သည်ကို ရွေးပါ။";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များအားလုံး";
@@ -1082,7 +1082,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "အကောင့် ဖျက်သိမ်းနေသည်...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
@@ -1091,25 +1091,25 @@
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ဖုန်းနံပါတ်";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "သင့် Signal နံပါတ်ကို အတည်ပြုပါ";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "ကိုယ်ပိုင်စာရင်း ကိုဖျက်ပါ";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "သင့်ရိုက်ထည့်ထားသော ဖုန်းနံပါတ်သည် သင့်အကောင့်အတွင်းရှိ နံပါတ်နှင့် မကိုက်ညီပါ။";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "စကားပြောဆိုမှု အတွင်းရှိ မက်ဆေ့ချ်များ အားလုံးကို ဖျက်သိမ်းမည်လား?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "မက်ဆေ့ချ်များအားလုံး ဖျက်သိမ်းမယ်";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "မက်ဆေ့ချ်ပေါင်း %ld ခုကို ဖျက်သိမ်းမည်လား?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "မက်ဆေ့ချ်ကို ဖျက်သိမ်းမည်လား?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ဤဖုန်းနံပါတ်ကို မှတ်ပုံပြန်တင်ပါ";
@@ -1118,124 +1118,124 @@
 "DEREGISTRATION_WARNING" = "ဤပစ္စည်းဖြင့် မှတ်ပုံတင်ထားခြင်းမရှိတော့ပါ။ ဤဖုန်းနံပါတ်ဖြင့် တခြားဖုန်းတွင် Signal ကို မှတ်ပုံတင်ထားကောင်း ထားနိုင်ပါသည်။ ပြန်လည်မှတ်ပုံတင်ရန် ဒီမှာနှိပ်ပါ။";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "နောက်ဆုံးလှုပ်ရှားခဲ့သည့်အချိန် - %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "%@ တွင်ချိတ်ခဲ့သည်";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ဖုန်းစာရင်းကိုထပ်ဖြည့်ခြင်း မအောင်မြင်ပါ။ ";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "လွှဲပြောင်းမှု ရပ်မယ်";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "၎င်း ဝင်းဒိုးကိုပိတ်ခြင်းဖြင့် သင်လုပ်ဆောင်နေသော လွှဲပြောင်းမှု ရပ်တန်ု့သွားမည်။ ၎င်း ဝင်းဒိုးကိုပိတ်မည်ဆိုသည်မှာ သေချာပါသလား?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "လွှဲပြောင်းမှု ရပ်မည်လား?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "သင့် iOS စက်အဟောင်းရှိလျှင် သင့်အကောင့်နှင့် မက်ဆေ့ချ်များ ကို ၎င်းစက်ပေါ်သို့ လုံခြုံစွာ လွှဲပြောင်းနိုင်ပါသည်။";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "သင်သည် ယခင်က ချိတ်ထားသော iPad ပေါ်တွင် Signal ကို သုံးနေခဲ့လျှင် သင့်အကောင့် နှင့် မက်ဆေ့ချ်များကို ၎င်းစက်ပေါ်သို့ လုံခြုံစွာ လွှဲပြောင်းနိုင်ပါသည်။";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "သင့် အကောင့်နှင့် မက်ဆေ့ချ်များ မလွှဲပြောင်းဘဲ ဆက်လက်လုပ်ဆောင်မယ်";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "မက်ဆေ့ချ်ရာဇဝင် မလွှဲပြောင်းဘဲ ၎င်း iPad အား ချိတ်မည့်စက်အသစ်အနေအဖြစ် ပေါင်းထည့်မယ်";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "စက်အသစ်အနေနှင့် ထည့်မယ်";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "မလွှဲပြောင်းဘဲ စာရင်းသွင်းမယ်";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "အကောင့်နှင့် မက်ဆေ့ချ်များ လွှဲပြောင်းမယ်";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "သင့် iOS စက်အဟောင်းမှ အကောင့်နှင့် မက်ဆေ့ချ်များ လွှဲပြောင်းမယ်";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "သင့် iPad အဟောင်းပေါ်မှ အကောင့်နှင့် မက်ဆေ့ချ်များ လွှဲပြောင်းမယ်";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "အခြား iPad ပေါ်မှ လွှဲပြောင်းမယ်";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS စက်ပေါ်မှ လွှဲပြောင်းမယ်";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "ဆက်လက်လုပ်ဆောင်ခြင်းသည် ၎င်းဖုန်းနံပါတ်ဖြင့် လက်ရှိချိတ်ထားသော အခြားစက်ပေါ်မှ Signal ကို ပိတ်လိုက်ပါမည်။";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "သင့်စက်အသစ်ကို အတည်ပြုခြင်း မရပါ၊ နောက်မှ ပြန်စမ်းကြည့်ပေးပါ";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "လွှဲပြောင်းခြင်း မပြီးစီးပါ၊ သင့် စက်များသည် အချင်းချင်း နီးကပ်စေရန် သေချာစေပါ၊​ ထို့နောက်ပြန်စမ်းကြည့်ပေးပါ။";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "၎င်း iPad နှင့် ချိတ်ဆက်ဖို့ ပြင်ဆင်ရန် သင့် iPad အဟောင်းဖြင့် သင်စကင်ဖတ်ရပါမည်။";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "သင့်အကောင့်ကို လွှပြောင်းရန် သင့် iPhone နှင့် စကင်ဖတ်ရပါမည်။";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "လွှဲပြောင်းခြင်း ပြီးစီးရန် နေရာအလွတ် လုံလောက်မှုမရှိပါ";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal ၏ နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်လုပ်ပြီး ပြန်စမ်းပေးပါ";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "iOS စက်အသစ်ပေါ်သို့ သင့် Signal အကောင့်ကို လွှဲပြောင်းလိုက်ပါ။ သင့်စက်အသစ်သည် အနီးအနားတွင် ဖွင့်ထားရန် သေချာပါစေ။";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "လွှဲပြောင်းမည့် အကောင့်";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "သင့် စက်အဟောင်းပေါ်တွင် Signal ကို ဖွင့်ပါ၊ အနီးအနားသို့ ယူလာပါ၊ ပြီးလျှင် စက် ၂ ခုလုံးပေါ်တွင် ဝိုင်ဖိုင် နှင့် ဘလူးတုသ် ဖွင့်ထားရန် သေချာစေပါ။";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "သင့် အခြားစက်ပေါ်၏ ဘောင်တွင်း ဤ QR ကုဒ်ကို ထားပါ။";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "သင့် စက်အဟောင်းပေါ်တွင် အညွှန်းမတွေ့ပါသလား?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "အခြားစက်ကို စောင့်နေပါသည်...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "စက် ၂ ခုလုံးသည် အနားတွင် အချင်းချင်းရှိနေစေပါ။ မည်သည့် စက်ကိုမှ မပိတ်ပါနှင့်၊ Signal ကို ဖွင့်ထားပေးပါ။ လွှဲပြောင်းမှုများသည် အစမှ အဆုံးထိ ကုဒ်ဖြင့်ဝှက်ထားပါသည်။";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "ဒေတာ လက်ခံနေသည်";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "ချိတ်ဆက်နေသည်...";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "စက်ဝိုင်း အတွင်းတွင် ဤ QR ကုဒ်ကို ထားပါ။";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "ကင်မရာစီသို့ သင့် စက်အသစ်ကို ထားပေးပါ။";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "စက် ၂ ခုလုံးသည် အနားတွင် အချင်းချင်းရှိနေစေပါ။ မည်သည့် စက်ကိုမှ မပိတ်ပါနှင့်၊ Signal ကို ဖွင့်ထားပေးပါ။";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ဒေတာ လွှဲပြောင်းနေသည်";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "စာများပျောက်သွားနေသည် ";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "၎င်း စကားပြောဆိုမှုထဲရှိ မက်ဆေ့ချ်များသည် %@ အကြာတွင် ဖျောက်သွားပါမည်။";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "ဖွင့်ထားခဲ့လျှင် ၎င်း စကားပြောဆိုမှုတွင် ပေးပို့လက်ခံရရှိသော မက်ဆေ့ချ်များကို တွေ့ခဲ့ပြီးလျှင် ဖျောက်သွားပါမည်။";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "စာများသည် %@အတောတွင်းပျက်သွားမည်";
@@ -1250,34 +1250,34 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ပိတ်ဆို့မှုဖြတ်ကျော်နေရာ ";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS အပြင်အဆင် အပ္ပလီကေးရှင်းထဲတွင် သင်သုံးခွင့်ပေးနိုင်ပါသည်။";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "သူ၏အချက်အလက်ကို တည်းဖြတ်ရန် Signal ကလိပ်စာစာအုပ်ကို ချိတ်ဆက်ရန်လိုအပ်သည် ";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "ဓါတ်ပုံ ဖယ်ရှားမယ်";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "အဖွဲ့ကိုတည်းဖြတ်သည် ";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "၎င်း သုံးသူသည် Signal ကို အပ်ဒိတ်မလုပ်သည်အထိ အဖွဲ့ထဲသို့ မထည့်နိုင်ပါ။";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "အများဆုံးဆံ့နိုင်သော အဖွဲ့ဝင် အရေအတွက် %@ ဦး ပြည့်ပါပြီ။";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "ဓါတ်ပုံ အဆင်မပြေပါ";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "အဖွဲ့အမည်";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "ထပ်ဖြည့်သည် ";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "၎င်း အဖွဲ့ပေါ်တွင် လုပ်ခဲ့သော ပြောင်းလဲမှုများကို သိမ်းဆည်းစေချင်ပါသလား?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "အပြောင်းအလဲများကို မသိမ်းပါ ";
@@ -1292,37 +1292,37 @@
 "EMAIL_INVITE_SUBJECT" = "Signal ကိုပြောင်းသုံးကြပါစို့ ";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "အီးမေးလ်ပို့ရန် သင့်စက်ကို မချိန်ညှိထားပါ။ ပံ့ပိုးမှု တောင်းဆိုရန် သင့်စက်ပေါ်တွင် အီးမေးလ်ပို့ရန် ပြင်ဆင်ပါ သို့မဟုတ် support@signal.org သို့ အီးမေးလ်ပို့လိုက်ပါ။";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "အီးမေးလ် မရနိုင်ပါ";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "လုပ်ရှားမှုများ";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "တိရိစ္ဆာန်များ နှင့် သဘာဝအရာများ";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "အလံများ";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "အစားအသောက်";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "ပစ္စည်းအရာများ";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "နောက်ဆုံး";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "မျက်နှာပြုံး နှင့် လူများ";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "သင်္ကေတများ";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "အသွားအလာ နှင့် နေရာများ";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "သင့်မိတ်ဆွေတစ်ယောက်မှ Signal တွင်မရှိပါ ";
@@ -1343,19 +1343,19 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "အဆက်အသွယ်များကို မရယူနိုင်ပါ။";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "ဗီဒီယိုကို မသိမ်းဆည်းနိုင်ပါ";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "စာတိုပို့ခြင်း မအောင်မြင်ပါ ";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "အီးမေးလ် အပ္ပလီကေးရှင်းဖွင့်ခြင်း မအောင်မြင်ပါ";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "ပံ့ပိုးရန် တောင်းဆိုမှု မပြုလုပ်နိုင်ပါ";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "မှတ်တမ်းများတင်ပို့ခြင်း မအောင်မြင်ပါ";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
@@ -1364,7 +1364,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "သင်ဘလော့ထားသည့်အတွက် စာတိုပေးပို့နိုင်ခြင်းမရှိပါ။ ";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal မှ အင်တာနက်နှင့် ချိတ်ဆက်၍ မရပါ။ ကျေးဇူးပြု၍ ပြန်စမ်းကြည့်ပါ။";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "လက်ခံမည့်သူ အကျုံးမဝင်သောကြောင့် စာပို့ခြင်း မအောင်မြင်ပါ။";
@@ -1379,7 +1379,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "ဝန်ဆောင်မှုထံမှ သင့်လျော်မှုမရှိသော တုံ့ပြန်မှု။";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "၎င်းစက်သည် သင့်ဖုန်းနံပါတ်ဖြင့် မှတ်ပုံစာရင်းသွင်းထားခြင်း မဟုတ်တော့ပါ။​ Signal ကိုပြန် ထည့်သွင်းပေးပါ။";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ဆာဗာပြဿနာ။ ထပ်မံ ကြိုးစားကြည့်ပါ။ ";
@@ -1391,22 +1391,22 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "သူသည် Signal အသုံးပြုသူ မဟုတ်ပါ။";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "ပူးတွဲဖိုင် ဒေါင်းလုပ်ဆွဲခြင်း မအောင်မြင်ပါ။";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "ပူးတွဲဖိုင် ပျက်ကွက်မှု - Signal ၏ နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်ပြုလုပ်ပြီးလျှင် ၎င်း အဆက်အသွယ်စီသို့ မက်ဆေ့ချ်ပြန်ပို့ပေးရန် တောင်းဆိုလိုက်ပါ။ ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "မိတ္တူပွား မက်ဆေ့ချ် ရခဲ့ပါသည်။";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "လက်ခံသူ၏လုံခြုံရေးသော့ မကိုက်ညီပါ။ ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "လက်ခံရရှိခဲ့သော မက်ဆေ့ချ်သည် ကူးပြောင်းခြင်း မကိုက်ညီပါ။";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "၎င်း ဗားရှင်းဖြင့် မလိုက်လျောသော မက်ဆေ့ချ်ကို လက်ခံရှိခဲ့ပါသည်။";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "ယင်းသူနှင့် ဆက်သွယ်နိုင်သော ဆက်ရှင်မရှိပါ။ ";
@@ -1418,7 +1418,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@နှင့် လုံခြုံစိတ်ချရသောနံပါတ်ပြောင်းသွားပြီ။ ";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "စကားပြောဆိုမှု အချိန်ပိုင်း ပြန်စတင်ခဲ့ပါသည်";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "အကျိုးအကြောင်းမသိသည့် ပြဿနာ ဖြစ်လာသည်။";
@@ -1427,22 +1427,22 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "လုံခြုံရေးနံပါတ် ပြောင်းသွားသည်။";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "ကွန်ယက် ပျက်ကွက်မှု";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "သင့်စက်နှင့် မချိတ်ထားတော့ပါ။ ထပ်မံ မက်ဆေ့ချ်များ ပေးပို့ရန် ပြန်ချိတ်ပေးပါ။";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "သင့်စက်သည် မှတ်ပုံစာရင်းသွင်းခြင်း မရှိတော့ပါ။ ထပ်မံ မက်ဆေ့ချ်များ ပေးပို့ရန် ပြန်စာရင်းသွင်းပေးပါ။";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+"ERROR_SENDING_EXPIRED" = "သင့် Signal ဗားရှင်းသည် သက်တမ်းကုန်သွားပါပြီ။ ထပ်မံ မက်ဆေ့ချ်များ ပေးပို့ရန် အပ်ဒိတ်ပြုလုပ်ပေးပါ။";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "မှတ်ပုံတင်ထားခြင်းမရှိသော အသုံးပြုသူ %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "သင့် Signal ဗားရှင်းသည် သက်တမ်းကုန်သွားပါပြီ! နှိပ်၍ နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်လုပ်လိုက်ပါ။";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "မိမိ၏ Signal ဗားရှင်းမှာ %d အတွင်း သက်တမ်းကုန်ဆုံးတော့မှာ ဖြစ်ပါတယ်။ Update ဆိုသည့် ခလုတ်ကိုနှိပ်၍ နောက်ဆုံးဗားရှင်းအား ရယူပါ။";
@@ -1451,10 +1451,10 @@
 "EXPIRATION_WARNING_TODAY" = "သင့်ရဲ့ Signal ဗားရှင်းက ဒီနေ့ သက်တမ်းကုန်ပါလိမ့်မယ်။ နောက်ဆုံးဗားရှင်းကို ရရန် နှိပ်ပါ။";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "၎င်း အဆက်အသွယ်နှင့် ပျက်ကွက်မှုများ နေပါသည်။ နောက်မှ ပြန်စမ်းကြည့်ပေးပါ။";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "သင်၏ လုံခြုံရေးနံပါတ် %@ သည် မကြာသေးမီက ပြောင်းလဲထားပါသည်။ ပြန်လည်မပေးပို့မီ သင်အတည်ပြုနိုင်ပါသည်။";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "လုံခြုံရေးနံပါတ် အတည်ပြုမှု မအောင်မြင်ပါ။";
@@ -1469,25 +1469,25 @@
 "FINISH_GROUP_CREATION_LABEL" = "အဖွဲ့ပြုလုပ်ပြီးပါပြီ";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "အဆက်အသွယ်ကို ထပ်ဆင့် ပေးပို့မယ်";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "မက်ဆေ့ချ်ကို ထပ်ဆင့် ပေးပို့မယ်";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "၎င်း စကားပြောဆိုမှုထဲတွင် မည်သည့် မီဒီယာမှ မရှိပါ။";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = " မီဒီယာအသစ် တင်နေပါသည်...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = " မီဒီယာအဟောင်း တင်နေပါသည်...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ပူးတွဲဖိုင်";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get started";
+"GET_STARTED_BANNER_TITLE" = "စတင်ပါ";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "သူငယ်ချင်းများကို ဖိတ်ပါ။";
@@ -1538,10 +1538,10 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "စီမံသူများသာ";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "မည်သည့် သုံးသူမဆို";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "အဖွဲ့ဝင်များအားလုံး";
@@ -1562,7 +1562,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "စီမံသူများသာ ၎င်းရွေးချယ်မှုကို ပြောင်းနိုင်ပါသည်။";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
@@ -1580,7 +1580,7 @@
 "GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
 
 /* A button to receive more info about not seeing a participant in group call grid */
-"GROUP_CALL_ERROR_DETAILS" = "More Info";
+"GROUP_CALL_ERROR_DETAILS" = "နောက်ထပ် အချက်အလက်များ";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
 "GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
@@ -1613,10 +1613,10 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "အခြား မည်သူမျှ မရှိပါ";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "ယခု ဖုန်းခေါ်ဆိုမှုပေါ်တွင် မည်သူမျှ မရှိသေးပါ";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
@@ -1655,13 +1655,13 @@
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "နှိပ်ဆွဲ၍ မြင်ကွင်းပြောင်းပါ";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "ခေါ်ဆိုမှု စတင်မယ်";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "ဤနေရာနှိပ်၍ အဖွဲ့လိုက်ဖုန်းခေါ်ဆိုပါ";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "အဖွဲ့လိုက် ဖုန်းခေါ်ဆိုမှု သင်စခဲ့ပါသည်";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
@@ -1862,7 +1862,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ဤကုဒ်နံပါတ်ကို စကင်ဖတ်သောသူများသည် သင်၏အဖွဲ့ထဲသို့ ဝင်နိုင်လိမ့်မည်။ အကယ်၍ သင်သည် ဤချိန်ညှိမှုကို ဖွင့်ပါက အုပ်ချုပ်သူအသစ်များအား အတည်ပြုရန် လိုအပ်ဦးမည်။";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
@@ -2228,7 +2228,7 @@
 "GROUP_YOU_LEFT" = "အဖွဲ့မှသင်ထွက်လိုက်သည်။";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "သင်မထွက်ခွာမီ ၎င်းအဖွဲ့အတွက် စီမံသူအသစ် ရွေးပါ။";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
@@ -2408,13 +2408,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "သင်မထွက်ခွာမီ ၎င်းအဖွဲ့အတွက် စီမံသူအသစ် ရွေးပါ။";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "စီမံသူအသစ် ရွေးပါ";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "စီမံသူအသစ် ရွေးပါ";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
@@ -2576,7 +2576,7 @@
 "JOIN_CALL_PILL_BUTTON" = "ဝင်ပါမယ်";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = " မီဒီယာအားလုံးသို့ သွားမယ်";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Archive Chat";
@@ -2708,7 +2708,7 @@
 "MANY_GROUPS_IN_COMMON" = "%@ groups in common";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ရုပ်/သံ/ပုံ အားလုံး";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "မီဒီယာဖိုင် အားလုံး";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "ကင်မရာ";
@@ -2765,7 +2765,7 @@
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "နောက်ထပ် အချက်အလက်များ";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
@@ -2777,7 +2777,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = " မီဒီယာ မျှဝေမယ်";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "စာတို";
@@ -3251,7 +3251,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "မည်သူမှ သင့်ဖုန်းနံပါတ် (%@) ဖြင့် သင့်အား ရှာဖွေနိုင်သည်ကို ရွေးပါ";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
@@ -3404,7 +3404,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "ပေးဆောင်ပါ";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3440,10 +3440,10 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "မှတ်ချက်";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "ပေးဆောင်ပါ";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
@@ -3530,7 +3530,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "၎င်းသုံးသူသို့ ငွေပေးချေမှုပေးလိုလျှင် ၎င်းတို့မှ သင့်စီမှ မက်ဆေ့ချ်တောင်းဆိုမှု ကို လက်ခံရန်လိုပါမည်။ ၎င်းစီသို့ မက်ဆေ့ပို့၍ တောင်းဆိုလိုက်ပါ။";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
@@ -3809,7 +3809,7 @@
 "PIN_CREATION_TITLE" = "Create your PIN";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "ပိုခိုင်မာသော ပင်နံပါတ်ကို ရွေးပါ";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
@@ -3878,7 +3878,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "ရုပ်/သံ/ပုံကို ဖွင့်မည်";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "မီဒီယာဖိုင် ဖွင့်ကြည့်မယ်";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "သင်သည် %@ ကို အတည်မပြုရသေးပါ။";
@@ -3899,10 +3899,10 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "ဤအရာက %@ နှင့် သင့်လုံခြုံရေးနံပါတ်လို့ မထင်ရပါ။ မှန်ကန်သော လူကို အတည်ပြုနေတာ ဟုတ်ရဲ့လား? ";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "သင့် ကလစ်ဘုတ်ပေါ်ရှိသည့် နံပါတ် နှင့် ယခုစကားပြေားဆိုမှု၏ လုံခြုံရေးနံပါတ် မတူညီပါ။";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "သင့် clipboard တွင်လုံခြုံရေးနံပါတ် ရှာမတွေ့ပါ။ ကူးယူပြီးတာ သေချာပါရဲ့လား? ";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "သင့် ကလစ်ဘုတ် တွင်လုံခြုံရေးနံပါတ် ရှာမတွေ့ပါ။ ကူးယူပြီးတာ သေချာပါရဲ့လား? ";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "အသုံးပြုသူ အတွဲတိုင်းတွင် တူညီသော လုံခြုံရေးနံပါတ်များရှိကြသည်။ %@ သည် သင်တို့ ၂ ယောက်၏ တူညီသော လုံခြုံရေးနံပါတ်ကိုပြနေပါသည်။";
@@ -3980,7 +3980,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "ဓါတ်ပုံ ဖယ်ရှားမယ်";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
@@ -4088,7 +4088,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "%@ ကဲ့သို့ သင့် တစ်ခါကြည့် မီဒီယာကို တုံ့ပြန်ခဲ့ပါသည်";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
@@ -4217,7 +4217,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "သင်စာရင်းသွင်းရန်ကြိုးစားနေသည့် ဖုန်းနံပါတ်သည် အခြားဆာဗာတွင် စာရင်းသွင်းပြီး ဖြစ်ပါသည်။ ယင်းဆာဗာမှ ပြန်ထွက်၍ ထပ်မံကြိုးစားကြည့်ပါ။ ";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "စီမံသူအသစ် ရွေးပါ";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
@@ -4484,13 +4484,13 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "၎င်းစက်အတွက် အမည်ရွေးပါ";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "အမည် ရွေးပါ";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
@@ -4544,13 +4544,13 @@
 "SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "မီဒီယာကို ဖယ်ရှားမယ်";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "မီဒီယာစာကြည့်တိုက်သို့ ပြန်သွားမယ်";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "သူငယ်ချင်းကို မလုံခြုံသည့် SMS မှ ဖိတ်မလား?";
@@ -4562,10 +4562,10 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "စကားပြောဆိုမှု အချိန်ပိုင်း ပြန်စတင်သွားပါပြီ";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "ရုပ်ပုံများမှ ရွေးပါ";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "Presets";
@@ -4676,7 +4676,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "ဖုန်းခေါ်ဆိုမှုများ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "အသံမက်ဆေ့ချ်များ၊​ တစ်ခါကြည့် မီဒီယာများ နှင့် စတစ်ကာများသည် (100 ကီလိုဘိုက်အောက်) အမြဲ အလိုအလျောက် ဒေါင်းလုပ်ဆွဲပါမည်။";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
@@ -4790,13 +4790,13 @@
 "SETTINGS_NOTIFICATIONS" = "အသိပေးချက်များ";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "ဖွင့်မယ်";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ဖွင့်မယ်";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -4805,7 +4805,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ငွေဖြည့်ရန် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာသို့ MobileCoin ပို့ပါ။ သင့် အကောင့်မှ MobileCoin ပံ့ပိုးသော လွှဲပြောင်းမှုနှင့် ငွေပေးငွေယူမှုတစ်ကြောင်းလုပ်ဆောင်ပါ၊ ပြီးလျှင် QR ကုဒ်စကင်ဖတ်ပါ သို့မဟုတ် သင့် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာ ကော်ပီကူးပါ။";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
@@ -4817,7 +4817,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal ထဲတွင် ငွေပေးချေမှုများ မလုပ်ဆောင်နိုင်တော့ပါ။ ငွေလဲလှယ်မှုတစ်ခုသို့ ငွေများလွှဲနိုင်ပါသည်၊ သို့သော် သင်မှ ငွေပေးချေမှုများ ပေးပို့လက်ခံလို့မရတော့ပါ၊​ ငွေလည်း ထည့်ပေါင်းလို့မရတော့ပါ။";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
@@ -4826,22 +4826,22 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal ထဲတွင် ငွေပေးချေမှုများ မလုပ်ဆောင်နိုင်တော့ပါ။ ငွေလဲလှယ်မှုတစ်ခုသို့ ငွေများလွှဲနိုင်ပါသည်၊ သို့သော် သင်မှ ငွေပေးချေမှုများ ပေးပို့လက်ခံလို့မရတော့ပါ၊​ ငွေလည်း ထည့်ပေါင်းလို့မရတော့ပါ။";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal ထဲတွင် ငွေပေးချေမှုများ မလုပ်ဆောင်နိုင်တော့ပါ။ ငွေလဲလှယ်မှုတစ်ခုသို့ ငွေများလွှဲနိုင်ပါသည်၊ သို့သော် သင်မှ ငွေပေးချေမှုများ ပေးပို့လက်ခံလို့မရတော့ပါ၊​ ငွေလည်း ထည့်ပေါင်းလို့မရတော့ပါ။";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "ငွေပြောင်းလဲခြင်းများသည် ခန့်မှန်းတွက်ချက်မှုများသာ ဖြစ်ပြီး မတိကျနိုင်ပါ။";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "ငွေကြေးများ အားလုံး";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "ပိတ်မယ်";
 
 /* Label for 'deactivate payments' button in the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
@@ -4850,7 +4850,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ငွေပေးချေမှုများကို ပိတ်မည်လား?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
@@ -4859,7 +4859,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "သင်မှ ငွေပေးချေမှုများကို ပြန်ဖွင့်ခဲ့လျှင် သင့် လက်ကျန်ငွေသည် Signal နှင့် ချိတ်ထားသော သင့်ပိုက်ဆံအိတ် wallet ထဲတွင် ကျန်ရှိနေပါမည်။";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
@@ -4871,46 +4871,46 @@
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
 
 /* Label for the 'payments details' view of the app settings. */
-"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Details";
+"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "အသေးစိတ်အချက်အလက်များ";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin သည် ပုဂ္ဂိုလ်လုံခြုံရေးကို အလေးထားသော ဒစ်ဂျစ်တယ်ငွေကြေးအသစ် ဖြစ်ပါသည်။";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin အကြောင်း";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "သင့် ပိုက်ဆံအိတ် wallet လိပ်စာသို့ MobileCoin ပို့၍ Signal တွင် သုံးရန် ငွေဖြည့်နိုင်ပါသည်။";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "မည်သည့်အချိတ်မဆို MobileCoin ပံ့ပိုးသော ငွေလဲလှယ်သည့်နေရာတွင် MobileCoin ငွေထုတ်ယူလို့ရပါသည်။ ၎င်းငွေလဲလှယ်သည့်နေရာတွင် သင့်အကောင့်သို့ လွှဲလိုက်ပါ။";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ငွေထုတ်ယူခြင်း";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN နံပါတ်ကိုအသစ်ပြောင်းပါ";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "လက်ကျန်ငွေများလျှင် သင့်အကောင့်ကို ပိုမိုလုံခြုံမှုရှိစေရန် အက္ခရာနံပါတ်ပါသော ပင်နံပါတ်ဖြင့် သင့်အကောင့်ကို ကာကွယ်နိုင်ပါသည်။";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "သင့် ပင်နံပါတ်ကို အပ်ဒိတ်ပြုလုပ်မယ်";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "ပြန်လည်ရယူရန် စာပုဒ်တိုသည် သင့် ငွေပေးချေမှုအကောင့်ကို ပြန်လည်ရယူရန် နည်းတစ်နည်းဖြစ်ပါသည်။";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို မှတ်ထားပါ";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
@@ -4925,13 +4925,13 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "ငွေပေးချေမှုများ ဖွင့်မယ်";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signal သုံး၍ MobileCoin ပေးပို့လက်ခံလိုက်ပါ၊​ ၎င်းသည် ပုဂ္ဂိုလုံခြုံရေး အလေးထားသော ဒစ်ဂျစ်တယ်ငွေကြေး ဖြစ်ပါသည်။ ဖွင့်၍ စတင်သုံးလိုက်ပါ။";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
@@ -4976,10 +4976,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "အခြေအနေ";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ငွေပေးချေမှု ငွေပမာဏ နှင့် လုပ်ဆောင်သည့်အချိန် အပါအဝင် ငွေပေးငွေယူသည့် အသေးစိတ်အချက်အလက်များသည်  MobileCoin စာအုပ်စာရင်း၏ အစိတ်အပိုင်းတစ်ခု ဖြစ်ပါသည်။";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "ငွေပေးချေမှု လုပ်ဆောင်ရန် သင့်လက်ထဲတွင်ရှိသော အကြွေစေ့များကိုပေါင်းစပ်သော်လည်း မလုံလောက်မှုဖြစ်ခဲ့လျှင် \"အကြွေစေ့ရှင်းရေးအခကြေး\" ကို ကိုက်ခံယူပါမည်။ ရှင်းခြင်းဖြင့် ငွေပေးချေမှုများ ဆက်လက် ပေးပို့နိုင်ပါမည်။";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
@@ -4994,7 +4994,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ငွေပေးချေမှုများ ပိတ်ပြီး";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "တက်ရောက်သူအားလုံး";
@@ -5009,7 +5009,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "သင့် ပင်နံပါတ်ကို မပိတ်မီ သင်ငွေပေးချေမှုလုပ်သည့် အကောင့်ကို ပြန်ရယူရန် သင်ငွေပေးချေမှု ပြန်လည်တင်သည့် စာတိုကို မှတ်ထားရပါမည်။";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
@@ -5033,7 +5033,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "ငွေပေးချေမှု အကောင့်ကို ပြန်ရယူနိုင်ခဲ့ပါသည်။";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
@@ -5048,10 +5048,10 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "ကလစ်ဘုတ်ပေါ်မှ ကူးရေးမယ်";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "ပြန်လည်ရယူရန် စာတို";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5081,7 +5081,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "အကြုံးမဝင်သော လိပ်စာ";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
@@ -5093,7 +5093,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "လက်ခံသူ ရွေးပါ";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
@@ -5102,13 +5102,13 @@
 "SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "အားလုံးကြည့်ရှုမယ်";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "ငွေပေးချေမှုများ";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "သင်မှ MobileCoin လွှဲရန် ငွေလဲလှယ်မှုတစ်ခုမှ ပေးသော ပိုက်ဆံအိတ် wallet လိပ်စာသို့ လွှဲပြောင်းမှုတစ်ခု ပြီးစီးစေလိုပါသည်။ ပိုက်ဆံအိတ် wallet လိပ်စာသည် QR ကုဒ်အောက်တွင် ပုံမှန်အားဖြင့်တွေ့နိုင်သော နံပါတ်များနှင့် အက္ခရာများဖြစ်ပါသည်။";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
@@ -5117,7 +5117,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "သို့ - စကင်ဖတ် သို့မဟုတ် ပိုက်ဆံအိတ် wallet လိပ်စာ ရိုက်ထည့်ပါ";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
@@ -5150,13 +5150,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "ကလစ်ဘုတ်ပေါ်သို့ ကူးယူမယ်";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "ဒီဂျစ်တယ်စနစ်ဖြင့် သင့် ပြန်လည်ရယူ စာပုဒ်တိုကို သိမ်းဆည်းမည်ဆိုလျှင် သင်ယုံကြည်ပြီး လုံခြုံသောတစ်နေရာတွင် သိမ်းထားရန် စေလိုပါသည်။";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "ကလစ်ဘုတ်ပေါ်သို့ ကူးယူမည်လား?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
@@ -5171,16 +5171,16 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "စကင်ရှော့မရိုက်ပါနှင့် သို့မဟုတ် အီးမေးလ် မပို့ပါနှင့်။";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "ငွေပေးချေမှုများ (စမ်းသပ်သည့် Beta ဗားရှင်း)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာ";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
@@ -5705,7 +5705,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "iOS ကို မြှင့်ပါ";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Signal ပေါ်တွင် သုံးသူအမည်များ ဖြည့်စရာမလိုပါ။ သုံးသူအမည် သင်ဖြည့်ခဲ့လျှင် အခြား Signal သုံးသူများသည် သင့်အား ၎င်းအမည်သုံး၍ ရှာဖွေနိုင်ပါသည် သို့မဟုတ် သင့် ဖုန်းနံပါတ် မသိရှိဘဲ သင့်ကို ဆက်သွယ်နိုင်ပါသည်။";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
@@ -5777,7 +5777,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "မက်ဆေ့ ဖတ်ကြည့်ရှုပြီး ဖျောက်ကွယ်ရန် ဤနေရာနှိပ်ပါ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "အထွက် တစ်ခါသုံး မီဒီယာဖိုင်များသည် ပေးပို့ပြီးခဲ့လျှင် အလိုအလျောက် ဖယ်ရှားဖြစ်ပါမည်။";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "မလုပ်တော့ဘူးဆိုရင် ဘေးကို ဆွဲပါ";
