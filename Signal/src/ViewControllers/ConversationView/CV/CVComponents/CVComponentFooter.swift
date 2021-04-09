@@ -356,7 +356,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public class CVComponentViewFooter: NSObject, CVComponentView {
 
         fileprivate let outerStack = ManualStackView(name: "footer.outerStack")
-        fileprivate let innerStack = ManualStackView(name: "footer.innerStack")
+        fileprivate let innerStack = ManualStackViewWithLayer(name: "footer.innerStack")
         fileprivate let tapForMoreLabel = UILabel()
         fileprivate let timestampLabel = UILabel()
         fileprivate let statusIndicatorImageView = UIImageView()

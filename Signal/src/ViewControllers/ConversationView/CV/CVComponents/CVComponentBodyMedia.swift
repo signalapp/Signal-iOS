@@ -65,7 +65,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let conversationStyle = self.conversationStyle
 
-        // TODO:
         let albumView = componentView.albumView
         albumView.configure(mediaCache: self.mediaCache,
                             items: self.items,

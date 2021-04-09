@@ -4,6 +4,22 @@
 
 import Foundation
 
+// ManualStackView (like ManualLayoutView) uses a CATransformLayer
+// by default.  CATransformLayer does not render.
+//
+// If you need to use properties like backgroundColor, border,
+// masksToBounds, shadow, etc. you should use this subclass instead.
+//
+// See: https://developer.apple.com/documentation/quartzcore/catransformlayer
+@objc
+open class ManualStackViewWithLayer: ManualStackView {
+    override open class var layerClass: AnyClass {
+        CALayer.self
+    }
+}
+
+// MARK: -
+
 @objc
 open class ManualStackView: ManualLayoutView {
 

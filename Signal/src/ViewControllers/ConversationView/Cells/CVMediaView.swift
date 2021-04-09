@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class CVMediaView: ManualLayoutView {
+public class CVMediaView: ManualLayoutViewWithLayer {
 
     private enum MediaError {
         case missing

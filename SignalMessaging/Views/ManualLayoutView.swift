@@ -4,6 +4,22 @@
 
 import Foundation
 
+// ManualLayoutView uses a CATransformLayer by default.
+// CATransformLayer does not render.
+//
+// If you need to use properties like backgroundColor, border,
+// masksToBounds, shadow, etc. you should use this subclass instead.
+//
+// See: https://developer.apple.com/documentation/quartzcore/catransformlayer
+@objc
+open class ManualLayoutViewWithLayer: ManualLayoutView {
+    override open class var layerClass: AnyClass {
+        CALayer.self
+    }
+}
+
+// MARK: -
+
 @objc
 open class ManualLayoutView: UIView {
 
@@ -12,6 +28,10 @@ open class ManualLayoutView: UIView {
     private var layoutBlocks = [LayoutBlock]()
 
     public var name: String { accessibilityLabel ?? "Unknown" }
+
+    override open class var layerClass: AnyClass {
+        CATransformLayer.self
+    }
 
     @objc
     public required init(name: String) {
@@ -34,7 +54,7 @@ open class ManualLayoutView: UIView {
 
     @objc
     public static func circleView(name: String) -> ManualLayoutView {
-        let result = ManualLayoutView(name: name)
+        let result = ManualLayoutViewWithLayer(name: name)
         result.addLayoutBlock { view in
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
@@ -43,7 +63,7 @@ open class ManualLayoutView: UIView {
 
     @objc
     public static func pillView(name: String) -> ManualLayoutView {
-        let result = ManualLayoutView(name: name)
+        let result = ManualLayoutViewWithLayer(name: name)
         result.addLayoutBlock { view in
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
