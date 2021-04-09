@@ -154,10 +154,10 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_AnimatedWebp = true
 
     @objc
-    public static let paymentsInternalBeta = build.includes(.beta)
+    public static let paymentsInternalBeta = false
 
     @objc
-    public static let paymentsExternalBeta = false
+    public static let paymentsExternalBeta = build.includes(.beta)
 
     @objc
     public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
