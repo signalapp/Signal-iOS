@@ -376,43 +376,69 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {
+        func confirmDownload() {
+            let modal = DownloadAttachmentModal(viewItem: viewItem)
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        }
         if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
             // Show the failed message sheet
             showFailedMessageSheet(for: message)
         } else {
             switch viewItem.messageCellType {
-            case .audio: playOrPauseAudio(for: viewItem)
+            case .audio:
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
+                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    confirmDownload()
+                } else {
+                    playOrPauseAudio(for: viewItem)
+                }
             case .mediaMessage:
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
-                    let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell, let albumView = cell.albumView else { return }
-                let locationInCell = gestureRecognizer.location(in: cell)
-                // Figure out whether the "read more" button was tapped
-                if let overlayView = cell.mediaTextOverlayView {
-                    let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
-                    if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
-                        return showFullText(viewItem) // HACK: This is a dirty way to do this
+                    let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
+                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    confirmDownload()
+                } else {
+                    guard let albumView = cell.albumView else { return }
+                    let locationInCell = gestureRecognizer.location(in: cell)
+                    // Figure out whether the "read more" button was tapped
+                    if let overlayView = cell.mediaTextOverlayView {
+                        let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
+                        if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
+                            return showFullText(viewItem) // HACK: This is a dirty way to do this
+                        }
                     }
-                }
-                // Otherwise, figure out which of the media views was tapped
-                let locationInAlbumView = cell.convert(locationInCell, to: albumView)
-                guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
-                if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
-                    // TODO: Tapped a failed incoming attachment
-                }
-                let attachment = mediaView.attachment
-                if let pointer = attachment as? TSAttachmentPointer {
-                    if pointer.state == .failed {
+                    // Otherwise, figure out which of the media views was tapped
+                    let locationInAlbumView = cell.convert(locationInCell, to: albumView)
+                    guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
+                    if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
                         // TODO: Tapped a failed incoming attachment
                     }
+                    let attachment = mediaView.attachment
+                    if let pointer = attachment as? TSAttachmentPointer {
+                        if pointer.state == .failed {
+                            // TODO: Tapped a failed incoming attachment
+                        }
+                    }
+                    guard let stream = attachment as? TSAttachmentStream else { return }
+                    let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
+                    gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
                 }
-                guard let stream = attachment as? TSAttachmentStream else { return }
-                let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
-                gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
             case .genericAttachment:
-                // Open the document if possible
-                guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
-                let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
-                navigationController!.present(shareVC, animated: true, completion: nil)
+                if viewItem.interaction is TSIncomingMessage,
+                    let thread = self.thread as? TSContactThread,
+                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    confirmDownload()
+                } else {
+                    // Open the document if possible
+                    guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
+                    let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
+                    navigationController!.present(shareVC, animated: true, completion: nil)
+                }
             case .textOnlyMessage:
                 if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
                     // Open the link preview URL

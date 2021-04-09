@@ -294,6 +294,8 @@
 		B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */; };
 		B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */; };
 		B8F5F61B25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F61A25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift */; };
+		B8F5F71A25F1B35C003BF8D4 /* MediaPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */; };
+		B8F5F72325F1B4CA003BF8D4 /* DownloadAttachmentModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */; };
 		B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		B8FF8E6225C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */; };
@@ -1303,6 +1305,8 @@
 		B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Subscripting.swift"; sourceTree = "<group>"; };
 		B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotification.swift; sourceTree = "<group>"; };
 		B8F5F61A25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotificationInfoMessage.swift; sourceTree = "<group>"; };
+		B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlaceholderView.swift; sourceTree = "<group>"; };
+		B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadAttachmentModal.swift; sourceTree = "<group>"; };
 		B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Blocks-IPv4"; path = "Countries/GeoLite2-Country-Blocks-IPv4"; sourceTree = "<group>"; };
 		B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Locations-English"; path = "Countries/GeoLite2-Country-Locations-English"; sourceTree = "<group>"; };
 		B8FF8EA525C11FEF004D1F22 /* IPv4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPv4.swift; sourceTree = "<group>"; };
@@ -2186,6 +2190,7 @@
 				B8569AD225CBA13D00DBA3DB /* MediaTextOverlayView.swift */,
 				3488F9352191CC4000E524CC /* MediaView.swift */,
 				B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */,
+				B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */,
 				C328251E25CA3A900062D0A7 /* QuoteView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				C328250E25CA06020062D0A7 /* VoiceMessageView.swift */,
@@ -2213,6 +2218,7 @@
 			isa = PBXGroup;
 			children = (
 				B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */,
+				B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */,
 				C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */,
 				B821494525D4D6FF009C0F2A /* URLModal.swift */,
 				B821494E25D4E163009C0F2A /* BodyTextView.swift */,
@@ -4996,6 +5002,7 @@
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				C331FFFE2558FF3B00070591 /* ConversationCell.swift in Sources */,
+				B8F5F72325F1B4CA003BF8D4 /* DownloadAttachmentModal.swift in Sources */,
 				C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */,
 				C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */,
 				B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */,
@@ -5013,6 +5020,7 @@
 				C328254925CA60E60062D0A7 /* ContextMenuVC+Action.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
+				B8F5F71A25F1B35C003BF8D4 /* MediaPlaceholderView.swift in Sources */,
 				341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				C331FFF32558FF0300070591 /* PathStatusView.swift in Sources */,
@@ -5233,7 +5241,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5254,7 +5262,7 @@
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5302,7 +5310,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5328,7 +5336,7 @@
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5363,7 +5371,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5382,7 +5390,7 @@
 				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -5433,7 +5441,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5457,7 +5465,7 @@
 				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -6318,7 +6326,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6354,7 +6362,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
@@ -6386,7 +6394,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 211;
+				CURRENT_PROJECT_VERSION = 214;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6422,7 +6430,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.9.4;
+				MARKETING_VERSION = 1.9.5;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
 				PRODUCT_NAME = Session;

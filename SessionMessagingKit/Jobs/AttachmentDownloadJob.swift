@@ -5,9 +5,11 @@ import SignalCoreKit
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let attachmentID: String
     public let tsMessageID: String
+    public let threadID: String
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
+    public var isDeferred = false
 
     public enum Error : LocalizedError {
         case noAttachment
@@ -26,31 +28,38 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
-    public init(attachmentID: String, tsMessageID: String) {
+    public init(attachmentID: String, tsMessageID: String, threadID: String) {
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
+        self.threadID = threadID
     }
 
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
             let tsMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
+            let threadID = coder.decodeObject(forKey: "threadID") as! String?,
             let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.tsMessageID = tsMessageID
+        self.threadID = threadID
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
+        self.isDeferred = coder.decodeBool(forKey: "isDeferred")
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
         coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
+        coder.encode(threadID, forKey: "threadID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
+        coder.encode(isDeferred, forKey: "isDeferred")
     }
 
     // MARK: Running
     public func execute() {
+        guard !isDeferred else { return }
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
             // from time to time with an already downloaded attachment.
@@ -99,9 +108,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     return handleFailure(error)
                 }
                 OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write { transaction in
+                storage.write(with: { transaction in
                     storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }
+                }, completion: {
+                    self.handleSuccess()
+                })
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
@@ -129,9 +140,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     return handleFailure(error)
                 }
                 OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write { transaction in
+                storage.write(with: { transaction in
                     storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }
+                }, completion: {
+                    self.handleSuccess()
+                })
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
