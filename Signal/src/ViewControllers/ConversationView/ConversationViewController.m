@@ -3324,10 +3324,35 @@ typedef enum : NSUInteger {
         // If this assert fails, *great* maybe we can get rid of this delay.
         OWSAssertDebug(![self.searchController.uiSearchController.searchBar canBecomeFirstResponder]);
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.searchController.uiSearchController.searchBar becomeFirstResponder];
-        });
+        // We wait N seconds for it to become ready.
+        CGFloat initialDelay = 0.4;
+        [self performSelector:@selector(tryToBecomeFirstResponderForSearchWithCumulativeDelay:)
+                   withObject:@(initialDelay)
+                   afterDelay:initialDelay];
     }];
+}
+
+- (void)tryToBecomeFirstResponderForSearchWithCumulativeDelay:(NSNumber *)cumulativeDelay
+{
+    // If this took more than N seconds, assume we're not going
+    // to be able to present search and bail.
+    if (cumulativeDelay.floatValue >= 1.5) {
+        OWSFailDebug(@"Giving up presenting search after excessive retry attempts.");
+        self.uiMode = ConversationUIMode_Normal;
+        return;
+    }
+
+    // Sometimes it takes longer, so we'll keep retrying..
+    if (![self.searchController.uiSearchController.searchBar canBecomeFirstResponder]) {
+        CGFloat additionalDelay = 0.05;
+        [self performSelector:@selector(tryToBecomeFirstResponderForSearchWithCumulativeDelay:)
+                   withObject:@(cumulativeDelay.floatValue + additionalDelay)
+                   afterDelay:additionalDelay];
+        return;
+    }
+
+    OWSLogDebug(@"Search controller became ready after %@ seconds", cumulativeDelay);
+    [self.searchController.uiSearchController.searchBar becomeFirstResponder];
 }
 
 #pragma mark ConversationSearchControllerDelegate
