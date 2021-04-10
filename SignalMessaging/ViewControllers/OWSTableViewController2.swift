@@ -219,7 +219,7 @@ open class OWSTableViewController2: OWSViewController {
             self.title = title
         }
 
-        tableView.reloadData()
+        if shouldReload { tableView.reloadData() }
     }
 
     public static func buildTopHeader(forView wrappedView: UIView,

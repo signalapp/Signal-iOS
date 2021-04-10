@@ -711,8 +711,7 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreGroups {
-            let offset = canEditConversationMembership ? 1 : 0
-            let expandedMemberIndices = ((groupThreadsToRender.count + 1)..<(mutualGroupThreads.count + 1)).map {
+            let expandedGroupIndices = ((groupThreadsToRender.count + 1)..<(mutualGroupThreads.count + 1)).map {
                 IndexPath(row: $0, section: sectionIndex)
             }
 
@@ -749,7 +748,7 @@ extension ConversationSettingsViewController {
                     return cell
                 },
                 actionBlock: { [weak self] in
-                    self?.showAllMutualGroups(revealingIndices: expandedMemberIndices)
+                    self?.showAllMutualGroups(revealingIndices: expandedGroupIndices)
                 }
             ))
         }

@@ -421,10 +421,10 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             tableView.beginUpdates()
 
             // Delete the "See All" row.
-            tableView.deleteRows(at: [IndexPath(row: firstIndex.row, section: firstIndex.section)], with: .bottom)
+            tableView.deleteRows(at: [IndexPath(row: firstIndex.row, section: firstIndex.section)], with: .top)
 
             // Insert the new rows.
-            tableView.insertRows(at: revealingIndices, with: .bottom)
+            tableView.insertRows(at: revealingIndices, with: .top)
 
             updateTableContents(shouldReload: false)
             tableView.endUpdates()
