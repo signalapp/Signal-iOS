@@ -256,7 +256,7 @@ extension SharingThreadPickerViewController {
         let progressFormat = NSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
-        var seenAttachmentIds = Set<String>()
+        var progressPerAttachment = [String: Float]()
         let observer = NotificationCenter.default.addObserver(
             forName: .attachmentUploadProgress,
             object: nil,
@@ -265,6 +265,11 @@ extension SharingThreadPickerViewController {
             // We can safely show the progress for just the first message,
             // all the messages share the same attachment upload progress.
             guard let attachmentIds = self.outgoingMessages.first?.attachmentIds else { return }
+
+            // Populate the initial progress for all attachments at 0
+            if progressPerAttachment.isEmpty {
+                progressPerAttachment = Dictionary(uniqueKeysWithValues: attachmentIds.map { ($0, 0) })
+            }
 
             guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
                 owsFailDebug("Missing notificationAttachmentId.")
@@ -277,17 +282,22 @@ extension SharingThreadPickerViewController {
 
             guard attachmentIds.contains(notificationAttachmentId) else { return }
 
-            seenAttachmentIds.insert(notificationAttachmentId)
+            progressPerAttachment[notificationAttachmentId] = progress.floatValue
 
-            // Attachments upload one at a time, so we can infer that
-            // the number of attachments we've seen progress updates
-            // for is which attachment we're uploading.
+            // Attachments can upload in parallel, so we show the progress
+            // of the average of all the individual attachment's progress.
+            progressView.progress = progressPerAttachment.values.reduce(0, +) / Float(attachmentIds.count)
+
+            // In order to indicate approximately how many attachments remain
+            // to upload, we look at the number that have had their progress
+            // reach 100%.
+            let totalCompleted = progressPerAttachment.values.filter { $0 == 1 }.count
+
             progressLabel.text = String(
                 format: progressFormat,
-                OWSFormat.formatInt(seenAttachmentIds.count),
+                OWSFormat.formatInt(min(totalCompleted + 1, attachmentIds.count)),
                 OWSFormat.formatInt(attachmentIds.count)
             )
-            progressView.progress = progress.floatValue
         }
 
         return { completion in
