@@ -408,14 +408,22 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     func showAllGroupMembers(revealingIndices: [IndexPath]? = nil) {
         isShowingAllGroupMembers = true
+        updateForSeeAll(revealingIndices: revealingIndices)
+    }
 
+    func showAllMutualGroups(revealingIndices: [IndexPath]? = nil) {
+        isShowingAllMutualGroups = true
+        updateForSeeAll(revealingIndices: revealingIndices)
+    }
+
+    func updateForSeeAll(revealingIndices: [IndexPath]? = nil) {
         if let revealingIndices = revealingIndices, !revealingIndices.isEmpty, let firstIndex = revealingIndices.first {
             tableView.beginUpdates()
 
             // Delete the "See All" row.
             tableView.deleteRows(at: [IndexPath(row: firstIndex.row, section: firstIndex.section)], with: .bottom)
 
-            // Insert the new member rows.
+            // Insert the new rows.
             tableView.insertRows(at: revealingIndices, with: .bottom)
 
             updateTableContents(shouldReload: false)
@@ -423,12 +431,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         } else {
             updateTableContents()
         }
-    }
-
-    func showAllMutualGroups() {
-        // TODO: Animate
-        isShowingAllMutualGroups = true
-        updateTableContents()
     }
 
     func showGroupAttributesView(editAction: GroupAttributesViewController.EditAction) {

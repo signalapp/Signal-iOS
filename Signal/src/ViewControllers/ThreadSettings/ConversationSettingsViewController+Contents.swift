@@ -81,8 +81,8 @@ extension ConversationSettingsViewController {
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
             }
-        } else if isContactThread, hasGroupThreads {
-            contents.addSection(buildMutualGroupsSection())
+        } else if isContactThread, hasGroupThreads, !isNoteToSelf {
+            contents.addSection(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
 
         if !isNoteToSelf {
@@ -628,7 +628,7 @@ extension ConversationSettingsViewController {
         contents.addSection(section)
     }
 
-    private func buildMutualGroupsSection() -> OWSTableSection {
+    private func buildMutualGroupsSection(sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
         section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
 
@@ -711,6 +711,11 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreGroups {
+            let offset = canEditConversationMembership ? 1 : 0
+            let expandedMemberIndices = ((groupThreadsToRender.count + 1)..<(mutualGroupThreads.count + 1)).map {
+                IndexPath(row: $0, section: sectionIndex)
+            }
+
             section.add(OWSTableItem(
                 customCellBlock: { [weak self] in
                     guard let self = self else {
@@ -744,7 +749,7 @@ extension ConversationSettingsViewController {
                     return cell
                 },
                 actionBlock: { [weak self] in
-                    self?.showAllMutualGroups()
+                    self?.showAllMutualGroups(revealingIndices: expandedMemberIndices)
                 }
             ))
         }
