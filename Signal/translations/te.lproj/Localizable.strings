@@ -85,23 +85,26 @@
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "సమూహంకి కలపండి";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "ఈ గుంపుకు %@ ను జోడించాలా?";
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@ కు జోడించండి";
+/* The title on the 'add to group' confirmation action sheet. */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "క్రొత్త సభ్యుడిని జోడించండి";
+
+/* Text indicating your contact is already a member of the group on the 'add to group' view. */
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ఇప్పటికే %@ లో సభ్యుడు";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "ఇటీవలి";
+"ADD_TO_GROUP_RECENTS_TITLE" = "ఇటీవలి మాటామంతీ";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ను %@ కి చేర్చారు";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "మరొక సమూహానికి జోడించండి";
+"ADD_TO_GROUP_TITLE" = "Add to a Group";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "మీరు మీ ప్రొఫైల్‌ను ఈ వినియోగదారుతో భాగస్వామ్యం చేయాలనుకుంటున్నారా?";
@@ -817,6 +820,9 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "సమూహం పేరు, ఫోటో మరియు కనుమరుగవుతున్న సందేశాల టైమర్‌ను ఎవరు సవరించవచ్చో ఎంచుకోండి.";
 
+/* Button to start a audio call */
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "మీరు ఇకపై ఈ వినియోగదారు నుండి సందేశాలు లేదా నవీకరణలను స్వీకరించరు.";
 
@@ -836,28 +842,19 @@
 "CONVERSATION_SETTINGS_EDIT" = "సరిచేయు";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "సమూహ వివరణను ఎవరు సవరించగలరు";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "నిర్వాహకులు మాత్రమే";
-
-/* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "సమూహం పేరు, ఫోటో మరియు కనుమరుగవుతున్న సందేశాలను ఎవరు మార్చవచ్చో ఎంచుకోండి:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "సభ్యులందరు";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ఎవరు సభ్యులను చేర్చగలరు";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "సభ్యులను జోడించండి";
 
-/* Label for button that sets 'group membership access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "నిర్వాహకులు మాత్రమే";
-
-/* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "ఈ గుంపుకు సభ్యులను ఎవరు జోడించవచ్చో ఎంచుకోండి:";
-
-/* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "సభ్యులందరు";
+/* Description for the 'edit membership access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "సమూహ సభ్యత్వాన్ని ఎవరు సవరించవచ్చో ఎంచుకోండి.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "సమూహ లింక్";
@@ -869,10 +866,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ఈ సమూహాన్ని మరియు దాని సభ్యులను సవరించగలుగుతుంది.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "సభ్యుడు ఆహ్వానాలను";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "ఆహ్వానాలు";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "సభ్యుల అభ్యర్థనలు & ఆహ్వానాలు";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "అభ్యర్థనలు & ఆహ్వానాలు";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = " సభ్యులు";
@@ -898,6 +895,9 @@
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
 
+/* Button to mute the chat */
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
@@ -922,11 +922,26 @@
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
 
+/* Button to unmute the chat */
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "వరకు %@";
 
+/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "క్రొత్త పరిచయాన్ని సృష్టించండి";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+
+/* Label for 'permissions' action in conversation settings view. */
+"CONVERSATION_SETTINGS_PERMISSIONS" = "అనుమతులు";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "సమూహం నుండి తీసివేయండి";
@@ -940,8 +955,8 @@
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "సమూహ నిర్వాహకుడిగా %@ ను తొలగించాలా?";
 
-/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "మాటామంతీ వెతకండి";
+/* Button to search the chat */
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "సమూహాన్ని అన్‌బ్లాక్ చేయండి";
@@ -958,20 +973,14 @@
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "సేవ్ చేయని మార్పులు";
 
-/* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "అన్నింటిని చూడు";
+/* Button to start a video call */
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ఈ వినియోగదారు మీ పరిచయాలలో ఉన్నారు";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "వ్యక్తిత్వవర్ణనను భాగస్వామ్యం చేయండి";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "మీ రూపంను భాగస్వామ్యం చేయండి";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "మీ రూపంను భాగస్వామ్యం చేయండి";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "పరిచయాలకు జోడించు";
@@ -1392,9 +1401,6 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "అటాచ్మెంట్ డౌన్‌లోడ్ విఫలమైంది.";
-
-/* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "అటాచ్మెంట్ వైఫల్యం: Signal యొక్క తాజా సంస్కరణకు నవీకరించిన తర్వాత వారి సందేశాన్ని మళ్ళీ పంపమని ఈ పరిచయాన్ని అడగండి.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "నకిలీ సందేశం అందుకుంది.";
@@ -1879,14 +1885,8 @@
 /* Label for the 'enable group link' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "సమూహ లింక్";
 
-/* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "నిర్వహించండి మరియు భాగస్వామ్యం చేయండి";
-
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "సమూహ లింక్ ద్వారా చేరిన కొత్త సభ్యులను ఆమోదించడానికి నిర్వాహకుడు అవసరం";
-
-/* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "సభ్యుడు అభ్యర్థనలు";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "లింక్‌ను రీసెట్ చేయండి";
@@ -2150,13 +2150,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ అడ్మిన్ హక్కులను %2$@ నుండి ఉపసంహరించుకుంది.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "సభ్యుల అభ్యర్థనలు";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "అభ్యర్థనలు";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ఆహ్వానాలు పెండింగ్‌లో ఉన్నాయి";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ఆహ్వానాలు";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "సభ్యుల అభ్యర్థనలు & ఆహ్వానాలు";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "అభ్యర్థనలు & ఆహ్వానాలు";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "సమూహం నవీకరించబడింది";
@@ -3620,13 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "చెల్లని ఆహ్వానాలు";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "వేరే సమూహ సభ్యుల ఆహ్వానములు";
-
-/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "సభ్యుల అభ్యర్థనలు పెండింగ్‌లో ఉన్నాయి";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "మీరు ఆహ్వానించినవారు";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ఇన్‌కమింగ్ సందేశాన్ని నిర్వహించడంలో లోపం";
@@ -4522,6 +4519,9 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "సురక్షిత సెషన్ రీసెట్ చేయబడింది.";
 
+/* Label for the 'see all' button. */
+"SEE_ALL_BUTTON" = "అన్నింటిని చూడు";
+
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "ఇతర పరిచయాలు";
 
@@ -5098,9 +5098,6 @@
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
-/* Label for the 'show all payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "అన్నింటిని చూడు";
-
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "Payments";
 
@@ -5385,6 +5382,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal ను ఇన్‌స్టాల్ చేయడానికి నేను మిమ్మల్ని ఆహ్వానిస్తున్నాను! లింక్ ఇక్కడ ఉంది:";
+
+/* table cell label in conversation settings */
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ఏదీ కాదు";

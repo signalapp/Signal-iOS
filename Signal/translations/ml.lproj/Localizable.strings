@@ -85,23 +85,26 @@
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@-നെ ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@-ലേക്ക് ചേർക്കുക";
+/* The title on the 'add to group' confirmation action sheet. */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "പുതിയ അംഗത്തെ ചേർക്കുക";
+
+/* Text indicating your contact is already a member of the group on the 'add to group' view. */
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ഇതിനകം %@ അംഗമാണ്";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "സമീപകാലത്ത്";
+"ADD_TO_GROUP_RECENTS_TITLE" = "അടുത്തിടെയുള്ള ചാറ്റുകൾ";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@-നെ %@-ലേക്ക് ചേർത്തു";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "മറ്റൊരു ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
+"ADD_TO_GROUP_TITLE" = "Add to a Group";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "നിങ്ങളുടെ പ്രൊഫൈൽ ഈ ഉപയോക്താവുമായി പങ്കുവയ്ക്കാൻ നിങ്ങൾ ‌താത്‌പര്യപ്പെടുന്നോ?";
@@ -817,6 +820,9 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ആർക്കെല്ലാം ഗ്രൂപ്പിന്റെ പേര് , ഫോട്ടോ, അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ എന്നിവ മാറ്റാൻ കഴിയുക എന്ന് തിരഞ്ഞെടുക്കുക.";
 
+/* Button to start a audio call */
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല";
 
@@ -836,28 +842,19 @@
 "CONVERSATION_SETTINGS_EDIT" = "തിരുത്തുക";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ഗ്രൂപ്പ് വിവരം തിരുത്താനാകും?";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
-
-/* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "ആർക്കെല്ലാം ഗ്രൂപ്പിന്റെ പേര് , ഫോട്ടോ, അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ എന്നിവ മാറ്റാൻ കഴിയുക എന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ആർക്കാണ് അംഗങ്ങളെ ചേർക്കാൻ കഴിയുക";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "അംഗങ്ങളെ ചേർക്കുക";
 
-/* Label for button that sets 'group membership access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
-
-/* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "ഈ ഗ്രൂപ്പിലേക്ക് ആർക്കൊക്കെ അംഗങ്ങളെ ചേർക്കാൻ കഴിയുമെന്ന് തിരഞ്ഞെടുക്കുക:";
-
-/* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
+/* Description for the 'edit membership access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "ഗ്രൂപ്പ് അംഗത്വം ആർക്കൊക്കെ എഡിറ്റുചെയ്യാനാകുമെന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "ഗ്രൂപ്പ് ലിങ്ക്";
@@ -869,10 +866,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "ഈ ഗ്രൂപ്പിനെയും അതിന്റെ അംഗങ്ങളെയും എഡിറ്റുചെയ്യാൻ %@-ന് കഴിയും.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "അംഗ ക്ഷണങ്ങൾ";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "ക്ഷണങ്ങൾ ";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "അംഗ അഭ്യർത്ഥനകളും ക്ഷണങ്ങളും";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "അംഗങ്ങൾ";
@@ -898,6 +895,9 @@
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "എല്ലായ്പ്പോഴും";
 
+/* Button to mute the chat */
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
 
@@ -922,11 +922,26 @@
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "എല്ലായ്പ്പോഴും";
 
+/* Button to unmute the chat */
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ വരെ";
 
+/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "പുതിയ കോൺടാക്ട് സൃഷ്ടിക്കുക";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+
+/* Label for 'permissions' action in conversation settings view. */
+"CONVERSATION_SETTINGS_PERMISSIONS" = "അനുമതികൾ";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "ഗ്രൂപ്പിൽ നിന്ന് ഒഴിവാക്കുക";
@@ -940,8 +955,8 @@
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@നെ അഡ്മിൻ സ്ഥാനത്ത് നിന്ന് ഒഴിവാക്കണോ?";
 
-/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "ചാറ്റ് തിരയുക";
+/* Button to search the chat */
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ഗ്രൂപ്പിനെ അൺബ്ലോക്ക് ചെയ്യുക";
@@ -958,20 +973,14 @@
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "സംരക്ഷിക്കാത്ത മാറ്റങ്ങൾ";
 
-/* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "എല്ലാം കാണൂ";
+/* Button to start a video call */
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ഈ യൂസർ നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ഉണ്ട്";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "പ്രൊഫൈൽ പങ്കിടുക";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "നിങ്ങളുടെ പ്രൊഫൈൽ പങ്കിടുക";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "നിങ്ങളുടെ പ്രൊഫൈൽ പങ്കിടുക";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "കോൺടാക്ടുകളിലേക്ക് ചേർക്കുക";
@@ -1392,9 +1401,6 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "അറ്റാച്ച്‌മെൻ്റ് ഡൗൺലോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.";
-
-/* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "അറ്റാച്ച്മെൻ്റ് പരാജയം: ഈ കോൺടാക്ടിനോട് Signal ൻ്റെ ഏറ്റവും പുതിയ വെർഷൻ അപ്ഡേറ്റ് ചെയ്ത ശേഷം അവരുടെ സന്ദേശം വീണ്ടും അയക്കാൻ ആവശ്യപ്പെടുക.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ഒരു ഡ്യൂപ്ലിക്കേറ്റ് സന്ദേശം ലഭിച്ചിരിക്കുന്നു.";
@@ -1879,14 +1885,8 @@
 /* Label for the 'enable group link' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "ഗ്രൂപ്പ് ലിങ്ക്";
 
-/* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "ക്രമീകരണവും പങ്കുവെക്കലും";
-
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ഗ്രൂപ്പ് ലിങ്ക് വഴി ചേരുന്ന പുതിയ അംഗങ്ങളെ അംഗീകരിക്കുന്നതിന് ഒരു അഡ്മിൻ ആവശ്യമാണ്.";
-
-/* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "അംഗ അഭ്യർത്ഥനകൾ";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "ലിങ്ക് പുനഃസജ്ജമാക്കുക്ക";
@@ -2150,13 +2150,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@  %2$@ ൽ നിന്ന് അഡ്മിൻ അധികാരങ്ങൾ റദ്ദാക്കിയിരിക്കുന്നു.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "അംഗ അഭ്യർത്ഥനകൾ";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "അഭ്യർത്ഥനകൾ";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ശേഷിക്കുന്ന ക്ഷണങ്ങൾ";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ക്ഷണങ്ങൾ ";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "അംഗ അഭ്യർത്ഥനകളും ക്ഷണങ്ങളും";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
@@ -3620,13 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "അസാധുവായ ക്ഷണങ്ങൾ";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "മറ്റ് ഗ്രൂപ്പ് അംഗങ്ങളുടെ ക്ഷണങ്ങൾ";
-
-/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "ശേഷിക്കുന്ന അംഗ അഭ്യര്‍ത്ഥനകള്‍ ";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "നിങ്ങൾ ക്ഷണിച്ച ആളുകൾ";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "വരുന്ന സന്ദേശങ്ങൾ കൈകാര്യം ചെയ്യുന്നതിലുള്ള പിശക്";
@@ -4522,6 +4519,9 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "സുരക്ഷിതമായ സെഷൻ റീസെറ്റ് ആയിരിക്കുന്നു.";
 
+/* Label for the 'see all' button. */
+"SEE_ALL_BUTTON" = "എല്ലാം കാണൂ";
+
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "മറ്റ് കോൺടാക്ടുകൾ";
 
@@ -5098,9 +5098,6 @@
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
-/* Label for the 'show all payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "എല്ലാം കാണൂ";
-
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "Payments";
 
@@ -5385,6 +5382,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal ഇൻസ്റ്റാൾ ചെയ്യാൻ ഞാൻ നിങ്ങളെ ക്ഷണിക്കുന്നു! ലിങ്ക് ഇതാ ഇവിടെ:";
+
+/* table cell label in conversation settings */
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ഒന്നുമില്ല";

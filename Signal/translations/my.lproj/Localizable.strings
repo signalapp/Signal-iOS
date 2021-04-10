@@ -85,23 +85,26 @@
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "အုပ်စုထဲထည့်ရန်";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@ကိုဒီအုပ်စုထဲထည့်မလား?";
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
 
-/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@ထဲထည့်ရန်";
+/* The title on the 'add to group' confirmation action sheet. */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "အဖွဲ့ဝင်အသစ်ထည့်ရန်";
+
+/* Text indicating your contact is already a member of the group on the 'add to group' view. */
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@သည်%@အုပ်စုထဲကအဖွဲ့ဝင်ပါ";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "နောက်ဆုံး";
+"ADD_TO_GROUP_RECENTS_TITLE" = "မကြာသေးမီက ပြောဆိုထားသော စကားစမြည်";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ကို %@ အဖွဲ့ထဲသို့ ပေါင်းထည့်ခဲ့ပါသည်";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "အခြားအုပ်စုတစ်ခုသို့ထည့်ရန်";
+"ADD_TO_GROUP_TITLE" = "Add to a Group";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "သင့်ကိုယ်ရေးအချက်အလက်ကို ဤသူနှင့်မျှဝေချင်ပါသလား? ";
@@ -143,7 +146,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "မသိရှိသော ဒေတာဘေ့စ် ဗားရှင်း";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "သင့် စက်အဟောင်းမှ လွှဲပြောင်းထားသော ဒေတာများကို ပြန်မရယူနိုင်ပါ။ ကျွန်ုပ်တို့မှ ပြဿနာ ဖြေရှင်းပေးရန် support@signal.org သို့ ပျက်ကွက်မှု မှတ်တမ်းပေးပို့ပေးပါ။ သင်မှ Signal ကို ပြန်ထည့်သွင်းလျှင် သင့် မက်ဆေ့ချ်ရာဇဝင် ပျောက်သွားနိုင်ပါသည်။";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "လွှဲပြောင်းမှု မပြီးမြောက်နိုင်ပါ";
@@ -323,7 +326,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ပိတ်ပင်သည် ";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" အဖွဲ့ကို ပိတ်ပယ်ပြီး ၎င်းအဖွဲ့မှ ထွက်ခွာမည်လား?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
@@ -380,13 +383,13 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ကို ပိတ်ပင်ခြင်းဖြည်လိုက်ပြီ ";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "လက်ရှိ အဖွဲ့ဝင်များသည် သင့်ကို အဖွဲ့ထဲသို့ပြန် ထည့်နိုင်ပါပြီ။";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ပိတ်ပင်ထားသော သုံးသူများအနေဖြင့် သင့်အားစာပို့​ခြင်း၊ ဖုန်းခေါ်ခြင်းများ ​ပြုလုပ်၍မရပါ။";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "အသစ် - မျက်နှာများကို မှုန်စေပါ သို့မဟုတ် ကြိုက်သည့်နေရာတွင်ဆွဲ၍ မှုန်စေပါ";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ထည့်သည် ";
@@ -440,19 +443,19 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ဖုန်းခေါ်ခြင်း အဝင်ရှိသည်…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 အသံခေါ်ဆိုမှု လွဲခဲ့ပါသည်";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "iOS အပြင်အဆင် အပ္ပလီကေးရှင်းထဲတွင် မိုက်ကရိုဖုန်းသုံးခွင့် ပေး၍  Signal တွင် ဖုန်းခေါ်ဆိုခြင်းနှင့် အသံမက်ဆေ့ခ်ျများကို လုပ်ဆောင်နိုင်ပါသည်။";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "မိုက်ခရိုဖုန်းချိတ်ဆက်ရန်လိုအပ်သည် ";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ ခေါ်ဆိုသူ၏ လုံခြုံမှုနံပါတ်ပြောင်းလဲခဲ့၍ ဖုန်းခေါ်ဆိုမှု လွဲခဲ့ပါသည်";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "ဖုန်းခေါ်ဆိုမှုသို့ ပြန်သွားမယ်";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ဖြေဆိုမှု မရှိပါ";
@@ -473,7 +476,7 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 ဗီဒီယိုခေါ်ခြင်း အဝင်ရှိသည်…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 ဗီဒီယို ခေါ်ဆိုမှု လွဲခဲ့ပါသည်";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ဗီဒီယိုမပါပဲ လက်ခံမယ်";
@@ -494,7 +497,7 @@
 "CALL_VIEW_MUTE_LABEL" = "အသံတိတ်ထားမည်";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ သည် သင့်စီမှ မက်ဆေ့ချ်တောင်းဆိုမှု လက်ခံရရှိပါမည်။ သင့် မက်ဆေ့ချ်တောင်းဆိုမှုကို လက်ခံပြီးလျှင် သင် ခေါ်ဆိုနိုင်ပါသည်။";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ကင်မရာ၏ ဦးတည်ရာကို ပြောင်းလဲမည်";
@@ -695,7 +698,7 @@
 "CONTACT_SUPPORT" = "ပံ့ပိုးသောအဖွဲ့နှင့် ဆက်သွယ်မယ်";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "ကျွန်ုပ်သည် အင်္ဂါရပ်အသစ်ကို တောင်းဆိုချင်ပါသည်";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "အင်္ဂါရပ် တောင်းဆိုမှု";
@@ -791,7 +794,7 @@
 "CONVERSATION_SEARCH_ONE_RESULT" = "ကိုက်ညီမှု တစ်ခု";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d မှ %d ခု ကိုက်ညီမှုရှိပါသည်";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "စကားပြောဆိုမှု အပြင်အဆင်များ";
@@ -817,6 +820,9 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "အဖွဲ့ အမည်၊ ရုပ်ပုံ နှင့် မက်ဆေ့ချ်များ ပြန်ဖျောက်မည့် အချိန်ကာလ ကို မည်သူက ပြောင်းလဲနိုင်သည်ကို ရွေးပါ။";
 
+/* Button to start a audio call */
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "၎င်းသုံးသူမှ မက်ဆေ့ချ်များ သို့မဟုတ် အပ်ဒိတ်များ သင် မရရှိတော့ပါ။";
 
@@ -836,28 +842,19 @@
 "CONVERSATION_SETTINGS_EDIT" = "ပြင်ရန်";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "အဖွဲ့၏ အချက်အလက်ကို မည်သူ ပြောင်းလဲနိုင်မည်လဲ?";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "စီမံသူများသာ";
-
-/* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "အဖွဲ့ အမည်၊ ရုပ်ပုံ နှင့် မက်ဆေ့ချ်များ ပြန်ဖျောက်မည့် အချိန်ကာလ ကို မည်သူက ပြောင်းလဲနိုင်သည်ကို ရွေးပါ။";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များအားလုံး";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "မည်သူမှ​ အဖွဲ့ဝင်သစ်များ ပေါင်းထည့်နိုင်ပါသလဲ";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "အဖွဲ့ဝင်များထည့်ရန်";
 
-/* Label for button that sets 'group membership access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "စီမံသူများသာ";
-
-/* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "မည်သူမှ​ အဖွဲ့ဝင်သစ်များ ပေါင်းထည့်နိုင်မည်ကို ရွေးပါ -";
-
-/* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များအားလုံး";
+/* Description for the 'edit membership access'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Choose who can edit group membership.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "အဖွဲ့လင့်ခ်";
@@ -869,10 +866,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ သည် ဤအဖွဲ့အား ပြင်ဆင်နိုင်ပြီး အဖွဲ့ဝင်သစ်များ ပေါင်းထည့်နိုင်ပါမည်။";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "အဖွဲ့ဝင် ဖိတ်ခေါ်မှုများ";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "ဖိတ်ကြားချက်များ";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "အဖွဲ့ဝင် တောင်းဆိုမှုများ နှင့် ဖိတ်ခေါ်မှုများ";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "အဖွဲ့ဝင်များ";
@@ -898,6 +895,9 @@
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "အမြဲ";
 
+/* Button to mute the chat */
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "၈ နာရီ";
 
@@ -922,11 +922,26 @@
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "အမြဲ";
 
+/* Button to unmute the chat */
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@အထိ ";
 
+/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "လိပ်စာအသစ်ထည့်မည် ";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+
+/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+
+/* Label for 'permissions' action in conversation settings view. */
+"CONVERSATION_SETTINGS_PERMISSIONS" = "Permissions";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "အဖွဲ့မှ ဖယ်ရှားမယ်";
@@ -940,8 +955,8 @@
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ ကို စီမံသူအနေမှ ဖယ်ရှားမည်လား?";
 
-/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "စကားပြောဆိုမှုတွင် ရှာဖွေပါ";
+/* Button to search the chat */
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်ခြင်းမှ ဖြည်မယ်";
@@ -958,20 +973,14 @@
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "မသိမ်းရသေးသော ပြောင်းလဲမှုများ";
 
-/* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "အားလုံးကြည့်ရှုမယ်";
+/* Button to start a video call */
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ဤသုံးသူသည် သင့်အဆက်အသွယ်ထဲတွင် ရှိပါသည်";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "ကိုယ်ရေးအချက်အလက်ကိုမျှဝေသည် ";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "သင့်ကိုယ်ရေးအချက်အလက်ကိုမျှဝေသည် ";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "သင့်ကိုယ်ရေးအချက်အလက်ကိုမျှဝေသည် ";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "လိပ်စာစာရင်းထဲထည့်မည်";
@@ -1079,13 +1088,13 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "အကောင့်ဖျက်သိမ်းခြင်း မအောင်မြင်ပါ။​ ဝိုင်ဖိုင် သို့မဟုတ် မိုဘိုင်းဒေတာအားဖွင့်ထားခြင်း သေချာစေပါ၊ ထို့နောက် ပြန်စမ်းကြည့်ပါ။";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "၎င်းလုပ်ဆောင်ခြင်းသည် သင့် အကောင့်အချက်အလက်၊ ပရိုဖိုင်း၊ နှင့် သင့်မက်ဆေ့ချ်များအားလုံးကို ဖျက်သိမ်းသွားပါမည်။";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "အကောင့် ဖျက်သိမ်းနေသည်...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "အင်တာနက် ချိတ်ဆက်မှု မရှိပါ။ ဝိုင်ဖိုင် နှင့် မိုဘိုင်းလ်ဒေတာ များဖွင့်ထားစေပါ၊ ပြီးလျှင် ပြန်စမ်းပေးပါ။";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ဖုန်းနံပါတ်";
@@ -1286,7 +1295,7 @@
 "EDIT_ITEM_COPY_ACTION" = "ကူးသည် ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "ဟဲ!\n\nလတ်တလောတွင် ကျွန်ုပ်၏ iPhone ပေါ်ရှိ စကားပြောဆိုမှုများကို လုံခြုံစေရန် Signal ကို ကျွန်ုပ်သုံးနေပါသည်။ သင်လဲ ထည့်သွင်းစေချင်ပါတယ်၊ ဒါဆိုရင် အချင်းချင်းပြောဆိုမှုများနှင့် မက်ဆေ့ချ်များကို တို့တွေသာ ဖတ်နိုင်ရန် စိတ်ချရပါမည်။\n\niPhone နှင့် Android များအတွက် Signal ရရှိနိုင်ပါသည်။​ ၎င်းနေရာတွင် ရယူလိုက်ပါ - %@ \n\nSignal သည် သင် လက်ရှိသုံးနေသော မက်ဆေ့ချ်လုပ်သည့် အပ္ပလီကေးရှင်းနှင့် တူပါသည်။ ရုပ်ပုံ၊ ဗီဒီယို၊​ဖုန်းခေါ်ဆိုမှု၊​ အဖွဲ့လိုက် စကားပြောဆိုမှုများ လုပ်ဆောင်နိုင်ပါသည်။ အကောင်းဆုံးကတော့ တို့တွေရဲ့ပြောစကားတွေကို တို့တွေကိုယ်တိုင်ကလွဲပြီး Signal ဖန်တီးသူတွေအပါအဝင် တခြားဘယ်သူမှ ကြည့်လို့မရနိုင်တာပဲ။\n\nSignal ကိုဖန်တီးတဲ့သူတွေဖြစ်တဲ့ Open Whisper Systems အကြောင်းကို ဒီနေရာမှာ %@ ဖတ်ကြည့်နိုင်ပါတယ်။ ";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal ကိုပြောင်းသုံးကြပါစို့ ";
@@ -1358,7 +1367,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "မှတ်တမ်းများတင်ပို့ခြင်း မအောင်မြင်ပါ";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ဟောင်းနွမ်းနေသော ကြိုလုပ်ဆောင်သည့်ကီး ဒေတာ ကြောင့် ပို့ဆောင်၍ မရပါ။";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "သင်ဘလော့ထားသည့်အတွက် စာတိုပေးပို့နိုင်ခြင်းမရှိပါ။ ";
@@ -1392,9 +1401,6 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "ပူးတွဲဖိုင် ဒေါင်းလုပ်ဆွဲခြင်း မအောင်မြင်ပါ။";
-
-/* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "ပူးတွဲဖိုင် ပျက်ကွက်မှု - Signal ၏ နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်ပြုလုပ်ပြီးလျှင် ၎င်း အဆက်အသွယ်စီသို့ မက်ဆေ့ချ်ပြန်ပို့ပေးရန် တောင်းဆိုလိုက်ပါ။ ";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "မိတ္တူပွား မက်ဆေ့ချ် ရခဲ့ပါသည်။";
@@ -1529,13 +1535,13 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "အချက်အလက်သိမ်းဆည်းမှုကို ဆီလျော်အောင်လုပ်ဆောင်နေသည်";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "အဖွဲ့၏ အချက်အလက်များအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည်ကို \"%@\" သို့ သင် ပြောင်းလိုက်သည်။";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ သည် အဖွဲ့၏အချက်အလက်များအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည်ကို \"%2$@\" သို့ ပြောင်းထားသည်။";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "အဖွဲ့၏အချက်အလက်များအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည်ကို \"%@\" သို့ ပြောင်းလဲထားသည်။";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "စီမံသူများသာ";
@@ -1553,19 +1559,19 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "မလုပ်ဆောင်သော";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "အဖွဲ့ဝင်ဖြစ်မှုအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည် ကို \"%@\" သို့ သင် ပြောင်းလိုက်သည်။";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ သည် အဖွဲ့ဝင်ဖြစ်မှုအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည် ကို \"%2$@\" သို့ ပြောင်းလိုက်သည်။";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "အဖွဲ့၏အချက်အလက်များအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည်ကို \"%@\" သို့ ပြောင်းလဲထားသည်။";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "စီမံသူများသာ ၎င်းရွေးချယ်မှုကို ပြောင်းနိုင်ပါသည်။";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "သင်သည် သူတို့၏ အသံ သို့မဟုတ် ဗီဒီယိုများကို လက်ခံရရှိလိမ့်မည် မဟုတ်ပါ၊ ၎င်းတို့လည်း သင်၏ ဖိုင်များကို မလက်ခံရရှိပါ။";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ အား ပိတ်ပင်ထားပါသည်";
@@ -1574,43 +1580,43 @@
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ အား ပိတ်ပင်ထားပါသည်";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "ခေါ်ဆိုမှုသို့ ဆက်မယ်";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "အဖွဲ့လိုက် ခေါ်ဆိုမှု ရပ်သွားပါပြီ";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "နောက်ထပ် အချက်အလက်များ";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "၎င်းခေါ်ဆိုမှုအတွက် အများဆုံးရှိနိုင်သော လူဦး အရေအတွက် (%ld ဦး) ပြည့်သွားပါပြီ။ နောက်မှပြန်စမ်းကြည့်ပေးပါ။";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "၎င်းခေါ်ဆိုမှုအတွက် အများဆုံးရှိနိုင်သော လူဦး အရေအတွက် ပြည့်သွားပါပြီ။ နောက်မှပြန်စမ်းကြည့်ပေးပါ။";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "ခေါ်ဆိုမှု လူပြည့်နေပါပြီ";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "ခေါ်ဆိုမှုထဲဝင်မယ်";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "ခေါ်ဆိုမှုမှ ထွက်ခွာမယ်";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "၎င်းခေါ်ဆိုမှုထဲတွင် - %ld ယောက်";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@၊ %2$@၊ နှင့် အခြား %3$@ ယောက်များသည် ၎င်းခေါ်ဆိုမှုထဲတွင် ရှိပါသည်";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ မှ အသံနှင့် ဗီဒီယို မရရှိနိုင်ပါ";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "သင့် လုံခြုံရေးနံပါတ် ပြောင်းလဲမှုကို ၎င်းတို့မှ အတည်မပြုရသေးသောကြောင့် သို့မဟုတ် ၎င်းတို့စက်တွင် ပျက်ကွက်မှုဖြစ်ခဲ့သောကြောင့် သို့မဟုတ် ၎င်းတို့မှ သင့်ကို ပိတ်ပယ်ထားခြင်းကြောင့် တို့ဖြစ်နိုင်ပါသည်။";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ မှ အသံနှင့် ဗွီဒီယို တွေမရရှိနိုင်ပါ";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "အခြား မည်သူမျှ မရှိပါ";
@@ -1619,37 +1625,37 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "ယခု ဖုန်းခေါ်ဆိုမှုပေါ်တွင် မည်သူမျှ မရှိသေးပါ";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@၊ %@၊ နှင့် အခြား %ld ယောက်များသည် ၎င်းခေါ်ဆိုမှုထဲသို့ ဝင်လာပါပြီ";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@၊ %@၊ နှင့် အခြား %ld ယောက်များသည် ၎င်းခေါ်ဆိုမှုမှ ထွက်ခွာသွားပါပြီ";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ သည် ခေါ်ဆိုမှုထဲ ဝင်လာပါသည်";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ သည် ခေါ်ဆိုမှုမှ ထွက်ခွာသွားပါသည်";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ နှင့် %@ သည် ခေါ်ဆိုမှုထဲ ဝင်လာပါသည်";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ နှင့် %@ သည် ခေါ်ဆိုမှုမှ ထွက်ခွာသွားပါသည်";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "၎င်းခေါ်ဆိုမှုထဲတွင် - ၁ ယောက်";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ သည် ၎င်းခေါ်ဆိုမှုထဲတွင် ရှိပါသည်";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "ပြန်ချိတ်နေသည်";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "ပြောင်းလဲထားသော လုံခြုံရေးနံပါတ်ဖြင့် ခေါ်ဆိုမှုထဲ ဝင်လာသော တစ်ဦးရှိပါသည်။";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "တစ်ယောက်ယောက်သည် အဖွဲ့လိုက်ခေါ်ဆိုမှု စခဲ့ပါသည်";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "နှိပ်ဆွဲ၍ မြင်ကွင်းပြောင်းပါ";
@@ -1664,28 +1670,28 @@
 "GROUP_CALL_STARTED_BY_YOU" = "အဖွဲ့လိုက် ဖုန်းခေါ်ဆိုမှု သင်စခဲ့ပါသည်";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ သည် အဖွဲ့လိုက်ခေါ်ဆိုမှု စခဲ့ပါသည်";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@၊ %2$@၊ နှင့် နောက်တစ်ဦးသည် ၎င်းခေါ်ဆိုမှုထဲတွင် ရှိပါသည်";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ နှင့် %2$@ သည် ၎င်းခေါ်ဆိုမှုထဲတွင် ရှိပါသည်";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "သင်သည် ခေါ်ဆိုမှုမှ လိုင်းပြတ်သွားပါသည်။ သင့် လိုင်းချိတ်ဆက်မှုစစ်၍ ပြန်စမ်းကြည့်ပေးပါ။";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "သင်";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "အဖွဲ့လိုက် ခေါ်ဆိုမှုထဲတွင် သင်ရှိပါသည်";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "မိမိ (အခြားစက်ပေါ်ရှိ)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "အခမဲ့ စာဝှက်ထားသော အုပ်စုခေါ်ဆိုမှုကို စတင်ရန် အုပ်စုအသစ်တစ်ခုကိုဖွင့်ပါ";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "အဖွဲ့လိုက်ခေါ်ဆိုနိုင်ခြိင်း မိတ်ဆက်ပါသည်";
@@ -1694,10 +1700,10 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့ဖွဲ့ခဲ့ပါသည်။";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့်ကို အဖွဲ့ထဲ ထည့်လိုက်ပါသည်။";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "အဖွဲ့ ဖွဲ့ပြီး";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "အဖွဲ့ဝင်အားလုံးကိုထည့်၍မရပါ။ ပြန်စရန် တစ်ချက်နှိပ်ပါ။";
@@ -1796,7 +1802,7 @@
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "ဖိတ်ကြားမှု ပြုလုပ်ပြီး!";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
@@ -1808,7 +1814,7 @@
 "GROUP_INVITES_VIEW_TITLE" = "အဖွဲ့ဝင် ဖိတ်ခေါ်မှုများ";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ဤအဖွဲ့လင့်ခ်သည် အကြုံးမဝင်တော့ပါ။";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
@@ -1826,31 +1832,31 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Please check if you are online and try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "သင်သည် အွန်လိုင်းပေါ် ရှိမရှိကို စစ်ပြီး ပြန်စမ်းကြည့်ပါ။";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "ပြန်စမ်းကြည့်ပါ။";
 
 /* Message for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "အကြုံးမဝင်သော လင့်ခ်";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "အဖွဲ့ဝင်သစ်များ အဖွဲ့လင့်ခ်ဖြင့် ဝင်ပါနိုင်ခြင်းကို စီမံသူမှ အတည်ပြုရန် လိုအပ်စေပေးပါ။";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "အဖွဲ့ဝင်သစ်များကို လက်ခံမယ်";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "ဖွင့်၍ လင့်ခ်ကို မျှဝေပါ";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "လင့်ခ်ကို မျှဝေပါ";
 
 /* Subtitle for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
@@ -1865,13 +1871,13 @@
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ဤကုဒ်နံပါတ်ကို စကင်ဖတ်သောသူများသည် သင်၏အဖွဲ့ထဲသို့ ဝင်နိုင်လိမ့်မည်။ အကယ်၍ သင်သည် ဤချိန်ညှိမှုကို ဖွင့်ပါက အုပ်ချုပ်သူအသစ်များအား အတည်ပြုရန် လိုအပ်ဦးမည်။";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "ကုဒ်ကို မျှဝေပါ";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR ကုဒ်";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "အဖွဲ့ဝင်သစ်များကို လက်ခံမယ်";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "link ကို ကူးယူရန်";
@@ -1879,17 +1885,11 @@
 /* Label for the 'enable group link' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "အဖွဲ့လင့်ခ်";
 
-/* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
-
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
-
-/* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "အဖွဲ့ဝင်သစ်များ အဖွဲ့လင့်ခ်ဖြင့် ဝင်ပါနိုင်ခြင်းကို စီမံသူမှ အတည်ပြုရန် လိုအပ်စေပေးပါ။";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "လင့်ခ် ကိုပြန်လည်သတ်မှတ်";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
@@ -1904,7 +1904,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR ကုဒ်";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal မှတဆင့်မျှဝေမည်";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
@@ -1913,82 +1913,82 @@
 "GROUP_LINK_VIEW_TITLE" = "အဖွဲ့လင့်ခ်";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့်ကို အဖွဲ့ထဲ ထည့်လိုက်ပါသည်။";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "သင်သည် ယခု စီမံသူဖြစ်သည်။";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့်ကို စီမံသူတစ်ယောက်အဖြစ် တာဝန်ပေးလိုက်သည်။";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "သင်သည် အဖွဲ့သို့ဖိတ်ခေါ်မှုကို လက်ခံခဲ့သည်။";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "သင်သည် %@ မှ အဖွဲ့သို့ဖိတ်ခေါ်မှုကို လက်ခံခဲ့သည်။";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့သို့ ဖိတ်ခေါ်မှုကို ငြင်းဆိုခဲ့သည်။";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "သင်သည် %@ မှ အဖွဲ့သို့ ဖိတ်ခေါ်မှုကို ငြင်းဆိုခဲ့သည်။";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "သင့်ကို အဖွဲ့သို့ ဖိတ်ခေါ်ချက်ကို %@ မှ ရုပ်သိမ်းခဲ့သည်။";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "သင့်ကို အဖွဲ့သို့ ဖိတ်ခေါ်ချက်အား ရုပ်သိမ်းခဲ့သည်။";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့်အား ဖိတ်ခေါ်ထားသည်။";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "သင့်ကို အဖွဲ့သို့ ဖိတ်ခေါ်ထားသည်။";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "သင်သည် အဖွဲ့ထဲ ဝင်လိုက်ပါသည်။";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "အဖွဲ့၏ လင့်ခ် မှတစ်ဆင့် သင်သည် အဖွဲ့ထဲသို့ဝင်ရောက်ခဲ့သည်။";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့်ကို ဖယ်ရှားခဲ့သည် ။";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "သင့်အား အဖွဲ့မှ ဖယ်ရှားခဲ့သည်။";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ သည် အဖွဲ့ထဲဝင်ရန် သင့်တောင်းဆိုချက်ကို အတည်ပြုခဲ့သည်။";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "သင်မှ အဖွဲ့ထဲဝင်ရန် သင့်တောင်းဆိုချက်ကို ပယ်ဖျက်ခဲ့သည်။";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "အဖွဲ့ထဲဝင်ရန် သင့်တောင်းဆိုချက်သည် ငြင်းဆိုခံခဲ့ရပါသည်။";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "အဖွဲ့ထဲဝင်ရန် သင်တောင်းဆိုချက် တစ်ခုပို့ခဲ့ပါသည်။";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "သင့် စီမံသူတာဝန်များ ရုပ်သိမ်းခံခဲ့ရပါသည်။";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ သည် သင့် စီမံသူတာဝန်များကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "အဖွဲ့ဝင် တစ်ဦးသည် သင့်ကို အဖွဲ့ထဲ ထည့်လိုက်ပါသည်။";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "စီမံသူ";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "အဖွဲ့ဝင်များမရှိ";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "အဖွဲ့ဝင် ၁ ဦး";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "အဖွဲ့ဝင် %@ ဦး";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "အဖွဲ့ဝင် %@ ဦး";
@@ -2000,7 +2000,7 @@
 "GROUP_MEMBERS_CALL" = "အသံခေါ်ဆိုမှု";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "အဖွဲ့ဖွဲ့ပြီးလျှင် သင်သည် သူငယ်ချင်းများကို ထည့်ဖိတ်ခေါ်နိုင်ပါသည်။";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "အဖွဲ့ဝင်များ";
@@ -2012,7 +2012,7 @@
 "GROUP_MEMBERS_VIDEO_CALL" = "ရုပ်သံဖုန်းခေါ်မည်";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "အဖွဲ့ဝင် %@ ဦးများသည် အမည်ဆင်တူ ဖြစ်နေပါသည်။";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "နှိပ်၍ ကြည့်ရှုသုံးသပ်ပါ";
@@ -2024,205 +2024,205 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "အဖွဲ့ဝင်များ သုံးသပ်မယ်";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "အဖွဲ့ဝင် %@ ဦးများသည် အမည်ဆင်တူဖြစ်နေပါသည်၊ အောက်ပါအဖွဲ့ဝင်များ သုံးသပ်ပါ သို့မဟုတ် လုပ်ဆောင်ချက်တစ်ခုလုပ်ရန် ရွေးချယ်ပါ။";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "အဖွဲ့ဝင် %@ ဦးများသည် အမည်တူနေပါသည်၊ အောက်ပါအဖွဲ့ဝင်များ သုံးသပ်ပါ သို့မဟုတ် လုပ်ဆောင်ချက်တစ်ခုလုပ်ရန် ရွေးချယ်ပါ။";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "အဖွဲ့ဝင် %@ ဦးများသည် အမည်တူနေပါသည်။";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "အဖွဲ့အမည် (လိုအပ်ပါသည်)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ သည် အဖွဲ့သို့ဖိတ်ခေါ်မှုကို လက်ခံခဲ့သည်။";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ သည် အဖွဲ့သို့ သင့်ဖိတ်ခေါ်မှုကို လက်ခံခဲ့သည်။";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ သည် အဖွဲ့သို့ %2$@ မှ ဖိတ်ခေါ်ထားခြင်းကို လက်ခံခဲ့သည်။";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "သင်မှ %@ ကို ထည့်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ မှ %2$@ ကို ထည့်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "အဖွဲ့သို့ %@ ကို ထည့်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "အဖွဲ့သို့ ဖိတ်ခေါ်မှုကို တစ်ဦးက ငြင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ မှ အဖွဲ့သို့ ဖိတ်ခေါ်ထားခြင်းကို တစ်ဦးမှ ငြင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "အဖွဲ့သို့ သင်ဖိတ်ခေါ်ထားခြင်းကို %@ မှ ငြင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ သည် စီမံသူတစ်ဦး ဖြစ်ပါသည်။";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "သင်သည် %@ ကို စီမံသူအနေအဖြစ် ခန့်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ သည် %2$@ ကို စီမံသူအနေအဖြစ် ခန့်ခဲ့ပါသည်။";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "အဖွဲ့သို့ ဖိတ်ခံရသူတစ်ဦး၏ ဖိတ်ခေါ်ချက်ကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "အဖွဲ့သို့ ဖိတ်ခံရသူ %@ ၏ ဖိတ်ခေါ်ချက်ကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "အဖွဲ့သို့ ဖိတ်ခံရသူတစ်ဦး၏ ဖိတ်ခေါ်ချက်ကို %@ မှ ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "အဖွဲ့သို့ ဖိတ်ခံရသူ %2$@ ဦး ၏ ဖိတ်ခေါ်ချက်ကို %1$@ မှ ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "အဖွဲ့သို့ ဖိတ်ခံရသူ %@ ဦး၏ ဖိတ်ခေါ်ချက်ကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "အဖွဲ့သို့ တစ်ဦးဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "အဖွဲ့သို့ %@ ကို ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "အဖွဲ့သို့ %@ ကို သင်မှ ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "အဖွဲ့သို့ %@ မှ တစ်ဦးကို ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "အဖွဲ့သို့ %1$@ မှ %2$@ ဦးကို ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "အဖွဲ့သို့ %@ ဦးကို ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ သည် အဖွဲ့သို့ ဝင်ခဲ့ပါသည်။";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "အဖွဲ့လင့်ခ်ဖြင့် %@ သည် အဖွဲ့သို့ ဝင်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ သည် အဖွဲ့မှ ထွက်ခွာသွားပါသည်။";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "သင်မှ %@ ကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ မှ %2$@ ကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ မှ အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်ကို သင်သည် လက်ခံအတည်ပြုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ မှ အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်ကို %2$@ သည် လက်ခံအတည်ပြုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ သည် အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်ကို ၎င်းမှ ပယ်ဖျက်ခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "%@ မှ အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်ကို သင်သည် ငြင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%1$@ မှ အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်ကို %2$@ သည် ငြင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ မှ အဖွဲ့သို့ဝင်ရန် တောင်းဆိုချက်သည် ငြင်းဆိုခံခဲ့ရပါသည်။";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ သည် အဖွဲ့သို့ အဖွဲ့လင့်ခ်ဖြင့်ဝင်ရန် တောင်းဆိုခဲ့ပါသည်။";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ ၏စီမံသူတာဝန်များ ရုပ်သိမ်းခံခဲ့ရပါသည်။";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "သင်သည် %@ ၏စီမံသူတာဝန်များကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ သည် %2$@ ၏စီမံသူတာဝန်များကို ရုပ်သိမ်းခဲ့ပါသည်။";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "တောင်းဆိုမှုများ";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ဖိတ်ကြားချက်များ";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "အဖွဲ့ဝင် တောင်းဆိုမှုများ နှင့် ဖိတ်ခေါ်မှုများ";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "အဖွဲ့အားပြင်ဆင်ချက်ပြုလုပ်ပြီး။";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "အဖွဲ့ရုပ်ပုံသည် ဖယ်ရှားခံခဲ့ရပါသည်။";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "သင်သည် ရုပ်ပုံကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ သည် ရုပ်ပုံကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "အဖွဲ့၏ ရုပ်ပုံကို အပ်ဒိတ်လုပ်ထားပါသည်။";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့၏ ရုပ်ပုံကို အပ်ဒိတ်လုပ်ခဲ့ပါသည်။";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ သည် ရုပ်ပုံကို အပ်ဒိတ်လုပ်ခဲ့ပါသည်။";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "အဖွဲ့အား သင်ပြောင်းလဲမှုပြုလိုက်သည်။";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ သည် အဖွဲ့ကို အပ်ဒိတ်လုပ်ခဲ့ပါသည်။";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
+"GROUP_UPDATED_NAME_REMOVED" = "အဖွဲ့၏ အမည်သည် ဖယ်ရှားခံထားရပါသည်။";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့၏ အမည်ကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ သည် အဖွဲ့၏အမည်ကို ဖယ်ရှားခဲ့ပါသည်။";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "သင်သည် အဖွဲ့၏အမည်ကို \"%@\" သို့ ပြောင်းထားခဲ့ပါသည်။";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ သည် အဖွဲ့၏အမည်ကို \"%2$@\" သို့ ပြောင်းထားခဲ့ပါသည်။";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "အဖွဲ့၏အမည်သည် ယခု \"%@\" ဖြစ်ပါသည်။";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "၎င်းအဖွဲ့သည် အဖွဲ့အသစ်သို့ အပ်ဒိတ်လုပ်ထားပါသည်။";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "အဖွဲ့အသစ်သို့ အဖွဲ့ဝင်ကို မထည့်နိုင်၍ အဖွဲ့မှ ဖယ်ရှားခဲ့ရပါသည်။";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "အဖွဲ့အသစ်သို့ သင့်ကို မထည့်နိုင်၍ အဖွဲ့မှ ဖယ်ရှားခဲ့ရပါသည်။";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "အဖွဲ့အသစ်သို့ အဖွဲ့ဝင် %@ ဦးကို မထည့်နိုင်၍ အဖွဲ့မှ ဖယ်ရှားခဲ့ရပါသည်။";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "အဖွဲ့အသစ်သို့ အဖွဲ့ဝင်ကို မထည့်နိုင်၍ အဖွဲ့သို့ ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "အဖွဲ့အသစ်သို့ သင့်ကို မထည့်နိုင်၍ အဖွဲ့သို့ ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "အဖွဲ့အသစ်သို့ အဖွဲ့ဝင် %@ဦးကို မထည့်နိုင်၍ အဖွဲ့သို့ ဖိတ်ခေါ်ထားပါသည်။";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "အဖွဲ့မှသင်ထွက်လိုက်သည်။";
@@ -2231,19 +2231,19 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "သင်မထွက်ခွာမီ ၎င်းအဖွဲ့အတွက် စီမံသူအသစ် ရွေးပါ။";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "သုံးသူသည် အဖွဲ့ဝင်ဖြစ်ပြီးသားဖြစ်ပါသည်။";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "ဖိတ်ကြားချက်ကို မလက်ခံနိုင်ပါ။";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "အဖွဲ့ကို ပိတ်ပင်မယ်";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "အဖွဲ့နှင့် %@ ကို ပိတ်ပယ်မယ်";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ ကို ပိတ်ပယ်မယ်";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "သူငယ်ချင်းများကို ဖိတ်ပါ။";
@@ -2351,10 +2351,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များထည့်မည်";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "အဖွဲ့ဝင်ထည့်မည်လား?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "အဖွဲ့ဝင်များထည့်မည်လား?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "အဖွဲ့ဝင်များထည့်မည်";
@@ -2435,7 +2435,7 @@
 "HELP_CONTACT_US" = "ကျွန်ုပ်တို့ကို ဆက်သွယ်ပါ";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "ပံ့ပိုးမှု စင်တာ";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
@@ -2477,10 +2477,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "ကြိုက်သည့်နေရာတွင်ဆွဲ၍ မှုန်စေပါ";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "မျက်နှာများကို မှုန်စေပါ";
 
 /* A toast indicating that you can blur more faces after detection */
 "IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
@@ -2489,40 +2489,40 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "ရုပ်ပုံများ ပြောင်းမယ်";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "သင့် ရုပ်ပုံများ မတွေ့ရှိပါသလား?";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "ပူးတွဲဖိုင်ရွေးခြင်း မအောင်မြင်ပါ။";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "ချိတ်ဆက်နေသည်...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "အခြားစက်ပေါ်တွင် ဖြေကြားထားပါသည်။";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "အခြားစက်ပေါ်တွင် ငြင်းဆိုထားပါသည်။";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "ပြန်လည်ချိတ်ဆက်နေသည် ...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "ဖုန်းသံမြည်နေသည်";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "အသံခေါ်ဆိုမှု...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "ရုပ်သံခေါ်ဆိုမှု...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "ဖုန်းကိုင်ပြီ။ လုံခြုံအောင်ပြုလုပ်နေသည်...";
@@ -2600,10 +2600,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "စာအသစ်";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "ရှေ့ရှိစကားပြောဆိုမှုသို့ သွားမယ်";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "အနောက်ကစကားပြောဆိုမှုသို့ သွားမယ်";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "ရှာရန်";
@@ -2612,10 +2612,10 @@
 "KEY_COMMAND_SETTINGS" = "အပြင်အဆင်များ";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "စတစ်ကာများ ပြပါ";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "သိုလှောင်ခြင်းမှ စကားပြောဆိုမှုကို ဖယ်ထုတ်မယ်";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "ပိုသိရန်";
@@ -2645,16 +2645,16 @@
 "LINK_DEVICE_RESTART" = "ပြန်စရန်";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "သင်ချိတ်ချင်သော စက်ပေါ်ရှိ QR ကုဒ် ကို စကင်ဖတ်မယ်";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "စက်အသစ်နှင့် ချိတ်ရန် QR ကုဒ်စကင်ဖတ်မယ်";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ဖုန်းအသစ်ကို ချိတ်ရန်";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "လင့်ခ်ကို ကြိုကြည့်ခြင်း";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "ချိတ်ဆက်ထားသော ဖုန်းများ";
@@ -2675,25 +2675,25 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
 
 /* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Need Help?";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "အကူအညီ လိုအပ်ပါသလား?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "စက်တစ်ခုချင်းပေါ်တွင် အပြင်အဆင်များ ဖွင့်ပါ";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "\"လိုကယ်\" ကွန်ယက်ကို ဖွင့်ပါ";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Signal သို့ သွားမယ်";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "လိုကယ်ကွန်ယက် သုံးခွင့် ဖွင့်ပါ";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "အမည် သို့မဟုတ် လိပ်စာဖြင့် ရှာဖွေမယ်";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "တည်နေရာ ရွေးပါ";
 
 /* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "မှတ်တမ်းထည့်နေသည်";
@@ -2705,7 +2705,7 @@
 "LONG_TEXT_VIEW_TITLE" = "စာ";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+"MANY_GROUPS_IN_COMMON" = "အဖွဲ့ %@ ဖွဲ့ အတူရှိသည်";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "မီဒီယာဖိုင် အားလုံး";
@@ -2723,13 +2723,13 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "စာကို ဖျက်မည်";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Photos";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "ရုပ်ပုံ %@ ပုံ";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "အရာ %@ ခု";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "သင်";
@@ -2738,16 +2738,16 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ယခုလ";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "နောက်မှ သတိပေးပါ";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "ကျွန်ုပ်တို့ သင့်ကို နောက်မှ သတိပေးပါမည်။";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "မက်ဆေ့ချ်စာသား ကော်ပီကူးမယ်";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Delete for Everyone";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "အားလုံးအတွက် ဖျက်သိမ်းမယ်";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
@@ -2756,25 +2756,25 @@
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "ကျွန်ုပ်အတွက် ဖျက်သိမ်းမယ်";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "၎င်းမက်ဆေ့ချ် ဖျက်သိမ်းမယ်";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "ရွေးထားသော မက်ဆေ့ချ်များကို ဖျက်သိမ်းမယ်";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "နောက်ထပ် အချက်အလက်များ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "မက်ဆေ့ချ်ကို ထပ်ဆင့် ပေးပို့မယ်";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "စာပြန်ပို့မယ်";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "မျိုးစုံရွေးချယ်မယ်";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = " မီဒီယာ မျှဝေမယ်";
@@ -2786,7 +2786,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "စာအသစ်";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "ကော်ပီကူးယူချိန် ပေးပို့ခဲ့သည်";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "မှပေးပို့သည်";
@@ -2807,7 +2807,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "ဖတ်သည်";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "သို့ ပေးပို့နေသည်";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ပေးပို့သည်";
@@ -2828,7 +2828,7 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ဖိုင်အမည်";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "မက်ဆေ့ချ် အချက်အလက်များ";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "တားမြစ်မည်";
@@ -2858,13 +2858,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "စကားပြောဆိုမှုကို ဖျက်သိမ်းမည်လား?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ဖျက်သိမ်းပြီး ထွက်ခွာမယ်";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "အဖွဲ့ကို ဖျက်သိမ်းပြီး ထွက်ခွာမည်လား?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
@@ -2882,7 +2882,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "တောင်းခံစာ သုံးသပ်မယ်";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "အဆက်အသွယ် အပ်ဒိတ်မယ်";
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "တောင်းခံစာ သုံးသပ်မယ်";
@@ -2930,7 +2930,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "တောင်းခံခြင်း ပယ်ဖျက်မယ်";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "အဖွဲ့သို့ ဝင်ရန် သင်၏တောင်းဆိုချက်ကို ပယ်ဖျက်မည်လား?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
@@ -2942,7 +2942,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "ကူးဆွဲနေဆဲ";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "ပေးပို့ခြင်း မအောင်မြင်ပါ";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "မအောင်မြင်သော";
@@ -2999,43 +2999,43 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "သင်၏ ကင်မရာအား Signal မှအသုံးပြုလိုပါသည်။";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "၎င်းသုံးခွင့်ကို iOS အပြင်အဆင်အပ္ပလီကေးရှင်းထဲတွင် ဖွင့်နိုင်ပါသည်။";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "ဤအင်္ဂါရပ်အတွက် Signal သည် သင့်တည်နေရာသုံးခွင့် လိုအပ်ပါသည်။";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "၎င်းသုံးခွင့်ကို iOS အပြင်အဆင်အပ္ပလီကေးရှင်းထဲတွင် ဖွင့်နိုင်ပါသည်။";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "ဤအင်္ဂါရပ်အတွက် Signal သည် သင့်ရုပ်ပုံများသုံးခွင့် လိုအပ်ပါသည်။";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "သင်သည် အခြားစက်များနှင့် ချိတ်ဆက်၍ မရတော့ပါ။";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "သင့်အကောင့်ဖြင့် လက်ရှိချိတ်ထားသော စက်အရေအတွက်သည် အများဆုံးပမာဏ ဖြစ်သွားပါပြီ။ စက်တစ်ခုအား ဖယ်ရှား၍ ပြန်စမ်းကြည့်ပေးပါ။";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "အသံပိတ်ထား";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "မကြာသေးမီက ပရိုဖိုင်းအမည်ကို %1$@ မှ %2$@ သို့ ပြောင်းထားခဲ့ပါသည်။";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ကျော်ပါ";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "သင်သည် အွန်လိုင်းပေါ် ရှိမရှိကို စစ်ပြီး ပြန်စမ်းကြည့်ပါ။";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+"NETWORK_INTERFACE_SET_CELLULAR" = "ဆယ်လူလာသာ";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "ဘယ်တော့မှ";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+"NETWORK_INTERFACE_SET_WIFI" = "ဝိုင်ဖိုင်သာ";
 
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "ဝိုင်ဖိုင် နှင့် ဆယ်လူလာ";
@@ -3074,13 +3074,13 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "အဖွဲ့အမည်";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "အခြားအသုံးပြုသူများ";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "အဖွဲ့ဝင်များ ရွေးပါ";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "ပြောင်းလဲမှုများကို ပြန်ရုပ်သိမ်းမှာလား?";
@@ -3101,22 +3101,22 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "လူများကို ဖုန်းနံပါတ်အရရှာမည်";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "No groups in common";
+"NO_GROUPS_IN_COMMON" = "တူညီသော အဖွဲ့များမရှိပါ";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
+"NO_OTHER_GROUPS_IN_COMMON" = "အခြားတူညီသော အဖွဲ့များမရှိပါ";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Select a contact or group to start chatting.";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "စတင်စကားပြောရန် အဆက်အသွယ် သို့မဟုတ် အဖွဲ့ကို ရွေးပါ";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Welcome to Signal";
+"NO_SELECTED_CONVERSATION_TITLE" = "Signal သို့ ကြိုဆိုပါသည်";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "မက်ဆေ့ချ်အသစ် ကို ၎င်းထံသို့ -";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "သုံးသူမတွေ့ပါ။ SMS ဖြင့် ဖိတ်ခေါ်မည်လား?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "မိမိမှတ်စု";
@@ -3125,19 +3125,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "သင်၏ %@ ကို ပြန်လည်စတင်နေသည့်အချိန်အတွင်း စာများ လက်ခံရယူနိုင်ပါသည်။";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "မက်ဆေ့ချ်အသစ်များ အတွက် အသိပေးချက်များ လက်ခံရန် -";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "အောက်တွင်ရှိသော \"အပြင်အဆင်များသို့ သွားမယ်\" ခလုတ် နှိပ်ပါ";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "\"အသိပေးချက်များ ခွင့်ပြုပါ\" ကို ဖွင့်ပါ";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "အသိပေးချက်များကို နှိပ်ပါ";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "အသိပေးချက်များကို ဖွင့်ပါ";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "မအားသေးပါ";
@@ -3146,13 +3146,13 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ဖွင့်မယ်";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "သင့် အဆက်အသွယ်များနှင့် အဖွဲ့များ ထံမှ မည်သည့် မက်ဆေ့ချ်ကိုမှ မလွတ်ပါစေနှင့်။";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "အသိပေးချက်များကို ဖွင့်မည်လား?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "လုပ်ဆောင်ချက်များသည် \"ဖတ်ရှုပြီးခြင်းကို မှတ်ခြင်း\", \"ပြန်ကြားမယ်\"၊ နှင့် \"ပြန်ခေါ်ဆိုမယ်\" တို့ဖြစ်ပါသည်။";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "နာမည် သို့မဟုတ် အကြောင်းအရာများ မရှိပါ";
@@ -3161,10 +3161,10 @@
 "NOTIFICATIONS_SECTION_INAPP" = "အပ်ပလီကေးရှင်းကို ဖွင့်ထားသည့်အချိန်မှသာ ဖွင့်ပါ";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "စိတ်ကြိုက်အသံထည့်ပါ...";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "အမည်၊ အရာများ၊ နှင့် လုပ်ဆောင်ချက်များ";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "နာမည်တစ်ခုတည်းသာ";
@@ -3176,37 +3176,37 @@
 "OK" = "အိုကေ";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "ပင်နံပါတ် မမှန်ကန်ပါ။ ကြိုးစားမှု အရေအတွက် ပြည့်သွားပါပြီ။";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "ပင်နံပါတ်အသစ် ဖန်တီးမယ်";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "အက္ခရာနံပါတ်ပါ ပင်နံပါတ်ကို ရိုက်ထည့်ပါ";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "နံပါတ်ပါ ပင်နံပါတ်ကို ရိုက်ထည့်ပါ";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "အကူအညီ လိုအပ်ပါသလား?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN နံပါတ်မှားနေသည်";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "ပင်နံပါတ်် မမှန်ကန်ပါ။​ ကြိုးစားရန် %lu ကြိမ် ကျန်ရှိပါသည်။";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "ပင်နံပါတ်် မမှန်ကန်ပါ။​ ကြိုးစားရန် ၁ ကြိမ်သာ ကျန်ရှိပါတော့သည်။";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "ကျော်၍ ပင်နံပါတ်အသစ် ဖန်တီးမယ်";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "သင့်ပင်နံပါတ်ကို မမှတ်မိလျှင် သင်အသစ်တစ်ခု ပြန်လုပ်နိုင်ပါသည်။ သင့်အကောင့်သုံး၍ စာရင်းသွင်းနိုင်ပါသည်၊ သို့သော်လည်း သင့် ပရိုဖိုင်း အချက်အလက်များလိုမျိုး သိမ်းဆည်းထားသော အပြင်အဆင်များ ပျောက်ဆုံးသွားပါမည်။";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "ပင်နံပါတ်ထည့်ခြင်းကို ကျော်မည်လား?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
@@ -3215,13 +3215,13 @@
 "ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Signal အတွက် စာရင်းသွင်းမယ်";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad ကို စာရင်းသွင်းမယ်";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPad ကို ချိတ်မယ်";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
@@ -3233,7 +3233,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ဒီ iP​ad ကို မှတ်ပုံတင်မည်";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "၎င်း iPhone ကို ချိတ်မယ်";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
@@ -3242,37 +3242,37 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "ခွင့်ပြုချက်များ ပေးမယ်";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "ခွင့်ပြုချက်များ ပေးမယ်";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "မည်သူမှ သင့်ဖုန်းနံပါတ် (%@) ဖြင့် သင့်အား ရှာဖွေနိုင်သည်ကို ရွေးပါ";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "မည်သူသည် သင့်နံပါတ်ကို တွေ့နိုင်မည်လဲ?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "သင့်ဖုန်းနံပါတ်";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "သင့်ဖုန်းနံပါတ်ကို ရိုက်ထည့်ပါ";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "ဖုန်းနံပါတ် အကြုံးမဝင်ပါ။ အကြုံးဝင်သော ဖုန်းနံပါတ်ကို ထည့်၍ စာရင်းသွင်းပါ။";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Learn more about PINs";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "ပင်နံပါတ်များ အကြောင်းထပ်မံ လေ့လာပါ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
@@ -3281,7 +3281,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Learn more about locked accounts";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Account Locked";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "အကောင့် ပိတ်မိ";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN နံပါတ်မှားနေသည်";
@@ -3293,7 +3293,7 @@
 "ONBOARDING_PIN_TITLE" = "သင်၏ PIN ကိုထည့်ပါ";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "သင့် ပရိုဖိုင်း";
 
 /* Placeholder text for the family name field of the profile creation view. */
 "ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
@@ -3311,28 +3311,28 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "ဖုန်းနံပါတ်မှားနေပါသလား?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Call Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "တို့ကို ဖုန်းခေါ်ပါ";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "တို့ကို %@ အတွင်း ဖုန်းခေါ်ပါ";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "ကုဒ်ကို အတည်ပြုနေပါသည်...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "၎င်းကုဒ်သည် မမှန်ကန်ပါ";
 
 /* Label for button to resend SMS verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Resend Code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "ကုဒ်ကို ပြန်ပို့ပါ";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "%@ အတွင်း ကုဒ်ကို ပြန်ပို့ပါ";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ သို့ ကျွန်ုပ်တို့ ပို့ထားသော ကုဒ်ကို ရိုက်ထည့်ပါ";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "အတည်ပြုချက်ကုဒ်";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "အပြင်အဆင်များ";
@@ -3347,10 +3347,10 @@
 "OUTAGE_WARNING" = "Signal သည် နည်းပညာပိုင်းဆိုင်ရာ အခက်အခဲများ ကြုံတွေ့နေပါသည်။ ဝန်ဆောင်မှုများကို အမြန်ဆုံးပြန်လည်စတင်နိုင်ရန် ကျွနု်ပ်တို့ကြိုးစားနေပါသည်။";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "%@ ကို ခေါ်ဆိုထားပါသည်";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "တောင်းဆိုခြင်းကို ငြင်းဆိုမယ်";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
@@ -3362,46 +3362,46 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "၎င်းတောင်းဆိုမှုကို ငြင်းဆိုမည်လား?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "အကြွေစေ့ရှင်းရေးအခကြေး";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "တောင်းဆိုမှုကို ပယ်ဖျက်၍ မရပါ။";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "တောင်းဆိုမှုကို ငြင်းဆို၍ မရပါ။";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "မအောင်မြင်သော";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "အကြုံးမဝင်ပါ";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "အကြုံးမဝင်ပါ";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "မအောင်မြင်သော";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "ငွေလုံလောက်မှု မရှိပါ";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
 "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "အကြုံးမဝင်ပါ";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "မှတ်ချက်ထည့်မယ်";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "ရရှိနိုင်သော လက်ကျန်ငွေ - %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "ငွေပေးချေမှု အတည်ပြုမယ်";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "ပေးဆောင်ပါ";
@@ -3410,7 +3410,7 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "ဝန်ဆောင်မှုသို့ ဆက်သွယ်၍ မရပါ";
 
 /* Indicates that a payment failed due to insufficient funds. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
@@ -3419,7 +3419,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "အကြုံးမဝင်သော ရောင်းဝယ်မှု";
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
@@ -3428,10 +3428,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "ကွန်ယက် အခကြေး";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "ခန့်မှန်းထားသည် %@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
@@ -3446,10 +3446,10 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "ပေးဆောင်ပါ";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "စုစုပေါင်း ပမာဏ";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "လုပ်ဆောင်နေသည်";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
@@ -3467,7 +3467,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "ငွေပေးချေမှု အောင်မြင်ပါပြီ";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
@@ -3476,7 +3476,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "အတည်ပြုပါသည်";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "ငွေပေးချေမှု အောင်မြင်ပါပြီ";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "ပို့နေသည်…";
@@ -3620,13 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "အခြားအဖွဲ့ဝင်များကဖိတ်ကြားသည်";
-
-/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ဖိတ်ခေါ်ထားသော လူများ";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
@@ -4106,7 +4103,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN ကို မေ့သွားပြီ။";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "အကူအညီ လိုအပ်ပါသလား?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
@@ -4522,6 +4519,9 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "လုံခြုံသောဆက်ရှင်ကို ပြန်ပြင်လိုက်ပြီ။ ";
 
+/* Label for the 'see all' button. */
+"SEE_ALL_BUTTON" = "အားလုံးကြည့်ရှုမယ်";
+
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "အခြားအဆက်အသွယ်များ";
 
@@ -4856,7 +4856,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "ငွေပေးချေမှုများ မပိတ်ခင် အခြား ပိုက်ဆံအိတ် wallet လိပ်စာသို့ သင့်ငွေများ လွှဲထားရန် အကြံပြုပါသည်။ သင့်ငွေများ ယခု မလွှဲထားပါက သင်မှ ငွေပေးချေမှုများ ပြန်ဖွင့်လျှင် ၎င်းငွေများသည် Signal နှင့် ချိတ်ထားသော ပိုက်ဆံအိတ် wallet ထဲတွင် ကျန်ရှိနေပါမည်။";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "သင်မှ ငွေပေးချေမှုများကို ပြန်ဖွင့်ခဲ့လျှင် သင့် လက်ကျန်ငွေသည် Signal နှင့် ချိတ်ထားသော သင့်ပိုက်ဆံအိတ် wallet ထဲတွင် ကျန်ရှိနေပါမည်။";
@@ -4949,7 +4949,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ကွန်ယက် အခကြေး";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "လက်ခံရရှိပြီး";
@@ -5097,9 +5097,6 @@
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
-
-/* Label for the 'show all payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_SHOW_ALL_PAYMENTS_BUTTON" = "အားလုံးကြည့်ရှုမယ်";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "ငွေပေးချေမှုများ";
@@ -5385,6 +5382,9 @@
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal ကို ထည့်သွင်းဖို့အတွက် လှမ်းဖိတ်တာပါ။ လင့်က ဒီမှာ ";
+
+/* table cell label in conversation settings */
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ဘယ်ဟာမျှ မဟုတ်သော";
