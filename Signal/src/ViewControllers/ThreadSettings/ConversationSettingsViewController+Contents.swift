@@ -49,7 +49,7 @@ extension ConversationSettingsViewController {
     }
 
     @objc
-    func updateTableContents() {
+    func updateTableContents(shouldReload: Bool = true) {
 
         let contents = OWSTableContents()
 
@@ -76,7 +76,7 @@ extension ConversationSettingsViewController {
         addAllMediaSectionIfNecessary(to: contents)
 
         if let groupModel = currentGroupModel, !groupModel.isPlaceholder {
-            contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
+            contents.addSection(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
 
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 buildGroupSettingsSection(groupModelV2: groupModelV2, contents: contents)
@@ -93,7 +93,7 @@ extension ConversationSettingsViewController {
         emptySection.customFooterHeight = 24
         contents.addSection(emptySection)
 
-        self.contents = contents
+        setContents(contents, shouldReload: shouldReload)
 
         updateNavigationBar()
     }
@@ -408,15 +408,12 @@ extension ConversationSettingsViewController {
         }
     }
 
-    private func buildGroupMembershipSection(groupModel: TSGroupModel) -> OWSTableSection {
+    private func buildGroupMembershipSection(groupModel: TSGroupModel, sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
         section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return section
-        }
         let helper = contactsViewHelper
+        let groupMembership = groupModel.groupMembership
 
         // "Add Members" cell.
         if canEditConversationMembership {
@@ -454,40 +451,19 @@ extension ConversationSettingsViewController {
             })
         }
 
-        let groupMembership = groupModel.groupMembership
-        let allMembers = groupMembership.fullMembers
-        var allMembersSorted = [SignalServiceAddress]()
-        var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
-        databaseStorage.read { transaction in
-            for memberAddress in allMembers {
-                verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
-                                                                                             transaction: transaction)
-            }
-            allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(Array(allMembers),
-                                                                                   transaction: transaction)
-        }
+        let totalMemberCount = sortedGroupMembers.count
 
-        var membersToRender = [SignalServiceAddress]()
-        if groupMembership.isFullMember(localAddress) {
-            // Make sure local user is first.
-            membersToRender.insert(localAddress, at: 0)
-        }
-        // Admin users are second.
-        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isFullMemberAndAdministrator($0) }
-        membersToRender += adminMembers
-        // Non-admin users are third.
-        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isFullMemberAndAdministrator($0) }
-        membersToRender += nonAdminMembers
-
-        if membersToRender.count > 1 {
+        if totalMemberCount > 1 {
             let headerFormat = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT",
                                                  comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.")
             section.headerTitle = String(format: headerFormat,
-                                         OWSFormat.formatInt(membersToRender.count))
+                                         OWSFormat.formatInt(totalMemberCount))
         } else {
             section.headerTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE",
                                                     comment: "Section title of the 'members' section in conversation settings view.")
         }
+
+        var membersToRender = sortedGroupMembers
 
         let maxMembersToShow = 6
         let hasMoreMembers = !isShowingAllGroupMembers && membersToRender.count > maxMembersToShow
@@ -496,12 +472,12 @@ extension ConversationSettingsViewController {
         }
 
         for memberAddress in membersToRender {
-            guard let verificationState = verificationStateMap[memberAddress] else {
+            guard let verificationState = groupMemberStateMap[memberAddress] else {
                 owsFailDebug("Missing verificationState.")
                 continue
             }
 
-            let isLocalUser = memberAddress == localAddress
+            let isLocalUser = memberAddress.isLocalAddress
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
@@ -557,37 +533,45 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreMembers {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
+            let offset = canEditConversationMembership ? 1 : 0
+            let expandedMemberIndices = ((membersToRender.count + offset)..<(totalMemberCount + offset)).map {
+                IndexPath(row: $0, section: sectionIndex)
+            }
+
+            section.add(OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self = self else {
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
+                    }
+                    let cell = OWSTableItem.newCell()
+                    cell.preservesSuperviewLayoutMargins = true
+                    cell.contentView.preservesSuperviewLayoutMargins = true
+
+                    let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
+                                                                      iconSize: kSmallAvatarSize,
+                                                                      innerIconSize: 24,
+                                                                      iconTintColor: Theme.primaryTextColor)
+
+                    let rowLabel = UILabel()
+                    rowLabel.text = CommonStrings.seeAllButton
+                    rowLabel.textColor = Theme.primaryTextColor
+                    rowLabel.font = OWSTableItem.primaryLabelFont
+                    rowLabel.lineBreakMode = .byTruncatingTail
+
+                    let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                    contentRow.spacing = self.iconSpacingSmall
+
+                    cell.contentView.addSubview(contentRow)
+                    contentRow.autoPinWidthToSuperviewMargins()
+                    contentRow.autoPinHeightToSuperview(withMargin: 7)
+
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.showAllGroupMembers(revealingIndices: expandedMemberIndices)
                 }
-                let cell = OWSTableItem.newCell()
-                cell.preservesSuperviewLayoutMargins = true
-                cell.contentView.preservesSuperviewLayoutMargins = true
-
-                let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                  iconSize: kSmallAvatarSize,
-                                                                  innerIconSize: 24,
-                                                                  iconTintColor: Theme.primaryTextColor)
-
-                let rowLabel = UILabel()
-                rowLabel.text = CommonStrings.seeAllButton
-                rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = OWSTableItem.primaryLabelFont
-                rowLabel.lineBreakMode = .byTruncatingTail
-
-                let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-                contentRow.spacing = self.iconSpacingSmall
-
-                cell.contentView.addSubview(contentRow)
-                contentRow.autoPinWidthToSuperviewMargins()
-                contentRow.autoPinHeightToSuperview(withMargin: 7)
-
-                return cell
-                }) { [weak self] in
-                                        self?.showAllGroupMembers()
-            })
+            ))
         }
 
         return section

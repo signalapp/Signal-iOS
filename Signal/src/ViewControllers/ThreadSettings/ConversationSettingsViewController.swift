@@ -222,6 +222,43 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     // MARK: -
 
+    private(set) var groupMemberStateMap = [SignalServiceAddress: OWSVerificationState]()
+    private(set) var sortedGroupMembers = [SignalServiceAddress]()
+    func updateGroupMembers(transaction: SDSAnyReadTransaction) {
+        guard let groupModel = currentGroupModel, !groupModel.isPlaceholder, let localAddress = tsAccountManager.localAddress else {
+            groupMemberStateMap = [:]
+            sortedGroupMembers = []
+            return
+        }
+
+        let groupMembership = groupModel.groupMembership
+        let allMembers = groupMembership.fullMembers
+        var allMembersSorted = [SignalServiceAddress]()
+        var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
+
+        for memberAddress in allMembers {
+            verificationStateMap[memberAddress] = self.identityManager.verificationState(for: memberAddress,
+                                                                                         transaction: transaction)
+        }
+        allMembersSorted = self.contactsManagerImpl.sortSignalServiceAddresses(Array(allMembers),
+                                                                               transaction: transaction)
+
+        var membersToRender = [SignalServiceAddress]()
+        if groupMembership.isFullMember(localAddress) {
+            // Make sure local user is first.
+            membersToRender.insert(localAddress, at: 0)
+        }
+        // Admin users are second.
+        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isFullMemberAndAdministrator($0) }
+        membersToRender += adminMembers
+        // Non-admin users are third.
+        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isFullMemberAndAdministrator($0) }
+        membersToRender += nonAdminMembers
+
+        self.groupMemberStateMap = verificationStateMap
+        self.sortedGroupMembers = membersToRender
+    }
+
     func reloadThreadAndUpdateContent() {
         let didUpdate = self.databaseStorage.read { transaction -> Bool in
             guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId,
@@ -234,8 +271,12 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             self.threadViewModel = newThreadViewModel
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
             self.groupViewHelper.delegate = self
+
+            self.updateGroupMembers(transaction: transaction)
+
             return true
         }
+
         if !didUpdate {
             owsFailDebug("Invalid thread.")
             navigationController?.popViewController(animated: true)
@@ -365,10 +406,23 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
-    func showAllGroupMembers() {
-        // TODO: Animate
+    func showAllGroupMembers(revealingIndices: [IndexPath]? = nil) {
         isShowingAllGroupMembers = true
-        updateTableContents()
+
+        if let revealingIndices = revealingIndices, !revealingIndices.isEmpty, let firstIndex = revealingIndices.first {
+            tableView.beginUpdates()
+
+            // Delete the "See All" row.
+            tableView.deleteRows(at: [IndexPath(row: firstIndex.row, section: firstIndex.section)], with: .bottom)
+
+            // Insert the new member rows.
+            tableView.insertRows(at: revealingIndices, with: .bottom)
+
+            updateTableContents(shouldReload: false)
+            tableView.endUpdates()
+        } else {
+            updateTableContents()
+        }
     }
 
     func showAllMutualGroups() {
