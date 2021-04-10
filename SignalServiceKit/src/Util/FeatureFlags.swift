@@ -20,7 +20,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .openPreview
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
