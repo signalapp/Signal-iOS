@@ -42,22 +42,23 @@ public class AddToGroupViewController: OWSTableViewController2 {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
+
+        updateGroupThreadsAsync()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        updateTableContents()
+    private var groupThreads = [TSGroupThread]() {
+        didSet {
+            AssertIsOnMainThread()
+            updateTableContents()
+        }
     }
-
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        NotificationCenter.default.removeObserver(self)
+    private func updateGroupThreadsAsync() {
+        // make sure threadViewHelper is prepared on the main thread
+        _ = threadViewHelper
+        DispatchQueue.sharedUserInitiated.async { self.updateGroupThreads() }
     }
-
-    private func updateTableContents() {
-        AssertIsOnMainThread()
+    private func updateGroupThreads() {
+        owsAssertDebug(!Thread.isMainThread)
 
         let groupThreads = databaseStorage.read { transaction in
             return self.threadViewHelper.threads.filter { thread -> Bool in
@@ -69,6 +70,14 @@ public class AddToGroupViewController: OWSTableViewController2 {
                 return groupViewHelper.canEditConversationMembership
             } as? [TSGroupThread] ?? []
         }
+
+        DispatchQueue.main.async {
+            self.groupThreads = groupThreads
+        }
+    }
+
+    private func updateTableContents() {
+        AssertIsOnMainThread()
 
         let contents = OWSTableContents()
 
@@ -288,6 +297,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
 extension AddToGroupViewController: ThreadViewHelperDelegate {
     public func threadListDidChange() {
-        updateTableContents()
+        updateGroupThreadsAsync()
     }
 }
