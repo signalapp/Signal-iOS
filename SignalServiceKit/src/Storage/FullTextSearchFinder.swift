@@ -210,7 +210,38 @@ class GRDBFullTextSearchFinder: NSObject {
         return "\(collection).\(uniqueId)"
     }
 
+    private class func shouldIndexModel(_ model: SDSModel) -> Bool {
+        if let userProfile = model as? OWSUserProfile,
+           OWSUserProfile.isLocalProfileAddress(userProfile.address) {
+            // We don't need to index the user profile for the local user.
+            return false
+        }
+        if let signalAccount = model as? SignalAccount,
+           OWSUserProfile.isLocalProfileAddress(signalAccount.recipientAddress) {
+            // We don't need to index the signal account for the local user.
+            return false
+        }
+        if let signalRecipient = model as? SignalRecipient,
+           OWSUserProfile.isLocalProfileAddress(signalRecipient.address) {
+            // We don't need to index the signal recipient for the local user.
+            return false
+        }
+        if let contactThread = model as? TSContactThread,
+           contactThread.contactPhoneNumber == kLocalProfileInvariantPhoneNumber {
+            // We don't need to index the contact thread for the "local invariant phone number".
+            // We do want to index the contact thread for the local user; that will have a
+            // different address.
+            return false
+        }
+        return true
+    }
+
     public class func modelWasInserted(model: SDSModel, transaction: GRDBWriteTransaction) {
+        guard shouldIndexModel(model) else {
+            Logger.verbose("Not indexing model: \(type(of: (model)))")
+            removeModelFromIndex(model, transaction: transaction)
+            return
+        }
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
@@ -232,6 +263,11 @@ class GRDBFullTextSearchFinder: NSObject {
     }
 
     public class func modelWasUpdated(model: SDSModel, transaction: GRDBWriteTransaction) {
+        guard shouldIndexModel(model) else {
+            Logger.verbose("Not indexing model: \(type(of: (model)))")
+            removeModelFromIndex(model, transaction: transaction)
+            return
+        }
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
@@ -265,6 +301,10 @@ class GRDBFullTextSearchFinder: NSObject {
     }
 
     public class func modelWasRemoved(model: SDSModel, transaction: GRDBWriteTransaction) {
+        removeModelFromIndex(model, transaction: transaction)
+    }
+
+    private class func removeModelFromIndex(_ model: SDSModel, transaction: GRDBWriteTransaction) {
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
 
