@@ -968,7 +968,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "प्रोफाईल सामायिक करा";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "आपली प्रोफाईल सामायिक करा";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "प्रोफाईल सामायिक करा";
 
 /* Action that shares user profile with a user. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "प्रोफाईल सामायिक करा";

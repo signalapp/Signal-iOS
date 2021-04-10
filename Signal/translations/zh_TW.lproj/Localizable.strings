@@ -1154,7 +1154,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "註冊而不轉移";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "轉移帳號 & 訊息";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "移轉帳號 & 訊息";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "從你的舊 iOS 裝置轉移你的帳號及訊息歷史紀錄";
@@ -1181,7 +1181,7 @@
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "要將iPad 設定為已連結的裝置，必須使用舊iPad進行掃描";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "要轉移你的帳號，你必須使用iPhone進行掃描";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "要移轉你的帳號，你必須使用iPhone進行掃描";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "沒有足夠的空間來完成轉移";
@@ -1190,7 +1190,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "更新到最新版本的 Signal並再試一次";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "轉移您的 Signal 帳號到新的 iOS 裝置。請確定您的新裝置在附近並已打開。";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "轉移您的 Signal 帳號到新的 iOS 裝置。請確定你的新裝置在附近並已打開。";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "轉移帳號";
@@ -2156,7 +2156,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "等待邀請";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "會員要求&邀請";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "成員要求&邀請";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "群組已更新";
@@ -4691,13 +4691,13 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "刪除帳戶";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "不要傳送";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "不要轉帳";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "你的餘額為 %@。 如果你在刪除帳號之前沒有將資金轉入另一個錢包位址，則將永遠遺失。";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "傳送付款餘額？";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "轉帳付款餘額？";
 
 /* Button for transferring the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "傳送餘額";
@@ -4817,7 +4817,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ 在 %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉移到交易所，但不能再傳送和接收付款或增加資金。";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉帳到交易所，但不能再傳送和接收付款或增加資金。";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "由於你的餘額不可使用，因此無法停用付款。 檢查你的網路連接，然後重試。";
@@ -4826,10 +4826,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "由於你的餘額不可使用，因此無法完成付款。 檢查你的網路連接，然後重試。";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉移到交易所，但不能再傳送和接收付款或增加資金。";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉帳到交易所，但不能再傳送和接收付款或增加資金。";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉移到交易所，但不能再傳送和接收付款或增加資金。";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal中的付款不再可用。 你仍然可以將資金轉帳到交易所，但不能再傳送和接收付款或增加資金。";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "轉換只是估算，可能不準確。";
@@ -4862,10 +4862,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "如果你選擇重新啟動付款功能，妳的餘額將保留在與Signal關聯的錢包中。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "停用而不傳送嗎？";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "停用而不轉帳嗎？";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "停用而不傳送";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "停用而不轉帳";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "無法停用付款功能";
@@ -5108,10 +5108,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "你無法轉移到你的Signal錢包位址。 在支援的交易所中從你的帳戶輸入錢包位址。";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "你可以透過完成到交易所提供的錢包位址的轉移功能來轉移MobileCoin。 錢包位址是QR碼下方最常見的數字和字母字符串。";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "你可以透過完成到交易所提供的錢包位址的轉移功能來轉帳到MobileCoin。 錢包位址是QR碼下方最常見的數字和字母字符串。";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "檢查你要轉移到的錢包位址，然後重試。";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "檢查你要轉帳的錢包位址，然後重試。";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "位址錯誤";
@@ -5120,10 +5120,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "給：掃描或輸入錢包位址";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "轉移到交易所";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "轉帳到交易所";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "轉移到交易所";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "轉帳到交易所";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "回復短語設定已完成。";

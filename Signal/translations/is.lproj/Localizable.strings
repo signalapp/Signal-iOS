@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Boð meðlima";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Beiðnir meðlima og boð";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Beiðnir um inngöngu og boð";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Meðlimir";

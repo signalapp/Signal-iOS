@@ -968,7 +968,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Ibahagi ang Profile";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Ibahagi ang Iyong Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Ibahagi ang Profile";
 
 /* Action that shares user profile with a user. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Ibahagi ang Profile";

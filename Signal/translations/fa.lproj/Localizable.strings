@@ -101,7 +101,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@عضو گروه %@ شد.";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "اضافه کردن به یک گروه دیگر";
+"ADD_TO_GROUP_TITLE" = "اضافه کردن به گروهی دیگر";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "آیا تمایل دارید پروفایل خود را با این کاربر به اشتراک بگذارید؟";
@@ -3620,7 +3620,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوت‌های اعضای دیگر گروه";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوت‌های سایر اعضای گروه";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";

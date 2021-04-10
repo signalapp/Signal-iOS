@@ -101,7 +101,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ wurde zu »%@« hinzugefügt";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Zu einer weiteren Gruppe hinzufügen";
+"ADD_TO_GROUP_TITLE" = "Zu weiterer Gruppe hinzufügen";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit diesem Nutzer teilen?";
@@ -4931,7 +4931,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Zahlungen aktiviert.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Verwende Signal, um MobileCoin zu senden und zu empfangen, eine neue, auf Datenschutz ausgerichtete digitale Währung. Aktivieren, um loszulegen.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Verwende Signal, um MobileCoin zu senden und zu empfangen, eine neue und auf Datenschutz ausgerichtete digitale Währung. Aktivieren, um loszulegen.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Zahlungen wieder aktivieren";

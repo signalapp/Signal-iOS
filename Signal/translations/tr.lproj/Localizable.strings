@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Üye Davetleri";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Üye İstekleri ve Davetleri";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Üyelik İstekleri ve Davetleri";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Üyeler";

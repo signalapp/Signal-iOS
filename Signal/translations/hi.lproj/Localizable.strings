@@ -101,7 +101,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ को %@ में शामिल किया गया था";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "किसी अन्य ग्रुप में जोड़ें";
+"ADD_TO_GROUP_TITLE" = "किसी अन्य ग्रुप में शामिल करें";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "क्या आप इस उपयोगकर्ता के साथ अपनी प्रोफ़ाइल साझा करना चाहेंगे?";

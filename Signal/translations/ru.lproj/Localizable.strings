@@ -959,7 +959,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Несохранённые изменения";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Просмотреть всех";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Просмотреть все";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Этот пользователь есть в ваших контактах";
