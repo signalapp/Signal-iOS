@@ -151,6 +151,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             BenchEventComplete(eventId: "Show-Camera")
             VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
+        UIApplication.shared.isIdleTimerDisabled = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -158,6 +159,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         isVisible = false
         VolumeButtons.shared?.removeObserver(photoCapture)
         pausePhotoCapture()
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 
     override var prefersStatusBarHidden: Bool {
