@@ -270,60 +270,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         configureForRendering(componentView: componentView,
                               cellMeasurement: cellMeasurement,
                               componentDelegate: componentDelegate)
-        let rootView = componentView.rootView
+        let hOuterStack = componentView.hOuterStack
         owsAssertDebug(cellView.layoutMargins == .zero)
         owsAssertDebug(cellView.subviews.isEmpty)
-        owsAssertDebug(rootView.superview == nil)
+        owsAssertDebug(hOuterStack.superview == nil)
 
-        cellView.layoutMargins = cellLayoutMargins
-        cellView.addSubview(rootView)
-        rootView.autoPinEdge(toSuperviewEdge: .top)
-
-        let bottomInset = reactions != nil ? reactionsVProtrusion : 0
-        rootView.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomInset)
+        cellView.addSubview(hOuterStack)
+        hOuterStack.autoPinEdgesToSuperviewEdges()
 
         self.swipeActionReference = nil
         self.swipeActionProgress = messageSwipeActionState.getProgress(interactionId: interaction.uniqueId)
-
-        var leadingView: UIView?
-        if isShowingSelectionUI {
-            let selectionView = componentView.selectionView
-            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
-            cellView.addSubview(selectionView)
-            selectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-            leadingView = selectionView
-        }
-
-        if isIncoming {
-            if let leadingView = leadingView {
-                rootView.autoPinEdge(.leading, to: .trailing, of: leadingView, withOffset: selectionViewSpacing)
-            } else {
-                rootView.autoPinEdge(toSuperviewMargin: .leading)
-            }
-        } else if hasSendFailureBadge {
-            // Send failures are rare, so it's cheaper to only build these views when we need them.
-            let sendFailureBadge = UIImageView()
-            sendFailureBadge.contentMode = .center
-            sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
-            sendFailureBadge.autoSetDimensions(to: CGSize(square: sendFailureBadgeSize))
-            cellView.addSubview(sendFailureBadge)
-            sendFailureBadge.autoPinEdge(toSuperviewMargin: .trailing)
-
-            if conversationStyle.hasWallpaper {
-                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
-                sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
-                sendFailureBadge.clipsToBounds = true
-
-                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView)
-            } else {
-                let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
-                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView, withOffset: -sendFailureBadgeBottomMargin)
-            }
-
-            rootView.autoPinEdge(.trailing, to: .leading, of: sendFailureBadge, withOffset: -sendFailureBadgeSpacing)
-        } else {
-            rootView.autoPinEdge(toSuperviewMargin: .trailing)
-        }
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -334,10 +290,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
 
-    private var selectionViewSpacing: CGFloat { ConversationStyle.messageStackSpacing }
-    private var selectionViewWidth: CGFloat { ConversationStyle.selectionViewWidth }
     private var sendFailureBadgeSize: CGFloat { conversationStyle.hasWallpaper ? 40 : 24 }
-    private var sendFailureBadgeSpacing: CGFloat { ConversationStyle.messageStackSpacing }
 
     // The "message" contents of this component are vertically
     // stacked in four sections.  Ordering of the keys in each
@@ -390,6 +343,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             configureBubbleView()
         }
 
+        // hInnerStack
+
         var hInnerStackSubviews = [UIView]()
         if let subview = outerAvatarView {
             hInnerStackSubviews.append(subview)
@@ -423,6 +378,57 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                               cellMeasurement: cellMeasurement,
                               measurementKey: Self.measurementKey_hInnerStack,
                               subviews: hInnerStackSubviews)
+
+        // hOuterStack
+
+        var hOuterStackSubviews = [UIView]()
+        if isShowingSelectionUI {
+            let selectionView = componentView.selectionView
+            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
+            hOuterStackSubviews.append(selectionView)
+        }
+        if isOutgoing {
+            hOuterStackSubviews.append(componentView.cellSpacer)
+        }
+        hOuterStackSubviews.append(hInnerStack)
+        if isIncoming {
+            hOuterStackSubviews.append(componentView.cellSpacer)
+        }
+        if hasSendFailureBadge {
+            // Send failures are rare, so it's cheaper to only build these views when we need them.
+            let sendFailureBadge = UIImageView()
+            sendFailureBadge.contentMode = .center
+            sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
+            if conversationStyle.hasWallpaper {
+                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+                sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
+                sendFailureBadge.clipsToBounds = true
+            }
+
+            let sendFailureWrapper = ManualLayoutView(name: "sendFailureWrapper")
+            hOuterStackSubviews.append(sendFailureWrapper)
+            sendFailureWrapper.addSubview(sendFailureBadge)
+            let sendFailureBadgeSize = self.sendFailureBadgeSize
+            let conversationStyle = self.conversationStyle
+            sendFailureWrapper.addLayoutBlock { view in
+                var sendFailureFrame = CGRect(origin: .zero,
+                                              size: CGSize(square: sendFailureBadgeSize))
+                // Bottom align.
+                sendFailureFrame.y = view.bounds.height - sendFailureFrame.height
+                if !conversationStyle.hasWallpaper {
+                    let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
+                    sendFailureFrame.y -= sendFailureBadgeBottomMargin
+                }
+                sendFailureBadge.frame = sendFailureFrame
+            }
+        }
+
+        let hOuterStack = componentView.hOuterStack
+        hOuterStack.reset()
+        hOuterStack.configure(config: hOuterStackConfig,
+                              cellMeasurement: cellMeasurement,
+                              measurementKey: Self.measurementKey_hOuterStack,
+                              subviews: hOuterStackSubviews)
 
         componentView.swipeActionContentView = swipeActionContentView
         let swipeToReplyIconView = componentView.swipeToReplyIconView
@@ -497,8 +503,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                withOffset: -reactionsVOverlap)
         }
 
-        componentView.rootView.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
-        componentView.rootView.isAccessibilityElement = true
+        componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
+        componentView.hInnerStack.isAccessibilityElement = true
     }
 
     private func configureContentStack(componentView: CVComponentViewMessage,
@@ -676,11 +682,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return result
     }
 
-    private var cellLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: 0,
-                     leading: conversationStyle.fullWidthGutterLeading,
-                     bottom: 0,
-                     trailing: conversationStyle.fullWidthGutterTrailing)
+    private var hOuterStackConfig: CVStackViewConfig {
+        let bottomInset = reactions != nil ? reactionsVProtrusion : 0
+        let cellLayoutMargins = UIEdgeInsets(top: 0,
+                                             leading: conversationStyle.fullWidthGutterLeading,
+                                             bottom: bottomInset,
+                                             trailing: conversationStyle.fullWidthGutterTrailing)
+        return CVStackViewConfig(axis: .horizontal,
+                          alignment: .fill,
+                          spacing: ConversationStyle.messageStackSpacing,
+                          layoutMargins: cellLayoutMargins)
     }
 
     private var hInnerStackConfig: CVStackViewConfig {
@@ -719,6 +730,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
+    private static let measurementKey_hOuterStack = "CVComponentMessage.measurementKey_hOuterStack"
     private static let measurementKey_hInnerStack = "CVComponentMessage.measurementKey_hInnerStack"
     private static let measurementKey_contentStack = "CVComponentMessage.measurementKey_contentStack"
     private static let measurementKey_topFullWidthStackView = "CVComponentMessage.measurementKey_topFullWidthStackView"
@@ -729,43 +741,25 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     public func measure(maxWidth maxWidthChatHistory: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidthChatHistory > 0)
 
-        let outerStackViewMaxWidth = max(0, maxWidthChatHistory - cellLayoutMargins.totalWidth)
-        var hInnerStackSize = CGSize.zero
-        var outerStackViewSize: CGSize = .zero
+        let selectionViewWidth = ConversationStyle.selectionViewWidth
 
-        if hasSenderAvatarLayout {
-            // Sender avatar in groups.
-            outerStackViewSize.width += ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
-            outerStackViewSize.height = max(outerStackViewSize.height, ConversationStyle.groupMessageAvatarDiameter)
-        }
+        let hOuterStackConfig = self.hOuterStackConfig
+        var contentMaxWidth = maxWidthChatHistory - hOuterStackConfig.layoutMargins.totalWidth
+        contentMaxWidth -= ConversationStyle.messageDirectionSpacing
         if isShowingSelectionUI {
-            outerStackViewSize.width += selectionViewWidth + selectionViewSpacing
+            contentMaxWidth -= selectionViewWidth + hOuterStackConfig.spacing
         }
         if !isIncoming, hasSendFailureBadge {
-            outerStackViewSize.width += sendFailureBadgeSize + sendFailureBadgeSpacing
+            contentMaxWidth -= sendFailureBadgeSize + hOuterStackConfig.spacing
         }
-        // The message cell's "outer" stack can contain many views:
-        // sender avatar, selection UI, send failure badge.
-        // The message cell's "content" stack must fit within the
-        // remaining space in the "outer" stack.
-        let contentMaxWidth = max(0,
-                                  min(conversationStyle.maxMessageWidth,
-                                      outerStackViewMaxWidth - (outerStackViewSize.width +
-                                                                    ConversationStyle.messageDirectionSpacing)))
+        if hasSenderAvatarLayout {
+            // Sender avatar in groups.
+            contentMaxWidth -= ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
+        }
+        contentMaxWidth = max(0, min(conversationStyle.maxMessageWidth, contentMaxWidth))
         let contentStackSize = measureContentStack(maxWidth: contentMaxWidth,
                                                    measurementBuilder: measurementBuilder)
-        outerStackViewSize.width += contentStackSize.width
-        outerStackViewSize.height = max(outerStackViewSize.height, contentStackSize.height)
 
-        //        var hInnerStackSubviews = [UIView]()
-        //
-        //        let hInnerStack = componentView.hInnerStack
-        //        hInnerStack.reset()
-        //        hInnerStack.configure(config: hInnerStackConfig,
-        //                             cellMeasurement: cellMeasurement,
-        //                             measurementKey: Self.measurementKey_hInnerStack,
-        //                             subviews: hInnerStackSubviews)
-        //
         var hInnerStackSubviewInfos = [ManualStackSubviewInfo]()
         if hasSenderAvatarLayout,
            nil != self.senderAvatar {
@@ -778,19 +772,33 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_hInnerStack,
                                                              subviewInfos: hInnerStackSubviewInfos)
-        // TODO:
-        //        return stackMeasurement.measuredSize
-
-        hInnerStackSize.width += outerStackViewSize.width
+        var hInnerStackSize = hInnerStackMeasurement.measuredSize
         let minBubbleWidth = kOWSMessageCellCornerRadius_Large * 2
         hInnerStackSize.width = max(hInnerStackSize.width, minBubbleWidth)
-        hInnerStackSize.height = max(hInnerStackSize.height, outerStackViewSize.height)
 
-        if nil != reactions {
-            hInnerStackSize.height += reactionsVProtrusion
+        var hOuterStackSubviewInfos = [ManualStackSubviewInfo]()
+        if isShowingSelectionUI {
+            let selectionViewSize = CGSize(width: selectionViewWidth, height: 0)
+            hOuterStackSubviewInfos.append(selectionViewSize.asManualSubviewInfo(hasFixedWidth: true))
         }
-
-        return hInnerStackSize.ceil
+        if isOutgoing {
+            // cellSpacer
+            hOuterStackSubviewInfos.append(CGSize.zero.asManualSubviewInfo)
+        }
+        hOuterStackSubviewInfos.append(hInnerStackSize.asManualSubviewInfo(hasFixedWidth: true))
+        if isIncoming {
+            // cellSpacer
+            hOuterStackSubviewInfos.append(CGSize.zero.asManualSubviewInfo)
+        }
+        if !isIncoming, hasSendFailureBadge {
+            let sendFailureBadgeSize = CGSize(square: self.sendFailureBadgeSize)
+            hOuterStackSubviewInfos.append(sendFailureBadgeSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
+        let hOuterStackMeasurement = ManualStackView.measure(config: hOuterStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_hOuterStack,
+                                                             subviewInfos: hOuterStackSubviewInfos)
+        return hOuterStackMeasurement.measuredSize
     }
 
     private func measureContentStack(maxWidth contentMaxWidth: CGFloat,
@@ -1097,19 +1105,29 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewMessage: NSObject, CVComponentView {
 
-        // Contains the "outer" contents which are arranged horizontally:
+        // Contains the cell contents which are arranged horizontally:
         //
         // * Gutters
-        // * Group sender bubble
-        // * Content view wrapped in message bubble _or_ unwrapped content view.
-        // * Reactions view, which uses a custom layout block.
+        // * Message Selection UI
+        // * hInnerStack
+        // * "Send failure" badge
+        fileprivate let hOuterStack = ManualStackView(name: "hOuterStack")
+
+        // Contains the cell contents which are arranged horizontally:
         //
-        // TODO:
+        // * Group sender avatar
+        // * Content view wrapped in message bubble _or_ unwrapped content view.
+        //
+        // Additionally, it contains:
+        //
+        // * Reactions view, which uses a custom layout block.
         fileprivate let hInnerStack = ManualStackView(name: "hInnerStack")
 
         fileprivate let avatarView = AvatarImageView()
 
         fileprivate let bubbleView = OWSBubbleView()
+
+        // Contains the actual renderable message content, arranged vertically.
         fileprivate let contentStack = ManualStackView(name: "contentStack")
 
         // We use these stack views when there is a mixture of subcomponents,
@@ -1119,17 +1137,21 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bottomFullWidthStackView = ManualStackView(name: "bottomFullWidthStackView")
         fileprivate let bottomNestedStackView = ManualStackView(name: "bottomNestedStackView")
 
-        // TODO:
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var swipeActionContentView: UIView?
 
         fileprivate let swipeToReplyIconView = UIImageView()
 
+        fileprivate let cellSpacer = UIView()
+
         public var isDedicatedCellView = false
 
-        // TODO:
         public var rootView: UIView {
+            hOuterStack
+        }
+
+        public var swipeRootView: UIView {
             hInnerStack
         }
 
@@ -1247,6 +1269,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             removeSwipeActionAnimations()
 
             if !isDedicatedCellView {
+                hOuterStack.reset()
                 hInnerStack.reset()
                 bubbleView.removeAllSubviews()
                 contentStack.reset()
@@ -1516,8 +1539,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     ) {
         AssertIsOnMainThread()
 
-        var xOffset = sender.translation(in: componentView.rootView).x
-        var xVelocity = sender.velocity(in: componentView.rootView).x
+        var xOffset = sender.translation(in: componentView.swipeRootView).x
+        var xVelocity = sender.velocity(in: componentView.swipeRootView).x
 
         // Invert positions for RTL logic, since the user is swiping in the opposite direction.
         if CurrentAppContext().isRTL {
@@ -1770,7 +1793,6 @@ fileprivate extension CVComponentMessage {
             subcomponent.configureForRendering(componentView: subcomponentView,
                                                cellMeasurement: cellMeasurement,
                                                componentDelegate: componentDelegate)
-            // TODO: Pin to measured height?
             return subcomponentView
         } else {
             let subcomponentView = subcomponent.buildComponentView(componentDelegate: componentDelegate)
@@ -1778,7 +1800,6 @@ fileprivate extension CVComponentMessage {
             subcomponent.configureForRendering(componentView: subcomponentView,
                                                cellMeasurement: cellMeasurement,
                                                componentDelegate: componentDelegate)
-            // TODO: Pin to measured height?
             return subcomponentView
         }
     }
