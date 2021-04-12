@@ -313,11 +313,14 @@ open class ManualStackView: ManualLayoutView {
         if abs(onAxisSizeTotal - onAxisMaxSize) < fuzzyTolerance {
             // Exact match.
         } else if onAxisSizeTotal < onAxisMaxSize {
+            // Underflow is expected; a stack view is often larger than
+            // the minimum size of its contents.  The stack view will
+            // expand the layout of its contents to take advantage of
+            // the extra space.
             let underflow = onAxisMaxSize - onAxisSizeTotal
-            Logger.warn("\(name): underflow[\(name)]: \(underflow)")
+            Logger.verbose("\(name): underflow[\(name)]: \(underflow)")
 
-            // TODO: This approach is pretty crude.
-            // We could weight re-distribution by contentHuggingPriority.
+            // TODO: We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {
                 !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
             }
@@ -331,11 +334,13 @@ open class ManualStackView: ManualLayoutView {
                 layoutItem.onAxisSize = max(0, layoutItem.onAxisSize + adjustment)
             }
         } else if onAxisSizeTotal > onAxisMaxSize {
+            // Overflow should be rare, at least in the conversation view cells.
+            // It is expected in some cases, e.g. when animating an orientation
+            // change when the new layout hasn't landed yet.
             let overflow = onAxisSizeTotal - onAxisMaxSize
             Logger.warn("\(name): overflow[\(name)]: \(overflow)")
 
-            // TODO: This approach is pretty crude.
-            // We could weight re-distribution by compressionResistence.
+            // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
                 !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
             }
