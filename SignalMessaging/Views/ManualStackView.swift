@@ -167,6 +167,13 @@ open class ManualStackView: ManualLayoutView {
         // We apply the layout blocks _after_ the arrangement.
         super.layoutSubviews(skipLayoutBlocks: true)
 
+        guard bounds.width > 0, bounds.height > 0 else {
+            for subview in subviews {
+                subview.frame = .zero
+            }
+            return
+        }
+
         ensureArrangement()?.apply()
 
         applyLayoutBlocks()
