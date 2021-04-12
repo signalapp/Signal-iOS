@@ -267,6 +267,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                 }
                                 id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
                                 if (possiblyRead.sortId > sortId) {
+                                    uint64_t test = possiblyRead.sortId;
                                     *stop = YES;
                                     return;
                                 }

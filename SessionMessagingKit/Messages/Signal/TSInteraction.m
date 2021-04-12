@@ -199,13 +199,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    if ([self isKindOfClass:TSMessage.class] && ((TSMessage *)self).isOpenGroupMessage) {
-        sortId1 = self.sortId;
-        sortId2 = other.sortId;
-    } else {
-        sortId1 = self.timestamp;
-        sortId2 = other.timestamp;
-    }
+    // sortId == receivedAtTimestamp for open group messages.
+    // sortId == sendTimestamp for one-to-one and closed group messages.
+    sortId1 = self.sortId;
+    sortId2 = other.sortId;
 
     if (sortId1 > sortId2) {
         return NSOrderedDescending;
@@ -227,6 +224,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      [super description],
                      self.uniqueThreadId,
                      (unsigned long)self.timestamp];
+}
+
+- (uint64_t)sortId
+{
+    if ([self isKindOfClass:TSMessage.class] && ((TSMessage *)self).isOpenGroupMessage) {
+        return self.receivedAtTimestamp;
+    }
+    return self.timestamp;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
