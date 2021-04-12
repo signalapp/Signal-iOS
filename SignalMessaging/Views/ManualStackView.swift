@@ -358,7 +358,7 @@ open class ManualStackView: ManualLayoutView {
         }
 
         // Determine offAxisSize and offAxisLocation.
-        for (index, layoutItem) in layoutItems.enumerated() {
+        for layoutItem in layoutItems {
             if layoutItem.offAxisMeasuredSize > offAxisMaxSize {
                 Logger.warn("\(name): Off-axis overflow: offAxisMeasuredSize: \(layoutItem.offAxisMeasuredSize) > offAxisMaxSize: \(offAxisMaxSize)")
             }
