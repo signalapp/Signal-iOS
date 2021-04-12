@@ -457,7 +457,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                       tintColor: .ows_gray45)
         }
 
-        if let reactions = self.reactions {
+        if let reactions = self.reactions,
+           let reactionsSize = cellMeasurement.size(key: Self.measurementKey_reactions) {
             let reactionsView = configureSubcomponentView(messageView: componentView,
                                                           subcomponent: reactions,
                                                           cellMeasurement: cellMeasurement,
@@ -465,42 +466,30 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                           key: .reactions)
 
             hInnerStack.addSubview(reactionsView.rootView)
-            if isIncoming {
-                reactionsView.rootView.autoPinEdge(.leading,
-                                                   to: .leading,
-                                                   of: outerContentView,
-                                                   withOffset: +reactionsHInset,
-                                                   relation: .greaterThanOrEqual)
-            } else {
-                reactionsView.rootView.autoPinEdge(.trailing,
-                                                   to: .trailing,
-                                                   of: outerContentView,
-                                                   withOffset: -reactionsHInset,
-                                                   relation: .lessThanOrEqual)
-            }
-
+            let reactionsRootView = reactionsView.rootView
+            let reactionsVOverlap = self.reactionsVOverlap
+            let reactionsHInset = self.reactionsHInset
+            let isIncoming = self.isIncoming
             // We want the reaction bubbles to stick to the middle of the screen inset from
             // the edge of the bubble with a small amount of padding unless the bubble is smaller
             // than the reactions view in which case it will break these constraints and extend
             // further into the middle of the screen than the message itself.
-            NSLayoutConstraint.autoSetPriority(.defaultLow) {
-                if self.isIncoming {
-                    reactionsView.rootView.autoPinEdge(.trailing,
-                                                       to: .trailing,
-                                                       of: outerContentView,
-                                                       withOffset: -reactionsHInset)
-                } else {
-                    reactionsView.rootView.autoPinEdge(.leading,
-                                                       to: .leading,
-                                                       of: outerContentView,
-                                                       withOffset: +reactionsHInset)
+            hInnerStack.addLayoutBlock { _ in
+                guard let superview = reactionsRootView.superview else {
+                    return
                 }
+                let contentFrame = superview.convert(outerContentView.bounds, from: outerContentView)
+                var reactionsFrame = CGRect(origin: .zero, size: reactionsSize)
+                reactionsFrame.y = contentFrame.maxY - reactionsVOverlap
+                let leftAlignX = contentFrame.minX + reactionsHInset
+                let rightAlignX = contentFrame.maxX - (reactionsSize.width + reactionsHInset)
+                if isIncoming ^ CurrentAppContext().isRTL {
+                    reactionsFrame.x = max(leftAlignX, rightAlignX)
+                } else {
+                    reactionsFrame.x = min(leftAlignX, rightAlignX)
+                }
+                reactionsRootView.frame = reactionsFrame
             }
-
-            reactionsView.rootView.autoPinEdge(.top,
-                                               to: .bottom,
-                                               of: outerContentView,
-                                               withOffset: -reactionsVOverlap)
         }
 
         componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
@@ -737,14 +726,15 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static let measurementKey_topNestedStackView = "CVComponentMessage.measurementKey_topNestedStackView"
     private static let measurementKey_bottomFullWidthStackView = "CVComponentMessage.measurementKey_bottomFullWidthStackView"
     private static let measurementKey_bottomNestedStackView = "CVComponentMessage.measurementKey_bottomNestedStackView"
+    private static let measurementKey_reactions = "CVComponentMessage.measurementKey_reactions"
 
-    public func measure(maxWidth maxWidthChatHistory: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
-        owsAssertDebug(maxWidthChatHistory > 0)
+    public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+        owsAssertDebug(maxWidth > 0)
 
         let selectionViewWidth = ConversationStyle.selectionViewWidth
 
         let hOuterStackConfig = self.hOuterStackConfig
-        var contentMaxWidth = maxWidthChatHistory - hOuterStackConfig.layoutMargins.totalWidth
+        var contentMaxWidth = maxWidth - hOuterStackConfig.layoutMargins.totalWidth
         contentMaxWidth -= ConversationStyle.messageDirectionSpacing
         if isShowingSelectionUI {
             contentMaxWidth -= selectionViewWidth + hOuterStackConfig.spacing
@@ -800,6 +790,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_hOuterStack,
                                                              subviewInfos: hOuterStackSubviewInfos)
+
+        if let reactionsSubcomponent = subcomponent(forKey: .reactions) {
+            let reactionsSize = reactionsSubcomponent.measure(maxWidth: maxWidth,
+                                                                     measurementBuilder: measurementBuilder)
+            measurementBuilder.setSize(key: Self.measurementKey_reactions, size: reactionsSize)
+        }
+
         return hOuterStackMeasurement.measuredSize
     }
 

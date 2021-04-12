@@ -401,9 +401,6 @@ public class DebugFlags: BaseFlags {
     public static let fastPerfTests = false
 
     @objc
-    public static let messageSendsFail = false
-
-    @objc
     public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
@@ -472,6 +469,11 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let paymentsAllowAllCountries = FeatureFlags.paymentsInternalBeta
+
+    @objc
+    public static let messageSendsFail = TestableFlag(false,
+                                                      title: LocalizationNotNeeded("Message Sends Fail"),
+                                                      details: LocalizationNotNeeded("All outgoing message sends will fail."))
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
