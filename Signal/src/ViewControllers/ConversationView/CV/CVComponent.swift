@@ -310,7 +310,6 @@ extension CVComponentBase {
         blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
         blurView.contentView.addSubview(blurOverlay)
         blurOverlay.autoPinEdgesToSuperviewEdges()
-
         return blurView
     }
 }

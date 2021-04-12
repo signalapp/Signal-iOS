@@ -318,7 +318,6 @@ open class ManualStackView: ManualLayoutView {
             // expand the layout of its contents to take advantage of
             // the extra space.
             let underflow = onAxisMaxSize - onAxisSizeTotal
-            Logger.verbose("\(name): underflow[\(name)]: \(underflow)")
 
             // TODO: We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {

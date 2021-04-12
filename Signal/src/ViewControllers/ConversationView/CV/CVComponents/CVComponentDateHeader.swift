@@ -81,15 +81,23 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.blurView = nil
 
             let contentView: UIView = {
-                if hasWallpaper {
+                if hasWallpaper,
+                   let innerStackSize = cellMeasurement.size(key: Self.measurementKey_innerStackSize) {
                     // blurView replaces innerStack, using the same size, layoutMargins, etc.
 
                     let blurView = buildBlurView(conversationStyle: conversationStyle)
                     componentView.blurView = blurView
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
+                    // blurView will be arranged by manual layout, but if we don't
+                    // constrain its width and height, its internal constraints will
+                    // be ambiguous.
+                    blurView.autoSetDimensions(to: innerStackSize)
+
                     blurView.contentView.addSubview(titleLabel)
                     titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
+                    titleLabel.setContentHuggingLow()
+
                     return blurView
                 } else {
                     innerStack.configure(config: innerStackConfig,
@@ -144,6 +152,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     private static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentDateHeader.measurementKey_innerStack"
+    private static let measurementKey_innerStackSize = "CVComponentDateHeader.measurementKey_innerStackSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -158,6 +167,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: [ labelInfo ])
+        measurementBuilder.setSize(key: Self.measurementKey_innerStackSize,
+                                   size: innerStackMeasurement.measuredSize)
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
