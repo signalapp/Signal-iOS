@@ -767,7 +767,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let avatarSize = CGSize.square(ConversationStyle.groupMessageAvatarDiameter)
             hInnerStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
-        hInnerStackSubviewInfos.append(contentStackSize.asManualSubviewInfo(hasFixedWidth: true))
+        // NOTE: The contentStackSize does not have fixed width and may grow
+        //       to reflect the minBubbleWidth below.
+        hInnerStackSubviewInfos.append(contentStackSize.asManualSubviewInfo)
         let hInnerStackMeasurement = ManualStackView.measure(config: hInnerStackConfig,
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_hInnerStack,
