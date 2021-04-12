@@ -436,25 +436,38 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         swipeToReplyIconView.alpha = 0
         hInnerStack.addSubview(swipeToReplyIconView)
         hInnerStack.sendSubviewToBack(swipeToReplyIconView)
-        swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeActionContentView)
-        swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeActionContentView, withOffset: 8)
 
+        let swipeToReplySize: CGFloat
         if conversationStyle.hasWallpaper {
             swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
             swipeToReplyIconView.layer.cornerRadius = 17
             swipeToReplyIconView.clipsToBounds = true
-            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 34))
-
+            swipeToReplySize = 34
             swipeToReplyIconView.setTemplateImageName("reply-outline-20",
                                                       tintColor: .ows_gray45)
         } else {
             swipeToReplyIconView.backgroundColor = .clear
             swipeToReplyIconView.layer.cornerRadius = 0
             swipeToReplyIconView.clipsToBounds = false
-            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 24))
-
+            swipeToReplySize = 24
             swipeToReplyIconView.setTemplateImageName("reply-outline-24",
                                                       tintColor: .ows_gray45)
+        }
+        hInnerStack.addLayoutBlock { _ in
+            guard let superview = swipeToReplyIconView.superview else {
+                return
+            }
+            let contentFrame = superview.convert(outerContentView.bounds, from: swipeActionContentView)
+            var swipeToReplyFrame = CGRect(origin: .zero, size: .square(swipeToReplySize))
+            // swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeActionContentView, withOffset: 8)
+            if CurrentAppContext().isRTL {
+                swipeToReplyFrame.x = contentFrame.maxX - (swipeToReplySize + 8)
+            } else {
+                swipeToReplyFrame.x = contentFrame.x + 8
+            }
+            // swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeActionContentView)
+            swipeToReplyFrame.y = contentFrame.y + (contentFrame.height - swipeToReplyFrame.height) * 0.5
+            swipeToReplyIconView.frame = swipeToReplyFrame
         }
 
         if let reactions = self.reactions,
@@ -1253,8 +1266,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            avatarView.autoSetDimensions(to: CGSize(square: ConversationStyle.groupMessageAvatarDiameter))
-
             bubbleView.layoutMargins = .zero
         }
 
