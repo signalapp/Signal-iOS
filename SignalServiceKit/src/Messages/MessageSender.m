@@ -106,8 +106,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         attachmentStream.attachmentType = TSAttachmentTypeBorderless;
     }
 
-    [attachmentStream writeConsumingDataSource:self.dataSource error:error];
-    if (*error != nil) {
+    BOOL success = [attachmentStream writeConsumingDataSource:self.dataSource error:error];
+    if (!success || *error != nil) {
         return nil;
     }
 
