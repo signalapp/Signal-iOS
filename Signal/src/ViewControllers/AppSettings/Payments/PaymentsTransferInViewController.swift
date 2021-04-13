@@ -31,6 +31,13 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        // We may have just transferred in; update the balance.
+        paymentsSwift.updateCurrentPaymentBalance()
+    }
+
     public override func applyTheme() {
         super.applyTheme()
 

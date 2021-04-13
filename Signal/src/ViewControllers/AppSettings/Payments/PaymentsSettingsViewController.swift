@@ -40,6 +40,34 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
+    // MARK: - Update Balance Timer
+
+    private var updateBalanceTimer: Timer?
+
+    private func stopUpdateBalanceTimer() {
+        updateBalanceTimer?.invalidate()
+        updateBalanceTimer = nil
+    }
+
+    private func startUpdateBalanceTimer() {
+        stopUpdateBalanceTimer()
+
+        let updateInterval = kSecondInterval * 30
+        self.updateBalanceTimer = WeakTimer.scheduledTimer(timeInterval: updateInterval,
+                                                           target: self,
+                                                           userInfo: nil,
+                                                           repeats: true) { _ in
+            Self.updateBalanceTimerDidFire()
+        }
+    }
+
+    private static func updateBalanceTimerDidFire() {
+        guard CurrentAppContext().isMainAppAndActive else {
+            return
+        }
+        Self.paymentsSwift.updateCurrentPaymentBalance()
+    }
+
     // MARK: - Help Cards
 
     private enum HelpCard: String, Equatable, CaseIterable {
@@ -162,6 +190,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         paymentsSwift.updateCurrentPaymentBalance()
         paymentsCurrencies.updateConversationRatesIfStale()
+
+        startUpdateBalanceTimer()
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
@@ -171,6 +201,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
            mode == .inAppSettings {
             PaymentsViewUtils.markAllUnreadPaymentsAsReadWithSneakyTransaction()
         }
+
+        stopUpdateBalanceTimer()
     }
 
     public override func applyTheme() {
