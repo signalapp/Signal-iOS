@@ -345,6 +345,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         // hInnerStack
 
+        let hInnerStack = componentView.hInnerStack
+        hInnerStack.reset()
         var hInnerStackSubviews = [UIView]()
         if let subview = outerAvatarView {
             hInnerStackSubviews.append(subview)
@@ -361,7 +363,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                                  messageView: componentView) {
                 if let bodyMediaComponent = componentAndView.component as? CVComponentBodyMedia {
                     if let bubbleViewPartner = bodyMediaComponent.bubbleViewPartner(componentView: componentAndView.componentView) {
-                        bubbleView.addPartnerView(bubbleViewPartner)
+                        bubbleViewPartner.setBubbleView(bubbleView)
+                        hInnerStack.addLayoutBlock { _ in
+                            // The "bubble view partner" must update it's layers
+                            // to reflect the bubble view state.
+                            bubbleViewPartner.updateLayers()
+                        }
                     }
                 } else {
                     owsFailDebug("Invalid component.")
@@ -372,8 +379,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             swipeActionContentView = outerContentView
         }
 
-        let hInnerStack = componentView.hInnerStack
-        hInnerStack.reset()
         hInnerStack.configure(config: hInnerStackConfig,
                               cellMeasurement: cellMeasurement,
                               measurementKey: Self.measurementKey_hInnerStack,
@@ -1290,8 +1295,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
 
             avatarView.image = nil
-
-            bubbleView.clearPartnerViews()
 
             if !isDedicatedCellView {
                 swipeActionContentView = nil

@@ -50,14 +50,6 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 
 - (UIBezierPath *)maskPath;
 
-#pragma mark - Coordination
-
-- (void)addPartnerView:(id<OWSBubbleViewPartner>)view;
-
-- (void)clearPartnerViews;
-
-- (void)updatePartnerViews;
-
 - (CGFloat)minWidth;
 
 - (CGFloat)minHeight;
