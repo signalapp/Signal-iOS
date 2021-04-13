@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -53,10 +53,12 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
     if timeElapsed > intervalLimit {
         let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
         let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
-        if logInProduction {
-            Logger.info(logMessage)
-        } else {
-            Logger.debug(logMessage)
+        if !DebugFlags.reduceLogChatter {
+            if logInProduction {
+                Logger.info(logMessage)
+            } else {
+                Logger.debug(logMessage)
+            }
         }
     }
 
@@ -308,7 +310,9 @@ public class BenchSteps: NSObject {
         let fromLastInterval: TimeInterval
 
         func log() {
-            Logger.debug("[Bench] \(stepName), duration: \(format(fromLastInterval)) (\(format(fromStartInterval)))")
+            if !DebugFlags.reduceLogChatter {
+                Logger.debug("[Bench] \(stepName), duration: \(format(fromLastInterval)) (\(format(fromStartInterval)))")
+            }
         }
 
         func format(_ interval: TimeInterval) -> String {

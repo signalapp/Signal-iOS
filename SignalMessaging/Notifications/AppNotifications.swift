@@ -210,7 +210,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         switch notification.object {
         case let incomingMessage as TSIncomingMessage:
-            Logger.debug("canceled notification for message: \(incomingMessage)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.debug("canceled notification for message: \(incomingMessage)")
+            }
             cancelNotifications(messageId: incomingMessage.uniqueId)
         default:
             break

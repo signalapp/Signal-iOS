@@ -175,7 +175,9 @@ extension CVUpdate {
                 return buildUpdate(type: .reloadAll)
             }
             updateItems.append(.insert(renderItem: renderItem, newIndex: newIndex))
-            Logger.verbose("insert: \(itemId) at: \(newIndex), \(renderItem.componentState.messageCellType)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("insert: \(itemId) at: \(newIndex), \(renderItem.componentState.messageCellType)")
+            }
             transformedItemList.insert(itemId, at: newIndex)
         }
 
@@ -232,11 +234,15 @@ extension CVUpdate {
                 continue
             case .stateChanged:
                 // The item changed, so we need to update it.
-                Logger.verbose("update: \(itemId) at: \(oldIndex) -> \(newIndex), \(newRenderItem.componentState.messageCellType)")
+                if !DebugFlags.reduceLogChatter {
+                    Logger.verbose("update: \(itemId) at: \(oldIndex) -> \(newIndex), \(newRenderItem.componentState.messageCellType)")
+                }
                 updateItems.append(.update(renderItem: newRenderItem, oldIndex: oldIndex, newIndex: newIndex))
             case .appearanceChanged:
                 // The item changed, so we need to update it.
-                Logger.verbose("update: \(itemId) at: \(oldIndex) -> \(newIndex), \(newRenderItem.componentState.messageCellType)")
+                if !DebugFlags.reduceLogChatter {
+                    Logger.verbose("update: \(itemId) at: \(oldIndex) -> \(newIndex), \(newRenderItem.componentState.messageCellType)")
+                }
                 updateItems.append(.update(renderItem: newRenderItem, oldIndex: oldIndex, newIndex: newIndex))
                 // Take note of the fact that only the _appearance_ of the
                 // item changed, not its state.

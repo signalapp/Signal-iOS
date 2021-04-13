@@ -417,6 +417,7 @@
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
 		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
+		34C7C7152625D8E100F4DC2A /* DebugUIMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7C7142625D8E100F4DC2A /* DebugUIMessages.swift */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
@@ -1452,6 +1453,7 @@
 		34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-mp3.mp3"; sourceTree = "<group>"; };
 		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
 		34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg.jpg"; sourceTree = "<group>"; };
+		34C7C7142625D8E100F4DC2A /* DebugUIMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMessages.swift; sourceTree = "<group>"; };
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
@@ -3018,6 +3020,7 @@
 				34E0127323FDA960002D0D13 /* DebugUIGroupsV2.swift */,
 				34D8C0231ED3673300188D7C /* DebugUIMessages.h */,
 				34D8C0241ED3673300188D7C /* DebugUIMessages.m */,
+				34C7C7142625D8E100F4DC2A /* DebugUIMessages.swift */,
 				4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */,
 				34D2CCDD206939B200CB1A14 /* DebugUIMessagesAction.h */,
 				34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */,
@@ -5291,6 +5294,7 @@
 				3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
+				34C7C7152625D8E100F4DC2A /* DebugUIMessages.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
 				88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */,

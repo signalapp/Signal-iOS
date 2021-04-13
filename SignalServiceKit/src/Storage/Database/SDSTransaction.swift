@@ -117,7 +117,9 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
             return
         }
         if transactionFinalizationBlocks[key] != nil {
-            Logger.verbose("De-duplicating.")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("De-duplicating.")
+            }
         }
         // Always overwrite; we want to use the _last_ block.
         // For example, in the case of touching thread, a given

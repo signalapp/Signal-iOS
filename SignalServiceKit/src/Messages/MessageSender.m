@@ -192,7 +192,11 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
-        OWSFailDebug(@"Precondition failure: %@.", error);
+        if (IsNetworkConnectivityFailure(error)) {
+            OWSLogWarn(@"Precondition failure: %@.", error);
+        } else {
+            OWSFailDebug(@"Precondition failure: %@.", error);
+        }
         return error;
     }
 

@@ -194,10 +194,12 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     }
 
     NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
-    OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
-        self.uniqueId,
-        self.timestamp,
-        secondsAgoRead);
+    if (!SSKDebugFlags.reduceLogChatter) {
+        OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
+            self.uniqueId,
+            self.timestamp,
+            secondsAgoRead);
+    }
 
     [self anyUpdateIncomingMessageWithTransaction:transaction
                                             block:^(TSIncomingMessage *message) {

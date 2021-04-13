@@ -285,7 +285,9 @@ class GRDBFullTextSearchFinder: NSObject {
             return false
         }
         guard !shouldSkipUpdate else {
-            Logger.verbose("Skipping FTS update")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("Skipping FTS update")
+            }
             return
         }
 

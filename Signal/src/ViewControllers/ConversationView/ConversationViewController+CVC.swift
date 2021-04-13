@@ -541,17 +541,23 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 case .insert(_, let newIndex):
                     // Always perform inserts before updates.
                     owsAssertDebug(!hasUpdated)
-                    Logger.verbose("insert newIndex: \(newIndex)")
+                    if !DebugFlags.reduceLogChatter {
+                        Logger.verbose("insert newIndex: \(newIndex)")
+                    }
                     let indexPath = IndexPath(row: newIndex, section: section)
                     self.collectionView.insertItems(at: [indexPath])
                     hasInserted = true
                 case .update(_, let oldIndex, _):
-                    Logger.verbose("update oldIndex: \(oldIndex)")
+                    if !DebugFlags.reduceLogChatter {
+                        Logger.verbose("update oldIndex: \(oldIndex)")
+                    }
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.reloadItems(at: [indexPath])
                     hasUpdated = true
                 case .delete(_, let oldIndex):
-                    Logger.verbose("delete oldIndex: \(oldIndex)")
+                    if !DebugFlags.reduceLogChatter {
+                        Logger.verbose("delete oldIndex: \(oldIndex)")
+                    }
                     // Always perform deletes before inserts and updates.
                     owsAssertDebug(!hasInserted && !hasUpdated)
 
