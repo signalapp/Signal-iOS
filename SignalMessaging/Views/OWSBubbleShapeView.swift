@@ -59,48 +59,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     public required init(coder aDecoder: NSCoder) {
         notImplemented()
     }
-//    
-//    - (void)setFillColor:(nullable UIColor *)fillColor
-//    {
-//    _fillColor = fillColor;
-//    
-//    [self updateLayers];
-//    }
-//    
-//    - (void)setStrokeColor:(nullable UIColor *)strokeColor
-//    {
-//    _strokeColor = strokeColor;
-//    
-//    [self updateLayers];
-//    }
-//    
-//    - (void)setStrokeThickness:(CGFloat)strokeThickness
-//    {
-//    _strokeThickness = strokeThickness;
-//    
-//    [self updateLayers];
-//    }
-//    
-//    - (void)setInnerShadowColor:(nullable UIColor *)innerShadowColor
-//    {
-//    _innerShadowColor = innerShadowColor;
-//    
-//    [self updateLayers];
-//    }
-//    
-//    - (void)setInnerShadowRadius:(CGFloat)innerShadowRadius
-//    {
-//    _innerShadowRadius = innerShadowRadius;
-//    
-//    [self updateLayers];
-//    }
-//    
-//    - (void)setInnerShadowOpacity:(float)innerShadowOpacity
-//    {
-//    _innerShadowOpacity = innerShadowOpacity;
-//    
-//    [self updateLayers];
-//    }
 
     public override var bounds: CGRect {
         didSet {
@@ -141,10 +99,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         let newState = State(bounds: bounds,
                              bubbleOffset: bubbleOffset,
                              bubbleBezierPath: bubbleBezierPath)
-        let newState2 = State(bounds: bounds,
-                             bubbleOffset: bubbleOffset,
-                             bubbleBezierPath: bubbleBezierPath)
-        owsAssertDebug(newState == newState2)
         guard newState != currentState else {
             return
         }
