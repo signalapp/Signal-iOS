@@ -623,6 +623,10 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
         return shouldHideCollectionViewContent ? [] : renderState.items
     }
 
+    public var renderStateId: UInt {
+        return shouldHideCollectionViewContent ? CVRenderState.renderStateId_unknown : renderState.renderStateId
+    }
+
     var allIndexPaths: [IndexPath] {
         AssertIsOnMainThread()
 

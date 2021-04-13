@@ -18,6 +18,7 @@ public protocol ConversationViewLayoutItem {
 public protocol ConversationViewLayoutDelegate {
 
     var layoutItems: [ConversationViewLayoutItem] { get }
+    var renderStateId: UInt { get }
 
     var layoutHeaderHeight: CGFloat { get }
     var layoutFooterHeight: CGFloat { get }
@@ -120,7 +121,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
             return layoutInfo
         }
 
-        let layoutInfo = Self.buildLayoutInfo(delegate: delegate, conversationStyle: conversationStyle)
+        updateState()
+
+        let layoutInfo = Self.buildLayoutInfo(state: currentState)
         currentLayoutInfo = layoutInfo
         hasEverHadLayout = true
         return layoutInfo
@@ -152,7 +155,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public override func invalidateLayout() {
         super.invalidateLayout()
 
-        clearState()
+        updateState()
     }
 
     @objc
@@ -164,11 +167,18 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         super.invalidateLayout(with: context)
 
-        clearState()
+        updateState()
     }
 
-    private func clearState() {
+    private func updateState() {
         AssertIsOnMainThread()
+
+        let newState = State.build(delegate: delegate, conversationStyle: conversationStyle)
+        guard newState != currentState else {
+            return
+        }
+
+        currentState = newState
 
         currentLayoutInfo = nil
     }
@@ -180,8 +190,42 @@ public class ConversationViewLayout: UICollectionViewLayout {
         _ = ensureCurrentLayoutInfo()
     }
 
-    private static func buildLayoutInfo(delegate: ConversationViewLayoutDelegate?,
-                                        conversationStyle: ConversationStyle) -> LayoutInfo {
+    private var currentState: State?
+
+    private struct State: Equatable {
+        let conversationStyle: ConversationStyle
+
+        let renderStateId: UInt
+        let layoutItems: [ConversationViewLayoutItem]
+
+        let layoutHeaderHeight: CGFloat
+        let layoutFooterHeight: CGFloat
+
+        static func build(delegate: ConversationViewLayoutDelegate?,
+                          conversationStyle: ConversationStyle) -> State? {
+            guard let delegate = delegate else {
+                return nil
+            }
+            return State(conversationStyle: conversationStyle,
+                         renderStateId: delegate.renderStateId,
+                         layoutItems: delegate.layoutItems,
+                         layoutHeaderHeight: delegate.layoutHeaderHeight,
+                         layoutFooterHeight: delegate.layoutFooterHeight)
+        }
+
+        // MARK: Equatable
+
+        static func == (lhs: State, rhs: State) -> Bool {
+            // Comparing the layoutItems is expensive. We can avoid that by
+            // comparing renderStateIds.
+            (lhs.conversationStyle.isEqualForCellRendering(rhs.conversationStyle) &&
+                lhs.renderStateId == rhs.renderStateId &&
+                lhs.layoutHeaderHeight == rhs.layoutHeaderHeight &&
+                lhs.layoutFooterHeight == rhs.layoutFooterHeight)
+        }
+    }
+
+    private static func buildLayoutInfo(state: State?) -> LayoutInfo {
         AssertIsOnMainThread()
 
         func buildEmptyLayoutInfo() -> LayoutInfo {
@@ -193,16 +237,19 @@ public class ConversationViewLayout: UICollectionViewLayout {
                               itemLayouts: [])
         }
 
-        guard let delegate = delegate else {
-            owsFailDebug("Missing delegate")
+        guard let state = state else {
+            owsFailDebug("Missing state")
             return buildEmptyLayoutInfo()
         }
+        let conversationStyle = state.conversationStyle
+        let layoutItems = state.layoutItems
+        let layoutHeaderHeight = state.layoutHeaderHeight
+        let layoutFooterHeight = state.layoutFooterHeight
 
         let viewWidth: CGFloat = conversationStyle.viewWidth
         guard viewWidth > 0 else {
             return buildEmptyLayoutInfo()
         }
-        let layoutItems = delegate.layoutItems
 
         var y: CGFloat = 0
 
@@ -210,7 +257,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         var headerLayoutAttributes: UICollectionViewLayoutAttributes?
         var footerLayoutAttributes: UICollectionViewLayoutAttributes?
 
-        let layoutHeaderHeight = delegate.layoutHeaderHeight
         if layoutItems.isEmpty || layoutHeaderHeight <= 0 {
             // Do nothing.
         } else {
@@ -263,7 +309,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         contentBottom += conversationStyle.contentMarginBottom
 
         if row > 0 {
-            let layoutFooterHeight = delegate.layoutFooterHeight
             let footerIndexPath = IndexPath(row: row - 1, section: 0)
             if layoutItems.isEmpty || layoutFooterHeight <= 0 || headerLayoutAttributes?.indexPath == footerIndexPath {
                 // Do nothing.
