@@ -408,8 +408,9 @@ class MediaGallery: Dependencies {
 
             // If we're loading the remainder of an album, check to see if any items in the album are not loaded yet.
             if shouldLoadAlbumRemainder {
-                let albumStart = itemIndex - item.albumIndex
-                let albumEnd = albumStart + item.message.attachmentIds.count
+                let albumStart = min(sectionItems.count - 1, itemIndex - item.albumIndex)
+                let albumEnd = min(sectionItems.count,
+                                   albumStart + item.message.attachmentIds.count)
                 if sectionItems[albumStart..<albumEnd].contains(nil) {
                     return true
                 }
@@ -419,8 +420,12 @@ class MediaGallery: Dependencies {
             func countUnfetched(in slice: ArraySlice<MediaGalleryItem?>) -> Int {
                 return slice.lazy.filter { $0 == nil }.count
             }
-            let sectionSlice = sectionItems[max(0, naiveRequestRange.lowerBound) ..<
-                                                min(sectionItems.count, naiveRequestRange.upperBound)]
+            let sectionSliceStart =  min(sectionItems.count - 1,
+                                         max(0, naiveRequestRange.lowerBound))
+            let sectionSliceEnd =  max(sectionSliceStart,
+                                       min(sectionItems.count,
+                                           naiveRequestRange.upperBound))
+            let sectionSlice = sectionItems[sectionSliceStart ..< sectionSliceEnd]
             var unfetchedCount = countUnfetched(in: sectionSlice)
 
             if naiveRequestRange.upperBound > sectionItems.count {
