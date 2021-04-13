@@ -15,10 +15,22 @@ open class OWSTableViewController2: OWSViewController {
     public weak var delegate: OWSTableViewControllerDelegate?
 
     @objc
-    public var contents = OWSTableContents() {
-        didSet {
+    public var contents: OWSTableContents {
+        set {
+            _contents = newValue
             applyContents()
         }
+        get {
+            _contents
+        }
+    }
+
+    private var _contents = OWSTableContents()
+
+    @objc
+    public func setContents(_ contents: OWSTableContents, shouldReload: Bool = true) {
+        _contents = contents
+        applyContents(shouldReload: shouldReload)
     }
 
     @objc
@@ -200,14 +212,14 @@ open class OWSTableViewController2: OWSViewController {
         return item
     }
 
-    private func applyContents() {
+    private func applyContents(shouldReload: Bool = true) {
         AssertIsOnMainThread()
 
         if let title = contents.title, !title.isEmpty {
             self.title = title
         }
 
-        tableView.reloadData()
+        if shouldReload { tableView.reloadData() }
     }
 
     public static func buildTopHeader(forView wrappedView: UIView,

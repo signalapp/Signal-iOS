@@ -13,11 +13,12 @@ import Intents
 @objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
-    enum ShareViewControllerError: Error {
+    enum ShareViewControllerError: Error, Equatable {
         case assertionError(description: String)
         case unsupportedMedia
         case notRegistered
         case obsoleteShare
+        case tooManyAttachments
     }
 
     private var hasInitialRootViewController = false
@@ -526,6 +527,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.done { [weak self] (attachments: [SignalAttachment]) in
             guard let self = self else { throw PMKError.cancelled }
 
+            // Make sure the user is not trying to share more than our attachment limit.
+            guard attachments.filter({ !$0.isConvertibleToTextMessage }).count <= SignalAttachment.maxAttachmentsAllowed else {
+                throw ShareViewControllerError.tooManyAttachments
+            }
+
             self.progressPoller = nil
 
             Logger.info("Setting picker attachments: \(attachments)")
@@ -538,11 +544,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.catch { [weak self] error in
             guard let self = self else { return }
 
-            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
+            let alertTitle: String
+            let alertMessage: String?
+
+            if let error = error as? ShareViewControllerError, error == .tooManyAttachments {
+                let format = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                                               comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+
+                alertTitle = String(format: format, OWSFormat.formatInt(SignalAttachment.maxAttachmentsAllowed))
+                alertMessage = nil
+            } else {
+                alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
+                alertMessage = error.localizedDescription
+            }
+
             OWSActionSheets.showActionSheet(
                 title: alertTitle,
-                message: error.localizedDescription,
+                message: alertMessage,
                 buttonTitle: CommonStrings.cancelButton
             ) { _ in
                 self.shareViewWasCancelled()
