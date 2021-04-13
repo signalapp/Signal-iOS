@@ -12,7 +12,7 @@ import Foundation
 public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // This view support multiple kinds of rendering.
-    public enum Mode {
+    public enum Mode: Equatable {
         case stroke(strokeColor: UIColor, strokeThickness: CGFloat)
         case fill(fillColor: UIColor)
         case strokeAndFill(fillColor: UIColor, strokeColor: UIColor, strokeThickness: CGFloat)
@@ -23,6 +23,8 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         case innerShadow(color: UIColor, radius: CGFloat, opacity: Float)
     }
 
+    // If we ever make mode a var, we need to clear currentState
+    // in a didSet clause.
     private let mode: Mode
 
     private let shapeLayer = CAShapeLayer()
@@ -131,6 +133,43 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
               let bubbleView = bubbleView else {
             return
         }
+        // Add the bubble view's path to the local path.
+        let bubbleBezierPath: UIBezierPath = bubbleView.maskPath()
+        // We need to convert between coordinate systems using layers, not views.
+        let bubbleOffset: CGPoint = layer.convert(CGPoint.zero, from: bubbleView.layer)
+
+        let newState = State(bounds: bounds,
+                             bubbleOffset: bubbleOffset,
+                             bubbleBezierPath: bubbleBezierPath)
+        let newState2 = State(bounds: bounds,
+                             bubbleOffset: bubbleOffset,
+                             bubbleBezierPath: bubbleBezierPath)
+        owsAssertDebug(newState == newState2)
+        guard newState != currentState else {
+            return
+        }
+        currentState = newState
+        Self.updateLayers(mode: mode,
+                          state: newState,
+                          bubbleShapeView: self)
+    }
+
+    private struct State: Equatable {
+        let bounds: CGRect
+        let bubbleOffset: CGPoint
+        let bubbleBezierPath: UIBezierPath
+    }
+
+    private var currentState: State?
+
+    private static func updateLayers(mode: Mode,
+                                     state: State,
+                                     bubbleShapeView: OWSBubbleShapeView) {
+        let shapeLayer = bubbleShapeView.shapeLayer
+        let maskLayer = bubbleShapeView.maskLayer
+        let bounds = state.bounds
+        let bubbleOffset = state.bubbleOffset
+        let bubbleBezierPath = state.bubbleBezierPath
 
         // Prevent the layer from animating changes.
         CATransaction.begin()
@@ -138,10 +177,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
         let bezierPath = UIBezierPath()
 
-        // Add the bubble view's path to the local path.
-        let bubbleBezierPath: UIBezierPath = bubbleView.maskPath()
-        // We need to convert between coordinate systems using layers, not views.
-        let bubbleOffset: CGPoint = layer.convert(CGPoint.zero, from: bubbleView.layer)
         let transform: CGAffineTransform = CGAffineTransform.translate(bubbleOffset)
         bubbleBezierPath.apply(transform)
         bezierPath.append(bubbleBezierPath)
@@ -152,7 +187,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
             bezierPath.append(UIBezierPath(rect: bounds))
 
-            clipsToBounds = true
+            bubbleShapeView.clipsToBounds = true
 
             if let strokeColor = strokeColor {
                 shapeLayer.strokeColor = strokeColor.cgColor
@@ -180,7 +215,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         case .strokeAndFill(let fillColor, let strokeColor, let strokeThickness):
             configureForDrawing(fillColor: fillColor, strokeColor: strokeColor, strokeThickness: strokeThickness)
         case .shadow(let fillColor):
-            clipsToBounds = false
+            bubbleShapeView.clipsToBounds = false
 
             if let fillColor = fillColor {
                 shapeLayer.fillColor = fillColor.cgColor
@@ -195,14 +230,14 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
         case .clip:
             maskLayer.path = bezierPath.cgPath
-            layer.mask = maskLayer
+            bubbleShapeView.layer.mask = maskLayer
         case .innerShadow(let color, let radius, let opacity):
             // Inner shadow.
             // This should usually not be visible; it is used to distinguish
             // profile pics from the background if they are similar.
             shapeLayer.frame = bounds
             shapeLayer.masksToBounds = true
-            let shadowBounds = self.bounds
+            let shadowBounds = bounds
             let shadowPath = bezierPath.copy() as! UIBezierPath
             // This can be any value large enough to cast a sufficiently large shadow.
             let shadowInset = radius * -4

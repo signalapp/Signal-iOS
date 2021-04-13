@@ -136,10 +136,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
            let firstMediaView = albumView.itemViews.first {
             let shadowColor: UIColor = isDarkThemeEnabled ? .white : .black
             let innerShadowView = OWSBubbleShapeView(mode: .innerShadow(color: shadowColor,
-                                                                        radius: 5,
-                                                                        opacity: 1))
-//                                                                        radius: 0.5,
-//                                                                        opacity: 0.15))
+                                                                        radius: 0.5,
+                                                                        opacity: 0.15))
             componentView.innerShadowView = innerShadowView
             firstMediaView.addSubview(innerShadowView)
             stackView.layoutSubviewToFillSuperviewBounds(innerShadowView)
