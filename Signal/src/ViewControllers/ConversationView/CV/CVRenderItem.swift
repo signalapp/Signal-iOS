@@ -17,7 +17,7 @@ public class CVRenderItem: NSObject {
     public let cellMeasurement: CVCellMeasurement
     public var cellSize: CGSize { cellMeasurement.cellSize }
 
-    private let incomingMessageAuthorUuid: String?
+    private let incomingMessageAuthorAddress: SignalServiceAddress?
 
     @objc
     public var cellReuseIdentifier: String {
@@ -42,9 +42,9 @@ public class CVRenderItem: NSObject {
 
         // This value is used in a particularly hot code path.
         if let incomingMessage = itemModel.interaction as? TSIncomingMessage {
-            self.incomingMessageAuthorUuid = incomingMessage.authorUUID
+            self.incomingMessageAuthorAddress = incomingMessage.authorAddress
         } else {
-            self.incomingMessageAuthorUuid = nil
+            self.incomingMessageAuthorAddress = nil
         }
     }
 
@@ -119,9 +119,9 @@ extension CVRenderItem: ConversationViewLayoutItem {
         case .incomingMessage:
             switch previousInteraction.interactionType() {
             case .incomingMessage:
-                if let selfAuthorUuid = self.incomingMessageAuthorUuid,
-                   let prevAuthorUuid = previousLayoutItem.incomingMessageAuthorUuid,
-                   selfAuthorUuid == prevAuthorUuid {
+                if let selfAuthorAddress = self.incomingMessageAuthorAddress,
+                   let prevAuthorAddress = previousLayoutItem.incomingMessageAuthorAddress,
+                   selfAuthorAddress == prevAuthorAddress {
                     return ConversationStyle.compactMessageSpacing
                 }
                 return ConversationStyle.defaultMessageSpacing
