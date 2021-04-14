@@ -203,11 +203,31 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStack.addSubviewToFillSuperviewEdges(bubbleView)
                 innerVStack.sendSubviewToBack(bubbleView)
 
+                // blurView will be arranged by manual layout, but if we don't
+                // constrain its width and height, its internal constraints will
+                // be ambiguous.
+                let bubbleWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
+                let bubbleHeightConstraint = bubbleView.autoSetDimension(.height, toSize: 0)
+                innerVStack.addLayoutBlock { view in
+                    bubbleWidthConstraint.constant = view.width
+                    bubbleHeightConstraint.constant = view.height
+                }
+
                 bubbleView.layer.cornerRadius = 8
                 bubbleView.clipsToBounds = true
             } else {
                 outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
                 outerVStack.sendSubviewToBack(bubbleView)
+
+                // blurView will be arranged by manual layout, but if we don't
+                // constrain its width and height, its internal constraints will
+                // be ambiguous.
+                let bubbleWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
+                let bubbleHeightConstraint = bubbleView.autoSetDimension(.height, toSize: 0)
+                outerVStack.addLayoutBlock { view in
+                    bubbleWidthConstraint.constant = view.width
+                    bubbleHeightConstraint.constant = view.height
+                }
 
                 if isFirstInCluster {
                     bubbleView.layer.cornerRadius = 12
@@ -265,24 +285,17 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                 (outerHStackConfig.layoutMargins.totalWidth +
                                     outerVStackConfig.layoutMargins.totalWidth +
                                     innerVStackConfig.layoutMargins.totalWidth))
-        Logger.verbose("maxContentWidth.1: \(maxContentWidth)")
 
         let selectionViewSize = CGSize(width: ConversationStyle.selectionViewWidth, height: 0)
         if isShowingSelectionUI {
             // Account for selection UI when doing measurement.
             maxContentWidth -= selectionViewSize.width + outerHStackConfig.spacing
         }
-        Logger.verbose("maxContentWidth.2: \(maxContentWidth)")
 
         // Padding around the outerVStack (leading and trailing side)
         maxContentWidth -= (outerHStackConfig.spacing + minBubbleHMargin) * 2
-        Logger.verbose("maxContentWidth.3: \(maxContentWidth)")
 
         maxContentWidth = max(0, maxContentWidth)
-
-        Logger.verbose("maxWidth: \(maxWidth)")
-        Logger.verbose("maxContentWidth: \(maxContentWidth)")
-        Logger.verbose("outerHStackConfig.layoutMargins.totalWidth: \(outerHStackConfig.layoutMargins.totalWidth)")
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig,
                                             maxWidth: maxContentWidth)
@@ -296,7 +309,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                         buttonContentEdgeInsets.asSize)
             measurementBuilder.setSize(key: Self.measurementKey_buttonSize, size: actionButtonSize)
             innerVStackSubviewInfos.append(actionButtonSize.asManualSubviewInfo(hasFixedSize: true))
-            Logger.verbose("actionButtonSize: \(actionButtonSize)")
         }
         let innerVStackMeasurement = ManualStackView.measure(config: innerVStackConfig,
                                                              measurementBuilder: measurementBuilder,
@@ -324,10 +336,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_outerHStack,
                                                              subviewInfos: outerHStackSubviewInfos)
-        Logger.verbose("titleSize: \(titleSize)")
-        Logger.verbose("innerVStackMeasurement: \(innerVStackMeasurement.measuredSize)")
-        Logger.verbose("outerVStackMeasurement: \(outerVStackMeasurement.measuredSize)")
-        Logger.verbose("outerHStackMeasurement: \(outerHStackMeasurement.measuredSize)")
         return outerHStackMeasurement.measuredSize
     }
 
