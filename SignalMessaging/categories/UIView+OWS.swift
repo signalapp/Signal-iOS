@@ -152,6 +152,20 @@ public extension UIView {
         return view
     }
 
+    class func transparentSpacer() -> UIView {
+        let view = TransparentSpacer()
+        view.setContentHuggingHorizontalLow()
+        view.setCompressionResistanceHorizontalLow()
+        return view
+    }
+
+    @objc
+    class TransparentSpacer: UIView {
+        override open class var layerClass: AnyClass {
+            CATransformLayer.self
+        }
+    }
+
     func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         guard subviews.contains(subview) else {
             owsFailDebug("Not a subview.")

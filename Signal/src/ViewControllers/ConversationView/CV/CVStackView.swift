@@ -11,7 +11,8 @@ public typealias CVStackViewConfig = OWSStackView.Config
 class CVStackView {
 
     public static func measure(config: CVStackViewConfig,
-                               subviewSizes: [CGSize]) -> CGSize {
+                               subviewSizes: [CGSize],
+                               verboseLogging: Bool = false) -> CGSize {
 
         let spacingCount = max(0, subviewSizes.count - 1)
 
@@ -21,12 +22,28 @@ class CVStackView {
             size.width = subviewSizes.map { $0.width }.reduce(0, +)
             size.height = subviewSizes.map { $0.height }.reduce(0, max)
 
+            if verboseLogging {
+                Logger.verbose("size of subviews: \(size)")
+            }
+
             size.width += CGFloat(spacingCount) * config.spacing
+
+            if verboseLogging {
+                Logger.verbose("size of subviews and spacing: \(size)")
+            }
         case .vertical:
             size.width = subviewSizes.map { $0.width }.reduce(0, max)
             size.height = subviewSizes.map { $0.height }.reduce(0, +)
 
+            if verboseLogging {
+                Logger.verbose("size of subviews: \(size)")
+            }
+
             size.height += CGFloat(spacingCount) * config.spacing
+
+            if verboseLogging {
+                Logger.verbose("size of subviews and spacing: \(size)")
+            }
         @unknown default:
             owsFailDebug("Unknown axis: \(config.axis)")
         }
@@ -34,6 +51,9 @@ class CVStackView {
         size.width += config.layoutMargins.left + config.layoutMargins.right
         size.height += config.layoutMargins.top + config.layoutMargins.bottom
 
+        if verboseLogging {
+            Logger.verbose("size of subviews and spacing and layoutMargins: \(size)")
+        }
         return size
     }
 }
@@ -79,11 +99,24 @@ public extension ManualStackView {
                   subviews: subviews)
     }
 
+    func configureForReuse(config: Config,
+                           cellMeasurement: CVCellMeasurement,
+                           measurementKey: String) {
+        guard let measurement = cellMeasurement.measurement(key: measurementKey) else {
+            owsFailDebug("Missing measurement.")
+            return
+        }
+        configureForReuse(config: config, measurement: measurement)
+    }
+
     static func measure(config: Config,
                         measurementBuilder: CVCellMeasurement.Builder,
                         measurementKey: String,
-                        subviewInfos: [ManualStackSubviewInfo]) -> Measurement {
-        let measurement = Self.measure(config: config, subviewInfos: subviewInfos)
+                        subviewInfos: [ManualStackSubviewInfo],
+                        verboseLogging: Bool = false) -> Measurement {
+        let measurement = Self.measure(config: config,
+                                       subviewInfos: subviewInfos,
+                                       verboseLogging: verboseLogging)
         measurementBuilder.setMeasurement(key: measurementKey, value: measurement)
         return measurement
     }

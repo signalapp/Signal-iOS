@@ -193,6 +193,13 @@ open class ManualStackView: ManualLayoutView {
         invalidateArrangement()
     }
 
+    public func configureForReuse(config: Config, measurement: Measurement) {
+        apply(config: config)
+        self.measurement = measurement
+
+        invalidateArrangement()
+    }
+
     private func ensureArrangement() -> Arrangement? {
         if let arrangement = arrangement {
             return arrangement
@@ -201,6 +208,8 @@ open class ManualStackView: ManualLayoutView {
             owsFailDebug("\(name): Missing measurement.")
             return nil
         }
+        // Ignore hidden subviews.
+        let arrangedSubviews = self.arrangedSubviews.filter { !$0.isHidden }
         if arrangedSubviews.count > measurement.subviewInfos.count {
             owsFailDebug("\(name): arrangedSubviews: \(arrangedSubviews.count) != subviewInfos: \(measurement.subviewInfos.count)")
         }
@@ -217,10 +226,7 @@ open class ManualStackView: ManualLayoutView {
                 owsFailDebug("\(name): Missing measuredSize.")
                 break
             }
-            guard !subview.isHidden else {
-                // Ignore hidden subviews.
-                continue
-            }
+            owsAssertDebug(!subview.isHidden)
             layoutItems.append(LayoutItem(subview: subview,
                                           subviewInfo: subviewInfo,
                                           isHorizontal: isHorizontal))
@@ -503,7 +509,9 @@ open class ManualStackView: ManualLayoutView {
         }
     }
 
-    public static func measure(config: Config, subviewInfos: [ManualStackSubviewInfo]) -> Measurement {
+    public static func measure(config: Config,
+                               subviewInfos: [ManualStackSubviewInfo],
+                               verboseLogging: Bool = false) -> Measurement {
 
         let subviewSizes = subviewInfos.map { $0.measuredSize.max(.zero) }
 
@@ -515,18 +523,38 @@ open class ManualStackView: ManualLayoutView {
             size.width = subviewSizes.map { $0.width }.reduce(0, +)
             size.height = subviewSizes.map { $0.height }.reduce(0, max)
 
+            if verboseLogging {
+                Logger.verbose("size of subviews: \(size)")
+            }
+
             size.width += CGFloat(spacingCount) * config.spacing
+
+            if verboseLogging {
+                Logger.verbose("size of subviews and spacing: \(size)")
+            }
         case .vertical:
             size.width = subviewSizes.map { $0.width }.reduce(0, max)
             size.height = subviewSizes.map { $0.height }.reduce(0, +)
 
+            if verboseLogging {
+                Logger.verbose("size of subviews: \(size)")
+            }
+
             size.height += CGFloat(spacingCount) * config.spacing
+
+            if verboseLogging {
+                Logger.verbose("size of subviews and spacing: \(size)")
+            }
         @unknown default:
             owsFailDebug("Unknown axis: \(config.axis)")
         }
 
         size.width += config.layoutMargins.totalWidth
         size.height += config.layoutMargins.totalHeight
+
+        if verboseLogging {
+            Logger.verbose("size of subviews and spacing and layoutMargins: \(size)")
+        }
 
         size = size.ceil
 

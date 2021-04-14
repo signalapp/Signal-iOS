@@ -836,9 +836,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 subviewSizes.append(subviewSize)
             }
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
-                (stackConfig.axis == .horizontal
-                    ? subviewSize.asManualSubviewInfo(hasFixedWidth: true)
-                    : subviewSize.asManualSubviewInfo(hasFixedHeight: true))
+                subviewSize.asManualSubviewInfo
             }
             let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                            measurementBuilder: measurementBuilder,
@@ -913,7 +911,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
 
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
-                subviewSize.asManualSubviewInfo(hasFixedHeight: true)
+                subviewSize.asManualSubviewInfo
             }
             return ManualStackView.measure(config: buildNoMarginsStackConfig(),
                                            measurementBuilder: measurementBuilder,
@@ -1128,7 +1126,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // * Message Selection UI
         // * hInnerStack
         // * "Send failure" badge
-        fileprivate let hOuterStack = ManualStackView(name: "hOuterStack")
+        fileprivate let hOuterStack = ManualStackView(name: "message.hOuterStack")
 
         // Contains the cell contents which are arranged horizontally:
         //
@@ -1138,21 +1136,21 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // Additionally, it contains:
         //
         // * Reactions view, which uses a custom layout block.
-        fileprivate let hInnerStack = ManualStackView(name: "hInnerStack")
+        fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
 
         fileprivate let avatarView = AvatarImageView()
 
         fileprivate let bubbleView = OWSBubbleView()
 
         // Contains the actual renderable message content, arranged vertically.
-        fileprivate let contentStack = ManualStackView(name: "contentStack")
+        fileprivate let contentStack = ManualStackView(name: "message.contentStack")
 
         // We use these stack views when there is a mixture of subcomponents,
         // some of which are full-width and some of which are not.
-        fileprivate let topFullWidthStackView = ManualStackView(name: "topFullWidthStackView")
-        fileprivate let topNestedStackView = ManualStackView(name: "topNestedStackView")
-        fileprivate let bottomFullWidthStackView = ManualStackView(name: "bottomFullWidthStackView")
-        fileprivate let bottomNestedStackView = ManualStackView(name: "bottomNestedStackView")
+        fileprivate let topFullWidthStackView = ManualStackView(name: "message.topFullWidthStackView")
+        fileprivate let topNestedStackView = ManualStackView(name: "message.topNestedStackView")
+        fileprivate let bottomFullWidthStackView = ManualStackView(name: "message.bottomFullWidthStackView")
+        fileprivate let bottomNestedStackView = ManualStackView(name: "message.bottomNestedStackView")
 
         fileprivate let selectionView = MessageSelectionView()
 
