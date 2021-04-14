@@ -89,6 +89,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                     componentView.blurView = blurView
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
+
                     // blurView will be arranged by manual layout, but if we don't
                     // constrain its width and height, its internal constraints will
                     // be ambiguous.
