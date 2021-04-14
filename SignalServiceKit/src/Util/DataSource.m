@@ -195,6 +195,10 @@ NS_ASSUME_NONNULL_BEGIN
                            }];
 
     if (!success || *error != nil) {
+        if (error == nil) {
+            OWSFailDebug(@"Missing error.");
+            *error = OWSErrorMakeAssertionError(@"Could not move data source.");
+        }
         OWSLogDebug(@"Could not write data value to: %@, %@", dstUrl, *error);
         OWSFailDebug(@"Could not write data with error: %@", *error);
         return NO;

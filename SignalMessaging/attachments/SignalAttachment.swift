@@ -1179,8 +1179,36 @@ public class SignalAttachment: NSObject {
 
         let (promise, resolver) = Promise<SignalAttachment>.pending()
 
-        Logger.debug("starting video export")
+        Logger.debug("Starting video export")
+
         exportSession.exportAsynchronously {
+            if let error = exportSession.error {
+                owsFailDebug("Error: \(error)")
+                resolver.reject(error)
+                return
+            }
+            switch exportSession.status {
+            case .unknown:
+                resolver.reject(OWSAssertionError("Unknown export status."))
+                return
+            case .waiting:
+                resolver.reject(OWSAssertionError("Export status: .waiting."))
+                return
+            case .exporting:
+                resolver.reject(OWSAssertionError("Export status: .exporting."))
+                return
+            case .completed:
+                break
+            case .failed:
+                resolver.reject(OWSAssertionError("Export failed without error."))
+                return
+            case .cancelled:
+                resolver.reject(OWSGenericError("Cancelled."))
+                return
+            @unknown default:
+                resolver.reject(OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)"))
+                return
+            }
             Logger.debug("Completed video export")
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
