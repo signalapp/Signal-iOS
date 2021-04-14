@@ -18,12 +18,13 @@ public final class SnodeAPI : NSObject {
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
     private static let minimumSwarmSnodeCount = 3
-    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
+    private static let seedNodePool: Set<String> = [ "http://public.loki.foundation:38157" ]
     private static let snodeFailureThreshold = 3
     private static let targetSwarmSnodeCount = 2
 
     /// - Note: Changing this on the fly is not recommended.
     internal static var useOnionRequests = true
+    internal static let useTestnet = false
 
     public static var powDifficulty: UInt = 1
     
@@ -266,7 +267,7 @@ public final class SnodeAPI : NSObject {
             return Promise<Set<Snode>> { $0.fulfill(cachedSwarm) }
         } else {
             SNLog("Getting swarm for: \((publicKey == SNSnodeKitConfiguration.shared.storage.getUserPublicKey()) ? "self" : publicKey).")
-            let parameters: [String:Any] = [ "pubKey" : publicKey ]
+            let parameters: [String:Any] = [ "pubKey" : useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey ]
             return getRandomSnode().then2 { snode in
                 attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                     invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
@@ -287,7 +288,7 @@ public final class SnodeAPI : NSObject {
                 storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
             }
             let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
-            let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
+            let parameters = [ "pubKey" : useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
             invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
@@ -303,7 +304,7 @@ public final class SnodeAPI : NSObject {
                         storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
                     }
                     let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
-                    let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
+                    let parameters = [ "pubKey" : useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
                     return invoke(.getMessages, on: targetSnode, associatedWith: publicKey, parameters: parameters).map2 { rawResponse in
                         parseRawMessagesResponse(rawResponse, from: targetSnode, associatedWith: publicKey)
                     }
@@ -315,7 +316,7 @@ public final class SnodeAPI : NSObject {
 
     public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
-        let publicKey = message.recipient
+        let publicKey = useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 let parameters = message.toJSON()
