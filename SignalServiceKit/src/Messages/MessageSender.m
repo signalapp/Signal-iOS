@@ -106,8 +106,14 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         attachmentStream.attachmentType = TSAttachmentTypeBorderless;
     }
 
-    [attachmentStream writeConsumingDataSource:self.dataSource error:error];
+    BOOL success = [attachmentStream writeConsumingDataSource:self.dataSource error:error];
     if (*error != nil) {
+        OWSFailDebug(@"Error: %@", *error);
+        return nil;
+    }
+    if (!success) {
+        OWSFailDebug(@"Unknown error.");
+        *error = OWSErrorMakeAssertionError(@"Could not consume data source.");
         return nil;
     }
 
@@ -1481,9 +1487,14 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
     for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
-        TSAttachmentStream *attachmentStream =
+        TSAttachmentStream *_Nullable attachmentStream =
             [attachmentInfo asStreamConsumingDataSourceWithIsVoiceMessage:outgoingMessage.isVoiceMessage error:error];
         if (*error != nil) {
+            return NO;
+        }
+        if (attachmentStream == nil) {
+            OWSFailDebug(@"Unknown error.");
+            *error = OWSErrorMakeAssertionError(@"Could not insert attachments.");
             return NO;
         }
         OWSAssert(attachmentStream != nil);
