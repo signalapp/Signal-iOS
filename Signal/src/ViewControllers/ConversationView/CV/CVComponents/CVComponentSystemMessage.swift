@@ -124,6 +124,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             UIView.transparentSpacer()
         ])
 
+        var hasActionButton = false
         if let action = action,
            !itemViewState.shouldCollapseSystemMessageAction,
            let actionButtonSize = cellMeasurement.size(key: Self.measurementKey_buttonSize) {
@@ -146,13 +147,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             button.layer.cornerRadius = actionButtonSize.height / 2
             button.isUserInteractionEnabled = false
             innerVStackViews.append(button)
+            hasActionButton = true
         }
 
         let isReusing = (componentView.rootView.superview != nil &&
                             !themeHasChanged &&
                             !wallpaperModeHasChanged &&
                             !hasClusteringChanges &&
-                            componentView.isShowingSelectionUI == isShowingSelectionUI)
+                            componentView.isShowingSelectionUI == isShowingSelectionUI &&
+                            componentView.hasActionButton == hasActionButton)
         if isReusing {
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
@@ -241,6 +244,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             }
         }
         componentView.isShowingSelectionUI = isShowingSelectionUI
+        componentView.hasActionButton = hasActionButton
     }
 
     private var titleLabelConfig: CVLabelConfig {
@@ -413,6 +417,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         public var isDedicatedCellView = false
 
         public var isShowingSelectionUI = false
+        public var hasActionButton = false
 
         public var rootView: UIView {
             outerHStack
@@ -454,6 +459,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             button = nil
 
             isShowingSelectionUI = false
+            hasActionButton = false
         }
     }
 }
