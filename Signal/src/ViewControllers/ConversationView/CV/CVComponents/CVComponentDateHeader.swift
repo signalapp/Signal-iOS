@@ -71,9 +71,17 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
         componentView.hasWallpaper = hasWallpaper
 
-        let isReusing = componentView.rootView.superview != nil
-
-        if !isReusing || themeHasChanged || wallpaperModeHasChanged {
+        let isReusing = (componentView.rootView.superview != nil &&
+                            !themeHasChanged &&
+                            !wallpaperModeHasChanged)
+        if isReusing {
+            innerStack.configureForReuse(config: innerStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_innerStack)
+            outerStack.configureForReuse(config: outerStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_outerStack)
+        } else {
             innerStack.reset()
             outerStack.reset()
             titleLabel.removeFromSuperview()
@@ -81,25 +89,18 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.blurView = nil
 
             let contentView: UIView = {
-                if hasWallpaper,
-                   let innerStackSize = cellMeasurement.size(key: Self.measurementKey_innerStackSize) {
+                if hasWallpaper {
                     // blurView replaces innerStack, using the same size, layoutMargins, etc.
 
                     let blurView = buildBlurView(conversationStyle: conversationStyle)
                     componentView.blurView = blurView
                     blurView.clipsToBounds = true
                     blurView.layer.cornerRadius = 8
-
-                    // blurView will be arranged by manual layout, but if we don't
-                    // constrain its width and height, its internal constraints will
-                    // be ambiguous.
-                    blurView.autoSetDimensions(to: innerStackSize)
-
                     blurView.contentView.addSubview(titleLabel)
                     titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
                     titleLabel.setContentHuggingLow()
 
-                    return blurView
+                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
                 } else {
                     innerStack.configure(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
@@ -153,7 +154,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     private static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentDateHeader.measurementKey_innerStack"
-    private static let measurementKey_innerStackSize = "CVComponentDateHeader.measurementKey_innerStackSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -168,8 +168,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: [ labelInfo ])
-        measurementBuilder.setSize(key: Self.measurementKey_innerStackSize,
-                                   size: innerStackMeasurement.measuredSize)
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,

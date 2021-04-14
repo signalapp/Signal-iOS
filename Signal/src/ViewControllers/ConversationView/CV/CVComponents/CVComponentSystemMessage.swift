@@ -170,6 +170,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             outerHStack.reset()
             innerVStack.reset()
             outerVStack.reset()
+
             innerVStack.configure(config: innerVStackConfig,
                                   cellMeasurement: cellMeasurement,
                                   measurementKey: Self.measurementKey_innerVStack,
@@ -194,7 +195,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
-                bubbleView = blurView
+                let blurWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView,
+                                                                                 isWrapperRendering: true)
+                bubbleView = blurWrapper
             } else {
                 let backgroundView = UIView()
                 componentView.backgroundView = backgroundView
@@ -206,31 +209,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStack.addSubviewToFillSuperviewEdges(bubbleView)
                 innerVStack.sendSubviewToBack(bubbleView)
 
-                // blurView will be arranged by manual layout, but if we don't
-                // constrain its width and height, its internal constraints will
-                // be ambiguous.
-                let bubbleWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
-                let bubbleHeightConstraint = bubbleView.autoSetDimension(.height, toSize: 0)
-                innerVStack.addLayoutBlock { view in
-                    bubbleWidthConstraint.constant = view.width
-                    bubbleHeightConstraint.constant = view.height
-                }
-
                 bubbleView.layer.cornerRadius = 8
                 bubbleView.clipsToBounds = true
             } else {
                 outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
                 outerVStack.sendSubviewToBack(bubbleView)
-
-                // blurView will be arranged by manual layout, but if we don't
-                // constrain its width and height, its internal constraints will
-                // be ambiguous.
-                let bubbleWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
-                let bubbleHeightConstraint = bubbleView.autoSetDimension(.height, toSize: 0)
-                outerVStack.addLayoutBlock { view in
-                    bubbleWidthConstraint.constant = view.width
-                    bubbleHeightConstraint.constant = view.height
-                }
 
                 if isFirstInCluster {
                     bubbleView.layer.cornerRadius = 12

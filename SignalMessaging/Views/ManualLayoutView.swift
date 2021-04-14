@@ -292,3 +292,33 @@ open class ManualLayoutView: UIView {
         tapBlock()
     }
 }
+
+// MARK: -
+
+@objc
+public extension ManualLayoutView {
+
+    static func wrapSubviewUsingIOSAutoLayout(_ subview: UIView,
+                                              isWrapperRendering: Bool = false,
+                                              wrapperName: String = "iOS auto layout wrapper") -> UIView {
+        let wrapper: ManualLayoutView
+        if isWrapperRendering {
+            wrapper = ManualLayoutViewWithLayer(name: wrapperName)
+        } else {
+            wrapper = ManualLayoutView(name: wrapperName)
+        }
+        wrapper.addSubviewToFillSuperviewEdges(subview)
+
+        // blurView will be arranged by manual layout, but if we don't
+        // constrain its width and height, its internal constraints will
+        // be ambiguous.
+        let widthConstraint = subview.autoSetDimension(.width, toSize: 0)
+        let heightConstraint = subview.autoSetDimension(.height, toSize: 0)
+        wrapper.addLayoutBlock { _ in
+            widthConstraint.constant = subview.width
+            heightConstraint.constant = subview.height
+        }
+
+        return wrapper
+    }
+}

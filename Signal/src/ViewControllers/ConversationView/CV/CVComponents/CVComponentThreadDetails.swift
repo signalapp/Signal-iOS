@@ -82,18 +82,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             blurView.clipsToBounds = true
             blurView.layer.cornerRadius = 12
             componentView.blurView = blurView
-
-            innerStackView.addSubviewToFillSuperviewEdges(blurView)
-
-            // blurView will be arranged by manual layout, but if we don't
-            // constrain its width and height, its internal constraints will
-            // be ambiguous.
-            let bubbleWidthConstraint = blurView.autoSetDimension(.width, toSize: 0)
-            let bubbleHeightConstraint = blurView.autoSetDimension(.height, toSize: 0)
-            innerStackView.addLayoutBlock { view in
-                bubbleWidthConstraint.constant = view.width
-                bubbleHeightConstraint.constant = view.height
-            }
+            let blurWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
+            innerStackView.addSubviewToFillSuperviewEdges(blurWrapper)
         }
 
         let titleLabel = componentView.titleLabel

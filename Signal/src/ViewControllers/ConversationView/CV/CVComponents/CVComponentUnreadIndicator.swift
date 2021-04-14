@@ -52,6 +52,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         }
 
         let outerStack = componentView.outerStack
+        let innerStack = componentView.innerStack
         let strokeView = componentView.strokeView
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
@@ -63,15 +64,24 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
         componentView.hasWallpaper = hasWallpaper
 
-        let isReusing = componentView.rootView.superview != nil
-        if !isReusing || themeHasChanged || wallpaperModeHasChanged {
+        let isReusing = (componentView.rootView.superview != nil &&
+                            !themeHasChanged &&
+                            !wallpaperModeHasChanged)
+        if isReusing {
+            innerStack.configureForReuse(config: innerStackConfig,
+                                         cellMeasurement: cellMeasurement,
+                                         measurementKey: Self.measurementKey_innerStack)
+            outerStack.configureForReuse(config: outerStackConfig,
+                                         cellMeasurement: cellMeasurement,
+                                         measurementKey: Self.measurementKey_outerStack)
+        } else {
+            outerStack.reset()
             titleLabel.removeFromSuperview()
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
             let contentView: UIView = {
-                if hasWallpaper,
-                   let innerStackSize = cellMeasurement.size(key: Self.measurementKey_innerStackSize) {
+                if hasWallpaper {
 
                     strokeView.backgroundColor = .ows_blackAlpha80
 
@@ -82,17 +92,12 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                     blurView.layer.cornerRadius = 8
                     blurView.contentView.addSubview(titleLabel)
                     titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
+                    titleLabel.setContentHuggingLow()
 
-                    // blurView will be arranged by manual layout, but if we don't
-                    // constrain its width and height, its internal constraints will
-                    // be ambiguous.
-                    blurView.autoSetDimensions(to: innerStackSize)
-
-                    return blurView
+                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
                 } else {
                     strokeView.backgroundColor = .ows_gray45
 
-                    let innerStack = componentView.innerStack
                     innerStack.reset()
                     innerStack.configure(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
@@ -102,7 +107,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 }
             }()
 
-            outerStack.reset()
             outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
@@ -139,7 +143,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
     private static let measurementKey_outerStack = "CVComponentUnreadIndicator.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentUnreadIndicator.measurementKey_innerStack"
-    private static let measurementKey_innerStackSize = "CVComponentUnreadIndicator.measurementKey_innerStackSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -155,8 +158,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_innerStack,
         subviewInfos: [ labelInfo ])
-        measurementBuilder.setSize(key: Self.measurementKey_innerStackSize,
-                                   size: innerStackMeasurement.measuredSize)
 
         let strokeInfo = strokeSize.asManualSubviewInfo(hasFixedHeight: true)
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
