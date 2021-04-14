@@ -42,9 +42,6 @@ extension Storage {
         } else {
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }
-        if let serverTimestamp = message.receivedTimestamp, openGroupID != nil {
-            tsMessage.setServerTimestampToReceivedTimestamp(serverTimestamp)
-        }
         tsMessage.save(with: transaction)
         tsMessage.attachments(with: transaction).forEach { attachment in
             attachment.albumMessageId = tsMessage.uniqueId!

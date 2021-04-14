@@ -10,6 +10,7 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public var sender: String?
     public var groupPublicKey: String?
     public var openGroupServerMessageID: UInt64?
+    public var openGroupServerTimestamp: UInt64?
 
     public var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
     public var isSelfSendValid: Bool { false }

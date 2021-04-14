@@ -19,7 +19,7 @@ public extension TSIncomingMessage {
             expiresInSeconds: !isOpenGroupMessage ? expiration : 0, // Ensure we don't ever expire open group messages
             quotedMessage: quotedMessage,
             linkPreview: linkPreview,
-            serverTimestamp: nil,
+            serverTimestamp: visibleMessage.openGroupServerTimestamp as NSNumber?,
             wasReceivedByUD: true
         )
         result.openGroupServerMessageID = openGroupServerMessageID
