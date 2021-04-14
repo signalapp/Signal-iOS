@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ! -z ${USE_PRIVATE_PODS+x} ]; then
+    echo "Using private pods"
+    if [ -d "Pods" ]; then
+        pushd Pods
+        HAS_CONFIGURED_PRIVATE_REMOTE=`git remote -v | grep -ci 'signal-pods-private' || true`
+        if [ "$HAS_CONFIGURED_PRIVATE_REMOTE" = 0 ]; then
+            echo "Adding private pods remote"
+            git remote add private git@github.com:signalapp/Signal-Pods-Private.git
+            git fetch private
+        fi
+        popd
+    else
+        echo "Cloning private pods repo"
+        git clone git@github.com:signalapp/Signal-Pods-Private.git Pods
+    fi
+else
+    echo "Not using private pods. Define USE_PRIVATE_PODS in your environment to enable."
+fi

@@ -15,13 +15,56 @@
 
 default_platform(:ios)
 
-platform :ios do
-  desc "Description of what the lane does"
-  lane :test do
-    run_tests(
-      workspace: "Signal.xcworkspace", 
-      scheme: "Signal", 
-      devices: ["iPhone SE"]
-    )
-  end
+desc 'Build, Archive, and Upload to ASC'
+lane :release do
+  app_identifier = ENV['APP_IDENTIFIER']
+  scheme = ENV['SCHEME']
+  configuration = 'App Store Release'
+
+  # Signal provisioning
+  sigh(
+    app_identifier: app_identifier,
+    template_name: 'Unrestricted PushKit entitlement for iOS 13 U68MSDN6DR (Dist)'
+  )
+  update_project_provisioning(
+    target_filter: "^Signal$",
+    build_configuration: configuration,
+    profile: "./AppStore_#{app_identifier}.mobileprovision"
+  )
+
+  # NSE provisioning
+  sigh(
+    app_identifier: "#{app_identifier}.NotificationServiceExtension",
+    template_name: 'Notification Service Extension Filtering iOS (Dist)'
+  )
+  update_project_provisioning(
+    target_filter: "^NotificationServiceExtension$",
+    build_configuration: configuration,
+    profile: "./AppStore_#{app_identifier}.NotificationServiceExtension.mobileprovision"
+  )
+
+  # SAE Provisioning
+  sigh(
+    app_identifier: "#{app_identifier}.shareextension",
+    template_name: 'Unrestricted PushKit entitlement for iOS 13 U68MSDN6DR (Dist)'
+  )
+  update_project_provisioning(
+    target_filter: "^SignalShareExtension$",
+    build_configuration: configuration,
+    profile: "./AppStore_#{app_identifier}.shareextension.mobileprovision"
+  )
+
+  gym(
+    workspace: 'Signal.xcworkspace',
+    scheme: scheme,
+    configuration: configuration,
+    clean: true,
+    derived_data_path: './build'
+  )
+
+  upload_to_testflight(
+    app_identifier: app_identifier,
+    skip_submission: true,
+    skip_waiting_for_build_processing: true
+  )
 end
