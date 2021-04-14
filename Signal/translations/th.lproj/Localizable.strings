@@ -35,7 +35,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "ข้อความเสียง %@ วินาที";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "โทรด้วย Signal";
+"ACTION_AUDIO_CALL" = "โทร Signal";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "เชิญมาใช้ Signal";
@@ -50,7 +50,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "แตะเพื่อดาวน์โหลด";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "โทรเห็นหน้า";
+"ACTION_VIDEO_CALL" = "โทรวิดีโอ";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "เพิ่มสมาชิก";
@@ -59,10 +59,10 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "เพิ่มสมาชิก";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "เพิ่มสมาชิกไปยัง “%2$@” หรือไม่?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "เพิ่มสมาชิกเข้า “%2$@” หรือไม่?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "เพิ่มสมาชิก %1$@ คนไปยัง “%2$@” หรือไม่?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "เพิ่มสมาชิก %1$@ คนเข้า “%2$@” หรือไม่?";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "เพิ่มสมาชิกใหม่";
@@ -143,10 +143,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "รุ่นฐานข้อมูลที่ไม่รู้จัก";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ข้อมูลที่ถูกโอนย้ายจากอุปกรณ์เครื่องเก่าของคุณจะไม่สามารถกู้คืนได้ กรุณาส่งปูมดีบักไปที่ support@signal.org เพื่อที่เราจะสามารถแก้ปัญหานี้ได้ ถ้าคุณติดตั้ง Signal ใหม่อีกครั้ง ข้อความเก่าของคุณอาจจะหายไป";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ข้อมูลที่ถูกถ่ายโอนจากอุปกรณ์เครื่องเก่าของคุณจะไม่สามารถกู้คืนได้ กรุณาส่งปูมดีบักไปที่ support@signal.org เพื่อที่เราจะสามารถแก้ปัญหานี้ได้ ถ้าคุณติดตั้ง Signal ใหม่อีกครั้ง ข้อความเก่าของคุณอาจจะหายไป";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ไม่สามารถถ่ายโอนได้เสร็จสมบูรณ์";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ไม่สามารถถ่ายโอนจนเสร็จ";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ป้อนชื่อของคุณ";
@@ -182,7 +182,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "เพิ่มตัวอักษรอีกไม่ได้แล้ว";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "เพิ่มคำบรรยาย...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "เพิ่มคำอธิบายภาพ...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "คำอธิบายภาพ";
@@ -293,7 +293,7 @@
 "ATTACHMENT_TYPE_IMAGE" = "รูปภาพ";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "รูปภาพ";
+"ATTACHMENT_TYPE_PHOTO" = "รูปถ่าย";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VIDEO" = "วิดีโอ";
@@ -305,7 +305,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ข้อความเสียง";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "การโทรด้วยเสียง";
+"AUDIO_CALL_LABEL" = "โทรเสียง";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
@@ -314,7 +314,7 @@
 "BACK_BUTTON" = "กลับ";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ปิดป้าย";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ปิดแถบแสดง";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากกลุ่มนี้อีกต่อไป ";
@@ -440,10 +440,10 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 สายเรียกเข้า…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 โทรแบบเสียงที่ไม่ได้รับ";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 โทรเสียงที่พลาด";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "คุณสามารถเปิดใช้การเข้าถึงไมโครโฟน ได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรและอัดข้อความเสียงได้ใน Signal";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "คุณสามารถเปิดการเข้าถึงไมโครโฟน ได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรและอัดข้อความเสียงได้ใน Signal";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ต้องการเข้าถึงไมโครโฟน";
@@ -464,16 +464,16 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "โทร";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "คุณต้องการโทรหา %@ หรือไม่";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "คุณต้องการโทรหา %@ หรือไม่?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "โทรหรือไม่";
+"CALL_USER_ALERT_TITLE" = "โทรหรือไม่?";
 
 /* notification body */
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 สายวิดีโอเรียกเข้า…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 โทรเห็นหน้าที่ไม่ได้รับ";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 โทรวิดีโอที่พลาด";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ตอบรับโดยไม่ใช้วิดีโอ";
@@ -500,10 +500,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "เปลี่ยนทิศทางกล้อง";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "สลับไปโทรด้วยเสียง";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "สลับไปโทรเสียง";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "สลับไปโทรด้วยวิดีโอ";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "สลับไปโทรวิดีโอ";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
@@ -644,7 +644,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "องค์กร";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "เพื่อดูชื่อผู้ติดต่อและรูปภาพในแชตของคุณ:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "เพื่อดูชื่อผู้ติดต่อและรูปภาพในการสนทนาของคุณ:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "แตะ \"ไปยังการตั้งค่า\" ด้านล่าง";
@@ -836,19 +836,19 @@
 "CONVERSATION_SETTINGS_EDIT" = "แก้ไข";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ใครที่สามารถแก้ไขข้อมูลกลุ่ม";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ใครที่แก้ไขข้อมูลกลุ่มได้";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "เฉพาะผู้ดูแล";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "เลือกว่าใครสามารถเปลี่ยนชื่อกลุ่ม รูปภาพ และตั้งเวลาให้ข้อความหายไปได้";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "เลือกว่าใครสามารถเปลี่ยนชื่อกลุ่ม รูปภาพ และตั้งเวลาให้ข้อความหายไปได้:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทั้งหมด";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทุกคน";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ใครสามารถเพิ่มสมาชิก";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ใครที่เพิ่มสมาชิกได้";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "เฉพาะผู้ดูแล";
@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "เลือกว่าใครสามารถเพิ่มสมาชิกเข้ามาในกลุ่ม:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทั้งหมด";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทุกคน";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "ลิงก์กลุ่ม";
@@ -929,10 +929,10 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "สร้างผู้ติดต่อใหม่";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "นำออกจากกลุ่ม";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "ลบออกจากกลุ่ม";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "นำ %@ ออกจากกลุ่มหรือไม่?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "ลบ %@ ออกจากกลุ่มหรือไม่?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "ปลดจากผู้ดูแล";
@@ -953,7 +953,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "เปิดเสียง";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการบันทึกความเปลี่ยนแปลงที่คุณสร้างในแชตนี้หรือไม่?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการบันทึกความเปลี่ยนแปลงที่คุณทำในแชตนี้หรือไม่?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ถูกบันทึก";
@@ -1136,31 +1136,31 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "หยุดการถ่ายโอนหรือไม่?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "ถ้าคุณมีอุปกรณ์ iOS เครื่องเก่า คุณสามารถโอนย้ายบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย ";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "ถ้าคุณมีอุปกรณ์ iOS เครื่องเก่า คุณสามารถถ่ายโอนบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย ";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ถ้าคุณเคยเชื่อมโยง Signal ของคุณเข้ากับ iPad คุณสามารถโอนย้ายบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ถ้าคุณเคยเชื่อมโยง Signal ของคุณเข้ากับ iPad คุณสามารถถ่ายโอนบัญชีและข้อความของคุณมาสู่อุปกรณ์นี้อย่างปลอดภัย";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ทำต่อโดยไม่โอนย้ายบัญชีและข้อความของคุณ";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ทำต่อโดยไม่ถ่ายโอนบัญชีและข้อความของคุณ";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "เพิ่ม iPad เครื่องนี้เป็นอุปกรณ์เชื่อมโยงเครื่องใหม่โดยไม่โอนย้ายข้อความเก่า";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "เพิ่ม iPad เครื่องนี้เป็นอุปกรณ์เชื่อมโยงเครื่องใหม่โดยไม่ถ่ายโอนข้อความเก่า";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "เพิ่มเป็นอุปกรณ์ใหม่";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "ลงทะเบียนโดยไม่โอนย้าย";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "ลงทะเบียนโดยไม่ถ่ายโอน";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "โอนย้ายบัญชีและข้อความ";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "ถ่ายโอนบัญชีและข้อความ";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "โอนย้ายบัญชีของคุณและข้อความเก่าจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "ถ่ายโอนบัญชีและข้อความเก่าของคุณจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "โอนย้ายบัญชีของคุณและข้อความเก่าจาก iPad เครื่องเก่าของคุณ";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "โอนย้ายบัญชีและข้อความเก่าของคุณจาก iPad เครื่องเก่าของคุณ";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "ถ่ายโอนจากไอแพดอีกเครื่อง";
@@ -1175,22 +1175,22 @@
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "ไม่สามารถยืนยันอุปกรณ์ใหม่ของคุณได้ กรุณาลองอีกครั้ง";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "การโอนย้ายไม่สมบูรณ์ กรุณาทำให้แน่ใจว่าอุปกรณ์ของคุณแต่ละเครื่องอยู่ใกล้กันและลองอีกครั้ง";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "การถ่ายโอนไม่สมบูรณ์ กรุณาทำให้แน่ใจว่าอุปกรณ์ของคุณแต่ละเครื่องอยู่ใกล้กันและลองอีกครั้ง";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "เพื่อตั้งค่า iPad เครื่องนี้ให้เป็นอุปกรณ์ที่เชื่อมโยง คุณต้องสแกนด้วย iPad เครื่องเก่า";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "เพื่อโอนย้ายบัญชีของคุณ คุณต้องสแกนด้วย iPhone ของคุณ";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "เพื่อถ่ายโอนบัญชีของคุณ คุณต้องสแกนด้วย iPhone ของคุณ";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "ไม่มีพื้นที่ว่างมากพอที่จะโอนย้ายให้เสร็จสมบูรณ์";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "ไม่มีพื้นที่ว่างมากพอที่จะถ่ายโอนให้เสร็จสมบูรณ์";
 
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "ปรับปรุง Signal ให้เป็นรุ่นล่าสุดและลองอีกครั้ง";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "โอนย้ายบัญชี Signal ของคุณไปยังอุปกรณ์ iOS เครื่องใหม่ ทำให้แน่ใจว่าอุปกรณ์เครื่องใหม่ของคุณอยู่ใกล้ๆ และเปิดอยู่";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "ถ่ายโอนบัญชี Signal ของคุณไปยังอุปกรณ์ iOS เครื่องใหม่ ทำให้แน่ใจว่าอุปกรณ์เครื่องใหม่ของคุณอยู่ใกล้ ๆ และเปิดอยู่";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "ถ่ายโอนบัญชี";
@@ -1202,7 +1202,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "เลื่อนรหัส QR ให้อยู่ในกรอบของอุปกรณ์อีกเครื่องหนึ่งของคุณ";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ไม่พบการแจ้งเตือนบนอุปกรณ์เครื่องเก่าของคุณ?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ไม่พบการแจ้งเตือนบนอุปกรณ์เครื่องเก่าของคุณหรือ?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์ตัวอื่น...";
@@ -1253,7 +1253,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "คุณสามารถเปิดการเข้าถึงได้ในการตั้งค่าของ iOS";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal จำเป็นต้องเข้าถึงผู้ติดต่อ เพื่อที่จะแก้ไขข้อมูลผู้ติดต่อ";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal จำเป็นต้องเข้าถึงผู้ติดต่อ เพื่อจะแก้ไขข้อมูลผู้ติดต่อ";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "ลบรูป";
@@ -1265,7 +1265,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ไม่สามารถเพิ่มผู้ใช้รายนี้เข้าไปในกลุ่มจนกว่าผู้ใช้จะปรับรุ่น Signal";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "จำนวนสมาชิกในกลุ่มถึงจำนวนจำกัดที่ %@ คนแล้ว";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "จำนวนสมาชิกในกลุ่มถึงขีดจำกัดที่ %@ คนแล้ว";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "รูปใช้ไม่ได้";
@@ -1277,7 +1277,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "ปรับปรุง";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการบันทึกความเปลี่ยนแปลงที่คุณสร้างในกลุ่มหรือไม่?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการบันทึกความเปลี่ยนแปลงที่คุณทำในกลุ่มหรือไม่?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก";
@@ -1301,13 +1301,13 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "กิจกรรม";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "สัตว์ & ธรรมชาติ";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "สัตว์และธรรมชาติ";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "ธง";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "อาหาร & เครื่องดื่ม";
+"EMOJI_CATEGORY_FOOD_NAME" = "อาหารและเครื่องดื่ม";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "วัตถุ";
@@ -1316,13 +1316,13 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "ล่าสุด";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "หน้ายิ้ม & ผู้คน";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "หน้ายิ้มและผู้คน";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "สัญลักษณ์";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "เดินทาง & สถานที่";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "เดินทางและสถานที่";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในผู้ติดต่อของคุณที่ใช้ Signal";
@@ -1370,13 +1370,13 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "การส่งข้อความไม่สำเร็จ เนื่องจากไม่มีชื่อผู้รับที่ถูกต้อง";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "คำร้องขอทางเครือข่ายล้มเหลว";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "คำร้องขอเครือข่ายล้มเหลว";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "คำร้องขอทางเครือข่ายหมดเวลา";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "คำร้องขอเครือข่ายหมดเวลา";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "การตอบรับจากบริการไม่สมบูรณ์";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "การตอบรับจากบริการไม่ถูกรูปแบบ";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "อุปกรณ์นี้ไม่สามารถลงทะเบียนกับหมายเลขโทรศัพท์ของคุณได้ กรุณาติดตั้ง Signal ใหม่อีกครั้ง";
@@ -1394,7 +1394,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "การดาวน์โหลดแฟ้มแนบล้มเหลว";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "การส่งแฟ้มแนบล้มเหลว: ขอผู้ติดต่อนี้ส่งข้อความของเขาอีกครั้งหลังจากปรับปรุง Signal เป็นรุ่นล่าสุด";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "การส่งแฟ้มแนบล้มเหลว: ขอผู้ติดต่อนี้ส่งข้อความของเขาอีกครั้งหลังจากปรับรุ่น Signal เป็นรุ่นล่าสุด";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ได้รับข้อความซ้ำ";
@@ -1523,16 +1523,16 @@
 "GO_TO_SETTINGS_BUTTON" = "ไปที่ การตั้งค่า";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal รุ่นนี้รวมถึงการทำให้ฐานข้อมูลมีประสิทธิภาพสูงสุดและการพัฒนาการทำงาน คุณอาจจะต้องเปิดแอปเพื่อทำให้กระบวนการเสร็จสมบูรณ์";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal รุ่นนี้มีการปรับปรุงและเพิ่มประสิทธิภาพฐานข้อมูล คุณอาจต้องเปิดแอปเพื่อให้กระบวนการเสร็จสมบูรณ์";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "จัดระเบียบฐานข้อมูล";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณได้เปลี่ยนแปลงว่าใครสามารถแก้ไขข้อมูลกลุ่มเป็น %@";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณได้เปลี่ยนว่าใครสามารถแก้ไขข้อมูลกลุ่มเป็น “%@“";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ได้เปลี่ยนแปลงว่าใครสามารถแก้ไขข้อมูลกลุ่มเป็น %2$@";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ได้เปลี่ยนว่าใครสามารถแก้ไขข้อมูลกลุ่มเป็น “%2$@“";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "ข้อมูลกลุ่มสามารถเปลี่ยนแปลงได้โดย “%@“";
@@ -1544,7 +1544,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "ผู้ใช้ใดๆ";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "สมาชิกทั้งหมด";
+"GROUP_ACCESS_LEVEL_MEMBER" = "สมาชิกทุกคน";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "ไม่ทราบ";
@@ -1553,19 +1553,19 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "หยุดใช้";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณได้เปลี่ยนแปลงว่าใครสามารถแก้ไขสมาชิกภาพเป็น %@";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณได้เปลี่ยนแปลงว่าใครสามารถแก้ไขสมาชิกภาพเป็น \"%@\"";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ได้เปลี่ยนแปลงว่าใครสามารถแก้ไขสมาชิกภาพกลุ่มเป็น %2$@";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ได้เปลี่ยนแปลงว่าใครสามารถแก้ไขสมาชิกภาพกลุ่มเป็น \"%2$@\"";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "สถานะการเป็นสมาชิกของกลุ่มสามารถเปลี่ยนแปลงได้โดย “%@“";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "ผู้ดูแลกลุ่มเท่านั้ที่จะเปลี่ยนการตั้งค่านี้ได้";
+"GROUP_ADMIN_ONLY_WARNING" = "ผู้ดูแลกลุ่มเท่านั้นที่จะเปลี่ยนการตั้งค่านี้ได้";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "คุณจะไม่ได้รับเสียงหรือวีดีโอ และพวกเขาจะไม่ได้รับเสียงและวีดีของคุณ";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "คุณจะไม่ได้รับเสียงหรือวิดีโอของพวกเขา และพวกเขาจะไม่ได้รับเสียงและวิดีโอของคุณ";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ ได้ถูกปิดกั้นแล้ว";
@@ -1577,79 +1577,79 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "ดำเนินการโทรต่อ";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "การโทรแบบกลุ่มสิ้นสุดลงแล้ว";
+"GROUP_CALL_ENDED_MESSAGE" = "การโทรกลุ่มสิ้นสุดแล้ว";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "ข้อมูลเพิ่มเติม";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "จำนวนผู้เข้าร่วมสูงสุดได้เข้าร่วมการโทรนี้เต็ม %ld คนแล้ว โปรดลองอีกครั้งภายหลัง";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "มีผู้เข้าร่วมสายนี้เต็มขีดจำกัดสูงสุด %ld คนแล้ว โปรดลองใหม่ภายหลัง";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "จำนวนผู้เข้าร่วมสูงสุดของการโทรนี้ได้เต็มแล้ว โปรดลองอีกครั้งภายหลัง";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "มีผู้เข้าร่วมสายนี้เต็มขีดจำกัดสูงสุดแล้ว โปรดลองใหม่ภายหลัง";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "ห้องเต็ม";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "เข้าร่วมการโทร";
+"GROUP_CALL_JOIN_BUTTON" = "เข้าร่วมสาย";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "ออกจากการโทร";
+"GROUP_CALL_LEAVE_BUTTON" = "ออกจากสาย";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "มีผู้เข้าร่วมการโทร %ld คน";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "มีผู้เข้าร่วมสาย %ld คน";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นๆ อีก %3$@ คน อยู่ในการโทรนี้";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นๆ อีก %3$@ คน อยู่ในสายนี้";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "ไม่สามารถรับการโทรเสียงและการโทรเห็นหน้าจาก %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "ไม่สามารถรับเสียงและวิดีโอจาก %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "เหตุนี้อาจเกิดขึ้นเนื่องจากพวกเขายังไม่ได้ตรวจยืนยันหมายเลขความปลอดภัยของคุณ อุปกรณ์ของพวกเขามีปัญหา หรือพวกเขาได้ปิดกั้นคุณไว้";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "ไม่สามารถรับการโทรเสียงและการโทรเห็นหน้าจาก %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "ไม่สามารถเสียงและวิดีโอจาก %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "ไม่มีใครที่นี่";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "ยังไม่มีผู้เข้าร่วมการโทรนี้";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "ยังไม่มีผู้เข้าร่วมสายนี้";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@ %@ และคนอื่นๆ อีก %ld คน ได้เข้าร่วมการโทรนี้แล้ว";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@ %@ และคนอื่นๆ อีก %ld คน ได้เข้าร่วมสายนี้แล้ว";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@ %@ และคนอื่นๆ อีก %ld คน ได้ออกจากการโทรนี้แล้ว";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@ %@ และคนอื่นๆ อีก %ld คน ได้ออกจากสายนี้แล้ว";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ ได้เข้าร่วมการโทร";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ ได้เข้าร่วมสาย";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ ได้ออกจากการโทร";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ ได้ออกจากสาย";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ และ %@ ได้เข้าร่วมการโทร";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ และ %@ ได้เข้าร่วมสาย";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ และ %@ ได้ออกจากการโทร";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ และ %@ ได้ออกจากสาย";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "มีผู้เข้าร่วมการโทร 1 คน";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "ในสายนี้ · 1 คน";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ อยู่ในการโทรนี้";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ อยู่ในสายนี้";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "กำลังเชื่อมต่อใหม่";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "มีคนเข้าร่วมการโทรนี้ด้วยหมายเลขความปลอดภัยที่มีการเปลี่ยนแปลง";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "มีคนเข้าร่วมสายนี้ด้วยหมายเลขความปลอดภัยที่เปลี่ยนไป";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "มีผู้เริ่มการโทรแบบกลุ่ม";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "มีผู้เริ่มโทรแบบกลุ่ม";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "ปัดขึ้นเพื่อเปลี่ยนมุมมอง";
@@ -1658,7 +1658,7 @@
 "GROUP_CALL_START_BUTTON" = "เริ่มโทร";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "แตะที่นี่เพื่อเริ่มการโทรแบบกลุ่ม";
+"GROUP_CALL_START_TOOLTIP" = "แตะที่นี่เพื่อเริ่มโทรแบบกลุ่ม";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "คุณได้เริ่มการโทรแบบกลุ่ม";
@@ -1667,13 +1667,13 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ได้เริ่มการโทรแบบกลุ่ม";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นอีกหนึ่งคนอยู่ในการโทรนี้";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นอีกหนึ่งคนอยู่ในสายนี้";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ และ %2$@ อยู่ในการโทรนี้";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ และ %2$@ อยู่ในสายนี้";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "คุณได้หลุดจากการเชื่อมต่อ กรุณาตรวจสอบการเชื่อมต่อของคุณแล้วลองใหม่อีกครั้ง";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "คุณได้หลุดจากการโทร กรุณาตรวจสอบการเชื่อมต่อของคุณแล้วลองใหม่อีกครั้ง";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "คุณ";
@@ -1682,7 +1682,7 @@
 "GROUP_CALL_YOU_ARE_HERE" = "คุณอยู่ในการโทรแบบกลุ่ม";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "คุณ (อยู่บนอุปกรณ์เครื่องอื่น)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "คุณ (อยู่บนอุปกรณ์อื่น)";
 
 /* Body for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_BODY" = "เปิดกลุ่มแบบใหม่เพื่อเริ่มการโทรแบบกลุ่มที่เข้ารหัส";
@@ -1748,22 +1748,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ได้ปิดลิงก์กลุ่ม";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "ลิงก์กลุ่มถูกเปิดแล้วโดยได้ตั้งเปิดการอนุมัติโดยผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "ลิงก์กลุ่มถูกเปิด โดยการอนุมัติโดยผู้ดูแลเปิดอยู่";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดลิงก์กลุ่มโดยเปิดการอนุมัติของผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดลิงก์กลุ่ม โดยการอนุมัติโดยผู้ดูแลเปิดอยู่";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ เปิดลิงก์กลุ่มแล้วโดยได้ตั้งเปิดการอนุมัติโดยผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ได้เปิดลิงก์กลุ่ม โดยการอนุมัติโดยผู้ดูแลเปิดอยู่";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "ลิงก์กลุ่มถูกเปิดแล้วโดยได้ตั้งปิดการอนุมัติโดยผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "ลิงก์กลุ่มถูกเปิด โดยการอนุมัติโดยผู้ดูแลปิดอยู่";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดลิงก์กลุ่มโดยปิดการอนุมัติของผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดลิงก์กลุ่ม โดยการอนุมัติโดยผู้ดูแลปิดอยู่";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ เปิดลิงก์กลุ่มแล้วโดยได้ตั้งปิดการอนุมัติโดยผู้ดูแลไว้";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ได้เปิดลิงก์กลุ่ม โดยการอนุมัติโดยผู้ดูแลปิดอยู่";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "ลิงก์กลุ่มได้ถูกรีเซ็ตใหม่";
@@ -1787,13 +1787,13 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "การอนุมัติโดยผู้ดูแลได้ถูกเปิดไว้สำหรับลิงก์กลุ่มนี้";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดการอนุมัติโดยผู้ดูแลสำหรับลิงก์กลุ่มนี้แล้ว";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "คุณได้เปิดการอนุมัติโดยผู้ดูแลสำหรับลิงก์กลุ่มนี้";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ได้เปิดการอนุมัติโดยผู้ดูแลสำหรับลิงก์กลุ่มนี้";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "คุณไม่สามารถเพิ่ม%@เข้าไปในกลุ่มอย่างอัตโนมัติ ผู้ใช้ได้ถูกเชิญให้เข้าร่วมและจะไม่เห็นข้อความในกลุ่มจนกว่าผู้ใช้จะตอบรับ";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "คุณไม่สามารถเพิ่ม%@เข้ากลุ่มโดยอัตโนมัติ ผู้ใช้ได้ถูกเชิญให้เข้ากลุ่ม และเขาจะไม่เห็นข้อความในกลุ่มจนกว่าเขาจะตอบรับ";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "ส่งคำเชิญแล้ว";
@@ -1802,13 +1802,13 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "ส่ง %@ คำเชิญแล้ว";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "คุณไม่สามารถเพิ่มผู้ใช้เหล่านี้เข้าไปในกลุ่มอย่างอัตโนมัติ ผู้ใช้เหล่านี้ได้ถูกเชิญให้เข้าร่วมและจะไม่เห็นข้อความในกลุ่มจนกว่าผู้ใช้เหล่านี้จะตอบรับ";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "คุณไม่สามารถเพิ่มผู้ใช้เหล่านี้เข้ากลุ่มโดยอัตโนมัติ ผู้ใช้เหล่านี้ได้ถูกเชิญให้เข้ากลุ่ม และพวกเขาจะไม่เห็นข้อความในกลุ่มจนกว่าพวกเขาจะตอบรับ";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "คำเชิญเป็นสมาชิก";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ลิงก์กลุ่มนี้ไม่ถูกต้องอีกต่อไป";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ลิงก์กลุ่มนี้ใช้ไม่ได้แล้ว";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "ไม่สามารถเข้าร่วมกลุ่ม";
@@ -1832,7 +1832,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "โปรดลองอีกครั้ง";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "นี่ไม่ใช่ลิงก์กลุ่มที่ถูกต้อง ตรวจสอบให้แน่ใจว่าลิงก์ทั้งหมดไม่เสียหายและถูกต้องก่อนที่จะพยายามเข้าร่วม";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "นี่ไม่ใช่ลิงก์กลุ่มที่ถูกรูปแบบ ตรวจสอบให้แน่ใจว่าลิงก์ทั้งหมดถูกต้องและไม่ถูกเปลี่ยนแปลงก่อนจะพยายามเข้าร่วม";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "ลิงก์ไม่ถูกรูปแบบ";
@@ -1841,7 +1841,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "ปรับรุ่น Signal บนอุปกรณ์เครื่องนี้เพื่อเข้ากลุ่มนี้";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ผู้ดูแลต้องยอมรับให้สมาชิกใหม่เข้าร่วมกลุ่มผ่านลิงก์กลุ่ม";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ผู้ดูแลต้องอนุมัติสมาชิกใหม่ที่เข้าร่วมผ่านลิงก์กลุ่ม";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "อนุมัติสมาชิกใหม่";
@@ -1883,16 +1883,16 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "จัดการและแชร์";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ผู้ดูแลต้องยอมรับให้สมาชิกใหม่เข้าร่วมกลุ่มผ่านลิงก์กลุ่ม";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ผู้ดูแลต้องอนุมัติสมาชิกใหม่ที่เข้าร่วมผ่านลิงก์กลุ่ม";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "คำขอเป็นสมาชิก";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "ตั้งค่าลิงก์ใหม่";
+"GROUP_LINK_VIEW_RESET_LINK" = "ล้างตั้งค่าลิงก์ใหม่";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "ึุ๊คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตลิงก์กลุ่มนี้? หากท่านรีเซ็ต จะทำให้คนอื่นไม่สามารถเข้าร่วมกลุ่มผ่านลิงก์ปัจจุบันได้";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "คุณแน่ใจหรือไม่ว่าต้องการตั้งค่าลิงก์กลุ่มนี้ใหม่? คนจะไม่สามารถเข้าร่วมกลุ่มด้วยลิงก์ปัจจุบันได้อีกต่อไป";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "แบ่งปัน";
@@ -1952,19 +1952,19 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "คุณได้เข้าร่วมกลุ่มผ่านลิงก์กลุ่ม";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ นำคุณออก";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ได้ลบคุณออก";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "คุณถูกนำออกจากกลุ่ม";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "คุณถูกลบออกจากกลุ่ม";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ ได้อนุมัติคำขอเพื่อเข้าร่วมกลุ่มของคุณ";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "คุณได้ยกเลิกคำขอเข้าร่วมกลุ่มนี้";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "คุณได้ยกเลิกคำขอเข้ากลุ่มนี้";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "คำขอเข้าร่วมกลุ่มของคุณถูกปฏิเสธ";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "คำขอเข้ากลุ่มของคุณถูกปฏิเสธ";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "คุณได้ส่งคำร้องขอเข้าร่วมกลุ่ม";
@@ -1985,19 +1985,19 @@
 "GROUP_MEMBER_COUNT_LABEL_0" = "ไม่มีสมาชิก";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "สมาชิก 1 คน ";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 สมาชิก";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ สมาชิก";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@สมาชิก";
+"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ สมาชิก";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "คุณ";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "การโทรด้วยเสียง";
+"GROUP_MEMBERS_CALL" = "โทรเสียง";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "คุณสามารถเพิ่มหรือเชิญเพื่อนหลังจากสร้างกลุ่มนี้";
@@ -2009,7 +2009,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "ข้อความ";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "โทรเห็นหน้า";
+"GROUP_MEMBERS_VIDEO_CALL" = "โทรวิดีโอ";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ สมาชิกในกลุ่ม ใช้ชื่อเหมือนกัน";
@@ -2114,28 +2114,28 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ออกจากกลุ่ม";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "คุณได้นำ %@ ออก";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "คุณได้ลบ %@ ออก";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ได้นำ %2$@ ออก";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ลบ %2$@ ออก";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "คุณได้อนุมัติคำขอเข้าร่วมกลุ่มของ %@";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "คุณได้อนุมัติคำขอเข้ากลุ่มของ %@";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้อนุมัติคำขอเข้าร่วมกลุ่มของ %1$@";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้อนุมัติคำขอเข้ากลุ่มของ %1$@";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ได้ยกเลิกคำขอเข้าร่วมกลุ่มของเขา";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ได้ยกเลิกคำขอเข้ากลุ่มของเขา";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "คุณได้ปฏิเสธคำขอเข้าร่วมกลุ่มของ %@";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "คุณได้ปฏิเสธคำขอเข้ากลุ่มของ %@";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้ปฏิเสธคำขอเข้าร่วมกลุ่มของ %1$@";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ได้ปฏิเสธคำขอเข้ากลุ่มของ %1$@";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "คำขอเข้าร่วมกลุ่ม %@ ถูกปฏิเสธ";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "คำขอเข้ากลุ่ม %@ ถูกปฏิเสธ";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ได้ขอเข้าร่วมกลุ่มผ่านลิงก์กลุ่ม";
@@ -2327,7 +2327,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "กลุ่มแบบเก่า";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "คุณต้องยอมรับการเชิญเข้ากลุ่มนี้อีกครั้ง และจะไม่ได้รับข้อความในกลุ่มจนกว่าคุณจะยอมรับคำเชิญ";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "คุณต้องตอบรับการเชิญเข้ากลุ่มนี้อีกครั้ง และคุณจะไม่ได้รับข้อความในกลุ่มจนกว่าคุณจะตอบรับ";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ปรับรุ่นกลุ่ม";
@@ -2363,22 +2363,22 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "สมาชิกรายนี้ไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้โดยอัตโนมัติเมื่อมีการปรับรุ่น:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "ตอนที่กลุ่มถูกปรับรุ่น สมาชิกเหล่านี้ไม่สามารถถูกเพิ่มเข้ากลุ่มแบบใหม่ได้โดยอัตโนมัติ:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "สมาชิกเหล่านี้ไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้โดยอัตโนมัติเมื่อมีการปรับรุ่น:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ประวัติข้อความและสื่อทั้งหมดได้ถูกรักษาไว้ก่อนการปรับรุ่น";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกท่านนี้ถูกนำออกจากกลุ่มและจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าเธอจะปรับรุ่น";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าเธอจะปรับรุ่น:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ถูกนำออกจากกลุ่มและจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าพวกเขาจะปรับรุ่น";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ถูกนำออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าพวกเขาจะปรับรุ่น:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "สมาชิกรายนี้จะต้องยอมรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และจะไม่ได้รับข้อความกลุ่มจนกว่าเขาจะยอมรับ:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "สมาชิกรายนี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และเขาจะไม่ได้รับข้อความกลุ่มจนกว่าเขาจะตอบรับ:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "สมาชิกเหล่านี้จะต้องยอมรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และจะไม่ได้รับข้อความกลุ่มจนกว่าพวกเขาจะยอมรับ:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "สมาชิกเหล่านี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และพวกเขาจะไม่ได้รับข้อความกลุ่มจนกว่าพวกเขาจะตอบรับ:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกนำออกจากกลุ่ม:";
@@ -2408,7 +2408,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ปรับรุ่นกลุ่มนี้";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ก่อนคุณออกจากกลุ่มนี้ เลือกผู้ดูแลคใหม่";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ก่อนออกจากกลุ่ม ให้เลือกผู้ดูแลคนใหม่สำหรับกลุ่มนี้";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "เลือกผู้ดูแลใหม่";
@@ -2417,10 +2417,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "เลือกผู้ดูแลใหม่";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "กลุ่มของ Signal ทำงานได้ดีที่สุดกับเมื่อมีสมาชิกไม่เกิน  %@ รายหรือน้อยกว่านั้น การเพิ่มสมาชิกให้มากขึ้นจะทำให้การส่งและรับข้อความล่าช้าขึ้น";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "กลุ่มของ Signal ทำงานได้ดีที่สุดเมื่อมีสมาชิกไม่เกิน %@ คน การเพิ่มสมาชิกอีกจะทำให้การรับและส่งข้อความล่าช้า";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "จำนวนจำกัดของสมาชิกแนะนำได้เต็มแล้ว";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "จำนวนสมาชิกถึงขีดจำกัดที่แนะนำแล้ว";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "ยืนยันที่จะเพิ่มสมาชิกหรือไม่?";
@@ -2510,7 +2510,7 @@
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "ยกเลิกสายเพราะมีการใช้สายบนอุปกรณ์อื่น";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "ปฏิเสธรับสายบนอุปกรณ์อื่น";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "ถูกปฏิเสธสายบนอุปกรณ์อื่น";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "กำลังเชื่อมต่อใหม่...";
@@ -2519,10 +2519,10 @@
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "โทรด้วยเสียง...";
+"IN_CALL_RINGING_AUDIO" = "โทรเสียง...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "โทรแบบเห็นหน้า...";
+"IN_CALL_RINGING_VIDEO" = "โทรวิดีโอ...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "รับสายแล้ว กำลังทำให้ปลอดภัย…";
@@ -2540,7 +2540,7 @@
 "INCOMING_CALL_FORMAT" = "%@ ได้โทรหาคุณ";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "คุณสามารถส่งหรือรับข้อความที่ปรับประสานถึงกันจากโทรศัพท์หรือไอแพดของคุณ ↵เพื่อความมั่นคงปลอดภัยของคุณ ประวัติการแชตจะไม่ถูกถ่ายโอนไปยังอุปกรณ์ใหม่ๆ ที่ถูกเชื่อมโยง";
+"INFO_MESSAGE_SYNCED_THREAD" = "คุณสามารถส่งหรือรับข้อความที่ปรับประสานถึงกันจากโทรศัพท์หรือไอแพดของคุณ\nเพื่อความมั่นคงปลอดภัยของคุณ ประวัติการแชตจะไม่ถูกถ่ายโอนไปยังอุปกรณ์ใหม่ ๆ ที่ถูกเชื่อมโยง";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ อยู่บน Signal!";
@@ -2639,7 +2639,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์เครื่องนี้จะสามารถเห็นกลุ่ม รายชื่อผู้ติดต่อ เข้าถึงแชตของคุณ และส่งข้อความด้วยชื่อของคุณ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "เชื่อมโยงอุปกรณ์นี้ใช่หรือไม่";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "เชื่อมโยงอุปกรณ์นี้ใช่หรือไม่ฦ";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "ลองใหม่";
@@ -2654,7 +2654,7 @@
 "LINK_NEW_DEVICE_TITLE" = "เชื่อมโยงอุปกรณ์ใหม่";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "ตัวอย่างลิงก์";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "ภาพตัวอย่างลิงก์";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "อุปกรณ์ที่เชื่อมโยง";
@@ -2663,13 +2663,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "ลิงก์ภาพตัวอย่างสามารถสร้างขึ้นได้จากเว็บไซต์ทุกเว็บแล้ว";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "สามารถสร้างภาพตัวอย่างลิงก์ได้จากทุกเว็บไซต์แล้ว";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "หยุดใช้";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "แสดงตัวอย่างทุกลิงก์";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "แสดงภาพตัวอย่างทุกลิงก์";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ในการถ่ายโอนบัญชี Signal ของคุณนั้น คุณจำเป็นต้องเปิดใช้งานการเข้าถึงเครือข่ายภายในบนอุปกรณ์ทั้งสองเครื่อง";
@@ -2843,7 +2843,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "บล็อก %@ หรือไม่";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "คุณจะออกจากลุ่มนี้และจะไม่ได้รับข้อความหรือความเคลื่อนไหวอีก";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "คุณจะออกจากกลุ่มนี้และจะไม่ได้รับข้อความหรือความเคลื่อนไหวอีก";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "ปิดกั้นและลบ %@ หรือไม่?";
@@ -2888,7 +2888,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "พิจารณาคำขอ";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ยอมรับ";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ตอบรับ";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
@@ -2915,13 +2915,13 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ต้องการแชตภายในกลุ่มนี้ต่อไปและเปิดเผยชื่อกับรูปภาพให้สมาชิกในกลุ่มเห็นหรือไม่?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "อนุญาต %@ ส่งข้อความและเห็นชื่อกับรูปภาพของคุณหรือไม่? พวกเขาจะไม่รู้ว่าคุณได้เห็นข้อความของพวกเขาแล้วจนกว่าคุณจะยอมรับ";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "อนุญาตให้ %@ ส่งข้อความและเห็นชื่อและรูปถ่ายของคุณหรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะตอบรับ";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "เข้าร่วมกลุ่มนี้และเปิดเผยชื่อของคุณและรูปถ่ายให้กับสมาชิกในกลุ่มเห็นหรือไม่ พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะยอมรับ";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "เข้าร่วมกลุ่มนี้และเปิดเผยชื่อและรูปถ่ายของคุณให้สมาชิกในกลุ่มเห็นหรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะตอบรับ";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "คุณต้องการเข้าร่วมกลุ่มนี้หรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาแล้วจนกว่าคุณจะตอบรับ";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "เข้าร่วมกลุ่มนี้หรือไม่? พวกเขาจะไม่รู้ว่าคุณเห็นข้อความของพวกเขาจนกว่าคุณจะตอบรับ";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "เลิกบล็อก";
@@ -2930,10 +2930,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "ยกเลิกคำขอ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "ต้องการยกเลิกคำขอเข้าร่วมกลุ่มนี้หรือไม่?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "ต้องการยกเลิกคำขอเข้ากลุ่มนี้หรือไม่?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "คําขอเข้าร่วมกลุ่มของคุณถูกส่งไปยังผู้ดูแลกลุ่มแล้ว คุณจะได้รับแจ้งเมื่อพวกเขาดําเนินการ";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "คําขอเข้ากลุ่มของคุณถูกส่งไปยังผู้ดูแลกลุ่มแล้ว คุณจะได้รับแจ้งเมื่อพวกเขาดําเนินการ";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "ส่งถึงแล้ว";
@@ -2990,10 +2990,10 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "ข้อความใหม่";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "สายที่ไม่ได้รับ";
+"MISSED_CALL" = "สายที่พลาด";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "คุณสามารถเปิดใช้การเข้าถึงกล้องได้ในการตั้งค่าของ iOS เพื่อให้สามารถวิดีโอคอลใน Signal ได้";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "คุณสามารถเปิดการเข้าถึงกล้องได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรวิดีโอใน Signal ได้";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณ";
@@ -3020,7 +3020,7 @@
 "MUTED_BADGE" = "ถูกปิดเสียงไว้";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "พึ่งเปลี่ยนชื่อของพวกเขาจาก %1$@ เป็น %2$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของพวกเขาจาก %1$@ เป็น %2$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
@@ -3038,10 +3038,10 @@
 "NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi เท่านั้น";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "WiFi และ เซลลูลาร์";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "WiFi และเซลลูลาร์";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ค้นหาโดยหมายเลขโทรศัพท์";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ค้นหาด้วยหมายเลขโทรศัพท์";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ตั้งรูปภาพกลุ่ม";
@@ -3059,7 +3059,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "ไม่สามารถสร้างกลุ่มใหม่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณและลองอีกครั้ง";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "ไม่รองรับกลุ่มใหม่";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "ไม่รองรับกลุ่มแบบใหม่";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "ต้องมีชื่อกลุ่ม";
@@ -3068,10 +3068,10 @@
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "ไม่พบชื่อกลุ่ม";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "กลุ่มใหม่";
+"NEW_GROUP_DEFAULT_TITLE" = "กลุ่มแบบใหม่";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ไป %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ถึง %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "ตั้งชื่อกลุ่ม";
@@ -3083,7 +3083,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "เลือกสมาชิก";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการจะยกเลิกการเปลี่ยนแปลงเหล่านี้หรือไม่";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการจะยกเลิกการเปลี่ยนแปลงเหล่านี้หรือไม่?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ถูกบันทึก";
@@ -3122,10 +3122,10 @@
 "NOTE_TO_SELF" = "หมายเหตุส่วนตัว\n";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "คุณอาจจะได้รับข้อความในขณะที่ %@ ของคุณกำลังเริ่มต้นใหม่";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "คุณอาจได้รับข้อความในขณะที่ %@ ของคุณกำลังเริ่มต้นใหม่";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "เปิดเพื่อรับการแจ้งเตือนสำหรับข้อความใหม่";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "เพื่อรับการแจ้งเตือนสำหรับข้อความใหม่:";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "แตะ \"ไปยังการตั้งค่า\" ด้านล่าง";
@@ -3143,13 +3143,13 @@
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "ไม่ใช่ตอนนี้";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "เปิดกุญแจลงทะเบียน";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "เปิด";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "คุณจะไม่พลาดข้อความจากผู้ติดต่อและกลุ่มของคุณอีกต่อไป";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "เปิดการแจ้งเตือน?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "เปิดการแจ้งเตือนหรือไม่?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "การกระทำรวมถึง \"ทำเครื่องหมายอ่านแล้ว\" \"ตอบ\" และ \"โทรกลับ\"";
@@ -3212,7 +3212,7 @@
 "ONBOARDING_CAPTCHA_TITLE" = "เพิ่มลูกเล่นในข้อความของคุณ";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "เนื่องจากคุณได้หยุดใช้งานไปนาน คุณจะต้องลงทะเบียนอีกครั้งเพื่อใช้ Signal";
 
 /* Title of the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_TITLE" = "ลงทะเบียนใช้ Signal";
@@ -3227,7 +3227,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "แตะ \"ลงทะเบียน iPad\" ทำให้คุณสามารถสร้างบัญชี Signal ใหม่หรือย้ายบัญชีที่มีอยู่แล้วลงใน iPad เครื่องนี้ นี่จะเป็นการปิดใช้ Signal บนอุปกรณ์อื่นที่ลงทะเบียนไว้ด้วยหมายเลขโทรศัพท์เดียวกัน";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "แตะ \"เชื่อมโยง iPhone\" ทำให้คุณสามารถเชื่อมโยงโทรศัพท์ของคุณเข้ากับบัญชีที่มีอยู่แล้ว ปกติแล้วการเชื่อมโยงโทรศัพท์จะไม่เป็นที่แนะนำและจะจำกัดการใช้งานบางอย่าง เช่นการโทรสาย";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "การแตะ \"เชื่อมโยง iPhone\" จะเชื่อมโยงโทรศัพท์ของคุณเข้ากับบัญชีที่มีอยู่แล้ว ปกติแล้วการเชื่อมโยงโทรศัพท์จะไม่เป็นที่แนะนำ และมันจะจำกัดการใช้งานบางอย่าง เช่น การโทร";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ลงทะเบียนไอแพดนี้";
@@ -3239,7 +3239,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "การลงทะเบียน iPad เครื่องนี้จะเป็นการปิดใช้ Signal บนอุปกรณ์อื่นที่ลงทะเบียนไว้ด้วยหมายเลขโทรศัพท์เดียวกัน";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "การเชื่อมโยงโทรศัพท์ไม่เป็นที่แนะนำและจะจำกัดการใช้งานหลัก";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "การเชื่อมโยงกับ iPhone นั้นไม่แนะนำ และมันจะจำกัดความสามารถหลัก";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "อนุญาต";
@@ -3308,7 +3308,7 @@
 "ONBOARDING_SPLASH_TITLE" = "นำความเป็นส่วนตัวไปกับคุณทุกที่ \nเป็นตัวคุณในทุกข้อความ";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "หมายเลขไม่ถูกต้องหรือ";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "หมายเลขไม่ถูกต้องหรือ?";
 
 /* Label for button to perform verification with a phone call. */
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "โทรหาฉัน";
@@ -3371,7 +3371,7 @@
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "คำขอไม่สามารถยกเลิกได้";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "คำขอไม่สามารถปฏิเสธได้";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "ไม่สามารถปฏิเสธคำขอได้";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "ไม่สำเร็จ";
@@ -3389,7 +3389,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "มีเงินไม่พอ";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "ไม่สามารถส่งใบเสร็จรับเงินไปยังผู้รับเงิน";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "ไม่ถูกรูปแบบ";
@@ -3398,7 +3398,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "เพิ่มบันทึก";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "ยอดคงเหลือ : %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "ยอดคงเหลือ: %@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "ยืนยันการจ่ายเงิน";
@@ -3467,7 +3467,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ การแจ้งเตือนการชำระเงินใหม่";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "การชำระเงินเสร็จสิ้น";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "การชำระเงินสมบูรณ์";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "ยังไม่ได้ตรวจยืนยัน";
@@ -3557,7 +3557,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "เพิ่มเข้ากลุ่ม";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "เพิ่ม “%@” ไปยังกลุ่ม?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "เพิ่ม “%@” เข้ากลุ่มหรือไม่?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "ปฏิเสธคำขอ";
@@ -3878,7 +3878,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "ปิดใช้ PIN อยู่";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "เล่นสื่อข้อมูล";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "เล่นสื่อ";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "คุณยังไม่ได้ทำเครื่องหมายว่า %@ ถูกตรวจยืนยันแล้ว";
@@ -3929,16 +3929,16 @@
 "PROCEED_BUTTON" = "ทำต่อ";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "เขียนอะไรบางอย่างเกี่ยวกับตัวคุณ";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "เขียนอะไรบางอย่างเกี่ยวกับตัวคุณ...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "โปรดสุภาพ";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "ใจดีกัน";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "คอกาแฟ";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "เข้ารหัสไว้";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "เข้ารหัสลับอยู่";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "สะดวกคุย";
@@ -3947,10 +3947,10 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "พูดได้อย่างอิสระ";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "อยู่ในระหว่างพัก";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "อยู่ระหว่างพัก";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "อยู่ในระหว่างการทำอะไรใหม่ๆ";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "อยู่ระหว่างการทำอะไรใหม่ๆ";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "เกี่ยวกับ";
@@ -4001,7 +4001,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ปรับปรุงโปรไฟล์ได้เมื่อเชื่อมต่อกับอินเทอร์เน็ตอยู่เท่านั้น";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "โปรไฟล์ของคุณถูกเข้ารหัสลับจากต้นทางถึงปลายทาง ผู้ติดต่อของคุณจะมองเห็นโปรไฟล์และความเปลี่ยนแปลงที่เกิดขึ้นกับโปรไฟล์ของคุณเมื่อคุณเริ่มต้นหรือยอมรับแชตใหม่ ";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "โปรไฟล์ของคุณถูกเข้ารหัสลับจากต้นทางถึงปลายทาง ผู้ติดต่อของคุณจะมองเห็นโปรไฟล์และความเปลี่ยนแปลงที่เกิดขึ้นกับโปรไฟล์ของคุณเมื่อคุณเริ่มต้นหรือตอบรับการสนทนาใหม่ ";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "บันทึก";
@@ -4082,7 +4082,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "ตอบสนอง %@ ต่อสติกเกอร์ของคุณ";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "ตอบสนอง %@ ต่อ %@";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "ตอบสนอง %@ ต่อ: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "ตอบสนอง %@ ต่อวิดีโอของคุณ";
@@ -4250,7 +4250,7 @@
 "RETURN_CALL_PILL_BUTTON" = "กลับไปที่การโทรกลุ่ม";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ยืนยันที่จะเพิ่มไปที่กลุ่ม";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ยืนยันที่จะเพิ่มเข้ากลุ่ม";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ยืนยันที่จะโทร";
@@ -4292,7 +4292,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "การรับรองความถูกต้องไม่สำเร็จ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "คุณทำรายการรับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่อีกครั้งในภายหลัง";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "คุณทำรายการรับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่ในภายหลัง";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "คุณต้องเปิดใช้งานรหัสในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
@@ -4385,7 +4385,7 @@
 "SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "นั่นแหละที่ฉันทำเช้าวันนี้";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "ว่างให้โทรหามั้ย";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "ว่างให้โทรหาไหม?";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "ใช่จ้า!";
@@ -4421,7 +4421,7 @@
 "SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "นี่เป็นคู่มือแนะนำ";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "นี่เป็นคู่มือวิธีใช้งาน";
 
 /* This is a message in the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "ส่งรูปมาด้วยจ้า";
@@ -4736,7 +4736,7 @@
 "SETTINGS_LINK_PREVIEWS" = "สร้างภาพตัวอย่างลิงก์";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "เรียกคืนลิงค์ภาพตัวอย่างจากเว็บไซต์ที่ท่านได้ส่งผ่านข้อไปได้โดยตรง";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "เรียกภาพตัวอย่างลิงก์โดยตรงจากเว็บไซต์สำหรับข้อความที่คุณส่ง";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "ไม่เลย";
@@ -4862,13 +4862,13 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "หยุดใช้งานโดยไม่ถ่ายโอนหรือไม่?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "หยุดใช้งานโดยไม่ถ่ายโอน";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "ไม่สามารถหยุดใช้การชำระเงินได้";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "รายละเอียด";
@@ -4910,16 +4910,16 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "บันทึกวลีกู้คืน";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ที่อยู่กระเป๋าเงินไม่ถูกรูปแบบ";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "ยังไม่มีกิจกรรมเร็วๆ นี้";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "คุณต้องการเปิดใช้การชำระเงินหรือไม่?";
 
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "การชำระเงินไม่ได้เปิดใช้";
@@ -4934,7 +4934,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "กลับมาใช้การชำระเงิน";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "แนะนำการชำระเงิน (รุ่นทดสอบ)";
@@ -4985,7 +4985,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "บัญชีมีเงินไม่พอ";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "จาก %@";
@@ -4994,7 +4994,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "ถึง %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "การชำระเงินถูกปิดใช้งานแล้ว";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "ทั้งหมด";
@@ -5021,7 +5021,7 @@
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "ยอดคงเหลือ";
 
 /* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "เอาออก";
+"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "ลบ";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
@@ -5042,7 +5042,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "การกู้คืนล้มเหลว";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "นี่ไม่ใช่วลีกู้คืนที่ถูกรูปแบบ";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "วลีไม่ตรงรูปแบบ";
@@ -5072,13 +5072,13 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "วลีกู้คืนผิดรูปแบบ";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "คำสะกดไม่ถูกต้อง";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "ใส่วลีกู้คืน";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "สแกนรหัส QR สำหรับผู้รับการโอน";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "ที่อยู่ไม่ถูกรูปแบบ";
@@ -5117,13 +5117,13 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "ที่อยู่ไม่ถูกต้อง";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ถึง: สแกนหรือใส่ที่อยู่กระเป๋าเงิน";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "โอนไปตลาดแลกเปลี่ยน";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "โอนไปตลาดแลกเปลี่ยน";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "การตั้งวลีกู้คืนเสร็จสมบูรณ์";
@@ -5231,16 +5231,16 @@
 "SETTINGS_PRIVACY_TITLE" = "ความเป็นส่วนตัว";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "การตอบรับเมื่ออ่าน";
+"SETTINGS_READ_RECEIPT" = "ใบตอบรับเมื่ออ่าน";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "ปิดกุญแจลงทะเบียน";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "ปิด";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "ปิดกุญแจลงทะเบียนหรือไม่?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "เปิดกุญแจลงทะเบียน";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "เปิด";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "ถ้าคุณลืมรหัส PIN ของคุณตอนที่คุณลงทะเบียนกับ Signal อีกครั้ง คุณจะถูกล็อกจากบัญชีของคุณเป็นเวลา 7 วัน";
@@ -5363,7 +5363,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "แบ่งปันไปยัง Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "การปิดใช้งานคำแนะนำการแบ่งปันล้มเหลว";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "การปิดคำแนะนำการแบ่งปันไม่สำเร็จ";
 
 /* Body for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "ตอนนี้แชตของ Signal จะถูกแสดงเป็นคำแนะนำเมื่อแชร์จากแอปอื่น";
@@ -5390,7 +5390,7 @@
 "SOUNDS_NONE" = "ไม่มี";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "เมื่อคุณออกจากกลุ่ม คุณจะได้รับคุณลักษณะเหล่านี้ภายในสัปดาห์ที่จะถึงนี้โดยอัตโนมัติ";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "กลุ่มที่มีอยู่เดิมจะได้รับความสามารถเหล่านี้โดยอัตโนมัติ ภายในไม่กี่สัปดาห์นี้";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "กลุ่มแบบใหม่";
@@ -5459,7 +5459,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "บอกกับเราว่าเกิดอะไรขึ้น";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "บอกปัญหากับเรา";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "บอกปัญหากับเรา:";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "โปรดส่งอีเมลคำขอการสนับสนุนไปที่ support@signal.org";
@@ -5480,7 +5480,7 @@
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "รุ่น iOS: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "พื้นที่: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "ท้องถิ่น: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "URL ของปูมดีบัก: %@";
@@ -5768,7 +5768,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "ตรวจสอบหมายเลขความปลอดภัย";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "โทรเห็นหน้า";
+"VIDEO_CALL_LABEL" = "โทรวิดีโอ";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "คุณเคยดูข้อความนี้แล้ว";
@@ -5816,7 +5816,7 @@
 "WALLPAPER_PREVIEW_SET_BUTTON" = "ตั้งเป็น";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "แสดงตัวอย่าง";
+"WALLPAPER_PREVIEW_TITLE" = "ภาพตัวอย่าง";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "ล้างภาพพื้นหลัง";
@@ -5837,7 +5837,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "ไม่สามารถรีเซ็ตภาพพื้นหลังทั้งหมดได้ กรุณาลองใหม่อีกครั้งหรือติดต่อฝ่ายสนับสนุนหากยังเกิดข้อผิดพลาดอยู่";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "แสดงตัวอย่าง";
+"WALLPAPER_SETTINGS_PREVIEW" = "ภาพตัวอย่าง";
 
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "รีเซ็ตภาพพื้นหลังทั้งหมด";
