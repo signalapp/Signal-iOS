@@ -76,6 +76,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         innerStackView.addSubviewToFillSuperviewEdges(bubbleView)
 
         let typingIndicatorView = componentView.typingIndicatorView
+        let typingIndicatorWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(typingIndicatorView)
 
         outerViews.append(innerStackView)
 
@@ -85,7 +86,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         innerStackView.configure(config: innerStackViewConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_innerStack,
-                             subviews: [ typingIndicatorView ])
+                             subviews: [ typingIndicatorWrapper ])
         outerStackView.configure(config: outerStackViewConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
@@ -155,7 +156,6 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         fileprivate let outerStackView = ManualStackView(name: "Typing indicator outer")
         fileprivate let innerStackView = ManualStackView(name: "Typing indicator inner")
 
-        // TODO:
         fileprivate let avatarView = AvatarImageView()
         fileprivate let bubbleView = OWSBubbleView()
         // TODO:
@@ -183,12 +183,10 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             outerStackView.reset()
             innerStackView.reset()
 
-            // TODO: Remove all usage of layoutBlock (singular) in ManualStackView.
-            // stackView.layoutBlock = nil
-
             avatarView.image = nil
 
             typingIndicatorView.stopAnimation()
+            typingIndicatorView.removeFromSuperview()
         }
     }
 }

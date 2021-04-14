@@ -82,7 +82,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
             let contentView: UIView = {
                 if hasWallpaper {
-
                     strokeView.backgroundColor = .ows_blackAlpha80
 
                     // blurView replaces innerStack, using the same size, layoutMargins, etc.

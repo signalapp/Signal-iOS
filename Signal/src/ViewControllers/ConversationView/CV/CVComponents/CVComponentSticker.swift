@@ -52,7 +52,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 reusableMediaView = cachedView
             } else {
                 let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
-                // TODO:
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
                 mediaCache.setMediaView(reusableMediaView, forKey: cacheKey, isAnimated: isAnimated)
             }
@@ -72,7 +71,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .none:
                 break
             case .uploading:
-                // TODO:
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)

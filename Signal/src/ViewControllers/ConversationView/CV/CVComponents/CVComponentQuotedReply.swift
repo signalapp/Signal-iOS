@@ -38,19 +38,19 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
             return
         }
 
-        // TODO:
+        // TODO: Reuse QuotedMessageView.
         let quotedMessageView = QuotedMessageView(state: quotedReply.viewState,
                                                   sharpCorners: sharpCornersForQuotedMessage)
         quotedMessageView.createContents()
         quotedMessageView.layoutMargins = .zero
-        quotedMessageView.translatesAutoresizingMaskIntoConstraints = false
+        let quotedMessageWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(quotedMessageView)
 
         let stackView = componentView.stackView
         stackView.reset()
         stackView.configure(config: stackConfig,
                             cellMeasurement: cellMeasurement,
                             measurementKey: Self.measurementKey_stackView,
-                            subviews: [ quotedMessageView ])
+                            subviews: [ quotedMessageWrapper ])
     }
 
     private var stackConfig: CVStackViewConfig {

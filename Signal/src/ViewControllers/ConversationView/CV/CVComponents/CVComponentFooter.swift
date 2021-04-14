@@ -121,7 +121,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             messageTimerView.configure(withExpirationTimestamp: expiration.expirationTimestamp,
                                        initialDurationSeconds: expiration.expiresInSeconds,
                                        tintColor: textColor)
-            innerViews.append(messageTimerView)
+            let wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(messageTimerView)
+            innerViews.append(wrapper)
         }
 
         if let statusIndicator = self.statusIndicator {
@@ -386,6 +387,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             statusIndicatorImageView.layer.removeAllAnimations()
             messageTimerView.prepareForReuse()
+            messageTimerView.removeFromSuperview()
         }
 
         fileprivate func animateSpinningIcon() {

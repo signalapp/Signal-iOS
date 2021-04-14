@@ -135,8 +135,6 @@ open class ManualLayoutView: UIView {
             return
         }
         subview.frame = frame
-        // TODO: Remove?
-        subview.setNeedsLayout()
     }
 
     // MARK: - Reset

@@ -29,16 +29,17 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
             return
         }
 
-        // TODO:
+        // TODO: Reuse LinkPreviewView.
         let linkPreviewView = LinkPreviewView(draftDelegate: nil)
         linkPreviewView.state = linkPreviewState.state
+        let linkPreviewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(linkPreviewView)
 
         let stackView = componentView.stackView
         stackView.reset()
         stackView.configure(config: stackConfig,
                             cellMeasurement: cellMeasurement,
                             measurementKey: Self.measurementKey_stackView,
-                            subviews: [ linkPreviewView ])
+                            subviews: [ linkPreviewWrapper ])
     }
 
     private var stackConfig: CVStackViewConfig {

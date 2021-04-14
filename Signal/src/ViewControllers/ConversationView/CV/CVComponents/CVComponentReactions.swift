@@ -68,11 +68,16 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
 
         // TODO:
         fileprivate let reactionCountsView = CVReactionCountsView()
+        fileprivate let reactionCountsWrapper: UIView
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            reactionCountsView
+            reactionCountsWrapper
+        }
+
+        public override required init() {
+            reactionCountsWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(self.reactionCountsView)
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
