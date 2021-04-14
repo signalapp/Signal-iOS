@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Új tag hozzáadása";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Már tag";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ már tagja a csoportnak: %@";
@@ -725,16 +725,16 @@
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Hogyan segíthetünk?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "Kérdésem van";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Kérdés";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Valami nem működik";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Valami nem működik";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "A Signal nem volt képes segítségkérésed elküldésére.";
@@ -749,7 +749,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Hibanapló beküldése?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Válassz okot";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Beküldés hibanaplóval együtt";
@@ -1016,7 +1016,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Adatbázis optimalizálása";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@h";
+"DATE_HOURS_AGO_FORMAT" = "%@ó";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@p";
@@ -3350,28 +3350,28 @@
 "OUTGOING_CALL_FORMAT" = "Hívtad: %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Kérés elutasítása";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ ekkor: %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ értesítésre kerül, hogy elutasítottad.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Elutasítod ezt a kérést?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "A kérés nem megszakítható.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "A kérés em elutasítható.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Sikertelen";
@@ -3395,13 +3395,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Érvénytelen";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Megjegyzés hozzáadása";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Elérhető egyenleg: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Fizetés megerősítése";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Fizet";
@@ -3440,13 +3440,13 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Megjegyzés";
 
 /* Label for the 'new payment' button. */
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Fizet";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Teljes összeg";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "Feldolgozás";
@@ -3467,7 +3467,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Fizetés teljesült";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Ellenőrizetlen";
@@ -3476,7 +3476,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Megerősítve";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Fizetés teljesült";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Küldés...";
@@ -3485,7 +3485,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Elküldve";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Előkészítés";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Ellenőrizetlen";
@@ -3494,7 +3494,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Megerősítve";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Ismeretlen hiba";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Befejezés";
@@ -3515,7 +3515,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Elküldve";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Előkészítés";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Ellenőrizetlen";
@@ -3524,7 +3524,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Megerősítve";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Ismeretlen hiba";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";

@@ -4520,7 +4520,7 @@
 "SECURE_SESSION_RESET" = "Защищенный сеанс был сброшен.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "Просмотреть все";
+"SEE_ALL_BUTTON" = "Просмотреть всех";
 
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Другие контакты";
@@ -4979,7 +4979,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Подробности транзакции, включая сумму перевода и время транзакции, являются частью MobileCoin Ledger.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "«Комиссия за очистку монет» взимается, когда монеты в вашем распоряжении не могут быть скомбинированы, чтобы завершить транзакцию. Очистка позволит вам продолжить отправлять переводы.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "«Комиссия за очистку монет» взимается, когда монеты в вашем распоряжении не могут быть объединены, чтобы завершить транзакцию. Очистка позволит вам продолжить отправлять переводы.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "У вас недостаточно MOB, чтобы завершить этот перевод. Ваш текущий баланс: %@.";
