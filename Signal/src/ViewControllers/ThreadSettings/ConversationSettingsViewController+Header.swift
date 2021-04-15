@@ -297,6 +297,7 @@ extension ConversationSettingsViewController {
                                                   migrationInfo: migrationInfo,
                                                   viewController: viewController)
             legacyGroupView.configure()
+            legacyGroupView.backgroundColor = viewController.cellBackgroundColor
             subviews.append(legacyGroupView)
         }
 

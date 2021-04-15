@@ -694,8 +694,44 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     class func showMuteUnmuteActionSheet(for thread: TSThread, from fromVC: UIViewController, actionExecuted: @escaping () -> Void) {
+        var unmuteTitle: String?
+        if thread.isMuted {
+            let now = Date()
+
+            if thread.mutedUntilTimestamp == TSThread.alwaysMutedTimestamp {
+                unmuteTitle = NSLocalizedString(
+                    "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE",
+                    comment: "Indicates that this thread is muted forever."
+                )
+            } else if let mutedUntilDate = thread.mutedUntilDate, mutedUntilDate > now {
+                let calendar = Calendar.current
+                let muteUntilComponents = calendar.dateComponents([.year, .month, .day], from: mutedUntilDate)
+                let nowComponents = calendar.dateComponents([.year, .month, .day], from: now)
+                let dateFormatter = DateFormatter()
+                if nowComponents.year != muteUntilComponents.year
+                    || nowComponents.month != muteUntilComponents.month
+                    || nowComponents.day != muteUntilComponents.day {
+
+                    dateFormatter.dateStyle = .short
+                    dateFormatter.timeStyle = .short
+                } else {
+                    dateFormatter.dateStyle = .none
+                    dateFormatter.timeStyle = .short
+                }
+
+                let formatString = NSLocalizedString(
+                    "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT",
+                    comment: "Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}."
+                )
+                unmuteTitle = String(
+                    format: formatString,
+                    dateFormatter.string(from: mutedUntilDate)
+                )
+            }
+        }
+
         let actionSheet = ActionSheetController(
-            message: thread.isMuted ? nil : NSLocalizedString(
+            title: thread.isMuted ? unmuteTitle : NSLocalizedString(
                 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
                 comment: "Title for the mute action sheet"
             )
