@@ -377,7 +377,6 @@ extension MessageReceiver {
     }
     
     private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        // Prepare
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
@@ -426,8 +425,8 @@ extension MessageReceiver {
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
             return SNLog("Ignoring closed group encryption key pair for nonexistent group.")
         }
-        guard thread.groupModel.groupMemberIds.contains(message.sender!) else {
-            return SNLog("Ignoring closed group encryption key pair from non-member.")
+        guard thread.groupModel.groupAdminIds.contains(message.sender!) else {
+            return SNLog("Ignoring closed group encryption key pair from non-admin.")
         }
         // Find our wrapper and decrypt it if possible
         guard let wrapper = wrappers.first(where: { $0.publicKey == userPublicKey }), let encryptedKeyPair = wrapper.encryptedKeyPair else { return }
@@ -507,6 +506,10 @@ extension MessageReceiver {
             guard members.contains(group.groupAdminIds.first!) else {
                 return SNLog("Ignoring invalid closed group update.")
             }
+            // Check that the message was sent by the group admin
+            guard group.groupAdminIds.contains(message.sender!) else {
+                return SNLog("Ignoring invalid closed group update.")
+            }
             // If the current user was removed:
             // • Stop polling for the group
             // • Remove the key pairs associated with the group
@@ -517,16 +520,6 @@ extension MessageReceiver {
                 Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
-            }
-            // Generate and distribute a new encryption key pair if needed
-            // NOTE: If we're the admin we can be sure at this point that we weren't removed
-            let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
-            if isCurrentUserAdmin {
-                do {
-                    try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: Set(members), using: transaction)
-                } catch {
-                    SNLog("Couldn't distribute new encryption key pair.")
-                }
             }
             // Update the group
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
@@ -547,25 +540,17 @@ extension MessageReceiver {
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             let didAdminLeave = group.groupAdminIds.contains(message.sender!)
             let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
-            let userPublicKey = getUserHexEncodedPublicKey()
-            let isCurrentUserAdmin = group.groupAdminIds.contains(userPublicKey)
             // If a regular member left:
-            // • Distribute a new encryption key pair if we're the admin of the group
+            // • Mark them as a zombie (to be removed by the admin later)
             // If the admin left:
-            // • Don't distribute a new encryption key pair
             // • Unsubscribe from PNs, delete the group public key, etc. as the group will be disbanded
             if didAdminLeave {
                 // Remove the group from the database and unsubscribe from PNs
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
                 Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
-                let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
-            } else if isCurrentUserAdmin {
-                // Generate and distribute a new encryption key pair if needed
-                do {
-                    try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members, using: transaction)
-                } catch {
-                    SNLog("Couldn't distribute new encryption key pair.")
-                }
+                let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
+            } else {
+                // TODO: Mark as zombie
             }
             // Update the group
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
@@ -579,6 +564,7 @@ extension MessageReceiver {
     }
     
     private static func handleClosedGroupEncryptionKeyPairRequest(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        /*
         guard case .encryptionKeyPairRequest = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let groupPublicKey = message.groupPublicKey else { return }
@@ -590,6 +576,7 @@ extension MessageReceiver {
             }
             MessageSender.sendLatestEncryptionKeyPair(to: publicKey, for: groupPublicKey, using: transaction)
         }
+         */
     }
     
     private static func performIfValid(for message: ClosedGroupControlMessage, using transaction: Any, _ update: (Data, TSGroupThread, TSGroupModel) -> Void) {
