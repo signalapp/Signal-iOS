@@ -130,6 +130,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
         mediaView.removeFromSuperview()
         addSubviewToFillSuperviewEdges(mediaView)
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
 
         if let imageView = mediaView as? UIImageView {
             configureImageView(imageView)

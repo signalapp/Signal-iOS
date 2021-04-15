@@ -53,7 +53,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var bottomButtons: CVComponent?
 
     private var swipeActionProgress: CVMessageSwipeActionState.Progress?
-    private var swipeActionReference: CVMessageSwipeActionState.Reference?
 
     private var hasSendFailureBadge = false
 
@@ -278,7 +277,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         cellView.addSubview(hOuterStack)
         hOuterStack.autoPinEdgesToSuperviewEdges()
 
-        self.swipeActionReference = nil
         self.swipeActionProgress = messageSwipeActionState.getProgress(interactionId: interaction.uniqueId)
     }
 
@@ -308,17 +306,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        var outerAvatarView: AvatarImageView?
         var outerBubbleView: OWSBubbleView?
-
-        if hasSenderAvatarLayout,
-           let senderAvatar = self.senderAvatar {
-            if hasSenderAvatar {
-                componentView.avatarView.image = senderAvatar.senderAvatar
-            }
-            outerAvatarView = componentView.avatarView
-        }
-
         func configureBubbleView() {
             let bubbleView = componentView.bubbleView
             bubbleView.backgroundColor = bubbleBackgroundColor
@@ -348,23 +336,28 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let hInnerStack = componentView.hInnerStack
         hInnerStack.reset()
         var hInnerStackSubviews = [UIView]()
-        if let subview = outerAvatarView {
-            hInnerStackSubviews.append(subview)
+
+        if hasSenderAvatarLayout,
+           let senderAvatar = self.senderAvatar {
+            if hasSenderAvatar {
+                componentView.avatarView.image = senderAvatar.senderAvatar
+            }
+            // Add the view wrapper, not the view.
+            hInnerStackSubviews.append(componentView.avatarViewSwipeToReplyWrapper)
         }
 
-        let swipeActionContentView: UIView
+        let contentViewSwipeToReplyWrapper = componentView.contentViewSwipeToReplyWrapper
         if let bubbleView = outerBubbleView {
             bubbleView.addSubview(outerContentView)
             bubbleView.ensureSubviewsFillBounds = true
-            hInnerStackSubviews.append(bubbleView)
-            swipeActionContentView = bubbleView
+            contentViewSwipeToReplyWrapper.subview = bubbleView
 
             if let componentAndView = findActiveComponentAndView(key: .bodyMedia,
                                                                  messageView: componentView) {
                 if let bodyMediaComponent = componentAndView.component as? CVComponentBodyMedia {
                     if let bubbleViewPartner = bodyMediaComponent.bubbleViewPartner(componentView: componentAndView.componentView) {
                         bubbleViewPartner.setBubbleView(bubbleView)
-                        hInnerStack.addLayoutBlock { _ in
+                        contentViewSwipeToReplyWrapper.addLayoutBlock { _ in
                             // The "bubble view partner" must update it's layers
                             // to reflect the bubble view state.
                             bubbleViewPartner.updateLayers()
@@ -375,9 +368,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
             }
         } else {
-            hInnerStackSubviews.append(outerContentView)
-            swipeActionContentView = outerContentView
+            contentViewSwipeToReplyWrapper.subview = outerContentView
         }
+        // Use the view wrapper, not the view.
+        let contentRootView = contentViewSwipeToReplyWrapper
+        hInnerStackSubviews.append(contentRootView)
 
         hInnerStack.configure(config: hInnerStackConfig,
                               cellMeasurement: cellMeasurement,
@@ -435,12 +430,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                               measurementKey: Self.measurementKey_hOuterStack,
                               subviews: hOuterStackSubviews)
 
-        componentView.swipeActionContentView = swipeActionContentView
         let swipeToReplyIconView = componentView.swipeToReplyIconView
         swipeToReplyIconView.contentMode = .center
         swipeToReplyIconView.alpha = 0
-        hInnerStack.addSubview(swipeToReplyIconView)
-        hInnerStack.sendSubviewToBack(swipeToReplyIconView)
+        let swipeToReplyIconSwipeToReplyWrapper = componentView.swipeToReplyIconSwipeToReplyWrapper
+        // Add the view wrapper, not the view.
+        let swipeToReplyView = swipeToReplyIconSwipeToReplyWrapper
+        hInnerStack.addSubview(swipeToReplyView)
+        hInnerStack.sendSubviewToBack(swipeToReplyView)
 
         let swipeToReplySize: CGFloat
         if conversationStyle.hasWallpaper {
@@ -459,10 +456,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                       tintColor: .ows_gray45)
         }
         hInnerStack.addLayoutBlock { _ in
-            guard let superview = swipeToReplyIconView.superview else {
+            guard let superview = swipeToReplyView.superview else {
                 return
             }
-            let contentFrame = superview.convert(outerContentView.bounds, from: swipeActionContentView)
+            let contentFrame = superview.convert(contentRootView.bounds, from: contentRootView)
             var swipeToReplyFrame = CGRect(origin: .zero, size: .square(swipeToReplySize))
             // swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeActionContentView, withOffset: 8)
             if CurrentAppContext().isRTL {
@@ -472,7 +469,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
             // swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeActionContentView)
             swipeToReplyFrame.y = contentFrame.y + (contentFrame.height - swipeToReplyFrame.height) * 0.5
-            swipeToReplyIconView.frame = swipeToReplyFrame
+            swipeToReplyView.frame = swipeToReplyFrame
         }
 
         if let reactions = self.reactions,
@@ -483,8 +480,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                           componentDelegate: componentDelegate,
                                                           key: .reactions)
 
-            hInnerStack.addSubview(reactionsView.rootView)
-            let reactionsRootView = reactionsView.rootView
+            // Use the view wrapper, not the view.
+            let reactionsSwipeToReplyWrapper = componentView.reactionsSwipeToReplyWrapper
+            reactionsSwipeToReplyWrapper.subview = reactionsView.rootView
+            let reactionsRootView = reactionsSwipeToReplyWrapper
+
+            hInnerStack.addSubview(reactionsRootView)
             let reactionsVOverlap = self.reactionsVOverlap
             let reactionsHInset = self.reactionsHInset
             let isIncoming = self.isIncoming
@@ -1154,20 +1155,35 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate var swipeActionContentView: UIView?
-
         fileprivate let swipeToReplyIconView = UIImageView()
 
         fileprivate let cellSpacer = UIView()
+
+        fileprivate let avatarViewSwipeToReplyWrapper = SwipeToReplyWrapper(name: "avatarViewSwipeToReplyWrapper",
+                                                                            useSlowOffset: true,
+                                                                            shouldReset: false)
+        fileprivate let swipeToReplyIconSwipeToReplyWrapper = SwipeToReplyWrapper(name: "swipeToReplyIconSwipeToReplyWrapper",
+                                                                                  useSlowOffset: true,
+                                                                                  shouldReset: false)
+        fileprivate var contentViewSwipeToReplyWrapper = SwipeToReplyWrapper(name: "contentViewSwipeToReplyWrapper",
+                                                                             useSlowOffset: false,
+                                                                             shouldReset: true)
+        fileprivate var reactionsSwipeToReplyWrapper = SwipeToReplyWrapper(name: "reactionsSwipeToReplyWrapper",
+                                                                           useSlowOffset: false,
+                                                                           shouldReset: true)
+        fileprivate var swipeToReplyWrappers: [SwipeToReplyWrapper] {
+            [
+                avatarViewSwipeToReplyWrapper,
+                swipeToReplyIconSwipeToReplyWrapper,
+                contentViewSwipeToReplyWrapper,
+                reactionsSwipeToReplyWrapper
+            ]
+        }
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
             hOuterStack
-        }
-
-        public var swipeRootView: UIView {
-            hInnerStack
         }
 
         // MARK: - Subcomponents
@@ -1270,11 +1286,26 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         override required init() {
             bubbleView.layoutMargins = .zero
+
+            avatarViewSwipeToReplyWrapper.subview = avatarView
+            swipeToReplyIconSwipeToReplyWrapper.subview = swipeToReplyIconView
+            // Configure contentViewSwipeToReplyWrapper and
+            // reactionsSwipeToReplyWrapper later.
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             for subcomponentView in allSubcomponentViews {
                 subcomponentView.setIsCellVisible(isCellVisible)
+            }
+        }
+
+        public func setSwipeToReplyOffset(fastOffset: CGPoint,
+                                          slowOffset: CGPoint) {
+            for swipeToReplyWrapper in swipeToReplyWrappers {
+                let offset = (swipeToReplyWrapper.useSlowOffset
+                                ? slowOffset
+                                : fastOffset)
+                swipeToReplyWrapper.offset = offset
             }
         }
 
@@ -1290,12 +1321,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 topNestedStackView.reset()
                 bottomFullWidthStackView.reset()
                 bottomNestedStackView.reset()
+
+                for swipeToReplyWrapper in swipeToReplyWrappers {
+                    if swipeToReplyWrapper.shouldReset {
+                        swipeToReplyWrapper.reset()
+                    } else {
+                        swipeToReplyWrapper.offset = .zero
+                    }
+                }
             }
 
             avatarView.image = nil
 
             if !isDedicatedCellView {
-                swipeActionContentView = nil
                 swipeToReplyIconView.image = nil
             }
             swipeToReplyIconView.alpha = 0
@@ -1325,10 +1363,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         fileprivate func removeSwipeActionAnimations() {
-            swipeActionContentView?.layer.removeAllAnimations()
-            avatarView.layer.removeAllAnimations()
-            swipeToReplyIconView.layer.removeAllAnimations()
-            reactionsView?.rootView.layer.removeAllAnimations()
+            for swipeToReplyWrapper in swipeToReplyWrappers {
+                swipeToReplyWrapper.layer.removeAllAnimations()
+            }
         }
     }
 
@@ -1355,14 +1392,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                            renderItem: renderItem,
                                                            messageSwipeActionState: messageSwipeActionState) {
             return panHandler
-        }
-
-        tryToUpdateSwipeActionReference(componentView: componentView,
-                                        renderItem: renderItem,
-                                        messageSwipeActionState: messageSwipeActionState)
-        guard swipeActionReference != nil else {
-            owsFailDebug("Missing reference[\(renderItem.interactionUniqueId)].")
-            return nil
         }
 
         return CVPanHandler(delegate: componentDelegate,
@@ -1398,9 +1427,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                             renderItem: renderItem,
                                             messageSwipeActionState: messageSwipeActionState)
         case .messageSwipeAction:
-            tryToUpdateSwipeActionReference(componentView: componentView,
-                                            renderItem: renderItem,
-                                            messageSwipeActionState: messageSwipeActionState)
             updateSwipeActionProgress(sender: sender,
                                       panHandler: panHandler,
                                       componentDelegate: componentDelegate,
@@ -1480,9 +1506,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToUpdateSwipeActionReference(componentView: componentView,
-                                        renderItem: renderItem,
-                                        messageSwipeActionState: messageSwipeActionState)
         tryToApplySwipeAction(componentView: componentView, isAnimated: false)
     }
 
@@ -1495,46 +1518,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToUpdateSwipeActionReference(componentView: componentView,
-                                        renderItem: renderItem,
-                                        messageSwipeActionState: messageSwipeActionState)
         tryToApplySwipeAction(componentView: componentView, isAnimated: false)
-    }
-
-    private func tryToUpdateSwipeActionReference(componentView: CVComponentViewMessage,
-                                                 renderItem: CVRenderItem,
-                                                 messageSwipeActionState: CVMessageSwipeActionState) {
-        AssertIsOnMainThread()
-
-        guard swipeActionReference == nil else {
-            // Reference already set.
-            return
-        }
-
-        guard let contentView = componentView.swipeActionContentView else {
-            owsFailDebug("Missing outerContentView.")
-            return
-        }
-        let avatarView = componentView.avatarView
-        let iconView = componentView.swipeToReplyIconView
-        let hInnerStack = componentView.hInnerStack
-
-        let contentViewCenter = contentView.center
-        let avatarViewCenter = avatarView.center
-        let iconViewCenter = iconView.center
-        guard hInnerStack.frame != .zero else {
-            // Cell has not been laid out yet.
-            return
-        }
-        var reactionsViewCenter: CGPoint?
-        if let reactionsView = componentView.reactionsView {
-            reactionsViewCenter = reactionsView.rootView.center
-        }
-        let reference = CVMessageSwipeActionState.Reference(contentViewCenter: contentViewCenter,
-                                                            reactionsViewCenter: reactionsViewCenter,
-                                                            avatarViewCenter: avatarViewCenter,
-                                                            iconViewCenter: iconViewCenter)
-        self.swipeActionReference = reference
     }
 
     private let swipeActionOffsetThreshold: CGFloat = 55
@@ -1550,8 +1534,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     ) {
         AssertIsOnMainThread()
 
-        var xOffset = sender.translation(in: componentView.swipeRootView).x
-        var xVelocity = sender.velocity(in: componentView.swipeRootView).x
+        var xOffset = sender.translation(in: componentView.rootView).x
+        var xVelocity = sender.velocity(in: componentView.rootView).x
 
         // Invert positions for RTL logic, since the user is swiping in the opposite direction.
         if CurrentAppContext().isRTL {
@@ -1684,17 +1668,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     ) {
         AssertIsOnMainThread()
 
-        guard let contentView = componentView.swipeActionContentView else {
-            owsFailDebug("Missing outerContentView.")
-            return
-        }
-        guard let swipeActionReference = swipeActionReference,
-              let swipeActionProgress = swipeActionProgress else {
+        guard let swipeActionProgress = swipeActionProgress else {
             return
         }
         let swipeToReplyIconView = componentView.swipeToReplyIconView
-        let avatarView = componentView.avatarView
-        let iconView = componentView.swipeToReplyIconView
 
         // Scale the translation above or below the desired range,
         // to produce an elastic feeling when you overscroll.
@@ -1730,13 +1707,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let animations = {
             swipeToReplyIconView.alpha = iconAlpha
-            contentView.center = swipeActionReference.contentViewCenter.plusX(position)
-            avatarView.center = swipeActionReference.avatarViewCenter.plusX(slowPosition)
-            iconView.center = swipeActionReference.iconViewCenter.plusX(slowPosition)
-            if let reactionsViewCenter = swipeActionReference.reactionsViewCenter,
-               let reactionsView = componentView.reactionsView {
-                reactionsView.rootView.center = reactionsViewCenter.plusX(position)
-            }
+            componentView.setSwipeToReplyOffset(fastOffset: CGPoint(x: position, y: 0),
+                                                slowOffset: CGPoint(x: slowPosition, y: 0))
         }
         if isAnimated {
             UIView.animate(withDuration: 0.1,
@@ -1758,26 +1730,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         messageSwipeActionState.resetProgress(interactionId: renderItem.interactionUniqueId)
 
-        guard let contentView = componentView.swipeActionContentView else {
-            owsFailDebug("Missing outerContentView.")
-            return
-        }
-        let avatarView = componentView.avatarView
         let iconView = componentView.swipeToReplyIconView
-        guard let swipeActionReference = swipeActionReference else {
-            return
-        }
 
         let animations = {
-            contentView.center = swipeActionReference.contentViewCenter
-            avatarView.center = swipeActionReference.avatarViewCenter
-            iconView.center = swipeActionReference.iconViewCenter
+            componentView.setSwipeToReplyOffset(fastOffset: .zero, slowOffset: .zero)
             iconView.alpha = 0
-
-            if let reactionsViewCenter = swipeActionReference.reactionsViewCenter,
-               let reactionsView = componentView.reactionsView {
-                reactionsView.rootView.center = reactionsViewCenter
-            }
         }
 
         if isAnimated {
@@ -1913,5 +1870,75 @@ fileprivate extension CVComponentMessage {
             result[key] = subcomponent
         }
         return result
+    }
+}
+
+// MARK: -
+
+class SwipeToReplyWrapper: ManualLayoutView {
+
+    var offset: CGPoint = .zero {
+        didSet {
+            layoutSubviews()
+        }
+    }
+
+    var subview: UIView? {
+        didSet {
+            // This view should only be configured after being reset.
+            owsAssertDebug((subview == nil) || (oldValue == nil))
+
+            oldValue?.removeFromSuperview()
+
+            if let subview = subview {
+                owsAssertDebug(subview.superview == nil)
+                addSubview(subview)
+
+                layoutSubviews()
+            }
+        }
+    }
+
+    let useSlowOffset: Bool
+    let shouldReset: Bool
+
+    public required init(name: String,
+                         useSlowOffset: Bool,
+                         shouldReset: Bool) {
+        self.useSlowOffset = useSlowOffset
+        self.shouldReset = shouldReset
+
+        super.init(name: name)
+
+        addDefaultLayoutBlock()
+    }
+
+    private func addDefaultLayoutBlock() {
+        addLayoutBlock { view in
+            guard let view = view as? SwipeToReplyWrapper else {
+                owsFailDebug("Invalid reference view.")
+                return
+            }
+            guard let subview = view.subview else {
+                return
+            }
+            var subviewFrame = view.bounds
+            subviewFrame.origin = subviewFrame.origin + view.offset
+            subview.frame = subviewFrame
+        }
+    }
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
+        notImplemented()
+    }
+
+    override func reset() {
+        super.reset()
+
+        subview = nil
+        offset = .zero
+        addDefaultLayoutBlock()
     }
 }

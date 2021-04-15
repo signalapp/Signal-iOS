@@ -74,6 +74,8 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
 
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
     return self;
 }
 

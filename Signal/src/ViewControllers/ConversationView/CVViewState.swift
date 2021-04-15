@@ -429,12 +429,6 @@ public class CVTextExpansion {
 // MARK: -
 
 public class CVMessageSwipeActionState {
-    public struct Reference {
-        let contentViewCenter: CGPoint
-        let reactionsViewCenter: CGPoint?
-        let avatarViewCenter: CGPoint
-        let iconViewCenter: CGPoint
-    }
     public struct Progress {
         let xOffset: CGFloat
     }
