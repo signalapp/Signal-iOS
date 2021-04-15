@@ -146,7 +146,7 @@ public enum MessageReceiver {
             message.recipient = userPublicKey
             message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = NSDate.millisecondTimestamp()
-            if (isOpenGroupMessage) {
+            if isOpenGroupMessage {
                 message.openGroupServerTimestamp = envelope.serverTimestamp
             }
             message.groupPublicKey = groupPublicKey
