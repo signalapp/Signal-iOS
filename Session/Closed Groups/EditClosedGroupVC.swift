@@ -299,14 +299,8 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
     
     private func canBeRemoved(_ publicKey: String) -> Bool {
-        return !isAdmin(publicKey) || isCurrentUser(publicKey)
-    }
-    
-    private func isAdmin(_ publicKey: String) -> Bool {
-        return thread.groupModel.groupAdminIds.contains(publicKey)
-    }
-    
-    private func isCurrentUser(_ publicKey: String) -> Bool {
-        return publicKey == getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let isCurrentUserAdmin = thread.groupModel.groupAdminIds.contains(userPublicKey)
+        return isCurrentUserAdmin || (publicKey == userPublicKey)
     }
 }
