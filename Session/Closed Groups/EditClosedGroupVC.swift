@@ -1,3 +1,4 @@
+import PromiseKit
 
 @objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
@@ -268,22 +269,26 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard members.count <= 100 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
-        Storage.write(with: { [weak self] transaction in
-            do {
+        var promise: Promise<Void>!
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] _ in
+            Storage.write(with: { transaction in
                 if !members.contains(getUserHexEncodedPublicKey()) {
-                    try MessageSender.leave(groupPublicKey, using: transaction)
+                    promise = MessageSender.leave(groupPublicKey, using: transaction)
                 } else {
-                    try MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction)
+                    promise = MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction)
                 }
-            } catch {
-                DispatchQueue.main.async {
-                    self?.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+            }, completion: {
+                let _ = promise.done(on: DispatchQueue.main) {
+                    guard let self = self else { return }
+                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    popToConversationVC(self)
                 }
-            }
-        }, completion: { [weak self] in
-            guard let self = self else { return }
-            popToConversationVC(self)
-        })
+                promise.catch(on: DispatchQueue.main) { error in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    self?.showError(title: "Couldn't Update Group", message: error.localizedDescription)
+                }
+            })
+        }
     }
 
     // MARK: Convenience

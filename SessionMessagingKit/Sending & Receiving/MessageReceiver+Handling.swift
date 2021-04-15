@@ -372,7 +372,7 @@ extension MessageReceiver {
         case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
         case .membersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
         case .memberLeft: handleClosedGroupMemberLeft(message, using: transaction)
-        case .encryptionKeyPairRequest: handleClosedGroupEncryptionKeyPairRequest(message, using: transaction)
+        case .encryptionKeyPairRequest: handleClosedGroupEncryptionKeyPairRequest(message, using: transaction) // Currently not used
         }
     }
     
