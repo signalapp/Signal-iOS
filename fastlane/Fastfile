@@ -62,9 +62,21 @@ lane :release do
     derived_data_path: './build'
   )
 
+  # Transporter only allows uploading one instance of
+  # an app at a time. To workaround and allow parallel
+  # building we need to wait for the transporter lock
+  # to be released.
+  puts "\e[33mWaiting for transporter lock, this could take a while...\e[0m"
+  lock = File.open("#{Dir.home}/.fastlane.transporter.lock", File::CREAT)
+  lock.flock(File::LOCK_EX)
+  puts "\e[32mTransporter lock acquired!\e[0m"
+
   upload_to_testflight(
     app_identifier: app_identifier,
     skip_submission: true,
     skip_waiting_for_build_processing: true
   )
+
+  lock.flock(File::LOCK_UN)
+  lock.close
 end
