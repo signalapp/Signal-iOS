@@ -10,6 +10,7 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public var sender: String?
     public var groupPublicKey: String?
     public var openGroupServerMessageID: UInt64?
+    public var openGroupServerTimestamp: UInt64?
 
     public var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
     public var isSelfSendValid: Bool { false }
@@ -30,6 +31,10 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         if let sentTimestamp = coder.decodeObject(forKey: "sentTimestamp") as! UInt64? { self.sentTimestamp = sentTimestamp }
         if let receivedTimestamp = coder.decodeObject(forKey: "receivedTimestamp") as! UInt64? { self.receivedTimestamp = receivedTimestamp }
         if let recipient = coder.decodeObject(forKey: "recipient") as! String? { self.recipient = recipient }
+        if let sender = coder.decodeObject(forKey: "sender") as! String? { self.sender = sender }
+        if let groupPublicKey = coder.decodeObject(forKey: "groupPublicKey") as! String? { self.groupPublicKey = groupPublicKey }
+        if let openGroupServerMessageID = coder.decodeObject(forKey: "openGroupServerMessageID") as! UInt64? { self.openGroupServerMessageID = openGroupServerMessageID }
+        if let openGroupServerTimestamp = coder.decodeObject(forKey: "openGroupServerTimestamp") as! UInt64? { self.openGroupServerTimestamp = openGroupServerTimestamp }
     }
 
     public func encode(with coder: NSCoder) {
@@ -38,6 +43,10 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(sentTimestamp, forKey: "sentTimestamp")
         coder.encode(receivedTimestamp, forKey: "receivedTimestamp")
         coder.encode(recipient, forKey: "recipient")
+        coder.encode(sender, forKey: "sender")
+        coder.encode(groupPublicKey, forKey: "groupPublicKey")
+        coder.encode(openGroupServerMessageID, forKey: "openGroupServerMessageID")
+        coder.encode(openGroupServerTimestamp, forKey: "openGroupServerTimestamp")
     }
 
     // MARK: Proto Conversion

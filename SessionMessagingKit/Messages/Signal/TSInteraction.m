@@ -169,8 +169,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)timestampForUI
 {
-    if (_shouldUseServerTime) {
-        return _receivedAtTimestamp;
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+        return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
     }
     return _timestamp;
 }
@@ -180,14 +180,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self.timestamp;
 }
 
-- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp
-{
-    _shouldUseServerTime = YES;
-    _receivedAtTimestamp = receivedAtTimestamp;
-}
-
 - (NSDate *)receivedAtDate
 {
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+        return [NSDate ows_dateWithMillisecondsSince1970:((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue];
+    }
     return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
@@ -199,13 +196,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    if ([self isKindOfClass:TSMessage.class] && ((TSMessage *)self).isOpenGroupMessage) {
-        sortId1 = self.sortId;
-        sortId2 = other.sortId;
-    } else {
-        sortId1 = self.timestamp;
-        sortId2 = other.timestamp;
-    }
+    // sortId == serverTimestamp for open group messages.
+    // sortId == timestamp (the sent timestamp) for one-to-one and closed group messages.
+    sortId1 = self.sortId;
+    sortId2 = other.sortId;
 
     if (sortId1 > sortId2) {
         return NSOrderedDescending;
@@ -227,6 +221,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      [super description],
                      self.uniqueThreadId,
                      (unsigned long)self.timestamp];
+}
+
+- (uint64_t)sortId
+{
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+        return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
+    }
+    return self.timestamp;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
