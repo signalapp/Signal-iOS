@@ -8,8 +8,8 @@ if [ ! -z ${USE_PRIVATE_PODS+x} ]; then
         if [ "$HAS_CONFIGURED_PRIVATE_REMOTE" = 0 ]; then
             echo "Adding private pods remote"
             git remote add private git@github.com:signalapp/Signal-Pods-Private.git
-            git fetch private
         fi
+        git fetch private
         popd
     else
         echo "Cloning private pods repo"
