@@ -204,7 +204,7 @@ public final class MessageSender : NSObject {
         }
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: NSDate.millisecondTimestamp())
+        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: message.sentTimestamp!)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count
