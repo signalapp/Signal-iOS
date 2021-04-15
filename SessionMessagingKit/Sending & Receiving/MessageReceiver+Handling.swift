@@ -521,6 +521,7 @@ extension MessageReceiver {
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
+            // TODO: Remove from zombie list
             // Update the group
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)

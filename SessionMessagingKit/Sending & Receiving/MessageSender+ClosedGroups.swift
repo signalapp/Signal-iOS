@@ -47,6 +47,11 @@ extension MessageSender {
         return when(fulfilled: promises).map2 { thread }
     }
 
+    /// Generates and distributes a new encryption key pair for the group with the given `groupPublicKey`. This sends a `ENCRYPTION_KEY_PAIR` message to the group. The
+    /// message contains a list of key pair wrappers. Each key pair wrapper consists of the public key for which the wrapper is intended along with the newly generated key pair
+    /// encrypted for that public key.
+    ///
+    /// The returned promise is fulfilled when the message has been sent to the group.
     public static func generateAndSendNewEncryptionKeyPair(for groupPublicKey: String, to targetMembers: Set<String>, using transaction: Any) -> Promise<Void> {
         // Prepare
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -109,6 +114,7 @@ extension MessageSender {
         return when(fulfilled: promises).map2 { _ in }
     }
     
+    /// Sets the name to `name` for the group with the given `groupPublicKey`. This sends a `NAME_CHANGE` message to the group.
     public static func setName(to name: String, for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -136,6 +142,8 @@ extension MessageSender {
         return Promise.value(())
     }
     
+    /// Adds `newMembers` to the group with the given `groupPublicKey`. This sends a `MEMBERS_ADDED` message to the group, and a
+    /// `NEW` message to the members that were added (using one-on-one channels).
     public static func addMembers(_ newMembers: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -179,6 +187,12 @@ extension MessageSender {
         return Promise.value(())
     }
     
+    /// Removes `membersToRemove` from the group with the given `groupPublicKey`. Only the admin can remove members, and when they do
+    /// they generate and distribute a new encryption key pair for the group. A member cannot leave a group using this method. For that they should use
+    /// `leave(:using:)`.
+    ///
+    /// The returned promise is fulfilled when the `MEMBERS_REMOVED` message has been sent to the group AND the new encryption key pair has been
+    /// generated and distributed.
     public static func removeMembers(_ membersToRemove: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         // Get the group, check preconditions & prepare
         let userPublicKey = getUserHexEncodedPublicKey()
@@ -223,6 +237,13 @@ extension MessageSender {
         return AnyPromise.from(leave(groupPublicKey, using: transaction))
     }
     
+    /// Leave the group with the given `groupPublicKey`. If the current user is the admin, the group is disbanded entirely. If the user is a regular
+    /// member they'll be marked as a "zombie" member by the other users in the group (upon receiving the leave message). The admin can then truly
+    /// remove them later.
+    ///
+    /// This function also removes all encryption key pairs associated with the closed group and the group's public key, and unregisters from push notifications.
+    ///
+    /// The returned promise is fulfilled when the `MEMBER_LEFT` message has been sent to the group.
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -275,7 +296,6 @@ extension MessageSender {
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPairRequest)
         MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
     }
-     */
     
     public static func sendLatestEncryptionKeyPair(to publicKey: String, for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Check that the user in question is part of the closed group
@@ -301,4 +321,5 @@ extension MessageSender {
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(publicKey: Data(hex: groupPublicKey), wrappers: [ wrapper ]))
         MessageSender.send(closedGroupControlMessage, in: contactThread, using: transaction)
     }
+     */
 }
