@@ -74,7 +74,8 @@ lane :release do
   upload_to_testflight(
     app_identifier: app_identifier,
     skip_submission: true,
-    skip_waiting_for_build_processing: true
+    skip_waiting_for_build_processing: true,
+    ipa: './Signal.ipa'
   )
 
   lock.flock(File::LOCK_UN)
