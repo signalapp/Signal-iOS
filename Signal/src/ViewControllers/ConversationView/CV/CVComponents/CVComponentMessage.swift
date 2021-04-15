@@ -362,6 +362,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                             // to reflect the bubble view state.
                             bubbleViewPartner.updateLayers()
                         }
+                        hInnerStack.addLayoutBlock { _ in
+                            // The "bubble view partner" must update it's layers
+                            // to reflect the bubble view state.
+                            bubbleViewPartner.updateLayers()
+                        }
                     }
                 } else {
                     owsFailDebug("Invalid component.")

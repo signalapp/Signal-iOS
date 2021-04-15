@@ -150,6 +150,11 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 {
     [super layoutSubviews];
 
+    [self ensureSubviewLayout];
+}
+
+- (void)ensureSubviewLayout
+{
     if (self.ensureSubviewsFillBounds) {
         for (UIView *subview in self.subviews) {
             subview.frame = self.bounds;
@@ -209,8 +214,9 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
         self.layer.mask = self.maskLayer;
     }
 
-
     [CATransaction commit];
+
+    [self ensureSubviewLayout];
 }
 
 - (nullable NSArray *)fillGradientCGColors

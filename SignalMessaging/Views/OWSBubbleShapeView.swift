@@ -84,6 +84,8 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     public func setBubbleView(_ bubbleView: OWSBubbleView?) {
         self.bubbleView = bubbleView
+
+        updateLayers()
     }
 
     public func updateLayers() {

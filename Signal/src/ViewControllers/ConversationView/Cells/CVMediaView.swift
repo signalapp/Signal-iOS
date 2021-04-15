@@ -225,8 +225,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
                                                                   tintColor: UIColor.ows_white)
         playVideoIconView.isUserInteractionEnabled = false
-        playVideoButton.addSubview(playVideoIconView)
-        centerSubviewOnSuperview(playVideoIconView, size: CGSize(square: playVideoIconWidth))
+        let playVideoIconWrapper = ManualLayoutView(name: "playVideoIconWrapper")
+        playVideoIconWrapper.addSubviewToFillSuperviewEdges(playVideoIconView)
+        addSubviewToCenterOnSuperview(playVideoIconWrapper, size: CGSize(square: playVideoIconWidth))
     }
 
     private var hasBlurHash: Bool {
