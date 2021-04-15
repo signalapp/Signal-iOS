@@ -243,8 +243,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - "SignalCoreKit (from `ssh://git@github.com/signalapp/SignalCoreKit.git`)"
-  - "SignalCoreKit/Tests (from `ssh://git@github.com/signalapp/SignalCoreKit.git`)"
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -321,7 +321,7 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :git: "ssh://git@github.com/signalapp/SignalCoreKit.git"
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -367,7 +367,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 64410ab6b3b8f6c082d5cf6ddd7d58915b997c75
-    :git: "ssh://git@github.com/signalapp/SignalCoreKit.git"
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
     :commit: af0c4d175384160946aca9d47247f80e26cb0625
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -436,6 +436,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 5a2224327ddec77d5df306b7e496e8790e0924ea
+PODFILE CHECKSUM: 88c70cbd58abdc7802ab181e7a59ffb11557a3c6
 
 COCOAPODS: 1.9.2
