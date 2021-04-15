@@ -61,6 +61,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         }
         self.isBorderless = isBorderless
         self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
+        self.translatesAutoresizingMaskIntoConstraints = false
 
         createContents(imageArrangement: imageArrangement,
                        cellMeasurement: cellMeasurement)
