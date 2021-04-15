@@ -213,11 +213,11 @@ extension ConversationSettingsViewController {
         private var maxIconButtonWidth: CGFloat = 0
         mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
             let button = OWSButton(block: action)
+            button.dimsWhenHighlighted = true
             button.isEnabled = isEnabled
             button.layer.cornerRadius = 10
             button.clipsToBounds = true
             button.setBackgroundImage(UIImage(color: viewController.cellBackgroundColor), for: .normal)
-            button.setBackgroundImage(UIImage(color: viewController.cellSelectedBackgroundColor), for: .highlighted)
 
             let imageView = UIImageView()
             imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
@@ -276,11 +276,14 @@ extension ConversationSettingsViewController {
             addSubtitleLabel(attributedText: NSAttributedString(string: text), font: font)
         }
 
+        private var hasSubtitleLabel = false
+
         @discardableResult
         mutating func addSubtitleLabel(attributedText: NSAttributedString, font: UIFont? = nil) -> UILabel {
-            subviews.append(UIView.spacer(withHeight: 8))
+            subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
             let label = buildHeaderSubtitleLabel(attributedText: attributedText, font: font)
             subviews.append(label)
+            hasSubtitleLabel = true
             return label
         }
 
@@ -400,14 +403,6 @@ extension ConversationSettingsViewController {
                 PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             if threadName != formattedPhoneNumber {
                 builder.addSubtitleLabel(text: formattedPhoneNumber)
-            }
-        }
-
-        if let username = profileManagerImpl.username(for: recipientAddress, transaction: transaction),
-           username.count > 0 {
-            if let formattedUsername = CommonFormats.formatUsername(username),
-               threadName != formattedUsername {
-                builder.addSubtitleLabel(text: formattedUsername)
             }
         }
 

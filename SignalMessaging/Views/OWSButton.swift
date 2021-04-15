@@ -10,6 +10,16 @@ public class OWSButton: UIButton {
     @objc
     public var block: () -> Void = { }
 
+    @objc
+    public var dimsWhenHighlighted = false
+
+    public override var isHighlighted: Bool {
+        didSet {
+            guard dimsWhenHighlighted else { return }
+            alpha = isHighlighted ? 0.4 : 1
+        }
+    }
+
     // MARK: -
 
     @objc
