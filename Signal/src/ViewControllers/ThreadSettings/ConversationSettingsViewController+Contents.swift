@@ -109,7 +109,11 @@ extension ConversationSettingsViewController {
                 let cell = OWSTableItem.newCell()
                 guard let self = self else { return cell }
 
-                cell.selectionStyle = .none
+                // We don't want the user to be able to present "all media"
+                // by tapping between the images.
+                let blockingView = OWSButton {}
+                cell.addSubview(blockingView)
+                blockingView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
 
                 let stackView = UIStackView()
                 stackView.axis = .horizontal
@@ -117,42 +121,51 @@ extension ConversationSettingsViewController {
                 cell.contentView.addSubview(stackView)
                 stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
-                let spacerWidth = CGFloat(self.maximumRecentMedia - 1) * stackView.spacing
-                let imageWidth = ((self.view.width - (Self.cellHInnerMargin + Self.cellHOuterMargin)) / CGFloat(self.maximumRecentMedia)) - spacerWidth
+                let totalSpacerSize = CGFloat(self.maximumRecentMedia - 1) * stackView.spacing
+                let availableWidth = self.view.width - ((Self.cellHInnerMargin + Self.cellHOuterMargin) * 2) - self.view.safeAreaInsets.totalWidth
+                let imageWidth = (availableWidth - totalSpacerSize) / CGFloat(self.maximumRecentMedia)
 
                 for (attachmentStream, imageView) in self.recentMedia.orderedValues {
                     let button = OWSButton { [weak self] in
                         self?.showMediaPageView(for: attachmentStream)
                     }
                     stackView.addArrangedSubview(button)
+                    button.autoSetDimensions(to: CGSize(square: imageWidth))
 
                     imageView.backgroundColor = Theme.middleGrayColor
-                    imageView.autoSetDimensions(to: CGSize(square: imageWidth))
 
                     button.addSubview(imageView)
                     imageView.autoPinEdgesToSuperviewEdges()
+
+                    let overlayView = UIView()
+                    overlayView.isUserInteractionEnabled = false
+                    overlayView.backgroundColor = .ows_blackAlpha05
+                    button.addSubview(overlayView)
+                    overlayView.autoPinEdgesToSuperviewEdges()
                 }
 
                 if self.recentMedia.count < self.maximumRecentMedia {
                     stackView.addArrangedSubview(.hStretchingSpacer())
                     stackView.autoPinEdge(toSuperviewMargin: .bottom)
+                    blockingView.autoPinEdge(toSuperviewEdge: .bottom)
                 } else {
-                    let seeAllButton = OWSButton { [weak self] in
-                        self?.showMediaGallery()
-                    }
-                    seeAllButton.setTitle(CommonStrings.seeAllButton, for: .normal)
-                    seeAllButton.setTitleColor(Theme.primaryTextColor, for: .normal)
-                    seeAllButton.contentHorizontalAlignment = .leading
-                    seeAllButton.titleLabel?.font = OWSTableItem.primaryLabelFont
-                    seeAllButton.autoSetDimension(.height, toSize: OWSTableItem.primaryLabelFont.lineHeight)
-                    cell.contentView.addSubview(seeAllButton)
-                    seeAllButton.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
-                    seeAllButton.autoPinEdge(.top, to: .bottom, of: stackView, withOffset: 14)
+                    let seeAllLabel = UILabel()
+                    seeAllLabel.textColor = Theme.primaryTextColor
+                    seeAllLabel.font = OWSTableItem.primaryLabelFont
+                    seeAllLabel.text = CommonStrings.seeAllButton
+
+                    seeAllLabel.autoSetDimension(.height, toSize: OWSTableItem.primaryLabelFont.lineHeight)
+                    cell.contentView.addSubview(seeAllLabel)
+                    seeAllLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+                    seeAllLabel.autoPinEdge(.top, to: .bottom, of: stackView, withOffset: 14)
+                    blockingView.autoPinEdge(.bottom, to: .top, of: seeAllLabel, withOffset: -14)
                 }
 
                 return cell
             },
-            actionBlock: {}
+            actionBlock: { [weak self] in
+                self?.showMediaGallery()
+            }
         ))
 
         contents.addSection(section)
