@@ -109,12 +109,6 @@ extension ConversationSettingsViewController {
                 let cell = OWSTableItem.newCell()
                 guard let self = self else { return cell }
 
-                // We don't want the user to be able to present "all media"
-                // by tapping between the images.
-                let blockingView = OWSButton {}
-                cell.addSubview(blockingView)
-                blockingView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-
                 let stackView = UIStackView()
                 stackView.axis = .horizontal
                 stackView.spacing = 5
@@ -147,7 +141,6 @@ extension ConversationSettingsViewController {
                 if self.recentMedia.count < self.maximumRecentMedia {
                     stackView.addArrangedSubview(.hStretchingSpacer())
                     stackView.autoPinEdge(toSuperviewMargin: .bottom)
-                    blockingView.autoPinEdge(toSuperviewEdge: .bottom)
                 } else {
                     let seeAllLabel = UILabel()
                     seeAllLabel.textColor = Theme.primaryTextColor
@@ -158,7 +151,6 @@ extension ConversationSettingsViewController {
                     cell.contentView.addSubview(seeAllLabel)
                     seeAllLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
                     seeAllLabel.autoPinEdge(.top, to: .bottom, of: stackView, withOffset: 14)
-                    blockingView.autoPinEdge(.bottom, to: .top, of: seeAllLabel, withOffset: -14)
                 }
 
                 return cell
