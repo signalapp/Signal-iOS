@@ -296,6 +296,7 @@ extension MessageSender {
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPairRequest)
         MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
     }
+     */
     
     public static func sendLatestEncryptionKeyPair(to publicKey: String, for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Check that the user in question is part of the closed group
@@ -321,5 +322,4 @@ extension MessageSender {
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(publicKey: Data(hex: groupPublicKey), wrappers: [ wrapper ]))
         MessageSender.send(closedGroupControlMessage, in: contactThread, using: transaction)
     }
-     */
 }

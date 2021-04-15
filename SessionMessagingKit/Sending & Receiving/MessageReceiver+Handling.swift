@@ -411,6 +411,8 @@ extension MessageReceiver {
         let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
     }
 
+    /// Extracts and adds the new encryption key pair to our list of key pairs if there is one for our public key, AND the message was
+    /// sent by the group admin.
     private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .encryptionKeyPair(explicitGroupPublicKey, wrappers) = message.kind,
@@ -482,6 +484,9 @@ extension MessageReceiver {
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Send the latest encryption key pair to the added members if the current user is the admin of the group
+            // FIXME: Is this still needed? I believe this was to fix a race condition, where someone might add a
+            // member to a group when they don't have the latest key pair. The admin would then be able to send the
+            // added user the latest key pair later. Not sure if that race condition still exists though.
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
             if isCurrentUserAdmin {
                 for member in membersAsData.map({ $0.toHexString() }) {
@@ -496,6 +501,11 @@ extension MessageReceiver {
         }
     }
  
+    /// Removes the given members from the group IF
+    /// • it wasn't the admin that was removed (that should happen through a `MEMBER_LEFT` message).
+    /// • the admin sent the message (only the admin can truly remove members).
+    /// If we're among the users that were removed, delete all encryption key pairs and the group public key, unsubscribe
+    /// from push notifications for this closed group, and remove the given members from the zombie list for this group.
     private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersRemoved(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -534,6 +544,10 @@ extension MessageReceiver {
         }
     }
     
+    /// If a regular member left:
+    /// • Mark them as a zombie (to be removed by the admin later).
+    /// If the admin left:
+    /// • Unsubscribe from PNs, delete the group public key, etc. as the group will be disbanded.
     private static func handleClosedGroupMemberLeft(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case .memberLeft = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -541,10 +555,6 @@ extension MessageReceiver {
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             let didAdminLeave = group.groupAdminIds.contains(message.sender!)
             let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
-            // If a regular member left:
-            // • Mark them as a zombie (to be removed by the admin later)
-            // If the admin left:
-            // • Unsubscribe from PNs, delete the group public key, etc. as the group will be disbanded
             if didAdminLeave {
                 // Remove the group from the database and unsubscribe from PNs
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
