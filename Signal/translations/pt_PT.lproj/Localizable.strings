@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Adicionar ao grupo";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Adicionar “%1$@” a “%2$@”?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Adicionar um membro novo";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ foi adicionado(a) a %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Adicionar a um grupo";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Deseja partilhar o seu perfil com este utilizador?";
@@ -821,7 +821,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Escolha quem pode editar o nome do grupo, fotografia e o temporizador da destruição de mensagens.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "áudio";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Deixará de receber mensagens ou atualizações a partir deste utilizador.";
@@ -896,7 +896,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Sempre";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "silenciar";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 horas";
@@ -923,22 +923,22 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Sempre";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "silenciado";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "até %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Grupos em comum";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar novo contacto";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Sem grupos em comum";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Grupo em comum";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Permissões";
@@ -956,7 +956,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remover %@ de administrador do grupo?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "pesquisar";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Desbloquear grupo";
@@ -974,10 +974,10 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Alterações não guardadas";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vídeo";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detalhes de contacto";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Partilhar perfil";
@@ -3620,10 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Convites inválidos";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Convidado(s) por outros";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Convidado(s) por si";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Erro ao receber mensagem";
@@ -5384,7 +5384,7 @@
 "SMS_INVITE_BODY" = "Estou a convidá-lo(a) para instalar o Signal! Aqui está a hiperligação: ";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Sons e notificações";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Nenhum";
