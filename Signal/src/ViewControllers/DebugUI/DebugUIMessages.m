@@ -3784,6 +3784,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSLogInfo(@"createFakeMessages: %lu", (unsigned long)counter);
 
+    SignalServiceAddress *_Nullable incomingSenderAddress = [DebugUIMessages anyIncomingSenderAddressForThread:thread];
+    if (incomingSenderAddress == nil) {
+        OWSFailDebug(@"Missing incomingSenderAddress.");
+        return;
+    }
+
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText
             = (messageContentType == MessageContentTypeShortText ? [self randomShortText] : [self randomText]);
@@ -3797,8 +3803,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             case 0: {
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:randomText];
-                incomingMessageBuilder.authorAddress =
-                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
+                incomingMessageBuilder.authorAddress = incomingSenderAddress;
                 TSIncomingMessage *message = [incomingMessageBuilder build];
                 [message anyInsertWithTransaction:transaction];
                 [message debugonly_markAsReadNowWithTransaction:transaction];
@@ -3839,8 +3844,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [pointer anyInsertWithTransaction:transaction];
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:nil];
-                incomingMessageBuilder.authorAddress =
-                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
+                incomingMessageBuilder.authorAddress = incomingSenderAddress;
                 incomingMessageBuilder.attachmentIds = [@[
                     pointer.uniqueId,
                 ] mutableCopy];

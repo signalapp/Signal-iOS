@@ -86,32 +86,68 @@ public protocol CVAccessibilityComponent: CVComponent {
 
 // MARK: -
 
+// TODO: There has to be a better way to do this.
+public class CVMeasurementObject: Equatable {
+
+    // MARK: - Equatable
+
+    public static func == (lhs: CVMeasurementObject, rhs: CVMeasurementObject) -> Bool {
+        true
+    }
+}
+
 // CVCellMeasurement captures the measurement state from the load.
 // This lets us pin cell views to their measured sizes.  This is
 // necessary because some UIViews (like UIImageView) set up
 // layout contraints based on their content that we want to override.
 public struct CVCellMeasurement: Equatable {
+
+    public typealias Measurement = ManualStackMeasurement
+    public typealias ObjectType = CVMeasurementObject
+
     let cellSize: CGSize
     private let sizes: [String: CGSize]
     private let values: [String: CGFloat]
+    private let measurements: [String: Measurement]
+    private let objects: [String: ObjectType]
 
     public class Builder {
         var cellSize: CGSize = .zero
         private var sizes = [String: CGSize]()
         private var values = [String: CGFloat]()
+        private var measurements = [String: Measurement]()
+        private var objects = [String: ObjectType]()
 
         func build() -> CVCellMeasurement {
             CVCellMeasurement(cellSize: cellSize,
                               sizes: sizes,
-                              values: values)
+                              values: values,
+                              measurements: measurements,
+                              objects: objects)
         }
 
         func setSize(key: String, size: CGSize) {
+            owsAssertDebug(sizes[key] == nil)
+
             sizes[key] = size
         }
 
         func setValue(key: String, value: CGFloat) {
+            owsAssertDebug(values[key] == nil)
+
             values[key] = value
+        }
+
+        func setMeasurement(key: String, value: Measurement) {
+            owsAssertDebug(measurements[key] == nil)
+
+            measurements[key] = value
+        }
+
+        func setObject(key: String, value: ObjectType) {
+            owsAssertDebug(measurements[key] == nil)
+
+            objects[key] = value
         }
     }
 
@@ -123,14 +159,30 @@ public struct CVCellMeasurement: Equatable {
         values[key]
     }
 
+    func measurement(key: String) -> Measurement? {
+        measurements[key]
+    }
+
+    func object<T>(key: String) -> T? {
+        guard let value = objects[key] else {
+            return nil
+        }
+        guard let object = value as? T else {
+            owsFailDebug("Missing object: \(key)")
+            return nil
+        }
+        return object
+    }
+
     public var debugDescription: String {
-        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values)]"
+        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values), measurements: \(measurements)]"
     }
 
     public func debugLog() {
         Logger.verbose("cellSize: \(cellSize)")
         Logger.verbose("sizes: \(sizes)")
         Logger.verbose("values: \(values)")
+        Logger.verbose("measurements: \(measurements)")
     }
 }
 

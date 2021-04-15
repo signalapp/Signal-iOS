@@ -48,8 +48,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 @property (nonatomic) CAShapeLayer *shapeLayer;
 @property (nonatomic) CAGradientLayer *gradientLayer;
 
-@property (nonatomic, readonly) NSMutableArray<id<OWSBubbleViewPartner>> *partnerViews;
-
 @end
 
 #pragma mark -
@@ -76,8 +74,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
 
-    _partnerViews = [NSMutableArray new];
-
     return self;
 }
 
@@ -92,10 +88,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     if (didChangeSize) {
         [self updateLayers];
     }
-
-    // We always need to inform the "bubble stroke view" (if any) if our
-    // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self updatePartnerViews];
 }
 
 - (void)setBounds:(CGRect)bounds
@@ -109,19 +101,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     if (didChangeSize) {
         [self updateLayers];
     }
-
-    // We always need to inform the "bubble stroke view" (if any) if our
-    // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self updatePartnerViews];
-}
-
-- (void)setCenter:(CGPoint)center
-{
-    [super setCenter:center];
-
-    // We always need to inform the "bubble stroke view" (if any) if our
-    // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self updatePartnerViews];
 }
 
 - (void)setFillColor:(nullable UIColor *)fillColor
@@ -323,33 +302,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
                         endAngle:topAngle
                        clockwise:true];
     return bezierPath;
-}
-
-#pragma mark - Coordination
-
-- (void)addPartnerView:(id<OWSBubbleViewPartner>)partnerView
-{
-    OWSAssertDebug(self.partnerViews);
-
-    [partnerView setBubbleView:self];
-
-    [self.partnerViews addObject:partnerView];
-}
-
-- (void)clearPartnerViews
-{
-    OWSAssertDebug(self.partnerViews);
-
-    [self.partnerViews removeAllObjects];
-}
-
-- (void)updatePartnerViews
-{
-    [self layoutIfNeeded];
-
-    for (id<OWSBubbleViewPartner> partnerView in self.partnerViews) {
-        [partnerView updateLayers];
-    }
 }
 
 - (CGFloat)minWidth

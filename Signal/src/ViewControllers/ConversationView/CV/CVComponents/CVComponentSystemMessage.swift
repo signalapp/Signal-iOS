@@ -41,26 +41,22 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             owsAssertDebug(cellView.subviews.isEmpty)
 
             cellView.addSubview(rootView)
-            cellView.layoutMargins = cellLayoutMargins
-            rootView.autoPinEdgesToSuperviewMargins()
+            rootView.autoPinEdgesToSuperviewEdges()
         }
     }
 
-    private var cellLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: 0,
-                     leading: conversationStyle.fullWidthGutterLeading,
-                     bottom: 0,
-                     trailing: conversationStyle.fullWidthGutterTrailing)
+    private var outerHStackConfig: CVStackViewConfig {
+        let cellLayoutMargins = UIEdgeInsets(top: 0,
+                                             leading: conversationStyle.fullWidthGutterLeading,
+                                             bottom: 0,
+                                             trailing: conversationStyle.fullWidthGutterTrailing)
+        return CVStackViewConfig(axis: .horizontal,
+                                 alignment: .fill,
+                                 spacing: ConversationStyle.messageStackSpacing,
+                                 layoutMargins: cellLayoutMargins)
     }
 
-    private var outerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .fill,
-                          spacing: ConversationStyle.messageStackSpacing,
-                          layoutMargins: .zero)
-    }
-
-    private var vStackConfig: CVStackViewConfig {
+    private var innerVStackConfig: CVStackViewConfig {
         let layoutMargins = UIEdgeInsets(hMargin: 10, vMargin: 8)
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .center,
@@ -68,8 +64,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                  layoutMargins: layoutMargins)
     }
 
-    private var hStackConfig: CVStackViewConfig {
-        return CVStackViewConfig(axis: .horizontal,
+    private var outerVStackConfig: CVStackViewConfig {
+        return CVStackViewConfig(axis: .vertical,
                                  alignment: .center,
                                  spacing: 0,
                                  layoutMargins: .zero)
@@ -87,43 +83,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        let outerStack = componentView.outerStack
-        let vStackView = componentView.vStackView
-        let hStackView = componentView.hStackView
-        let selectionView = componentView.selectionView
-        let titleLabel = componentView.titleLabel
-
-        if isShowingSelectionUI {
-            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
-        }
-        selectionView.isHiddenInStackView = !isShowingSelectionUI
-
-        titleLabelConfig.applyForRendering(label: titleLabel)
-        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
-
-        let isReusing = componentView.rootView.superview != nil
-        if !isReusing {
-            outerStack.apply(config: outerStackConfig)
-            vStackView.apply(config: vStackConfig)
-            hStackView.apply(config: hStackConfig)
-
-            outerStack.addArrangedSubview(selectionView)
-            outerStack.addArrangedSubview(.spacer(withWidth: 4))
-            outerStack.addArrangedSubview(hStackView)
-            outerStack.addArrangedSubview(.spacer(withWidth: 4))
-
-            let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.hStretchingSpacer()
-
-            hStackView.addArrangedSubview(leadingSpacer)
-            hStackView.addArrangedSubview(vStackView)
-            hStackView.addArrangedSubview(trailingSpacer)
-
-            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
-
-            vStackView.addArrangedSubview(titleLabel)
-        }
-
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
         componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
 
@@ -133,11 +92,97 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         let isFirstInCluster = itemModel.itemViewState.isFirstInCluster
         let isLastInCluster = itemModel.itemViewState.isLastInCluster
-        let hasClusteringChanges = componentView.isFirstInCluster != isFirstInCluster || componentView.isLastInCluster != isLastInCluster
+        let hasClusteringChanges = (componentView.isFirstInCluster != isFirstInCluster ||
+                                        componentView.isLastInCluster != isLastInCluster)
         componentView.isFirstInCluster = isFirstInCluster
         componentView.isLastInCluster = isLastInCluster
 
-        if !isReusing || themeHasChanged || wallpaperModeHasChanged || hasClusteringChanges {
+        let outerHStack = componentView.outerHStack
+        let innerVStack = componentView.innerVStack
+        let outerVStack = componentView.outerVStack
+        let selectionView = componentView.selectionView
+        let titleLabel = componentView.titleLabel
+
+        titleLabelConfig.applyForRendering(label: titleLabel)
+        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
+
+        var innerVStackViews: [UIView] = [
+            titleLabel
+        ]
+        let outerVStackViews = [
+            innerVStack
+        ]
+        var outerHStackViews = [UIView]()
+        if isShowingSelectionUI {
+            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
+            outerHStackViews.append(selectionView)
+        }
+        outerHStackViews.append(contentsOf: [
+            UIView.transparentSpacer(),
+            outerVStack,
+            UIView.transparentSpacer()
+        ])
+
+        var hasActionButton = false
+        if let action = action,
+           !itemViewState.shouldCollapseSystemMessageAction,
+           let actionButtonSize = cellMeasurement.size(key: Self.measurementKey_buttonSize) {
+
+            let buttonLabelConfig = self.buttonLabelConfig(action: action)
+            let button = OWSButton(title: action.title) {}
+            componentView.button = button
+            button.accessibilityIdentifier = action.accessibilityIdentifier
+            button.titleLabel?.textAlignment = .center
+            button.titleLabel?.font = buttonLabelConfig.font
+            button.setTitleColor(buttonLabelConfig.textColor, for: .normal)
+            if nil == interaction as? OWSGroupCallMessage {
+                if isDarkThemeEnabled && hasWallpaper {
+                    button.backgroundColor = .ows_gray65
+                } else {
+                    button.backgroundColor = Theme.conversationButtonBackgroundColor
+                }
+            }
+            button.contentEdgeInsets = buttonContentEdgeInsets
+            button.layer.cornerRadius = actionButtonSize.height / 2
+            button.isUserInteractionEnabled = false
+            innerVStackViews.append(button)
+            hasActionButton = true
+        }
+
+        let isReusing = (componentView.rootView.superview != nil &&
+                            !themeHasChanged &&
+                            !wallpaperModeHasChanged &&
+                            !hasClusteringChanges &&
+                            componentView.isShowingSelectionUI == isShowingSelectionUI &&
+                            componentView.hasActionButton == hasActionButton)
+        if isReusing {
+            innerVStack.configureForReuse(config: innerVStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_innerVStack)
+            outerVStack.configureForReuse(config: outerVStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_outerVStack)
+            outerHStack.configureForReuse(config: outerHStackConfig,
+                                          cellMeasurement: cellMeasurement,
+                                          measurementKey: Self.measurementKey_outerHStack)
+        } else {
+            outerHStack.reset()
+            innerVStack.reset()
+            outerVStack.reset()
+
+            innerVStack.configure(config: innerVStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: Self.measurementKey_innerVStack,
+                                  subviews: innerVStackViews)
+            outerVStack.configure(config: outerVStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: Self.measurementKey_outerVStack,
+                                  subviews: outerVStackViews)
+            outerHStack.configure(config: outerHStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: Self.measurementKey_outerHStack,
+                                  subviews: outerHStackViews)
+
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
@@ -149,7 +194,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
-                bubbleView = blurView
+                let blurWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView,
+                                                                                 isWrapperRendering: true)
+                bubbleView = blurWrapper
             } else {
                 let backgroundView = UIView()
                 componentView.backgroundView = backgroundView
@@ -157,16 +204,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 backgroundView.backgroundColor = Theme.backgroundColor
             }
 
-            vStackView.insertSubview(bubbleView, at: 0)
-            bubbleView.autoPinVerticalEdges(toEdgesOf: hStackView)
-
             if isFirstInCluster && isLastInCluster {
-                bubbleView.autoPinHorizontalEdges(toEdgesOf: vStackView)
+                innerVStack.addSubviewToFillSuperviewEdges(bubbleView)
+                innerVStack.sendSubviewToBack(bubbleView)
 
                 bubbleView.layer.cornerRadius = 8
                 bubbleView.clipsToBounds = true
             } else {
-                bubbleView.autoPinHorizontalEdges(toEdgesOf: hStackView)
+                outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
+                outerVStack.sendSubviewToBack(bubbleView)
 
                 if isFirstInCluster {
                     bubbleView.layer.cornerRadius = 12
@@ -179,31 +225,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 }
             }
         }
-
-        if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
-            let button = OWSButton(title: action.title) {}
-            componentView.button = button
-            button.accessibilityIdentifier = action.accessibilityIdentifier
-            button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote.ows_semibold
-            if nil != interaction as? OWSGroupCallMessage {
-                let buttonTitleColor: UIColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
-                button.setTitleColor(buttonTitleColor, for: .normal)
-                button.backgroundColor = UIColor.ows_accentGreen
-            } else {
-                button.setTitleColor(Theme.conversationButtonTextColor, for: .normal)
-                if isDarkThemeEnabled && hasWallpaper {
-                    button.backgroundColor = .ows_gray65
-                } else {
-                    button.backgroundColor = Theme.conversationButtonBackgroundColor
-                }
-            }
-            button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
-            button.layer.cornerRadius = buttonHeight / 2
-            button.autoSetDimension(.height, toSize: buttonHeight)
-            button.isUserInteractionEnabled = false
-            vStackView.addArrangedSubview(button)
-        }
+        componentView.isShowingSelectionUI = isShowingSelectionUI
+        componentView.hasActionButton = hasActionButton
     }
 
     private var titleLabelConfig: CVLabelConfig {
@@ -215,42 +238,94 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
+    private func buttonLabelConfig(action: CVMessageAction) -> CVLabelConfig {
+        let textColor: UIColor
+        if nil != interaction as? OWSGroupCallMessage {
+            textColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
+        } else {
+            textColor = Theme.conversationButtonTextColor
+        }
+        return CVLabelConfig(text: action.title,
+                             font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
+                             textColor: textColor,
+                             textAlignment: .center)
+    }
+
+    private var buttonContentEdgeInsets: UIEdgeInsets {
+        UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
+    }
+
     private static var titleLabelFont: UIFont {
         UIFont.ows_dynamicTypeFootnote
     }
 
+    private static let measurementKey_outerHStack = "CVComponentFooter.measurementKey_outerHStack"
+    private static let measurementKey_innerVStack = "CVComponentFooter.measurementKey_innerVStack"
+    private static let measurementKey_outerVStack = "CVComponentFooter.measurementKey_outerVStack"
+    private static let measurementKey_buttonSize = "CVComponentFooter.measurementKey_buttonSize"
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        var availableWidth = max(0, maxWidth - cellLayoutMargins.totalWidth)
+        var maxContentWidth = (maxWidth -
+                                (outerHStackConfig.layoutMargins.totalWidth +
+                                    outerVStackConfig.layoutMargins.totalWidth +
+                                    innerVStackConfig.layoutMargins.totalWidth))
+
+        let selectionViewSize = CGSize(width: ConversationStyle.selectionViewWidth, height: 0)
         if isShowingSelectionUI {
             // Account for selection UI when doing measurement.
-            availableWidth -= ConversationStyle.selectionViewWidth + outerStackConfig.spacing
+            maxContentWidth -= selectionViewSize.width + outerHStackConfig.spacing
         }
 
-        // Padding around the hStack (leading and trailing side)
-        availableWidth -= (outerStackConfig.spacing + 4) * 2
+        // Padding around the outerVStack (leading and trailing side)
+        maxContentWidth -= (outerHStackConfig.spacing + minBubbleHMargin) * 2
 
-        // Padding around the vStackView
-        availableWidth -= vStackConfig.layoutMargins.totalWidth
-
-        var height: CGFloat = 0
+        maxContentWidth = max(0, maxContentWidth)
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig,
-                                            maxWidth: availableWidth)
-        height += titleSize.height
-        height += cellLayoutMargins.totalHeight
-        if action != nil, !itemViewState.shouldCollapseSystemMessageAction {
-            height += buttonHeight + vStackConfig.spacing
-        }
-        height += vStackConfig.layoutMargins.totalHeight
+                                            maxWidth: maxContentWidth)
 
-        // Full width.
-        return CGSize(width: maxWidth, height: height).ceil
+        var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
+        innerVStackSubviewInfos.append(titleSize.asManualSubviewInfo)
+        if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
+            let buttonLabelConfig = self.buttonLabelConfig(action: action)
+            let actionButtonSize = (CVText.measureLabel(config: buttonLabelConfig,
+                                                       maxWidth: maxContentWidth) +
+                                        buttonContentEdgeInsets.asSize)
+            measurementBuilder.setSize(key: Self.measurementKey_buttonSize, size: actionButtonSize)
+            innerVStackSubviewInfos.append(actionButtonSize.asManualSubviewInfo(hasFixedSize: true))
+        }
+        let innerVStackMeasurement = ManualStackView.measure(config: innerVStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_innerVStack,
+                                                             subviewInfos: innerVStackSubviewInfos)
+
+        let outerVStackSubviewInfos: [ManualStackSubviewInfo] = [
+            innerVStackMeasurement.measuredSize.asManualSubviewInfo
+        ]
+        let outerVStackMeasurement = ManualStackView.measure(config: outerVStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_outerVStack,
+                                                             subviewInfos: outerVStackSubviewInfos)
+
+        var outerHStackSubviewInfos = [ManualStackSubviewInfo]()
+        if isShowingSelectionUI {
+            outerHStackSubviewInfos.append(selectionViewSize.asManualSubviewInfo(hasFixedWidth: true))
+        }
+        outerHStackSubviewInfos.append(contentsOf: [
+            CGSize(width: minBubbleHMargin, height: 0).asManualSubviewInfo(hasFixedWidth: true),
+            outerVStackMeasurement.measuredSize.asManualSubviewInfo,
+            CGSize(width: minBubbleHMargin, height: 0).asManualSubviewInfo(hasFixedWidth: true)
+        ])
+        let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_outerHStack,
+                                                             subviewInfos: outerHStackSubviewInfos)
+        return outerHStackMeasurement.measuredSize
     }
 
-    // Should this reflect dynamic type used in the button?
-    private let buttonHeight: CGFloat = 28
+    private let minBubbleHMargin: CGFloat = 4
 
     // MARK: - Events
 
@@ -305,9 +380,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewSystemMessage: NSObject, CVComponentView {
 
-        fileprivate let outerStack = OWSStackView(name: "systemMessage.outerStack")
-        fileprivate let vStackView = OWSStackView(name: "systemMessage.vStackView")
-        fileprivate let hStackView = OWSStackView(name: "systemMessage.hStackView")
+        fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
+        fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
+        fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
         fileprivate let titleLabel = UILabel()
         fileprivate let selectionView = MessageSelectionView()
 
@@ -323,8 +398,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         public var isDedicatedCellView = false
 
+        public var isShowingSelectionUI = false
+        public var hasActionButton = false
+
         public var rootView: UIView {
-            outerStack
+            outerHStack
         }
 
         // MARK: -
@@ -341,9 +419,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             owsAssertDebug(isDedicatedCellView)
 
             if !isDedicatedCellView {
-                outerStack.reset()
-                vStackView.reset()
-                hStackView.reset()
+                outerHStack.reset()
+                innerVStack.reset()
+                outerVStack.reset()
 
                 blurView?.removeFromSuperview()
                 blurView = nil
@@ -361,6 +439,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
             button?.removeFromSuperview()
             button = nil
+
+            isShowingSelectionUI = false
+            hasActionButton = false
         }
     }
 }

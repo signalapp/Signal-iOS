@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -125,6 +125,10 @@ class AudioWaveformProgressView: UIView {
         loadingAnimation.stop()
         loadingAnimation.isHidden = true
         thumbImageView.isHidden = false
+
+        guard width > 0 else {
+            return
+        }
 
         let sampleWidth: CGFloat = 2
         let minSampleSpacing: CGFloat = 2

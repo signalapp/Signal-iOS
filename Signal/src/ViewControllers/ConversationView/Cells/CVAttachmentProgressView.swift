@@ -7,7 +7,7 @@ import Lottie
 
 // A view for presenting attachment upload/download/failure/pending state.
 @objc
-public class CVAttachmentProgressView: UIView {
+public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
         case upload(attachmentStream: TSAttachmentStream)
@@ -62,19 +62,21 @@ public class CVAttachmentProgressView: UIView {
                                    style: style,
                                    conversationStyle: conversationStyle)
 
-        super.init(frame: .zero)
+        super.init(name: "CVAttachmentProgressView")
 
         createViews()
 
         configureState()
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
+        notImplemented()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     private static func outerDiameter(style: Style) -> CGFloat {
@@ -124,7 +126,7 @@ public class CVAttachmentProgressView: UIView {
         }
     }
 
-    private class StateView: UIView {
+    private class StateView: ManualLayoutView {
         private let diameter: CGFloat
         private let direction: Direction
         private let style: Style
@@ -133,8 +135,6 @@ public class CVAttachmentProgressView: UIView {
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
         private lazy var outerCircleView = UIImageView()
-
-        private var layoutConstraints = [NSLayoutConstraint]()
 
         var state: State = .none {
             didSet {
@@ -160,13 +160,15 @@ public class CVAttachmentProgressView: UIView {
             self.style = style
             self.conversationStyle = conversationStyle
 
-            super.init(frame: .zero)
+            super.init(name: "CVAttachmentProgressView.StateView")
 
             applyState(oldState: .none, newState: .none)
         }
 
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+        @available(*, unavailable, message: "use other constructor instead.")
+        @objc
+        public required init(name: String) {
+            notImplemented()
         }
 
         private func applyState(oldState: State, newState: State) {
@@ -243,9 +245,7 @@ public class CVAttachmentProgressView: UIView {
                 iconSize = sizeInsideCircle * diameter / CVAttachmentProgressView.outerDiameter(style: style)
             }
             imageView.setTemplateImageName(templateName, tintColor: tintColor)
-            addSubview(imageView)
-            layoutConstraints.append(contentsOf: imageView.autoSetDimensions(to: .square(iconSize)))
-            layoutConstraints.append(contentsOf: imageView.autoCenterInSuperview())
+            addSubviewToCenterOnSuperview(imageView, size: .square(iconSize))
 
             if hasOuterCircle {
                 let imageName: String
@@ -255,8 +255,7 @@ public class CVAttachmentProgressView: UIView {
                     imageName = "circle_incoming_grey_40"
                 }
                 outerCircleView.setImage(imageName: imageName)
-                addSubview(outerCircleView)
-                layoutConstraints.append(contentsOf: outerCircleView.autoPinEdgesToSuperviewEdges())
+                addSubviewToFillSuperviewEdges(outerCircleView)
             }
         }
 
@@ -281,8 +280,7 @@ public class CVAttachmentProgressView: UIView {
             // We DO NOT play this animation; we "scrub" it to reflect
             // attachment upload/download progress.
             updateProgress(progress: progress)
-            addSubview(animationView)
-            layoutConstraints.append(contentsOf: animationView.autoPinEdgesToSuperviewEdges())
+            addSubviewToFillSuperviewEdges(animationView)
         }
 
         private func presentUnknownProgress() {
@@ -305,8 +303,7 @@ public class CVAttachmentProgressView: UIView {
             animationView.contentMode = .scaleAspectFit
             animationView.play()
 
-            addSubview(animationView)
-            layoutConstraints.append(contentsOf: animationView.autoPinEdgesToSuperviewEdges())
+            addSubviewToFillSuperviewEdges(animationView)
         }
 
         private func ensureAnimationView(_ animationView: Lottie.AnimationView?,
@@ -335,10 +332,9 @@ public class CVAttachmentProgressView: UIView {
                                                       animation.endFrame)
         }
 
-        private func reset() {
-            removeAllSubviews()
-            NSLayoutConstraint.deactivate(layoutConstraints)
-            layoutConstraints.removeAll()
+        public override func reset() {
+            super.reset()
+
             progressView?.stop()
             unknownProgressView?.stop()
             outerCircleView.image = nil
@@ -348,25 +344,26 @@ public class CVAttachmentProgressView: UIView {
 
     private func createViews() {
         let innerContentView = self.stateView
-        innerContentView.autoSetDimensions(to: .square(Self.innerDiameter(style: style)))
 
-        let outerContentView: UIView
         switch style {
         case .withCircle:
-            let circleView = OWSLayerView.circleView()
+            let circleView = ManualLayoutView.circleView(name: "circleView")
             circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-            circleView.autoSetDimensions(to: .square(Self.outerDiameter(style: style)))
-            circleView.addSubview(innerContentView)
-            innerContentView.autoCenterInSuperview()
-            outerContentView = circleView
+            circleView.addSubviewToCenterOnSuperview(innerContentView,
+                                                     size: .square(Self.outerDiameter(style: style)))
+            addSubviewToFillSuperviewEdges(circleView)
         case .withoutCircle:
-            outerContentView = innerContentView
+            addSubviewToFillSuperviewEdges(innerContentView)
         }
+    }
 
-        addSubview(outerContentView)
-        outerContentView.autoPinEdgesToSuperviewEdges()
-        outerContentView.setContentHuggingHigh()
-        outerContentView.setCompressionResistanceHigh()
+    public var layoutSize: CGSize {
+        switch style {
+        case .withCircle:
+            return .square(Self.outerDiameter(style: style))
+        case .withoutCircle:
+            return .square(Self.innerDiameter(style: style))
+        }
     }
 
     private func configureState() {

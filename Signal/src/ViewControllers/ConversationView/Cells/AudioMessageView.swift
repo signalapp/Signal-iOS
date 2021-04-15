@@ -5,7 +5,7 @@
 import Foundation
 import Lottie
 
-class AudioMessageView: OWSStackView {
+class AudioMessageView: ManualStackView {
 
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
@@ -28,12 +28,12 @@ class AudioMessageView: OWSStackView {
     }
 
     private let isIncoming: Bool
-    private let conversationStyle: ConversationStyle
 
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
     private let playbackTimeLabel = UILabel()
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
+    private let waveformContainer = OWSLayerView()
 
     private var audioPlaybackState: AudioPlaybackState {
         cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
@@ -47,44 +47,51 @@ class AudioMessageView: OWSStackView {
     }
 
     @objc
-    init(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle) {
+    init(audioAttachment: AudioAttachment, isIncoming: Bool) {
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
-        self.conversationStyle = conversationStyle
 
         super.init(name: "AudioMessageView")
+    }
 
-        self.apply(config: Self.outerStackConfig)
+    public func configureForRendering(cellMeasurement: CVCellMeasurement,
+                                      conversationStyle: ConversationStyle) {
+
+        var outerSubviews = [UIView]()
 
         if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
-                                           isIncoming: isIncoming,
-                                           conversationStyle: conversationStyle) {
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle) {
             let topLabel = UILabel()
             topLabelConfig.applyForRendering(label: topLabel)
-            addArrangedSubview(topLabel)
+            outerSubviews.append(topLabel)
         }
-
-        let waveformContainer = UIView.container()
-        waveformContainer.autoSetDimension(.height, toSize: AudioMessageView.waveformHeight)
 
         waveformProgress.playedColor = playedColor
         waveformProgress.unplayedColor = unplayedColor
         waveformProgress.thumbColor = thumbColor
         waveformContainer.addSubview(waveformProgress)
-        waveformProgress.autoPinEdgesToSuperviewEdges()
 
         progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.asTintedImage(color: thumbColor), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: playedColor), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: unplayedColor), for: .normal)
-
         waveformContainer.addSubview(progressSlider)
-        progressSlider.autoPinWidthToSuperview()
-        progressSlider.autoSetDimension(.height, toSize: 12)
-        progressSlider.autoVCenterInSuperview()
         progressSlider.isEnabled = isDownloaded
 
-        Self.playbackTimeLabelConfig(isIncoming: isIncoming,
-                                     conversationStyle: conversationStyle).applyForRendering(label: playbackTimeLabel)
+        let waveformProgress = self.waveformProgress
+        let progressSlider = self.progressSlider
+        waveformContainer.layoutCallback = { view in
+            waveformProgress.frame = view.bounds
+
+            var sliderFrame = view.bounds
+            sliderFrame.height = 12
+            sliderFrame.y = (view.bounds.height - sliderFrame.height) * 0.5
+            progressSlider.frame = sliderFrame
+        }
+
+        let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_render(isIncoming: isIncoming,
+                                                                          conversationStyle: conversationStyle)
+        playbackTimeLabelConfig.applyForRendering(label: playbackTimeLabel)
         playbackTimeLabel.setContentHuggingHigh()
 
         let leftView: UIView
@@ -97,8 +104,6 @@ class AudioMessageView: OWSStackView {
             playPauseAnimation.animationSpeed = 3
             playPauseAnimation.backgroundBehavior = .forceFinish
             playPauseAnimation.contentMode = .scaleAspectFit
-            playPauseAnimation.autoSetDimensions(to: CGSize(square: Self.animationSize))
-            playPauseAnimation.setContentHuggingHigh()
 
             let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
             playPauseAnimation.setValueProvider(ColorValueProvider(thumbColor.lottieColorValue), keypath: fillColorKeypath)
@@ -113,14 +118,70 @@ class AudioMessageView: OWSStackView {
             leftView = UIView()
         }
 
-        let innerStack = OWSStackView(name: "playerStack",
-                                      arrangedSubviews: [leftView, waveformContainer, playbackTimeLabel])
-        innerStack.apply(config: Self.innerStackConfig)
-        addArrangedSubview(innerStack)
+        let innerStack = ManualStackView(name: "playerStack")
+        innerStack.configure(config: Self.innerStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_innerStack,
+                             subviews: [
+                                leftView,
+                                waveformContainer,
+                                playbackTimeLabel
+                             ])
+        outerSubviews.append(innerStack)
+
+        self.configure(config: Self.outerStackConfig,
+                       cellMeasurement: cellMeasurement,
+                       measurementKey: Self.measurementKey_outerStack,
+                       subviews: outerSubviews)
 
         updateContents(animated: false)
 
         cvAudioPlayer.addListener(self)
+    }
+
+    private static let measurementKey_innerStack = "CVComponentAudioAttachment.measurementKey_innerStack"
+    private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
+
+    public static func measure(maxWidth: CGFloat,
+                               audioAttachment: AudioAttachment,
+                               isIncoming: Bool,
+                               conversationStyle: ConversationStyle,
+                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+        owsAssertDebug(maxWidth > 0)
+
+        var outerSubviewInfos = [ManualStackSubviewInfo]()
+        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle) {
+            let topLabelSize = CGSize(width: 0, height: topLabelConfig.font.lineHeight)
+            outerSubviewInfos.append(topLabelSize.asManualSubviewInfo)
+        }
+
+        var innerSubviewInfos = [ManualStackSubviewInfo]()
+        let leftViewSize = CGSize(square: animationSize)
+        innerSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
+
+        let waveformSize = CGSize(width: 0, height: waveformHeight)
+        innerSubviewInfos.append(waveformSize.asManualSubviewInfo)
+
+        let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(audioAttachment: audioAttachment,
+                                                                             isIncoming: isIncoming,
+                                                                             conversationStyle: conversationStyle)
+        let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
+        innerSubviewInfos.append(playbackTimeLabelSize.asManualSubviewInfo(hasFixedWidth: true))
+
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_innerStack,
+                                                            subviewInfos: innerSubviewInfos)
+        let innerStackSize = innerStackMeasurement.measuredSize
+        outerSubviewInfos.append(innerStackSize.ceil.asManualSubviewInfo)
+
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
     }
 
     @available(swift, obsoleted: 1.0)
@@ -163,35 +224,30 @@ class AudioMessageView: OWSStackView {
                              textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming))
     }
 
-    private static func playbackTimeLabelConfig(isIncoming: Bool,
-                                                conversationStyle: ConversationStyle) -> CVLabelConfig {
-        return CVLabelConfig(text: " ",
-                             font: UIFont.ows_dynamicTypeCaption1.ows_monospaced,
-                             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
+    private static func playbackTimeLabelConfig_render(isIncoming: Bool,
+                                                       conversationStyle: ConversationStyle) -> CVLabelConfig {
+        playbackTimeLabelConfig(text: " ",
+                                isIncoming: isIncoming,
+                                conversationStyle: conversationStyle)
     }
 
-    @objc
-    static func measureHeight(audioAttachment: AudioAttachment,
-                              isIncoming: Bool,
-                              conversationStyle: ConversationStyle) -> CGFloat {
+    private static func playbackTimeLabelConfig_forMeasurement(audioAttachment: AudioAttachment,
+                                                               isIncoming: Bool,
+                                                               conversationStyle: ConversationStyle) -> CVLabelConfig {
+        // playbackTimeLabel uses a monospace font, so we measure the
+        // worst-case width using the full duration of the audio.
+        let text = OWSFormat.formatDurationSeconds(Int(audioAttachment.durationSeconds))
+        return playbackTimeLabelConfig(text: text,
+                                       isIncoming: isIncoming,
+                                       conversationStyle: conversationStyle)
+    }
 
-        var outerSubviewSizes = [CGSize]()
-        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
-                                                    isIncoming: isIncoming,
-                                                    conversationStyle: conversationStyle) {
-            outerSubviewSizes.append(CGSize(width: 0, height: topLabelConfig.font.lineHeight))
-        }
-
-        let playPauseAnimationSize = CGSize(square: animationSize)
-        let waveformSize = CGSize(width: 0, height: waveformHeight)
-        let playbackTimeLabelSize = CGSize(width: 0, height: playbackTimeLabelConfig(isIncoming: isIncoming,
-                                                                                     conversationStyle: conversationStyle).font.lineHeight)
-        let innerSubviewSizes = [playPauseAnimationSize, waveformSize, playbackTimeLabelSize]
-        let innerStackSize = CVStackView.measure(config: innerStackConfig, subviewSizes: innerSubviewSizes)
-        outerSubviewSizes.append(innerStackSize)
-
-        let outerStackSize = CVStackView.measure(config: outerStackConfig, subviewSizes: outerSubviewSizes)
-        return outerStackSize.height
+    private static func playbackTimeLabelConfig(text: String,
+                                                isIncoming: Bool,
+                                                conversationStyle: ConversationStyle) -> CVLabelConfig {
+        CVLabelConfig(text: text,
+                      font: UIFont.ows_dynamicTypeCaption1.ows_monospaced,
+                      textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
     }
 
     // MARK: - Scrubbing

@@ -32,10 +32,11 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
             return
         }
 
+        // TODO: Reuse CVContactShareView.
         let contactShareView = CVContactShareView(state: contactShareState.state)
+        let contactWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(contactShareView)
         let hostView = componentView.hostView
-        hostView.addSubview(contactShareView)
-        contactShareView.autoPinEdgesToSuperviewEdges()
+        hostView.addSubviewToFillSuperviewEdges(contactWrapper)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -64,7 +65,7 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         // For now we simply use this view to host ContactShareView.
         //
         // TODO: Reuse ContactShareView.
-        fileprivate let hostView = UIView()
+        fileprivate let hostView = ManualLayoutView(name: "contactShare.hostView")
 
         public var isDedicatedCellView = false
 
@@ -75,7 +76,7 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            hostView.removeAllSubviews()
+            hostView.reset()
         }
     }
 }

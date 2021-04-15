@@ -17,7 +17,7 @@ public protocol QuotedMessageViewDelegate {
 
 // TODO: Remove OWSQuotedMessageView.
 @objc
-public class QuotedMessageView: UIView {
+public class QuotedMessageView: OWSLayerView {
 
     @objc
     public weak var delegate: QuotedMessageViewDelegate?
@@ -40,7 +40,7 @@ public class QuotedMessageView: UIView {
         self.state = state
         self.sharpCorners = sharpCorners
 
-        super.init(frame: .zero)
+        super.init()
     }
 
     required init(coder: NSCoder) {
@@ -203,7 +203,7 @@ public class QuotedMessageView: UIView {
             return innerBubbleView
         }
 
-        func createContents(rootView: UIView,
+        func createContents(rootView: OWSLayerView,
                             quotedAuthorLabel: UILabel,
                             quotedTextLabel: UILabel,
                             quoteContentSourceLabel: UILabel,
@@ -217,12 +217,14 @@ public class QuotedMessageView: UIView {
 
             let innerBubbleView = createInnerBubbleView(sharpCorners: sharpCorners)
             rootView.addSubview(innerBubbleView)
-            innerBubbleView.autoPinLeadingToSuperviewMargin(withInset: bubbleHMargin)
-            innerBubbleView.autoPinTrailingToSuperviewMargin(withInset: bubbleHMargin)
-            innerBubbleView.autoPinTopToSuperviewMargin()
-            innerBubbleView.autoPinBottomToSuperviewMargin()
-            innerBubbleView.setContentHuggingHorizontalLow()
-            innerBubbleView.setCompressionResistanceHorizontalLow()
+            rootView.layoutCallback = { view in
+                var bubbleFrame = view.bounds
+                bubbleFrame = bubbleFrame.inset(by: UIEdgeInsets(top: view.layoutMargins.top,
+                                                                 leading: bubbleHMargin,
+                                                                 bottom: view.layoutMargins.bottom,
+                                                                 trailing: bubbleHMargin))
+                innerBubbleView.frame = bubbleFrame
+            }
 
             let hStackView = UIStackView()
             hStackView.axis = .horizontal

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,21 +38,39 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
             return
         }
 
+        // TODO: Reuse QuotedMessageView.
         let quotedMessageView = QuotedMessageView(state: quotedReply.viewState,
                                                   sharpCorners: sharpCornersForQuotedMessage)
         quotedMessageView.createContents()
         quotedMessageView.layoutMargins = .zero
-        quotedMessageView.translatesAutoresizingMaskIntoConstraints = false
+        let quotedMessageWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(quotedMessageView)
 
-        let hostView = componentView.hostView
-        hostView.addSubview(quotedMessageView)
-        quotedMessageView.autoPinEdgesToSuperviewEdges()
+        let stackView = componentView.stackView
+        stackView.reset()
+        stackView.configure(config: stackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: [ quotedMessageWrapper ])
     }
+
+    private var stackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
+    private static let measurementKey_stackView = "CVComponentQuotedReply.measurementKey_stackView"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return QuotedMessageView.measure(state: quotedReply.viewState, maxWidth: maxWidth).ceil
+        let quotedMessageSize = QuotedMessageView.measure(state: quotedReply.viewState, maxWidth: maxWidth).ceil
+        let stackMeasurement = ManualStackView.measure(config: stackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ quotedMessageSize.asManualSubviewInfo ])
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -76,18 +94,18 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         // For now we simply use this view to host QuotedMessageView.
         //
         // TODO: Reuse QuotedMessageView.
-        fileprivate let hostView = UIView()
+        fileprivate let stackView = ManualStackView(name: "QuotedReply.stackView")
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            hostView
+            stackView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            hostView.removeAllSubviews()
+            stackView.reset()
         }
     }
 }

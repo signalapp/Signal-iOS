@@ -4,7 +4,36 @@
 
 import Foundation
 
-class OWSStackView: UIStackView {
+open class OWSStackView: UIStackView {
+
+    public struct Config {
+        public let axis: NSLayoutConstraint.Axis
+        public let alignment: UIStackView.Alignment
+        public let spacing: CGFloat
+        public let layoutMargins: UIEdgeInsets
+
+        public init(axis: NSLayoutConstraint.Axis,
+                    alignment: UIStackView.Alignment,
+                    spacing: CGFloat,
+                    layoutMargins: UIEdgeInsets) {
+            self.axis = axis
+            self.alignment = alignment
+            self.spacing = spacing
+            self.layoutMargins = layoutMargins
+        }
+
+        public var debugDescription: String {
+            let components: [String] = [
+                "axis: \(axis)",
+                "alignment: \(alignment)",
+                "spacing: \(spacing)",
+                "layoutMargins: \(layoutMargins)"
+            ]
+            return "[" + components.joined(separator: ", ") + "]"
+        }
+    }
+
+    // MARK: -
 
     public typealias LayoutBlock = (UIView) -> Void
 
@@ -38,7 +67,7 @@ class OWSStackView: UIStackView {
         layoutBlock?(self)
     }
 
-    public func reset() {
+    open func reset() {
         alignment = .fill
         axis = .vertical
         spacing = 0
@@ -52,7 +81,7 @@ class OWSStackView: UIStackView {
         setNeedsLayout()
     }
 
-    func apply(config: CVStackViewConfig) {
+    public func apply(config: Config) {
         if self.axis != config.axis {
             self.axis = config.axis
         }
@@ -71,11 +100,11 @@ class OWSStackView: UIStackView {
         }
     }
 
-    var asConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: self.axis,
-                          alignment: self.alignment,
-                          spacing: self.spacing,
-                          layoutMargins: self.layoutMargins)
+    public var asConfig: Config {
+        Config(axis: self.axis,
+               alignment: self.alignment,
+               spacing: self.spacing,
+               layoutMargins: self.layoutMargins)
     }
 
     public typealias TapBlock = () -> Void
@@ -94,5 +123,45 @@ class OWSStackView: UIStackView {
         owsAssertDebug(tapBlock != nil)
 
         tapBlock?()
+    }
+}
+
+// MARK: -
+
+extension NSLayoutConstraint.Axis: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .horizontal:
+            return "horizontal"
+        case .vertical:
+            return "vertical"
+        @unknown default:
+            owsFailDebug("unexpected value: \(self.rawValue)")
+            return "unknown"
+        }
+    }
+}
+
+// MARK: -
+
+extension UIStackView.Alignment: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .fill:
+            return "fill"
+        case .leading:
+            return "leading"
+        case .firstBaseline:
+            return "firstBaseline"
+        case .center:
+            return "center"
+        case .trailing:
+            return "trailing"
+        case .lastBaseline:
+            return "lastBaseline"
+        @unknown default:
+            owsFailDebug("unexpected value: \(self.rawValue)")
+            return "unknown"
+        }
     }
 }

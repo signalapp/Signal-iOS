@@ -42,13 +42,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             return
         }
 
-        let containerView = componentView.containerView
-        containerView.apply(config: containerViewConfig)
-
-        guard let stickerSize = cellMeasurement.value(key: stickerMeasurementKey) else {
-            owsFailDebug("Missing stickerMeasurement.")
-            return
-        }
+        let stackView = componentView.stackView
 
         if let attachmentStream = self.attachmentStream {
             let cacheKey = attachmentStream.uniqueId
@@ -65,8 +59,12 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             reusableMediaView.owner = componentView
             componentView.reusableMediaView = reusableMediaView
             let mediaView = reusableMediaView.mediaView
-            containerView.addArrangedSubview(mediaView)
-            componentView.layoutConstraints.append(contentsOf: mediaView.autoSetDimensions(to: .square(stickerSize)))
+
+            stackView.reset()
+            stackView.configure(config: stackViewConfig,
+                                cellMeasurement: cellMeasurement,
+                                measurementKey: Self.measurementKey_stackView,
+                                subviews: [ mediaView ])
 
             switch CVAttachmentProgressView.progressType(forAttachment: attachmentStream,
                                                          interaction: interaction) {
@@ -76,9 +74,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)
-                containerView.addSubview(progressView)
-                progressView.autoAlignAxis(.horizontal, toSameAxisOf: mediaView)
-                progressView.autoAlignAxis(.vertical, toSameAxisOf: mediaView)
+                stackView.addSubview(progressView)
+                stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
             case .pendingDownload:
                 break
             case .downloading:
@@ -95,35 +92,44 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             let placeholderView = UIView()
             placeholderView.backgroundColor = Theme.secondaryBackgroundColor
             placeholderView.layer.cornerRadius = 18
-            containerView.addArrangedSubview(placeholderView)
-            componentView.layoutConstraints.append(contentsOf: placeholderView.autoSetDimensions(to: .square(stickerSize)))
+
+            stackView.reset()
+            stackView.configure(config: stackViewConfig,
+                                cellMeasurement: cellMeasurement,
+                                measurementKey: Self.measurementKey_stackView,
+                                subviews: [ placeholderView ])
 
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withCircle,
                                                         conversationStyle: conversationStyle)
-            placeholderView.addSubview(progressView)
-            progressView.autoCenterInSuperview()
+            stackView.addSubview(progressView)
+            stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
         } else {
             owsFailDebug("Invalid attachment.")
             return
         }
     }
 
-    private var containerViewConfig: CVStackViewConfig {
+    private var stackViewConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: isOutgoing ? .trailing : .leading,
                           spacing: 0,
                           layoutMargins: .zero)
     }
 
-    private let stickerMeasurementKey = "stickerMeasurementKey"
+    private static let measurementKey_stackView = "CVComponentSticker.measurementKey_stackView"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let size: CGFloat = ceil(min(maxWidth, Self.stickerSize))
-        measurementBuilder.setValue(key: stickerMeasurementKey, value: size)
-        return CGSize(width: size, height: size).ceil
+        let stickerSize = CGSize.square(size)
+        let stickerInfo = stickerSize.asManualSubviewInfo(hasFixedSize: true)
+        let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ stickerInfo ])
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -149,17 +155,15 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewSticker: NSObject, CVComponentView {
 
-        fileprivate let containerView = OWSStackView(name: "sticker.container")
+        fileprivate let stackView = ManualStackView(name: "sticker.container")
 
         fileprivate var reusableMediaView: ReusableMediaView?
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            containerView
+            stackView
         }
-
-        fileprivate var layoutConstraints = [NSLayoutConstraint]()
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
@@ -176,10 +180,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         }
 
         public func reset() {
-            containerView.reset()
-
-            NSLayoutConstraint.deactivate(layoutConstraints)
-            layoutConstraints = []
+            stackView.reset()
 
             if let reusableMediaView = reusableMediaView,
                reusableMediaView.owner == self {

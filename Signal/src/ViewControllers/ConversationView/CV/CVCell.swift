@@ -18,8 +18,6 @@ public enum CVCellReuseIdentifier: String, CaseIterable {
     case typingIndicator
     case threadDetails
     case systemMessage
-    case dedicatedTextOnlyIncoming
-    case dedicatedTextOnlyOutgoing
 }
 
 // MARK: -

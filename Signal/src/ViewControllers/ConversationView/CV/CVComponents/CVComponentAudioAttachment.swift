@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
@@ -30,23 +31,46 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             return
         }
 
+        let stackView = componentView.stackView
+
         owsAssertDebug(attachment.isAudio)
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
         let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
-                                                isIncoming: isIncoming,
-                                                conversationStyle: conversationStyle)
+                                                isIncoming: isIncoming)
+        audioMessageView.configureForRendering(cellMeasurement: cellMeasurement,
+                                               conversationStyle: conversationStyle)
         componentView.audioMessageView = audioMessageView
-        componentView.rootView.addSubview(audioMessageView)
-        audioMessageView.autoPinEdgesToSuperviewEdges()
+        stackView.configure(config: stackViewConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: [ audioMessageView ])
     }
+
+    private var stackViewConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
+    private static let measurementKey_stackView = "CVComponentAudioAttachment.measurementKey_stackView"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let height = AudioMessageView.measureHeight(audioAttachment: audioAttachment,
-                                                    isIncoming: isIncoming,
-                                                    conversationStyle: conversationStyle)
-        return CGSize(width: maxWidth, height: height).ceil
+        let audioSize = AudioMessageView.measure(maxWidth: maxWidth,
+                                                 audioAttachment: audioAttachment,
+                                                 isIncoming: isIncoming,
+                                                 conversationStyle: conversationStyle,
+                                                 measurementBuilder: measurementBuilder).ceil
+        let audioInfo = audioSize.asManualSubviewInfo
+        let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ audioInfo ])
+        var measuredSize = stackMeasurement.measuredSize
+        measuredSize.width = maxWidth
+        return measuredSize
     }
 
     // MARK: - Events
@@ -155,20 +179,20 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewAudioAttachment: NSObject, CVComponentView {
 
-        fileprivate let containerView = UIView.container()
+        fileprivate let stackView = ManualStackView(name: "CVComponentViewAudioAttachment.stackView")
 
         fileprivate var audioMessageView: AudioMessageView?
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            containerView
+            stackView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            containerView.removeAllSubviews()
+            stackView.reset()
 
             audioMessageView?.removeFromSuperview()
             audioMessageView = nil

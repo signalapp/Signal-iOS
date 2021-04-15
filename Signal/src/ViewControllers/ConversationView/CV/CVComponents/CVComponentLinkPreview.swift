@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,18 +29,37 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
             return
         }
 
+        // TODO: Reuse LinkPreviewView.
         let linkPreviewView = LinkPreviewView(draftDelegate: nil)
         linkPreviewView.state = linkPreviewState.state
+        let linkPreviewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(linkPreviewView)
 
-        let hostView = componentView.hostView
-        hostView.addSubview(linkPreviewView)
-        linkPreviewView.autoPinEdgesToSuperviewEdges()
+        let stackView = componentView.stackView
+        stackView.reset()
+        stackView.configure(config: stackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: [ linkPreviewWrapper ])
     }
+
+    private var stackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
+    private static let measurementKey_stackView = "CVComponentLinkPreview.measurementKey_stackView"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return LinkPreviewView.measure(withState: linkPreviewState.state).ceil
+        let linkPreviewSize = LinkPreviewView.measure(withState: linkPreviewState.state).ceil
+        let stackMeasurement = ManualStackView.measure(config: stackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_stackView,
+                                                            subviewInfos: [ linkPreviewSize.asManualSubviewInfo ])
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -64,18 +83,18 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
         // For now we simply use this view to host LinkPreviewView.
         //
         // TODO: Reuse LinkPreviewView.
-        fileprivate let hostView = UIView()
+        fileprivate let stackView = ManualStackView(name: "LinkPreview.stackView")
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            hostView
+            stackView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            hostView.removeAllSubviews()
+            stackView.reset()
         }
     }
 }

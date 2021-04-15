@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFileSystem.h"
@@ -46,7 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
 {
-    OWSLogVerbose(@"protecting file at path: %@", path);
+    if (!SSKDebugFlags.reduceLogChatter) {
+        OWSLogVerbose(@"protecting file at path: %@", path);
+    }
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return NO;
     }

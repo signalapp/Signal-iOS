@@ -35,21 +35,29 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
             return
         }
 
-        let contentView = componentView.contentView
+        let outerStack = componentView.outerStack
+        let innerStack = componentView.innerStack
+        let label = componentView.label
+
+        outerStack.reset()
+        innerStack.reset()
 
         if isBorderlessWithWallpaper {
-            contentView.layoutMargins = contentViewBorderlessMargins
-            contentView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
-            contentView.layer.cornerRadius = 11
-            contentView.clipsToBounds = true
-        } else {
-            contentView.layoutMargins = .zero
-            contentView.backgroundColor = .clear
-            contentView.layer.cornerRadius = 0
-            contentView.clipsToBounds = false
+            let backgroundView = OWSLayerView.pillView()
+            backgroundView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            innerStack.addSubviewToFillSuperviewEdges(backgroundView)
         }
 
-        labelConfig.applyForRendering(label: componentView.label)
+        labelConfig.applyForRendering(label: label)
+
+        innerStack.configure(config: innerStackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_innerStack,
+                            subviews: [ label ])
+        outerStack.configure(config: outerStackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_outerStack,
+                            subviews: [ innerStack ])
     }
 
     private var isBorderlessWithWallpaper: Bool {
@@ -63,24 +71,43 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
                       lineBreakMode: .byTruncatingTail)
     }
 
-    private var contentViewBorderlessMargins: UIEdgeInsets {
-        UIEdgeInsets(hMargin: 12, vMargin: 3)
+    private var outerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .leading,
+                          spacing: 0,
+                          layoutMargins: .zero)
     }
+
+    private var innerStackConfig: CVStackViewConfig {
+        let layoutMargins: UIEdgeInsets = (isBorderlessWithWallpaper
+                                            ? UIEdgeInsets(hMargin: 12, vMargin: 3)
+                                            : .zero)
+        return CVStackViewConfig(axis: .vertical,
+                                 alignment: .center,
+                                 spacing: 0,
+                                 layoutMargins: layoutMargins)
+    }
+
+    private static let measurementKey_outerStack = "CVComponentSenderName.measurementKey_outerStack"
+    private static let measurementKey_innerStack = "CVComponentSenderName.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        var maxWidth = maxWidth
-        if isBorderlessWithWallpaper { maxWidth -= contentViewBorderlessMargins.totalWidth }
-
-        var size = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
-
-        if isBorderlessWithWallpaper {
-            size.width += contentViewBorderlessMargins.totalWidth
-            size.height += contentViewBorderlessMargins.totalHeight
-        }
-
-        return size
+        let maxWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
+                                    innerStackConfig.layoutMargins.totalWidth)
+        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
+        let labelInfo = labelSize.asManualSubviewInfo
+        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_innerStack,
+                                                       subviewInfos: [ labelInfo ])
+        let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_outerStack,
+                                                       subviewInfos: [ innerStackInfo ])
+        return outerStackMeasurement.measuredSize
     }
 
     // MARK: -
@@ -91,29 +118,22 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
     public class CVComponentViewSenderName: NSObject, CVComponentView {
 
         fileprivate let label = UILabel()
-        fileprivate lazy var contentView: UIView = {
-            let contentView = UIView()
-            contentView.addSubview(label)
-            label.autoPinEdgesToSuperviewMargins()
-            return contentView
-        }()
-        fileprivate lazy var outerView: UIView = {
-            let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.hStretchingSpacer()
-            let outerView = UIStackView(arrangedSubviews: [leadingSpacer, contentView, trailingSpacer])
-            outerView.axis = .horizontal
-            return outerView
-        }()
+
+        fileprivate let outerStack = ManualStackView(name: "CVComponentViewSenderName.outerStack")
+        fileprivate let innerStack = ManualStackView(name: "CVComponentViewSenderName.innerStack")
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            outerView
+            outerStack
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
+            outerStack.reset()
+            innerStack.reset()
+
             label.text = nil
         }
     }

@@ -184,7 +184,9 @@ public class ReusableMediaView: NSObject {
             return
         }
 
-        Logger.verbose("media cache miss")
+        if !DebugFlags.reduceLogChatter {
+            Logger.verbose("media cache miss")
+        }
 
         let loadState = self._loadState
 

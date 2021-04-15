@@ -294,7 +294,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    if (!SSKDebugFlags.reduceLogChatter) {
+        OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    }
     return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
 
@@ -476,7 +478,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidImageCached) {
-            OWSLogVerbose(@"Updating isValidImageCached.");
+            if (!SSKDebugFlags.reduceLogChatter) {
+                OWSLogVerbose(@"Updating isValidImageCached.");
+            }
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);
             if (!self.isValidImageCached.boolValue) {
@@ -534,7 +538,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isAnimatedCached) {
-            OWSLogVerbose(@"Updating isAnimatedCached.");
+            if (!SSKDebugFlags.reduceLogChatter) {
+                OWSLogVerbose(@"Updating isAnimatedCached.");
+            }
             self.isAnimatedCached = @([self hasAnimatedImageContent]);
             didUpdateCache = YES;
         }

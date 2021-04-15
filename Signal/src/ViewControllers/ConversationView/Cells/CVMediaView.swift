@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class CVMediaView: UIView {
+public class CVMediaView: ManualLayoutViewWithLayer {
 
     private enum MediaError {
         case missing
@@ -38,7 +38,7 @@ public class CVMediaView: UIView {
         self.isBorderless = isBorderless
         self.conversationStyle = conversationStyle
 
-        super.init(frame: .zero)
+        super.init(name: "CVMediaView")
 
         backgroundColor = isBorderless ? .clear : Theme.washColor
         clipsToBounds = true
@@ -46,8 +46,9 @@ public class CVMediaView: UIView {
         createContents()
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
         notImplemented()
     }
 
@@ -107,8 +108,8 @@ public class CVMediaView: UIView {
         let progressView = CVAttachmentProgressView(direction: direction,
                                                     style: .withCircle,
                                                     conversationStyle: conversationStyle)
-        addSubview(progressView)
-        progressView.autoCenterInSuperview()
+        addSubviewToCenterOnSuperview(progressView, size: progressView.layoutSize)
+
         return true
     }
 
@@ -126,8 +127,10 @@ public class CVMediaView: UIView {
         reusableMediaView.owner = self
         self.reusableMediaView = reusableMediaView
         let mediaView = reusableMediaView.mediaView
-        addSubview(mediaView)
-        mediaView.autoPinEdgesToSuperviewEdges()
+
+        mediaView.removeFromSuperview()
+        addSubviewToFillSuperviewEdges(mediaView)
+
         if let imageView = mediaView as? UIImageView {
             configureImageView(imageView)
         }
@@ -135,9 +138,7 @@ public class CVMediaView: UIView {
 
         if !addProgressIfNecessary() {
             if reusableMediaView.isVideo {
-                let videoPlayButton = Self.buildVideoPlayButton()
-                addSubview(videoPlayButton)
-                videoPlayButton.autoCenterInSuperview()
+                addVideoPlayButton()
             }
         }
     }
@@ -206,27 +207,25 @@ public class CVMediaView: UIView {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
-    private static func buildVideoPlayButton() -> UIView {
+    private func addVideoPlayButton() {
+
+        let playVideoButtonWidth: CGFloat = 44
+        let playVideoIconWidth: CGFloat = 20
+
         let playVideoButton = UIView()
+        addSubviewToCenterOnSuperview(playVideoButton, size: CGSize(square: playVideoButtonWidth))
 
         let playVideoCircleView = OWSLayerView.circleView()
         playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
         playVideoCircleView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoCircleView)
+        layoutSubviewToFillSuperviewBounds(playVideoCircleView)
 
         let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
                                                                   tintColor: UIColor.ows_white)
         playVideoIconView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoIconView)
-
-        let playVideoButtonWidth: CGFloat = 44
-        let playVideoIconWidth: CGFloat = 20
-        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
-        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
-        playVideoCircleView.autoPinEdgesToSuperviewEdges()
-        playVideoIconView.autoCenterInSuperview()
-
-        return playVideoButton
+        centerSubviewOnSuperview(playVideoIconView, size: CGSize(square: playVideoIconWidth))
     }
 
     private var hasBlurHash: Bool {
@@ -248,8 +247,7 @@ public class CVMediaView: UIView {
         }
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
-        addSubview(iconView)
-        iconView.autoCenterInSuperview()
+        addSubviewToCenterOnSuperview(iconView, size: icon.size)
     }
 
     @objc

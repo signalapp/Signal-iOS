@@ -33,15 +33,20 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
         componentView.reset()
 
-        let stackView = componentView.stackView
-        stackView.apply(config: stackConfig)
-
+        var subviews = [UIView]()
         for action in actions {
             let buttonView = CVMessageActionButton(action: action)
             buttonView.backgroundColor = Theme.conversationButtonBackgroundColor
-            stackView.addArrangedSubview(buttonView)
+            subviews.append(buttonView)
             componentView.buttonViews.append(buttonView)
         }
+
+        let stackView = componentView.stackView
+        stackView.reset()
+        stackView.configure(config: stackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: subviews)
     }
 
     private var stackConfig: CVStackViewConfig {
@@ -51,18 +56,21 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
     fileprivate static var buttonHeight: CGFloat { CVMessageActionButton.buttonHeight }
     fileprivate static let buttonSpacing: CGFloat = 1
 
-    private var totalHeight: CGFloat {
-        var height = Self.buttonHeight * CGFloat(actions.count)
-        if actions.count > 1 {
-            height += CGFloat(actions.count - 1) * Self.buttonSpacing
-        }
-        return height
-    }
+    private static let measurementKey_stackView = "CVComponentBottomButtons.measurementKey_stackView"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CGSize(width: maxWidth, height: totalHeight).ceil
+        let subviewSize = CGSize(width: maxWidth, height: Self.buttonHeight)
+        var subviewInfos = [ManualStackSubviewInfo]()
+        for _ in 0 ..< actions.count {
+            subviewInfos.append(subviewSize.asManualSubviewInfo)
+        }
+        let stackMeasurement = ManualStackView.measure(config: stackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: subviewInfos)
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -95,7 +103,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewBottomButtons: NSObject, CVComponentView {
 
-        fileprivate let stackView = OWSStackView(name: "bottomButtons")
+        fileprivate let stackView = ManualStackView(name: "bottomButtons")
         fileprivate var buttonViews = [CVMessageActionButton]()
 
         public var isDedicatedCellView = false

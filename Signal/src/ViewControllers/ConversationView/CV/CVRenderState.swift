@@ -9,7 +9,11 @@ import Foundation
 // It is intended to be an immutable, comprehensive snapshot of all
 // loaded state needed to render CVC at a given state of time.
 class CVRenderState {
-    private static let idCounter = AtomicUInt()
+
+    public static let renderStateId_unknown: UInt = 0
+
+    private static let idCounter = AtomicUInt(1)
+
     let renderStateId: UInt
 
     let threadViewModel: ThreadViewModel

@@ -73,9 +73,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                             cellMeasurement: cellMeasurement,
                             conversationStyle: conversationStyle)
 
-        let blockLayoutView = componentView.blockLayoutView
-        blockLayoutView.addSubview(albumView)
-        albumView.autoPinEdgesToSuperviewEdges()
+        let stackView = componentView.stackView
+
+        stackView.reset()
+        stackView.configure(config: stackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: [ albumView ])
 
         if let footerOverlay = self.footerOverlay {
             let footerView: CVComponentView
@@ -89,16 +93,24 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             footerOverlay.configureForRendering(componentView: footerView,
                                                 cellMeasurement: cellMeasurement,
                                                 componentDelegate: componentDelegate)
-            blockLayoutView.addSubview(footerView.rootView)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .leading,
-                                            withInset: conversationStyle.textInsetHorizontal)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .trailing,
-                                            withInset: conversationStyle.textInsetHorizontal)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .bottom,
-                                            withInset: conversationStyle.textInsetBottom)
-            footerView.rootView.autoPinEdge(toSuperviewEdge: .top,
-                                            withInset: conversationStyle.textInsetTop,
-                                            relation: .greaterThanOrEqual)
+            let footerRootView = footerView.rootView
+            stackView.addSubview(footerRootView)
+            let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
+            stackView.addLayoutBlock { view in
+                var footerFrame = view.bounds
+                // Apply h-insets.
+                footerFrame.x += conversationStyle.textInsetHorizontal
+                footerFrame.width -= conversationStyle.textInsetHorizontal * 2
+                // Ensure footer height fits within text insets.
+                let maxFooterHeight = (view.bounds.height -
+                                        (conversationStyle.textInsetTop + conversationStyle.textInsetBottom))
+                footerFrame.height = min(maxFooterHeight, footerSize.height)
+                // Bottom align.
+                footerFrame.y = (view.bounds.height -
+                                    (footerFrame.height +
+                                        conversationStyle.textInsetBottom))
+                footerRootView.frame = footerFrame
+            }
 
             let maxGradientHeight: CGFloat = 40
             let gradientLayer = CAGradientLayer()
@@ -115,7 +127,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentView.bodyMediaGradientView = gradientView
             gradientView.layer.addSublayer(gradientLayer)
             albumView.addSubview(gradientView)
-            componentView.layoutConstraints.append(contentsOf: gradientView.autoPinEdgesToSuperviewEdges())
+            stackView.layoutSubviewToFillSuperviewBounds(gradientView)
         }
 
         // Only apply "inner shadow" for single media, not albums.
@@ -123,16 +135,17 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
            albumView.itemViews.count == 1,
            let firstMediaView = albumView.itemViews.first {
             let shadowColor: UIColor = isDarkThemeEnabled ? .white : .black
-            let innerShadowView = OWSBubbleShapeView(innerShadowWith: shadowColor, radius: 0.5, opacity: 0.15)
+            let innerShadowView = OWSBubbleShapeView(mode: .innerShadow(color: shadowColor,
+                                                                        radius: 0.5,
+                                                                        opacity: 0.15))
             componentView.innerShadowView = innerShadowView
             firstMediaView.addSubview(innerShadowView)
-            componentView.layoutConstraints.append(contentsOf: innerShadowView.autoPinEdgesToSuperviewEdges())
+            stackView.layoutSubviewToFillSuperviewBounds(innerShadowView)
         }
 
         if hasDownloadButton {
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: UIColor.ows_white)
-            let downloadButton: UIView
             if albumView.itemViews.count > 1 {
                 let downloadStack = UIStackView()
                 downloadStack.axis = .horizontal
@@ -144,6 +157,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let pillView = OWSLayerView.pillView()
                 pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
                 downloadStack.addSubview(pillView)
+                // TODO:
                 pillView.autoPinEdgesToSuperviewEdges()
 
                 iconView.autoSetDimensions(to: CGSize.square(20))
@@ -160,18 +174,18 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadLabel.font = .ows_dynamicTypeSubheadline
                 downloadStack.addArrangedSubview(downloadLabel)
 
-                downloadButton = downloadStack
+                stackView.addSubview(downloadStack)
+                // TODO:
+                downloadStack.autoCenterInSuperview()
             } else {
-                let circleView = OWSLayerView.circleView(size: 44)
+                let circleSize: CGFloat = 44
+                let circleView = OWSLayerView.circleView(size: circleSize)
                 circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                iconView.autoSetDimensions(to: CGSize.square(24))
-                circleView.addSubview(iconView)
-                iconView.autoCenterInSuperview()
-                downloadButton = circleView
+                stackView.addSubview(circleView)
+                stackView.centerSubviewOnSuperview(circleView, size: .square(circleSize))
+                stackView.addSubview(iconView)
+                stackView.centerSubviewOnSuperview(iconView, size: .square(24))
             }
-
-            componentView.rootView.addSubview(downloadButton)
-            downloadButton.autoCenterInSuperview()
 
             if mediaAlbumHasPendingAttachment {
                 let attachmentPointers = items.compactMap { $0.attachment as? TSAttachmentPointer }
@@ -201,9 +215,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     downloadSizeLabel.textColor = UIColor.ows_white
                     downloadSizeLabel.font = .ows_dynamicTypeCaption1
                     downloadSizeView.addSubview(downloadSizeLabel)
+                    // TODO:
                     downloadSizeLabel.autoPinEdgesToSuperviewMargins()
 
                     componentView.rootView.addSubview(downloadSizeView)
+                    // TODO:
                     downloadSizeView.autoPinEdge(toSuperviewEdge: .top, withInset: 9)
                     downloadSizeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
                 }
@@ -223,6 +239,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         UIFont.ows_dynamicTypeCaption1.ows_semibold
     }
 
+    private var stackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
     private var maxMediaMessageWidth: CGFloat {
         let maxMediaMessageWidth = conversationStyle.maxMediaMessageWidth
         if self.isBorderless {
@@ -230,6 +253,9 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         return maxMediaMessageWidth
     }
+
+    private static let measurementKey_stackView = "CVComponentBodyMedia.measurementKey_stackView"
+    private static let measurementKey_footerSize = "CVComponentBodyMedia.measurementKey_footerSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -242,14 +268,21 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
                                                    measurementBuilder: measurementBuilder)
             minWidth = min(maxWidth, footerSize.width + conversationStyle.textInsets.totalWidth)
+            measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
         let maxWidth = min(maxWidth, maxMediaMessageWidth)
 
-        return CVMediaAlbumView.layoutSize(maxWidth: maxWidth,
-                                           minWidth: minWidth,
-                                           items: self.items,
-                                           measurementBuilder: measurementBuilder).ceil
+        let albumSize = CVMediaAlbumView.measure(maxWidth: maxWidth,
+                                                 minWidth: minWidth,
+                                                 items: self.items,
+                                                 measurementBuilder: measurementBuilder)
+        let albumInfo = albumSize.asManualSubviewInfo
+        let stackMeasurement = ManualStackView.measure(config: stackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ albumInfo ])
+        return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
@@ -332,13 +365,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     // MARK: -
 
     // We use this view to implement BodyMediaPresentationContext below.
-    class CVComponentViewBodyMediaRootView: OWSStackView {
+    class CVComponentViewBodyMediaRootView: ManualStackView {
 
         fileprivate var bodyMediaGradientView: UIView?
 
         fileprivate var footerOverlayView: CVComponentView?
 
-        public override func reset() {
+        open override func reset() {
             bodyMediaGradientView = nil
             footerOverlayView = nil
 
@@ -353,30 +386,28 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewBodyMedia: NSObject, CVComponentView {
 
-        fileprivate let blockLayoutView = CVComponentViewBodyMediaRootView(name: "blockLayoutView")
+        fileprivate let stackView = CVComponentViewBodyMediaRootView(name: "stackView")
 
         fileprivate let albumView = CVMediaAlbumView()
 
         fileprivate var bodyMediaGradientView: UIView? {
-            get { blockLayoutView.bodyMediaGradientView }
-            set { blockLayoutView.bodyMediaGradientView = newValue }
+            get { stackView.bodyMediaGradientView }
+            set { stackView.bodyMediaGradientView = newValue }
         }
 
         fileprivate var innerShadowView: OWSBubbleShapeView?
 
-        fileprivate var layoutConstraints = [NSLayoutConstraint]()
-
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            blockLayoutView
+            stackView
         }
 
         // MARK: - Subcomponents
 
         fileprivate var footerOverlayView: CVComponentView? {
-            get { blockLayoutView.footerOverlayView }
-            set { blockLayoutView.footerOverlayView = newValue }
+            get { stackView.footerOverlayView }
+            set { stackView.footerOverlayView = newValue }
         }
 
         // MARK: -
@@ -391,7 +422,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         public func reset() {
             albumView.reset()
-            blockLayoutView.reset()
+            stackView.reset()
             footerOverlayView?.reset()
 
             bodyMediaGradientView?.removeFromSuperview()
@@ -399,9 +430,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
             innerShadowView?.removeFromSuperview()
             innerShadowView = nil
-
-            NSLayoutConstraint.deactivate(layoutConstraints)
-            layoutConstraints = []
         }
     }
 }

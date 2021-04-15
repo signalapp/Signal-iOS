@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-public class MessageSelectionView: UIView {
+public class MessageSelectionView: ManualLayoutView {
 
     @objc
     public var isSelected: Bool = false {
@@ -17,39 +17,42 @@ public class MessageSelectionView: UIView {
 
     @objc
     public init() {
-        super.init(frame: .zero)
+        super.init(name: "MessageSelectionView")
 
         addSubview(selectedView)
-        selectedView.autoPinWidthToSuperview()
-        selectedView.autoVCenterInSuperview()
-
         addSubview(unselectedView)
-        unselectedView.autoPinWidthToSuperview()
-        unselectedView.autoVCenterInSuperview()
 
-        autoSetDimension(.width, toSize: ConversationStyle.selectionViewWidth)
+        centerSubviewOnSuperview(selectedView, size: Self.contentSize)
+        centerSubviewOnSuperview(unselectedView, size: Self.contentSize)
+
         selectedView.isHidden = true
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(*, unavailable, message: "use other constructor instead.")
+    @objc
+    public required init(name: String) {
+        notImplemented()
+    }
+
+    private static var contentSize: CGSize {
+        CGSize(square: ConversationStyle.selectionViewWidth)
     }
 
     private lazy var selectedView: UIView = {
-        let wrapper = UIView()
-        wrapper.autoSetDimensions(to: CGSize(square: ConversationStyle.selectionViewWidth))
+        let wrapper = ManualLayoutView(name: "MessageSelectionView.selectedView")
 
         // the checkmark shape is transparent, but we want it colored white, even in dark theme
-        let backgroundView = CircleView(diameter: ConversationStyle.selectionViewWidth - 8)
+        let backgroundSize = ConversationStyle.selectionViewWidth - 8
+        let backgroundView = CircleView(diameter: backgroundSize)
         backgroundView.backgroundColor = .white
         wrapper.addSubview(backgroundView)
-        backgroundView.autoCenterInSuperview()
+        wrapper.centerSubviewOnSuperview(backgroundView, size: .square(backgroundSize))
 
         let image = #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
         imageView.tintColor = .ows_accentBlue
         wrapper.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges()
+        wrapper.layoutSubviewToFillSuperviewBounds(imageView)
 
         return wrapper
     }()
