@@ -118,11 +118,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         if let expiration = expiration {
             let messageTimerView = componentView.messageTimerView
-            messageTimerView.configure(withExpirationTimestamp: expiration.expirationTimestamp,
+            messageTimerView.configure(expirationTimestamp: expiration.expirationTimestamp,
                                        initialDurationSeconds: expiration.expiresInSeconds,
                                        tintColor: textColor)
-            let wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(messageTimerView)
-            innerViews.append(wrapper)
+            innerViews.append(messageTimerView)
         }
 
         if let statusIndicator = self.statusIndicator {
@@ -309,7 +308,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         if hasPerConversationExpiration,
            nil != interaction as? TSMessage {
-            let timerSize = OWSMessageTimerView.measureSize()
+            let timerSize = MessageTimerView.measureSize
             innerSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
@@ -361,8 +360,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let tapForMoreLabel = UILabel()
         fileprivate let timestampLabel = UILabel()
         fileprivate let statusIndicatorImageView = UIImageView()
-        // TODO:
-        fileprivate let messageTimerView = OWSMessageTimerView()
+        fileprivate let messageTimerView = MessageTimerView()
 
         public var isDedicatedCellView = false
 
