@@ -150,6 +150,11 @@ public class SendPaymentViewController: OWSViewController {
             showEnablePaymentsActionSheet()
             return
         }
+        guard tsAccountManager.isRegisteredAndReady else {
+            Logger.info("Local user is not registered and ready.")
+            showNotRegisteredActionSheet()
+            return
+        }
 
         var hasProfileKeyForRecipient = false
         var hasSentMessagesToRecipient = false
@@ -991,7 +996,7 @@ public class SendPaymentViewController: OWSViewController {
         let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE",
                                       comment: "Title for the 'payments not enabled' alert.")
         let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE",
-                                              comment: "Message for the 'payments not enabled' alert.")
+                                        comment: "Message for the 'payments not enabled' alert.")
         let actionSheet = ActionSheetController(title: title,
                                                 message: message)
 
@@ -1003,6 +1008,22 @@ public class SendPaymentViewController: OWSViewController {
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        frontmostViewController.presentActionSheet(actionSheet)
+    }
+
+    private static func showNotRegisteredActionSheet() {
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFailDebug("could not identify frontmostViewController")
+            return
+        }
+        let title = NSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE",
+                                      comment: "Title for the 'payments not registered' alert.")
+        let message = NSLocalizedString("SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE",
+                                        comment: "Message for the 'payments not registered' alert.")
+        let actionSheet = ActionSheetController(title: title, message: message)
+
+        actionSheet.addAction(OWSActionSheets.okayAction)
 
         frontmostViewController.presentActionSheet(actionSheet)
     }
