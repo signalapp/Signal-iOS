@@ -89,6 +89,10 @@ extension ConversationSettingsViewController {
             contents.addSection(buildBlockAndLeaveSection())
         }
 
+        if DebugFlags.internalSettings {
+            contents.addSection(buildInternalSection())
+        }
+
         let emptySection = OWSTableSection()
         emptySection.customFooterHeight = 24
         contents.addSection(emptySection)
@@ -346,9 +350,9 @@ extension ConversationSettingsViewController {
                                                                                   comment: "table cell label in conversation settings"),
                                                       customColor: UIColor.ows_accentRed,
                                                       accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"))
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.didTapLeaveGroup()
+            },
+            actionBlock: { [weak self] in
+                self?.didTapLeaveGroup()
             }))
         }
 
@@ -383,13 +387,33 @@ extension ConversationSettingsViewController {
                                                       customColor: customColor,
                                                       accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"))
             return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    if isCurrentlyBlocked {
-                                        self?.didTapUnblockThread()
-                                    } else {
-                                        self?.didTapBlockThread()
-                                    }
+        },
+        actionBlock: { [weak self] in
+            if isCurrentlyBlocked {
+                self?.didTapUnblockThread()
+            } else {
+                self?.didTapBlockThread()
+            }
+        }))
+
+        return section
+    }
+
+    private func buildInternalSection() -> OWSTableSection {
+        let section = OWSTableSection()
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            return OWSTableItem.buildIconNameCell(icon: .settingsAdvanced,
+                                                  itemName: "Internal",
+                                                  accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"))
+        },
+        actionBlock: { [weak self] in
+            self?.didTapInternalSettings()
         }))
 
         return section
