@@ -108,6 +108,7 @@ post_install do |installer|
   configure_warning_flags(installer)
   configure_testable_build(installer)
   disable_bitcode(installer)
+  disable_armv7(installer)
   disable_non_development_pod_warnings(installer)
   copy_acknowledgements
 end
@@ -179,6 +180,14 @@ def disable_bitcode(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['ENABLE_BITCODE'] = 'NO'
+    end
+  end
+end
+
+def disable_armv7(installer)
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS'] = 'armv7'
     end
   end
 end
