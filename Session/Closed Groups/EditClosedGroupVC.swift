@@ -4,10 +4,16 @@ import PromiseKit
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let thread: TSGroupThread
     private var name = ""
+    private var zombies: Set<String> = []
     private var members: [String] = [] { didSet { handleMembersChanged() } }
     private var isEditingGroupName = false { didSet { handleIsEditingGroupNameChanged() } }
     private var tableViewHeightConstraint: NSLayoutConstraint!
 
+    private lazy var groupPublicKey: String = {
+        let groupID = thread.groupModel.groupId
+        return LKGroupUtilities.getDecodedGroupID(groupID)
+    }()
+    
     // MARK: Components
     private lazy var groupNameLabel: UILabel = {
         let result = UILabel()
@@ -70,7 +76,10 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         }
         setUpViewHierarchy()
+        // Always show zombies at the bottom
+        zombies = Storage.shared.getZombieMembers(for: groupPublicKey)
         members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+            + zombies.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         updateNavigationBarButtons()
         name = thread.groupModel.groupName!
     }
@@ -145,6 +154,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
         let publicKey = members[indexPath.row]
         cell.publicKey = publicKey
+        cell.isZombie = zombies.contains(publicKey)
         cell.accessory = !canBeRemoved(publicKey) ? .lock : .none
         cell.update()
         return cell
@@ -254,8 +264,6 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
                 editVC.navigationController!.popViewController(animated: true)
             }
         }
-        let groupID = thread.groupModel.groupId
-        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
         let members = Set(self.members)
         let name = self.name
         guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
@@ -270,7 +278,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         var promise: Promise<Void>!
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] _ in
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [groupPublicKey, weak self] _ in
             Storage.write(with: { transaction in
                 if !members.contains(getUserHexEncodedPublicKey()) {
                     promise = MessageSender.leave(groupPublicKey, using: transaction)

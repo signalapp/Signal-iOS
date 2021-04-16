@@ -3,6 +3,7 @@ import UIKit
 final class UserCell : UITableViewCell {
     var accessory = Accessory.none
     var publicKey = ""
+    var isZombie = false
 
     // MARK: Accessory
     enum Accessory {
@@ -92,5 +93,7 @@ final class UserCell : UITableViewCell {
             let icon = isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
             accessoryImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
         }
+        let alpha: CGFloat = isZombie ? 0.5 : 1
+        [ profilePictureView, displayNameLabel, accessoryImageView ].forEach { $0.alpha = alpha }
     }
 }
