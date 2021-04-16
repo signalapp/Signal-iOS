@@ -693,6 +693,11 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         }
     }
 
+    func didTapInternalSettings() {
+        let view = ConversationInternalViewController(thread: thread)
+        navigationController?.pushViewController(view, animated: true)
+    }
+
     class func showMuteUnmuteActionSheet(for thread: TSThread, from fromVC: UIViewController, actionExecuted: @escaping () -> Void) {
         var unmuteTitle: String?
         if thread.isMuted {
