@@ -30,7 +30,6 @@
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSMessageTextView.h"
-#import "OWSMessageTimerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
