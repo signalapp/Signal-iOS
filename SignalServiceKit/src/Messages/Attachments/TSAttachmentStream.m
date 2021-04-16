@@ -830,9 +830,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 #pragma mark - Thumbnails
 
-- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
-                                         success:(OWSThumbnailSuccess)success
-                                         failure:(OWSThumbnailFailure)failure
+- (void)thumbnailImageWithSizeHint:(CGSize)sizeHint
+                           success:(OWSThumbnailSuccess)success
+                           failure:(OWSThumbnailFailure)failure
 {
     CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
     NSUInteger thumbnailDimensionPoints;
@@ -844,105 +844,100 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         thumbnailDimensionPoints = ThumbnailDimensionPointsLarge();
     }
 
-    return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
+    [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+- (void)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
-                                                    success:success
-                                                    failure:failure];
+    [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall success:success failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+- (void)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium
-                                                    success:success
-                                                    failure:failure];
+    [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium success:success failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+- (void)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge()
-                                                    success:success
-                                                    failure:failure];
+    [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge() success:success failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-                                                         success:(OWSThumbnailSuccess)success
-                                                         failure:(OWSThumbnailFailure)failure
+- (void)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                           success:(OWSThumbnailSuccess)success
+                                           failure:(OWSThumbnailFailure)failure
 {
-    OWSLoadedThumbnail *_Nullable loadedThumbnail;
-    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
-        success:^(OWSLoadedThumbnail *thumbnail) {
-            DispatchMainThreadSafe(^{
-                success(thumbnail.image);
-            });
-        }
-        failure:^{
-            DispatchMainThreadSafe(^{
+    [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
+        success:^(OWSLoadedThumbnail *thumbnail) { DispatchMainThreadSafe(^{ success(thumbnail.image); }); }
+        failure:^{ DispatchMainThreadSafe(^{ failure(); }); }];
+}
+
+- (void)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                            success:(OWSLoadedThumbnailSuccess)success
+                                            failure:(OWSThumbnailFailure)failure
+{
+    [self.thumbnailLoadingOperationQueue addOperationWithBlock:^{
+        @autoreleasepool {
+            if (!self.isValidVisualMedia) {
+                // Never thumbnail (or try to use the original of) invalid media.
+                OWSFailDebug(@"Invalid image.");
                 failure();
-            });
-        }];
-    return loadedThumbnail.image;
+                return;
+            }
+
+            CGSize originalSize = self.imageSize;
+            if (originalSize.width < 1 || originalSize.height < 1) {
+                failure();
+                return;
+            }
+
+            if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
+                // There's no point in generating a thumbnail if the original is smaller than the
+                // thumbnail size.
+                NSString *originalFilePath = self.originalFilePath;
+                UIImage *_Nullable originalImage = self.originalImage;
+                if (originalImage == nil) {
+                    OWSFailDebug(@"originalImage was unexpectedly nil");
+                    failure();
+                } else {
+                    success([[OWSLoadedThumbnail alloc] initWithImage:originalImage filePath:originalFilePath]);
+                }
+                return;
+            }
+
+            NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+                UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
+                if (!image) {
+                    OWSFailDebug(@"couldn't load image.");
+                    failure();
+                } else {
+                    success([[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath]);
+                }
+                return;
+            }
+
+            [OWSThumbnailService.shared ensureThumbnailForAttachment:self
+                                            thumbnailDimensionPoints:thumbnailDimensionPoints
+                                                             success:success
+                                                             failure:^(NSError *error) {
+                                                                 OWSLogError(@"Failed to create thumbnail: %@", error);
+                                                                 failure();
+                                                             }];
+        }
+    }];
+    return;
 }
 
-- (nullable OWSLoadedThumbnail *)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-                                                                     success:(OWSLoadedThumbnailSuccess)success
-                                                                     failure:(OWSThumbnailFailure)failure
+- (NSOperationQueue *)thumbnailLoadingOperationQueue
 {
-    if (!self.isValidVisualMedia) {
-        // Never thumbnail (or try to use the original of) invalid media.
-        OWSFailDebug(@"Invalid image.");
-        // Any time we return nil from this method we have to call the failure handler
-        // or else the caller waits for an async thumbnail
-        failure();
-        return nil;
-    }
-
-    CGSize originalSize = self.imageSize;
-    if (originalSize.width < 1 || originalSize.height < 1) {
-        // Any time we return nil from this method we have to call the failure handler
-        // or else the caller waits for an async thumbnail
-        failure();
-        return nil;
-    }
-    if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
-        // There's no point in generating a thumbnail if the original is smaller than the
-        // thumbnail size.
-        UIImage *_Nullable originalImage = self.originalImage;
-        if (originalImage == nil) {
-            OWSFailDebug(@"originalImage was unexpectedly nil");
-            // Any time we return nil from this method we have to call the failure handler
-            // or else the caller waits for an async thumbnail
-            failure();
-            return nil;
-        }
-
-        return [[OWSLoadedThumbnail alloc] initWithImage:originalImage filePath:self.originalFilePath];
-    }
-
-    NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
-        if (!image) {
-            OWSFailDebug(@"couldn't load image.");
-            // Any time we return nil from this method we have to call the failure handler
-            // or else the caller waits for an async thumbnail
-            failure();
-            return nil;
-        }
-        return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];
-    }
-
-    [OWSThumbnailService.shared ensureThumbnailForAttachment:self
-                                    thumbnailDimensionPoints:thumbnailDimensionPoints
-                                                     success:success
-                                                     failure:^(NSError *error) {
-                                                         OWSLogError(@"Failed to create thumbnail: %@", error);
-                                                         failure();
-                                                     }];
-    return nil;
+    static dispatch_once_t onceToken;
+    static NSOperationQueue *operationQueue;
+    dispatch_once(&onceToken, ^{
+        operationQueue = [NSOperationQueue new];
+        operationQueue.name = @"thumbnailLoadingOperationQueue";
+        operationQueue.maxConcurrentOperationCount = 4;
+    });
+    return operationQueue;
 }
 
 - (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
@@ -950,22 +945,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
-    OWSLoadedThumbnail *_Nullable syncLoadedThumbnail = nil;
-    syncLoadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+    [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
         success:^(OWSLoadedThumbnail *thumbnail) {
             @synchronized(self) {
                 asyncLoadedThumbnail = thumbnail;
             }
             dispatch_semaphore_signal(semaphore);
         }
-        failure:^{
-            dispatch_semaphore_signal(semaphore);
-        }];
-
-    if (syncLoadedThumbnail) {
-        return syncLoadedThumbnail;
-    }
-
+        failure:^{ dispatch_semaphore_signal(semaphore); }];
     // Wait up to N seconds.
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
     @synchronized(self) {

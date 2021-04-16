@@ -70,15 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We cache the image data in case the attachment stream is deleted.
     __weak MediaDetailViewController *weakSelf = self;
-    _image = [galleryItemBox.attachmentStream
+    [galleryItemBox.attachmentStream
         thumbnailImageLargeWithSuccess:^(UIImage *image) {
             weakSelf.image = image;
             [weakSelf updateContents];
             [weakSelf updateMinZoomScale];
         }
-        failure:^{
-            OWSLogWarn(@"Could not load media.");
-        }];
+        failure:^{ OWSLogWarn(@"Could not load media."); }];
 
     return self;
 }

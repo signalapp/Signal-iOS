@@ -8,15 +8,6 @@ import PromiseKit
 
 extension UIImage {
     @objc
-    public func asTintedImage(color: UIColor) -> UIImage? {
-        let template = self.withRenderingMode(.alwaysTemplate)
-        let imageView = UIImageView(image: template)
-        imageView.tintColor = color
-
-        return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
-    }
-
-    @objc
     public func withCornerRadius(_ cornerRadius: CGFloat) -> UIImage? {
         let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
         UIGraphicsBeginImageContextWithOptions(size, false, 1)
@@ -113,5 +104,52 @@ extension UIImage {
 
             return blurredImage
         }
+    }
+
+    @objc
+    public func preloadForRendering() -> UIImage {
+        guard let inputCGImage = self.cgImage else {
+            owsFailDebug("Unexpected ciImage.")
+            return self
+        }
+        let hasAlpha: Bool = {
+            switch inputCGImage.alphaInfo {
+            case .none,
+                 .noneSkipLast,
+                 .noneSkipFirst:
+                return false
+            case .premultipliedLast,
+                 .premultipliedFirst,
+             .last,
+             .first,
+             .alphaOnly:
+                return true
+            @unknown default:
+                owsFailDebug("Unknown CGImageAlphaInfo value.")
+                return true
+            }
+        }()
+        let width = inputCGImage.width
+        let height = inputCGImage.height
+        let colourSpace = CGColorSpaceCreateDeviceRGB()
+        let alphaInfo: CGImageAlphaInfo = hasAlpha ? .premultipliedFirst : .noneSkipFirst
+        let bitmapInfo: UInt32 = alphaInfo.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
+        guard let imageContext = CGContext(data: nil,
+                                           width: width,
+                                           height: height,
+                                           bitsPerComponent: 8,
+                                           bytesPerRow: width * 4,
+                                           space: colourSpace,
+                                           bitmapInfo: bitmapInfo) else {
+            owsFailDebug("Could not create context.")
+            return self
+        }
+        let rect = CGRect(x: 0, y: 0, width: width, height: height)
+        imageContext.draw(inputCGImage, in: rect)
+        guard let outputCGImage = imageContext.makeImage() else {
+            owsFailDebug("Could not make image.")
+            return self
+        }
+        return UIImage(cgImage: outputCGImage)
     }
 }

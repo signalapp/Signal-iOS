@@ -20,7 +20,9 @@ public enum OWSThumbnailError: Error {
 
     @objc
     public init(image: UIImage, filePath: String) {
-        self.image = image
+        // Always preload thumbnail images for rendering.
+        self.image = image.preloadForRendering()
+
         self.dataSourceBlock = {
             return try Data(contentsOf: URL(fileURLWithPath: filePath))
         }
@@ -57,7 +59,10 @@ private struct OWSThumbnailRequest {
     }
 }
 
-@objc public class OWSThumbnailService: NSObject {
+// MARK: - 
+
+@objc
+public class OWSThumbnailService: NSObject {
 
     // MARK: - Singleton class
 
@@ -67,7 +72,10 @@ private struct OWSThumbnailRequest {
     public typealias SuccessBlock = (OWSLoadedThumbnail) -> Void
     public typealias FailureBlock = (Error) -> Void
 
-    private let serialQueue = DispatchQueue(label: "OWSThumbnailService")
+    @objc
+    public static let serialQueue = DispatchQueue(label: "OWSThumbnailService")
+
+    private var serialQueue: DispatchQueue { OWSThumbnailService.serialQueue }
 
     // This property should only be accessed on the serialQueue.
     //
@@ -88,11 +96,14 @@ private struct OWSThumbnailRequest {
     // success and failure will be called async _off_ the main thread.
     @objc
     public func ensureThumbnail(forAttachment attachment: TSAttachmentStream,
-                                                     thumbnailDimensionPoints: UInt,
-                                                     success: @escaping SuccessBlock,
-                                                     failure: @escaping FailureBlock) {
+                                thumbnailDimensionPoints: UInt,
+                                success: @escaping SuccessBlock,
+                                failure: @escaping FailureBlock) {
         serialQueue.async {
-            let thumbnailRequest = OWSThumbnailRequest(attachment: attachment, thumbnailDimensionPoints: thumbnailDimensionPoints, success: success, failure: failure)
+            let thumbnailRequest = OWSThumbnailRequest(attachment: attachment,
+                                                       thumbnailDimensionPoints: thumbnailDimensionPoints,
+                                                       success: success,
+                                                       failure: failure)
             self.thumbnailRequestStack.append(thumbnailRequest)
 
             self.processNextRequestSync()
