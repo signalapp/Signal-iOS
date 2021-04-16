@@ -449,8 +449,10 @@
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
-		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
+		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
+		34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */; };
+		34EB0E7E2629E00500B62DC3 /* CVHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
@@ -637,7 +639,6 @@
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
-		4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
 		4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
@@ -1505,8 +1506,10 @@
 		34E88D252098C5AE00A608F4 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
-		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
+		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
+		34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
+		34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVHelpers.swift; sourceTree = "<group>"; };
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
@@ -1689,7 +1692,6 @@
 		4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewControllerTest.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportAlert.swift; sourceTree = "<group>"; };
-		4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBaseTest+Swift.swift"; sourceTree = "<group>"; };
 		4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
@@ -2484,7 +2486,6 @@
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
-				4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */,
 				8855DF85238F1DEE0066D96F /* Reactions Details */,
 				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
@@ -2661,6 +2662,7 @@
 				347C3839252CE6C900F3D941 /* CVComponents */,
 				347C381E252CE69400F3D941 /* CVComponentState.swift */,
 				347C3819252CE69400F3D941 /* CVComponentState+GroupLink.swift */,
+				34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */,
 				347C3824252CE69400F3D941 /* CVItemModel.swift */,
 				3426A365255C854A0036407F /* CVItemViewModelImpl.swift */,
 				347C3820252CE69400F3D941 /* CVItemViewState.swift */,
@@ -2985,6 +2987,7 @@
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
+				34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */,
 				34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */,
 				34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */,
 				34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */,
@@ -5196,7 +5199,6 @@
 				34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsViewController.swift in Sources */,
-				4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				34156C8F25A7521800556182 /* CVMessageActionButton.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
@@ -5309,6 +5311,7 @@
 				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */,
+				34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */,
 				8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */,
@@ -5389,6 +5392,7 @@
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */,
+				34EB0E7E2629E00500B62DC3 /* CVHelpers.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,

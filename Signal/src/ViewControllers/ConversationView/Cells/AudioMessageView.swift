@@ -30,7 +30,7 @@ class AudioMessageView: ManualStackView {
     private let isIncoming: Bool
 
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
-    private let playbackTimeLabel = UILabel()
+    private let playbackTimeLabel = CVLabel()
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
     private let waveformContainer = OWSLayerView()
@@ -62,7 +62,7 @@ class AudioMessageView: ManualStackView {
         if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
                                                     isIncoming: isIncoming,
                                                     conversationStyle: conversationStyle) {
-            let topLabel = UILabel()
+            let topLabel = CVLabel()
             topLabelConfig.applyForRendering(label: topLabel)
             outerSubviews.append(topLabel)
         }

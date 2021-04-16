@@ -576,7 +576,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             if let label = _label {
                 return label
             }
-            let label = UILabel()
+            let label = CVLabel()
             _label = label
             return label
         }

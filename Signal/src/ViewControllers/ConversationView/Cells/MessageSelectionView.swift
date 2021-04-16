@@ -49,7 +49,7 @@ public class MessageSelectionView: ManualLayoutView {
         wrapper.centerSubviewOnSuperview(backgroundView, size: .square(backgroundSize))
 
         let image = #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate)
-        let imageView = UIImageView(image: image)
+        let imageView = CVImageView(image: image)
         imageView.tintColor = .ows_accentBlue
         wrapper.addSubview(imageView)
         wrapper.layoutSubviewToFillSuperviewBounds(imageView)

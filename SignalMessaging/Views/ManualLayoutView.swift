@@ -50,6 +50,12 @@ open class ManualLayoutView: UIView {
         notImplemented()
     }
 
+    public override func updateConstraints() {
+        super.updateConstraints()
+
+        deactivateAllConstraints()
+    }
+
     // MARK: - Circles and Pills
 
     @objc

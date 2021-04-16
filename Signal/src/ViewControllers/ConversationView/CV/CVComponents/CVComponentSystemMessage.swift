@@ -383,7 +383,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
         fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
         fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
-        fileprivate let titleLabel = UILabel()
+        fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var blurView: UIVisualEffectView?

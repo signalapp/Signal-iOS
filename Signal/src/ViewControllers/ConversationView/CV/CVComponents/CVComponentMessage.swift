@@ -401,7 +401,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         if hasSendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
-            let sendFailureBadge = UIImageView()
+            let sendFailureBadge = CVImageView()
             sendFailureBadge.contentMode = .center
             sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
             if conversationStyle.hasWallpaper {
@@ -1160,7 +1160,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate let swipeToReplyIconView = UIImageView()
+        fileprivate let swipeToReplyIconView = CVImageView()
 
         fileprivate let cellSpacer = UIView()
 

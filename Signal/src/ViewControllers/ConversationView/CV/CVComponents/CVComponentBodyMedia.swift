@@ -144,6 +144,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         if hasDownloadButton {
+            // TODO: Convert to manual layout.
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {

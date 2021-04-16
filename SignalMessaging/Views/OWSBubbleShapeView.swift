@@ -60,6 +60,12 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         notImplemented()
     }
 
+    public override func updateConstraints() {
+        super.updateConstraints()
+
+        deactivateAllConstraints()
+    }
+
     public override var bounds: CGRect {
         didSet {
             if oldValue.size != bounds.size {
