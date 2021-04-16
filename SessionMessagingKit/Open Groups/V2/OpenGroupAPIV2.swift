@@ -4,7 +4,7 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    private static var authTokenPromise: Promise<String>?
+    private static var authTokenPromises: [String:Promise<String>] = [:]
     
     public static let defaultServer = "https://sessionopengroup.com"
     public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
@@ -125,7 +125,7 @@ public final class OpenGroupAPIV2 : NSObject {
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
         } else {
-            if let authTokenPromise = authTokenPromise {
+            if let authTokenPromise = authTokenPromises["\(server).\(room)"] {
                 return authTokenPromise
             } else {
                 let promise = requestNewAuthToken(for: room, on: server)
@@ -140,11 +140,11 @@ public final class OpenGroupAPIV2 : NSObject {
                     return promise
                 }
                 promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    authTokenPromise = nil
+                    authTokenPromises["\(server).\(room)"] = nil
                 }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    authTokenPromise = nil
+                    authTokenPromises["\(server).\(room)"] = nil
                 }
-                authTokenPromise = promise
+                authTokenPromises["\(server).\(room)"] = promise
                 return promise
             }
         }
