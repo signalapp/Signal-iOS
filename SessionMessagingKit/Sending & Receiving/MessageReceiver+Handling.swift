@@ -512,7 +512,8 @@ extension MessageReceiver {
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Check that the admin wasn't removed
-            let members = Set(group.groupMemberIds).subtracting(membersAsData.map { $0.toHexString() })
+            let removedMembers = membersAsData.map { $0.toHexString() }
+            let members = Set(group.groupMemberIds).subtracting(removedMembers)
             guard members.contains(group.groupAdminIds.first!) else {
                 return SNLog("Ignoring invalid closed group update.")
             }
@@ -531,7 +532,9 @@ extension MessageReceiver {
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
-            // TODO: Remove from zombie list
+            let storage = SNMessagingKitConfiguration.shared.storage
+            let zombies = storage.getZombieMembers(for: groupPublicKey).subtracting(removedMembers)
+            storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
             // Update the group
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
@@ -561,7 +564,9 @@ extension MessageReceiver {
                 Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
             } else {
-                // TODO: Mark as zombie
+                let storage = SNMessagingKitConfiguration.shared.storage
+                let zombies = storage.getZombieMembers(for: groupPublicKey).union([ message.sender! ])
+                storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
             }
             // Update the group
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)

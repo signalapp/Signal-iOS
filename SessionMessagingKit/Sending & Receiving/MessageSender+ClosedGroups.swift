@@ -216,6 +216,10 @@ extension MessageSender {
             return Promise(error: Error.invalidClosedGroupUpdate)
         }
         let members = Set(group.groupMemberIds).subtracting(membersToRemove)
+        // Update zombie list
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let zombies = storage.getZombieMembers(for: groupPublicKey).subtracting(membersToRemove)
+        storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
         // Send the update to the group and generate + distribute a new encryption key pair
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .membersRemoved(members: membersToRemove.map { Data(hex: $0) }))
         let promise = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).map {
