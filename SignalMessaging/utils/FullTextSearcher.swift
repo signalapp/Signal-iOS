@@ -305,6 +305,9 @@ public class FullTextSearcher: NSObject {
             case is TSMessage:
                 // not included in compose screen results
                 break
+            case is OWSGroupCallMessage:
+                // not included in compose screen results
+                break
             default:
                 owsFailDebug("unhandled item: \(match)")
             }
