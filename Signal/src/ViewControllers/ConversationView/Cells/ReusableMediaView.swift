@@ -345,7 +345,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImageLarge(success: { (image) in
+        attachmentStream.thumbnailImageMedium(success: { (image) in
             resolver.fulfill(image)
         }, failure: {
             resolver.reject(OWSAssertionError("Could not load thumbnail"))
@@ -399,7 +399,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImageLarge(success: { (image) in
+        attachmentStream.thumbnailImageMedium(success: { (image) in
             resolver.fulfill(image)
         }, failure: {
             resolver.reject(OWSAssertionError("Could not load thumbnail"))
