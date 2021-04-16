@@ -119,6 +119,36 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
+    public static func compactPoll(_ server: String) -> Promise<[(room: String, messages: [OpenGroupMessageV2], deletions: [Int64], moderators: [String])]> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
+        var body: [JSON] = []
+        for room in rooms {
+            let authToken = try! getAuthToken(for: room, on: server).wait() // TODO: This should be async
+            var json: JSON = [ "room_id" : room, "auth_token" : authToken ]
+            if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
+                json["from_message_server_id"] = String(lastMessageServerID)
+            }
+            if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
+                json["from_deletion_server_id"] = String(lastDeletionServerID)
+            }
+            body.append(json)
+        }
+        let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : body ], isAuthRequired: false)
+        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
+            var x: [(room: String, messages: [OpenGroupMessageV2], deletions: [Int64], moderators: [String])] = []
+            for result in results {
+                guard let room = result["room_id"] as? String else { continue }
+                let messages = try! parseMessages(from: result, for: room, on: server).wait() // TODO: This should be async
+                let deletions = result["deletions"] as? [Int64] ?? []
+                let moderators = result["moderators"] as? [String] ?? []
+                x.append((room: room, messages: messages, deletions: deletions, moderators: moderators))
+            }
+            return x
+        }
+    }
+    
     // MARK: Authorization
     private static func getAuthToken(for room: String, on server: String) -> Promise<String> {
         let storage = SNMessagingKitConfiguration.shared.storage
@@ -224,35 +254,40 @@ public final class OpenGroupAPIV2 : NSObject {
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "messages", queryParameters: queryParameters)
         return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[OpenGroupMessageV2]> in
-            guard let rawMessages = json["messages"] as? [[String:Any]] else { throw Error.parsingFailed }
-            let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
-                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, let sender = message.sender, let data = Data(base64Encoded: message.base64EncodedData),
-                    let base64EncodedSignature = message.base64EncodedSignature, let signature = Data(base64Encoded: base64EncodedSignature) else {
-                    SNLog("Couldn't parse open group message from JSON: \(json).")
-                    return nil
-                }
-                // Validate the message signature
-                let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
-                let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
-                guard isValid else {
-                    SNLog("Ignoring message with invalid signature.")
-                    return nil
-                }
-                return message
+            try parseMessages(from: json, for: room, on: server)
+        }
+    }
+    
+    private static func parseMessages(from json: JSON, for room: String, on server: String) throws -> Promise<[OpenGroupMessageV2]> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        guard let rawMessages = json["messages"] as? [JSON] else { throw Error.parsingFailed }
+        let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
+            guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, let sender = message.sender, let data = Data(base64Encoded: message.base64EncodedData),
+                let base64EncodedSignature = message.base64EncodedSignature, let signature = Data(base64Encoded: base64EncodedSignature) else {
+                SNLog("Couldn't parse open group message from JSON: \(json).")
+                return nil
             }
-            let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out
-            let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
-            if serverID > lastMessageServerID {
-                let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()
-                storage.write(with: { transaction in
-                    storage.setLastMessageServerID(for: room, on: server, to: serverID, using: transaction)
-                }, completion: {
-                    seal.fulfill(messages)
-                })
-                return promise
-            } else {
-                return Promise.value(messages)
+            // Validate the message signature
+            let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
+            let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
+            guard isValid else {
+                SNLog("Ignoring message with invalid signature.")
+                return nil
             }
+            return message
+        }
+        let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out
+        let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
+        if serverID > lastMessageServerID {
+            let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()
+            storage.write(with: { transaction in
+                storage.setLastMessageServerID(for: room, on: server, to: serverID, using: transaction)
+            }, completion: {
+                seal.fulfill(messages)
+            })
+            return promise
+        } else {
+            return Promise.value(messages)
         }
     }
     
