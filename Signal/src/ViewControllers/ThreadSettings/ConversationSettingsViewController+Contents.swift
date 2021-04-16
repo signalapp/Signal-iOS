@@ -410,6 +410,7 @@ extension ConversationSettingsViewController {
 
             return OWSTableItem.buildIconNameCell(icon: .settingsAdvanced,
                                                   itemName: "Internal",
+                                                  accessoryType: .disclosureIndicator,
                                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"))
         },
         actionBlock: { [weak self] in
