@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO: Convert to manual layout.
 class CVReactionCountsView: OWSStackView {
 
     struct State: Equatable {
@@ -145,8 +146,8 @@ class CVReactionCountsView: OWSStackView {
     }
 
     private class PillView: OWSLayerView {
-        private let emojiLabel = UILabel()
-        private let countLabel = UILabel()
+        private let emojiLabel = CVLabel()
+        private let countLabel = CVLabel()
 
         private static let pillBorderWidth: CGFloat = 1
 

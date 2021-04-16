@@ -335,6 +335,12 @@ public extension UIView {
         sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
                             height: CGFloat.greatestFiniteMagnitude))
     }
+
+    func deactivateAllConstraints() {
+        for constraint in constraints {
+            constraint.isActive = false
+        }
+    }
 }
 
 // MARK: -

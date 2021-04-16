@@ -195,8 +195,8 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
     public class CVComponentViewViewOnce: NSObject, CVComponentView {
 
         fileprivate let stackView = ManualStackView(name: "viewOnce")
-        fileprivate let iconView = UIImageView()
-        fileprivate let label = UILabel()
+        fileprivate let iconView = CVImageView()
+        fileprivate let label = CVLabel()
 
         public var isDedicatedCellView = false
 

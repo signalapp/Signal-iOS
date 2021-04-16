@@ -117,7 +117,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewSenderName: NSObject, CVComponentView {
 
-        fileprivate let label = UILabel()
+        fileprivate let label = CVLabel()
 
         fileprivate let outerStack = ManualStackView(name: "CVComponentViewSenderName.outerStack")
         fileprivate let innerStack = ManualStackView(name: "CVComponentViewSenderName.innerStack")

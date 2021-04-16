@@ -131,10 +131,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
         private let direction: Direction
         private let style: Style
         private let conversationStyle: ConversationStyle
-        private lazy var imageView = UIImageView()
+        private lazy var imageView = CVImageView()
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
-        private lazy var outerCircleView = UIImageView()
+        private lazy var outerCircleView = CVImageView()
 
         var state: State = .none {
             didSet {

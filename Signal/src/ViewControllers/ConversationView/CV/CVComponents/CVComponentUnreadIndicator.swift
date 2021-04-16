@@ -181,7 +181,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         fileprivate let outerStack = ManualStackView(name: "unreadIndicator.outerStack")
         fileprivate let innerStack = ManualStackView(name: "unreadIndicator.innerStack")
 
-        fileprivate let titleLabel = UILabel()
+        fileprivate let titleLabel = CVLabel()
 
         fileprivate var blurView: UIVisualEffectView?
 

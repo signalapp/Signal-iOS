@@ -5,6 +5,7 @@
 import Foundation
 import Lottie
 
+// TODO: Convert to manual layout.
 @objc
 class AudioWaveformProgressView: UIView {
     @objc

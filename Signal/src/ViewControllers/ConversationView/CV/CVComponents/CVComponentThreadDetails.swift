@@ -424,11 +424,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         fileprivate var avatarView: AvatarImageView?
 
-        fileprivate let titleLabel = UILabel()
-        fileprivate let bioLabel = UILabel()
-        fileprivate let detailsLabel = UILabel()
+        fileprivate let titleLabel = CVLabel()
+        fileprivate let bioLabel = CVLabel()
+        fileprivate let detailsLabel = CVLabel()
 
-        fileprivate let mutualGroupsLabel = UILabel()
+        fileprivate let mutualGroupsLabel = CVLabel()
 
         fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
         fileprivate let innerStackView = ManualStackView(name: "Thread details inner")

@@ -357,9 +357,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         fileprivate let outerStack = ManualStackView(name: "footer.outerStack")
         fileprivate let innerStack = ManualStackViewWithLayer(name: "footer.innerStack")
-        fileprivate let tapForMoreLabel = UILabel()
-        fileprivate let timestampLabel = UILabel()
-        fileprivate let statusIndicatorImageView = UIImageView()
+        fileprivate let tapForMoreLabel = CVLabel()
+        fileprivate let timestampLabel = CVLabel()
+        fileprivate let statusIndicatorImageView = CVImageView()
         fileprivate let messageTimerView = MessageTimerView()
 
         public var isDedicatedCellView = false

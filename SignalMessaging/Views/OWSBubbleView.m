@@ -4,6 +4,7 @@
 
 #import "OWSBubbleView.h"
 #import "MainAppContext.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -320,6 +321,13 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 - (CGFloat)minHeight
 {
     return (kOWSMessageCellCornerRadius_Large * 2);
+}
+
+- (void)updateConstraints
+{
+    [super updateConstraints];
+
+    [self deactivateAllConstraints];
 }
 
 @end

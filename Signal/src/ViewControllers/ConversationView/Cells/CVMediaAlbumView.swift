@@ -122,7 +122,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 let moreText = String(format: NSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
                                                                 comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."),
                                       moreCountText)
-                let moreLabel = UILabel()
+                let moreLabel = CVLabel()
                 moreLabel.text = moreText
                 moreLabel.textColor = UIColor.ows_white
                 // We don't want to use dynamic text here.
@@ -170,7 +170,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 owsFailDebug("Couldn't load icon.")
                 continue
             }
-            let iconView = UIImageView(image: icon)
+            let iconView = CVImageView(image: icon)
             itemView.addSubview(iconView)
             itemView.layoutMargins = .zero
             iconView.autoPinTopToSuperviewMargin(withInset: 6)

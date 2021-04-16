@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesUtils.h"
@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:(UIColor *)backgroundColor
                           textColor:(UIColor *)textColor
                               label:(NSString *)label;
++ (instancetype)mediumFilesizePngInstance;
 + (instancetype)tinyPdfInstance;
 + (instancetype)largePdfInstance;
 + (instancetype)missingPngInstance;

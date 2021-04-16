@@ -218,7 +218,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
     let blurHash: String
-    let imageView = UIImageView()
+    let imageView = CVImageView()
 
     init(blurHash: String) {
         self.blurHash = blurHash
@@ -268,7 +268,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = true
     let attachmentStream: TSAttachmentStream
-    let imageView = YYAnimatedImageView()
+    let imageView = CVAnimatedImageView()
 
     init(attachmentStream: TSAttachmentStream) {
         self.attachmentStream = attachmentStream
@@ -322,7 +322,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
-    let imageView = UIImageView()
+    let imageView = CVImageView()
 
     init(attachmentStream: TSAttachmentStream) {
         self.attachmentStream = attachmentStream
@@ -381,7 +381,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
-    let imageView = UIImageView()
+    let imageView = CVImageView()
 
     init(attachmentStream: TSAttachmentStream) {
         self.attachmentStream = attachmentStream
@@ -449,9 +449,9 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         self.attachmentStream = attachmentStream
 
         if shouldBeRenderedByYY {
-            imageView = YYAnimatedImageView()
+            imageView = CVAnimatedImageView()
         } else {
-            imageView = UIImageView()
+            imageView = CVImageView()
         }
 
         imageView.contentMode = .scaleAspectFit

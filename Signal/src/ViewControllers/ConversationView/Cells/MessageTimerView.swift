@@ -15,7 +15,7 @@ public class MessageTimerView: ManualLayoutView {
     }
     private var configuration: Configuration?
 
-    private let imageView = UIImageView()
+    private let imageView = CVImageView()
     private var animationTimer: Timer?
 
     // 0 == about to expire, 12 == just started countdown.

@@ -129,8 +129,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         let mediaView = reusableMediaView.mediaView
 
         mediaView.removeFromSuperview()
-        addSubviewToFillSuperviewEdges(mediaView)
         mediaView.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToFillSuperviewEdges(mediaView)
 
         if let imageView = mediaView as? UIImageView {
             configureImageView(imageView)
@@ -222,12 +222,12 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         playVideoButton.addSubview(playVideoCircleView)
         layoutSubviewToFillSuperviewBounds(playVideoCircleView)
 
-        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
-                                                                  tintColor: UIColor.ows_white)
+        let playVideoIconView = CVImageView()
+        playVideoIconView.setTemplateImageName("play-solid-32",
+                                               tintColor: UIColor.ows_white)
         playVideoIconView.isUserInteractionEnabled = false
-        let playVideoIconWrapper = ManualLayoutView(name: "playVideoIconWrapper")
-        playVideoIconWrapper.addSubviewToFillSuperviewEdges(playVideoIconView)
-        addSubviewToCenterOnSuperview(playVideoIconWrapper, size: CGSize(square: playVideoIconWidth))
+        addSubviewToCenterOnSuperview(playVideoIconView,
+                                      size: CGSize(square: playVideoIconWidth))
     }
 
     private var hasBlurHash: Bool {
@@ -247,7 +247,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         case .missing:
             return
         }
-        let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
+        let iconView = CVImageView(image: icon.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         addSubviewToCenterOnSuperview(iconView, size: icon.size)
     }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMessageActionButton: UILabel {
+public class CVMessageActionButton: CVLabel {
     let action: CVMessageAction
 
     required init(action: CVMessageAction) {

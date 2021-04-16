@@ -336,10 +336,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         fileprivate let hStackView = ManualStackView(name: "GenericAttachment.hStackView")
         fileprivate let vStackView = ManualStackView(name: "GenericAttachment.vStackView")
-        fileprivate let topLabel = UILabel()
-        fileprivate let bottomLabel = UILabel()
-        fileprivate let fileTypeLabel = UILabel()
-        fileprivate let iconImageView = UIImageView()
+        fileprivate let topLabel = CVLabel()
+        fileprivate let bottomLabel = CVLabel()
+        fileprivate let fileTypeLabel = CVLabel()
+        fileprivate let iconImageView = CVImageView()
 
         public var isDedicatedCellView = false
 
