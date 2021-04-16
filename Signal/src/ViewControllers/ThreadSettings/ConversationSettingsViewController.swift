@@ -358,27 +358,12 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Actions
 
-    @objc func conversationNameTouched(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else { return }
-        guard let avatarView = avatarView else {
-            owsFailDebug("Missing avatarView.")
-            return
+    func tappedAvatar() {
+        guard avatarView != nil, !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil else {
+            return // Not a valid avatar
         }
 
-        let didTapAvatar = avatarView.containsGestureLocation(sender)
-        let hasValidAvatar = !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil
-
-        if didTapAvatar, hasValidAvatar {
-            presentAvatarViewController()
-        } else if canEditConversationAttributes {
-            if didTapAvatar, isGroupThread {
-                showGroupAttributesView(editAction: .avatar)
-            } else if isGroupThread {
-                showGroupAttributesView(editAction: .name)
-            } else if contactsManagerImpl.supportsContactEditing {
-                presentContactViewController()
-            }
-        }
+        presentAvatarViewController()
     }
 
     func showVerificationView() {
