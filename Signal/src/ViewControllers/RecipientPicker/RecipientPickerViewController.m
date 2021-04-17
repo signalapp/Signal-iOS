@@ -120,7 +120,6 @@ const NSUInteger kMinimumSearchLength = 2;
             @"Placeholder text indicating the user can search for contacts by name or phone number.");
     }
     [searchBar sizeToFit];
-    searchBar.layoutMargins = self.tableViewController.cellOuterInsets;
 
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
     searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
@@ -160,6 +159,12 @@ const NSUInteger kMinimumSearchLength = 2;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 
     [self updateTableContents];
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+    self.searchBar.layoutMargins = self.tableViewController.cellOuterInsets;
 }
 
 - (void)dealloc
