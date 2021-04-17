@@ -188,7 +188,7 @@ class GroupAttributesEditorHelper: NSObject {
     }
 
     @objc
-    func didTapAvatarView(sender: UIGestureRecognizer) {
+    func didTapAvatarView() {
         showAvatarUI()
     }
 
