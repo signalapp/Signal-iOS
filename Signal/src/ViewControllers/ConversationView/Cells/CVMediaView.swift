@@ -220,7 +220,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
         playVideoCircleView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoCircleView)
-        layoutSubviewToFillSuperviewBounds(playVideoCircleView)
+        layoutSubviewToFillSuperviewEdges(playVideoCircleView)
 
         let playVideoIconView = CVImageView()
         playVideoIconView.setTemplateImageName("play-solid-32",
@@ -257,6 +257,10 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         AssertIsOnMainThread()
 
         guard let reusableMediaView = reusableMediaView else {
+            return
+        }
+        guard reusableMediaView.owner != nil else {
+            Logger.warn("No longer owner of reusableMediaView.")
             return
         }
         guard reusableMediaView.owner == self else {

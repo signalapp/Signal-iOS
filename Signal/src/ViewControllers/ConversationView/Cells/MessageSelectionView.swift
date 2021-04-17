@@ -52,7 +52,7 @@ public class MessageSelectionView: ManualLayoutView {
         let imageView = CVImageView(image: image)
         imageView.tintColor = .ows_accentBlue
         wrapper.addSubview(imageView)
-        wrapper.layoutSubviewToFillSuperviewBounds(imageView)
+        wrapper.layoutSubviewToFillSuperviewEdges(imageView)
 
         return wrapper
     }()

@@ -258,10 +258,27 @@ open class ManualLayoutView: UIView {
 
         addSubview(subview)
 
-        layoutSubviewToFillSuperviewBounds(subview)
+        layoutSubviewToFillSuperviewEdges(subview)
     }
 
-    public func layoutSubviewToFillSuperviewBounds(_ subview: UIView) {
+    public func layoutSubviewToFillSuperviewEdges(_ subview: UIView) {
+        layoutSubviewToFillSuperview(subview, honorLayoutsMargins: false)
+    }
+
+    public func addSubviewToFillSuperviewMargins(_ subview: UIView) {
+        owsAssertDebug(subview.superview == nil)
+
+        addSubview(subview)
+
+        layoutSubviewToFillSuperviewMargins(subview)
+    }
+
+    public func layoutSubviewToFillSuperviewMargins(_ subview: UIView) {
+        layoutSubviewToFillSuperview(subview, honorLayoutsMargins: true)
+    }
+
+    public func layoutSubviewToFillSuperview(_ subview: UIView,
+                                             honorLayoutsMargins: Bool) {
         owsAssertDebug(subview.superview != nil)
 
         subview.translatesAutoresizingMaskIntoConstraints = false
@@ -272,7 +289,11 @@ open class ManualLayoutView: UIView {
                 return
             }
 
-            Self.setSubviewFrame(subview: subview, frame: superview.bounds)
+            var subviewFrame = superview.bounds
+            if honorLayoutsMargins {
+                subviewFrame = subviewFrame.inset(by: superview.layoutMargins)
+            }
+            Self.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }
 
