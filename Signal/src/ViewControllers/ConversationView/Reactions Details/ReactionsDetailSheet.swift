@@ -37,10 +37,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         fatalError("init() has not been implemented")
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: -
 
     override public func viewDidLoad() {

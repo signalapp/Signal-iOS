@@ -106,6 +106,10 @@ class ConversationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Accessors
 
+    var isBlockedByMigration: Bool {
+        return groupViewHelper.isBlockedByMigration
+    }
+
     var canEditConversationAttributes: Bool {
         return groupViewHelper.canEditConversationAttributes
     }
@@ -311,7 +315,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             return
         }
         let memberActionSheet = MemberActionSheet(address: memberAddress, groupViewHelper: groupViewHelper)
-        memberActionSheet.present(fromViewController: self)
+        memberActionSheet.present(from: self)
     }
 
     func showAddToSystemContactsActionSheet(contactThread: TSContactThread) {

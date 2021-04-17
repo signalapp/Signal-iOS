@@ -120,8 +120,7 @@ const NSUInteger kMinimumSearchLength = 2;
             @"Placeholder text indicating the user can search for contacts by name or phone number.");
     }
     [searchBar sizeToFit];
-    searchBar.layoutMargins
-        = UIEdgeInsetsMake(0, OWSTableViewController2.cellHOuterMargin, 0, OWSTableViewController2.cellHOuterMargin);
+    searchBar.layoutMargins = self.tableViewController.cellOuterInsets;
 
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
     searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");

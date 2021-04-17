@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class InteractiveSheetViewController: UIViewController {
+public class InteractiveSheetViewController: OWSViewController {
     public let contentView = UIView()
 
     public var interactiveScrollViews: [UIScrollView] { [] }
@@ -18,16 +18,13 @@ public class InteractiveSheetViewController: UIViewController {
 
     public var allowsInteractiveDismisssal: Bool { true }
 
-    private let handle = UIView()
+    public var renderExternalHandle: Bool { true }
+    private lazy var handle = UIView()
 
-    public required init() {
-        super.init(nibName: nil, bundle: nil)
+    public required override init() {
+        super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     public func willDismissInteractively() {}
@@ -98,12 +95,14 @@ public class InteractiveSheetViewController: UIViewController {
         // the view.
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
 
-        handle.backgroundColor = .ows_whiteAlpha80
-        handle.autoSetDimensions(to: CGSize(width: 56, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        view.addSubview(handle)
-        handle.autoHCenterInSuperview()
-        handle.autoPinEdge(.bottom, to: .top, of: contentView, withOffset: -8)
+        if renderExternalHandle {
+            handle.backgroundColor = .ows_whiteAlpha80
+            handle.autoSetDimensions(to: CGSize(width: 56, height: 5))
+            handle.layer.cornerRadius = 5 / 2
+            view.addSubview(handle)
+            handle.autoHCenterInSuperview()
+            handle.autoPinEdge(.bottom, to: .top, of: contentView, withOffset: -8)
+        }
     }
 
     @objc

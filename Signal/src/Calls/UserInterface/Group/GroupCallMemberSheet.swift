@@ -17,10 +17,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         call.addObserverAndSyncState(observer: self)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     public required init() {
         fatalError("init() has not been implemented")
     }

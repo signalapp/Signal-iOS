@@ -8,43 +8,79 @@ import UIKit
 struct ConversationHeaderBuilder: Dependencies {
     weak var delegate: ConversationHeaderDelegate!
     let transaction: SDSAnyReadTransaction
+    let avatarSize: UInt
+    let options: Options
 
     var subviews = [UIView]()
 
-    struct ButtonOptions: OptionSet {
+    struct Options: OptionSet {
         let rawValue: Int
 
-        static let message   = ButtonOptions(rawValue: 1 << 0)
-        static let audioCall = ButtonOptions(rawValue: 1 << 1)
-        static let videoCall = ButtonOptions(rawValue: 1 << 2)
-        static let mute      = ButtonOptions(rawValue: 1 << 3)
-        static let search    = ButtonOptions(rawValue: 1 << 4)
+        static let message   = Options(rawValue: 1 << 0)
+        static let audioCall = Options(rawValue: 1 << 1)
+        static let videoCall = Options(rawValue: 1 << 2)
+        static let mute      = Options(rawValue: 1 << 3)
+        static let search    = Options(rawValue: 1 << 4)
+
+        static let renderLocalUserAsNoteToSelf = Options(rawValue: 1 << 5)
     }
 
-    static func buildHeader(for thread: TSThread, options: ButtonOptions, delegate: ConversationHeaderDelegate) -> UIView {
+    static func buildHeader(
+        for thread: TSThread,
+        avatarSize: UInt,
+        options: Options,
+        delegate: ConversationHeaderDelegate
+    ) -> UIView {
         if let groupThread = thread as? TSGroupThread {
-            return ConversationHeaderBuilder.buildHeaderForGroup(groupThread: groupThread, options: options, delegate: delegate)
+            return ConversationHeaderBuilder.buildHeaderForGroup(
+                groupThread: groupThread,
+                avatarSize: avatarSize,
+                options: options,
+                delegate: delegate
+            )
         } else if let contactThread = thread as? TSContactThread {
-            return ConversationHeaderBuilder.buildHeaderForContact(contactThread: contactThread, options: options, delegate: delegate)
+            return ConversationHeaderBuilder.buildHeaderForContact(
+                contactThread: contactThread,
+                avatarSize: avatarSize,
+                options: options,
+                delegate: delegate
+            )
         } else {
             owsFailDebug("Invalid thread.")
             return UIView()
         }
     }
 
-    static func buildHeaderForGroup(groupThread: TSGroupThread, options: ButtonOptions, delegate: ConversationHeaderDelegate) -> UIView {
+    static func buildHeaderForGroup(
+        groupThread: TSGroupThread,
+        avatarSize: UInt,
+        options: Options,
+        delegate: ConversationHeaderDelegate
+    ) -> UIView {
         databaseStorage.read { transaction in
-            self.buildHeaderForGroup(groupThread: groupThread, options: options, delegate: delegate, transaction: transaction)
+            self.buildHeaderForGroup(
+                groupThread: groupThread,
+                avatarSize: avatarSize,
+                options: options,
+                delegate: delegate,
+                transaction: transaction
+            )
         }
     }
 
     static func buildHeaderForGroup(
         groupThread: TSGroupThread,
-        options: ButtonOptions,
+        avatarSize: UInt,
+        options: Options,
         delegate: ConversationHeaderDelegate,
         transaction: SDSAnyReadTransaction
     ) -> UIView {
-        var builder = ConversationHeaderBuilder(delegate: delegate, transaction: transaction)
+        var builder = ConversationHeaderBuilder(
+            delegate: delegate,
+            avatarSize: avatarSize,
+            options: options,
+            transaction: transaction
+        )
 
         if !groupThread.groupModel.isPlaceholder {
             let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
@@ -63,24 +99,41 @@ struct ConversationHeaderBuilder: Dependencies {
             builder.addLegacyGroupView(groupThread: groupThread)
         }
 
-        builder.addButtons(options: options)
+        builder.addButtons()
 
         return builder.build()
     }
 
-    static func buildHeaderForContact(contactThread: TSContactThread, options: ButtonOptions, delegate: ConversationHeaderDelegate) -> UIView {
+    static func buildHeaderForContact(
+        contactThread: TSContactThread,
+        avatarSize: UInt,
+        options: Options,
+        delegate: ConversationHeaderDelegate
+    ) -> UIView {
         databaseStorage.read { transaction in
-            self.buildHeaderForContact(contactThread: contactThread, options: options, delegate: delegate, transaction: transaction)
+            self.buildHeaderForContact(
+                contactThread: contactThread,
+                avatarSize: avatarSize,
+                options: options,
+                delegate: delegate,
+                transaction: transaction
+            )
         }
     }
 
     static func buildHeaderForContact(
         contactThread: TSContactThread,
-        options: ButtonOptions,
+        avatarSize: UInt,
+        options: Options,
         delegate: ConversationHeaderDelegate,
         transaction: SDSAnyReadTransaction
     ) -> UIView {
-        var builder = ConversationHeaderBuilder(delegate: delegate, transaction: transaction)
+        var builder = ConversationHeaderBuilder(
+            delegate: delegate,
+            avatarSize: avatarSize,
+            options: options,
+            transaction: transaction
+        )
 
         if !contactThread.contactAddress.isLocalAddress,
            let bioText = profileManagerImpl.profileBioForDisplay(
@@ -93,7 +146,10 @@ struct ConversationHeaderBuilder: Dependencies {
             label.textAlignment = .center
         }
 
-        let threadName = contactsManager.displayName(for: contactThread, transaction: transaction)
+        let threadName = delegate.threadName(
+            renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
+            transaction: transaction
+        )
         let recipientAddress = contactThread.contactAddress
         if let phoneNumber = recipientAddress.phoneNumber {
             let formattedPhoneNumber =
@@ -116,14 +172,16 @@ struct ConversationHeaderBuilder: Dependencies {
             builder.addSubtitleLabel(attributedText: subtitle)
         }
 
-        builder.addButtons(options: options)
+        builder.addButtons()
 
         return builder.build()
     }
 
-    init(delegate: ConversationHeaderDelegate, transaction: SDSAnyReadTransaction) {
+    init(delegate: ConversationHeaderDelegate, avatarSize: UInt, options: Options, transaction: SDSAnyReadTransaction) {
 
         self.delegate = delegate
+        self.avatarSize = avatarSize
+        self.options = options
         self.transaction = transaction
 
         addFirstSubviews()
@@ -147,7 +205,7 @@ struct ConversationHeaderBuilder: Dependencies {
         subviews.append(buildThreadNameLabel())
     }
 
-    mutating func addButtons(options: ButtonOptions) {
+    mutating func addButtons() {
         var buttons = [UIView]()
 
         if options.contains(.message) {
@@ -221,7 +279,7 @@ struct ConversationHeaderBuilder: Dependencies {
             ))
         }
 
-        if options.contains(.search), !delegate.groupViewHelper.isBlockedByMigration {
+        if options.contains(.search), !delegate.isBlockedByMigration {
             buttons.append(buildIconButton(
                 icon: .settingsSearch,
                 text: NSLocalizedString(
@@ -236,7 +294,8 @@ struct ConversationHeaderBuilder: Dependencies {
 
         let spacerWidth: CGFloat = 8
         let totalSpacerWidth = CGFloat(buttons.count - 1) * spacerWidth
-        let maxAvailableButtonWidth = delegate.view.width - (OWSTableViewController2.cellHOuterMargin + totalSpacerWidth)
+        let maxAvailableButtonWidth = delegate.tableViewController.view.width
+            - (delegate.tableViewController.cellOuterInsets.totalWidth + totalSpacerWidth)
         let minButtonWidth = maxAvailableButtonWidth / 4
 
         var buttonWidth = max(maxIconButtonWidth, minButtonWidth)
@@ -266,12 +325,15 @@ struct ConversationHeaderBuilder: Dependencies {
 
     private var maxIconButtonWidth: CGFloat = 0
     mutating func buildIconButton(icon: ThemeIcon, text: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
-        let button = OWSButton(block: action)
+        let button = OWSButton { [weak delegate] in
+            delegate?.tappedButton()
+            action()
+        }
         button.dimsWhenHighlighted = true
         button.isEnabled = isEnabled
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
-        button.setBackgroundImage(UIImage(color: delegate.cellBackgroundColor), for: .normal)
+        button.setBackgroundImage(UIImage(color: delegate.tableViewController.cellBackgroundColor), for: .normal)
 
         let imageView = UIImageView()
         imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
@@ -304,12 +366,17 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     func buildAvatarView() -> UIView {
-        let avatarSize: UInt = 88
-        let avatarImage = OWSAvatarBuilder.buildImage(
-            thread: delegate.thread,
-            diameter: avatarSize,
-            transaction: transaction
-        )
+        let avatarImage: UIImage?
+        if delegate.thread.isNoteToSelf, !options.contains(.renderLocalUserAsNoteToSelf) {
+            avatarImage = profileManager.localProfileAvatarImage() ??
+                OWSContactAvatarBuilder(forLocalUserWithDiameter: avatarSize).buildDefaultImage()
+        } else {
+            avatarImage = OWSAvatarBuilder.buildImage(
+                thread: delegate.thread,
+                diameter: avatarSize,
+                transaction: transaction
+            )
+        }
         let avatarView = AvatarImageView(image: avatarImage)
         avatarView.autoSetDimensions(to: CGSize(square: CGFloat(avatarSize)))
         // Track the most recent avatar view.
@@ -319,7 +386,10 @@ struct ConversationHeaderBuilder: Dependencies {
 
     func buildThreadNameLabel() -> UILabel {
         let label = UILabel()
-        label.text = delegate.threadName(transaction: transaction)
+        label.text = delegate.threadName(
+            renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
+            transaction: transaction
+        )
         label.textColor = Theme.primaryTextColor
         // TODO: See if design really wants this custom font size.
         label.font = UIFont.ows_semiboldFont(withSize: UIFont.ows_dynamicTypeTitle1Clamped.pointSize * (13/14))
@@ -354,7 +424,7 @@ struct ConversationHeaderBuilder: Dependencies {
             viewController: delegate
         )
         legacyGroupView.configure()
-        legacyGroupView.backgroundColor = delegate.cellBackgroundColor
+        legacyGroupView.backgroundColor = delegate.tableViewController.cellBackgroundColor
         subviews.append(legacyGroupView)
     }
 
@@ -378,30 +448,31 @@ struct ConversationHeaderBuilder: Dependencies {
         header.alignment = .center
         header.layoutMargins = UIEdgeInsets(
             top: 0,
-            leading: OWSTableViewController2.cellHOuterMargin,
+            left: delegate.tableViewController.cellHOuterLeftMargin,
             bottom: 24,
-            trailing: OWSTableViewController2.cellHOuterMargin
+            right: delegate.tableViewController.cellHOuterRightMargin
         )
         header.isLayoutMarginsRelativeArrangement = true
 
         header.isUserInteractionEnabled = true
         header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: delegate, name: "mainSectionHeader")
-        header.addBackgroundView(withBackgroundColor: delegate.tableBackgroundColor)
+        header.addBackgroundView(withBackgroundColor: delegate.tableViewController.tableBackgroundColor)
 
         return header
     }
 }
 
-protocol ConversationHeaderDelegate: OWSTableViewController2, Dependencies {
+protocol ConversationHeaderDelegate: UIViewController, Dependencies {
+    var tableViewController: OWSTableViewController2 { get }
+
     var thread: TSThread { get }
     var threadViewModel: ThreadViewModel { get }
 
-    var threadName: String { get }
-    func threadName(transaction: SDSAnyReadTransaction) -> String
+    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String
 
     var avatarView: UIImageView? { get set }
 
-    var groupViewHelper: GroupViewHelper { get }
+    var isBlockedByMigration: Bool { get }
 
     func tappedAvatar()
     func updateTableContents(shouldReload: Bool)
@@ -409,18 +480,19 @@ protocol ConversationHeaderDelegate: OWSTableViewController2, Dependencies {
 
     func startCall(withVideo: Bool)
 
+    func tappedButton()
+
     func didTapUnblockThread(completion: @escaping () -> Void)
 }
 
 extension ConversationHeaderDelegate {
-    var threadName: String {
-        databaseStorage.read { transaction in
-            self.threadName(transaction: transaction)
+    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
+        var threadName: String
+        if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf, let localName = profileManager.localFullName() {
+            threadName = localName
+        } else {
+            threadName = contactsManager.displayName(for: thread, transaction: transaction)
         }
-    }
-
-    func threadName(transaction: SDSAnyReadTransaction) -> String {
-        var threadName = contactsManager.displayName(for: thread, transaction: transaction)
 
         if let contactThread = thread as? TSContactThread {
             if let phoneNumber = contactThread.contactAddress.phoneNumber,
@@ -478,7 +550,16 @@ extension ConversationHeaderDelegate {
 }
 
 extension ConversationSettingsViewController: ConversationHeaderDelegate {
+    var tableViewController: OWSTableViewController2 { self }
+
     func buildMainHeader() -> UIView {
-        ConversationHeaderBuilder.buildHeader(for: thread, options: [.videoCall, .audioCall, .mute, .search], delegate: self)
+        ConversationHeaderBuilder.buildHeader(
+            for: thread,
+            avatarSize: 88,
+            options: [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf],
+            delegate: self
+        )
     }
+
+    func tappedButton() {}
 }

@@ -18,10 +18,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         super.init()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     public required init() {
         fatalError("init() has not been implemented")
     }

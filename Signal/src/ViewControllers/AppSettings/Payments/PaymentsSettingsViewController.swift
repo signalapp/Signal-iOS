@@ -290,8 +290,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         let balanceStack = UIStackView(arrangedSubviews: [ balanceLabel ])
         balanceStack.axis = .vertical
         balanceStack.alignment = .fill
-        balanceStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
-                                                  vMargin: 0)
+        balanceStack.layoutMargins = cellOuterInsets
         balanceStack.isLayoutMarginsRelativeArrangement = true
 
         let conversionRefreshSize: CGFloat = 20
@@ -384,9 +383,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         headerStack.axis = .vertical
         headerStack.alignment = .fill
         headerStack.layoutMargins = UIEdgeInsets(top: 30,
-                                                 leading: OWSTableViewController2.cellHOuterMargin,
+                                                 left: cellHOuterLeftMargin,
                                                  bottom: 8,
-                                                 trailing: OWSTableViewController2.cellHOuterMargin)
+                                                 right: cellHOuterRightMargin)
         headerStack.isLayoutMarginsRelativeArrangement = true
         cell.contentView.addSubview(headerStack)
         headerStack.autoPinEdgesToSuperviewEdges()
@@ -698,7 +697,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: selector)
 
-        section.add(OWSTableItem(customCellBlock: {
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else { return OWSTableItem.newCell() }
+
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.textColor = Theme.primaryTextColor
@@ -758,7 +759,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             dismissIconView.autoCenterInSuperview()
             cell.contentView.addSubview(dismissButton)
             dismissButton.autoPinEdge(toSuperviewEdge: .top, withInset: 8)
-            dismissButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8 + OWSTableViewController2.cellHOuterMargin)
+            dismissButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8 + self.cellOuterInsets.trailing)
 
             cell.isUserInteractionEnabled = true
             cell.addGestureRecognizer(tapGestureRecognizer)
