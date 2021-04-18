@@ -149,7 +149,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         Storage.read { transaction in
             unreadCount = self.thread.unreadMessageCount(transaction: transaction)
         }
-        unreadViewItems = unreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(unreadCount) ..< viewItems.endIndex]) : []
+        let clampedUnreadCount = min(unreadCount, UInt(kConversationInitialMaxRangeSize))
+        unreadViewItems = clampedUnreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(clampedUnreadCount) ..< viewItems.endIndex]) : []
     }
     
     required init?(coder: NSCoder) {

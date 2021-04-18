@@ -198,6 +198,14 @@ NS_ASSUME_NONNULL_BEGIN
                                 visibleUnseenMessageCount++;
 
                                 interactionAfterUnreadIndicator = interaction;
+        
+                                if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
+                                    // If there are more unseen messages than can be displayed in the
+                                    // messages view, show the unread indicator at the top of the
+                                    // displayed messages.
+                                    *stop = YES;
+                                    hasMoreUnseenMessages = YES;
+                                }
                             }];
 
     if (!interactionAfterUnreadIndicator) {
