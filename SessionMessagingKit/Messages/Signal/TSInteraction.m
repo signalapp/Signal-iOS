@@ -222,8 +222,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)sortId
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage && ((TSIncomingMessage *) self).serverTimestamp != nil) {
-        return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+        if (((TSIncomingMessage *) self).serverTimestamp != nil) {
+            return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
+        }
+        // For messages that don't have a serverTimestamp, it is the same to sort by the receivedAtTimestamp,
+        // since in the open group poller we sort messages by their server timestamp.
+        return ((TSIncomingMessage *) self).receivedAtTimestamp;
     }
     return self.timestamp;
 }
