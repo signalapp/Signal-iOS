@@ -204,7 +204,7 @@ extension MessageSender {
             SNLog("Can't remove members from nonexistent closed group.")
             return Promise(error: Error.noThread)
         }
-        guard !membersToRemove.isEmpty || !storage.getZombieMembers(for: groupPublicKey).isEmpty else {
+        guard !membersToRemove.isEmpty else {
             SNLog("Invalid closed group update.")
             return Promise(error: Error.invalidClosedGroupUpdate)
         }
@@ -219,8 +219,9 @@ extension MessageSender {
         }
         let members = Set(group.groupMemberIds).subtracting(membersToRemove)
         // Update zombie list
-        let zombies = storage.getZombieMembers(for: groupPublicKey).subtracting(membersToRemove)
-        storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
+        let oldZombies = storage.getZombieMembers(for: groupPublicKey)
+        let newZombies = oldZombies.subtracting(membersToRemove)
+        storage.setZombieMembers(for: groupPublicKey, to: newZombies, using: transaction)
         // Send the update to the group and generate + distribute a new encryption key pair
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .membersRemoved(members: membersToRemove.map { Data(hex: $0) }))
         let promise = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).map {
@@ -229,10 +230,12 @@ extension MessageSender {
         // Update the group
         let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
         thread.setGroupModel(newGroupModel, with: transaction)
-        // Notify the user
-        let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
-        infoMessage.save(with: transaction)
+        // Notify the user if needed (not if only zombie members were removed)
+        if !membersToRemove.subtracting(oldZombies).isEmpty {
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            infoMessage.save(with: transaction)
+        }
         // Return
         return promise
     }
