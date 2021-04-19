@@ -5,7 +5,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     private let thread: TSGroupThread
     private var name = ""
     private var zombies: Set<String> = []
-    private var members: [String] = [] { didSet { handleMembersChanged() } }
+    private var membersAndZombies: [String] = [] { didSet { handleMembersChanged() } }
     private var isEditingGroupName = false { didSet { handleIsEditingGroupNameChanged() } }
     private var tableViewHeightConstraint: NSLayoutConstraint!
 
@@ -78,7 +78,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         setUpViewHierarchy()
         // Always show zombies at the bottom
         zombies = Storage.shared.getZombieMembers(for: groupPublicKey)
-        members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+        membersAndZombies = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
             + zombies.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         updateNavigationBarButtons()
         name = thread.groupModel.groupName!
@@ -107,7 +107,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         membersLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         membersLabel.text = "Members"
         // Add members button
-        let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
+        let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.membersAndZombies).isEmpty
         if (!hasContactsToAdd) {
             addMembersButton.isUserInteractionEnabled = false
             let disabledColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -147,29 +147,31 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
 
     // MARK: Table View Data Source / Delegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return members.count
+        return membersAndZombies.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
-        let publicKey = members[indexPath.row]
+        let publicKey = membersAndZombies[indexPath.row]
         cell.publicKey = publicKey
         cell.isZombie = zombies.contains(publicKey)
-        cell.accessory = !canBeRemoved(publicKey) ? .lock : .none
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let isCurrentUserAdmin = thread.groupModel.groupAdminIds.contains(userPublicKey)
+        cell.accessory = !isCurrentUserAdmin ? .lock : .none
         cell.update()
         return cell
     }
 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let publicKey = members[indexPath.row]
-        return canBeRemoved(publicKey)
+        let userPublicKey = getUserHexEncodedPublicKey()
+        return thread.groupModel.groupAdminIds.contains(userPublicKey)
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let publicKey = members[indexPath.row]
+        let publicKey = membersAndZombies[indexPath.row]
         let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { [weak self] _, _ in
-            guard let self = self, let index = self.members.firstIndex(of: publicKey) else { return }
-            self.members.remove(at: index)
+            guard let self = self, let index = self.membersAndZombies.firstIndex(of: publicKey) else { return }
+            self.membersAndZombies.remove(at: index)
         }
         removeAction.backgroundColor = Colors.destructive
         return [ removeAction ]
@@ -190,7 +192,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     private func handleMembersChanged() {
-        tableViewHeightConstraint.constant = CGFloat(members.count) * 67
+        tableViewHeightConstraint.constant = CGFloat(membersAndZombies.count) * 67
         tableView.reloadData()
     }
     
@@ -239,15 +241,15 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
 
     @objc private func addMembers() {
         let title = "Add Members"
-        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members)) { [weak self] selectedUsers in
+        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(membersAndZombies)) { [weak self] selectedUsers in
             guard let self = self else { return }
-            var members = self.members
+            var members = self.membersAndZombies
             members.append(contentsOf: selectedUsers)
             func getDisplayName(for publicKey: String) -> String {
                 return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
             }
-            self.members = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
-            let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
+            self.membersAndZombies = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+            let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.membersAndZombies).isEmpty
             self.addMembersButton.isUserInteractionEnabled = hasContactsToAdd
             let color = hasContactsToAdd ? Colors.accent : Colors.text.withAlphaComponent(Values.mediumOpacity)
             self.addMembersButton.layer.borderColor = color.cgColor
@@ -264,9 +266,11 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
                 editVC.navigationController!.popViewController(animated: true)
             }
         }
-        let members = Set(self.members)
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let members = Set(self.membersAndZombies)
         let name = self.name
-        guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
+        let zombies = storage.getZombieMembers(for: groupPublicKey)
+        guard members != Set(thread.groupModel.groupMemberIds + zombies) || name != thread.groupModel.groupName else {
             return popToConversationVC(self)
         }
         if !members.contains(getUserHexEncodedPublicKey()) {
@@ -304,11 +308,5 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
         presentAlert(alert)
-    }
-    
-    private func canBeRemoved(_ publicKey: String) -> Bool {
-        let userPublicKey = getUserHexEncodedPublicKey()
-        let isCurrentUserAdmin = thread.groupModel.groupAdminIds.contains(userPublicKey)
-        return isCurrentUserAdmin || (publicKey == userPublicKey)
     }
 }
