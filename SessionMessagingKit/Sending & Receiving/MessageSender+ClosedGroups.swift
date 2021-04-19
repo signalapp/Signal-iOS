@@ -108,8 +108,9 @@ extension MessageSender {
         let addedMembers = members.subtracting(group.groupMemberIds)
         if !addedMembers.isEmpty { promises.append(addMembers(addedMembers, to: groupPublicKey, using: transaction)) }
         // Remove members if needed
-        let removedMembers = Set(group.groupMemberIds).subtracting(members)
-        if !removedMembers.isEmpty { promises.append(removeMembers(removedMembers, to: groupPublicKey, using: transaction)) }
+        let zombies = SNMessagingKitConfiguration.shared.storage.getZombieMembers(for: groupPublicKey)
+        let removedMembers = Set(group.groupMemberIds + zombies).subtracting(members)
+        if !removedMembers.isEmpty{ promises.append(removeMembers(removedMembers, to: groupPublicKey, using: transaction)) }
         // Return
         return when(fulfilled: promises).map2 { _ in }
     }
@@ -198,11 +199,12 @@ extension MessageSender {
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
             SNLog("Can't remove members from nonexistent closed group.")
             return Promise(error: Error.noThread)
         }
-        guard !membersToRemove.isEmpty else {
+        guard !membersToRemove.isEmpty || !storage.getZombieMembers(for: groupPublicKey).isEmpty else {
             SNLog("Invalid closed group update.")
             return Promise(error: Error.invalidClosedGroupUpdate)
         }
@@ -217,7 +219,6 @@ extension MessageSender {
         }
         let members = Set(group.groupMemberIds).subtracting(membersToRemove)
         // Update zombie list
-        let storage = SNMessagingKitConfiguration.shared.storage
         let zombies = storage.getZombieMembers(for: groupPublicKey).subtracting(membersToRemove)
         storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
         // Send the update to the group and generate + distribute a new encryption key pair
