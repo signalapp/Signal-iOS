@@ -150,7 +150,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             let conversationStyle = ConversationStyle(
                 type: .messageDetails,
                 thread: thread,
-                viewWidth: view.width - (Self.cellHOuterMargin + Self.cellHInnerMargin),
+                viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
                 hasWallpaper: false
             )
 
@@ -301,14 +301,12 @@ class MessageDetailViewController: OWSTableViewController2 {
 
             let sectionTitle = self.sectionTitle(for: statusGroup)
             if let iconName = sectionIconName(for: statusGroup) {
-                let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
-
                 let headerView = UIView()
                 headerView.layoutMargins = UIEdgeInsets(
                     top: (defaultSpacingBetweenSections ?? 0) + 12,
-                    leading: cellHMargin,
+                    left: cellHOuterLeftMargin + Self.cellHInnerMargin * 0.5,
                     bottom: 10,
-                    trailing: cellHMargin
+                    right: cellHOuterRightMargin + Self.cellHInnerMargin * 0.5
                 )
 
                 let label = UILabel()
@@ -363,7 +361,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let actionSheet = MemberActionSheet(address: address, groupViewHelper: nil)
-                actionSheet.present(fromViewController: self)
+                actionSheet.present(from: self)
             }
         )
     }

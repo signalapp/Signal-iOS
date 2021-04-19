@@ -237,11 +237,7 @@ open class OWSTableViewController2: OWSViewController {
         wrapperStack.axis = .vertical
         wrapperStack.alignment = .fill
         wrapperStack.isLayoutMarginsRelativeArrangement = true
-        let layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
-                                         vMargin: 0)
-        // TODO: Should we apply safeAreaInsets?
-        // layoutMargins.left += tableView.safeAreaInsets.left
-        // layoutMargins.right += tableView.safeAreaInsets.right
+        let layoutMargins = cellOuterInsets(in: wrappedView)
         wrapperStack.layoutMargins = layoutMargins
         return wrapperStack
     }
@@ -321,10 +317,16 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             // _inside_.
             //
             // By applying it to the cell, ensure the correct behavior for accesories.
-            cell.layoutMargins = UIEdgeInsets(hMargin: Self.cellHOuterMargin + Self.cellHInnerMargin,
-                                              vMargin: 0)
-            var contentMargins = UIEdgeInsets(hMargin: 0,
-                                              vMargin: Self.cellVInnerMargin)
+            cell.layoutMargins = UIEdgeInsets(
+                top: 0,
+                left: cellHOuterLeftMargin + Self.cellHInnerMargin,
+                bottom: 0,
+                right: cellHOuterRightMargin + Self.cellHInnerMargin
+            )
+            var contentMargins = UIEdgeInsets(
+                hMargin: 0,
+                vMargin: Self.cellVInnerMargin
+            )
             // Our table code is going to be vastly simpler if we DRY up the
             // spacing between the cell content and the accessory here.
             let hasAccessory = (cell.accessoryView != nil || cell.accessoryType != .none)
@@ -351,8 +353,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         var separatorLayer: CAShapeLayer?
         let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
             guard let self = self else { return }
-            var pillFrame = view.bounds.inset(by: UIEdgeInsets(hMargin: OWSTableViewController2.cellHOuterMargin,
-                                                               vMargin: 0))
+            var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
+
             pillFrame.x += view.safeAreaInsets.left
             pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
             pillLayer.frame = view.bounds
@@ -423,13 +425,10 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
         let pillLayer = CAShapeLayer()
-        let backgroundView = OWSLayerView(frame: .zero) { view in
-            var pillFrame = view.bounds.inset(
-                by: UIEdgeInsets(
-                    hMargin: OWSTableViewController2.cellHOuterMargin,
-                    vMargin: 0
-                )
-            )
+        let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
+            guard let self = self else { return }
+            var pillFrame = view.bounds.inset(by: self.cellOuterInsets)
+
             pillFrame.x += view.safeAreaInsets.left
             pillFrame.size.width -= view.safeAreaInsets.left + view.safeAreaInsets.right
             pillLayer.frame = view.bounds
@@ -472,18 +471,55 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public static let cellRounding: CGFloat = 10
 
+    @objc
+    public static var maximumInnerWidth: CGFloat { 496 }
+
+    @objc
+    public static var defaultHOuterMargin: CGFloat {
+        UIDevice.current.isPlusSizePhone ? 20 : 16
+    }
+
     // The distance from the edge of the view to the cell border.
     @objc
-    public static var cellHOuterMargin: CGFloat {
-        if CurrentAppContext().interfaceOrientation.isLandscape,
-           !UIDevice.current.isIPad {
-            // We use a small value in landscape orientation;
-            // safeAreaInsets will ensure the correct spacing.
-            return 0
-        } else {
-            return UIDevice.current.isPlusSizePhone ? 20 : 16
+    public static func cellOuterInsets(in view: UIView) -> UIEdgeInsets {
+        var insets = UIEdgeInsets()
+
+        if view.safeAreaInsets.left <= 0 {
+            insets.left = defaultHOuterMargin
         }
+
+        if view.safeAreaInsets.right <= 0 {
+            insets.right = defaultHOuterMargin
+        }
+
+        let totalInnerWidth = view.width - insets.totalWidth
+        if totalInnerWidth > maximumInnerWidth {
+            let excessInnerWidth = totalInnerWidth - maximumInnerWidth
+            insets.left += excessInnerWidth / 2
+            insets.right += excessInnerWidth / 2
+        }
+
+        return insets
     }
+
+    @objc
+    public var cellOuterInsets: UIEdgeInsets { Self.cellOuterInsets(in: view) }
+
+    @objc
+    public static func cellHOuterLeftMargin(in view: UIView) -> CGFloat {
+        cellOuterInsets(in: view).left
+    }
+
+    @objc
+    public var cellHOuterLeftMargin: CGFloat { Self.cellHOuterLeftMargin(in: view) }
+
+    @objc
+    public static func cellHOuterRightMargin(in view: UIView) -> CGFloat {
+        cellOuterInsets(in: view).right
+    }
+
+    @objc
+    public var cellHOuterRightMargin: CGFloat { Self.cellHOuterRightMargin(in: view) }
 
     // The distance from the the cell border to the cell content.
     @objc
@@ -519,11 +555,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                                     : UIColor.ows_gray90)
             textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
-            let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin * 0.5
-            var textContainerInset = UIEdgeInsets(top: (defaultSpacingBetweenSections ?? 0) + 12,
-                                                  leading: cellHMargin,
-                                                  bottom: 10,
-                                                  trailing: cellHMargin)
+            var textContainerInset = UIEdgeInsets(
+                top: (defaultSpacingBetweenSections ?? 0) + 12,
+                left: cellHOuterLeftMargin + Self.cellHInnerMargin * 0.5,
+                bottom: 10,
+                right: cellHOuterRightMargin + Self.cellHInnerMargin * 0.5
+            )
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
             textView.textContainerInset = textContainerInset
@@ -582,11 +619,12 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             ]
             textView.linkTextAttributes = linkTextAttributes
 
-            let cellHMargin = Self.cellHOuterMargin + Self.cellHInnerMargin
-            var textContainerInset = UIEdgeInsets(top: 12,
-                                                  leading: cellHMargin,
-                                                  bottom: 0,
-                                                  trailing: cellHMargin)
+            var textContainerInset = UIEdgeInsets(
+                top: 12,
+                left: cellHOuterLeftMargin + Self.cellHInnerMargin,
+                bottom: 0,
+                right: cellHOuterRightMargin + Self.cellHInnerMargin
+            )
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
             textView.textContainerInset = textContainerInset

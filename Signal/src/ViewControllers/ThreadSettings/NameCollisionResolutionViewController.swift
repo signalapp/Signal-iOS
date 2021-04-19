@@ -225,7 +225,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
                     MemberActionSheet(
                         address: model.address,
                         groupViewHelper: self.groupViewHelper
-                    ).present(fromViewController: self)
+                    ).present(from: self)
                 }
             )
         ])

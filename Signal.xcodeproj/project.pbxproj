@@ -438,7 +438,7 @@
 		34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */; };
 		34DE9C02256575300080E4AF /* CVMessageMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DE9C012565752F0080E4AF /* CVMessageMapping.swift */; };
 		34E0127423FDA960002D0D13 /* DebugUIGroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E0127323FDA960002D0D13 /* DebugUIGroupsV2.swift */; };
-		34E20D4C24256563002C011E /* ConversationSettingsViewController+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E20D4B24256563002C011E /* ConversationSettingsViewController+Header.swift */; };
+		34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E20D4B24256563002C011E /* ConversationHeaderBuilder.swift */; };
 		34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */; };
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
@@ -677,6 +677,7 @@
 		8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */; };
 		880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */; };
 		880C0FF7233D3F7C00386FB8 /* playPauseButton.json in Resources */ = {isa = PBXBuildFile; fileRef = 880C0FF6233D3F7C00386FB8 /* playPauseButton.json */; };
+		880C2E02262A19DE006650B6 /* InteractiveSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */; };
 		880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D9024247F8841003D2B14 /* Emoji+Name.swift */; };
 		880D9027247F90CC003D2B14 /* Emoji+Available.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D9026247F90CC003D2B14 /* Emoji+Available.swift */; };
 		880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D90292480887F003D2B14 /* EmojiPickerSheet.swift */; };
@@ -1490,7 +1491,7 @@
 		34DC9BD821543E0B00FDDCEC /* DebugContactsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugContactsUtils.h; sourceTree = "<group>"; };
 		34DE9C012565752F0080E4AF /* CVMessageMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMessageMapping.swift; sourceTree = "<group>"; };
 		34E0127323FDA960002D0D13 /* DebugUIGroupsV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIGroupsV2.swift; sourceTree = "<group>"; };
-		34E20D4B24256563002C011E /* ConversationSettingsViewController+Header.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationSettingsViewController+Header.swift"; sourceTree = "<group>"; };
+		34E20D4B24256563002C011E /* ConversationHeaderBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationHeaderBuilder.swift; sourceTree = "<group>"; };
 		34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationSettingsViewController+Contents.swift"; sourceTree = "<group>"; };
 		34E3EF0B1EFC235B007F6822 /* DebugUIDiskUsage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIDiskUsage.h; sourceTree = "<group>"; };
 		34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIDiskUsage.m; sourceTree = "<group>"; };
@@ -1742,6 +1743,7 @@
 		8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPhotoCollectionView.swift; sourceTree = "<group>"; };
 		880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSplitViewController.swift; sourceTree = "<group>"; };
 		880C0FF6233D3F7C00386FB8 /* playPauseButton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = playPauseButton.json; sourceTree = "<group>"; };
+		880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveSheetViewController.swift; sourceTree = "<group>"; };
 		880D9024247F8841003D2B14 /* Emoji+Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Name.swift"; sourceTree = "<group>"; };
 		880D9026247F90CC003D2B14 /* Emoji+Available.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Emoji+Available.swift"; sourceTree = "<group>"; };
 		880D90292480887F003D2B14 /* EmojiPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerSheet.swift; sourceTree = "<group>"; };
@@ -2311,7 +2313,7 @@
 				882BDAAD249050F000C14587 /* AddToGroupViewController.swift */,
 				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
 				34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */,
-				34E20D4B24256563002C011E /* ConversationSettingsViewController+Header.swift */,
+				34E20D4B24256563002C011E /* ConversationHeaderBuilder.swift */,
 				34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */,
 				88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */,
 				88BE44A526153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift */,
@@ -2843,6 +2845,7 @@
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
+				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
@@ -5212,7 +5215,7 @@
 				88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
-				34E20D4C24256563002C011E /* ConversationSettingsViewController+Header.swift in Sources */,
+				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
@@ -5237,6 +5240,7 @@
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */,
+				880C2E02262A19DE006650B6 /* InteractiveSheetViewController.swift in Sources */,
 				347C3844252CE6C900F3D941 /* CVComponentFooter.swift in Sources */,
 				88238EB824F20F1600F28079 /* EmojiWithSkinTones.swift in Sources */,
 				349A5C5425CD7A6C00B30EE8 /* DebugContactsUtils.swift in Sources */,

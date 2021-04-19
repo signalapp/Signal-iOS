@@ -48,6 +48,8 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
                 return
             }
             fromContextProvider = contextProvider
+        case let memberActionSheet as MemberActionSheet:
+            fromContextProvider = memberActionSheet
         default:
             owsFailDebug("unexpected fromVC: \(fromVC)")
             transitionContext.completeTransition(false)

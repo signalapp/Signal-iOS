@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ protocol GroupAttributesViewControllerDelegate: class {
 
 // MARK: -
 
-class GroupAttributesViewController: OWSViewController {
+class GroupAttributesViewController: OWSTableViewController2 {
 
     public enum EditAction {
         case none
@@ -20,7 +20,7 @@ class GroupAttributesViewController: OWSViewController {
         case avatar
     }
 
-    private weak var delegate: GroupAttributesViewControllerDelegate?
+    private weak var attributesDelegate: GroupAttributesViewControllerDelegate?
 
     private let groupThread: TSGroupThread
 
@@ -47,7 +47,7 @@ class GroupAttributesViewController: OWSViewController {
         // user intent.
         self.oldGroupModel = groupThread.groupModel
         self.editAction = editAction
-        self.delegate = delegate
+        self.attributesDelegate = delegate
 
         self.helper = GroupAttributesEditorHelper(groupId: groupThread.groupModel.groupId,
                                                   conversationColorName: groupThread.conversationColorName.rawValue,
@@ -71,55 +71,57 @@ class GroupAttributesViewController: OWSViewController {
         helper.delegate = self
         helper.buildContents(avatarViewHelperDelegate: self)
 
-        let avatarStack = UIStackView(arrangedSubviews: [ helper.avatarWrapper ])
-        avatarStack.axis = .vertical
-        avatarStack.spacing = 10
-        avatarStack.alignment = .center
-        avatarStack.isUserInteractionEnabled = true
-        avatarStack.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                action: #selector(didTapAvatarView)))
-        avatarStack.layoutMargins = UIEdgeInsets(top: 12, leading: 18, bottom: 18, trailing: 28)
-        avatarStack.isLayoutMarginsRelativeArrangement = true
+        let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
+        helper.avatarWrapper.addSubview(cameraButton)
+        cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
+        cameraButton.autoPinEdge(toSuperviewEdge: .bottom)
 
-        let nameLabel = UILabel()
-        nameLabel.text = NSLocalizedString("EDIT_GROUP_GROUP_NAME",
-                                           comment: "Label for the group name in the 'edit group' view.")
-        nameLabel.font = .ows_dynamicTypeBody
-        nameLabel.textColor = Theme.primaryTextColor
-        nameLabel.setCompressionResistanceHorizontalHigh()
-        nameLabel.setContentHuggingHorizontalHigh()
+        updateTableContents()
+    }
 
-        nameTextField.setCompressionResistanceHorizontalLow()
-        nameTextField.textAlignment = CurrentAppContext().isRTL ? .left : .right
+    func updateTableContents() {
+        let contents = OWSTableContents()
 
-        let nameStack = UIStackView(arrangedSubviews: [ nameLabel, nameTextField ])
-        nameStack.axis = .horizontal
-        nameStack.spacing = 10
-        nameStack.alignment = .center
-        nameStack.distribution = .fill
-        nameStack.layoutMargins = UIEdgeInsets(top: 12, leading: 18, bottom: 18, trailing: 12)
-        nameStack.isLayoutMarginsRelativeArrangement = true
+        let avatarSection = OWSTableSection()
+        avatarSection.hasBackground = false
+        avatarSection.add(.init(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                cell.selectionStyle = .none
+                guard let self = self else { return cell }
+                cell.contentView.addSubview(self.helper.avatarWrapper)
+                self.helper.avatarWrapper.autoPinHeightToSuperviewMargins()
+                self.helper.avatarWrapper.autoHCenterInSuperview()
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.didTapAvatarView()
+            }
+        ))
+        contents.addSection(avatarSection)
 
-        let makeHairlineSeparator = { () -> UIView in
-            let seperator = UIView.container()
-            seperator.backgroundColor = Theme.secondaryBackgroundColor
-            seperator.autoSetDimension(.height, toSize: 1)
-            seperator.setContentHuggingHorizontalLow()
-            return seperator
-        }
+        let nameSection = OWSTableSection()
+        nameSection.add(.init(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                cell.selectionStyle = .none
+                guard let self = self else { return cell }
 
-        let stackView = UIStackView(arrangedSubviews: [ avatarStack,
-                                                        makeHairlineSeparator(),
-                                                        nameStack,
-                                                        makeHairlineSeparator(),
-                                                        UIView.vStretchingSpacer() ])
-        stackView.axis = .vertical
-        nameStack.alignment = .fill
-        view.addSubview(stackView)
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPinEdge(toSuperviewEdge: .leading)
-        stackView.autoPinEdge(toSuperviewEdge: .trailing)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom)
+                self.nameTextField.font = .ows_dynamicTypeBodyClamped
+                self.nameTextField.textColor = Theme.primaryTextColor
+
+                cell.addSubview(self.nameTextField)
+                self.nameTextField.autoPinEdgesToSuperviewMargins()
+
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.nameTextField.becomeFirstResponder()
+            }
+        ))
+        contents.addSection(nameSection)
+
+        self.contents = contents
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -158,8 +160,8 @@ class GroupAttributesViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func didTapAvatarView(sender: UIGestureRecognizer) {
-        helper.didTapAvatarView(sender: sender)
+    func didTapAvatarView() {
+        helper.didTapAvatarView()
     }
 }
 
@@ -262,13 +264,8 @@ private extension GroupAttributesViewController {
         let avatarCurrent: GroupAvatar? = helper.avatarCurrent
 
         let dismissAndUpdateDelegate = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            if let delegate = self.delegate {
-                delegate.groupAttributesDidUpdate()
-            }
-            self.navigationController?.popViewController(animated: true)
+            self?.attributesDelegate?.groupAttributesDidUpdate()
+            self?.navigationController?.popViewController(animated: true)
         }
 
         guard hasUnsavedChanges else {
