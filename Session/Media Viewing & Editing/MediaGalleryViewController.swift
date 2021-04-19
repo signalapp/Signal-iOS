@@ -120,7 +120,7 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     let month: Int
 
     init(message: TSMessage) {
-        let date = message.receivedAtDate()
+        let date = message.dateForUI()
 
         self.year = Calendar.current.component(.year, from: date)
         self.month = Calendar.current.component(.month, from: date)

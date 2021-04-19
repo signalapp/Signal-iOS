@@ -169,7 +169,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)timestampForUI
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage && ((TSIncomingMessage *) self).serverTimestamp != nil) {
         return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
     }
     return _timestamp;
@@ -180,11 +180,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self.timestamp;
 }
 
+- (NSDate *)dateForUI
+{
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForUI];
+}
+
 - (NSDate *)receivedAtDate
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
-        return [NSDate ows_dateWithMillisecondsSince1970:((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue];
-    }
+    // This is only used for sorting threads
     return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
@@ -225,7 +228,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)sortId
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage) {
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage && ((TSIncomingMessage *) self).serverTimestamp != nil) {
         return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
     }
     return self.timestamp;

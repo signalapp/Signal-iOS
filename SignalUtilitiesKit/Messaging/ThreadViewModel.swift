@@ -32,7 +32,7 @@ public class ThreadViewModel: NSObject {
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
         self.lastMessageForInbox = lastInteraction
-        self.lastMessageDate = lastInteraction?.receivedAtDate() ?? thread.creationDate
+        self.lastMessageDate = lastInteraction?.dateForUI() ?? thread.creationDate
 
         if let contactThread = thread as? TSContactThread {
             self.contactIdentifier = contactThread.contactIdentifier()
