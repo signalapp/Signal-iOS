@@ -115,7 +115,7 @@ class AudioMessageView: ManualStackView {
                                                 conversationStyle: conversationStyle)
         } else {
             owsFailDebug("Unexpected state.")
-            leftView = UIView()
+            leftView = UIView.transparentContainer()
         }
 
         let innerStack = ManualStackView(name: "playerStack")

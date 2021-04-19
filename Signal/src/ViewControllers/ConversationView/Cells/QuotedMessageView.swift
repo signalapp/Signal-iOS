@@ -298,7 +298,7 @@ public class QuotedMessageView: OWSLayerView {
                     let contentImageView = imageView(forImage: contentIcon)
                     contentImageView.contentMode = .scaleAspectFit
 
-                    let wrapper = UIView.container()
+                    let wrapper = UIView.transparentContainer()
                     wrapper.addSubview(contentImageView)
                     contentImageView.autoCenterInSuperview()
                     contentImageView.autoSetDimension(.width, toSize: quotedAttachmentSize * 0.5)
@@ -313,7 +313,7 @@ public class QuotedMessageView: OWSLayerView {
                 // If there's no attachment, add an empty view so that
                 // the stack view's spacing serves as a margin between
                 // the text views and the trailing edge.
-                let emptyView = UIView.container()
+                let emptyView = UIView.transparentContainer()
                 hStackView.addArrangedSubview(emptyView)
                 emptyView.setContentHuggingHigh()
                 emptyView.autoSetDimension(.width, toSize: 0)
