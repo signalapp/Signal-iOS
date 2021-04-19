@@ -126,10 +126,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var canFooterOverlayMedia: Bool {
-        hasBodyMediaWithThumbnail && !isBorderless
+        hasBodyMedia && !isBorderless
     }
 
-    private var hasBodyMediaWithThumbnail: Bool {
+    private var hasBodyMedia: Bool {
         bodyMedia != nil
     }
 
@@ -770,7 +770,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // Sender avatar in groups.
             contentMaxWidth -= ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
         }
-        contentMaxWidth = max(0, min(conversationStyle.maxMessageWidth, contentMaxWidth))
+
+        owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
+        if hasBodyMedia {
+            contentMaxWidth = max(0, min(conversationStyle.maxMediaMessageWidth, contentMaxWidth))
+        } else {
+            contentMaxWidth = max(0, min(conversationStyle.maxMessageWidth, contentMaxWidth))
+        }
+
         let contentStackSize = measureContentStack(maxWidth: contentMaxWidth,
                                                    measurementBuilder: measurementBuilder)
 

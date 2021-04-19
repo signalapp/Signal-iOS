@@ -345,16 +345,11 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        let possibleThumbnail = attachmentStream.thumbnailImageLarge(success: { (image) in
+        attachmentStream.thumbnailImageMedium(success: { (image) in
             resolver.fulfill(image)
         }, failure: {
             resolver.reject(OWSAssertionError("Could not load thumbnail"))
         })
-        // TSAttachmentStream's thumbnail methods return a UIImage sync
-        // if the thumbnail already exists. Otherwise, the callbacks are invoked async.
-        if let thumbnail = possibleThumbnail {
-            resolver.fulfill(thumbnail)
-        }
         return promise
     }
 
@@ -404,16 +399,11 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        let possibleThumbnail = attachmentStream.thumbnailImageLarge(success: { (image) in
+        attachmentStream.thumbnailImageMedium(success: { (image) in
             resolver.fulfill(image)
         }, failure: {
             resolver.reject(OWSAssertionError("Could not load thumbnail"))
         })
-        // TSAttachmentStream's thumbnail methods return a UIImage sync
-        // if the thumbnail already exists. Otherwise, the callbacks are invoked async.
-        if let thumbnail = possibleThumbnail {
-            resolver.fulfill(thumbnail)
-        }
         return promise
     }
 

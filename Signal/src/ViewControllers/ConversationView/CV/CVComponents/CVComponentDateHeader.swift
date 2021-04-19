@@ -185,7 +185,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
         fileprivate let outerStack = ManualStackView(name: "dateHeader.outerStackView")
         fileprivate let innerStack = ManualStackView(name: "dateHeader.innerStackView")
-        fileprivate let titleLabel = UILabel()
+        fileprivate let titleLabel = CVLabel()
 
         fileprivate var blurView: UIView?
 

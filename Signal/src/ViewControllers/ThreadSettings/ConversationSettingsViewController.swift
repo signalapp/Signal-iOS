@@ -868,7 +868,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             imageView.layer.cornerRadius = 4
             imageView.contentMode = .scaleAspectFill
 
-            imageView.image = attachmentStream.thumbnailImageSmall { imageView.image = $0 } failure: {}
+            attachmentStream.thumbnailImageSmall { imageView.image = $0 } failure: {}
 
             result.append(key: attachmentStream.uniqueId, value: (attachmentStream, imageView))
         })
