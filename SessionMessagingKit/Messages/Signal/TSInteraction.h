@@ -43,6 +43,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (uint64_t)timestampForUI;
 
+- (NSDate *)dateForUI;
+
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

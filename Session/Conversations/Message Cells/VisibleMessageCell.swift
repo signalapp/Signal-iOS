@@ -286,7 +286,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         dateBreakLabel.textColor = Colors.text
         dateBreakLabel.textAlignment = .center
-        let date = viewItem.interaction.receivedAtDate()
+        let date = viewItem.interaction.dateForUI()
         let description = DateUtil.formatDate(forConversationDateBreaks: date)
         dateBreakLabel.text = description
         headerView.addSubview(dateBreakLabel)
