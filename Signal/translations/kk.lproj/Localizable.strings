@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Сіз";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Қатысушылар";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Хабарлама";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Бейне қоңырау";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
@@ -4929,6 +4923,12 @@
 
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Тіркелмеген";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";

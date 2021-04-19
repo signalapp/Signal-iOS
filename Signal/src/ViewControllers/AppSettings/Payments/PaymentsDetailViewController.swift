@@ -31,7 +31,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                                     selector: #selector(didTapRemove))
             removeButton.autoSetHeightUsingFont()
             view.addSubview(removeButton)
-            removeButton.autoPinWidthToSuperview(withMargin: Self.cellHOuterMargin)
+            removeButton.autoPinEdge(toSuperviewEdge: .left, withInset: cellHOuterLeftMargin)
+            removeButton.autoPinEdge(toSuperviewEdge: .right, withInset: cellHOuterRightMargin)
             removeButton.autoPin(toBottomLayoutGuideOf: self, withInset: 8)
         }
 
@@ -314,9 +315,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])
         footerStack.axis = .vertical
         footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(hMargin: (OWSTableViewController2.cellHOuterMargin +
-                                                            OWSTableViewController2.cellHInnerMargin),
-                                                 vMargin: 12)
+        footerStack.layoutMargins = UIEdgeInsets(
+            top: 12,
+            left: cellHOuterLeftMargin + Self.cellHInnerMargin,
+            bottom: 12,
+            right: cellHOuterRightMargin + Self.cellHInnerMargin
+        )
         footerStack.isLayoutMarginsRelativeArrangement = true
         section.customFooterView = footerStack
 

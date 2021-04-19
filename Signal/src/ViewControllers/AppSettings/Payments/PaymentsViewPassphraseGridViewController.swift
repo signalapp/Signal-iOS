@@ -58,8 +58,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         bottomStack.axis = .vertical
         bottomStack.alignment = .fill
         bottomStack.isLayoutMarginsRelativeArrangement = true
-        let hMargin = 20 + OWSTableViewController2.cellHOuterMargin
-        bottomStack.layoutMargins = UIEdgeInsets(top: 8, leading: hMargin, bottom: 0, trailing: hMargin)
+        bottomStack.layoutMargins = UIEdgeInsets(top: 8, left: cellHOuterLeftMargin + 20, bottom: 0, right: cellHOuterRightMargin + 20)
         bottomStack.addArrangedSubviews([
             nextButton,
             UIView.spacer(withHeight: 8)
@@ -128,8 +127,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
-        let hMargin = 20 + OWSTableViewController2.cellHOuterMargin
-        topStack.layoutMargins = UIEdgeInsets(top: 32, leading: hMargin, bottom: 40, trailing: hMargin)
+        topStack.layoutMargins = UIEdgeInsets(top: 32, left: cellHOuterLeftMargin + 20, bottom: 40, right: cellHOuterRightMargin + 20)
         return topStack
     }
 
@@ -149,8 +147,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
-        let hMargin = 20 + OWSTableViewController2.cellHOuterMargin
-        topStack.layoutMargins = UIEdgeInsets(top: 16, leading: hMargin, bottom: 16, trailing: hMargin)
+        topStack.layoutMargins = UIEdgeInsets(top: 16, left: cellHOuterLeftMargin + 20, bottom: 16, right: cellHOuterRightMargin + 20)
         return topStack
     }
 

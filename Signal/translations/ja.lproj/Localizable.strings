@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "グループに追加";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "「%1$@」を「%2$@」に追加しますか？";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "新しいメンバーを追加";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ が %@ に追加されました";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "グループへの追加";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "あなたのプロフィールをこのユーザと共有しますか？";
@@ -821,7 +821,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "グループ名、アイコン、消えるメッセージのタイマーを編集できる人を選択してください。";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "音声通話";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "今後、このユーザからはメッセージや更新を受信しなくなります。";
@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "メンション";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "このチャットをミュート…";
 
@@ -896,7 +899,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "常時";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "ミュート";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8時間";
@@ -923,28 +926,28 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "常時";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "常時ミュート中";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "ミュート解除";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@まで";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@までミュート中";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "共通のグループが%@件あります";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "新規の連絡先を作成";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "共通のグループはありません";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "共通のグループが1件あります";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "アクセス許可";
@@ -962,7 +965,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ をグループ管理者から外しますか？";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "検索";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "グループのブロック解除";
@@ -980,10 +983,10 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "未保存の変更";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "ビデオ通話";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "連絡先の詳細";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールを共有する";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "あなた";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "音声通話";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "このグループを作成した後に、友達を追加したり招待することができます。";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "メンバー";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "メッセージ";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "ビデオ通話";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@人のグループメンバーが似た名前です。";
@@ -3419,28 +3413,28 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "連絡先にアクセスできませんでした。";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "支払いを完了するに十分なMOBがありません。";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "支払いを完了するに十分なMOBがありません。残高は %@ です。";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "無効な取引";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "支払いをするにはSignalをアップデートしてください。";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "支払いを完了できませんでした。接続を確認し、再度試してください。";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "ネットワーク料金";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "概算 %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "無効な金額";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
@@ -3452,37 +3446,37 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "払う";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "合計";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "処理中";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "受取人 %@ ";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "申請";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1件の支払い通知";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ があなたに %2$@ 送りました。";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ 件の支払い通知";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "支払い完了";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "未検証";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "検証済み";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "支払い完了";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "送信しています…";
@@ -3491,22 +3485,22 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "送信";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "準備しています";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "未検証";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "検証済み";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "不明なエラー";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "完了";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "未検証";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "検証済み";
@@ -3521,43 +3515,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "送信";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "準備しています";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "未検証";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "検証済み";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "不明なエラー";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "送金するには、このユーザーがあなたのメッセージリクエストを受け取る必要があります。";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "送金するには、このユーザーがあなたのメッセージリクエストを受け取る必要があります。リクエストを作成するため、先にメッセージを送ってください。";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "送金できません";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "この人は支払い機能を有効にしていません。";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "無効な宛先";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "移行";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "受け取り済み";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "送金済み";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "無効";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "グループに追加する";
@@ -3626,10 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "不正な招待";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "他のメンバーの招待";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "あなたの招待";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "受信中にエラー";
@@ -4697,16 +4691,16 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "アカウントを削除する";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "送金禁止";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "あなたの残高は %@ です。アカウントを削除する前に、別のウオレットに移行しないと、残金が永遠に失われます。";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "残高を移行しますか?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "残高を移行";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "すべてのデータを削除する";
@@ -4796,178 +4790,184 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "支払い条件に同意";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Signalでは仮想通貨のMobileCoinを支払いに利用できます。すべての支払い規約はMobileCoinsとMobileCoin Walletに準じます。この機能は試験段階で、問題が発生したり、取引や残高が修復できなくなる恐れがあります。";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "支払い確認を有効化";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoinの規約を見る";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "入金";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "入金するには、あなたのウォレットアドレスにMobileCoinを送る必要があります。MobileCoinを扱っている取引所に開設したあなたの口座から取引を開始し、QRコードをスキャンするか、あなたのウォレットアドレスをコピーします。";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ウォレットアドレスをコピーしました";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "すべての支払い";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@（%3$@時点）";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signalの支払い機能はもう利用できません。残金は取引所に移行できますが、送金や入金は今後できません。";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "残高に取得できないため、支払い機能を停止できません。接続を確認し、再度試してください。";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "残高に取得できないため、支払いを完了できませんでした。接続を確認し、再度試してください。";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signalの支払い機能はもう利用できません。残金は取引所に移行できますが、送金や入金は今後できません。";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signalの支払い機能はもう利用できません。残金は取引所に移行できますが、送金や入金は今後できません。";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "金額は概算で、正確ではありません";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "すべての通貨";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "残高を移行";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "支払い機能を停止";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "支払い機能を停止";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "支払い機能を停止すると、SignalでMobileCoinを利用できなくなります。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "支払い機能を停止しますか？";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "支払い機能を停止";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "支払い機能を停止する前に、別のウォレットアドレスに残金を移行することをお勧めします。移行しない場合、支払いを再開した時に、Signalにリンクされたウォレットに残ります。";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "残高は、支払いを再開した時に、Signalにリンクされたウォレットに残ります。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "移行しないで停止しますか?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "移行せず停止";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "支払い機能を停止できませんでした";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "詳細";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "支払い機能を有効化";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoinは、プライバシーを考慮した仮想通貨です。";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoinについて";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "MobileCoinをウォレットアドレスに送信することで、Singnalで使う口座に入金できます。";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "入金";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoinを扱っている取引所にいつでも出金できます。取引所のあなたの口座に送付するだけです。";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "出金";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PINをアップデート";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "残高が大きい時、PINをアップデートし、口座保護を強化できます。";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "PINをアップデート";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "リカバリーフレーズを保存";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "リカバリーフレーズは、支払口座を復元するもう一つの方法です。";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "リカバリーフレーズを保存";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "無効なウォレットアドレス";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "最近の取引はありません";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "支払い機能を有効にしますか?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "支払い機能が有効になりません";
+
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "未登録";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "支払い機能を有効化";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "支払い機能が有効になりました";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signalで、プライバシーを考慮した仮想通貨MobileCoinを利用できます。利用するには機能を有効化してください。";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "支払い機能を再有効化";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "支払い機能 (ベータ) のご紹介";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Signalを再インストールしてPINを確認すると、残高は自動で復元します。また、24語のリカバリーフレーズを使って残高を復元することもできます。リカバリーフレーズは、紙に書いて安全な場所に保存してください。";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "入金";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "ブロック番号";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ネットワーク料金";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "受信";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ から受け取り";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "送金者";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@（%2$@）";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "あなた";
@@ -4976,31 +4976,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "送信";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@ に送金";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "状態";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "金額と時間を含む取引詳細は、MobileCoinの元帳の一部です。";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "クリーンアップ手数料は、細分化されたコインを結合して取引を完了することができない場合に請求されます。クリーンアップすることで、送金を続けることができます。";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "支払いを完了するに十分なMOBがありません。残高は %@ です。";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "残高不足";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "支払人 %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "受取人 %@ ";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "支払い機能を停止";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "全員";
@@ -5012,178 +5012,178 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "送信";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "最近の支払い";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "PINを無効化する前に、口座を復元するための支払いリカバリーフレーズを保存しなければなりません。";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "リカバリーフレーズを保存";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "支払いリカバリーフレーズを保存";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "残高";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "削除する";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "支払い口座を復元";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "フレーズが正しいか確認してください";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "リカバリーフレーズを確認";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "支払い口座が復元されました";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "マニュアル入力";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "復元に失敗しました";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "有効なリカバリーフレーズではありません";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "不正なパスフレーズ";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "クリップボードから貼り付け";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "リカバリーフレーズ";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "リカバリーフレーズを貼り付け";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "リカバリーフレーズは12語で、口座の復元に使います。";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "リカバリーパスフレーズを入力してください";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "リカバリーフレーズ";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "単語: %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "無効なリカバリーフレーズ";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "スペルが正しくありません";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "リカバリーフレーズを入力してください";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "受取人のQRコードを読み取ります。";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "無効なアドレス";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "無効なURL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QRコードをスキャンする";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "送金";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "受取人を選択";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "換算通貨";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "支払い";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Signalのウォレットアドレスに送金できません。MOBを扱う取引所の口座からアドレスを入力してください。";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "取引所のウォレットアドレスへの送金を完了することで、MobileCoinを送金できます。ウォレットアドレスは、QRコードの下にある文字列です。";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "ウォレットアドレスをチェックし、再実行してください。";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "不正なアドレス";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "受取人: スキャンするかアドレスを入力";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "取引所に送付";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "取引所に送付";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "リカバリーフレーズの設定が完了";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "確認";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "リカバリーフレーズの %1$@ と %2$@ を入力してください。";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "単語が間違っています。再入力してください。";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "両方の単語が間違っています。再入力してください。";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "単語 %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "リカバリーフレーズを確認";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "リカバリーフレーズがコピーされました";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "クリップボードにコピー";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "リカバリーフレーズを電子的に保存する場合、信頼できる安全な場所に保存してください。";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "クリップボードにコピーしますか？";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "フレーズを再点検してください。";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "リカバリーフレーズを見る";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "リカバリーフレーズ";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "次の24語を書きとめてください。安全な場所に保管してください。";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "スクリーンショットを使ったり、メールで転送しないこと";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "リカバリーフレーズ";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "支払い (ベータ)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "あなたのウォレットアドレス";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "電話番号で私を検索できる人";
@@ -5390,7 +5390,7 @@
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします！このリンクから入手してください:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "音と通知";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "なし";

@@ -779,6 +779,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertDebug(avatarImage);
 
     UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
+    avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
     [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
     [avatarButton setImage:avatarImage forState:UIControlStateNormal];
     [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];

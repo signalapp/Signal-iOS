@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -377,7 +377,7 @@ public class MessageActionsViewController: UIViewController {
                 isRemoving: emojiString == self.reactionState?.localUserEmoji
             )
         }
-        picker.backdropView = backdropView
+        picker.externalBackdropView = backdropView
         anyReactionPicker = picker
 
         // Presenting the emoji picker causes the conversation view controller

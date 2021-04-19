@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Pridėti į grupę";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Pridėti „%1$@“ į „%2$@“?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Pridėti naują narį";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Naudotojas %@ buvo pridėtas į %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Pridėti į grupę";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte bendrinti savo profilį  su šiuo naudotoju?";
@@ -425,7 +425,7 @@
 "BUTTON_SELECT" = "Pasirinkti";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Pradėti";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Pateikti";
@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Paminėjimai";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Išjungti šio pokalbio pranešimus…";
 
@@ -896,7 +899,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Visada";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "išjungti pranešimus";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 valandos";
@@ -923,7 +926,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Visada";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Pranešimai visada išjungti";
 
 /* Button to unmute the chat */
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
@@ -932,19 +935,19 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "iki %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Pranešimai išjungti iki %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "Bendrų grupių: %@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Sukurti naują adresatą";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Nėra bendrų grupių";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 bendra grupė";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Leidimai";
@@ -962,7 +965,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Pašalinti %@ iš grupės administratorių?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "ieškoti";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Atblokuoti grupę";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Jūs";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Garso skambutis";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Sukūrę šią grupę, galėsite pridėti ar pakviesti draugus.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Nariai";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Žinutė";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Vaizdo skambutis";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ grupės nariai(-ių) turi panašius vardus.";
@@ -3218,7 +3212,7 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Pridėkite į savo žinutes lašelį žmogiškumo";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Kadangi ilgą laiką buvote neveiklūs, norėdami naudotis Signal, privalote vėl užsiregistruoti.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_TITLE" = "Registruokitės Signal";
@@ -3392,7 +3386,7 @@
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "Nepavyko";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Trūksta lėšų";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
 "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
@@ -3476,7 +3470,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Mokėjimas užbaigtas";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Nepatvirtintas";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Patvirtinta(-s)";
@@ -3491,10 +3485,10 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Išsiųsta";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Ruošiamas";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Nepatvirtintas";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Patvirtinta(-s)";
@@ -3503,16 +3497,16 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Nežinoma nesėkmė";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Užbaigtas";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Nepatvirtintas";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Patvirtinta(-s)";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Užbaigtas";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Siunčiama…";
@@ -3521,10 +3515,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Išsiųsta";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Ruošiamas";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Nepatvirtintas";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Patvirtinta(-s)";
@@ -3626,10 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Neteisingi pakvietimai";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Pakvietė kiti";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Pakvietėte jūs";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Klaida, apdorojant gaunamą žinutę";
@@ -4700,10 +4694,10 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Nepervesti";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Jūs turite %@ likutį. Jei, prieš ištrindami paskyrą, nepervesite savo lėšų į kitos piniginės adresą, prarasite jas visiems laikams.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Pervesti mokėjimų likutį?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Pervesti likutį";
@@ -4823,19 +4817,19 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Mokėjimai Signal programėlėje daugiau nebeprieinami. Jūs vis dar galite pervesti lėšas į valiutos keitimo punktą, bet nebegalite siųsti ir gauti mokėjimų ar pridėti lėšų.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Nepavyksta pasyvinti mokėjimų, nes jūsų likutis yra neprieinamas. Patikrinkite savo ryšį ir bandykite dar kartą.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Nepavyko užbaigti mokėjimo, nes jūsų likutis yra neprieinamas. Patikrinkite savo ryšį ir bandykite dar kartą.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Mokėjimai Signal programėlėje daugiau nebeprieinami. Jūs vis dar galite pervesti lėšas į valiutos keitimo punktą, bet nebegalite siųsti ir gauti mokėjimų ar pridėti lėšų.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Mokėjimai Signal programėlėje daugiau nebeprieinami. Jūs vis dar galite pervesti lėšas į valiutos keitimo punktą, bet nebegalite siųsti ir gauti mokėjimų ar pridėti lėšų.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Konvertavimai yra apytiksliai ir gali būti netikslūs.";
@@ -4913,7 +4907,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Atkūrimo frazė suteikia jums kitą būdą atkurti savo mokėjimų paskyrą.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
@@ -4922,13 +4916,19 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Neteisingas piniginės adresas";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Kol kas nėra paskiausios veiklos.";
 
 /* Message for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Ar norėtumėte įjungti mokėjimus?";
 
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Mokėjimai neįjungti";
+
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Neregistruota";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Aktyvuoti mokėjimus";
@@ -4946,7 +4946,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Pristatome mokėjimus (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Kai įdiegsite Signal iš naujo, jūsų likutis bus automatiškai atkurtas tuo atveju, jei patvirtinsite savo Signal PIN kodą. Taip pat galite atkurti savo likutį naudodami atkūrimo frazę – savo unikalią 24 žodžių frazę. Užsirašykite ją ir saugokite saugioje vietoje.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Pridėti lėšų";
@@ -5024,16 +5024,16 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Likęs likutis";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Šalinti";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Atkurti mokėjimų paskyrą";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Įsitikinkite, kad teisingai įvedėte frazę.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
@@ -5042,7 +5042,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Mokėjimų paskyra atkurta.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Įvesti rankiniu būdu";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Atkūrimas nepavyko";
@@ -5114,7 +5114,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Galite pervesti „MobileCoin“ valiutą, užbaigdami pervedimą į valiutos keitimo punkto pateiktą piniginės adresą. Piniginės adresas yra skaitmenų ir raidžių eilutė, kuri, įprastai, būna po QR kodu.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Patikrinkite piniginės, į kurią bandote pervesti, adresą ir bandykite dar kartą.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Neteisingas adresas";
@@ -5156,7 +5156,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Kopijuoti į iškarpinę";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Jei pasirinksite saugoti savo atkūrimo frazę skaitmeniniu pavidalu, užtikrinkite, kad ji bus saugiai laikoma patikimoje vietoje.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopijuoti į iškarpinę?";
@@ -5171,10 +5171,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Atkūrimo frazė";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Užsirašykite šiuos 24 žodžius eilės tvarka. Saugokite sąrašą saugioje vietoje.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Nedarykite ekrano kopijų ir nesiųskite el. paštu.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Atkūrimo frazė";
@@ -5390,7 +5390,7 @@
 "SMS_INVITE_BODY" = "Siūlau tau įdiegti Signal! Štai čia yra nuoroda:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Garsai ir pranešimai";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Nėra";

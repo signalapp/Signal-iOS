@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Hozzáadás a csoporthoz";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Hozzáadod őt: \"%1$@\" a \"%2$@\" csoporthoz?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Új tag hozzáadása";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ hozzáadva az alábbi csoporthoz: %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Hozzáadás egy csoporthoz";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Szeretnéd megosztani a profilod ezzel a felhasználóval?";
@@ -704,13 +704,13 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Funkció kérés";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Észrevételem van az alkalmazásról";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Visszajelzés";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "Egyéb";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Egyéb";
@@ -821,7 +821,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Add meg, hogy ki szerkeszthesse a csoportnevet, az avatárt és az eltűnő üzenetek időzítőjét.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "hang";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Többé nem kapsz üzeneteket vagy frissítéseket ettől a felhasználótól.";
@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Említések";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Némítás eddig...";
 
@@ -896,7 +899,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Végleg";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "némítás";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 óra";
@@ -911,10 +914,10 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 nap";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 órája";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 óra";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 perce";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 perc";
 
 /* Label for button to mute a thread for a week. */
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 hét";
@@ -923,28 +926,28 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Végleg";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Végleg némít";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "némítva";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@-ig";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Némítva eddig: %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ közös csoport";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Új kontakt";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Nincs közös csoport";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 közös csoport";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Jogosultságok";
@@ -962,7 +965,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Elveszed %@ admin jogát?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "keresés";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Csoport tiltás feloldása";
@@ -980,10 +983,10 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Mentetlen változtatások";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "videó";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Kontakt részletek";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil megosztása";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Te";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Hanghívás";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "A csoport létrehozását követően is meghívhatod vagy hozzáadhatod barátaidat.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Tagok";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Üzenetek";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Videóhívás";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ csoport tag hasonló névvel szerepel.";
@@ -3626,10 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Érvénytelen meghívók";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Mások meghívottjai";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Saját meghívottjaid";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Nem sikerült kezelni a bejövő üzenetet.";
@@ -4930,6 +4924,12 @@
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
 
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nincs regisztrálva";
+
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Fizetések aktíválása";
 
@@ -5390,7 +5390,7 @@
 "SMS_INVITE_BODY" = "Szia, használd te is a Signalt! Innen telepítheted:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Hangok és Értesítések";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Nincs";
@@ -5462,7 +5462,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Kapcsolat";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Mondd el, mi történt";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Írj pár szót a problémáról:";

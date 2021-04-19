@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "나중에";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal에 대하여";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "새 안전 번호 수락";
@@ -86,13 +86,13 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "그룹에 추가";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%1$@를 %2$@에 추가하시겠습니까?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "새 멤버 추가";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "이미 멤버입니다.";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ 님은 이미 %@ 그룹의 멤버입니다";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ 님을 %@ 그룹에 추가함";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "그룹에 추가하기";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "이 사용자에게 내 프로필을 공유하시겠습니까?";
@@ -269,7 +269,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "사진을 찍은 후 여기에서 최근 연락처에게 보낼 수 있습니다.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "결제";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "첨부 파일";
@@ -419,13 +419,13 @@
 "BUTTON_OKAY" = "확인";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "이전";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "선택";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "시작";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "보내기";
@@ -566,7 +566,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "메시지를 삭제하고 애플리케이션이 재설정됩니다. 이 과정이 완료되면 애플리케이션이 종료됩니다.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "모든 데이터를 삭제하시겠습니까?";
@@ -698,16 +698,16 @@
 "CONTACT_SUPPORT" = "지원에 문의";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "새 기능을 요청하고 싶어요.";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "기능 요청";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "애플리케이션에 대해 피드백이 있어요.";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "애플리케이션 피드백";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
@@ -716,19 +716,19 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "기타";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "결제";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "결제";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "무엇을 도와드릴까요?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "질문이 있습니다.";
 
 /* A brief localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "질문";
 
 /* The localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
@@ -749,7 +749,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "디버그 로그를 보내시겠습니까?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "이유 선택하";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "디버그 로그와 함께 보내기";
@@ -821,7 +821,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "그룹 이름과 사진, 사라지는 메시지 시간을 수정할 수 있는 사람을 선택하세요.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "오디오";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "이 사용자에게서 메시지 또는 새 소식을 받을 수 없게 됩니다.";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "수정";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "그룹 정보 수정";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "관리자만";
@@ -889,17 +889,20 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "언급";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "항상";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "알림 끄기";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8시간";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "알림 끄기";
@@ -920,19 +923,19 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1주";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "항상";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "항상 알림 끔";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "음소거됨";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@까지";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@까지 알림 끄기";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
@@ -962,7 +965,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ 님을 그룹 관리자 권한으로 제외하시겠습니까?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "검색";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "그룹 차단 해제";
@@ -980,7 +983,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "저장하지 않은 변경사항";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "비디오";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
@@ -1097,7 +1100,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "계정 삭제 중...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "나";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "음성 통화";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "그룹을 만든 후에 친구들을 추가하거나 초대할 수 있습니다.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "멤버";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "메시지";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "영상 통화";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
@@ -2654,7 +2648,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "연결하고자 하는 기기의 QR 코드를 스캔하세요.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "새 기기에 연결하려면 QR 코드를 스캔하세요.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "새 기기 연결";
@@ -2792,7 +2786,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "새 메시지";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "보낸 시간 복사됨";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "받음";
@@ -3434,7 +3428,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "네트워크 사용료";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
 "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
@@ -3458,7 +3452,7 @@
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "처리 중";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%@에게";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "요청";
@@ -4685,7 +4679,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "음성 메시지, 한 번만 볼 수 있는 미디어와 스티커(100KB 이하)는 항상 자동 다운로드됩니다.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "자동 다운로드";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "자동 다운로드 설정 초기화";
@@ -4907,7 +4901,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "PIN 업데이트";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
@@ -4930,8 +4924,14 @@
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
 
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "등록되지 않음";
+
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "결제 활성화";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
@@ -4943,7 +4943,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "결제 (베타) 소개";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
@@ -4955,13 +4955,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "네트워크 사용료";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "받은 시간";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@로 부터 받음";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
@@ -4976,7 +4976,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "보낸 시간";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@에게 보냄";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "상태";
@@ -4994,10 +4994,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%@로 부터";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%@에게";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
@@ -5054,7 +5054,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "클립보드에서 붙여넣기";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
@@ -5072,7 +5072,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "단어를 입력하세요.: %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
@@ -5087,10 +5087,10 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "유효하지 않은 주소";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "유효하지 않은 URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR 코드 스캔";
@@ -5105,7 +5105,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "결제";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
@@ -5138,13 +5138,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "단어가 잘못되었습니다. 다시 시도하세요.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "단어들이 잘못되었습니다. 다시 시도하세요.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "단어 %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
@@ -5153,13 +5153,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "클립보드에 복사";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "클립보드에 복사할까요?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
@@ -5180,7 +5180,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "결제 (베타)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
@@ -5279,16 +5279,16 @@
 "SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal을 잠금 해제하려면 Face ID를 사용하세요.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal을 잠금 해제하려면 기기 비밀번호를 사용하세요.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal을 잠금 해제하려면 Touch ID를 사용하세요.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "애플리케이션 보안";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
@@ -5528,13 +5528,13 @@
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "이 대화에서는 스스로 메모를 남길 수 있습니다. 내 계정에 연결된 기기 또한 새 메모가 같이 동기화됩니다.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@의 멤버 ";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ 멤버";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ 및 %@의 멤버";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ 및 %@ 멤버";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ 및 %@의 멤버";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ 및 %@ 멤버";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@일";

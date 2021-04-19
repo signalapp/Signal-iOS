@@ -269,7 +269,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Akken ara d-teṭṭfeḍ tiwlafin, ad tizmireḍ ad tazneḍ tid n melmi kan dagi.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Axelleṣ";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Afaylu yeddan";
@@ -716,10 +716,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Nniḍen";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Axelleṣ";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Axelleṣ";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "How can we help?";
@@ -889,11 +889,14 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Tibdarin";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Yal tikkelt";
 
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
@@ -920,7 +923,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 week";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Yal tikkelt";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Kečč.Kemm";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Asiwel s umeslaw";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Tzemreḍ ad ternuḍ neɣ ad d-tnecdeḍ imeddukkal seld timerna n ugraw-a.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Imttekkiyen";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Izen";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Asiwel s tvidyut";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ n yiεeggalen n ugraw sεan yiwen yisem.";
@@ -4796,13 +4790,13 @@
 "SETTINGS_NOTIFICATIONS" = "Ilɣa";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Rmed";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Rmed";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -4847,7 +4841,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Sens";
 
 /* Label for 'deactivate payments' button in the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
@@ -4856,7 +4850,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Sens axelleṣ?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
@@ -4877,7 +4871,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
 
 /* Label for the 'payments details' view of the app settings. */
-"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Details";
+"SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Talqayt";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
@@ -4930,8 +4924,14 @@
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
 
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Ur yettujerred ara";
+
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Rmed axelleṣ";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
@@ -5000,7 +5000,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Axelleṣ yensa.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Akk";
@@ -5057,7 +5057,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Tifyirt n tririt";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5105,7 +5105,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "Axelleṣ";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
@@ -5180,7 +5180,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Axelleṣ (Beta)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";

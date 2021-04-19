@@ -914,6 +914,28 @@ public extension UIEdgeInsets {
     var totalSize: CGSize {
         CGSize(width: totalWidth, height: totalHeight)
     }
+
+    var leading: CGFloat {
+        get { CurrentAppContext().isRTL ? right : left }
+        set {
+            if CurrentAppContext().isRTL {
+                right = newValue
+            } else {
+                left = newValue
+            }
+        }
+    }
+
+    var trailing: CGFloat {
+        get { CurrentAppContext().isRTL ? left : right }
+        set {
+            if CurrentAppContext().isRTL {
+                left = newValue
+            } else {
+                right = newValue
+            }
+        }
+    }
 }
 
 // MARK: - Gestures
