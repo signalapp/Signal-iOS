@@ -169,8 +169,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)timestampForUI
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage && ((TSIncomingMessage *) self).serverTimestamp != nil) {
-        return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
+    // We always want to show the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
+    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
+    // wrapped, which gets parsed to `serverTimestamp` in that case.
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
+        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
     }
     return _timestamp;
 }
@@ -199,7 +202,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    // sortId == serverTimestamp for open group messages.
+    // sortId == serverTimestamp (the sent timestamp) for open group messages.
     // sortId == timestamp (the sent timestamp) for one-to-one and closed group messages.
     sortId1 = self.sortId;
     sortId2 = other.sortId;
@@ -228,8 +231,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)sortId
 {
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *) self).isOpenGroupMessage && ((TSIncomingMessage *) self).serverTimestamp != nil) {
-        return ((TSIncomingMessage *) self).serverTimestamp.unsignedLongLongValue;
+    // We always want to sort on the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
+    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
+    // wrapped, which gets parsed to `serverTimestamp` in that case.
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
+        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
     }
     return self.timestamp;
 }
