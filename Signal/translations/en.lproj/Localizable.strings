@@ -1027,8 +1027,20 @@
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@h";
 
+/* Full string for a relative time of one hour ago. */
+"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+
+/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
+
+/* Full string for a relative time of one minute ago. */
+"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+
+/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
 
 /* The present; the current time. */
 "DATE_NOW" = "Now";
