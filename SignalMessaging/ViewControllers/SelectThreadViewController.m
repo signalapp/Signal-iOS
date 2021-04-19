@@ -213,7 +213,9 @@ NS_ASSUME_NONNULL_BEGIN
                             }
 
                             [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                [cell configureWithThread:thread transaction:transaction];
+                                [cell configureWithThread:thread
+                                      localUserAvatarMode:LocalUserAvatarModeNoteToSelf
+                                              transaction:transaction];
 
                                 if (!cell.hasAccessoryText) {
                                     // Don't add a disappearing messages indicator if we've already added a "blocked"
@@ -285,7 +287,8 @@ NS_ASSUME_NONNULL_BEGIN
                             if (isBlocked) {
                                 cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
-                            [cell configureWithRecipientAddressWithSneakyTransaction:signalAccount.recipientAddress];
+                            [cell configureWithSneakyTransactionWithRecipientAddress:signalAccount.recipientAddress
+                                                                 localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
                             return cell;
                         }
                         actionBlock:^{

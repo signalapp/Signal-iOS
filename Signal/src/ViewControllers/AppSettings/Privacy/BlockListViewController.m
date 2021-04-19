@@ -109,7 +109,9 @@ NS_ASSUME_NONNULL_BEGIN
             [blockedContactsSection addItem:[OWSTableItem
                                                 itemWithCustomCellBlock:^{
                                                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                    [cell configureWithRecipientAddressWithSneakyTransaction:address];
+                                                    [cell configureWithSneakyTransactionWithRecipientAddress:address
+                                                                                         localUserAvatarMode:
+                                                                                             LocalUserAvatarModeAsUser];
                                                     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         BlockListViewController, @"user");
                                                     return cell;

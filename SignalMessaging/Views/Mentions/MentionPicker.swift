@@ -271,7 +271,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
 private class MentionableUserCell: UITableViewCell {
     static let reuseIdentifier = "MentionPickerCell"
 
-    static let avatarHeight: CGFloat = 36
+    static let avatarSize: UInt = 36
     static let vSpacing: CGFloat = 10
     static let hSpacing: CGFloat = 12
 
@@ -279,12 +279,13 @@ private class MentionableUserCell: UITableViewCell {
         let cell = MentionableUserCell()
         cell.displayNameLabel.text = LocalizationNotNeeded("size")
         cell.displayNameLabel.sizeToFit()
-        return max(avatarHeight, ceil(cell.displayNameLabel.height)) + vSpacing * 2
+        return max(CGFloat(avatarSize), ceil(cell.displayNameLabel.height)) + vSpacing * 2
     }
 
     let displayNameLabel = UILabel()
     let usernameLabel = UILabel()
-    let avatarImageView = AvatarImageView()
+    let avatarView = ConversationAvatarView(diameter: MentionableUserCell.avatarSize,
+                                            localUserAvatarMode: .asUser)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -293,11 +294,10 @@ private class MentionableUserCell: UITableViewCell {
         selectedBackgroundView = UIView()
 
         let avatarContainer = UIView()
-        avatarContainer.addSubview(avatarImageView)
-        avatarImageView.autoSetDimension(.width, toSize: Self.avatarHeight)
-        avatarImageView.autoPinWidthToSuperview()
-        avatarImageView.autoVCenterInSuperview()
-        avatarImageView.autoMatch(.height, to: .height, of: avatarContainer, withOffset: 0, relation: .lessThanOrEqual)
+        avatarContainer.addSubview(avatarView)
+        avatarView.autoPinWidthToSuperview()
+        avatarView.autoVCenterInSuperview()
+        avatarView.autoMatch(.height, to: .height, of: avatarContainer, withOffset: 0, relation: .lessThanOrEqual)
 
         displayNameLabel.font = .ows_dynamicTypeBody2
         usernameLabel.font = .ows_dynamicTypeBody2
@@ -344,10 +344,6 @@ private class MentionableUserCell: UITableViewCell {
             usernameLabel.isHidden = true
         }
 
-        avatarImageView.image = OWSContactAvatarBuilder(
-            address: mentionableUser.address,
-            colorName: mentionableUser.conversationColorName,
-            diameter: UInt(Self.avatarHeight)
-        ).build()
+        avatarView.configureWithSneakyTransaction(address: mentionableUser.address)
     }
 }

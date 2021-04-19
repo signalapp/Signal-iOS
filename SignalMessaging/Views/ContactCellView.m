@@ -21,7 +21,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @interface ContactCellView ()
 
 @property (nonatomic) UILabel *nameLabel;
-@property (nonatomic) UIImageView *avatarView;
+@property (nonatomic) ConversationAvatarView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
@@ -29,7 +29,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) SignalServiceAddress *address;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
 @end
 
@@ -51,7 +50,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.layoutMargins = UIEdgeInsetsZero;
 
-    _avatarView = [AvatarImageView new];
+    self.avatarView = [[ConversationAvatarView alloc] initWithDiameter:self.avatarSize
+                                                   localUserAvatarMode:LocalUserAvatarModeAsUser];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -69,7 +69,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
 
-    [self.avatarView setContentHuggingHorizontalHigh];
     [self.nameContainerView setContentHuggingHorizontalLow];
     [self.accessoryViewContainer setContentHuggingHorizontalHigh];
 
@@ -102,13 +101,17 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
 }
 
-- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
+- (void)configureWithSneakyTransactionWithRecipientAddress:(SignalServiceAddress *)address
+                                       localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
-    [self.databaseStorage uiReadWithBlock:^(
-        SDSAnyReadTransaction *transaction) { [self configureWithRecipientAddress:address transaction:transaction]; }];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self configureWithRecipientAddress:address localUserAvatarMode:localUserAvatarMode transaction:transaction];
+    }];
 }
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
+                  localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
@@ -118,12 +121,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.address = address;
     self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
 
+    self.avatarView.localUserAvatarMode = localUserAvatarMode;
+    [self.avatarView configureWithAddress:address transaction:transaction];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
     [self updateNameLabels];
-    [self updateAvatarWithTransaction:transaction];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -134,11 +139,16 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (void)configureWithThread:(TSThread *)thread
+        localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     self.thread = thread;
-    
+
+    self.avatarView.localUserAvatarMode = localUserAvatarMode;
+    [self.avatarView configureWithThread:self.thread transaction:transaction];
+
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
@@ -165,11 +175,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.nameLabel.attributedText = attributedText;
     }
 
-    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
-                                                         diameter:self.avatarSize
-                                                      transaction:transaction];
-
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
         [self setAccessoryView:self.accessoryLabel];
@@ -177,38 +182,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
-}
-
-- (void)updateAvatarWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
-
-    if (self.customAvatar != nil) {
-        self.avatarView.image = self.customAvatar;
-        return;
-    }
-
-    SignalServiceAddress *address = self.address;
-    if (!address.isValid) {
-        OWSFailDebug(@"address should not be invalid");
-        self.avatarView.image = nil;
-        return;
-    }
-
-    ConversationColorName colorName = ^{
-        if (self.thread) {
-            return self.thread.conversationColorName;
-        } else {
-            return [TSThread stableColorNameForNewConversationWithString:address.stringForDisplay];
-        }
-    }();
-
-    OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
-                                                                                    colorName:colorName
-                                                                                     diameter:self.avatarSize
-                                                                                  transaction:transaction];
-
-    self.avatarView.image = [avatarBuilder build];
 }
 
 - (NSUInteger)avatarSize
@@ -243,6 +216,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+    [self.avatarView reset];
+
     self.forceDarkAppearance = NO;
     self.thread = nil;
     self.accessoryMessage = nil;
@@ -250,12 +225,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel.text = nil;
     self.accessoryLabel.text = nil;
     self.customName = nil;
-    self.customAvatar = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];
     }
-    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
-    self.layoutConstraints = nil;
     self.useLargeAvatars = NO;
 }
 
@@ -268,8 +240,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     if (address.isValid && [self.address isEqualToAddress:address]) {
         [self updateNameLabels];
-        [self.databaseStorage
-            uiReadWithBlock:^(SDSAnyReadTransaction *transaction) { [self updateAvatarWithTransaction:transaction]; }];
     }
 }
 

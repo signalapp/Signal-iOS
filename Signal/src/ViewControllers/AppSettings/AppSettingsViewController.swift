@@ -283,7 +283,9 @@ class AppSettingsViewController: OWSTableViewController2 {
         if let avatarData = snapshot.avatarData {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
-            avatarImageView.image = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter)).buildDefaultImage()
+            let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter),
+                                                        localUserAvatarMode: .asUser)
+            avatarImageView.image = avatarBuilder.buildDefaultImage()
         }
         avatarImageView.clipsToBounds = true
         avatarImageView.layer.cornerRadius = avatarDiameter / 2

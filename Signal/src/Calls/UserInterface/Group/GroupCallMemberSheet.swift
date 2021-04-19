@@ -237,8 +237,8 @@ extension GroupCallMemberSheet: CallObserver {
 private class GroupCallMemberCell: UITableViewCell {
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    let avatarView = AvatarImageView()
-    let avatarDiameter: CGFloat = 36
+    let avatarView = ConversationAvatarView(diameter: 36,
+                                            localUserAvatarMode: .asUser)
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()
@@ -254,7 +254,6 @@ private class GroupCallMemberCell: UITableViewCell {
         contentView.addSubview(avatarView)
         avatarView.autoPinLeadingToSuperviewMargin()
         avatarView.autoPinHeightToSuperviewMargins()
-        avatarView.autoSetDimensions(to: CGSize(square: avatarDiameter))
 
         nameLabel.font = .ows_dynamicTypeBody
         contentView.addSubview(nameLabel)
@@ -284,24 +283,17 @@ private class GroupCallMemberCell: UITableViewCell {
     }
 
     func configure(item: GroupCallMemberSheet.JoinedMember) {
-
-        let avatarBuilder = OWSContactAvatarBuilder(
-            address: item.address,
-            colorName: item.conversationColorName,
-            diameter: UInt(avatarDiameter)
-        )
-
         nameLabel.textColor = Theme.darkThemePrimaryColor
         videoMutedIndicator.isHidden = item.isVideoMuted != true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
         if item.address.isLocalAddress {
             nameLabel.text = item.displayName
-            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             nameLabel.text = item.displayName
-            avatarView.image = avatarBuilder.build()
         }
+
+        avatarView.configureWithSneakyTransaction(address: item.address)
     }
 }
 

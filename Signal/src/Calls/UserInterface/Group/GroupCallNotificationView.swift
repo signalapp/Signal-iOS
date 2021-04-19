@@ -247,7 +247,8 @@ private class BannerView: UIView {
             let avatarBuilder = OWSContactAvatarBuilder(
                 address: address,
                 colorName: conversationColorName,
-                diameter: 40
+                diameter: 40,
+                localUserAvatarMode: .asUser
             )
 
             if address.isLocalAddress {

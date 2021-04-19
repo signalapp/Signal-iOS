@@ -354,7 +354,8 @@ class MessageDetailViewController: OWSTableViewController2 {
             customCellBlock: { [weak self] in
                 let cell = ContactTableViewCell()
                 guard let self = self else { return cell }
-                cell.configureWithSneakyTransaction(recipientAddress: address)
+                cell.configureWithSneakyTransaction(recipientAddress: address,
+                                                    localUserAvatarMode: .asUser)
                 cell.ows_setAccessoryView(self.buildAccessoryView(text: accessoryText, displayUDIndicator: displayUDIndicator))
                 return cell
             },

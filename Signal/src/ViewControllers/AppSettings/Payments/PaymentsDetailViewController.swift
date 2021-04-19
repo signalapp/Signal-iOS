@@ -364,8 +364,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         var stackViews = [UIView]()
 
         let avatarSize: UInt = 52
-        let avatarView = AvatarImageView()
-        avatarView.autoSetDimensions(to: .square(CGFloat(avatarSize)))
+        let avatarView = ConversationAvatarView(diameter: avatarSize,
+                                                localUserAvatarMode: .asUser)
         stackViews.append(avatarView)
         stackViews.append(UIView.spacer(withHeight: 12))
 
@@ -386,11 +386,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         databaseStorage.read { transaction in
-            let colorName = TSContactThread.conversationColorName(forContactAddress: address,
-                                                                  transaction: transaction)
-            avatarView.image = OWSContactAvatarBuilder(address: address,
-                                                       colorName: colorName,
-                                                       diameter: avatarSize).build(with: transaction)
+            avatarView.configure(address: address, transaction: transaction)
 
             let username = Self.contactsManager.displayName(for: address, transaction: transaction)
             let usernameFormat = (self.paymentItem.isIncoming

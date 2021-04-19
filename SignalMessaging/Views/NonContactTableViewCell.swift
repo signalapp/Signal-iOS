@@ -78,7 +78,8 @@ public class NonContactTableViewCell: UITableViewCell {
             let avatarBuilder = OWSContactAvatarBuilder(
                 address: address,
                 colorName: TSThread.stableColorNameForNewConversation(with: address.stringForDisplay),
-                diameter: 48
+                diameter: 48,
+                localUserAvatarMode: .asUser
             )
 
             iconView.image = avatarBuilder.build()

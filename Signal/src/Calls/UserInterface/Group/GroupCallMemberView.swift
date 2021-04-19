@@ -248,7 +248,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
-    let avatarView = AvatarImageView()
+    let avatarView = ConversationAvatarView(diameter: 0,
+                                            localUserAvatarMode: .asUser)
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
@@ -319,18 +320,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         backgroundAvatarView.image = profileImage
 
-        let avatarBuilder = OWSContactAvatarBuilder(
-            address: device.address,
-            colorName: conversationColorName,
-            diameter: avatarDiameter
-        )
-
-        if device.address.isLocalAddress {
-            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
-        } else {
-            avatarView.image = avatarBuilder.build()
-        }
-
+        avatarView.diameter = avatarDiameter
+        avatarView.configureWithSneakyTransaction(address: device.address)
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
         muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true

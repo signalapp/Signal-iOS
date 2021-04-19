@@ -184,11 +184,11 @@ struct ConversationHeaderBuilder: Dependencies {
         self.options = options
         self.transaction = transaction
 
-        addFirstSubviews()
+        addFirstSubviews(transaction: transaction)
     }
 
-    mutating func addFirstSubviews() {
-        let avatarView = buildAvatarView()
+    mutating func addFirstSubviews(transaction: SDSAnyReadTransaction) {
+        let avatarView = buildAvatarView(transaction: transaction)
 
         let avatarWrapper = UIView.container()
         avatarWrapper.addSubview(avatarView)
@@ -365,20 +365,13 @@ struct ConversationHeaderBuilder: Dependencies {
         return button
     }
 
-    func buildAvatarView() -> UIView {
-        let avatarImage: UIImage?
-        if delegate.thread.isNoteToSelf, !options.contains(.renderLocalUserAsNoteToSelf) {
-            avatarImage = profileManager.localProfileAvatarImage() ??
-                OWSContactAvatarBuilder(forLocalUserWithDiameter: avatarSize).buildDefaultImage()
-        } else {
-            avatarImage = OWSAvatarBuilder.buildImage(
-                thread: delegate.thread,
-                diameter: avatarSize,
-                transaction: transaction
-            )
-        }
-        let avatarView = AvatarImageView(image: avatarImage)
-        avatarView.autoSetDimensions(to: CGSize(square: CGFloat(avatarSize)))
+    func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
+        let localUserAvatarMode: LocalUserAvatarMode = (options.contains(.renderLocalUserAsNoteToSelf)
+                                                            ? .noteToSelf
+                                                            : .asUser)
+        let avatarView = ConversationAvatarView(diameter: avatarSize,
+                                                localUserAvatarMode: localUserAvatarMode)
+        avatarView.configure(thread: delegate.thread, transaction: transaction)
         // Track the most recent avatar view.
         delegate.avatarView = avatarView
         return avatarView

@@ -193,7 +193,8 @@ extension RecipientPickerViewController {
                         }
                     }
 
-                    cell.configureWithSneakyTransaction(recipientAddress: address)
+                    cell.configureWithSneakyTransaction(recipientAddress: address,
+                                                        localUserAvatarMode: .noteToSelf)
 
                     self.delegate?.recipientPicker(self, willRenderRecipient: recipient)
 

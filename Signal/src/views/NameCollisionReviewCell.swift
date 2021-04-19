@@ -28,8 +28,8 @@ extension NameCollision {
         if address.isLocalAddress, let localProfileAvatar = profileManager.localProfileAvatarImage() {
             return localProfileAvatar
         } else {
-            return OWSContactAvatarBuilder.buildImage(
-                address: address,
+            return OWSContactAvatarBuilder.buildImageForNonLocalAddress(
+                address,
                 diameter: 64,
                 transaction: transaction)
         }
@@ -89,7 +89,8 @@ extension NameCollision {
 class NameCollisionCell: UITableViewCell {
     typealias Action = (title: String, action: () -> Void)
 
-    let avatarView = AvatarImageView()
+    let avatarView = ConversationAvatarView(diameter: 64,
+                                            localUserAvatarMode: .asUser)
 
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -196,7 +197,6 @@ class NameCollisionCell: UITableViewCell {
 
         contentView.addSubview(horizontalStack)
         horizontalStack.autoPinEdgesToSuperviewMargins()
-        avatarView.autoSetDimensions(to: CGSize(square: 64))
         separatorView.autoConstrainAttribute(.horizontal, to: .bottom, of: avatarView, withMultiplier: 1, relation: .greaterThanOrEqual)
     }
 
@@ -214,7 +214,7 @@ class NameCollisionCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
-        avatarView.image = nil
+        avatarView.reset()
         nameLabel.text = ""
         phoneNumberLabel.text = ""
         blockedLabel.isHidden = true
@@ -226,7 +226,7 @@ class NameCollisionCell: UITableViewCell {
     func configure(model: NameCollisionCellModel, actions: [NameCollisionCell.Action]) {
         owsAssertDebug(actions.count < 3, "Only supports two actions. Feel free to update this for more.")
 
-        avatarView.image = model.avatar
+        avatarView.configureWithSneakyTransaction(address: model.address)
         if model.address.isLocalAddress {
             nameLabel.text = NSLocalizedString(
                 "GROUP_MEMBER_LOCAL_USER",

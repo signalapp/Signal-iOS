@@ -7,7 +7,8 @@ import Foundation
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
-    let contactAvatarView = AvatarImageView()
+    let contactAvatarView = ConversationAvatarView(diameter: PaymentModelCell.avatarDiameter,
+                                                   localUserAvatarMode: .asUser)
 
     let nameLabel = UILabel()
     let statusLabel = UILabel()
@@ -21,10 +22,6 @@ public class PaymentModelCell: UITableViewCell {
         OWSTableItem.configureCell(self)
         backgroundColor = .clear
         selectionStyle = .none
-
-        contactAvatarView.autoSetDimensions(to: CGSize(square: CGFloat(Self.avatarDiameter)))
-        contactAvatarView.setCompressionResistanceHigh()
-        contactAvatarView.setContentHuggingHigh()
 
         amountLabel.setCompressionResistanceHigh()
         amountLabel.setContentHuggingHigh()
@@ -76,12 +73,7 @@ public class PaymentModelCell: UITableViewCell {
 
         var avatarView: UIView
         if let address = paymentItem.address {
-            let avatarBuilder = OWSContactAvatarBuilder(
-                address: address,
-                colorName: paymentItem.conversationColorName,
-                diameter: Self.avatarDiameter
-            )
-            contactAvatarView.image = avatarBuilder.build()
+            contactAvatarView.configureWithSneakyTransaction(address: address)
             contactAvatarView.removeAllSubviews()
             avatarView = contactAvatarView
         } else {
@@ -134,7 +126,7 @@ public class PaymentModelCell: UITableViewCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
 
-        contactAvatarView.image = nil
+        contactAvatarView.reset()
         nameLabel.text = nil
         statusLabel.text = nil
         amountLabel.text = nil
