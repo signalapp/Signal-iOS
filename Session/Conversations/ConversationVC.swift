@@ -181,7 +181,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         addOrRemoveBlockedBanner()
         // Notifications
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillShowNotification(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleAudioDidFinishPlayingNotification(_:)), name: .SNAudioDidFinishPlaying, object: nil)
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
@@ -289,7 +289,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
     }
     
-    @objc func handleKeyboardWillShowNotification(_ notification: Notification) {
+    @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         if (newHeight > 0 && baselineKeyboardHeight == 0) {
             baselineKeyboardHeight = newHeight
@@ -300,8 +300,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
             didConstrainScrollButton = true
         }
-        let newContentOffsetY = self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight
-        self.messagesTableView.contentOffset.y = max(self.messagesTableView.contentOffset.y, newContentOffsetY)
+        let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
+        self.messagesTableView.contentOffset.y = newContentOffsetY
         self.messagesTableView.keyboardHeight = newHeight
         self.scrollButton.alpha = self.getScrollButtonOpacity()
     }
