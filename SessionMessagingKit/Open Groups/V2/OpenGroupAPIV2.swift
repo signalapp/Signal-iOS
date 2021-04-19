@@ -3,9 +3,9 @@ import SessionSnodeKit
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
-    private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
     private static var authTokenPromises: [String:Promise<String>] = [:]
     
+    public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
     public static let defaultServer = "https://sessionopengroup.com"
     public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
     public static var defaultRoomsPromise: Promise<[Info]>?
@@ -72,6 +72,14 @@ public final class OpenGroupAPIV2 : NSObject {
             self.imageID = imageID
         }
     }
+    
+    // MARK: Compact Poll Response Body
+    public struct CompactPollResponseBody {
+        let room: String
+        let messages: [OpenGroupMessageV2]
+        let deletions: [Int64]
+        let moderators: [String]
+    }
 
     // MARK: Convenience
     private static func send(_ request: Request) -> Promise<JSON> {
@@ -119,12 +127,17 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
-    public static func compactPoll(_ server: String) -> Promise<[(room: String, messages: [OpenGroupMessageV2], deletions: [Int64], moderators: [String])]> {
+    public static func compactPoll(_ server: String) -> Promise<[CompactPollResponseBody]> {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(.main))
+        #endif
         let storage = SNMessagingKitConfiguration.shared.storage
         let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
         var body: [JSON] = []
         for room in rooms {
-            let authToken = try! getAuthToken(for: room, on: server).wait() // TODO: This should be async
+            // It's okay for this to be blocking. This call happens on a background thread
+            // plus we'll almost always have the auth token in storage anyway.
+            guard let authToken = try? getAuthToken(for: room, on: server).wait() else { continue }
             var json: JSON = [ "room_id" : room, "auth_token" : authToken ]
             if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
                 json["from_message_server_id"] = String(lastMessageServerID)
@@ -135,17 +148,17 @@ public final class OpenGroupAPIV2 : NSObject {
             body.append(json)
         }
         let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : body ], isAuthRequired: false)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
             guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
-            var x: [(room: String, messages: [OpenGroupMessageV2], deletions: [Int64], moderators: [String])] = []
-            for result in results {
-                guard let room = result["room_id"] as? String else { continue }
-                let messages = try! parseMessages(from: result, for: room, on: server).wait() // TODO: This should be async
-                let deletions = result["deletions"] as? [Int64] ?? []
-                let moderators = result["moderators"] as? [String] ?? []
-                x.append((room: room, messages: messages, deletions: deletions, moderators: moderators))
+            let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
+                guard let room = json["room_id"] as? String else { return nil }
+                let deletions = json["deletions"] as? [Int64] ?? []
+                let moderators = json["moderators"] as? [String] ?? []
+                return try? parseMessages(from: json, for: room, on: server).map { messages in
+                    return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
+                }
             }
-            return x
+            return when(fulfilled: promises)
         }
     }
     

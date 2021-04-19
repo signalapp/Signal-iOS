@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(SNOpenGroupManagerV2)
 public final class OpenGroupManagerV2 : NSObject {
-    private var pollers: [String:OpenGroupPollerV2] = [:]
+    private var pollers: [String:OpenGroupPollerV2] = [:] // One for each server
     private var isPolling = false
     
     @objc public static var useV2OpenGroups = false
@@ -16,12 +16,12 @@ public final class OpenGroupManagerV2 : NSObject {
     @objc public func startPolling() {
         guard !isPolling else { return }
         isPolling = true
-        let openGroups = Storage.shared.getAllV2OpenGroups()
-        for (_, openGroup) in openGroups {
-            if let poller = pollers[openGroup.id] { poller.stop() } // Should never occur
-            let poller = OpenGroupPollerV2(for: openGroup)
+        let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+        servers.forEach { server in
+            if let poller = pollers[server] { poller.stop() } // Should never occur
+            let poller = OpenGroupPollerV2(for: server)
             poller.startIfNeeded()
-            pollers[openGroup.id] = poller
+            pollers[server] = poller
         }
     }
 
@@ -56,15 +56,12 @@ public final class OpenGroupManagerV2 : NSObject {
                     thread.save(with: transaction)
                     storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
                 }, completion: {
-                    // Stop any existing poller if needed
-                    if let poller = OpenGroupManagerV2.shared.pollers[openGroup.id] {
-                        poller.stop()
-                        OpenGroupManagerV2.shared.pollers[openGroup.id] = nil
+                    // Start the poller if needed
+                    if OpenGroupManagerV2.shared.pollers[server] == nil {
+                        let poller = OpenGroupPollerV2(for: server)
+                        poller.startIfNeeded()
+                        OpenGroupManagerV2.shared.pollers[server] = poller
                     }
-                    // Start the poller
-                    let poller = OpenGroupPollerV2(for: openGroup)
-                    poller.startIfNeeded()
-                    OpenGroupManagerV2.shared.pollers[openGroup.id] = poller
                     // Fetch the group image
                     OpenGroupAPIV2.getGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                         storage.write { transaction in
@@ -86,10 +83,13 @@ public final class OpenGroupManagerV2 : NSObject {
     }
 
     public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+        let storage = SNMessagingKitConfiguration.shared.storage
         // Stop the poller if needed
-        if let poller = pollers[openGroup.id] {
-            poller.stop()
-            pollers[openGroup.id] = nil
+        let openGroups = storage.getAllV2OpenGroups().values.filter { $0.server == openGroup.server }
+        if openGroups.count == 1 && openGroups.last == openGroup {
+            let poller = pollers[openGroup.server]
+            poller?.stop()
+            pollers[openGroup.server] = nil
         }
         // Remove all data
         var messageIDs: Set<String> = []
@@ -98,7 +98,7 @@ public final class OpenGroupManagerV2 : NSObject {
             messageIDs.insert(interaction.uniqueId!)
             messageTimestamps.insert(interaction.timestamp)
         }
-        SNMessagingKitConfiguration.shared.storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
+        storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)
