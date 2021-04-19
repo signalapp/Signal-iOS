@@ -61,7 +61,6 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         }
         self.isBorderless = isBorderless
         self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
-        self.translatesAutoresizingMaskIntoConstraints = false
 
         createContents(imageArrangement: imageArrangement,
                        cellMeasurement: cellMeasurement)
@@ -115,7 +114,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 let tintView = UIView()
                 tintView.backgroundColor = UIColor(white: 0, alpha: 0.4)
                 lastView.addSubview(tintView)
-                subStack2.layoutSubviewToFillSuperviewBounds(tintView)
+                subStack2.layoutSubviewToFillSuperviewEdges(tintView)
 
                 let moreCount = max(1, items.count - CVMediaAlbumView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(moreCount)
@@ -172,9 +171,16 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             }
             let iconView = CVImageView(image: icon)
             itemView.addSubview(iconView)
-            itemView.layoutMargins = .zero
-            iconView.autoPinTopToSuperviewMargin(withInset: 6)
-            iconView.autoPinLeadingToSuperviewMargin(withInset: 6)
+            itemView.addLayoutBlock { view in
+                let inset: CGFloat = 6
+                let x = (CurrentAppContext().isRTL
+                            ? view.width - (icon.size.width + inset)
+                            : inset)
+                iconView.frame = CGRect(x: x,
+                                        y: inset,
+                                        width: icon.size.width,
+                                        height: icon.size.height)
+            }
         }
     }
 

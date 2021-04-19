@@ -127,7 +127,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentView.bodyMediaGradientView = gradientView
             gradientView.layer.addSublayer(gradientLayer)
             albumView.addSubview(gradientView)
-            stackView.layoutSubviewToFillSuperviewBounds(gradientView)
+            stackView.layoutSubviewToFillSuperviewEdges(gradientView)
         }
 
         // Only apply "inner shadow" for single media, not albums.
@@ -140,29 +140,27 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                                                         opacity: 0.15))
             componentView.innerShadowView = innerShadowView
             firstMediaView.addSubview(innerShadowView)
-            stackView.layoutSubviewToFillSuperviewBounds(innerShadowView)
+            stackView.layoutSubviewToFillSuperviewEdges(innerShadowView)
         }
 
         if hasDownloadButton {
-            // TODO: Convert to manual layout.
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {
-                let downloadStack = UIStackView()
-                downloadStack.axis = .horizontal
-                downloadStack.alignment = .center
-                downloadStack.spacing = 8
-                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
-                downloadStack.isLayoutMarginsRelativeArrangement = true
+                let downloadStackConfig = ManualStackView.Config(axis: .horizontal,
+                                                                 alignment: .center,
+                                                                 spacing: 8,
+                                                                 layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 10))
+                let downloadStack = ManualStackView(name: "downloadStack")
+                downloadStack.apply(config: downloadStackConfig)
+                var subviewInfos = [ManualStackSubviewInfo]()
 
-                let pillView = OWSLayerView.pillView()
+                let pillView = ManualLayoutViewWithLayer.pillView(name: "pillView")
                 pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                downloadStack.addSubview(pillView)
-                // TODO:
-                pillView.autoPinEdgesToSuperviewEdges()
+                downloadStack.addSubviewToFillSuperviewEdges(pillView)
 
-                iconView.autoSetDimensions(to: CGSize.square(20))
                 downloadStack.addArrangedSubview(iconView)
+                subviewInfos.append(CGSize.square(20).asManualSubviewInfo(hasFixedSize: true))
 
                 let downloadLabel = UILabel()
                 let downloadFormat = (areAllItemsImages
@@ -170,22 +168,27 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                         comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
                                         : NSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT",
                                         comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
-                downloadLabel.text = String(format: downloadFormat, OWSFormat.formatInt(albumView.itemViews.count))
-                downloadLabel.textColor = UIColor.ows_white
-                downloadLabel.font = .ows_dynamicTypeSubheadline
                 downloadStack.addArrangedSubview(downloadLabel)
+                let downloadLabelConfig = CVLabelConfig(text: String(format: downloadFormat,
+                                                                     OWSFormat.formatInt(albumView.itemViews.count)),
+                                                        font: .ows_dynamicTypeSubheadline,
+                                                        textColor: UIColor.ows_white)
+                downloadLabelConfig.applyForRendering(label: downloadLabel)
+                let downloadLabelSize = CVText.measureLabel(config: downloadLabelConfig,
+                                                            maxWidth: CGFloat.greatestFiniteMagnitude)
+                subviewInfos.append(downloadLabelSize.asManualSubviewInfo)
 
-                stackView.addSubview(downloadStack)
-                // TODO:
-                downloadStack.autoCenterInSuperview()
+                let downloadStackMeasurement = ManualStackView.measure(config: downloadStackConfig,
+                                                                       subviewInfos: subviewInfos)
+                downloadStack.measurement = downloadStackMeasurement
+                stackView.addSubviewToCenterOnSuperview(downloadStack,
+                                                        size: downloadStackMeasurement.measuredSize)
             } else {
                 let circleSize: CGFloat = 44
                 let circleView = OWSLayerView.circleView(size: circleSize)
                 circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                stackView.addSubview(circleView)
-                stackView.centerSubviewOnSuperview(circleView, size: .square(circleSize))
-                stackView.addSubview(iconView)
-                stackView.centerSubviewOnSuperview(iconView, size: .square(24))
+                stackView.addSubviewToCenterOnSuperview(circleView, size: .square(circleSize))
+                stackView.addSubviewToCenterOnSuperview(iconView, size: .square(24))
             }
 
             if mediaAlbumHasPendingAttachment {
@@ -194,12 +197,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)
 
                 if totalSize > 0 {
-                    let downloadSizeView = OWSLayerView.pillView()
-                    downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
-                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
-
                     var downloadSizeText = [OWSFormat.formatFileSize(UInt(totalSize))]
-
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
                         if firstAttachmentPointer.isAnimated {
@@ -211,18 +209,31 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         }
                     }
 
-                    let downloadSizeLabel = UILabel()
-                    downloadSizeLabel.text = downloadSizeText.joined(separator: " • ")
-                    downloadSizeLabel.textColor = UIColor.ows_white
-                    downloadSizeLabel.font = .ows_dynamicTypeCaption1
-                    downloadSizeView.addSubview(downloadSizeLabel)
-                    // TODO:
-                    downloadSizeLabel.autoPinEdgesToSuperviewMargins()
+                    let downloadSizeView = ManualLayoutViewWithLayer.pillView(name: "downloadSizeView")
+                    downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
 
-                    componentView.rootView.addSubview(downloadSizeView)
-                    // TODO:
-                    downloadSizeView.autoPinEdge(toSuperviewEdge: .top, withInset: 9)
-                    downloadSizeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+                    let downloadSizeLabelConfig = CVLabelConfig(text: downloadSizeText.joined(separator: " • "),
+                                                                font: .ows_dynamicTypeCaption1,
+                                                                textColor: .ows_white)
+                    let downloadSizeLabel = UILabel()
+                    downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
+                    let downloadSizeLabelSize = CVText.measureLabel(config: downloadSizeLabelConfig,
+                                                                    maxWidth: .greatestFiniteMagnitude)
+                    downloadSizeView.addSubviewToFillSuperviewMargins(downloadSizeLabel)
+
+                    let downloadSizeViewSize = downloadSizeLabelSize + downloadSizeView.layoutMargins.asSize
+                    stackView.addSubview(downloadSizeView)
+                    stackView.addLayoutBlock { view in
+                        let hInset: CGFloat = 16
+                        let x = (CurrentAppContext().isRTL
+                                    ? view.width - (downloadSizeViewSize.width - hInset)
+                                    : hInset)
+                        downloadSizeView.frame = CGRect(x: x,
+                                                        y: 9,
+                                                        width: downloadSizeViewSize.width,
+                                                        height: downloadSizeViewSize.height)
+                    }
                 }
             }
         }
