@@ -70,6 +70,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];
 
+        // Vacuum the database
+        [self.dbReadWriteConnection vacuum];
+        
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
