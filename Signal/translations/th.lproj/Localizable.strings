@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "เพิ่มเข้ากลุ่ม";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "เพิ่ม “%1$@” เข้า “%2$@” หรือไม่?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "เพิ่มสมาชิกใหม่";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ถูกเพิ่มเข้า %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "เพิ่มเข้ากลุ่ม";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "คุณต้องการแบ่งปันโปรไฟล์ของคุณให้กับผู้ใช้คนนี้หรือไม่";
@@ -533,7 +533,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "เลือกประเทศ";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "เลือกสีของข้อความที่ส่งออกไปสำหรับแชตนี้";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "เลือกสีของข้อความขาออกสำหรับแชตนี้";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "จะมีเฉพาะคุณที่เห็นสีที่คุณเลือก";
@@ -731,10 +731,10 @@
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "คำถาม";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "มีบางสิ่งใช้งานไม่ได้";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "มีบางสิ่งไม่ทำงาน";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "มีบางสิ่งใช้งานไม่ได้";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "มีบางสิ่งไม่ทำงาน";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ไม่สามารถทำให้คำขอการสนับสนุนของคุณจบสิ้นลงได้";
@@ -743,7 +743,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "ลองอีกครั้ง";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Debug log ของคุณจะช่วยให้เราแก้ไขปัญหาของคุณได้เร็วขึ้น คุณสามารถเลือกที่จะส่ง logs ของคุณหรือไม่ก็ได้ ";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "ปูมดีบักของคุณจะช่วยให้เราแก้ไขปัญหาของคุณได้เร็วขึ้น คุณจะส่งปูมของคุณหรือไม่ก็ได้";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ส่งปูมดีบักหรือไม่?";
@@ -821,7 +821,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "เลือกว่าใครสามารถแก้ไขชื่อกลุ่ม รูปภาพ และตั้งเวลาให้ข้อความหายไป";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "เสียง";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากผู้ใช้นี้อีกต่อไป ";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "แก้ไข";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "แก้ไขข้อมูลกลุ่ม";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "เฉพาะผู้ดูแล";
@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "การกล่าวถึง";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดแจ้งเตือนการสนทนานี้ไป...";
 
@@ -896,7 +899,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "ตลอดเวลา";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "ปิดเสียง";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 ชั่วโมง";
@@ -923,28 +926,28 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "ตลอดเวลา";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "ปิดเสียงตลอด";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "ปิดเสียงอยู่";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "จนถึง %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "ปิดเสียงจนถึง %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "มี %@ กลุ่มร่วมกัน";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "สร้างผู้ติดต่อใหม่";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "ไม่มีกลุ่มร่วมกัน";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "มี 1 กลุ่มร่วมกัน";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "สิทธิ์";
@@ -962,7 +965,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "ปลด %@ จากการเป็นผู้ดูแลกลุ่มหรือไม่?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "ค้นหา";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "เลิกปิดกั้นกลุ่ม";
@@ -980,10 +983,10 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ถูกบันทึก";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "วิดีโอ";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "รายละเอียดผู้ติดต่อ";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "แบ่งปันโปรไฟล์";
@@ -1007,7 +1010,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "อ่านเพิ่มเติม";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตเซสชันของคุณจะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่จะไม่สามารถเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วได้";
+"CORRUPTED_SESSION_DESCRIPTION" = "การเริ่มสมัยสนทนาของคุณใหม่ จะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่มันจะไม่สามารถกู้คืนข้อความที่เสียหายไปแล้วได้";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "เลือกรหัสประเทศ";
@@ -1025,7 +1028,7 @@
 "DATE_HOURS_AGO_FORMAT" = "%@ชม.";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ด";
+"DATE_MINUTES_AGO_FORMAT" = "%@ นาที";
 
 /* The present; the current time. */
 "DATE_NOW" = "เดี๋ยวนี้";
@@ -1076,7 +1079,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "เปลี่ยนเส้นทางไปยัง GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "ข้อมูลเกี่ยวกับบันทึกดีบัก";
+"DEBUG_LOG_INFO_BUTTON" = "ข้อมูลเกี่ยวกับปูมดีบัก";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ลบบัญชี";
@@ -1247,7 +1250,7 @@
 "DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ข้อความในแชตนี้จะหายไปหลังจาก%@";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ข้อความในแชตนี้จะหายไปหลังจาก %@";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "เมื่อเปิดใช้งาน ข้อความที่ส่งและได้รับในแชตนี้จะหายไปหลังจากที่ได้เห็นแล้ว";
@@ -1307,7 +1310,7 @@
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "อุปกรณ์ของคุณไม่ได้ตั้งค่าให้ส่งอีเมลไว้ ในการส่งคำร้องขอการสนับสนุน คุณจะต้องตั้งค่าอีเมลบนอุปกรณ์และอีเมลของคุณ support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "อุปกรณ์ของคุณไม่ได้ตั้งค่าให้ส่งอีเมลไว้ ในการส่งคำขอการสนับสนุน คุณจะต้องตั้งค่าอีเมลบนอุปกรณ์และอีเมลของคุณ support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "อีเมลไม่พร้อมใช้งาน";
@@ -1367,7 +1370,7 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "ไม่สามารถเปิดแอปอีเมล";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "ไม่สามารถสร้างคำร้องขอการสนับสนุนได้";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "ไม่สามารถสร้างคำขอการสนับสนุนได้";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "ไม่สามารถอัปโหลดรายการบันทึก";
@@ -1421,7 +1424,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "ได้รับข้อความที่ใช้ไม่ได้กับรุ่นนี้";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "ไม่มีเซสชันที่ใช้งานได้สำหรับผู้ติดต่อ";
+"ERROR_MESSAGE_NO_SESSION" = "ไม่มีสมัยสนทนาที่ใช้ได้สำหรับผู้ติดต่อ";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "หมายเลขความปลอดภัยถูกเปลี่ยนแล้ว";
@@ -1430,7 +1433,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "หมายเลขความปลอดภัยของคุณกับ %@ ได้เปลี่ยนไป";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "ข้อมูลสนทนาถูกเรียกขึ้นใหม่";
+"ERROR_MESSAGE_SESSION_REFRESH" = "สมัยสนทนาถูกเรียกขึ้นใหม่";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "เกิดข้อผิดพลาดที่ไม่รู้จัก";
@@ -1475,7 +1478,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "ทำเครื่องหมายว่าตรวจยืนยันแล้ว";
 
 /* Label for button to reset a session. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "ตั้งค่าเซสชันใหม่";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "เริ่มสมัยสนทนาใหม่";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "สร้างกลุ่มให้เสร็จ";
@@ -1874,7 +1877,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "เชิญเพื่อนเข้ากลุ่มของคุณผ่านลิงก์กลุ่มนี้";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ผู้ที่สามารถสแกนรหัสนี้จะสามารถเข้าร่วมกลุ่มของคุณได้ ซึ่งผู้ดูแลยังคงต้องอนุมัติให้สมาชิกใหม่อยู่ หากท่านได้เปิดการตั้งค่านี้ไว้";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ผู้ที่สแกนรหัสนี้จะสามารถเข้าร่วมกลุ่มของคุณได้ ผู้ดูแลยังต้องอนุมัติสมาชิกใหม่อยู่ หากคุณได้เปิดการตั้งค่าไว้";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "แบ่งปันรหัส";
@@ -1973,7 +1976,7 @@
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "คำขอเข้ากลุ่มของคุณถูกปฏิเสธ";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "คุณได้ส่งคำร้องขอเข้าร่วมกลุ่ม";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "คุณได้ส่งคำขอเข้ากลุ่ม";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "สิทธิ์ผู้ดูแลของคุณถูกเพิกถอน";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "คุณ";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "โทรเสียง";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "คุณสามารถเพิ่มหรือเชิญเพื่อนหลังจากสร้างกลุ่มนี้";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "สมาชิก";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "ข้อความ";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "โทรวิดีโอ";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ สมาชิกในกลุ่ม ใช้ชื่อเหมือนกัน";
@@ -2471,7 +2465,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ เพิ่มคุณเข้ากลุ่ม";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "คำร้องขอส่งข้อความ";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "คำขอส่งข้อความ";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "ไม่พบผลลัพธ์สำหรับ '%@'";
@@ -2483,7 +2477,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "วาดที่ใดก็ไดเพื่อทำให้มัว";
+"IMAGE_EDITOR_BLUR_HINT" = "วาดที่ใดก็ได้เพื่อมัว";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "มัวหน้า";
@@ -2705,7 +2699,7 @@
 "LOGGING_SECTION" = "กำลังบันทึก";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "บันทึกดีบัคสามารถช่วย Signal ในการแก้ไขปัญหาและการหลุดจากแอปได้";
+"LOGGING_SECTION_FOOTER" = "ปูมดีบักสามารถช่วยให้ Signal แก้ไขปัญหาและการหลุดจากแอปได้";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "ข้อความ";
@@ -2714,7 +2708,7 @@
 "MANY_GROUPS_IN_COMMON" = "มี %@ กลุ่มร่วมกัน";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "สื่อข้อมูลทั้งหมด";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "สื่อทั้งหมด";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "กล้อง";
@@ -2954,7 +2948,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "ไม่สำเร็จ";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "ส่งได้แล้วบางส่วน แตะดูรายละเอียด";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "ส่งแล้วบางส่วน แตะเพื่อดูรายละเอียด";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
@@ -3023,10 +3017,10 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้เชื่อมโยงอุปกรณ์เข้ากับบัญชีของคุณถึงจำนวนที่จำกัดแล้ว กรุณาลบอุปกรณ์ใดอุปกรณ์หนึ่งและลองอีกครั้ง";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "ถูกปิดเสียงไว้";
+"MUTED_BADGE" = "ปิดเสียงอยู่";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของพวกเขาจาก %1$@ เป็น %2$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
@@ -3356,7 +3350,7 @@
 "OUTGOING_CALL_FORMAT" = "คุณได้โทรหา %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "ปฏิเสธการขอ";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "ปฏิเสธคำขอ";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ เมื่อ %2$@";
@@ -3368,7 +3362,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ จะได้รับแจ้งว่าคุณปฏิเสธ";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "ปฏิเสธการขอนี้หรือไม่?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "ปฏิเสธคำขอนี้หรือไม่?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "ค่าธรรมเนียมจัดระเบียบเหรียญ";
@@ -3419,10 +3413,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "ไม่สามารถติดต่อบริการได้";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "คุณมี MOB ไม่พอสำหรับทำการชำระเงินนี้ให้สมบูรณ์";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "คุณมี MOB ไม่พอสำหรับทำการชำระเงินนี้ให้สมบูรณ์ ขณะนี้คุณมี %@";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "ธุรกรรมที่ไม่ถูกรูปแบบ";
@@ -3431,7 +3425,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "ปรับรุ่น Signal เพื่อใช้การจ่ายเงิน";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "ไม่สามารถชำระเงินได้สำเร็จ กรุณาตรวจสอบการเชื่อมต่อของคุณและลองอีกครั้ง";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "ค่าธรรมเนียมเครือข่าย";
@@ -3542,7 +3536,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "ไม่สามารถส่งการจ่ายเงินได้";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "บุคคลนี้ไม่ได้เปิดใช้การชำระเงิน";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "ผู้รับที่ไม่เปิดรับเงิน";
@@ -3626,10 +3620,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "คำเชิญที่ใช้งานไม่ได้";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ถูกเชิญโดยคนอื่น";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ถูกเชิญโดยคุณ";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "เกิดข้อผิดพลาดในการจัดการข้อความขาเข้า";
@@ -3842,10 +3836,10 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "เราจะเตือนคุณอีกครั้งพรุ่งนี้";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "เราจะเตือนคุณอีกครั้งภายในอีกไม่กี่สัปดาห์";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "เราจะเตือนคุณอีกครั้งในอีกไม่กี่สัปดาห์";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "เราจะเตือนคุณอีกครั้งภายในหนึ่งสัปดาห์";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "เราจะเตือนคุณอีกครั้งในหนึ่งสัปดาห์";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "รหัส PIN ไม่ถูกต้อง ลองอีกครั้ง";
@@ -4238,7 +4232,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "ไม่ ขอบคุณ";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>เราเชื่อมั่นในความเป็นส่วนตัว</bold>\n\nSignal จะไม่ติดตามหรือเก็บรวบรวมข้อมูลของคุณ พวกเราหวังพึ่งข้อเสนอแนะของผู้ใช้งานเพื่อพัฒนา Signal ให้แก่ทุกท่าน <bold>และเรายินดียิ่งที่จะรับฟังข้อเสนอแนะของคุณ</bold>.\n\nเราได้เปิดแบบสำรวจเพื่อให้ได้เข้าใจแนวทางการใช้ Signal ของคุณ แบบสำรวจของเราจะไม่รวบรวมข้อมูลอันจะนำมาซึ่งการเปิดเผยตัวตนคุณ หากคุณสนใจที่จะแบ่งปันข้อเสนอแนะเพิ่มเติม คุณจะมีตัวเลือกให้เพิ่มข้อมูลการติดต่อของคุณ\n\nหากคุณสะดวกและมีข้อเสนอแนะจะนำเสนอ เรายินดียิ่งที่จะรับฟังจากคุณ";
+"RESEARCH_MODAL_PLEA" = "<bold>เราเชื่อมั่นในความเป็นส่วนตัว</bold>\n\nSignal ไม่ติดตามหรือรวบรวมข้อมูลของคุณ เรารับฟังผู้ใช้เพื่อปรับปรุง Signal ให้กับทุกคน <bold>และเรายินดีที่จะฟังจากคุณ</bold>\n\nเราเปิดสำรวจเพื่อให้เข้าใจว่าคุณใช้ Signal อย่างไร การสำรวจของเราจะไม่เก็บข้อมูลใดที่จะระบุตัวคุณได้ หากคุณสนใจที่จะแบ่งปันข้อเสนอแนะเพิ่มเติม คุณสามารถเลือกเพิ่มข้อมูลการติดต่อของคุณ\n\nหากคุณสะดวกและมีข้อเสนอแนะ เรายินดียิ่งที่จะรับฟังจากคุณ";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "ทำแบบสำรวจ";
@@ -4523,7 +4517,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "เปิด Signal ในไอแพดเครื่องเก่าของคุณเพื่อถ่ายโอนบัญชีของคุณ";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "เซสชันที่ปลอดภัยถูกรีเซ็ตแล้ว";
+"SECURE_SESSION_RESET" = "สมัยสนทนาที่ปลอดภัยถูกล้างเริ่มใหม่";
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "ดูทั้งหมด";
@@ -4565,7 +4559,7 @@
 "SEND_SMS_INVITE_TITLE" = "คุณต้องการเชิญหมายเลขต่อไปนี้มาใช้ Signal หรือไม่:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal เข้ารหัสลับจากต้นทางถึงปลายทางและมันอาจต้องเรียกข้อมูลการสนทนาของคุณใหม่เป็นบางครั้ง การเรียกข้อมูลใหม่นี้ไม่ส่งผลต่อความปลอดภัยของการสนทนา แต่เป็นได้ว่าคุณอาจพลาดข้อความหนึ่งข้อความจากผู้ติดต่อรายนี้ และคุณสามารถขอให้เขาส่งข้อความอีกครั้งได้";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal เข้ารหัสลับจากต้นทางถึงปลายทางและมันอาจต้องเรียกสมัยการสนทนาของคุณใหม่เป็นบางครั้ง สิ่งนี้ไม่ส่งผลต่อความปลอดภัยของการสนทนา แต่เป็นได้ว่าคุณอาจพลาดข้อความหนึ่งข้อความจากผู้ติดต่อรายนี้ คุณสามารถขอให้เขาส่งข้อความอีกครั้งได้";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "เริ่มสมัยสนทนาใหม่";
@@ -4607,7 +4601,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ไม่จำเป็นต้องใช้การหลบเลี่ยงการปิดกั้นข้อมูล; คุณเชื่อมต่อกับเซิร์ฟเวอร์ Signal อยู่แล้ว";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกดีบัก";
+"SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้ปูมดีบัก";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "การตั้งค่า PIN ขั้นสูง";
@@ -4682,7 +4676,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "การโทร";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "ข้อความเสียง สื่อเสียงแบบฟังได้ครั้งเดียว และสติกเกอร์ (ขนาดน้อยกว่า 100kb) จะดาวน์โหลดให้เองโดยอัตโนมัติเสมอ";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "ข้อความเสียง สื่อเสียงที่ฟังได้ครั้งเดียว และสติกเกอร์ (ต่ำกว่า 100kb) จะดาวน์โหลดอัตโนมัติเสมอ";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "ดาวน์โหลดอัตโนมัติ";
@@ -4930,6 +4924,12 @@
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "การชำระเงินไม่ได้เปิดใช้";
 
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "ยังไม่ได้ลงทะเบียน";
+
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "เปิดใช้การชำระเงิน";
 
@@ -4988,7 +4988,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "คุณมี MOB ไม่พอสำหรับทำการชำระเงินนี้ให้สมบูรณ์ ขณะนี้คุณมี %@";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "บัญชีมีเงินไม่พอ";
@@ -5021,7 +5021,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "บันทึกวลีกู้คืน";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "บันทึกวลีกู้คืนสำหรับการชำระเงิน";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "ยอดคงเหลือ";
@@ -5315,7 +5315,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "อนุญาตจากทุกคน";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "เปิดใช้งานผู้ส่งที่ปิดบังตัวตนสำหรับข้อความขาเข้าจากคนที่ไม่ใช่ผู้ติดต่อและคนที่คุณไม่ได้แบ่งปันโปรไฟล์";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "เปิดใช้งานผู้ส่งที่ปิดบังตัวตน สำหรับข้อความขาเข้า จากคนที่ไม่ใช่ผู้ติดต่อ และคนที่คุณไม่ได้แบ่งปันโปรไฟล์ด้วย";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "เวอร์ชัน";
@@ -5390,7 +5390,7 @@
 "SMS_INVITE_BODY" = "ฉันกำลังชวนคุณให้ติดตั้ง Signal! นี่คือลิงก์:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "เสียงและการแจ้งเตือน";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ไม่มี";
@@ -5417,7 +5417,7 @@
 "STICKERS_INSTALL_BUTTON" = "ติดตั้ง";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "ซีรีส์ของสติกเกอร์ที่ออกแบบโดยศิลปินของ Signal";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "ซีรีส์สติกเกอร์โดยศิลปิน Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "สติกเกอร์ที่คุณได้รับ";
@@ -5672,7 +5672,7 @@
 "UNSUPPORTED_ATTACHMENT" = "ได้รับประเภทแฟ้มแนบที่ไม่รองรับ";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "อุปกรณ์ของคุณไม่รองรับคุณลักษณะนี้";
+"UNSUPPORTED_FEATURE_ERROR" = "อุปกรณ์ของคุณไม่รองรับความสามารถนี้";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
 "UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
@@ -5783,7 +5783,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "แตะที่นี่เพื่อทำให้ข้อความหายไปหลังจากคุณเห็นข้อความ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "แฟ้มสื่อแบบดูได้ครั้งเดียวที่กำลังส่งออกไปจะถูกลบอัตโนมัติหลังจากส่งไปแล้ว";
+"VIEW_ONCE_OUTGOING_TOAST" = "แฟ้มสื่อที่ดูได้ครั้งเดียวขาออกจะถูกลบอัตโนมัติหลังจากส่งแล้ว";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "เลื่อนเพื่อยกเลิก";

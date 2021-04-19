@@ -889,6 +889,9 @@
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "تىلغا ئالغانلار";
 
+/* Button to message the chat */
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "بۇ سۆھبەتنى ئۈنسىزلە…";
 
@@ -923,7 +926,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "ھەمىشە";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "ھەمىشە ئۈنسىز";
 
 /* Button to unmute the chat */
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "ئۈنسىز";
@@ -932,7 +935,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ غىچە";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ غىچە ئۈنسىز";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ئورتاق گۇرۇپپا";
@@ -2002,20 +2005,11 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "سىز";
 
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "ئۈن چاقىرىش";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "بۇ گۇرۇپپىنى قۇرغاندىن كېيىن دوستلارنى قوشالايسىز ياكى تەكلىپ قىلالايسىز.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ئەزالار";
-
-/* Accessibility label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "ئۇچۇر";
-
-/* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "سىنلىق چاقىرىش";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "توپتىكى %@ ئەزانىڭ ئاتى ئوخشىشىپ كېتىدۇ.";
@@ -4930,6 +4924,12 @@
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "چىقىم قىلىش قوزغىتىلمىدى";
 
+/* Message for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+
+/* Title for the 'payments not registered' alert. */
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "تىزىملىتىلمىغان";
+
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "چىقىملارنى ئاكتىپلا";
 
@@ -5834,7 +5834,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "تاما قەغىزىنى تازىلاشمۇ؟ بۇ سىزنىڭ سۆھبەتلىرىڭىز ئۈچۈن خاسلاشتۇرغان تام قەغەزلىرىڭىزنى تازىلىۋەتمەيدۇ. ";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "قاراڭغۇ ئۇسلۇب تام قەغىزىنى گىرەمسەنلەشتۈرىدۇ";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "قاراڭغۇ ئۇسلۇب تام قەغىزىنى گىرىمسەنلەشتۈرىدۇ";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "بارلىق تامقەغىزىنى تازىلىغىلى بولمىدى، كېيىنرەك قايتا سىناڭ ياكى خاتالىق يوقىمىسا ياردەم مەركىزى بىلەن ئالاقىلىشىڭ.";
