@@ -66,9 +66,6 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func setSnodePool(to newValue: Set<Snode>, using transaction: Any? = nil) {
-        #if DEBUG
-        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
-        #endif
         snodePool = newValue
         let storage = SNSnodeKitConfiguration.shared.storage
         if let transaction = transaction {
@@ -143,13 +140,13 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func getSnodePool() -> Promise<Set<Snode>> {
-        if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
         loadSnodePoolIfNeeded()
         let now = Date()
         let hasSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
         let snodePool = SnodeAPI.snodePool
         let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
         if hasInsufficientSnodes || hasSnodePoolExpired {
+            if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
             let promise: Promise<Set<Snode>>
             if snodePool.isEmpty {
                 promise = getSnodePoolFromSeedNode()
@@ -195,6 +192,7 @@ public final class SnodeAPI : NSObject {
             "method" : "get_n_service_nodes",
             "params" : [
                 "active_only" : true,
+                "limit" : 256,
                 "fields" : [
                     "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
                 ]
@@ -227,31 +225,43 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func getSnodePoolFromSnode() -> Promise<Set<Snode>> {
-        return getSnodePool().then2 { snodePool -> Promise<Set<Snode>> in
-            var snodePool = snodePool
-            var snodes: Set<Snode> = []
-            (0..<3).forEach { _ in
-                let snode = snodePool.randomElement()!
-                snodePool.remove(snode)
-                snodes.insert(snode)
-            }
-            let rawSnodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
-                return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                    return invoke(.getAllSnodes, on: snode, parameters: [:]).map2 { rawResponse in
-                        return parseSnodes(from: rawResponse)
-                    }
-                }
-            }
-            return when(fulfilled: rawSnodePoolPromises).map2 { results in
-                var result: Set<Snode> = results[0]
-                results.forEach { result = result.union($0) }
-                if result.count > 196 { // We want the snodes to agree on at least this many snodes
-                    return result
-                } else {
-                    throw Error.inconsistentSnodePools
+        var snodePool = SnodeAPI.snodePool
+        var snodes: Set<Snode> = []
+        (0..<3).forEach { _ in
+            let snode = snodePool.randomElement()!
+            snodePool.remove(snode)
+            snodes.insert(snode)
+        }
+        let rawSnodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
+            return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                let parameters: JSON = [
+                    "endpoint" : "get_n_service_nodes",
+                    "oxend_params" : [
+                        "limit" : 256,
+                        "active_only" : true,
+                        "fields" : [
+                            "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
+                        ]
+                    ]
+                ]
+                return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
+                    return parseSnodes(from: rawResponse)
                 }
             }
         }
+        let promise = when(fulfilled: rawSnodePoolPromises).map2 { results -> Set<Snode> in
+            var result: Set<Snode> = results[0]
+            results.forEach { result = result.union($0) }
+            if result.count > 196 { // We want the snodes to agree on at least this many snodes
+                return result
+            } else {
+                throw Error.inconsistentSnodePools
+            }
+        }
+        promise.catch2 { error in
+            SNLog("\(error)")
+        }
+        return promise
     }
 
     // MARK: Public API
@@ -479,8 +489,20 @@ public final class SnodeAPI : NSObject {
         case 421:
             // The snode isn't associated with the given public key anymore
             if let publicKey = publicKey {
-                SNLog("Invalidating swarm for: \(publicKey).")
-                SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                func invalidateSwarm() {
+                    SNLog("Invalidating swarm for: \(publicKey).")
+                    SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                }
+                if let json = json {
+                    let snodes = parseSnodes(from: json)
+                    if !snodes.isEmpty {
+                        setSwarm(to: snodes, for: publicKey)
+                    } else {
+                        invalidateSwarm()
+                    }
+                } else {
+                    invalidateSwarm()
+                }
             } else {
                 SNLog("Got a 421 without an associated public key.")
             }
