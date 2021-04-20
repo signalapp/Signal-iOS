@@ -49,8 +49,9 @@ internal extension OnionRequestAPI {
                 let snodeED25519PublicKey = snode.publicKeySet.ed25519Key
                 parameters = [ "destination" : snodeED25519PublicKey ]
             case .server(let host, let target, _, let scheme, let port):
-                parameters = [ "host" : host, "target" : target, "method" : "POST", "protocol" : scheme ?? "https" ]
-                if let port = port { parameters["port"] = port }
+                let scheme = scheme ?? "https"
+                let port = port ?? (scheme == "https" ? 443 : 80)
+                parameters = [ "host" : host, "target" : target, "method" : "POST", "protocol" : scheme, "port" : port ]
             }
             parameters["ephemeral_key"] = previousEncryptionResult.ephemeralPublicKey.toHexString()
             let x25519PublicKey: String
