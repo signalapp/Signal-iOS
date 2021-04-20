@@ -77,9 +77,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerViews.append(avatarWrapper)
 
             var unblurAvatarSubviewInfos = [ManualStackSubviewInfo]()
-            // TODO: Apply asset from design.
-            let unblurAvatarIconView = UIImageView.withTemplateImageName("file-outline-24",
-                                                                   tintColor: .ows_white)
+            let unblurAvatarIconView = UIImageView.withTemplateImageName("tap-outline-24",
+                                                                         tintColor: .ows_white)
             unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
             let unblurAvatarLabelConfig = CVLabelConfig(text: NSLocalizedString("THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",

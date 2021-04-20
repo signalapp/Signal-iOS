@@ -4,6 +4,16 @@
 
 import Foundation
 
+fileprivate extension OWSContactsManager {
+    static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+
+    static var unblurredAvatarContactCache = AtomicSet<UUID>()
+    static var unblurredAvatarGroupCache = AtomicSet<Data>()
+}
+
+// MARK: -
+
 @objc
 public extension OWSContactsManager {
 
@@ -37,31 +47,48 @@ public extension OWSContactsManager {
 
     // MARK: - Avatar Blurring
 
-    private static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
-    private static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
-
     func shouldBlurContactAvatar(address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool {
-
+        if address.phoneNumber == "+13134505219" {
+            Logger.info("jackpot.")
+        }
+        func cacheContains() -> Bool {
+            guard let uuid = address.uuid else {
+                return false
+            }
+            return Self.unblurredAvatarContactCache.contains(uuid)
+        }
+        func addToCache() {
+            guard let uuid = address.uuid else {
+                return
+            }
+            Self.unblurredAvatarContactCache.insert(uuid)
+        }
+        if cacheContains() {
+            return false
+        }
         // Only blur avatars for users who are not in system contacts...
         if isSystemContact(address: address) {
+            addToCache()
             return false
         }
         // ...not yet whitelisted...
         if profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+            addToCache()
             return false
         }
         // ...and not in a whitelisted group with the locar user.
         if isInWhitelistedGroupWithLocalUser(address: address,
                                              transaction: transaction) {
+            addToCache()
             return false
         }
-
         // We can skip avatar blurring if the user has explicitly waived the blurring.
         if let uuid = address.uuid,
            Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
                                                   defaultValue: false,
                                                   transaction: transaction) {
+            addToCache()
             return false
         }
         return true
@@ -69,18 +96,26 @@ public extension OWSContactsManager {
 
     func shouldBlurGroupAvatar(groupThread: TSGroupThread,
                                transaction: SDSAnyReadTransaction) -> Bool {
-
         let groupId = groupThread.groupId
-
-        // Only blur avatars for groups who are not yet whitelisted.
-        if profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+        func cacheContains() -> Bool {
+            Self.unblurredAvatarGroupCache.contains(groupId)
+        }
+        func addToCache() {
+            Self.unblurredAvatarGroupCache.insert(groupId)
+        }
+        if cacheContains() {
             return false
         }
-
+        // Only blur avatars for groups who are not yet whitelisted.
+        if profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+            addToCache()
+            return false
+        }
         // We can skip avatar blurring if the user has explicitly waived the blurring.
         if Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
                                                           defaultValue: false,
                                                           transaction: transaction) {
+            addToCache()
             return false
         }
         return true
@@ -98,9 +133,9 @@ public extension OWSContactsManager {
             owsFailDebug("Missung uuid for user.")
             return
         }
-        Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
-                                                       key: uuid.uuidString,
-                                                       transaction: transaction)
+        Self.skipContactAvatarBlurByUuidStore.setBool(true,
+                                                      key: uuid.uuidString,
+                                                      transaction: transaction)
         NotificationCenter.default.postNotificationNameAsync(Self.skipContactAvatarBlurDidChange,
                                                              object: nil,
                                                              userInfo: [
@@ -125,8 +160,29 @@ public extension OWSContactsManager {
 
     // MARK: - Shared Groups
 
-    func isInWhitelistedGroupWithLocalUser(address: SignalServiceAddress,
+    func isInWhitelistedGroupWithLocalUser(address otherAddress: SignalServiceAddress,
                                            transaction: SDSAnyReadTransaction) -> Bool {
+        let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: transaction)
+        guard !otherGroupThreadIds.isEmpty else {
+            return false
+        }
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return false
+        }
+        let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: transaction)
+        let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
+        for groupThreadId in groupThreadIds {
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
+                                                                      transaction: transaction) else {
+                owsFailDebug("Missing group thread")
+                continue
+            }
+            if profileManager.isGroupId(inProfileWhitelist: groupThread.groupId,
+                                        transaction: transaction) {
+                return true
+            }
+        }
         return false
     }
 

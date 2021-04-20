@@ -286,3 +286,19 @@ public class AtomicDictionary<Key: Hashable, Value> {
         Atomics.perform { self.values = values }
     }
 }
+
+// MARK: -
+
+public class AtomicSet<T: Hashable> {
+    private var values = Set<T>()
+
+    public required init() {}
+
+    public func insert(_ value: T) {
+        Atomics.perform { _ = self.values.insert(value) }
+    }
+
+    public func contains(_ value: T) -> Bool {
+        Atomics.perform { self.values.contains(value) }
+    }
+}

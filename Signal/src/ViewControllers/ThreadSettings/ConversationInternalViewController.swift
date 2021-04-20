@@ -59,6 +59,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                 value: address.uuid?.uuidString,
                                 accessibilityIdentifier: "uuid")
 
+                addCopyableItem(title: "Phone Number",
+                                value: address.phoneNumber,
+                                accessibilityIdentifier: "phoneNumber")
+
                 let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
                 addCopyableItem(title: "Profile Key",
                                 value: profileKey?.hexadecimalString,
