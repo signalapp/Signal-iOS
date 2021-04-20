@@ -128,37 +128,41 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     public static func compactPoll(_ server: String) -> Promise<[CompactPollResponseBody]> {
-        #if DEBUG
-        dispatchPrecondition(condition: .onQueue(.main))
-        #endif
         let storage = SNMessagingKitConfiguration.shared.storage
         let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
         var body: [JSON] = []
+        var authTokenPromises: [String:Promise<String>] = [:]
         for room in rooms {
-            // It's okay for this to be blocking. This call happens on a background thread
-            // plus we'll almost always have the auth token in storage anyway.
-            guard let authToken = try? getAuthToken(for: room, on: server).wait() else { continue }
-            var json: JSON = [ "room_id" : room, "auth_token" : authToken ]
+            authTokenPromises[room] = getAuthToken(for: room, on: server)
+            var json: JSON = [ "room_id" : room ]
             if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
-                json["from_message_server_id"] = String(lastMessageServerID)
+                json["from_message_server_id"] = lastMessageServerID
             }
             if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
-                json["from_deletion_server_id"] = String(lastDeletionServerID)
+                json["from_deletion_server_id"] = lastDeletionServerID
             }
             body.append(json)
         }
-        let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : body ], isAuthRequired: false)
-        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
-            guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
-            let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
-                guard let room = json["room_id"] as? String else { return nil }
-                let deletions = json["deletions"] as? [Int64] ?? []
-                let moderators = json["moderators"] as? [String] ?? []
-                return try? parseMessages(from: json, for: room, on: server).map { messages in
-                    return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
-                }
+        return when(fulfilled: [Promise<String>](authTokenPromises.values)).then(on: DispatchQueue.global(qos: .userInitiated)) { _ -> Promise<[CompactPollResponseBody]> in
+            let bodyWithAuthTokens = body.compactMap { json -> JSON? in
+                guard let roomID = json["room_id"] as? String, let authToken = authTokenPromises[roomID]?.value else { return nil }
+                var json = json
+                json["auth_token"] = authToken
+                return json
             }
-            return when(fulfilled: promises)
+            let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : bodyWithAuthTokens ], isAuthRequired: false)
+            return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
+                guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
+                let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
+                    guard let room = json["room_id"] as? String else { return nil }
+                    let deletions = json["deletions"] as? [Int64] ?? []
+                    let moderators = json["moderators"] as? [String] ?? []
+                    return try? parseMessages(from: json, for: room, on: server).map { messages in
+                        return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
+                    }
+                }
+                return when(fulfilled: promises)
+            }
         }
     }
     

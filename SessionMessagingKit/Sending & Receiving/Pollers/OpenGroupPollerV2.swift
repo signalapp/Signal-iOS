@@ -58,7 +58,9 @@ public final class OpenGroupPollerV2 : NSObject {
             self.isPolling = false
             bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
             seal.fulfill(())
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            SNLog("Open group polling failed due to error: \(error).")
+            self.isPolling = false
             seal.fulfill(()) // The promise is just used to keep track of when we're done
         }
         return promise
