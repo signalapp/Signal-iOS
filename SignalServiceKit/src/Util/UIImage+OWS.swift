@@ -63,47 +63,74 @@ extension UIImage {
         return newImage
     }
 
-    public func withGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
-        return cgImageWithGausianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension).map(on: .sharedUserInteractive) { UIImage(cgImage: $0) }
+    public func withGausianBlurPromise(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
+        return firstly {
+            cgImageWithGausianBlurPromise(radius: radius,
+                                          resizeToMaxPixelDimension: resizeToMaxPixelDimension)
+        }.map(on: .sharedUserInteractive) {
+            UIImage(cgImage: $0)
+        }
     }
 
-    public func cgImageWithGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
+    public func cgImageWithGausianBlurPromise(radius: CGFloat,
+                                              resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
         return firstly(on: .sharedUserInteractive) {
-            guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
-                throw OWSAssertionError("Failed to create blur filter")
-            }
-
-            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: radius]) else {
-                throw OWSAssertionError("Failed to create blur filter")
-            }
-
-            guard let resizedImage = self.resized(withMaxDimensionPixels: resizeToMaxPixelDimension),
-                  let resizedCGImage = resizedImage.cgImage else {
-                throw OWSAssertionError("Failed to downsize image for blur")
-            }
-
-            // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
-            let inputImage = CIImage(cgImage: resizedCGImage)
-            clampFilter.setDefaults()
-            clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
-
-            guard let clampOutput = clampFilter.outputImage else {
-                throw OWSAssertionError("Failed to clamp image")
-            }
-
-            blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
-
-            guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
-                throw OWSAssertionError("Failed to blur clamped image")
-            }
-
-            let context = CIContext(options: nil)
-            guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
-                throw OWSAssertionError("Failed to create CGImage from blurred output")
-            }
-
-            return blurredImage
+            try self.cgImageWithGausianBlur(radius: radius,
+                                            resizeToMaxPixelDimension: resizeToMaxPixelDimension)
         }
+    }
+
+    public func withGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) throws -> UIImage {
+        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius,
+                                                    resizeToMaxPixelDimension: resizeToMaxPixelDimension))
+    }
+
+    public func cgImageWithGausianBlur(radius: CGFloat,
+                                       resizeToMaxPixelDimension: CGFloat) throws -> CGImage {
+        guard let resizedImage = self.resized(withMaxDimensionPixels: resizeToMaxPixelDimension) else {
+            throw OWSAssertionError("Failed to downsize image for blur")
+        }
+        return try resizedImage.cgImageWithGausianBlur(radius: radius)
+    }
+
+    public func withGausianBlur(radius: CGFloat) throws -> UIImage {
+        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius))
+    }
+
+    public func cgImageWithGausianBlur(radius: CGFloat) throws -> CGImage {
+        guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
+            throw OWSAssertionError("Failed to create blur filter")
+        }
+
+        guard let blurFilter = CIFilter(name: "CIGaussianBlur",
+                                        parameters: [kCIInputRadiusKey: radius]) else {
+            throw OWSAssertionError("Failed to create blur filter")
+        }
+        guard let cgImage = self.cgImage else {
+            throw OWSAssertionError("Missing cgImage.")
+        }
+
+        // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
+        let inputImage = CIImage(cgImage: cgImage)
+        clampFilter.setDefaults()
+        clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
+
+        guard let clampOutput = clampFilter.outputImage else {
+            throw OWSAssertionError("Failed to clamp image")
+        }
+
+        blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
+
+        guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
+            throw OWSAssertionError("Failed to blur clamped image")
+        }
+
+        let context = CIContext(options: nil)
+        guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
+            throw OWSAssertionError("Failed to create CGImage from blurred output")
+        }
+
+        return blurredImage
     }
 
     @objc

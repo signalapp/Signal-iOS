@@ -190,7 +190,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             transaction: SDSAnyReadTransaction,
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
-        let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress, diameter: avatarDiameter)
+        let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
+                                               diameter: avatarDiameter)
 
         let contactName = Self.contactsManager.displayName(for: contactThread.contactAddress,
                                                            transaction: transaction)

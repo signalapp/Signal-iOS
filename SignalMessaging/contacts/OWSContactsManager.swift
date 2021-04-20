@@ -35,7 +35,102 @@ public extension OWSContactsManager {
         }
     }
 
-    // MARK: -
+    // MARK: - Avatar Blurring
+
+    private static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    private static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+
+    func shouldBlurContactAvatar(address: SignalServiceAddress,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+
+        // Only blur avatars for users who are not in system contacts...
+        if isSystemContact(address: address) {
+            return false
+        }
+        // ...not yet whitelisted...
+        if profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+            return false
+        }
+        // ...and not in a whitelisted group with the locar user.
+        if isInWhitelistedGroupWithLocalUser(address: address,
+                                             transaction: transaction) {
+            return false
+        }
+
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if let uuid = address.uuid,
+           Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
+                                                  defaultValue: false,
+                                                  transaction: transaction) {
+            return false
+        }
+        return true
+    }
+
+    func shouldBlurGroupAvatar(groupThread: TSGroupThread,
+                               transaction: SDSAnyReadTransaction) -> Bool {
+
+        let groupId = groupThread.groupId
+
+        // Only blur avatars for groups who are not yet whitelisted.
+        if profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+            return false
+        }
+
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
+                                                          defaultValue: false,
+                                                          transaction: transaction) {
+            return false
+        }
+        return true
+    }
+
+    static let skipContactAvatarBlurDidChange = NSNotification.Name("skipContactAvatarBlurDidChange")
+    static let skipContactAvatarBlurAddressKey = "skipContactAvatarBlurAddressKey"
+    static let skipGroupAvatarBlurDidChange = NSNotification.Name("skipGroupAvatarBlurDidChange")
+    static let skipGroupAvatarBlurGroupUniqueIdKey = "skipGroupAvatarBlurGroupUniqueIdKey"
+
+    func doNotBlurGroupAvatar(address: SignalServiceAddress,
+                              transaction: SDSAnyWriteTransaction) {
+
+        guard let uuid = address.uuid else {
+            owsFailDebug("Missung uuid for user.")
+            return
+        }
+        Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
+                                                       key: uuid.uuidString,
+                                                       transaction: transaction)
+        NotificationCenter.default.postNotificationNameAsync(Self.skipContactAvatarBlurDidChange,
+                                                             object: nil,
+                                                             userInfo: [
+                                                                Self.skipContactAvatarBlurAddressKey: address
+                                                             ])
+    }
+
+    func doNotBlurGroupAvatar(groupThread: TSGroupThread,
+                              transaction: SDSAnyWriteTransaction) {
+
+        let groupId = groupThread.groupId
+        let groupUniqueId = groupThread.uniqueId
+        Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
+                                                       key: groupId.hexadecimalString,
+                                                       transaction: transaction)
+        NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
+                                                             object: nil,
+                                                             userInfo: [
+                                                                Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
+                                                             ])
+    }
+
+    // MARK: - Shared Groups
+
+    func isInWhitelistedGroupWithLocalUser(address: SignalServiceAddress,
+                                           transaction: SDSAnyReadTransaction) -> Bool {
+        return false
+    }
+
+    // MARK: - Sorting
 
     func sortSignalAccountsWithSneakyTransaction(_ signalAccounts: [SignalAccount]) -> [SignalAccount] {
         databaseStorage.read { transaction in
