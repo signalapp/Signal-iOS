@@ -46,8 +46,7 @@ public class CVAvatarBuilder: Dependencies {
         let finalAvatar: UIImage
         if shouldBlurAvatar {
             do {
-                let blurRadius: CGFloat = 28
-                finalAvatar = try rawAvatar.withGausianBlur(radius: blurRadius)
+                finalAvatar = try rawAvatar.withGausianBlur(radius: CGFloat(diameter) / 2)
             } catch {
                 owsFailDebug("Error: \(error)")
                 return nil
@@ -75,8 +74,7 @@ public class CVAvatarBuilder: Dependencies {
         let finalAvatar: UIImage
         if shouldBlurAvatar {
             do {
-                let blurRadius: CGFloat = 28
-                finalAvatar = try rawAvatar.withGausianBlur(radius: blurRadius)
+                finalAvatar = try rawAvatar.withGausianBlur(radius: CGFloat(diameter) / 2)
             } catch {
                 owsFailDebug("Error: \(error)")
                 return nil

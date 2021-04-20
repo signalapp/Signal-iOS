@@ -377,8 +377,7 @@ public class ConversationAvatarView: AvatarImageView {
         }
         if shouldBlurAvatar {
             do {
-                let blurRadius: CGFloat = 28
-                return try image.withGausianBlur(radius: blurRadius)
+                return try image.withGausianBlur(radius: CGFloat(diameter) / 2)
             } catch {
                 owsFailDebug("Error: \(error)")
                 return nil

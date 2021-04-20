@@ -199,6 +199,7 @@ public class CVComponentState: Equatable, Dependencies {
 
     struct ThreadDetails: Equatable {
         let avatar: UIImage?
+        let isAvatarBlurred: Bool
         let titleText: String
         let bioText: String?
         let detailsText: String?

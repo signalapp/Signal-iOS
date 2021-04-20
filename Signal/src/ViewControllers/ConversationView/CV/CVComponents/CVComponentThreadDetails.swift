@@ -179,6 +179,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         } else {
             owsFailDebug("Invalid thread.")
             return CVComponentState.ThreadDetails(avatar: nil,
+                                                  isAvatarBlurred: false,
                                                   titleText: TSGroupThread.defaultGroupName,
                                                   bioText: nil,
                                                   detailsText: nil,
@@ -192,6 +193,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
                                                diameter: avatarDiameter)
+
+        let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(address: contactThread.contactAddress,
+                                                                          transaction: transaction)
 
         let contactName = Self.contactsManager.displayName(for: contactThread.contactAddress,
                                                            transaction: transaction)
@@ -317,6 +321,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }()
 
         return CVComponentState.ThreadDetails(avatar: avatar,
+                                              isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: bioText,
                                               detailsText: detailsText,
@@ -332,6 +337,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameter: avatarDiameter)
 
+        let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
+                                                                        transaction: transaction)
+
         let titleText = groupThread.groupNameOrDefault
 
         let detailsText = { () -> String? in
@@ -346,6 +354,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }()
 
         return CVComponentState.ThreadDetails(avatar: avatar,
+                                              isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: nil,
                                               detailsText: detailsText,
