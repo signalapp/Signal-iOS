@@ -555,11 +555,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
-    // NSE will trigger this when we receive a new message from remote PN,
-    // the touchDbAsync will trigger uiDatabaseDidUpdate but with a notification
-    // that does NOT include the recent update from NSE.
-    // This flag let the uiDatabaseDidUpdate know it needs to expect more update
-    // than those in the notification.
+    //
+    // The NSE will trigger this when we receive a new message through a remote notification.
+    // In this scenario, touchDbAsync will trigger uiDatabaseDidUpdate, but with a notification
+    // that does NOT include the recent update from NSE. This flag lets uiDatabaseDidUpdate
+    // know it needs to expect more updates than those in the notification.
     _hasUiDatabaseUpdatedExternally = true;
 }
 
@@ -578,7 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications] && !_hasUiDatabaseUpdatedExternally) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications] && !self.hasUiDatabaseUpdatedExternally) {
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
         return;
     }
