@@ -13,7 +13,7 @@ enum ProofOfWork {
         let payload = payloadAsString.bytes
         // Calculate target
         let numerator = UInt64.max
-        let difficulty = UInt64(SnodeAPI.powDifficulty)
+        let difficulty = UInt64(1)
         let totalSize = UInt64(payload.count + nonceSize)
         let ttlInSeconds = ttl / 1000
         let denominator = difficulty * (totalSize + (ttlInSeconds * totalSize) / UInt64(UInt16.max))

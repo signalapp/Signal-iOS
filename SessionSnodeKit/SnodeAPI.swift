@@ -33,6 +33,7 @@ public final class SnodeAPI : NSObject {
         case generic
         case clockOutOfSync
         case snodePoolUpdatingFailed
+        case inconsistentSnodePools
         // ONS
         case decryptionFailed
         case hashingFailed
@@ -43,6 +44,7 @@ public final class SnodeAPI : NSObject {
             case .generic: return "An error occurred."
             case .clockOutOfSync: return "Your clock is out of sync with the Service Node network. Please check that your device's clock is set to automatic time."
             case .snodePoolUpdatingFailed: return "Failed to update the Service Node pool."
+            case .inconsistentSnodePools: return "Received inconsistent Service Node pool information from the Service Node network."
             // ONS
             case .decryptionFailed: return "Couldn't decrypt ONS name."
             case .hashingFailed: return "Couldn't compute ONS name hash."
@@ -225,7 +227,31 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func getSnodePoolFromSnode() -> Promise<Set<Snode>> {
-        return Promise(error: Error.generic)
+        return getSnodePool().then2 { snodePool -> Promise<Set<Snode>> in
+            var snodePool = snodePool
+            var snodes: Set<Snode> = []
+            (0..<3).forEach { _ in
+                let snode = snodePool.randomElement()!
+                snodePool.remove(snode)
+                snodes.insert(snode)
+            }
+            let rawSnodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
+                return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                    return invoke(.getAllSnodes, on: snode, parameters: [:]).map2 { rawResponse in
+                        return parseSnodes(from: rawResponse)
+                    }
+                }
+            }
+            return when(fulfilled: rawSnodePoolPromises).map2 { results in
+                var result: Set<Snode> = results[0]
+                results.forEach { result = result.union($0) }
+                if result.count > 196 { // We want the snodes to agree on at least this many snodes
+                    return result
+                } else {
+                    throw Error.inconsistentSnodePools
+                }
+            }
+        }
     }
 
     // MARK: Public API
