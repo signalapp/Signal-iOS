@@ -429,18 +429,6 @@ public final class SnodeAPI : NSObject {
             } else {
                 SNLog("Got a 421 without an associated public key.")
             }
-        case 432:
-            // The proof of work difficulty is too low
-            if let powDifficulty = json?["difficulty"] as? UInt {
-                if powDifficulty < 100 {
-                    SNLog("Setting proof of work difficulty to \(powDifficulty).")
-                    SnodeAPI.powDifficulty = UInt(powDifficulty)
-                } else {
-                    handleBadSnode()
-                }
-            } else {
-                SNLog("Failed to update proof of work difficulty.")
-            }
         default:
             handleBadSnode()
             SNLog("Unhandled response code: \(statusCode).")
