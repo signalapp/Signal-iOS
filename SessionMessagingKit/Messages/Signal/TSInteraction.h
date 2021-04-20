@@ -41,9 +41,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 @property (nonatomic, readonly) BOOL shouldUseServerTime;
 
-- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp;
-
 - (uint64_t)timestampForUI;
+
+- (NSDate *)dateForUI;
 
 - (NSDate *)receivedAtDate;
 

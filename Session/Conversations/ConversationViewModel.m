@@ -162,24 +162,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-// Always load up to n messages when user arrives.
-//
-// The smaller this number is, the faster the conversation can display.
-// To test, shrink you accessibility font as much as possible, then count how many 1-line system info messages (our
-// shortest cells) can fit on screen at a time on an iPhoneX
-//
-// PERF: we could do less messages on shorter (older, slower) devices
-// PERF: we could cache the cell height, since some messages will be much taller.
-static const int kYapDatabasePageSize = 100;
-
-// Never show more than n messages in conversation view when user arrives.
-static const int kConversationInitialMaxRangeSize = 100;
-
-// Never show more than n messages in conversation view at a time.
-static const int kYapDatabaseRangeMaxLength = 25000;
-
-#pragma mark -
-
 @interface ConversationViewModel ()
 
 @property (nonatomic, weak) id<ConversationViewModelDelegate> delegate;
@@ -213,6 +195,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 @property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
 @property (nonatomic) NSArray<TSOutgoingMessage *> *unsavedOutgoingMessages;
+
+@property (nonatomic) BOOL hasUiDatabaseUpdatedExternally;
 
 @end
 
@@ -569,9 +553,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
+    //
+    // The NSE will trigger this when we receive a new message through a remote notification.
+    // In this scenario, touchDbAsync will trigger uiDatabaseDidUpdate, but with a notification
+    // that does NOT include the recent update from NSE. This flag lets uiDatabaseDidUpdate
+    // know it needs to expect more updates than those in the notification.
+    _hasUiDatabaseUpdatedExternally = true;
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
@@ -589,10 +578,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications] && !self.hasUiDatabaseUpdatedExternally) {
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
         return;
     }
+    
+    _hasUiDatabaseUpdatedExternally = false;
 
     __block ConversationMessageMappingDiff *_Nullable diff = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

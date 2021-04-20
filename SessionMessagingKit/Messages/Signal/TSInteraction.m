@@ -169,8 +169,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)timestampForUI
 {
-    if (_shouldUseServerTime) {
-        return _receivedAtTimestamp;
+    // We always want to show the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
+    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
+    // wrapped, which gets parsed to `serverTimestamp` in that case.
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
+        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
     }
     return _timestamp;
 }
@@ -180,14 +183,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self.timestamp;
 }
 
-- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp
+- (NSDate *)dateForUI
 {
-    _shouldUseServerTime = YES;
-    _receivedAtTimestamp = receivedAtTimestamp;
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForUI];
 }
 
 - (NSDate *)receivedAtDate
 {
+    // This is only used for sorting threads
     return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
@@ -199,13 +202,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    if ([self isKindOfClass:TSMessage.class] && ((TSMessage *)self).isOpenGroupMessage) {
-        sortId1 = self.sortId;
-        sortId2 = other.sortId;
-    } else {
-        sortId1 = self.timestamp;
-        sortId2 = other.timestamp;
-    }
+    // sortId == serverTimestamp (the sent timestamp) for open group messages.
+    // sortId == timestamp (the sent timestamp) for one-to-one and closed group messages.
+    sortId1 = self.sortId;
+    sortId2 = other.sortId;
 
     if (sortId1 > sortId2) {
         return NSOrderedDescending;
@@ -227,6 +227,17 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      [super description],
                      self.uniqueThreadId,
                      (unsigned long)self.timestamp];
+}
+
+- (uint64_t)sortId
+{
+    // We always want to sort on the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
+    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
+    // wrapped, which gets parsed to `serverTimestamp` in that case.
+    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
+        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
+    }
+    return self.timestamp;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
