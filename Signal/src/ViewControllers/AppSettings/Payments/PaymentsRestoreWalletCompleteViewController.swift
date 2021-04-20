@@ -66,7 +66,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         bottomStack.axis = .vertical
         bottomStack.alignment = .fill
         bottomStack.isLayoutMarginsRelativeArrangement = true
-        bottomStack.layoutMargins = UIEdgeInsets(top: 8, left: cellHOuterLeftMargin + 20, bottom: 0, right: cellHOuterRightMargin + 20)
+        bottomStack.layoutMargins = cellOuterInsetsWithMargin(top: 8, left: 20, right: 20)
         bottomStack.addArrangedSubviews([
             doneButton,
             UIView.spacer(withHeight: 8),
@@ -123,7 +123,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = UIEdgeInsets(top: 32, left: cellHOuterLeftMargin + 20, bottom: 40, right: cellHOuterRightMargin + 20)
+        topStack.layoutMargins = cellOuterInsetsWithMargin(top: 32, left: 20, bottom: 40, right: 20)
         return topStack
     }
 

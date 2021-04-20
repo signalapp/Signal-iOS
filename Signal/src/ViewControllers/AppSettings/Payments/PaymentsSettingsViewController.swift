@@ -382,10 +382,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         ])
         headerStack.axis = .vertical
         headerStack.alignment = .fill
-        headerStack.layoutMargins = UIEdgeInsets(top: 30,
-                                                 left: cellHOuterLeftMargin,
-                                                 bottom: 8,
-                                                 right: cellHOuterRightMargin)
+        headerStack.layoutMargins = cellOuterInsetsWithMargin(top: 30, bottom: 8)
         headerStack.isLayoutMarginsRelativeArrangement = true
         cell.contentView.addSubview(headerStack)
         headerStack.autoPinEdgesToSuperviewEdges()

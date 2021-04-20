@@ -315,12 +315,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         let footerStack = UIStackView(arrangedSubviews: [footerLabel])
         footerStack.axis = .vertical
         footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(
-            top: 12,
-            left: cellHOuterLeftMargin + Self.cellHInnerMargin,
-            bottom: 12,
-            right: cellHOuterRightMargin + Self.cellHInnerMargin
-        )
+        footerStack.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 12)
         footerStack.isLayoutMarginsRelativeArrangement = true
         section.customFooterView = footerStack
 
