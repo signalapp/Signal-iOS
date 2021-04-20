@@ -91,8 +91,8 @@ public extension OWSContactsManager {
     static let skipGroupAvatarBlurDidChange = NSNotification.Name("skipGroupAvatarBlurDidChange")
     static let skipGroupAvatarBlurGroupUniqueIdKey = "skipGroupAvatarBlurGroupUniqueIdKey"
 
-    func doNotBlurGroupAvatar(address: SignalServiceAddress,
-                              transaction: SDSAnyWriteTransaction) {
+    func doNotBlurContactAvatar(address: SignalServiceAddress,
+                                transaction: SDSAnyWriteTransaction) {
 
         guard let uuid = address.uuid else {
             owsFailDebug("Missung uuid for user.")

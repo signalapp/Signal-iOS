@@ -5542,6 +5542,9 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
 
+/* Indicator that a blurred avatar can be revealed by tapping. */
+"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "View";
+
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
 
