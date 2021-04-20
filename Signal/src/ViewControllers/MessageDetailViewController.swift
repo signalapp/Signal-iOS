@@ -302,11 +302,11 @@ class MessageDetailViewController: OWSTableViewController2 {
             let sectionTitle = self.sectionTitle(for: statusGroup)
             if let iconName = sectionIconName(for: statusGroup) {
                 let headerView = UIView()
-                headerView.layoutMargins = UIEdgeInsets(
+                headerView.layoutMargins = cellOuterInsetsWithMargin(
                     top: (defaultSpacingBetweenSections ?? 0) + 12,
-                    left: cellHOuterLeftMargin + Self.cellHInnerMargin * 0.5,
+                    left: Self.cellHInnerMargin * 0.5,
                     bottom: 10,
-                    right: cellHOuterRightMargin + Self.cellHInnerMargin * 0.5
+                    right: Self.cellHInnerMargin * 0.5
                 )
 
                 let label = UILabel()

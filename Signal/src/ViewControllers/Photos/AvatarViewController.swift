@@ -43,11 +43,23 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     }
 
     @objc
-    init?(address: SignalServiceAddress, readTx: SDSAnyReadTransaction) {
-        guard let avatarImage = OWSContactAvatarBuilder.buildImage(
-                address: address,
-                diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
-                transaction: readTx) else { return nil }
+    init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
+        let diameter = UInt(UIScreen.main.bounds.size.smallerAxis)
+        guard let avatarImage: UIImage = {
+            if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
+                return Self.profileManager.localProfileAvatarImage() ??
+                    OWSContactAvatarBuilder(
+                        forLocalUserWithDiameter: diameter,
+                        transaction: readTx
+                    ).buildDefaultImage()
+            } else {
+                return OWSContactAvatarBuilder.buildImage(
+                    address: address,
+                    diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
+                    transaction: readTx
+                )
+            }
+        }() else { return nil }
 
         self.avatarImage = avatarImage
         super.init(nibName: nil, bundle: nil)

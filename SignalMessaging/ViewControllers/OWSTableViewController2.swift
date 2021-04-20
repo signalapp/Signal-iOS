@@ -317,12 +317,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             // _inside_.
             //
             // By applying it to the cell, ensure the correct behavior for accesories.
-            cell.layoutMargins = UIEdgeInsets(
-                top: 0,
-                left: cellHOuterLeftMargin + Self.cellHInnerMargin,
-                bottom: 0,
-                right: cellHOuterRightMargin + Self.cellHInnerMargin
-            )
+            cell.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 0)
             var contentMargins = UIEdgeInsets(
                 hMargin: 0,
                 vMargin: Self.cellVInnerMargin
@@ -506,6 +501,21 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public var cellOuterInsets: UIEdgeInsets { Self.cellOuterInsets(in: view) }
 
     @objc
+    public func cellOuterInsetsWithMargin(top: CGFloat = .zero, left: CGFloat = .zero, bottom: CGFloat = .zero, right: CGFloat = .zero) -> UIEdgeInsets {
+        UIEdgeInsets(
+            top: top,
+            left: left + cellHOuterLeftMargin,
+            bottom: bottom,
+            right: right + cellHOuterRightMargin
+        )
+    }
+
+    @objc
+    public func cellOuterInsetsWithMargin(hMargin: CGFloat, vMargin: CGFloat) -> UIEdgeInsets {
+        cellOuterInsetsWithMargin(top: vMargin, left: hMargin, bottom: vMargin, right: hMargin)
+    }
+
+    @objc
     public static func cellHOuterLeftMargin(in view: UIView) -> CGFloat {
         cellOuterInsets(in: view).left
     }
@@ -555,11 +565,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                                     : UIColor.ows_gray90)
             textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
-            var textContainerInset = UIEdgeInsets(
+            var textContainerInset = cellOuterInsetsWithMargin(
                 top: (defaultSpacingBetweenSections ?? 0) + 12,
-                left: cellHOuterLeftMargin + Self.cellHInnerMargin * 0.5,
+                left: Self.cellHInnerMargin * 0.5,
                 bottom: 10,
-                right: cellHOuterRightMargin + Self.cellHInnerMargin * 0.5
+                right: Self.cellHInnerMargin * 0.5
             )
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
@@ -619,11 +629,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             ]
             textView.linkTextAttributes = linkTextAttributes
 
-            var textContainerInset = UIEdgeInsets(
+            var textContainerInset = cellOuterInsetsWithMargin(
                 top: 12,
-                left: cellHOuterLeftMargin + Self.cellHInnerMargin,
+                left: Self.cellHInnerMargin,
                 bottom: 0,
-                right: cellHOuterRightMargin + Self.cellHInnerMargin
+                right: Self.cellHInnerMargin
             )
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right

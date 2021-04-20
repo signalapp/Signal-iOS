@@ -77,9 +77,26 @@ class MemberActionSheet: InteractiveSheetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        tableViewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
         addChild(tableViewController)
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
+
+        // We add the handle directly to the content view,
+        // so that it doesn't scroll with the table.
+        let handleContainer = UIView()
+        contentView.addSubview(handleContainer)
+        handleContainer.autoPinWidthToSuperview()
+        handleContainer.autoPinEdge(toSuperviewEdge: .top)
+
+        let handle = UIView()
+        handle.backgroundColor = tableViewController.separatorColor
+        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
+        handle.layer.cornerRadius = 5 / 2
+        handleContainer.addSubview(handle)
+        handle.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
+        handle.autoPinEdge(toSuperviewEdge: .bottom, withInset: 33)
+        handle.autoHCenterInSuperview()
     }
 
     private var previousMinimizedHeight: CGFloat?
@@ -110,19 +127,9 @@ class MemberActionSheet: InteractiveSheetViewController {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
-        let handleContainer = UIView()
-
-        let handle = UIView()
-        handle.backgroundColor = tableViewController.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
-        handle.autoPinEdge(toSuperviewEdge: .bottom, withInset: 33)
-        handle.autoHCenterInSuperview()
-
+        // Leave space at the top for the handle
         let handleSection = OWSTableSection()
-        handleSection.customHeaderView = handleContainer
+        handleSection.customHeaderHeight = 50
         contents.addSection(handleSection)
 
         let section = OWSTableSection()
@@ -315,7 +322,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
     func tappedAvatar() {
         guard let avatarView = avatarView, avatarView.image != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
-            AvatarViewController(thread: self.thread, readTx: readTx)
+            AvatarViewController(address: self.address, renderLocalUserAsNoteToSelf: false, readTx: readTx)
         }) else { return }
         present(vc, animated: true)
     }

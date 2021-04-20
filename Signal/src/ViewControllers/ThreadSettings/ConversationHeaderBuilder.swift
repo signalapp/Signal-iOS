@@ -217,7 +217,7 @@ struct ConversationHeaderBuilder: Dependencies {
                     ),
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
-                    delegate.signalApp.presentConversation(for: delegate.thread, animated: true)
+                    delegate.signalApp.presentConversation(for: delegate.thread, action: .compose, animated: true)
                 }
             ))
         }
@@ -446,12 +446,7 @@ struct ConversationHeaderBuilder: Dependencies {
         let header = UIStackView(arrangedSubviews: subviews)
         header.axis = .vertical
         header.alignment = .center
-        header.layoutMargins = UIEdgeInsets(
-            top: 0,
-            left: delegate.tableViewController.cellHOuterLeftMargin,
-            bottom: 24,
-            right: delegate.tableViewController.cellHOuterRightMargin
-        )
+        header.layoutMargins = delegate.tableViewController.cellOuterInsetsWithMargin(bottom: 24)
         header.isLayoutMarginsRelativeArrangement = true
 
         header.isUserInteractionEnabled = true

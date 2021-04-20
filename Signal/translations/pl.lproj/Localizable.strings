@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Wzmianki";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "Wiadomość";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Wycisz tę rozmowę na...";
@@ -4925,10 +4925,10 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Płatności nie są włączone";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Zarejestruj się ponownie, aby wysyłać płatności.";
 
 /* Title for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nie zarejestrowany";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Niezarejestrowany";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Aktywuj płatności";
@@ -5342,7 +5342,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Uruchom aplikację Signal by zarejestrować.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Nie zarejestrowany";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Niezarejestrowany";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Uruchom aplikację Signal by zarejestrować lub zaktualizować.";

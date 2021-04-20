@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "אזכורים";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "התכתב";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "השתק התכתבות זו למשך…";
@@ -4925,7 +4925,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "תשלומים לא מאופשרים";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "הירשם מחדש כדי לשלוח תשלומים.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "לא רשום";

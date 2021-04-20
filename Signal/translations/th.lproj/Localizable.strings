@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "การกล่าวถึง";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "ข้อความ";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดแจ้งเตือนการสนทนานี้ไป...";
@@ -4469,7 +4469,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "ปรับปรุงรุ่น Signal ในอุปกรณ์นี้เพื่อเชื่อมโยงโทรศัพท์ของคุณ";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "ไม่รองรับเวอร์ชั่นนี้";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "ไม่รองรับรุ่นนี้";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "อุปกรณ์ชิ้นอื่นของคุณกำลังใช้งาน Signal รุ่นที่เลิกสนับสนุนแล้ว และไม่รองรับการสแกนรหัส QR สำหรับ iPad กรุณาติตตั้ง Signal รุ่นใหม่ล่าสุดและลองใหม่อีกครั้ง";
@@ -4526,7 +4526,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "ผู้ติดต่ออื่น";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "แชตเร็วๆ นี้";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "การสนทนาล่าสุด";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ส่งอีกครั้ง";
@@ -4544,7 +4544,7 @@
 "SEND_INVITE_SUCCESS" = "คุณได้เชิญเพื่อนของคุณมาใช้ Signal";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = " ยกเลิกสื่อ";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "ทิ้งสื่อ";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "กลับไปกล้อง";
@@ -4589,16 +4589,16 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "หากเปิดใช้ Signal จะพยายามหลบเลี่ยงการปิดกั้นข้อมูล อย่าเปิดใช้ความสามารถนี้ เว้นแต่ว่าคุณอยู่ในที่ที่ Signal ถูกปิดกั้น";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "การหลบเลี่ยงการปิดกั้นข้อมูลถูกเปิดใช้ เนื่องจากหมายเลขโทรศัพท์ของบัญชีของคุณ";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "การหลบเลี่ยงการปิดกั้นถูกเปิดใช้ เนื่องจากหมายเลขโทรศัพท์ของบัญชีของคุณ";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "คุณได้ปิดใช้งานระบบหลีกเลี่ยงการปิดกั้นข้อมูลข่าวสาร";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "คุณได้ปิดใช้งานระบบหลีกเลี่ยงการปิดกั้น";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "การหลบเลี่ยงการปิดกั้นข้อมูลจะใช้ได้ก็ต่อเมื่อเชื่อมต่อกับอินเทอร์เน็ต";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ไม่จำเป็นต้องใช้การหลบเลี่ยงการปิดกั้นข้อมูล; คุณเชื่อมต่อกับเซิร์ฟเวอร์ Signal อยู่แล้ว";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ไม่จำเป็นต้องใช้การหลบเลี่ยงการปิดกั้น คุณเชื่อมต่อกับเซิร์ฟเวอร์ Signal อยู่แล้ว";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้ปูมดีบัก";
@@ -4763,7 +4763,7 @@
 "SETTINGS_MESSAGING" = "การส่งข้อความ";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "ดูและแบ่งบันเมื่อมีการอ่านและพิมพ์ข้อความ หากปิดไว้ คุณจะไม่เห็นผู้อ่านข้อความหรือผู้พิมพ์คนอื่นๆ";
+"SETTINGS_MESSAGING_FOOTER" = "ดูและแบ่งปันว่าข้อความได้อ่านแล้วและกำลังพิมพ์อยู่ หากปิดไว้ คุณจะไม่เห็นสัญลักษณ์ว่าอ่านแล้วหรือกำลังพิมพ์อยู่จากคนอื่น";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "การตั้งค่า";
@@ -4772,7 +4772,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "รวมแชตที่ถูกปิดเสียงเข้าไว้ด้วย";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "ตัวเลขการแจ้งเตือน";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "จำนวนแจ้งเตือน";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "การแจ้งเตือนการโทรและข้อความสามารถแสดงในขณะที่โทรศัพท์ของคุณล็อกอยู่";
@@ -5318,7 +5318,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "เปิดใช้งานผู้ส่งที่ปิดบังตัวตน สำหรับข้อความขาเข้า จากคนที่ไม่ใช่ผู้ติดต่อ และคนที่คุณไม่ได้แบ่งปันโปรไฟล์ด้วย";
 
 /* No comment provided by engineer. */
-"SETTINGS_VERSION" = "เวอร์ชัน";
+"SETTINGS_VERSION" = "รุ่น";
 
 /* Label for the 'who can' privacy settings. */
 "SETTINGS_WHO_CAN" = "ใครสามารถ...";
@@ -5675,7 +5675,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "อุปกรณ์ของคุณไม่รองรับความสามารถนี้";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "หมายเลขความปลอดภัยของคุณกับ %@ ได้เปลี่ยนไป น่าจะเพราะเขาได้ติดตั้ง Signal ใหม่หรือเปลี่ยนอุปกรณ์ แตะ ตรวจยืนยัน เพื่อยืนยันหมายเลขความปลอดภัยใหม่ สิ่งนี้จะทำหรือไม่ก็ได้";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "ตรวจยืนยัน";

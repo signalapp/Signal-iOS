@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Erwähnungen";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "Nachricht";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Diese Unterhaltung stummschalten für …";
@@ -3464,7 +3464,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ hat dir %2$@ gesendet";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ neue Zahlungsbenachrichtigungen";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ neue Zahlungsmitteilungen";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Zahlung abgeschlossen";
@@ -4736,7 +4736,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Link-Vorschauen erstellen";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Wenn deine Nachricht einen Link enthält, wird eine Vorschau der verlinkten Seite erstellt.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Für zu versendende Nachrichten Link-Vorschauen direkt von den verlinkten Webseiten abrufen.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nie";
@@ -4925,7 +4925,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Zahlungen nicht aktiviert";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registriere dich erneut, um Zahlungen zu senden.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nicht registriert";
