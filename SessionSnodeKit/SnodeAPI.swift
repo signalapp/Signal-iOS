@@ -22,7 +22,7 @@ public final class SnodeAPI : NSObject {
     private static let seedNodePool: Set<String> = useTestnet ? [ "http://public.loki.foundation:38157" ] : [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
     private static let snodeFailureThreshold = 3
     private static let targetSwarmSnodeCount = 2
-    private static let minSnodePoolCount = 24;
+    private static let minSnodePoolCount = 12
 
     /// - Note: Changing this on the fly is not recommended.
     internal static var useOnionRequests = true
@@ -235,7 +235,7 @@ public final class SnodeAPI : NSObject {
         let rawSnodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
             return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                 let parameters: JSON = [
-                    "endpoint" : "get_n_service_nodes",
+                    "endpoint" : "get_service_nodes",
                     "oxend_params" : [
                         "limit" : 256,
                         "active_only" : true,
@@ -245,14 +245,25 @@ public final class SnodeAPI : NSObject {
                     ]
                 ]
                 return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
-                    return parseSnodes(from: rawResponse)
+                    guard let json = rawResponse as? JSON, let intermediate1 = json["result"] as? String,
+                        let intermediate1AsData = intermediate1.data(using: String.Encoding.utf8),
+                        let intermediate2 = try JSONSerialization.jsonObject(with: intermediate1AsData, options: [ .fragmentsAllowed ]) as? JSON,
+                        let rawSnodes = intermediate2["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
+                    return Set(rawSnodes.compactMap { rawSnode in
+                        guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
+                            let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                            SNLog("Failed to parse snode from: \(rawSnode).")
+                            return nil
+                        }
+                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                    })
                 }
             }
         }
         let promise = when(fulfilled: rawSnodePoolPromises).map2 { results -> Set<Snode> in
             var result: Set<Snode> = results[0]
             results.forEach { result = result.union($0) }
-            if result.count > 196 { // We want the snodes to agree on at least this many snodes
+            if result.count > 24 { // We want the snodes to agree on at least this many snodes
                 return result
             } else {
                 throw Error.inconsistentSnodePools
