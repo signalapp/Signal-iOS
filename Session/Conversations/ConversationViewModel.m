@@ -196,6 +196,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
 @property (nonatomic) NSArray<TSOutgoingMessage *> *unsavedOutgoingMessages;
 
+@property (nonatomic) BOOL hasUiDatabaseUpdatedExternally;
+
 @end
 
 #pragma mark -
@@ -551,9 +553,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
+    // NSE will trigger this when we receive a new message from remote PN,
+    // the touchDbAsync will trigger uiDatabaseDidUpdate but with a notification
+    // that does NOT include the recent update from NSE.
+    // This flag let the uiDatabaseDidUpdate know it needs to expect more update
+    // than those in the notification.
+    _hasUiDatabaseUpdatedExternally = true;
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
@@ -571,10 +578,12 @@ NS_ASSUME_NONNULL_BEGIN
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications] && !_hasUiDatabaseUpdatedExternally) {
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
         return;
     }
+    
+    _hasUiDatabaseUpdatedExternally = false;
 
     __block ConversationMessageMappingDiff *_Nullable diff = nil;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
