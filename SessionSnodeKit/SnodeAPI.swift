@@ -25,8 +25,6 @@ public final class SnodeAPI : NSObject {
     /// - Note: Changing this on the fly is not recommended.
     internal static var useOnionRequests = true
     internal static let useTestnet = false
-
-    public static var powDifficulty: UInt = 1
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -321,19 +319,9 @@ public final class SnodeAPI : NSObject {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 let parameters = message.toJSON()
                 return Set(targetSnodes.map { targetSnode in
-                    let result = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
                     }
-                    result.done2 { rawResponse in
-                        if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
-                            guard powDifficulty != SnodeAPI.powDifficulty, powDifficulty < 100 else { return }
-                            SNLog("Setting proof of work difficulty to \(powDifficulty).")
-                            SnodeAPI.powDifficulty = UInt(powDifficulty)
-                        } else {
-                            SNLog("Failed to update proof of work difficulty from: \(rawResponse).")
-                        }
-                    }
-                    return result
                 })
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
@@ -346,12 +334,13 @@ public final class SnodeAPI : NSObject {
 
     private static func parseSnodes(from rawResponse: Any) -> Set<Snode> {
         guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
-            SNLog("Failed to parse targets from: \(rawResponse).")
+            SNLog("Failed to parse snodes from: \(rawResponse).")
             return []
         }
         return Set(rawSnodes.compactMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                SNLog("Failed to parse target from: \(rawSnode).")
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString),
+                let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                SNLog("Failed to parse snode from: \(rawSnode).")
                 return nil
             }
             return Snode(address: "https://\(address)", port: port, publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
