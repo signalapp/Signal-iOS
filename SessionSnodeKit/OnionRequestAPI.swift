@@ -29,7 +29,7 @@ public enum OnionRequestAPI {
     // MARK: Destination
     public enum Destination {
         case snode(Snode)
-        case server(host: String, target: String, x25519PublicKey: String)
+        case server(host: String, target: String, x25519PublicKey: String, scheme: String?, port: UInt16?)
     }
 
     // MARK: Error
@@ -306,13 +306,10 @@ public enum OnionRequestAPI {
             default: return value
             }
         }
-        guard let url = request.url?.absoluteString, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
-        var endpoint = ""
-        if server.count < url.count {
-            guard let serverEndIndex = url.range(of: server)?.upperBound else { return Promise(error: Error.invalidURL) }
-            let endpointStartIndex = url.index(after: serverEndIndex)
-            endpoint = String(url[endpointStartIndex..<url.endIndex])
-        }
+        guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
+        let endpoint = url.path.removingPrefix("/")
+        let scheme = url.scheme
+        let port = given(url.port) { UInt16($0) }
         let parametersAsString: String
         if let tsRequest = request as? TSRequest {
             headers["Content-Type"] = "application/json"
@@ -339,7 +336,7 @@ public enum OnionRequestAPI {
             "method" : request.httpMethod!,
             "headers" : headers
         ]
-        let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey)
+        let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
         let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
         promise.catch2 { error in
             SNLog("Couldn't reach server: \(url) due to error: \(error).")
