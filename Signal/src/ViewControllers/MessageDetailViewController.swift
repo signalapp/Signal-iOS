@@ -184,7 +184,8 @@ class MessageDetailViewController: OWSTableViewController2 {
         cellContainer.addSubview(cellView)
         cellView.autoPinHeightToSuperviewMargins()
 
-        cellView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing)
+        cellView.autoPinEdge(toSuperviewEdge: .leading)
+        cellView.autoPinEdge(toSuperviewEdge: .trailing)
 
         messageStack.addArrangedSubview(cellContainer)
 

@@ -380,11 +380,11 @@ open class ManualStackView: ManualLayoutView {
             layoutItem.offAxisSize = offAxisSize
 
             switch offAxisAlignment {
-            case .minimum, .fill:
+            case .minimum:
                 layoutItem.offAxisLocation = 0
             case .maximum:
                 layoutItem.offAxisLocation = offAxisMaxSize - offAxisSize
-            case .center:
+            case .center, .fill:
                 layoutItem.offAxisLocation = (offAxisMaxSize - offAxisSize) * 0.5
             }
         }
