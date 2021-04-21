@@ -508,9 +508,11 @@ public class WallpaperView: ManualLayoutViewWithLayer {
                     resetContent()
                     return
                 }
-                let tintColor: UIColor = isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-                // TODO: Tune.
-                let blurRadius: CGFloat = 8
+                // We approximate the behavior of UIVisualEffectView(effect: UIBlurEffect(style: .regular)).
+                let tintColor: UIColor = (isDarkThemeEnabled
+                                            ? UIColor.ows_black.withAlphaComponent(0.9)
+                                            : .ows_whiteAlpha60)
+                let blurRadius: CGFloat = 32
                 let blurredImage = try contentImage.withGausianBlur(radius: blurRadius,
                                                                     tintColor: tintColor)
                 self.image = blurredImage

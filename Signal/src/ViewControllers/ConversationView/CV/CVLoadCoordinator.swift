@@ -778,7 +778,10 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
             return
         }
         cell.isCellVisible = true
-        delegate?.updateWallpaperMask()
+        let delegate = self.delegate
+        DispatchQueue.main.async {
+            delegate?.updateWallpaperMask()
+        }
     }
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
