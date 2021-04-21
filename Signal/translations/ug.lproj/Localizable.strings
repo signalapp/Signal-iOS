@@ -80,10 +80,10 @@
 "ADD_TO_CONTACTS_OFFER" = "بۇ ئىشلەتكۈچىنى ئالاقەداشلارغا قوشامسىز؟";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "باشقا بىر توپقا قوشىدۇ";
+"ADD_TO_GROUP" = "باشقا بىر گۇرۇپپىغا قوشىدۇ";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "توپقا قوش";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "گۇرۇپپىغا قوش";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "«%1$@» نى «%2$@» غا قوشامدۇ؟";
@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "يېڭى ئەزا قوش";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "بۇ توپنىڭ ئەزاسى";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "بۇ گۇرۇپپىنىڭ ئەزاسى";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ئاللىبۇرۇن %@ نىڭ ئەزاسى";
@@ -101,7 +101,7 @@
 "ADD_TO_GROUP_RECENTS_TITLE" = "يېقىنقى سۆھبەتلەر";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ قوشۇلغان توپ %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ قوشۇلغان گۇرۇپپا%@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "گۇرۇپپىغا قوش";
@@ -320,25 +320,25 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "لوزۇنكىنى ياپ";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ئەمدى بۇ توپنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ئەمدى بۇ گۇرۇپپىنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "چەكلەش";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "بۇ «%@» توپنى چەكلەپ ۋە چېكىنەمدۇ؟";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "بۇ «%@» گۇرۇپپىنى چەكلەپ ۋە چېكىنەمدۇ؟";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ نى چەكلەمدۇ؟";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "چەكلەنگەن توپلار";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "چەكلەنگەن گۇرۇپپىلار";
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "چەكلەنگەن ئىشلەتكۈچىلەر";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "توپ ئاللىبۇرۇن چەكلەنگەن.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "گۇرۇپپا ئاللىبۇرۇن چەكلەنگەن.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ئىشلەتكۈچى ئاللىبۇرۇن چەكلەنگەن.";
@@ -350,13 +350,13 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "ئۆز ئارا ئۇچۇرلىشىپ ۋە چاقىرىشالايسىلەر.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "مەۋجۇت ئەزالار سىزنى توپقا قايتا قوشالايدۇ.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "مەۋجۇت ئەزالار سىزنى گۇرۇپپىغا قايتا قوشالايدۇ.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "گۇرۇپپا ئەزالىرى سىزنى بۇ گۇرۇپپىغا قايتا قوشالايدۇ.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "بۇ توپنى چەكلىمەمدۇ؟";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "بۇ گۇرۇپپىنى چەكلىمەمدۇ؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ نى چەكلىمەمدۇ؟";
@@ -371,7 +371,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ئىشلەتكۈچى چەكلەندى";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "توپ چەكلەندى";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "گۇرۇپپا چەكلەندى";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ئۆزىڭىزنى چەكلىيەلمەيسىز.";
@@ -383,7 +383,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ چەكلەنمىدى.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "مەۋجۇت ئەزالار ھازىر سىزنى توپقا قايتا قوشالايدۇ.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "مەۋجۇت ئەزالار ھازىر سىزنى گۇرۇپپىغا قايتا قوشالايدۇ.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "توسۇۋېتىلگەن ئىشلەتكۈچىلەر سىزگە تېلېفون قىلالمايدۇ ياكى ئۇچۇر ئەۋەتەلمەيدۇ.";
@@ -818,7 +818,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "تاقالغان";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "توپنىڭ ئىسمى، سۈرىتى ۋە كۆرۈن-غايىب ئۇچۇرنىڭ ۋاقتىنى كىم ئۆزگەرتەلەيدىغانلىقىنى تاللاڭ.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "گۇرۇپپىنىڭ ئىسمى، سۈرىتى ۋە كۆرۈن-غايىب ئۇچۇرنىڭ ۋاقتىنى كىم ئۆزگەرتەلەيدىغانلىقىنى تاللاڭ.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ئۈن";
@@ -827,10 +827,10 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ئەمدى بۇ ئىشلەتكۈچىنىڭ ئۇچۇرى ياكى يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "ئەمدى بۇ توپنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "ئەمدى بۇ گۇرۇپپىنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "توپ چەكلە";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "گۇرۇپپا چەكلە";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ئىشلەتكۈچى چەكلە";
@@ -857,13 +857,13 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "گۇرۇپپا ئەزالىقىنى كىم تەھرىرلەشنى تاللاڭ.";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "توپ ئۇلانمىسى";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "گۇرۇپپا ئۇلانمىسى";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "باشقۇرغۇچىلا";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "بۇ توپ ۋە ئۇنىڭ ئەزالىرىنى %@ تەھرىرلىيەلەيدۇ.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "بۇ گۇرۇپپا ۋە ئۇنىڭ ئەزالىرىنى %@ تەھرىرلىيەلەيدۇ.";
 
 /* Label for 'member invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "تەكلىپلەر";
@@ -953,10 +953,10 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "ھوقۇقلار";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "توپتىن چىقىرىۋەت";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "گۇرۇپپىدىن چىقىرىۋەت";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@ نى توپتىن چىقىرىۋېتەمدۇ؟";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@ نى گۇرۇپپىدىن چىقىرىۋېتەمدۇ؟";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "باشقۇرغۇچىدىن چىقىرىۋەت";
@@ -968,7 +968,7 @@
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "ئىزدە";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "توپنى چەكلىمە";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "گۇرۇپپىنى چەكلىمە";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "ئىشلەتكۈچىنى چەكلىمە";
@@ -1283,7 +1283,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "بۇ ئىشلەتكۈچى Signal نى يۇقىرىلاتمىغىچە بۇ گۇرۇپپىغا قوشقىلى بولمايدۇ.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "توپنىڭ ئادەم سانى ئەزا چېكى %@ گە يەتتى.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "گۇرۇپپىنىڭ ئادەم سانى ئەزا چېكى %@ گە يەتتى.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "ئىناۋەتسىز رەسىم.";
@@ -1304,7 +1304,7 @@
 "EDIT_ITEM_COPY_ACTION" = "كۆچۈر";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "سالام،\n\nيېقىندىن بېرى مەن ئالما تېلېفونۇمدا Signal نى ئىشلىتىپ، باشقىلار بىلەن بىخەتەر سۆھبتلىشىۋاتىمەن. سىزنىڭمۇ قاچىلىۋېلىشىڭىزنى ئۈمىت قىلىمەن. بۇنداق بولغاندا ئۇچۇرلىرىمىزنى ئىككىمىزنىڭلا كۆرگىنىگە ياكى سۆھبەتلىرىمىزنى ئىككىمىزنىڭلا ئاڭلىغىنىغا ئىشەنچ قىلالايمىز.\n\nSignal نى ئالما ۋە Android ئىككىسىدە ئىشلەيدۇ. بۇ يەردىن ئېرىشەلەيسىز:%@\n\nSignal نى ئىشلىتىش سىزدىكى بار بولغان ئۇچۇرلىشىش ئەپلىرىگە ئوخشاش. رەسىم ۋە سىن ئەۋەتەلەيمىز، تېلېفون ئۇرالايمىز، ھەم توپ سۆھبىتى قۇرالايمىز. ئەڭ ئىسىل يېرى ھېچكىم بۇلارنى كۆرەلمەيدۇ. ھەتتا Signal نى ياسىغان ئادەممۇ. \n\nSignal نى ياسىغان  ئوچۇق پسىلداس سېستىمىلىرى ھەققىدە تېخىمۇ كۆپرەك ئوقۇماقچى بولسىڭىز، بۇ يەردە: %@ ";
+"EMAIL_INVITE_BODY" = "سالام،\n\nيېقىندىن بېرى مەن ئالما تېلېفونۇمدا Signal نى ئىشلىتىپ، باشقىلار بىلەن بىخەتەر سۆھبتلىشىۋاتىمەن. سىزنىڭمۇ قاچىلىۋېلىشىڭىزنى ئۈمىت قىلىمەن. بۇنداق بولغاندا ئۇچۇرلىرىمىزنى ئىككىمىزنىڭلا كۆرگىنىگە ياكى سۆھبەتلىرىمىزنى ئىككىمىزنىڭلا ئاڭلىغىنىغا ئىشەنچ قىلالايمىز.\n\nSignal نى ئالما ۋە Android ئىككىسىدە ئىشلەيدۇ. بۇ يەردىن ئېرىشەلەيسىز:%@\n\nSignal نى ئىشلىتىش سىزدىكى بار بولغان ئۇچۇرلىشىش ئەپلىرىگە ئوخشاش. رەسىم ۋە سىن ئەۋەتەلەيمىز، تېلېفون ئۇرالايمىز، ھەم گۇرۇپپا سۆھبىتى قۇرالايمىز. ئەڭ ئىسىل يېرى ھېچكىم بۇلارنى كۆرەلمەيدۇ. ھەتتا Signal نى ياسىغان ئادەممۇ. \n\nSignal نى ياسىغان  ئوچۇق پسىلداس سېستىمىلىرى ھەققىدە تېخىمۇ كۆپرەك ئوقۇماقچى بولسىڭىز، بۇ يەردە: %@ ";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "‫Signal دا پاراڭلىشايلى";
@@ -1481,7 +1481,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "سۆزلىشىشنى ئەسلىگە قايتۇر";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "توپ قۇرۇش تامام";
+"FINISH_GROUP_CREATION_LABEL" = "گۇرۇپپا قۇرۇش تامام";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "ئالاقەداشنى ئۇلاپ يوللا";
@@ -1508,7 +1508,7 @@
 "GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "يېڭى توپ";
+"GET_STARTED_CARD_NEW_GROUP" = "يېڭى گۇرۇپپا";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "ئىلتىماس قىلغان GIF نى ئوقۇيالمىدى. تورغا باغلانغانلىقىڭىزنى دەلىللەڭ.";
@@ -1544,13 +1544,13 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "سانداننى ئەلالاشتۇرۇۋاتىدۇ";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "توپ ئۇچۇرىنى كىم تەھرىرلەشنى «%@» غا ئۆزگەرتتىڭىز.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "گۇرۇپپا ئۇچۇرىنى كىم تەھرىرلەشنى «%@» غا ئۆزگەرتتىڭىز.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ توپ ئۇچۇرىنى كىم تەھرىرلەشنى «%2$@» غا ئۆزگەرتتى.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ گۇرۇپپا ئۇچۇرىنى كىم تەھرىرلەشنى «%2$@» غا ئۆزگەرتتى.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "توپ ئۇچۇرىنى كىم تەھرىرلەش «%@» غا ئۆزگەرتىلدى.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "گۇرۇپپا ئۇچۇرىنى كىم تەھرىرلەش «%@» غا ئۆزگەرتىلدى.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "باشقۇرغۇچىلارلا";
@@ -1568,13 +1568,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "تاقالغان";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "توپ ئەزالىقىنى كىم تەھرىرلەشنى «%@» غا ئۆزگەرتتىڭىز.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "گۇرۇپپا ئەزالىقىنى كىم تەھرىرلەشنى «%@» غا ئۆزگەرتتىڭىز.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ توپ ئەزالىقىنى كىم تەھرىرلەشنى «%2$@» غا ئۆزگەرتتى.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ گۇرۇپپا ئەزالىقىنى كىم تەھرىرلەشنى «%2$@» غا ئۆزگەرتتى.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "توپ ئەزالىقىنى «%@» ئۆزگەرتەلەيدۇ.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "گۇرۇپپا ئەزالىقىنى «%@» ئۆزگەرتەلەيدۇ.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "پەقەت باشقۇرغۇچىلارلا بۇ تاللانمىنى ئۆزگەرتەلەيدۇ.";
@@ -1592,7 +1592,7 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "داۋاملىق چاقىر";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "توپ چاقىرىش ئاخىرلاشتى";
+"GROUP_CALL_ENDED_MESSAGE" = "گۇرۇپپا چاقىرىش ئاخىرلاشتى";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "تېخىمۇ كۆپ ئۇچۇر";
@@ -1694,7 +1694,7 @@
 "GROUP_CALL_YOU" = "سىز";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "سىز بۇ توپ چاقىرىشىدا";
+"GROUP_CALL_YOU_ARE_HERE" = "سىز بۇ گۇرۇپپا چاقىرىقىدا";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "سىز(يەنە بىر ئۈسكىنىدە)";
@@ -1757,58 +1757,58 @@
 "GROUP_INVITE_LINK_DISABLED" = "گۇرۇپپا ئۇلانمىسى ئېتىۋېتىلدى.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى چەكلىدىڭىز.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى چەكلىدىڭىز.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئۇلانمىسىنى %@ ئېتىۋەتتى.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "باشقۇرغۇچى دەلىللەيدىغان توپ ئۇلانمىسى قوزغىتىلدى.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "باشقۇرغۇچى دەلىللەيدىغان گۇرۇپپا ئۇلانمىسى قوزغىتىلدى.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "باشقۇرغۇچى دەلىللەيدىغان توپ ئۇلانمىسىنى %@ قوزغاتتى.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "باشقۇرغۇچى دەلىللەيدىغان گۇرۇپپا ئۇلانمىسىنى %@ قوزغاتتى.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "باشقۇرغۇچى دەلىللىمەيدىغان توپ ئۇلانمىسى قوزغىتىلدى.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "باشقۇرغۇچى دەلىللىمەيدىغان گۇرۇپپا ئۇلانمىسى قوزغىتىلدى.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللىمەسلىكنى قوزغاتتىڭىز.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللىمەسلىكنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "باشقۇرغۇچى دەلىللىمەيدىغان توپ ئۇلانمىسىنى %@ قوزغاتتى.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "باشقۇرغۇچى دەلىللىمەيدىغان گۇرۇپپا ئۇلانمىسىنى %@ قوزغاتتى.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "توپ ئۇلانمىسى ئەسلىگە قايتۇرۇلدى.";
+"GROUP_INVITE_LINK_RESET" = "گۇرۇپپا ئۇلانمىسى ئەسلىگە قايتۇرۇلدى.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى ئەسلىگە قايتۇردىڭىز.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى ئەسلىگە قايتۇردىڭىز.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "توپ ئۇلانمىسىنى %@ ئەسلىگە قايتۇردى.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئۇلانمىسىنى %@ ئەسلىگە قايتۇردى.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەش تاقالدى.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەش تاقالدى.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى چەكلىدىڭىز.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى چەكلىدىڭىز.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى %@ چەكلىدى.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى %@ چەكلىدى.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەش قوزغىتىلدى.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەش قوزغىتىلدى.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى قوزغاتتىڭىز.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "توپ ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى %@ قوزغاتتى..";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئۇلانمىسىنى باشقۇرغۇچى دەلىللەشنى %@ قوزغاتتى..";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "سىز %@ نى بۇ توپقا ئاپتوماتىك قوشالمايسىز. ئۇ تەكلىپنامىنى تاپشۇرۇۋالدى، ئەمما ئۇ تەكلىپكە قوشۇلۇشتىن ئىلگىرى بۇ توپنىڭ ھەر قانداق ئۇچۇرىنى كۆرەلمەيدۇ.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "سىز %@ نى بۇ گۇرۇپپىغا ئاپتوماتىك قوشالمايسىز. ئۇ تەكلىپنامىنى تاپشۇرۇۋالدى، ئەمما ئۇ تەكلىپكە قوشۇلۇشتىن ئىلگىرى بۇ گۇرۇپپىنىڭ ھەر قانداق ئۇچۇرىنى كۆرەلمەيدۇ.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "تەكلىپ يوللاندى";
@@ -1817,16 +1817,16 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ تەكلىپ يوللاندى";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "سىز بۇ ئىشلەتكۈچىلەرنى مەزكۇر توپقا ئاپتوماتىك قوشالمايسىز. ئۇلار تەكلىپنامىنى تاپشۇرۇۋالدى، ئەمما ئۇلار تەكلىپكە قوشۇلۇشتىن ئىلگىرى بۇ توپنىڭ ھەر قانداق ئۇچۇرىنى كۆرەلمەيدۇ.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "سىز بۇ ئىشلەتكۈچىلەرنى مەزكۇر گۇرۇپپىغا ئاپتوماتىك قوشالمايسىز. ئۇلار تەكلىپنامىنى تاپشۇرۇۋالدى، ئەمما ئۇلار تەكلىپكە قوشۇلۇشتىن ئىلگىرى بۇ گۇرۇپپىنىڭ ھەر قانداق ئۇچۇرىنى كۆرەلمەيدۇ.";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "ئەزالىق تەكلىپى";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "بۇ توپ ئۇلانمىسىنى ئىشلەتكىلى بولمايدۇ.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "بۇ گۇرۇپپا ئۇلانمىسىنى ئىشلەتكىلى بولمايدۇ.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "توپقا قوشۇلالمايدۇ";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "گۇرۇپپىغا قوشۇلالمايدۇ";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "گۇرۇپپا";
@@ -1838,7 +1838,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "قاچىلىنىۋاتىدۇ...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "توپقا قوشۇلۇپ ئىسىم ۋە سۈرىتىڭىزنى توپ ئەزالىرى بىلەن ھەمبەھىرلىنەمسىز؟";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "گۇرۇپپىغا قوشۇلۇپ ئىسىم ۋە سۈرىتىڭىزنى گۇرۇپپا ئەزالىرى بىلەن ھەمبەھىرلىنەمسىز؟";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "تورنى تەكشۈرۈپ ئاندىن قايتا سىناڭ.";
@@ -1847,13 +1847,13 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "قايتا سىناڭ.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "بۇ ئىناۋەتلىك توپ ئۇلانمىسى ئەمەس. توپقا قوشۇلۇشتىن ئىلگىرى ئۇلانمىنىڭ مۇكەممەل ۋە توغرا ئىكەنلىكىنى جەزملەڭ.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "بۇ ئىناۋەتلىك گۇرۇپپا ئۇلانمىسى ئەمەس. گۇرۇپپىغا قوشۇلۇشتىن ئىلگىرى ئۇلانمىنىڭ مۇكەممەل ۋە توغرا ئىكەنلىكىنى جەزملەڭ.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "ئىناۋەتسىز ئۇلانما";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "توپقا قوشۇلۇش ئۈچۈن Signal نى يېڭىلاڭ";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "گۇرۇپپىغا قوشۇلۇش ئۈچۈن Signal نى يېڭىلاڭ";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "گۇرۇپپا ئۇلانمىسى ئارقىلىق قوشۇلماقچى بولغان يېڭى ئەزالارنى باشقۇرغۇچى دەلىللەيدۇ.";
@@ -1868,13 +1868,13 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ئۇلانما ھەمبەھىر";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ئۇلانمىنى دوستلارغا ھەمبەھىرلەپ ئۇلارنىڭ بۇ توپقا كىرىشىنى تېزلىتەلەيسىز.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ئۇلانمىنى دوستلارغا ھەمبەھىرلەپ ئۇلارنىڭ بۇ گۇرۇپپىغا كىرىشىنى تېزلىتەلەيسىز.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "دوستلار تەكلىپى";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "توپ ئۇلانمىسىنى ئارقىلىق دوستلىرىڭىزنى تەكلىپ قىلىڭ";
+"GROUP_LINK_PROMOTION_UPDATE" = "گۇرۇپپا ئۇلانمىسىنى ئارقىلىق دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "بۇ كودنى تارىغان كىشى گۇرۇپپىڭىزغا كىرەلەيدۇ. ئەگەر باشقۇرغۇچى دەلىللەشنى قوزغاتقان بولسىڭىز ئۇنداقتا باشقۇرغۇچى قوشۇلسا ئاندىن گۇرۇپپىغا كىرەلەيدۇ.";
@@ -1892,7 +1892,7 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "ئۇلانما كۆچۈر";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "توپ ئۇلانمىسى";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "گۇرۇپپا ئۇلانمىسى";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "گۇرۇپپا ئۇلانمىسى ئارقىلىق قوشۇلماقچى بولغان يېڭى ئەزالارنى باشقۇرغۇچى دەلىللەيدۇ.";
@@ -1916,10 +1916,10 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "‫Signal ئارقىلىق ھەمبەھىرلە";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "بۇ ئۇلانما ئارقىلىق خالىغان كىشى مەزكۇر توپنىڭ ئاتى ۋە ئەزالىرىنى كۆرەلەيدۇ ھەمدە توپقا قوشۇلۇشنى ئىلتىماس قىلالايدۇ. سىز ئىشىنىدىغان كىشىلەرگە ھەمبەھىرلەڭ.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "بۇ ئۇلانما ئارقىلىق خالىغان كىشى مەزكۇر گۇرۇپپىنىڭ ئاتى ۋە ئەزالىرىنى كۆرەلەيدۇ ھەمدە گۇرۇپپىغا قوشۇلۇشنى ئىلتىماس قىلالايدۇ. سىز ئىشىنىدىغان كىشىلەرگە ھەمبەھىرلەڭ.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "توپ ئۇلانمىسى";
+"GROUP_LINK_VIEW_TITLE" = "گۇرۇپپا ئۇلانمىسى";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ سىزنى قوشتى.";
@@ -1931,25 +1931,25 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ سىزنى باشقۇرغۇچىلىققا تەڭشىدى.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "توپقا كىرىش تەكلىپىگە قوشۇلدىڭىز.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "گۇرۇپپىغا كىرىش تەكلىپىگە قوشۇلدىڭىز.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "%@ ئەۋەتكەن توپقا كىرىش تەكلىپىگە قوشۇلدىڭىز.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "%@ ئەۋەتكەن گۇرۇپپىغا كىرىش تەكلىپىگە قوشۇلدىڭىز.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "توپقا كىرىش تەكلىپىنى رەت قىلدىڭىز.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلدىڭىز.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "%@ ئەۋەتكەن توپقا كىرىش تەكلىپىنى رەت قىلدىڭىز.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "%@ ئەۋەتكەن گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلدىڭىز.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "سىزنىڭ توپقا كىرىش تەكلىپىڭىزنى %@ بىكار قىلدى.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "سىزنىڭ گۇرۇپپىغا كىرىش تەكلىپىڭىزنى %@ بىكار قىلدى.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "توپقا كىرىش تەكلىپىڭىز بىكار قىلىندى.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "گۇرۇپپىغا كىرىش تەكلىپىڭىز بىكار قىلىندى.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "سىزنى توپقا %@ تەكلىپ قىلدى.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "سىزنى گۇرۇپپىغا %@ تەكلىپ قىلدى.";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "گۇرۇپپىغا تەكلىپ قىلىندىڭىز.";
@@ -1958,7 +1958,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "گۇرۇپپىغا قوشۇلدىڭىز.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "توپ ئۇلانمىسى ئارقىلىق توپقا قوشۇلدىڭىز.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "گۇرۇپپا ئۇلانمىسى ئارقىلىق گۇرۇپپىغا قوشۇلدىڭىز.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@سىزنى چىقىرىۋەتتى.";
@@ -1967,16 +1967,16 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "سىزنى گۇرۇپپىدىن چىقىرىۋەتتى.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "توپقا قوشۇلۇش ئىلتىماسىڭىزنى %@ نى تەستىقلىدى.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسىڭىزنى %@ نى تەستىقلىدى.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "توپقا قوشۇلۇش ئىلتىماسىڭىزدىن ۋاز كەچتىڭىز.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسىڭىزدىن ۋاز كەچتىڭىز.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "توپقا قوشۇلۇش ئىلتىماسىڭىز رەت قىلىندى.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسىڭىز رەت قىلىندى.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "توپقا قوشۇلۇش ئىلتىماسى يوللىدىڭىز.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسى يوللىدىڭىز.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "باشقۇرغۇچىلىق ھوقۇقىڭىز بىكار قىلىندى.";
@@ -2012,7 +2012,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ئەزالار";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "توپتىكى %@ ئەزانىڭ ئاتى ئوخشىشىپ كېتىدۇ.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "گۇرۇپپىدىكى%@ ئەزانىڭ ئاتى ئوخشىشىپ كېتىدۇ.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "كۆزدىن كەچۈرۈش ئۈچۈن چېكىڭ";
@@ -2024,25 +2024,25 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "ئەزالارنى تەكشۈر";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "توپتىكى %@ ئەزانىڭ ئاتى ئوخشىشىپ كېتىدۇ، تۆۋەندىكى ئەزالارنى كۆرۈڭ ياكى مۇناسىپ مەشغۇلاتنى تاللاڭ.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "گۇرۇپپىدىكى %@ ئەزانىڭ ئاتى ئوخشىشىپ كېتىدۇ، تۆۋەندىكى ئەزالارنى كۆرۈڭ ياكى مۇناسىپ مەشغۇلاتنى تاللاڭ.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "توپتىكى %@ ئەزانىڭ ئاتى ئوخشاش، تۆۋەندىكى ئەزالارنى كۆرۈڭ ياكى مۇناسىپ مەشغۇلاتنى تاللاڭ.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "گۇرۇپپىدىكى %@ ئەزانىڭ ئاتى ئوخشاش، تۆۋەندىكى ئەزالارنى كۆرۈڭ ياكى مۇناسىپ مەشغۇلاتنى تاللاڭ.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "توپتىكى %@ ئەزانىڭ ئاتى ئوخشاش.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "گۇرۇپپىدىكى %@ ئەزانىڭ ئاتى ئوخشاش.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "گۇرۇپپا ئىسمى (تەلەپ قىلىنغان)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ توپقا كىرىش تەكلىپىگە قوشۇلدى.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ گۇرۇپپىغا كىرىش تەكلىپىگە قوشۇلدى.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ توپقا كىرىش تەكلىپىڭىزگە قوشۇلدى.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ گۇرۇپپىغا كىرىش تەكلىپىڭىزگە قوشۇلدى.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%2$@ ئەۋەتكەن توپقا كىرىش تەكلىپىگە %1$@ قوشۇلدى.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%2$@ ئەۋەتكەن گۇرۇپپىغا كىرىش تەكلىپىگە %1$@ قوشۇلدى.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "سىز %@ نى قوشتىڭىز.";
@@ -2051,16 +2051,16 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%2$@ نى %1$@ قوشتى.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "بۇ توپقا %@ قوشۇلدى.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "بۇ گۇرۇپپىغا %@ قوشۇلدى.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 كىشى توپقا كىرىش تەكلىپىنى رەت قىلدى.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 كىشى گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلدى.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ تەكلىپ قىلغان 1 كىشى توپقا كىرىش تەكلىپىنى رەت قىلدى.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ تەكلىپ قىلغان 1 كىشى گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلدى.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ سىز ئەۋەتكەن توپقا كىرىش تەكلىپىنى رەت قىلدى.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ سىز ئەۋەتكەن گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلدى.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "ھازىر %@ باشقۇرغۇچى";
@@ -2072,46 +2072,46 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%2$@ نى %1$@ باشقۇرغۇچى قىلىپ تەڭشىدى.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = " 1 كىشىنىڭ توپقا كىرىش تەكلىپى بىكار قىلىندى.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = " 1 كىشىنىڭ گۇرۇپپىغا كىرىش تەكلىپى بىكار قىلىندى.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ توپقا كىرىش تەكلىپى بىكار قىلىندى.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ گۇرۇپپىغا كىرىش تەكلىپى بىكار قىلىندى.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "1 كىشىنىڭ توپقا كىرىش تەكلىپىنى %@ بىكار قىلدى.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "1 كىشىنىڭ گۇرۇپپىغا كىرىش تەكلىپىنى %@ بىكار قىلدى.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%2$@ كىشىنىڭ توپقا كىرىش تەكلىپىنى %1$@ بىكار قىلدى.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%2$@ كىشىنىڭ گۇرۇپپىغا كىرىش تەكلىپىنى %1$@ بىكار قىلدى.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@كىشىنىڭ توپقا كىرىش تەكلىپى بىكار قىلىندى.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@كىشىنىڭ گۇرۇپپىغا كىرىش تەكلىپى بىكار قىلىندى.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "بۇ توپقا 1 كىشى تەكلىپ قىلىندى.";
+"GROUP_REMOTE_USER_INVITED_1" = "بۇ گۇرۇپپىغا 1 كىشى تەكلىپ قىلىندى.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "بۇ توپقا %@ تەكلىپ قىلىندى.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "بۇ گۇرۇپپىغا %@ تەكلىپ قىلىندى.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "توپقا %@ نى تەكلىپ قىلدىڭىز.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "گۇرۇپپىغا %@ نى تەكلىپ قىلدىڭىز.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "بۇ توپقا 1 كىشىنى %@ تەكلىپ قىلدى.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "بۇ گۇرۇپپىغا 1 كىشىنى %@ تەكلىپ قىلدى.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "بۇ توپقا %2$@ كىشىنى %1$@ تەكلىپ قىلدى.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "بۇ گۇرۇپپىغا %2$@ كىشىنى %1$@ تەكلىپ قىلدى.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "بۇ توپقا %@ كىشى تەكلىپ قىلىندى.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "بۇ گۇرۇپپىغا %@ كىشى تەكلىپ قىلىندى.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "توپقا %@ قوشۇلدى.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "گۇرۇپپىغا%@ قوشۇلدى.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ توپ ئۇلانمىسى ئارقىلىق توپقا قوشۇلدى.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ گۇرۇپپا ئۇلانمىسى ئارقىلىق گۇرۇپپىغا قوشۇلدى.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ توپتىن ئايرىلدى.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ گۇرۇپپىدىن ئايرىلدى.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%@ نى چىقىرىۋەتتىڭىز.";
@@ -2120,25 +2120,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%2$@ نى %1$@ چىقىرىۋەتتى.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ توپقا قوشۇلۇش ئىلتىماسىنى تەستىقلىدىڭىز.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىنى تەستىقلىدىڭىز.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ نىڭ توپقا قوشۇلۇش ئىلتىماسىنى %2$@ تەستىقلىدى.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىنى %2$@ تەستىقلىدى.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ توپقا قوشۇلۇش ئىلتىماسىدىن ۋاز كەچتى.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىدىن ۋاز كەچتى.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ توپقا قوشۇلۇش ئىلتىماسىنى رەت قىلدىڭىز.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "%@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىنى رەت قىلدىڭىز.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%1$@ نىڭ توپقا قوشۇلۇش ئىلتىماسىنى %2$@ رەت قىلدى.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%1$@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسىنى %2$@ رەت قىلدى.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ نىڭ توپقا قوشۇلۇش ئىلتىماسى رەت قىلىندى.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ نىڭ گۇرۇپپىغا قوشۇلۇش ئىلتىماسى رەت قىلىندى.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ توپ ئۇلانمىسى ئارقىلىق توپقا قوشۇلۇشنى ئىلتىماس قىلدى.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ گۇرۇپپا ئۇلانمىسى ئارقىلىق گۇرۇپپىغا قوشۇلۇشنى ئىلتىماس قىلدى.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "ئۇلارنىڭ باشقۇرغۇچىلىق ھوقۇقىنى %@ بىكار قىلدى.";
@@ -2162,46 +2162,46 @@
 "GROUP_UPDATED" = "گۇرۇپپا يېڭىلاندى.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "توپنىڭ سۈرىتى چىقىرىۋېتىلدى.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "گۇرۇپپىنىڭ سۈرىتى چىقىرىۋېتىلدى.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "سۈرەتنى چىقىرىۋەتتىڭىز.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "توپنىڭ سۈرىتىنى %@ چىقىرىۋەتتى.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپىنىڭ سۈرىتىنى %@ چىقىرىۋەتتى.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "توپنىڭ سۈرىتى يېڭىلاندى.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "گۇرۇپپىنىڭ سۈرىتى يېڭىلاندى.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "توپ سۈرىتىنى يېڭىلىدىڭىز.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "گۇرۇپپا سۈرىتىنى يېڭىلىدىڭىز.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "توپ سۈرىتىنى %@ يېڭىلىدى.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا سۈرىتىنى %@ يېڭىلىدى.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "گۇرۇپپىنى يېڭىلىدىڭىز.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "توپ ئۇچۇرىنى %@ يېڭىلىدى.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئۇچۇرىنى %@ يېڭىلىدى.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "توپ ئاتى چىقىرىۋېتىلدى.";
+"GROUP_UPDATED_NAME_REMOVED" = "گۇرۇپپا ئاتى چىقىرىۋېتىلدى.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "توپ ئاتىنى چىقىرىۋەتتىڭىز.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "گۇرۇپپا ئاتىنى چىقىرىۋەتتىڭىز.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "توپ ئاتىنى %@ چىقىرىۋەتتى.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "گۇرۇپپا ئاتىنى %@ چىقىرىۋەتتى.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "توپ ئاتىنى «%@» غا ئۆزگەرتتىڭىز.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "گۇرۇپپا ئاتىنى «%@» غا ئۆزگەرتتىڭىز.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@  توپ ئاتىنى «%2$@» غا ئۆزگەرتتى.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@  گۇرۇپپا ئاتىنى «%2$@» غا ئۆزگەرتتى.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ھازىرقى توپ ئاتى «%@».";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ھازىرقى گۇرۇپپا ئاتى «%@».";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "بۇ گۇرۇپپا «يېڭى گۇرۇپپا»غا يېڭىلاندى.";
@@ -2237,7 +2237,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "تەكلىپنى قوبۇل قىلغىلى بولمىدى.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "توپ چەكلە";
+"GROUPS_INVITE_BLOCK_GROUP" = "گۇرۇپپا چەكلە";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "گۇرۇپپىنى چەكلەڭ ۋە %@";
@@ -2267,7 +2267,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "كونا ۋە يېڭى گۇرۇپپىلارنىڭ سېلىشتۇرمىسى";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@ئاتاش ۋە باشقۇرغۇچى قاتارلىق ئىقتىدارلارنى ئاكتىپلاش ئۈچۈن بۇ گۇرۇپپىنى يۇقىرىلىتىڭ. بۇ گۇرۇپپىدا ئ‍ىسمى ۋە سۈرىتىنى ھەمبەھىرلىمىگەن ئەزالارغا توپقا قوشۇلۇش تەكلىپى يوللىنىدۇ.%@";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@ئاتاش ۋە باشقۇرغۇچى قاتارلىق ئىقتىدارلارنى ئاكتىپلاش ئۈچۈن بۇ گۇرۇپپىنى يۇقىرىلىتىڭ. بۇ گۇرۇپپىدا ئ‍ىسمى ۋە سۈرىتىنى ھەمبەھىرلىمىگەن ئەزالارغا گۇرۇپپىغا قوشۇلۇش تەكلىپى يوللىنىدۇ.%@";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "«يېڭى گۇرۇپپا»غا يۇقىرلاتقىلى بولمىدى";
@@ -2417,7 +2417,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "يېڭى باشقۇرغۇچى تاللاڭ";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "ئەزا سانى %@ ياكى ئاز بولغاندا Signal توپىنىڭ ئىقتىدارى ئەڭ ياخشى. تېخىمۇ كۆپ ئەزا قوشۇلسا ئۇچۇر يوللاش ۋە تاپشۇرۇۋېلىش سەل كېچىكىدۇ.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "ئەزا سانى %@ ياكى ئاز بولغاندا Signal گۇرۇپپىنىڭ ئىقتىدارى ئەڭ ياخشى. تېخىمۇ كۆپ ئەزا قوشۇلسا ئۇچۇر يوللاش ۋە تاپشۇرۇۋېلىش سەل كېچىكىدۇ.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تەۋسىيە ئەزا چېكىگە يەتتى";
@@ -2570,7 +2570,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "دوستلار تەكلىپى";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "بىرلا ۋاقىتتا كۆپ ئىشلەتكۈچىنى تەكلىپ قىلغاندا، بىر توپ قۇرىسىز، ئۇنىڭدىكى تەكلىپ قىلىنغانلار بىر بىرىنى كۆرەلەيدۇ.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "بىرلا ۋاقىتتا كۆپ ئىشلەتكۈچىنى تەكلىپ قىلغاندا، بىر گۇرۇپپا قۇرىسىز، ئۇنىڭدىكى تەكلىپ قىلىنغانلار بىر بىرىنى كۆرەلەيدۇ.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "قوشۇل";
@@ -2705,7 +2705,7 @@
 "LONG_TEXT_VIEW_TITLE" = "ئۇچۇر";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ ئورتاق توپ";
+"MANY_GROUPS_IN_COMMON" = "%@ ئورتاق گۇرۇپپا";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "بارلىق ۋاسىتە";
@@ -2843,7 +2843,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ نى چەكلەمدۇ؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "بۇ توپتىن ئايرىلىپ ئۇنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "بۇ گۇرۇپپىدىن ئايرىلىپ ئۇنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@ نى توسۇۋېتەمسىز ۋە ئايرىلامسىز؟";
@@ -2897,10 +2897,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ نىڭ سىزگە ئۇچۇر يوللىشىغا يول قويامسىز ھەمدە ئىسىم ۋە سۈرەتلىرىڭىزنى ئۇلار بىلەن ھەمبەھىرلەمسىز؟ سىز ئۇلارنى چەكلەشتىن چىقىرىشتىن بۇرۇن ھېچقانداق ئۇچۇر تاپشۇرۇۋالمايسىز.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "بۇ توپنى چەكلەپ ھەمدە ئات ۋە باش سۈرىتىڭىزنى ھەمبەھىرلەشكە يول قويامسىز؟ سىز ئۇلارنى چەكلىۋېتىشتىن ئىلگىرى ھېچقانداق ئۇچۇر تاپشۇرۇۋالمايسىز.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "بۇ گۇرۇپپىنى چەكلەپ ھەمدە ئات ۋە باش سۈرىتىڭىزنى ھەمبەھىرلەشكە يول قويامسىز؟ سىز ئۇلارنى چەكلىۋېتىشتىن ئىلگىرى ھېچقانداق ئۇچۇر تاپشۇرۇۋالمايسىز.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "بۇ توپنى چەكلىمەمسىز؟ چەكلەشنى بىكار قىلمىغىچە ئۇلارنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى ئۇلار بىلمەيدۇ.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "بۇ گۇرۇپپىنى چەكلىمەمسىز؟ چەكلەشنى بىكار قىلمىغىچە ئۇلارنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى ئۇلار بىلمەيدۇ.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "داۋاملىق";
@@ -2918,10 +2918,10 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ نىڭ سىزگە ئۇچۇر يوللىشىغا يول قويامسىز ھەمدە ئىسىم ۋە سۈرەتلىرىڭىزنى ئۇلار بىلەن ھەمبەھىرلەمسىز؟ سىز قوبۇل قىلغۇچە، ئۇلار سىزنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى بىلەلمەيدۇ.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "بۇ توپقا قوشۇلۇپ ئات ۋە باش سۈرەتنى توپ ئەزالىرىغا ھەمبەھىرلەمسىز؟ سىز تەكلىپنى قوبۇل قىلىشتىن ئىلگىرى توپ ئەزالىرى ئۇلار ئەۋەتكەن ئۇچۇرنى كۆرگەنلىكىڭىزنى بىلمەيدۇ.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "بۇ گۇرۇپپىغا قوشۇلۇپ ئات ۋە باش سۈرەتنى گۇرۇپپا ئەزالىرىغا ھەمبەھىرلەمسىز؟ سىز تەكلىپنى قوبۇل قىلىشتىن ئىلگىرى گۇرۇپپا ئەزالىرى ئۇلار ئەۋەتكەن ئۇچۇرنى كۆرگەنلىكىڭىزنى بىلمەيدۇ.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "توپقا قوشۇلامسىز؟ سىز قوشۇلمىغىچە ئۇلارنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى ئۇلار بىلمەيدۇ.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "گۇرۇپپىغا قوشۇلامسىز؟ سىز قوشۇلمىغىچە ئۇلارنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى ئۇلار بىلمەيدۇ.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "قالدۇرۇش";
@@ -2930,10 +2930,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "ئىلتىماسنى بىكار قىلىش";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "توپقا قوشۇلۇش ئىلتىماسىڭىزدىن ۋاز كېچەمسىز؟";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "گۇرۇپپىغا قوشۇلۇش ئىلتىماسىڭىزدىن ۋاز كېچەمسىز؟";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "قوشۇلۇش تەلىپىڭىز توپ باشقۇرغۇچىسىغا ئەۋەتىلدى. ئۇلار قارار قىلغاندا سىزگە ئۇقتۇرۇلىدۇ.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "قوشۇلۇش تەلىپىڭىز گۇرۇپپا باشقۇرغۇچىسىغا ئەۋەتىلدى. ئۇلار قارار قىلغاندا سىزگە ئۇقتۇرۇلىدۇ.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "ئەۋەتىلگەن";
@@ -2984,7 +2984,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "بۇ گۇرۇپپىنىڭ %@ ئەزاسىنى چەكلىدىڭىز";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "بۇ توپتىكى بىر قانچە ئەزاغا ئەمدى «دەلىللەندى» دەپ بەلگە سېلىمىدى. چېكىپ تاللانمىلارنى ئېچىڭ.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "بۇ گۇرۇپپىدىكى بىر قانچە ئەزاغا ئەمدى «دەلىللەندى» دەپ بەلگە سېلىمىدى. چېكىپ تاللانمىلارنى ئېچىڭ.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "يېڭى ئۇچۇرلار";
@@ -3146,7 +3146,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ئاچ";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ئالاقەداش ۋە توپنىڭ ئۇچۇرلىرىنى ھەرگىز ئۆتكۈزۈۋەتمەيدۇ.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ئالاقەداش ۋە گۇرۇپپىنىڭ ئۇچۇرلىرىنى ھەرگىز ئۆتكۈزۈۋەتمەيدۇ.";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "ئۇقتۇرۇشنى قوزغىتامدۇ؟";
@@ -3554,7 +3554,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "ئىناۋەتسىز چىقىم";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "توپقا قوش";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "گۇرۇپپىغا قوش";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "«%@» نى گۇرۇپپىغا قوشامسىز؟";
@@ -3599,22 +3599,22 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "تەكلىپنى بىكار قىلىڭ";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "«%@» يوللىغان توپقا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "«%@» يوللىغان گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "«%2$@» يوللىغان «%1$@» توپقا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "«%2$@» يوللىغان «%1$@» گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "تەكلىپلەرنى بىكار قىلىڭ";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "«%@» نىڭ توپقا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "«%@» نىڭ گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "باشقا گۇرۇپپا ئەزالىرى تەكلىپ قىلغان كىشىلەرنىڭ تەپسىلاتلىرى كۆرسىتىلمىدى. ئەگەر تەكلىپ قىلىنغانلار قاتنىشىشنى تاللىسا، ئۇلارنىڭ ئۇچۇرلىرى شۇ ۋاقىتتا ئ‍اندىن گۇرۇپپا بىلەن ئورتاقلىشىدۇ. ئۇلار تەكلىپنى قوبۇل قىلمىغۇچە گۇرۇپپىدىكى ھېچقانداق ئۇچۇرنى كۆرمەيدۇ.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "بۇ تىزىمدىكى كىشىلەر «%@» غا توپ ئۇلانمىسى ئارقىلىق كىرمەكچى.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "بۇ تىزىمدىكى كىشىلەر «%@» غا گۇرۇپپا ئۇلانمىسى ئارقىلىق كىرمەكچى.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "ئىناۋەتسىز تەكلىپلەر";
@@ -3674,7 +3674,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "ھەممەيلەن";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "تېلېفون نومۇرىڭىز ئۇچۇرلاشقان بارلىق كىشىلەر ۋە توپتا كۆرۈنىدۇ. تېلېفون نومۇرىڭىز ئالاقەداش تىزىملىكىدە بار كىشىلەرنىڭ Signal. دىمۇ كۆرۈنىدۇ.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "تېلېفون نومۇرىڭىز ئۇچۇرلاشقان بارلىق كىشىلەر ۋە گۇرۇپپىدا كۆرۈنىدۇ. تېلېفون نومۇرىڭىز ئالاقەداش تىزىملىكىدە بار كىشىلەرنىڭ Signal. دىمۇ كۆرۈنىدۇ";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "ھېچكىم";
@@ -4247,7 +4247,7 @@
 "RETURN_CALL_PILL_BUTTON" = "قايت";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "توپقا قوشۇۋەر";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "گۇرۇپپىغا قوشۇۋەر";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "چاقىرىۋەر";
@@ -5315,7 +5315,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ھەممىسىدن قوبۇل قىل";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "ئالاقەداشلىرىڭ ئارىسىدا بولمىغان ياكى ئارخىپىڭنى ھەمبەھرلىمىگەن كىشىلەردىن، ئەۋەتكۈچىسى مۆھۈرلەنگەنلەرنىڭمۇ ئۇچۇرلىرىنى قوبۇل قىلىشنى ئاكتىپ قىل. ";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "ئالاقەداشلىرىڭ ئارىسىدا بولمىغان ياكى ئارخىپىڭنى ھەمبەھىرلىمىگەن كىشىلەردىن، يوشۇرۇن ئەۋەتكۈچى ئۇچۇرلىرىنى قوبۇل قىلىشنى ئاكتىپلا.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "نەشر";

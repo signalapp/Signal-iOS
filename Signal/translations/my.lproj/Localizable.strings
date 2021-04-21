@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "မန်းရှင်းခေါ်မှုများ";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "မက်ဆေ့ချ်";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ဤစကားပြောဆိုမှုကို အချိန်အကန့်သတ်နှင့် အသံပိတ်ထားပါ...";
@@ -4925,7 +4925,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "ငွေပေးချေမှုများ မဖွင့်ထားပါ";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "ငွေပေးချေမှုများ ပေးပို့ရန် ပြန်စာရင်းသွင်းပေးပါ။";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "မှတ်ပုံတင်ထားခြင်း မရှိပါ";
