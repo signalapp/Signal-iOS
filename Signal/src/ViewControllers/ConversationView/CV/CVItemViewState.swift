@@ -102,7 +102,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         // UnknownThreadWarning are the second item in the thread
-        if messageMapping.shouldShowUnknownThreadWarning(transaction: transaction) {
+        if messageMapping.shouldShowUnknownThreadWarning(thread: thread,
+                                                         transaction: transaction) {
             Logger.debug("adding UnknownThreadWarning")
 
             // The "Unknown Thread Warning" should have a stable timestamp.
@@ -617,7 +618,8 @@ fileprivate extension CVMessageMapping {
     var shouldShowThreadDetails: Bool {
         !canLoadOlder
     }
-    func shouldShowUnknownThreadWarning(transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldShowUnknownThreadWarning(thread: TSThread,
+                                        transaction: SDSAnyReadTransaction) -> Bool {
         !canLoadOlder && Self.contactsManagerImpl.shouldBlurAvatar(thread: thread,
                                                                    transaction: transaction)
     }

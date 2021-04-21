@@ -179,6 +179,11 @@ public protocol CVComponentDelegate {
 
     @objc
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction)
+
+    @objc
+    func cvc_didTapUnknownThreadWarningGroup()
+    @objc
+    func cvc_didTapUnknownThreadWarningContact()
 }
 
 // MARK: -
@@ -213,6 +218,8 @@ struct CVMessageAction: Equatable {
         case cvc_didTapSendMessage(contactShare: ContactShareViewModel)
         case cvc_didTapSendInvite(contactShare: ContactShareViewModel)
         case cvc_didTapAddToContacts(contactShare: ContactShareViewModel)
+        case cvc_didTapUnknownThreadWarningGroup
+        case cvc_didTapUnknownThreadWarningContact
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
@@ -254,6 +261,10 @@ struct CVMessageAction: Equatable {
                 delegate.cvc_didTapSendInvite(toContactShare: contactShare)
             case .cvc_didTapAddToContacts(let contactShare):
                 delegate.cvc_didTapAddToContacts(contactShare: contactShare)
+            case .cvc_didTapUnknownThreadWarningGroup:
+                delegate.cvc_didTapUnknownThreadWarningGroup()
+            case .cvc_didTapUnknownThreadWarningContact:
+                delegate.cvc_didTapUnknownThreadWarningContact()
             }
         }
     }

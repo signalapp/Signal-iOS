@@ -320,8 +320,8 @@ public class CVLoader: NSObject {
                 owsFailDebug("Missing unknownThreadWarning.")
                 return nil
             }
-            rootComponent = CVComponentUnknownThreadWarning(itemModel: itemModel,
-                                                            unknownThreadWarning: unknownThreadWarning)
+            rootComponent = CVComponentSystemMessage(itemModel: itemModel,
+                                                     systemMessage: unknownThreadWarning)
         case .textOnlyMessage, .audio, .genericAttachment, .contactShare,
              .bodyMedia, .viewOnce, .stickerMessage:
             rootComponent = CVComponentMessage(itemModel: itemModel)

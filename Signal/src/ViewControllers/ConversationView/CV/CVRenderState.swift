@@ -59,8 +59,6 @@ class CVRenderState {
 
     public let allIndexPaths: [IndexPath]
 
-    public let shouldBlurAvatar: Bool
-
     init(threadViewModel: ThreadViewModel,
          prevThreadViewModel: ThreadViewModel?,
          items: [CVRenderItem],

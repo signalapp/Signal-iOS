@@ -207,10 +207,7 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let threadDetails: ThreadDetails?
 
-    struct UnknownThreadWarning: Equatable {
-        let title: NSAttributedString
-        let titleColor: UIColor
-    }
+    typealias UnknownThreadWarning = CVComponentState.SystemMessage
     let unknownThreadWarning: UnknownThreadWarning?
 
     struct BottomButtons: Equatable {
@@ -610,7 +607,9 @@ fileprivate extension CVComponentState.Builder {
             self.threadDetails = buildThreadDetails()
             return build()
         case .unknownThreadWarning:
-            self.unknownThreadWarning = buildUnknownThreadWarning()
+            self.unknownThreadWarning = CVComponentSystemMessage.buildUnknownThreadWarningState(interaction: interaction,
+                                                                                                threadViewModel: threadViewModel,
+                                                                                                transaction: transaction)
             return build()
         case .typingIndicator:
             guard let typingIndicatorInteraction = interaction as? TypingIndicatorInteraction else {
@@ -773,13 +772,6 @@ fileprivate extension CVComponentState.Builder {
         return CVComponentThreadDetails.buildComponentState(thread: thread,
                                                             transaction: transaction,
                                                             avatarBuilder: avatarBuilder)
-    }
-
-    mutating func buildUnknownThreadWarning() -> UnknownThreadWarning {
-        owsAssertDebug(interaction as? UnknownThreadWarningInteraction != nil)
-
-        return CVComponentUnknownThreadWarning.buildComponentState(thread: thread,
-                                                                   transaction: transaction)
     }
 
     // TODO: Should we throw more?

@@ -400,4 +400,7 @@ extension MockConversationView: CVComponentDelegate {
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {}
 
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}
+
+    func cvc_didTapUnknownThreadWarningGroup() {}
+    func cvc_didTapUnknownThreadWarningContact() {}
 }

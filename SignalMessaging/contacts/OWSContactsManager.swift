@@ -78,6 +78,7 @@ public extension OWSContactsManager {
         if cacheContains() {
             return false
         }
+
         // Only blur avatars for users who are not in system contacts...
         if isSystemContact(address: address) {
             addToCache()
@@ -85,6 +86,15 @@ public extension OWSContactsManager {
         }
         // ...not yet whitelisted...
         if profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+            addToCache()
+            return false
+        }
+        guard let thread = TSContactThread.getWithContactAddress(address,
+                                                                 transaction: transaction) else {
+            addToCache()
+            return false
+        }
+        if !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
             addToCache()
             return false
         }
@@ -119,6 +129,10 @@ public extension OWSContactsManager {
         }
         // Only blur avatars for groups who are not yet whitelisted.
         if profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+            addToCache()
+            return false
+        }
+        if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
             addToCache()
             return false
         }

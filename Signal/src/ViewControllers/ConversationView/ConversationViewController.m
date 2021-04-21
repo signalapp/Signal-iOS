@@ -4188,6 +4188,20 @@ typedef enum : NSUInteger {
     [self showGroupLobbyOrActiveCall];
 }
 
+- (void)cvc_didTapUnknownThreadWarningGroup
+{
+    OWSAssertIsOnMainThread();
+
+    [self showUnknownThreadWarningAlert];
+}
+
+- (void)cvc_didTapUnknownThreadWarningContact
+{
+    OWSAssertIsOnMainThread();
+
+    [self showUnknownThreadWarningAlert];
+}
+
 - (BOOL)isCurrentCallForThread
 {
     TSThread *currentCallThread = self.callService.currentCall.thread;
