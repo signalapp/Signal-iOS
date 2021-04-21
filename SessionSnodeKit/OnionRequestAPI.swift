@@ -13,7 +13,7 @@ public enum OnionRequestAPI {
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
     // MARK: Settings
-    public static let maxFileSize = 10_000_000 // 10 MB
+    public static let maxRequestSize = 10_000_000 // 10 MB
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     /// The number of times a path can fail before it's replaced.
@@ -88,26 +88,24 @@ public enum OnionRequestAPI {
             return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
         } else {
             SNLog("Populating guard snode cache.")
-            return SnodeAPI.getRandomSnode().then2 { _ -> Promise<Set<Snode>> in // Just used to populate the snode pool
-                var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
-                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
-                guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else { throw Error.insufficientSnodes }
-                func getGuardSnode() -> Promise<Snode> {
-                    // randomElement() uses the system's default random generator, which is cryptographically secure
-                    guard let candidate = unusedSnodes.randomElement() else { return Promise<Snode> { $0.reject(Error.insufficientSnodes) } }
-                    unusedSnodes.remove(candidate) // All used snodes should be unique
-                    SNLog("Testing guard snode: \(candidate).")
-                    // Loop until a reliable guard snode is found
-                    return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
-                        withDelay(0.1, completionQueue: Threading.workQueue) { getGuardSnode() }
-                    }
+            var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
+            let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+            guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else { return Promise(error: Error.insufficientSnodes) }
+            func getGuardSnode() -> Promise<Snode> {
+                // randomElement() uses the system's default random generator, which is cryptographically secure
+                guard let candidate = unusedSnodes.randomElement() else { return Promise<Snode> { $0.reject(Error.insufficientSnodes) } }
+                unusedSnodes.remove(candidate) // All used snodes should be unique
+                SNLog("Testing guard snode: \(candidate).")
+                // Loop until a reliable guard snode is found
+                return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
+                    withDelay(0.1, completionQueue: Threading.workQueue) { getGuardSnode() }
                 }
-                let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
-                return when(fulfilled: promises).map2 { guardSnodes in
-                    let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
-                    OnionRequestAPI.guardSnodes = guardSnodesAsSet
-                    return guardSnodesAsSet
-                }
+            }
+            let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
+            return when(fulfilled: promises).map2 { guardSnodes in
+                let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
+                OnionRequestAPI.guardSnodes = guardSnodesAsSet
+                return guardSnodesAsSet
             }
         }
     }
@@ -120,35 +118,33 @@ public enum OnionRequestAPI {
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
         }
-        return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
-            let reusableGuardSnodes = reusablePaths.map { $0[0] }
-            return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
-                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
-                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
-                let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
-                guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
-                // Don't test path snodes as this would reveal the user's IP to them
-                return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
-                    let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
-                        // randomElement() uses the system's default random generator, which is cryptographically secure
-                        let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
-                        unusedSnodes.remove(pathSnode) // All used snodes should be unique
-                        return pathSnode
-                    }
-                    SNLog("Built new onion request path: \(result.prettifiedDescription).")
-                    return result
+        let reusableGuardSnodes = reusablePaths.map { $0[0] }
+        return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
+            var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
+            let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+            let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
+            guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
+            // Don't test path snodes as this would reveal the user's IP to them
+            return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
+                let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
+                    // randomElement() uses the system's default random generator, which is cryptographically secure
+                    let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
+                    unusedSnodes.remove(pathSnode) // All used snodes should be unique
+                    return pathSnode
                 }
-            }.map2 { paths in
-                OnionRequestAPI.paths = paths + reusablePaths
-                SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                    SNLog("Persisting onion request paths to database.")
-                    SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
-                }
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .pathsBuilt, object: nil)
-                }
-                return paths
+                SNLog("Built new onion request path: \(result.prettifiedDescription).")
+                return result
             }
+        }.map2 { paths in
+            OnionRequestAPI.paths = paths + reusablePaths
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+                SNLog("Persisting onion request paths to database.")
+                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+            }
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .pathsBuilt, object: nil)
+            }
+            return paths
         }
     }
 
@@ -353,7 +349,7 @@ public enum OnionRequestAPI {
                 let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
-                if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxFileSize) {
+                if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
                     SNLog("Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [

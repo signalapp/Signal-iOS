@@ -148,7 +148,7 @@ public final class SnodeAPI : NSObject {
         if hasInsufficientSnodes || hasSnodePoolExpired {
             if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
             let promise: Promise<Set<Snode>>
-            if snodePool.isEmpty {
+            if snodePool.count < minSnodePoolCount {
                 promise = getSnodePoolFromSeedNode()
             } else {
                 promise = getSnodePoolFromSnode().recover2 { _ in
@@ -232,11 +232,11 @@ public final class SnodeAPI : NSObject {
             snodePool.remove(snode)
             snodes.insert(snode)
         }
-        let rawSnodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
+        let snodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
             return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                 let parameters: JSON = [
                     "endpoint" : "get_service_nodes",
-                    "oxend_params" : [
+                    "params" : [
                         "limit" : 256,
                         "active_only" : true,
                         "fields" : [
@@ -244,11 +244,11 @@ public final class SnodeAPI : NSObject {
                         ]
                     ]
                 ]
-                return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
-                    guard let json = rawResponse as? JSON, let intermediate1 = json["result"] as? String,
-                        let intermediate1AsData = intermediate1.data(using: String.Encoding.utf8),
-                        let intermediate2 = try JSONSerialization.jsonObject(with: intermediate1AsData, options: [ .fragmentsAllowed ]) as? JSON,
-                        let rawSnodes = intermediate2["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
+                let promise: Promise<Set<Snode>> = invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
+                    guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
+                        let rawSnodes = intermediate["service_node_states"] as? [JSON] else {
+                        throw Error.snodePoolUpdatingFailed
+                    }
                     return Set(rawSnodes.compactMap { rawSnode in
                         guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
                             let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
@@ -258,9 +258,10 @@ public final class SnodeAPI : NSObject {
                         return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                 }
+                return promise
             }
         }
-        let promise = when(fulfilled: rawSnodePoolPromises).map2 { results -> Set<Snode> in
+        let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Snode> in
             var result: Set<Snode> = results[0]
             results.forEach { result = result.union($0) }
             if result.count > 24 { // We want the snodes to agree on at least this many snodes
@@ -268,9 +269,6 @@ public final class SnodeAPI : NSObject {
             } else {
                 throw Error.inconsistentSnodePools
             }
-        }
-        promise.catch2 { error in
-            SNLog("\(error)")
         }
         return promise
     }
