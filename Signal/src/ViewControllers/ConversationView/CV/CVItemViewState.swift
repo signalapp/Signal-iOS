@@ -91,13 +91,30 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             // The thread details should have a stable timestamp.
             let threadDetailsTimestamp: UInt64
             if let firstInteraction = messageMapping.loadedInteractions.first {
-                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 1
+                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 2
             } else {
                 threadDetailsTimestamp = 1
             }
             let threadDetails = ThreadDetailsInteraction(thread: thread,
                                                          timestamp: threadDetailsTimestamp)
             let item = addItem(interaction: threadDetails)
+            owsAssertDebug(item != nil)
+        }
+
+        // UnknownThreadWarning are the second item in the thread
+        if messageMapping.shouldShowUnknownThreadWarning(transaction: transaction) {
+            Logger.debug("adding UnknownThreadWarning")
+
+            // The "Unknown Thread Warning" should have a stable timestamp.
+            let timestamp: UInt64
+            if let firstInteraction = messageMapping.loadedInteractions.first {
+                timestamp = max(1, firstInteraction.timestamp) - 1
+            } else {
+                timestamp = 2
+            }
+            let unknownThreadWarning = UnknownThreadWarningInteraction(thread: thread,
+                                                                       timestamp: timestamp)
+            let item = addItem(interaction: unknownThreadWarning)
             owsAssertDebug(item != nil)
         }
 
@@ -600,6 +617,10 @@ fileprivate extension CVMessageMapping {
     var shouldShowThreadDetails: Bool {
         !canLoadOlder
     }
+    func shouldShowUnknownThreadWarning(transaction: SDSAnyReadTransaction) -> Bool {
+        !canLoadOlder && Self.contactsManagerImpl.shouldBlurAvatar(thread: thread,
+                                                                   transaction: transaction)
+    }
 }
 
 // MARK: -
@@ -632,7 +653,7 @@ private class ItemBuilder {
 
     var canShowDate: Bool {
         switch interaction.interactionType() {
-        case .unknown, .typingIndicator, .threadDetails, .dateHeader:
+        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning:
             return false
         case .info:
             guard let infoMessage = interaction as? TSInfoMessage else {

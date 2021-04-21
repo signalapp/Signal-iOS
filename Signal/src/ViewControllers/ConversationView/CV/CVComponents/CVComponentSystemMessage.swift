@@ -24,25 +24,19 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func configure(cellView: UIView,
-                          cellMeasurement: CVCellMeasurement,
-                          componentDelegate: CVComponentDelegate,
-                          cellSelection: CVCellSelection,
-                          messageSwipeActionState: CVMessageSwipeActionState,
-                          componentView: CVComponentView) {
-
-        configureForRendering(componentView: componentView,
-                              cellMeasurement: cellMeasurement,
-                              componentDelegate: componentDelegate)
-
-        let rootView = componentView.rootView
-        if rootView.superview == nil {
-            owsAssertDebug(cellView.layoutMargins == .zero)
-            owsAssertDebug(cellView.subviews.isEmpty)
-
-            cellView.addSubview(rootView)
-            rootView.autoPinEdgesToSuperviewEdges()
-        }
+    public func configureCellRootComponent(cellView: UIView,
+                                           cellMeasurement: CVCellMeasurement,
+                                           componentDelegate: CVComponentDelegate,
+                                           cellSelection: CVCellSelection,
+                                           messageSwipeActionState: CVMessageSwipeActionState,
+                                           componentView: CVComponentView) {
+        Self.configureCellRootComponent(rootComponent: self,
+                                        cellView: cellView,
+                                        cellMeasurement: cellMeasurement,
+                                        componentDelegate: componentDelegate,
+                                        cellSelection: cellSelection,
+                                        messageSwipeActionState: messageSwipeActionState,
+                                        componentView: componentView)
     }
 
     private var outerHStackConfig: CVStackViewConfig {
@@ -259,10 +253,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         UIFont.ows_dynamicTypeFootnote
     }
 
-    private static let measurementKey_outerHStack = "CVComponentFooter.measurementKey_outerHStack"
-    private static let measurementKey_innerVStack = "CVComponentFooter.measurementKey_innerVStack"
-    private static let measurementKey_outerVStack = "CVComponentFooter.measurementKey_outerVStack"
-    private static let measurementKey_buttonSize = "CVComponentFooter.measurementKey_buttonSize"
+    private static let measurementKey_outerHStack = "CVComponentSystemMessage.measurementKey_outerHStack"
+    private static let measurementKey_innerVStack = "CVComponentSystemMessage.measurementKey_innerVStack"
+    private static let measurementKey_outerVStack = "CVComponentSystemMessage.measurementKey_outerVStack"
+    private static let measurementKey_buttonSize = "CVComponentSystemMessage.measurementKey_buttonSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)

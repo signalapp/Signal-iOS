@@ -631,7 +631,7 @@ extension ConversationViewController {
         switch interaction.interactionType() {
         case .unknown, .unreadIndicator, .dateHeader, .typingIndicator:
             return false
-        case .incomingMessage, .outgoingMessage, .error, .call, .info, .threadDetails:
+        case .incomingMessage, .outgoingMessage, .error, .call, .info, .threadDetails, .unknownThreadWarning:
             return true
         }
     }

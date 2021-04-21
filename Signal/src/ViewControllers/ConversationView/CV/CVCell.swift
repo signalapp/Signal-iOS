@@ -18,6 +18,7 @@ public enum CVCellReuseIdentifier: String, CaseIterable {
     case typingIndicator
     case threadDetails
     case systemMessage
+    case unknownThreadWarning
 }
 
 // MARK: -
@@ -262,12 +263,12 @@ public extension CVRootComponentHost {
 
         componentView.isDedicatedCellView = rootComponent.isDedicatedCell
 
-        rootComponent.configure(cellView: hostView,
-                                cellMeasurement: renderItem.cellMeasurement,
-                                componentDelegate: componentDelegate,
-                                cellSelection: cellSelection,
-                                messageSwipeActionState: messageSwipeActionState,
-                                componentView: componentView)
+        rootComponent.configureCellRootComponent(cellView: hostView,
+                                                 cellMeasurement: renderItem.cellMeasurement,
+                                                 componentDelegate: componentDelegate,
+                                                 cellSelection: cellSelection,
+                                                 messageSwipeActionState: messageSwipeActionState,
+                                                 componentView: componentView)
 
         #if TESTABLE_BUILD
         GRDBDatabaseStorageAdapter.setCanOpenTransaction(true)

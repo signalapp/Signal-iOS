@@ -120,7 +120,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // We don't render sender avatars with a subcomponent.
         case .senderAvatar:
             return nil
-        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
+        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning:
             return nil
         }
     }
@@ -254,28 +254,20 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
-    public func configure(cellView: UIView,
-                          cellMeasurement: CVCellMeasurement,
-                          componentDelegate: CVComponentDelegate,
-                          cellSelection: CVCellSelection,
-                          messageSwipeActionState: CVMessageSwipeActionState,
-                          componentView: CVComponentView) {
+    public func configureCellRootComponent(cellView: UIView,
+                                           cellMeasurement: CVCellMeasurement,
+                                           componentDelegate: CVComponentDelegate,
+                                           cellSelection: CVCellSelection,
+                                           messageSwipeActionState: CVMessageSwipeActionState,
+                                           componentView: CVComponentView) {
 
-        guard let componentView = componentView as? CVComponentViewMessage else {
-            owsFailDebug("Unexpected componentView.")
-            return
-        }
-
-        configureForRendering(componentView: componentView,
-                              cellMeasurement: cellMeasurement,
-                              componentDelegate: componentDelegate)
-        let hOuterStack = componentView.hOuterStack
-        owsAssertDebug(cellView.layoutMargins == .zero)
-        owsAssertDebug(cellView.subviews.isEmpty)
-        owsAssertDebug(hOuterStack.superview == nil)
-
-        cellView.addSubview(hOuterStack)
-        hOuterStack.autoPinEdgesToSuperviewEdges()
+        Self.configureCellRootComponent(rootComponent: self,
+                                        cellView: cellView,
+                                        cellMeasurement: cellMeasurement,
+                                        componentDelegate: componentDelegate,
+                                        cellSelection: cellSelection,
+                                        messageSwipeActionState: messageSwipeActionState,
+                                        componentView: componentView)
 
         self.swipeActionProgress = messageSwipeActionState.getProgress(interactionId: interaction.uniqueId)
     }
@@ -1251,7 +1243,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .senderAvatar:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
             }
@@ -1289,7 +1281,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:
                 owsAssertDebug(subcomponentView == nil)
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning:
                 owsAssertDebug(subcomponentView == nil)
             }
         }

@@ -47,6 +47,20 @@ public extension OWSContactsManager {
 
     // MARK: - Avatar Blurring
 
+    func shouldBlurAvatar(thread: TSThread,
+                          transaction: SDSAnyReadTransaction) -> Bool {
+        if let contactThread = thread as? TSContactThread {
+            return shouldBlurContactAvatar(address: contactThread.contactAddress,
+                                           transaction: transaction)
+        } else if let groupThread = thread as? TSGroupThread {
+            return shouldBlurGroupAvatar(groupThread: groupThread,
+                                           transaction: transaction)
+        } else {
+            owsFailDebug("Invalid thread.")
+            return false
+        }
+    }
+
     func shouldBlurContactAvatar(address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool {
         func cacheContains() -> Bool {

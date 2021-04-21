@@ -22,25 +22,19 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func configure(cellView: UIView,
-                          cellMeasurement: CVCellMeasurement,
-                          componentDelegate: CVComponentDelegate,
-                          cellSelection: CVCellSelection,
-                          messageSwipeActionState: CVMessageSwipeActionState,
-                          componentView: CVComponentView) {
-
-        configureForRendering(componentView: componentView,
-                              cellMeasurement: cellMeasurement,
-                              componentDelegate: componentDelegate)
-
-        let rootView = componentView.rootView
-        if rootView.superview == nil {
-            owsAssertDebug(cellView.layoutMargins == .zero)
-            owsAssertDebug(cellView.subviews.isEmpty)
-
-            cellView.addSubview(rootView)
-            rootView.autoPinEdgesToSuperviewMargins()
-        }
+    public func configureCellRootComponent(cellView: UIView,
+                                           cellMeasurement: CVCellMeasurement,
+                                           componentDelegate: CVComponentDelegate,
+                                           cellSelection: CVCellSelection,
+                                           messageSwipeActionState: CVMessageSwipeActionState,
+                                           componentView: CVComponentView) {
+        Self.configureCellRootComponent(rootComponent: self,
+                                        cellView: cellView,
+                                        cellMeasurement: cellMeasurement,
+                                        componentDelegate: componentDelegate,
+                                        cellSelection: cellSelection,
+                                        messageSwipeActionState: messageSwipeActionState,
+                                        componentView: componentView)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {

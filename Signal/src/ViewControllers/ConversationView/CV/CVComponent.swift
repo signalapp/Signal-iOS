@@ -65,12 +65,12 @@ public protocol CVRootComponent: CVComponent {
 
     var cellReuseIdentifier: CVCellReuseIdentifier { get }
 
-    func configure(cellView: UIView,
-                   cellMeasurement: CVCellMeasurement,
-                   componentDelegate: CVComponentDelegate,
-                   cellSelection: CVCellSelection,
-                   messageSwipeActionState: CVMessageSwipeActionState,
-                   componentView: CVComponentView)
+    func configureCellRootComponent(cellView: UIView,
+                                    cellMeasurement: CVCellMeasurement,
+                                    componentDelegate: CVComponentDelegate,
+                                    cellSelection: CVCellSelection,
+                                    messageSwipeActionState: CVMessageSwipeActionState,
+                                    componentView: CVComponentView)
 
     var isDedicatedCell: Bool { get }
 }
@@ -255,6 +255,30 @@ public class CVComponentBase: NSObject {
     var isShowingSelectionUI: Bool {
         itemModel.itemViewState.isShowingSelectionUI
     }
+
+    // MARK: - Root Components
+
+    public static func configureCellRootComponent(rootComponent: CVRootComponent,
+                                                  cellView: UIView,
+                                                  cellMeasurement: CVCellMeasurement,
+                                                  componentDelegate: CVComponentDelegate,
+                                                  cellSelection: CVCellSelection,
+                                                  messageSwipeActionState: CVMessageSwipeActionState,
+                                                  componentView: CVComponentView) {
+        owsAssertDebug(cellView.layoutMargins == .zero)
+        owsAssertDebug(cellView.subviews.isEmpty)
+
+        rootComponent.configureForRendering(componentView: componentView,
+                                            cellMeasurement: cellMeasurement,
+                                            componentDelegate: componentDelegate)
+
+        let rootView = componentView.rootView
+        if rootView.superview == nil {
+            cellView.addSubview(rootView)
+            cellView.layoutMargins = .zero
+            rootView.autoPinEdgesToSuperviewEdges()
+        }
+    }
 }
 
 // MARK: -
@@ -364,6 +388,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case typingIndicator
     case threadDetails
     case failedOrPendingDownloads
+    case unknownThreadWarning
 
     public var description: String {
         switch self {
@@ -405,6 +430,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".typingIndicator"
         case .threadDetails:
             return ".threadDetails"
+        case .unknownThreadWarning:
+            return ".unknownThreadWarning"
         case .failedOrPendingDownloads:
             return ".failedOrPendingDownloads"
         case .sendFailureBadge:
