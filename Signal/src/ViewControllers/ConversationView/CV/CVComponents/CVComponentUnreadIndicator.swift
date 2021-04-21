@@ -27,8 +27,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                                         cellView: cellView,
                                         cellMeasurement: cellMeasurement,
                                         componentDelegate: componentDelegate,
-                                        cellSelection: cellSelection,
-                                        messageSwipeActionState: messageSwipeActionState,
                                         componentView: componentView)
     }
 

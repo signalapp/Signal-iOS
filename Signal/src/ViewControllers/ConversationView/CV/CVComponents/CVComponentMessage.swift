@@ -265,8 +265,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                         cellView: cellView,
                                         cellMeasurement: cellMeasurement,
                                         componentDelegate: componentDelegate,
-                                        cellSelection: cellSelection,
-                                        messageSwipeActionState: messageSwipeActionState,
                                         componentView: componentView)
 
         self.swipeActionProgress = messageSwipeActionState.getProgress(interactionId: interaction.uniqueId)

@@ -262,11 +262,8 @@ public class CVComponentBase: NSObject {
                                                   cellView: UIView,
                                                   cellMeasurement: CVCellMeasurement,
                                                   componentDelegate: CVComponentDelegate,
-                                                  cellSelection: CVCellSelection,
-                                                  messageSwipeActionState: CVMessageSwipeActionState,
                                                   componentView: CVComponentView) {
         owsAssertDebug(cellView.layoutMargins == .zero)
-        owsAssertDebug(cellView.subviews.isEmpty)
 
         rootComponent.configureForRendering(componentView: componentView,
                                             cellMeasurement: cellMeasurement,
@@ -274,6 +271,8 @@ public class CVComponentBase: NSObject {
 
         let rootView = componentView.rootView
         if rootView.superview == nil {
+            owsAssertDebug(cellView.subviews.isEmpty)
+
             cellView.addSubview(rootView)
             cellView.layoutMargins = .zero
             rootView.autoPinEdgesToSuperviewEdges()
