@@ -35,13 +35,16 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
             return
         }
 
-        componentView.reactionCountsView.configure(withState: viewState)
+        let reactionCountsView = componentView.reactionCountsView
+        reactionCountsView.configure(state: viewState,
+                                     cellMeasurement: cellMeasurement)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CVReactionCountsView.measure(state: viewState).ceil
+        return CVReactionCountsView.measure(state: viewState,
+                                            measurementBuilder: measurementBuilder)
     }
 
     // MARK: - Events
@@ -66,23 +69,18 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewReactions: NSObject, CVComponentView {
 
-        // TODO:
         fileprivate let reactionCountsView = CVReactionCountsView()
-        fileprivate let reactionCountsWrapper: UIView
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            reactionCountsWrapper
-        }
-
-        public override required init() {
-            reactionCountsWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(self.reactionCountsView)
+            reactionCountsView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
+            reactionCountsView.reset()
         }
     }
 }

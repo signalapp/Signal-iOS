@@ -4,23 +4,23 @@
 
 import Foundation
 
-// TODO: Convert to manual layout.
-class CVReactionCountsView: OWSStackView {
+class CVReactionCountsView: ManualStackView {
 
-    struct State: Equatable {
-        enum PillState: Equatable {
-            case emoji(emoji: String, count: Int, fromLocalUser: Bool)
-            case moreCount(count: Int, fromLocalUser: Bool)
+    enum PillState: Equatable {
+        case emoji(emoji: String, count: Int, fromLocalUser: Bool)
+        case moreCount(count: Int, fromLocalUser: Bool)
 
-            var fromLocalUser: Bool {
-                switch self {
-                case .emoji(_, _, let fromLocalUser):
-                    return fromLocalUser
-                case .moreCount(_, let fromLocalUser):
-                    return fromLocalUser
-                }
+        var fromLocalUser: Bool {
+            switch self {
+            case .emoji(_, _, let fromLocalUser):
+                return fromLocalUser
+            case .moreCount(_, let fromLocalUser):
+                return fromLocalUser
             }
         }
+    }
+
+    struct State: Equatable {
         let pill1: PillState?
         let pill2: PillState?
         let pill3: PillState?
@@ -29,23 +29,16 @@ class CVReactionCountsView: OWSStackView {
     public static let height: CGFloat = 24
     public static let inset: CGFloat = 7
 
-    private let pill1 = PillView()
-    private let pill2 = PillView()
-    private let pill3 = PillView()
+    private static let pillKey1 = "pill1"
+    private static let pillKey2 = "pill2"
+    private static let pillKey3 = "pill3"
+
+    private let pill1 = PillView(pillKey: CVReactionCountsView.pillKey1)
+    private let pill2 = PillView(pillKey: CVReactionCountsView.pillKey2)
+    private let pill3 = PillView(pillKey: CVReactionCountsView.pillKey3)
 
     required init() {
         super.init(name: "reaction counts")
-
-        self.apply(config: Self.stackConfig)
-
-        addArrangedSubview(pill1)
-        addArrangedSubview(pill2)
-        addArrangedSubview(pill3)
-
-        // low priority contstraint to ensure the view has the smallest width possible.
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            self.autoSetDimension(.width, toSize: 0)
-        }
     }
 
     @available(swift, obsoleted: 1.0)
@@ -58,7 +51,7 @@ class CVReactionCountsView: OWSStackView {
     }
 
     public static func buildState(with reactionState: InteractionReactionState) -> State {
-        func buildPillState(emojiCount: (emoji: String, count: Int)) -> State.PillState {
+        func buildPillState(emojiCount: (emoji: String, count: Int)) -> PillState {
             .emoji(emoji: emojiCount.emoji,
                    count: emojiCount.count,
                    fromLocalUser: emojiCount.emoji == reactionState.localUserEmoji)
@@ -68,9 +61,9 @@ class CVReactionCountsView: OWSStackView {
         // of popularity (`emojiCounts` comes pre-sorted to reflect
         // this ordering).
 
-        var pill1: State.PillState?
-        var pill2: State.PillState?
-        var pill3: State.PillState?
+        var pill1: PillState?
+        var pill2: PillState?
+        var pill3: PillState?
         let build = {
             State(pill1: pill1, pill2: pill2, pill3: pill3)
         }
@@ -114,62 +107,87 @@ class CVReactionCountsView: OWSStackView {
         return build()
     }
 
-    func configure(withState state: State) {
+    private static let measurementKey = "CVReactionCountsView"
+
+    func configure(state: State, cellMeasurement: CVCellMeasurement) {
+
+        layer.borderColor = Theme.backgroundColor.cgColor
+
+        var subviews = [UIView]()
+        func configure(pillView: PillView, pillState: PillState?) {
+            guard let pillState = pillState else {
+                return
+            }
+            pillView.configure(pillState: pillState, cellMeasurement: cellMeasurement)
+            subviews.append(pillView)
+        }
         configure(pillView: pill1, pillState: state.pill1)
         configure(pillView: pill2, pillState: state.pill2)
         configure(pillView: pill3, pillState: state.pill3)
+
+        self.configure(config: Self.stackConfig,
+                       cellMeasurement: cellMeasurement,
+                       measurementKey: Self.measurementKey,
+                       subviews: subviews)
     }
 
-    private func configure(pillView: PillView, pillState: State.PillState?) {
-        guard let pillState = pillState else {
-            pillView.isHiddenInStackView = true
-            return
-        }
-        pillView.isHiddenInStackView = false
-        pillView.configure(pillState: pillState)
-    }
-
-    public static func measure(state: State) -> CGSize {
-        var subviewSizes = [CGSize]()
-        for pillState in [state.pill1, state.pill2, state.pill3] {
+    static func measure(state: State,
+                        measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+        var subviewInfos = [ManualStackSubviewInfo]()
+        func measurePill(pillState: PillState?, pillKey: String) {
             guard let pillState = pillState else {
-                continue
+                return
             }
-            let pillSize = PillView.measure(pillState: pillState)
-            subviewSizes.append(pillSize)
+            let pillSize = PillView.measure(pillState: pillState,
+                                            pillKey: pillKey,
+                                            measurementBuilder: measurementBuilder)
+            subviewInfos.append(pillSize.asManualSubviewInfo)
         }
-        guard !subviewSizes.isEmpty else {
-            owsFailDebug("Missing pills.")
-            return .zero
-        }
-        return CVStackView.measure(config: stackConfig, subviewSizes: subviewSizes)
+        measurePill(pillState: state.pill1, pillKey: Self.pillKey1)
+        measurePill(pillState: state.pill2, pillKey: Self.pillKey2)
+        measurePill(pillState: state.pill3, pillKey: Self.pillKey3)
+
+        let stackMeasurement = ManualStackView.measure(config: Self.stackConfig,
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey,
+                                                       subviewInfos: subviewInfos)
+        return stackMeasurement.measuredSize
     }
 
-    private class PillView: OWSLayerView {
+    public override func reset() {
+        super.reset()
+
+        pill1.reset()
+        pill2.reset()
+        pill3.reset()
+    }
+
+    // MARK: -
+
+    private class PillView: ManualStackViewWithLayer {
+
+        private let pillKey: String
+
         private let emojiLabel = CVLabel()
         private let countLabel = CVLabel()
 
         private static let pillBorderWidth: CGFloat = 1
 
-        private let contentsStackView = OWSStackView(name: "pillView")
+        required init(pillKey: String) {
+            self.pillKey = pillKey
 
-        required override init() {
-            super.init()
-
-            self.layoutCallback = { view in
-                view.layer.borderWidth = Self.pillBorderWidth
-                view.layer.cornerRadius = CVReactionCountsView.height / 2
-            }
-
-            addSubview(contentsStackView)
-            contentsStackView.autoSetDimension(.height, toSize: CVReactionCountsView.height)
-            contentsStackView.autoPinEdgesToSuperviewEdges()
-            contentsStackView.addArrangedSubview(emojiLabel)
-            contentsStackView.addArrangedSubview(countLabel)
-            contentsStackView.apply(config: Self.stackConfig)
+            super.init(name: pillKey)
 
             emojiLabel.clipsToBounds = true
             clipsToBounds = true
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        required init(name: String, arrangedSubviews: [UIView] = []) {
+            fatalError("init(coder:) has not been implemented")
         }
 
         static var stackConfig: CVStackViewConfig {
@@ -177,7 +195,7 @@ class CVReactionCountsView: OWSStackView {
             return CVStackViewConfig(axis: .horizontal, alignment: .fill, spacing: 2, layoutMargins: layoutMargins)
         }
 
-        static func emojiLabelConfig(pillState: State.PillState) -> CVLabelConfig? {
+        static func emojiLabelConfig(pillState: PillState) -> CVLabelConfig? {
             switch pillState {
             case .emoji(let emoji, _, _):
                 assert(emoji.isSingleEmoji)
@@ -192,7 +210,7 @@ class CVReactionCountsView: OWSStackView {
             }
         }
 
-        static func countLabelConfig(pillState: State.PillState) -> CVLabelConfig? {
+        static func countLabelConfig(pillState: PillState) -> CVLabelConfig? {
             let textColor: UIColor = {
                 if pillState.fromLocalUser {
                     return Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray90
@@ -218,11 +236,13 @@ class CVReactionCountsView: OWSStackView {
                                  textAlignment: .center)
         }
 
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
+        func configure(pillState: PillState,
+                       cellMeasurement: CVCellMeasurement) {
 
-        func configure(pillState: State.PillState) {
+            addLayoutBlock { view in
+                view.layer.borderWidth = Self.pillBorderWidth
+                view.layer.cornerRadius = CVReactionCountsView.height / 2
+            }
 
             layer.borderColor = Theme.backgroundColor.cgColor
 
@@ -232,35 +252,49 @@ class CVReactionCountsView: OWSStackView {
                 backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05
             }
 
+            var subviews = [UIView]()
+
             if let emojiLabelConfig = Self.emojiLabelConfig(pillState: pillState) {
-                emojiLabel.isHiddenInStackView = false
                 emojiLabelConfig.applyForRendering(label: emojiLabel)
-            } else {
-                emojiLabel.isHiddenInStackView = true
+                subviews.append(emojiLabel)
             }
 
             if let countLabelConfig = Self.countLabelConfig(pillState: pillState) {
-                countLabel.isHiddenInStackView = false
                 countLabelConfig.applyForRendering(label: countLabel)
-            } else {
-                countLabel.isHiddenInStackView = true
+                subviews.append(countLabel)
             }
+
+            configure(config: Self.stackConfig,
+                      cellMeasurement: cellMeasurement,
+                      measurementKey: pillKey,
+                      subviews: subviews)
         }
 
-        static func measure(pillState: State.PillState) -> CGSize {
-            var subviewSizes = [CGSize]()
+        static func measure(pillState: PillState,
+                            pillKey: String,
+                            measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
 
+            var subviewInfos = [ManualStackSubviewInfo]()
             if let emojiLabelConfig = Self.emojiLabelConfig(pillState: pillState) {
-                subviewSizes.append(CVText.measureLabel(config: emojiLabelConfig,
-                                                        maxWidth: .greatestFiniteMagnitude))
+                let labelSize = CVText.measureLabel(config: emojiLabelConfig,
+                                                    maxWidth: .greatestFiniteMagnitude)
+                subviewInfos.append(labelSize.asManualSubviewInfo)
             }
 
             if let countLabelConfig = Self.countLabelConfig(pillState: pillState) {
-                subviewSizes.append(CVText.measureLabel(config: countLabelConfig,
-                                                        maxWidth: .greatestFiniteMagnitude))
+                let labelSize = CVText.measureLabel(config: countLabelConfig,
+                                                    maxWidth: .greatestFiniteMagnitude)
+                subviewInfos.append(labelSize.asManualSubviewInfo)
             }
 
-            return CVStackView.measure(config: stackConfig, subviewSizes: subviewSizes)
+            let stackMeasurement = ManualStackView.measure(config: Self.stackConfig,
+                                                           measurementBuilder: measurementBuilder,
+                                                           measurementKey: pillKey,
+                                                           subviewInfos: subviewInfos)
+            var result = stackMeasurement.measuredSize
+            // Pin height.
+            result.height = CVReactionCountsView.height
+            return result
         }
     }
 }
