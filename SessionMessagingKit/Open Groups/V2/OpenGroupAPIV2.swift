@@ -112,7 +112,7 @@ public final class OpenGroupAPIV2 : NSObject {
                         // we provided a valid token but it doesn't have a high enough permission level for the route in question.
                         if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 {
                             let storage = SNMessagingKitConfiguration.shared.storage
-                            storage.write { transaction in
+                            storage.writeSync { transaction in
                                 storage.removeAuthToken(for: room, on: request.server, using: transaction)
                             }
                         }
