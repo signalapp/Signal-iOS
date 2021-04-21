@@ -269,9 +269,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             let incomingSenderAddress: SignalServiceAddress = incomingMessage.authorAddress
             owsAssertDebug(incomingSenderAddress.isValid)
             let isDisappearingMessage = incomingMessage.hasPerConversationExpiration
-            let authorName = contactsManager.displayName(for: incomingSenderAddress,
-                                                         transaction: transaction)
-            itemViewState.accessibilityAuthorName = authorName
 
             if let nextItem = nextItem,
                let nextIncomingMessage = nextItem.interaction as? TSIncomingMessage {
@@ -311,6 +308,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 // the previous message has the same sender name and
                 // no "date break" separates us.
                 var shouldShowSenderName = true
+                let authorName = contactsManager.displayName(for: incomingSenderAddress,
+                                                             transaction: transaction)
+                itemViewState.accessibilityAuthorName = authorName
+
                 if let previousItem = previousItem,
                    let previousIncomingMessage = previousItem.interaction as? TSIncomingMessage {
                     let previousIncomingSenderAddress = previousIncomingMessage.authorAddress
@@ -331,7 +332,14 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                     let nextIncomingSenderAddress: SignalServiceAddress = nextIncomingMessage.authorAddress
                     itemViewState.shouldShowSenderAvatar = incomingSenderAddress != nextIncomingSenderAddress
                 }
+            } else {
+                // In a 1:1 thread, we can avoid cluttering up voiceover string with the recipient's
+                // full name. Group thread's will continue to read off the full name.
+                itemViewState.accessibilityAuthorName = contactsManager.shortDisplayName(
+                    for: incomingSenderAddress,
+                    transaction: transaction)
             }
+
         } else if [.call, .info, .error].contains(interaction.interactionType()) {
             // clustering
 
