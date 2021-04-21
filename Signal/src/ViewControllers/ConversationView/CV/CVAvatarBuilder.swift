@@ -45,12 +45,11 @@ public class CVAvatarBuilder: Dependencies {
         }
         let finalAvatar: UIImage
         if shouldBlurAvatar {
-            do {
-                finalAvatar = try rawAvatar.withGausianBlur(radius: CGFloat(diameter) / 2)
-            } catch {
-                owsFailDebug("Error: \(error)")
+            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
+                owsFailDebug("Could build blur avatar.")
                 return nil
             }
+            finalAvatar = blurredAvatar
         } else {
             finalAvatar = rawAvatar
         }
@@ -73,12 +72,11 @@ public class CVAvatarBuilder: Dependencies {
         }
         let finalAvatar: UIImage
         if shouldBlurAvatar {
-            do {
-                finalAvatar = try rawAvatar.withGausianBlur(radius: CGFloat(diameter) / 2)
-            } catch {
-                owsFailDebug("Error: \(error)")
+            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
+                owsFailDebug("Could build blur avatar.")
                 return nil
             }
+            finalAvatar = blurredAvatar
         } else {
             finalAvatar = rawAvatar
         }

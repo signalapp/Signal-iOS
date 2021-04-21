@@ -49,9 +49,6 @@ public extension OWSContactsManager {
 
     func shouldBlurContactAvatar(address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool {
-        if address.phoneNumber == "+13134505219" {
-            Logger.info("jackpot.")
-        }
         func cacheContains() -> Bool {
             guard let uuid = address.uuid else {
                 return false
@@ -156,6 +153,17 @@ public extension OWSContactsManager {
                                                              userInfo: [
                                                                 Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
                                                              ])
+    }
+
+    @nonobjc
+    func blurAvatar(_ image: UIImage) -> UIImage? {
+        do {
+            return try image.withGausianBlur(radius: 16,
+                                             resizeToMaxPixelDimension: 100)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
     }
 
     // MARK: - Shared Groups

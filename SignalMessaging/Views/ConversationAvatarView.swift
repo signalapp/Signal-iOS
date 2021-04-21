@@ -376,12 +376,7 @@ public class ConversationAvatarView: AvatarImageView {
             return nil
         }
         if shouldBlurAvatar {
-            do {
-                return try image.withGausianBlur(radius: CGFloat(diameter) / 2)
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return nil
-            }
+            return contactsManagerImpl.blurAvatar(image)
         } else {
             return image
         }
