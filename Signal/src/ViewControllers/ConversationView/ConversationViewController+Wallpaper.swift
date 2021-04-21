@@ -18,7 +18,6 @@ extension ConversationViewController {
         updateWallpaperView()
     }
 
-    @objc
     func wallpaperDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
         updateWallpaperView()
@@ -30,11 +29,11 @@ extension ConversationViewController {
         updateConversationStyle(hasWallpaper: hasWallpaper)
     }
 
-    @objc
     func updateWallpaperView() {
         AssertIsOnMainThread()
 
         viewState.wallpaperContainer.removeAllSubviews()
+        viewState.wallpaperView = nil
 
         guard let wallpaperView = databaseStorage.read(block: { transaction in
             Wallpaper.view(for: self.thread, transaction: transaction)
@@ -44,8 +43,8 @@ extension ConversationViewController {
         }
 
         viewState.wallpaperContainer.backgroundColor = .clear
-
         viewState.wallpaperContainer.addSubview(wallpaperView)
         wallpaperView.autoPinEdgesToSuperviewEdges()
+        viewState.wallpaperView = wallpaperView
     }
 }

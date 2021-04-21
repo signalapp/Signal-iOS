@@ -129,7 +129,9 @@ public class CVViewState: NSObject {
     #endif
 
     @objc
-    public var wallpaperContainer = UIView()
+    public let wallpaperContainer = UIView()
+    @objc
+    public var wallpaperView: UIView?
 
     // MARK: - 
 

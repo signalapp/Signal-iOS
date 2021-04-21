@@ -182,24 +182,19 @@ public enum Wallpaper: String, CaseIterable {
         return view
     }
 
-    public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> UIView? {
+    public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> WallpaperView? {
         AssertIsOnMainThread()
 
         if let solidColor = wallpaper.solidColor {
-            let view = UIView()
-            view.backgroundColor = solidColor
-            return view
+            return WallpaperView(mode: .solidColor(solidColor: solidColor))
         } else if let gradientView = wallpaper.gradientView {
-            return gradientView
+            return WallpaperView(mode: .gradientView(gradientView: gradientView))
         } else if case .photo = wallpaper {
             guard let photo = photo else {
                 owsFailDebug("Missing photo for wallpaper \(wallpaper)")
                 return nil
             }
-            let imageView = UIImageView(image: photo)
-            imageView.contentMode = .scaleAspectFill
-            imageView.clipsToBounds = true
-            return imageView
+            return WallpaperView(mode: .image(image: photo))
         } else {
             owsFailDebug("Unexpected wallpaper type \(wallpaper)")
             return nil
@@ -337,5 +332,152 @@ fileprivate extension Wallpaper {
             throw OWSAssertionError("Failed to percent encode filename")
         }
         return URL(fileURLWithPath: filename, relativeTo: wallpaperDirectory)
+    }
+}
+
+// MARK: -
+
+@objc
+public class WallpaperView: ManualLayoutViewWithLayer {
+    fileprivate enum Mode {
+        case solidColor(solidColor: UIColor)
+        case gradientView(gradientView: UIView)
+        case image(image: UIImage)
+    }
+
+    private let mode: Mode
+
+    fileprivate init(mode: Mode) {
+        self.mode = mode
+
+        super.init(name: "WallpaperView")
+
+        configure()
+    }
+
+    @available(swift, obsoleted: 1.0)
+    required init(name: String) {
+        owsFail("Do not use this initializer.")
+    }
+
+    private func configure() {
+        switch mode {
+        case .solidColor(let solidColor):
+            backgroundColor = solidColor
+        case .gradientView(let gradientView):
+            addSubviewToFillSuperviewEdges(gradientView)
+
+            addBlurView(contentView: gradientView)
+        case .image(let image):
+            let imageView = UIImageView(image: image)
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+            // Use trilinear filters for better scaling quality at
+            // some performance cost.
+            imageView.layer.minificationFilter = .trilinear
+            imageView.layer.magnificationFilter = .trilinear
+            addSubviewToFillSuperviewEdges(imageView)
+
+            addBlurView(contentView: imageView)
+        }
+    }
+
+    private var blurView: BlurView?
+
+    private func addBlurView(contentView: UIView) {
+        let blurView = BlurView(contentView: contentView)
+        addSubviewToFillSuperviewEdges(blurView)
+
+        addLayoutBlock { _ in
+            blurView.updateContentAndMask()
+        }
+    }
+
+    // MARK: -
+
+    private class BlurView: UIImageView {
+        private let contentView: UIView
+        private let maskLayer = CAShapeLayer()
+
+        init(contentView: UIView) {
+            self.contentView = contentView
+
+            super.init(frame: .zero)
+
+            self.contentMode = .scaleAspectFill
+            self.clipsToBounds = true
+
+            self.layer.mask = maskLayer
+
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(themeDidChange),
+                                                   name: .ThemeDidChange,
+                                                   object: nil)
+        }
+
+        @available(swift, obsoleted: 1.0)
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        @objc
+        private func themeDidChange() {
+            updateContent()
+        }
+
+        func updateContentAndMask() {
+            updateContent()
+            updateMask()
+        }
+
+        func updateMask() {
+            // TODO:
+//            maskLayer.path = UIBezierPath(rect: bounds).cgPath
+            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: 150).cgPath
+        }
+
+        private struct ContentToken: Equatable {
+            let contentSize: CGSize
+            let isDarkThemeEnabled: Bool
+        }
+        private var contentToken: ContentToken?
+
+        func updateContent() {
+            // De-bounce.
+            let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+            let newContentToken = ContentToken(contentSize: bounds.size,
+                                               isDarkThemeEnabled: isDarkThemeEnabled)
+            guard contentToken != newContentToken else {
+                return
+            }
+
+            do {
+                guard bounds.width > 0, bounds.height > 0 else {
+                    reset()
+                    return
+                }
+                guard let contentImage = contentView.renderAsImage() else {
+                    owsFailDebug("Could not render contentView.")
+                    reset()
+                    return
+                }
+                let tintColor: UIColor = isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
+                // TODO: Tune.
+                let blurRadius: CGFloat = 8
+                let blurredImage = try contentImage.withGausianBlur(radius: blurRadius,
+                                                                    tintColor: tintColor)
+                self.image = blurredImage
+                self.contentToken = newContentToken
+            } catch {
+                owsFailDebug("Error: \(error).")
+                reset()
+            }
+        }
+
+        private func reset() {
+            image = nil
+            maskLayer.path = nil
+            contentToken = nil
+        }
     }
 }
