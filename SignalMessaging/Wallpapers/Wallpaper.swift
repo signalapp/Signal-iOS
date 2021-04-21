@@ -349,11 +349,25 @@ fileprivate extension Wallpaper {
 // MARK: -
 
 public struct WallpaperMaskBuilder {
-    fileprivate let bezierPath = UIBezierPath()
+    fileprivate let maskPath = UIBezierPath()
     public let referenceView: UIView
 
-    public func append(bezierPath: UIBezierPath) {
-        self.bezierPath.append(bezierPath)
+    public func append(blurPath: UIBezierPath) {
+        maskPath.append(blurPath)
+    }
+
+    public func append(blurView: UIView?) {
+        guard let blurView = blurView else {
+            Logger.warn("Missing blurView.")
+            return
+        }
+        let blurFrame = referenceView.convert(blurView.bounds, from: blurView)
+        let blurPath: UIBezierPath = {
+            return UIBezierPath(roundedRect: blurFrame,
+                                byRoundingCorners: blurView.layer.maskedCorners.asUIRectCorner,
+                                cornerRadii: .square(blurView.layer.cornerRadius))
+        }()
+        append(blurPath: blurPath)
     }
 }
 
@@ -477,10 +491,7 @@ public class WallpaperView: ManualLayoutViewWithLayer {
             }
             let builder = WallpaperMaskBuilder(referenceView: self)
             maskDataSource.buildWallpaperMask(builder)
-            maskLayer.path = builder.bezierPath.cgPath
-            // TODO:
-//            maskLayer.path = UIBezierPath(rect: bounds).cgPath
-//            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: 150).cgPath
+            maskLayer.path = builder.maskPath.cgPath
         }
 
         private struct ContentToken: Equatable {
@@ -536,5 +547,26 @@ public class WallpaperView: ManualLayoutViewWithLayer {
             image = nil
             contentToken = nil
         }
+    }
+}
+
+// MARK: -
+
+extension CACornerMask {
+    var asUIRectCorner: UIRectCorner {
+        var corners = UIRectCorner()
+        if self.contains(.layerMinXMinYCorner) {
+            corners.formUnion(.topLeft)
+        }
+        if self.contains(.layerMaxXMinYCorner) {
+            corners.formUnion(.topRight)
+        }
+        if self.contains(.layerMinXMaxYCorner) {
+            corners.formUnion(.bottomLeft)
+        }
+        if self.contains(.layerMaxXMaxYCorner) {
+            corners.formUnion(.bottomRight)
+        }
+        return corners
     }
 }

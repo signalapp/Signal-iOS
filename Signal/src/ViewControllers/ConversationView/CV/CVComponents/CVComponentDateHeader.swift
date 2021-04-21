@@ -41,6 +41,17 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         CVComponentViewDateHeader()
     }
 
+    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                            componentView: CVComponentView) {
+        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewDateHeader else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+    }
+
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -79,32 +90,19 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
-            let contentView: UIView = {
-                if hasWallpaper {
-                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
-
-                    let blurView = buildBlurView(conversationStyle: conversationStyle)
-                    componentView.blurView = blurView
-                    blurView.clipsToBounds = true
-                    blurView.layer.cornerRadius = 8
-                    blurView.contentView.addSubview(titleLabel)
-                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
-                    titleLabel.setContentHuggingLow()
-
-                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
-                } else {
-                    innerStack.configure(config: innerStackConfig,
-                                         cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_innerStack,
-                                         subviews: [ titleLabel ])
-                    return innerStack
-                }
-            }()
+            innerStack.configure(config: innerStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_innerStack,
+                                 subviews: [ titleLabel ])
+            if hasWallpaper {
+                innerStack.layer.cornerRadius = 8
+                componentView.blurView = innerStack
+            }
 
             outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
-                                 subviews: [ contentView ])
+                                 subviews: [ innerStack ])
         }
 
         componentView.rootView.accessibilityLabel = titleLabelConfig.stringValue

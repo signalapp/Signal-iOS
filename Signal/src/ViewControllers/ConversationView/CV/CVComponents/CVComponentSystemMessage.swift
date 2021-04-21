@@ -71,15 +71,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        guard let blurView = componentView.blurView else {
-            owsFailDebug("Missing blurView.")
-            return
-        }
-        let referenceView = wallpaperMaskBuilder.referenceView
-        let blurFrame = referenceView.convert(blurView.bounds, from: blurView)
-        let blurPath = UIBezierPath(roundedRect: blurFrame,
-                                    cornerRadius: blurView.layer.cornerRadius)
-        wallpaperMaskBuilder.append(bezierPath: blurPath)
+        wallpaperMaskBuilder.append(blurView: componentView.blurView)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -218,6 +210,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStack.sendSubviewToBack(bubbleView)
 
                 bubbleView.layer.cornerRadius = 8
+                bubbleView.layer.maskedCorners = .all
                 bubbleView.clipsToBounds = true
             } else {
                 outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
