@@ -5,7 +5,7 @@ public final class OpenGroupManagerV2 : NSObject {
     private var pollers: [String:OpenGroupPollerV2] = [:] // One for each server
     private var isPolling = false
     
-    @objc public static var useV2OpenGroups = false
+    @objc public static var useV2OpenGroups = true
 
     // MARK: Initialization
     @objc public static let shared = OpenGroupManagerV2()
