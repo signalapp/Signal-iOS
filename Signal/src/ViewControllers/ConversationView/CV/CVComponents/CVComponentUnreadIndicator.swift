@@ -94,8 +94,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 let blurView = innerStack
                 blurView.layer.cornerRadius = 8
                 componentView.blurView = blurView
-
-                innerStack.addSubviewToFillSuperviewEdges(titleLabel)
             } else {
                 strokeView.backgroundColor = .ows_gray45
             }
