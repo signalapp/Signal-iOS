@@ -15,7 +15,6 @@ class MentionPicker: UIView {
         let address: SignalServiceAddress
         let username: String?
         let displayName: String
-        let conversationColorName: ConversationColorName
     }
 
     lazy private(set) var filteredMentionableUsers = mentionableUsers
@@ -39,9 +38,7 @@ class MentionPicker: UIView {
                 return MentionableUser(
                     address: address,
                     username: Self.profileManagerImpl.username(for: address, transaction: transaction),
-                    displayName: Self.contactsManager.displayName(for: address, transaction: transaction),
-                    conversationColorName: TSContactThread.conversationColorName(forContactAddress: address,
-                                                                                 transaction: transaction)
+                    displayName: Self.contactsManager.displayName(for: address, transaction: transaction)
                 )
             }
         }

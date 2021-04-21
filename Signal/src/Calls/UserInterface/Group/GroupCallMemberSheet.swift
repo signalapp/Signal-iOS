@@ -55,7 +55,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     struct JoinedMember {
         let address: SignalServiceAddress
-        let conversationColorName: ConversationColorName
         let displayName: String
         let comparableName: String
         let isAudioMuted: Bool?
@@ -69,7 +68,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
             if self.call.groupCall.localDeviceState.joinState == .joined {
                 members += self.call.groupCall.remoteDeviceStates.values.map { member in
-                    let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
                     let displayName: String
                     let comparableName: String
                     if member.address.isLocalAddress {
@@ -85,7 +83,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
                     return JoinedMember(
                         address: member.address,
-                        conversationColorName: thread?.conversationColorName ?? .default,
                         displayName: displayName,
                         comparableName: comparableName,
                         isAudioMuted: member.audioMuted,
@@ -95,7 +92,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
-                let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
                 let displayName = NSLocalizedString(
                     "GROUP_CALL_YOU",
                     comment: "Text describing the local user as a participant in a group call."
@@ -104,7 +100,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
                 members.append(JoinedMember(
                     address: localAddress,
-                    conversationColorName: thread?.conversationColorName ?? .default,
                     displayName: displayName,
                     comparableName: comparableName,
                     isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
@@ -115,13 +110,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 // We can get the list of joined members still, provided we are connected.
                 members += self.call.groupCall.peekInfo?.joinedMembers.map { uuid in
                     let address = SignalServiceAddress(uuid: uuid)
-                    let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
                     let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
                     let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
 
                     return JoinedMember(
                         address: address,
-                        conversationColorName: thread?.conversationColorName ?? .default,
                         displayName: displayName,
                         comparableName: comparableName,
                         isAudioMuted: nil,

@@ -311,7 +311,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         hasBeenConfigured = true
         deferredReconfigTimer?.invalidate()
 
-        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
+        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction -> (UIImage?, ConversationColorName) in
+            avatarView.diameter = avatarDiameter
+            avatarView.configure(address: device.address, transaction: transaction)
+            avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+
             return (
                 self.contactsManagerImpl.image(for: device.address, transaction: transaction),
                 self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
@@ -319,10 +323,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
 
         backgroundAvatarView.image = profileImage
-
-        avatarView.diameter = avatarDiameter
-        avatarView.configureWithSneakyTransaction(address: device.address)
-        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
         muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets

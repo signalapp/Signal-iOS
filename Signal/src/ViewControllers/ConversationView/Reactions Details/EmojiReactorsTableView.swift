@@ -7,7 +7,6 @@ import Foundation
 class EmojiReactorsTableView: UITableView {
     struct ReactorItem {
         let address: SignalServiceAddress
-        let conversationColorName: ConversationColorName
         let displayName: String
         let emoji: String
     }
@@ -32,12 +31,10 @@ class EmojiReactorsTableView: UITableView {
 
     func configure(for reactions: [OWSReaction], transaction: SDSAnyReadTransaction) {
         reactorItems = reactions.compactMap { reaction in
-            let thread = TSContactThread.getWithContactAddress(reaction.reactor, transaction: transaction)
             let displayName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
             return ReactorItem(
                 address: reaction.reactor,
-                conversationColorName: thread?.conversationColorName ?? .default,
                 displayName: displayName,
                 emoji: reaction.emoji
             )
