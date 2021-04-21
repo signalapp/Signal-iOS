@@ -396,7 +396,7 @@ private class LinkPreviewImageView: UIImageView {
             layer.cornerRadius = smallRounding
             layer.maskedCorners = isHero ? .top : .all
         case .circular:
-            layer.cornerRadius = bounds.size.smallerAxis
+            layer.cornerRadius = bounds.size.smallerAxis / 2
             layer.maskedCorners = .all
         case .asymmetrical:
             // This uses a more expensive layer mask to clip corners
