@@ -244,7 +244,7 @@ public final class SnodeAPI : NSObject {
                         ]
                     ]
                 ]
-                let promise: Promise<Set<Snode>> = invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
+                return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
                     guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
                         let rawSnodes = intermediate["service_node_states"] as? [JSON] else {
                         throw Error.snodePoolUpdatingFailed
@@ -258,7 +258,6 @@ public final class SnodeAPI : NSObject {
                         return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                 }
-                return promise
             }
         }
         let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Snode> in
