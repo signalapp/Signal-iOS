@@ -16,6 +16,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken)
 
+    func updateWallpaperMask()
+
     var isScrolledToBottom: Bool { get }
 
     var isScrollNearTopOfLoadWindow: Bool { get }
@@ -776,6 +778,7 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
             return
         }
         cell.isCellVisible = true
+        delegate?.updateWallpaperMask()
     }
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -784,6 +787,7 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
             return
         }
         cell.isCellVisible = false
+        delegate?.updateWallpaperMask()
     }
 
     // We use this hook to ensure scroll state continuity.  As the collection

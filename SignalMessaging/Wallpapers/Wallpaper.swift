@@ -141,7 +141,9 @@ public enum Wallpaper: String, CaseIterable {
         return dimInDarkMode
     }
 
-    public static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
+    public static func view(for thread: TSThread? = nil,
+                            maskDataSource: WallpaperMaskDataSource? = nil,
+                            transaction: SDSAnyReadTransaction) -> WallpaperView? {
         AssertIsOnMainThread()
 
         guard let wallpaper: Wallpaper = {
@@ -170,7 +172,9 @@ public enum Wallpaper: String, CaseIterable {
             return nil
         }
 
-        guard let view = view(for: wallpaper, photo: photo) else { return nil }
+        guard let view = view(for: wallpaper, photo: photo, maskDataSource: maskDataSource) else {
+            return nil
+       }
 
         if Theme.isDarkThemeEnabled && dimInDarkMode(for: thread, transaction: transaction) {
             let dimmingView = UIView()
@@ -182,23 +186,30 @@ public enum Wallpaper: String, CaseIterable {
         return view
     }
 
-    public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> WallpaperView? {
+    public static func view(for wallpaper: Wallpaper,
+                            photo: UIImage? = nil,
+                            maskDataSource: WallpaperMaskDataSource? = nil) -> WallpaperView? {
         AssertIsOnMainThread()
 
-        if let solidColor = wallpaper.solidColor {
-            return WallpaperView(mode: .solidColor(solidColor: solidColor))
-        } else if let gradientView = wallpaper.gradientView {
-            return WallpaperView(mode: .gradientView(gradientView: gradientView))
-        } else if case .photo = wallpaper {
-            guard let photo = photo else {
-                owsFailDebug("Missing photo for wallpaper \(wallpaper)")
+        guard let mode = { () -> WallpaperView.Mode? in
+            if let solidColor = wallpaper.solidColor {
+                return .solidColor(solidColor: solidColor)
+            } else if let gradientView = wallpaper.gradientView {
+                return .gradientView(gradientView: gradientView)
+            } else if case .photo = wallpaper {
+                guard let photo = photo else {
+                    owsFailDebug("Missing photo for wallpaper \(wallpaper)")
+                    return nil
+                }
+                return .image(image: photo)
+            } else {
+                owsFailDebug("Unexpected wallpaper type \(wallpaper)")
                 return nil
             }
-            return WallpaperView(mode: .image(image: photo))
-        } else {
-            owsFailDebug("Unexpected wallpaper type \(wallpaper)")
+        }() else {
             return nil
         }
+        return WallpaperView(mode: mode, maskDataSource: maskDataSource)
     }
 }
 
@@ -337,6 +348,23 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
+public struct WallpaperMaskBuilder {
+    fileprivate let bezierPath = UIBezierPath()
+    public let referenceView: UIView
+
+    public func append(bezierPath: UIBezierPath) {
+        self.bezierPath.append(bezierPath)
+    }
+}
+
+// MARK: -
+
+public protocol WallpaperMaskDataSource: class {
+    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder)
+}
+
+// MARK: -
+
 @objc
 public class WallpaperView: ManualLayoutViewWithLayer {
     fileprivate enum Mode {
@@ -347,12 +375,12 @@ public class WallpaperView: ManualLayoutViewWithLayer {
 
     private let mode: Mode
 
-    fileprivate init(mode: Mode) {
+    fileprivate init(mode: Mode, maskDataSource: WallpaperMaskDataSource?) {
         self.mode = mode
 
         super.init(name: "WallpaperView")
 
-        configure()
+        configure(maskDataSource: maskDataSource)
     }
 
     @available(swift, obsoleted: 1.0)
@@ -360,14 +388,14 @@ public class WallpaperView: ManualLayoutViewWithLayer {
         owsFail("Do not use this initializer.")
     }
 
-    private func configure() {
+    private func configure(maskDataSource: WallpaperMaskDataSource?) {
         switch mode {
         case .solidColor(let solidColor):
             backgroundColor = solidColor
         case .gradientView(let gradientView):
             addSubviewToFillSuperviewEdges(gradientView)
 
-            addBlurView(contentView: gradientView)
+            addBlurView(contentView: gradientView, maskDataSource: maskDataSource)
         case .image(let image):
             let imageView = UIImageView(image: image)
             imageView.contentMode = .scaleAspectFill
@@ -378,14 +406,19 @@ public class WallpaperView: ManualLayoutViewWithLayer {
             imageView.layer.magnificationFilter = .trilinear
             addSubviewToFillSuperviewEdges(imageView)
 
-            addBlurView(contentView: imageView)
+            addBlurView(contentView: imageView, maskDataSource: maskDataSource)
         }
     }
 
     private var blurView: BlurView?
 
-    private func addBlurView(contentView: UIView) {
-        let blurView = BlurView(contentView: contentView)
+    private func addBlurView(contentView: UIView,
+                             maskDataSource: WallpaperMaskDataSource?) {
+        guard let maskDataSource = maskDataSource else {
+            return
+        }
+        let blurView = BlurView(contentView: contentView, maskDataSource: maskDataSource)
+        self.blurView = blurView
         addSubviewToFillSuperviewEdges(blurView)
 
         addLayoutBlock { _ in
@@ -393,14 +426,20 @@ public class WallpaperView: ManualLayoutViewWithLayer {
         }
     }
 
+    public func updateMask() {
+        blurView?.updateMask()
+    }
+
     // MARK: -
 
     private class BlurView: UIImageView {
         private let contentView: UIView
         private let maskLayer = CAShapeLayer()
+        private weak var maskDataSource: WallpaperMaskDataSource?
 
-        init(contentView: UIView) {
+        init(contentView: UIView, maskDataSource: WallpaperMaskDataSource) {
             self.contentView = contentView
+            self.maskDataSource = maskDataSource
 
             super.init(frame: .zero)
 
@@ -431,9 +470,17 @@ public class WallpaperView: ManualLayoutViewWithLayer {
         }
 
         func updateMask() {
+            guard let maskDataSource = self.maskDataSource else {
+                owsFailDebug("Missing maskDataSource.")
+                resetMask()
+                return
+            }
+            let builder = WallpaperMaskBuilder(referenceView: self)
+            maskDataSource.buildWallpaperMask(builder)
+            maskLayer.path = builder.bezierPath.cgPath
             // TODO:
 //            maskLayer.path = UIBezierPath(rect: bounds).cgPath
-            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: 150).cgPath
+//            maskLayer.path = UIBezierPath(roundedRect: bounds, cornerRadius: 150).cgPath
         }
 
         private struct ContentToken: Equatable {
@@ -453,12 +500,12 @@ public class WallpaperView: ManualLayoutViewWithLayer {
 
             do {
                 guard bounds.width > 0, bounds.height > 0 else {
-                    reset()
+                    resetContent()
                     return
                 }
                 guard let contentImage = contentView.renderAsImage() else {
                     owsFailDebug("Could not render contentView.")
-                    reset()
+                    resetContent()
                     return
                 }
                 let tintColor: UIColor = isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
@@ -470,13 +517,21 @@ public class WallpaperView: ManualLayoutViewWithLayer {
                 self.contentToken = newContentToken
             } catch {
                 owsFailDebug("Error: \(error).")
-                reset()
+                resetContent()
             }
         }
 
         private func reset() {
-            image = nil
+            resetContent()
+            resetMask()
+        }
+
+        private func resetMask() {
             maskLayer.path = nil
+        }
+
+        private func resetContent() {
+            image = nil
             contentToken = nil
         }
     }

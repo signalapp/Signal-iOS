@@ -3129,6 +3129,8 @@ typedef enum : NSUInteger {
     [self configureScrollDownButtons];
 
     [self scheduleScrollUpdateTimer];
+
+    [self updateWallpaperMask];
 }
 
 - (void)scheduleScrollUpdateTimer
@@ -3240,6 +3242,8 @@ typedef enum : NSUInteger {
     if (oldSize.width != newSize.width) {
         [self resetForSizeOrOrientationChange];
     }
+
+    [self updateWallpaperMask];
 }
 
 - (void)collectionViewWillAnimate
@@ -3627,6 +3631,7 @@ typedef enum : NSUInteger {
     for (CVCell *cell in self.collectionView.visibleCells) {
         cell.isCellVisible = isCellVisible;
     }
+    [self updateWallpaperMask];
 }
 
 #pragma mark - ContactsPickerDelegate

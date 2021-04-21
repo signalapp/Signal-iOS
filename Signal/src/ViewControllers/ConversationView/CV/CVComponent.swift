@@ -55,6 +55,9 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
+
+    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                            componentView: CVComponentView)
 }
 
 // MARK: -
@@ -277,6 +280,13 @@ public class CVComponentBase: NSObject {
             cellView.layoutMargins = .zero
             rootView.autoPinEdgesToSuperviewEdges()
         }
+    }
+
+    // MARK: - 
+
+    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                   componentView: CVComponentView) {
+        // Do nothing.
     }
 }
 

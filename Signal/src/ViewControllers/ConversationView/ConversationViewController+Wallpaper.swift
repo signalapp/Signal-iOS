@@ -36,7 +36,9 @@ extension ConversationViewController {
         viewState.wallpaperView = nil
 
         guard let wallpaperView = databaseStorage.read(block: { transaction in
-            Wallpaper.view(for: self.thread, transaction: transaction)
+            Wallpaper.view(for: self.thread,
+                           maskDataSource: self,
+                           transaction: transaction)
         }) else {
             viewState.wallpaperContainer.backgroundColor = Theme.backgroundColor
             return
@@ -46,5 +48,25 @@ extension ConversationViewController {
         viewState.wallpaperContainer.addSubview(wallpaperView)
         wallpaperView.autoPinEdgesToSuperviewEdges()
         viewState.wallpaperView = wallpaperView
+    }
+
+    public func updateWallpaperMask() {
+        AssertIsOnMainThread()
+
+        viewState.wallpaperView?.updateMask()
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: WallpaperMaskDataSource {
+    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
+        for cell in collectionView.visibleCells {
+            guard let cell = cell as? CVCell else {
+                owsFailDebug("Invalid cell.")
+                continue
+            }
+            cell.buildWallpaperMask(wallpaperMaskBuilder)
+        }
     }
 }
