@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMeasurementObject: Equatable {
+open class CVMeasurementObject: Equatable {
 
     // MARK: - Equatable
 
@@ -22,20 +22,24 @@ public struct CVCellMeasurement: Equatable {
     public typealias Measurement = ManualStackMeasurement
     public typealias ObjectType = CVMeasurementObject
 
-    let cellSize: CGSize
+    public let cellSize: CGSize
+
     private let sizes: [String: CGSize]
     private let values: [String: CGFloat]
     private let measurements: [String: Measurement]
     private let objects: [String: ObjectType]
 
     public class Builder {
-        var cellSize: CGSize = .zero
+        public var cellSize: CGSize = .zero
+
         private var sizes = [String: CGSize]()
         private var values = [String: CGFloat]()
         private var measurements = [String: Measurement]()
         private var objects = [String: ObjectType]()
 
-        func build() -> CVCellMeasurement {
+        public init() {}
+
+        public func build() -> CVCellMeasurement {
             CVCellMeasurement(cellSize: cellSize,
                               sizes: sizes,
                               values: values,
@@ -43,44 +47,44 @@ public struct CVCellMeasurement: Equatable {
                               objects: objects)
         }
 
-        func setSize(key: String, size: CGSize) {
+        public func setSize(key: String, size: CGSize) {
             owsAssertDebug(sizes[key] == nil)
 
             sizes[key] = size
         }
 
-        func setValue(key: String, value: CGFloat) {
+        public func setValue(key: String, value: CGFloat) {
             owsAssertDebug(values[key] == nil)
 
             values[key] = value
         }
 
-        func setMeasurement(key: String, value: Measurement) {
+        public func setMeasurement(key: String, value: Measurement) {
             owsAssertDebug(measurements[key] == nil)
 
             measurements[key] = value
         }
 
-        func setObject(key: String, value: ObjectType) {
+        public func setObject(key: String, value: ObjectType) {
             owsAssertDebug(measurements[key] == nil)
 
             objects[key] = value
         }
     }
 
-    func size(key: String) -> CGSize? {
+    public func size(key: String) -> CGSize? {
         sizes[key]
     }
 
-    func value(key: String) -> CGFloat? {
+    public func value(key: String) -> CGFloat? {
         values[key]
     }
 
-    func measurement(key: String) -> Measurement? {
+    public func measurement(key: String) -> Measurement? {
         measurements[key]
     }
 
-    func object<T>(key: String) -> T? {
+    public func object<T>(key: String) -> T? {
         guard let value = objects[key] else {
             return nil
         }

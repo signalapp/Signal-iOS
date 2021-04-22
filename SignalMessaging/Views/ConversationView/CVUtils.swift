@@ -21,7 +21,7 @@ public class CVUtils {
 // MARK: -
 
 @objc
-public class CVLabel: UILabel {
+open class CVLabel: UILabel {
     public override func updateConstraints() {
         super.updateConstraints()
 
@@ -32,7 +32,7 @@ public class CVLabel: UILabel {
 // MARK: -
 
 @objc
-public class CVImageView: UIImageView {
+open class CVImageView: UIImageView {
     public override func updateConstraints() {
         super.updateConstraints()
 
@@ -43,7 +43,7 @@ public class CVImageView: UIImageView {
 // MARK: -
 
 @objc
-public class CVAnimatedImageView: YYAnimatedImageView {
+open class CVAnimatedImageView: YYAnimatedImageView {
     public override func updateConstraints() {
         super.updateConstraints()
 

@@ -58,21 +58,32 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         }
     }
 
-    private var isDraft: Bool {
-        return draftDelegate != nil
+    @objc
+    public func configureForNonCVC(state: LinkPreviewState, isDraft: Bool) {
+        let measurementBuilder = CVCellMeasurement.Builder()
+        _ = Self.measure(maxWidth: CGFloat.greatestFiniteMagnitude,
+                         measurementBuilder: measurementBuilder,
+                         state: state,
+                         isDraft: isDraft)
+        let cellMeasurement = measurementBuilder.build()
+        configureForRendering(state: state,
+                              isDraft: isDraft,
+                              hasAsymmetricalRounding: false,
+                              cellMeasurement: cellMeasurement)
     }
 
-    // TODO: hasAsymmetricalRounding
     public func configureForRendering(state: LinkPreviewState,
+                                      isDraft: Bool,
                                       hasAsymmetricalRounding: Bool,
                                       cellMeasurement: CVCellMeasurement) {
-        let adapter = self.adapter(forState: state)
+        let adapter = Self.adapter(forState: state, isDraft: isDraft)
         adapter.configureForRendering(linkPreviewView: self,
                                       hasAsymmetricalRounding: hasAsymmetricalRounding,
                                       cellMeasurement: cellMeasurement)
     }
 
-    private func adapter(forState state: LinkPreviewState) -> LinkPreviewViewAdapter {
+    private static func adapter(forState state: LinkPreviewState,
+                                isDraft: Bool) -> LinkPreviewViewAdapter {
         if !state.isLoaded() {
             return LinkPreviewViewAdapterDraftLoading(state: state)
         } else if isDraft {
@@ -167,6 +178,12 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         return StickerPackInfo.isStickerPackShare(url)
     }
 
+    static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
+        Theme.isDarkThemeEnabled
+        ? .white
+        : .gray
+    }
+
     // MARK: Events
 
     @objc func wasTapped(sender: UIGestureRecognizer) {
@@ -184,11 +201,11 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     // MARK: Measurement
 
-    @objc
-    public func measure(maxWidth: CGFloat,
-                        measurementBuilder: CVCellMeasurement.Builder,
-                        state: LinkPreviewState) -> CGSize {
-        let adapter = self.adapter(forState: state)
+    public static func measure(maxWidth: CGFloat,
+                               measurementBuilder: CVCellMeasurement.Builder,
+                               state: LinkPreviewState,
+                               isDraft: Bool) -> CGSize {
+        let adapter = Self.adapter(forState: state, isDraft: isDraft)
         return adapter.measure(maxWidth: maxWidth,
                                measurementBuilder: measurementBuilder,
                                state: state)
