@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+BASE_DIR=$(git rev-parse --show-toplevel)
+METADATA_ROOT="$BASE_DIR/fastlane/metadata"
+
+cd $METADATA_ROOT
+
+tx push --source

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+# https://docs.fastlane.tools/actions/deliver/#available-language-codes
+APP_STORE_LANGUAGES='ar-SA,ca,cs,da,de-DE,el,en-AU,en-CA,en-GB,en-US,es-ES,es-MX,fi,fr-CA,fr-FR,he,hi,hr,hu,id,it,ja,ko,ms,nl-NL,no,pl,pt-BR,pt-PT,ro,ru,sk,sv,th,tr,uk,vi,zh-Hans,zh-Hant'
+
+echo "Pulling metadata translations..."
+
+BASE_DIR=$(git rev-parse --show-toplevel)
+METADATA_ROOT="$BASE_DIR/fastlane/metadata"
+
+cd $METADATA_ROOT
+
+# Pull all supported languages which are at least 80% complete
+tx pull -l $APP_STORE_LANGUAGES --minimum-perc=80
+

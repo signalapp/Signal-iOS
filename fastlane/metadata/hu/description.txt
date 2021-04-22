@@ -1,0 +1,26 @@
+Milliók használják a Signal-t minden nap az azonnali, ingyenes kommunikációra szerte a világon. Küldj és fogadj nagy felbontású üzeneteket, vegyél rész HD hang/videó hívásokban, fedezd fel az új szolgáltatásokat, amelyek a kapcsolattartást segítik. A Signal fejlett adatvédelmi technológiája mindig aktív, így arra fókuszálhatsz hogy a számodra fontos pillanatokat megoszthasd a számodra fontos emberekkel.
+
+• Mondj bármit – Az aktuális technikai fejlettségnek megfelelő végponttól végpontig titkosítás (a nyílt forrású  Signal Protocol™ segítségével) óvja beszélgetései biztonságát. Az adatvédelem többé nem csak egy opcionális mód — a mód, ahogy a Signal működik. Minden üzenet, minden hívás, mindig.
+
+• Gyorsulj fel – Az üzenetek gyorsan és megbízhatóan kézbesülnek, még lassú hálózatokon is. A Signal korlátozott környezetben működésre optimalizált.
+
+• Légy szabad – A Signal egy 501c3 szerinti teljesen független nonprofit szervezet. A fejlesztés olyan felhasználók, mint Te támogatják. Nincs reklám. Nincs követés. Nem viccelünk.
+
+• Légy önmagad –  Használd meglévő telefonszámod és címjegyzéked, hogy biztonságosan kommunikálj barátaiddal.
+
+• Beszélj tisztán – Mindegy, hogy a város túlsó végén vagy az óceánon túl, a Signal fejlett audió és videó minősége közelebb hozza a barátokat és a családot.
+
+• Suttogj a sötétben – Kapcsolj a sötét témára, ha zavar a fény.
+
+• Ismerősen hangzik - Válassz egyedi értesítéseket minden kapcsolatodhoz vagy kapcsold ki a hangokat teljesen. Simon & Garfunkel írt egy slágert erről 1964-ben - Te is megtapasztalhatod, ha az értesítési hangot "Nincs"-re állítod.
+
+• Képzeld el - A beépített képszerkesztő lehetővé teszi a küldött fotók nyújtását, vágását, forgatását. Szöveg eszköztár is található benne, így még több szót adhatsz meg a meglévő ezer mellé, amit a kép mond.
+
+
+Támogatásért, kérdéseivel és további információkért látogasson el ide:
+https://support.signal.org
+
+Forráskód:
+https://github.com/signalapp
+
+Kövessen minket Twitter-en (@signalapp) és Instagram-on (@signal_app) a legújabb frissítésekért és bejelentésekért.

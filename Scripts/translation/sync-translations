@@ -16,6 +16,7 @@ Begin Pushing translation source
 EOS
 
 $BIN_DIR/push-translation-source
+$BIN_DIR/push-metadata-source
 
 cat <<EOS
 
@@ -25,8 +26,9 @@ Begin Pulling translations
 
 EOS
 
-
 $BIN_DIR/pull-translations
+$BIN_DIR/pull-metadata-translations
+
 cat <<EOS
 
 Done Pulling translations

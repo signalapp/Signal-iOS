@@ -1,0 +1,5 @@
+• Innamorati di numerosi miglioramenti all'esperienza di caricamento e download dei media. Può sembrare che tutto stia accadendo molto velocemente, specialmente quando invii più foto e video contemporaneamente, ma l'amore a volte è così. Va bene iniziare a sentirsi più attaccati all'invio di più allegati.
+• L'amore e la perdita sono inestricabilmente connessi, quindi abbiamo anche rotto con un bug che rendeva impossibile condividere lunghi video da altre app (come l'app Foto di iOS).
+• Nell'ambito dei nostri continui sforzi per riprogettare e migliorare l'app, abbiamo aggiornato la schermata delle impostazioni della chat per rendere le azioni comuni più facili da trovare e per aiutarti a trovare un terreno comune nelle chat individuali visualizzando i gruppi in comune.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

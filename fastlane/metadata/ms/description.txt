@@ -1,0 +1,26 @@
+Berjuta-juta orang menggunakan Signal setiap hari untuk komunikasi segera dan percuma di mana-mana sahaja di dunia. Menghantar dan menerima mesej ketepatan tinggi, mengambil bahagian dalam panggilan suara/video HD, dan meneroka set ciri baru yang semakin meningkat yang membantu anda terus berhubung. Teknologi pemeliharaan privasi yang maju Signal sentiasa didayakan, jadi anda boleh memberi tumpuan untuk berkongsi saat-saat indah bersama orang yang penting bagi anda.
+
+• Katakan apa-apa - Penyulitan hujung ke hujung terkini (dikuasakan oleh Protokol Signal™ sumber terbuka) memastikan perbualan anda selamat. Privasi bukan sejenis mod pilihan — ia tugas kerja Signal. Setiap mesej, setiap panggilan, setiap masa.
+
+• Cepat – Mesej dihantarkan laju dan dengan pasti, walaupun dengan rangkaian yang lambat. Signal dioptimumkan untuk beroperasi dalam lingkungan yang paling terkawal.
+
+• Rasa kebebasan - Signal ialah satu 501c3 bukan keuntungan bebas sepenuhnya. Pembangunan adalah disokong oleh pengguna-pengguna seperti anda. Tiada iklan. Tiada penjejak. Tiada muslihat.
+
+• Menjadi diri sendiri - Anda boleh menggunakan nombor telefon anda dan buku alamat yang sedia ada untuk komunikasi dengan kawan-kawan anda dengan selamat.
+
+• Bersuara - Sama ada mereka yang tinggal di seluruh bandar atau di seberang lautan, kualiti audio dan video yang diperkuatkan oleh Signal akan membolehkan anda dengan kawan dan keluarga anda terasa lebih rapat.
+
+• Bisik dalam bayang-bayang - Beralih ke tema gelap jika anda enggan melihat cahaya.
+
+• Bunyian biasa - Pilih makluman khusus untuk setiap kenalan, atau nyahaktifkan bunyi sepenuhnya. Simon & Garfunkel menulis lagu hit tentangnya pada tahun 1964, anda boleh mengalami bunyi senyap apabila anda ingin dengan memilih "Tiada" sebagai nada dering pemberitahuan anda.
+
+• Gambarkan ini - Gunakan ciri penyuntingan imej terbina dalam untuk lakaran, potong, dan flip foto keluar anda. Terdapat juga alat teks supaya anda boleh menambah lebih banyak perkataan kepada 1,000 yang mana gambar anda sudah bernilai.
+
+
+Untuk sokongan, soalan, atau maklumat selanjutnya, sila layari:
+https://support.signal.org
+
+Kod sumber:
+https://github.com/signalapp
+
+Ikuti kami di Twitter (@signalapp) dan Instagram (@signal_app) untuk semua kemas kini dan pengumuman terkini.

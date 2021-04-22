@@ -1,0 +1,5 @@
+• Enamoreu-vos de diverses millores en l'experiència de càrrega i baixada de mitjans. Pot semblar que tot està passant molt ràpid, sobretot quan s'envien diverses fotos i vídeos alhora, però l’amor és així de vegades. Està bé començar a sentir-se més propens a enviar més fitxers adjunts.
+• L’amor i la pèrdua estan indissolublement connectats, de manera que també vam trencar amb un error que feia impossible compartir vídeos llargs d’altres aplicacions (com ara l’aplicació iOS Photos).
+• Com a part dels nostres esforços continus per redissenyar i millorar l'aplicació, hem actualitzat la pantalla de configuració de les converses per facilitar l'accés a les accions habituals i ajudar-vos a trobar un punt de coincidència a les individuals, mostrant els grups que teniu en comú.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

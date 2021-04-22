@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+BASE_DIR=$(git rev-parse --show-toplevel)
+
+cd $BASE_DIR
+
+bundle exec fastlane deliver --skip-screenshots --skip-binary-upload --username ${FASTLANE_USERNAME} --app_identifier 'org.whispersystems.signal'

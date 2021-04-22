@@ -1,0 +1,26 @@
+Des millions de personnes utilisent Signal tous les jours pour communiquer gratuitement et instantanément partout dans le monde. Envoyez et recevez des messages haute-fidélité, participez à des appels voix/vidéo HD et découvrez un nombre sans cesse croissant de nouvelles fonctionnalités qui vous aident à rester connecté. La technologie avancée de protection de la vie privée de Signal est toujours active, vous permettant de vous concentrer sur une seule chose : partager les moments qui comptent avec vos proches.
+
+• Parlez librement : un chiffrement de bout en bout à la pointe de la technologie (optimisé par le protocole open source Signal Protocol™) assure la sécurité de vos conversations. Sur Signal, la confidentialité n'est pas une option mais un principe de base, pour tous vos messages et appels sans exception.
+
+• Communiquez rapidement : les messages sont transmis rapidement et avec fiabilité, même sur les réseaux lents. Signal est optimisé de façon à fonctionner même dans les environnements les plus contraignants.
+
+• Restez libre : Signal est une organisation à but non lucratif entièrement indépendante (501c3). Son développement est assuré par des utilisateurs comme vous. Elle ne vous réserve aucune publicité, aucun tracker et aucune autre mauvaise surprise.
+
+• Soyez vous-même : vous pouvez utiliser votre numéro de téléphone et votre répertoire existants pour communiquer en toute sécurité avec vos amis.
+
+• Communiquez avec spontanéité : la qualité audio et vidéo améliorée de Signal vous rapprochera de votre famille et de vos amis, qu'ils vivent de l'autre côté de la ville ou de l'océan.
+
+• Passez du côté obscur : adoptez le thème sombre pour soulager vos yeux et économiser de l'énergie.
+
+• Personnalisez votre application : choisissez des alertes personnalisées pour chaque contact ou désactivez complètement le son. La parole est d'argent mais le silence est d'or : configurez la sonnerie d'alerte sur "Aucune" pour profiter d'un peu de calme.
+
+• Dessinez, c'est gagné : utilisez les fonctions de retouche d'image intégrées pour recadrer, pivoter et dessiner sur vos photos. Un outil de texte vous permet même d'ajouter des commentaires pour encore plus de convivialité.
+
+
+Pour de l’assistance, des questions ou plus de renseignements, visitez :
+https://support.signal.org
+
+Code source :
+https://github.com/signalapp
+
+Suivez-nous sur Twitter (@signalapp) et Instagram (@signal_app) pour toutes les dernières mises à jour et actualités.

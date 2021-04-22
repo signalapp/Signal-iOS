@@ -1,0 +1,26 @@
+Milyonlarca insan, Signal'i anlık iletişim için dünyanın her tarafından ücretsiz olarak kullanıyor. Yüksek netliğe sahip iletiler gönderin ve alın, sesli ve görüntülü aramalarda yer alın, bağlı kalmanıza yardımcı olacak genişleyen yeni özellikleri keşfedin. Signal'in gelişmiş gizlilik koruma teknolojisi her zaman açıktır, böylelikle önem verdiğiniz anıları sizin için önemli olan insanlarla paylaşmaya odaklanabilirsiniz.
+
+• İstediğinizi söyleyin – Teknoloji harikası uçtan uca şifreleme (açık kaynaklı Signal Protocol™) sohbetlerinizi güvenli tutar. Gizlilik isteğe bağlı bir kip değil, Signal'in çalışma şeklidir. Her ileti, her arama, her zaman.
+
+• Hızlanın – Yavaş bir bağlantıda bile iletiler hızlı ve güvenli bir şekilde gönderilir. Signal olabildiğince sıkıntılı ortamlarda çalışmak için optimize edildi.
+
+• Özgür hissedin – Signal tamamen bağımsız 501c3 kar amacı gütmeyen kuruluştur. Yazılımın geliştirilmesi sizin gibi kullanıcılar tarafından desteklenmektedir. Reklam yok. İzleme yok. Şaka yok.
+
+• Kendiniz olun – Arkadaşlarınızla güvenli bir şekilde iletişim kurmak için mevcut telefon numaranızı ve rehberinizi kullanabilirsiniz.
+
+• Konuşun – İster şehrin öbür ucunda ister okyanus ötesinde olsun, Signal'in gelişmiş ses ve görüntü kalitesi arkadaşlarınızı ve ailenizi size daha yakın hissettirecektir.
+
+• Gölgelerde fısıldayın – Işığı görmeye dayanamıyorsanız karanlık temaya geçiş yapın.
+
+• Tanıdık gelsin – Her kişiye farklı uyarı seçin, veya sesleri tamamen kapatın. Simon ve Garfunkel'in 1964 yılında hakkında popüler bir şarkı yazdığı sessizliğin sesini, istediğiniz zaman bildirim sesi ayarını "Hiçbiri" seçerek deneyimleyebilirsiniz.
+
+• Bunu çek – Gönderilen fotoğraflarınız üzerinde çizim, kırpma, döndürme gibi işlemleri yapmak için dahili görüntü düzenleyiciyi kullanın. 1,000 kelimeye bedel fotoğrafınıza daha da fazlasını ekleyebileceğiniz yazı yazma aracı bile var.
+
+
+Destek, soru veya daha fazla bilgi için lütfen aşağıdaki adresi ziyaret edin:
+https://support.signal.org
+
+Kaynak kodu:
+https://github.com/signalapp
+
+En son güncellemeler ve duyurular için Twitter (@signalapp) ve Instagram'da (@signal_app) bizi takip edin.

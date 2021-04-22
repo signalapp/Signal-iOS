@@ -1,0 +1,26 @@
+Ogni giorno milioni di persone usano Signal per comunicare in modo gratuito e istantaneo in qualsiasi parte del mondo. Invia e ricevi messaggi ad alta fedeltà, partecipa a chiamate vocali o a videochiamate in HD e scopri tante nuove funzioni per restare sempre connesso. La tecnologia avanzata impiegata da Signal per proteggere la privacy è sempre abilitata, così puoi condividere con i tuoi cari i momenti più importanti della tua vita in tutta serenità.
+
+• Esprimiti in libertà – La crittografia end-to-end all'avanguardia (basata sul protocollo open source Signal Protocol™) garantisce la sicurezza delle tue conversazioni. La protezione della privacy per Signal è alla base di ogni messaggio, di ogni chiamata, sempre.
+
+• Non perdere tempo – I messaggi vengono consegnati in modo rapido e affidabile, anche sulle reti più lente. Signal infatti è ottimizzato per operare negli ambienti più instabili.
+
+• Sentiti libero – Signal è una società 501c3 senza scopi di lucro e completamente indipendente. Lo sviluppo è supportato da utenti come te. Niente pubblicità. Niente tracker. Niente scherzi.
+
+• Sii te stesso – Puoi usare i tuoi numeri di telefono e la rubrica personali per comunicare in modo sicuro con gli amici.
+
+• Chiacchiera – Che vivano dall'altra parte della città o dell'oceano, la tua famiglia e i tuoi amici ti sembreranno dietro l'angolo grazie alla qualità audio e video ottimizzata di Signal.
+
+• Sussurra al buio – Applica il tema Scuro se la luce proprio non fa per te.
+
+• Personalizza – Scegli avvisi personalizzati per ogni contatto o disattiva completamente l'audio. Simon & Garfunkel avevano ragione quando nel 1964 scrissero la loro hit più famosa "Sound of silence": scegli di non applicare nessuna suoneria e il suono del silenzio sarà perfetto per quando non vorrai essere disturbato.
+
+• Immagina e crea – Usa le funzioni integrate di editing delle immagini per disegnare, ritagliare e capovolgere le foto da inviare. È vero che un'immagine vale più di mille parole, ma con lo strumento di testo potrai personalizzare al massimo le tue foto.
+
+
+Per assistenza, domande o ulteriori informazioni, visita:
+https://support.signal.org
+
+Codice sorgente:
+https://github.com/signalapp
+
+Seguici su Twitter (@signalapp) e Instagram (@signal_app) per tutti gli ultimi aggiornamenti e novità.

@@ -1,0 +1,5 @@
+• Bliv forelsket i flere forbedringer af medieupload og overførsel-oplevelsen. Det kan virke som om alt sker rigtig hurtigt, især når du sender flere fotos og videoer på én gang, men kærlighed er sådan sommetider. Det er OK at begynde at føle sig mere knyttet til at sende flere vedhæftede filer.
+• Kærlighed og tab er uløseligt forbundet, så vi brød også op med en fejl, der gjorde det umuligt at dele lange videoer fra andre apps (som iOS Photos-appen).
+• Som en del af vores løbende bestræbelser på at redesigne og forbedre appen, opdaterede vi skærmbilledet for chatindstillinger for at gøre fælles handlinger lettere at finde og hjælpe dig med at finde fælles grund i en-til-en-chats ved at vise de grupper, som begge har til fælles.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

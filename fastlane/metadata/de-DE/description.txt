@@ -1,0 +1,26 @@
+Millionen von Menschen nutzen Signal täglich für kostenlose und verzögerungsfreie Kommunikation überall auf der Welt. Versende und empfange klangtreue Nachrichten, nimm an HD-Sprach- und Videoanrufen teil und erkunde eine wachsende Anzahl von neuen Features, die dir dabei helfen, mit deinen Freunden verbunden zu bleiben. Signals fortschrittliche, deine Privatsphäre bewahrende Technologie ist dabei immer aktiv, sodass du dich darauf konzentrieren kannst, bedeutende Momente zu teilen mit Menschen, die dir etwas bedeuteten.
+
+• Sag alles – Fortschrittlichste Ende-zu-Ende-Verschlüsselung (auf Basis des quelloffenen Signal Protocol™) hält deine Unterhaltungen sicher. Vertraulichkeit ist kein optionaler Modus — es ist vielmehr Signals grundlegende Arbeitsweise. Jede Nachricht, jeden Anruf, jederzeit.
+
+• Sei schnell – Nachrichten werden schnell und zuverlässig ausgeliefert, auch in langsamen Netzen. Signal ist darauf optimiert, selbst in den eingeschränktesten Umgebungen zu funktionieren.
+
+• Fühl dich frei – Signal ist eine vollständig unabhängige, gemeinnützige Organisation (»501c3«). Die Entwicklung wird von Nutzern wie dir unterstützt. Keine Werbung. Keine Tracker. Kein Scherz.
+
+• Sei du selbst – Du kannst deine bestehende Rufnummer und dein Adressbuch verwenden, um sicher mit deinen Freunden zu kommunizieren.
+
+• Sprich klar – Ob sie am anderen Ende der Stadt oder am anderen Ende der Welt leben: Mit Signals erhöhter Ton- und Videoqualität wirst du dich deinen Freunden und deiner Familie näher fühlen.
+
+• Flüster im Schatten – Wechsle zur dunklen Darstellung, falls du das Licht nicht sehen willst.
+
+• Kling vertraut – Wähle individuelle Benachrichtigungstöne für jeden Kontakt oder verzichte auf jegliche Geräusche. Simon & Garfunkel schrieben 1964 darüber einen Hit: Erlebe den »Sound of Silence« wann immer du willst, indem du Benachrichtigungstöne einfach abschaltest.
+
+• Mach dir ein Bild – Verwende die eingebauten Bildbearbeitungsfunktionen, um deine ausgehenden Fotos zu  entwerfen, zuzuschneiden und zu drehen. Auch existiert ein Textwerkzeug, mit dem du zu jenen 1.000 Wörtern, die dein Bild bereits wert ist, noch weitere hinzufügen kannst.
+
+
+Für Hilfe, Fragen oder weitere Informationen besuche bitte:
+https://support.signal.org
+
+Quellcode:
+https://github.com/signalapp
+
+Folge uns auf Twitter (@signalapp) und Instagram (@signal_app) für Neuigkeiten und Ankündigungen.
