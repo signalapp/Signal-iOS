@@ -6,6 +6,8 @@ import Foundation
 
 open class CVMeasurementObject: Equatable {
 
+    public init() {}
+
     // MARK: - Equatable
 
     public static func == (lhs: CVMeasurementObject, rhs: CVMeasurementObject) -> Bool {

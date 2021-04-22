@@ -338,6 +338,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
         fileprivate required init(imageArrangement: ImageArrangement) {
             self.imageArrangement = imageArrangement
+
+            super.init()
         }
 
         // MARK: - Equatable
