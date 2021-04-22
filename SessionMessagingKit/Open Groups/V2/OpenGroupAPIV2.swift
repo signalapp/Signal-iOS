@@ -154,7 +154,16 @@ public final class OpenGroupAPIV2 : NSObject {
             return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
                 guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
                 let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
-                    guard let room = json["room_id"] as? String else { return nil }
+                    guard let room = json["room_id"] as? String, let status = json["status_code"] as? UInt else { return nil }
+                    // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
+                    // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
+                    // we provided a valid token but it doesn't have a high enough permission level for the route in question.
+                    guard status != 401 else {
+                        storage.writeSync { transaction in
+                            storage.removeAuthToken(for: room, on: server, using: transaction)
+                        }
+                        return nil
+                    }
                     let deletions = json["deletions"] as? [Int64] ?? []
                     let moderators = json["moderators"] as? [String] ?? []
                     return try? parseMessages(from: json, for: room, on: server).map { messages in
