@@ -221,7 +221,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
                                                diameter: avatarDiameter)
 
-        let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(address: contactThread.contactAddress,
+        let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(contactThread: contactThread,
                                                                           transaction: transaction)
 
         let contactName = Self.contactsManager.displayName(for: contactThread.contactAddress,

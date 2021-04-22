@@ -47,14 +47,11 @@ public extension OWSContactsManager {
 
     // MARK: - Avatar Blurring
 
-    func shouldBlurAvatar(thread: TSThread,
-                          transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldBlurAvatar(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
-            return shouldBlurContactAvatar(address: contactThread.contactAddress,
-                                           transaction: transaction)
+            return shouldBlurContactAvatar(contactThread: contactThread, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
-            return shouldBlurGroupAvatar(groupThread: groupThread,
-                                           transaction: transaction)
+            return shouldBlurGroupAvatar(groupThread: groupThread, transaction: transaction)
         } else {
             owsFailDebug("Invalid thread.")
             return false
@@ -78,23 +75,33 @@ public extension OWSContactsManager {
         if cacheContains() {
             return false
         }
+        guard let contactThread = TSContactThread.getWithContactAddress(address,
+                                                                        transaction: transaction) else {
+            addToCache()
+            return false
+        }
+        return shouldBlurContactAvatar(contactThread: contactThread, transaction: transaction)
+    }
 
-        // Only blur avatars for users who are not in system contacts...
-        if isSystemContact(address: address) {
-            addToCache()
+    func shouldBlurContactAvatar(contactThread: TSContactThread,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+        let address = contactThread.contactAddress
+        func cacheContains() -> Bool {
+            guard let uuid = address.uuid else {
+                return false
+            }
+            return Self.unblurredAvatarContactCache.contains(uuid)
+        }
+        func addToCache() {
+            guard let uuid = address.uuid else {
+                return
+            }
+            Self.unblurredAvatarContactCache.insert(uuid)
+        }
+        if cacheContains() {
             return false
         }
-        // ...not yet whitelisted...
-        if profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
-            addToCache()
-            return false
-        }
-        guard let thread = TSContactThread.getWithContactAddress(address,
-                                                                 transaction: transaction) else {
-            addToCache()
-            return false
-        }
-        if !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+        if !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
             addToCache()
             return false
         }
@@ -107,8 +114,8 @@ public extension OWSContactsManager {
         // We can skip avatar blurring if the user has explicitly waived the blurring.
         if let uuid = address.uuid,
            Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
-                                                  defaultValue: false,
-                                                  transaction: transaction) {
+                                                         defaultValue: false,
+                                                         transaction: transaction) {
             addToCache()
             return false
         }
@@ -125,11 +132,6 @@ public extension OWSContactsManager {
             Self.unblurredAvatarGroupCache.insert(groupId)
         }
         if cacheContains() {
-            return false
-        }
-        // Only blur avatars for groups who are not yet whitelisted.
-        if profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
-            addToCache()
             return false
         }
         if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
