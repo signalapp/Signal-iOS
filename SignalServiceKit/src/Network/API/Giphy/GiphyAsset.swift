@@ -122,11 +122,11 @@ extension GiphyAsset {
 
 private func parsePositiveInt(dict: [String: Any], key: String) -> Int? {
     let stringValue = dict[key] as? String
-    let parsedValue = stringValue.flatMap { Int($0) } ?? 0
+    let parsedValue = stringValue?.nilIfEmpty.flatMap { Int($0) } ?? 0
     return (parsedValue > 0) ? parsedValue : nil
 }
 
 private func parseUrl(dict: [String: Any], key: String) -> URL? {
     let stringValue = dict[key] as? String
-    return stringValue.flatMap { URL(string: $0) }
+    return stringValue?.nilIfEmpty.flatMap { URL(string: $0) }
 }

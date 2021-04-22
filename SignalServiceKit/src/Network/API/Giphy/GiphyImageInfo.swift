@@ -117,8 +117,6 @@ private extension Sequence where Element == GiphyAsset {
     // - The largest dimensioned item under the target file size
     // - If unavailable, the item with the smallest file size over the target
     func bestOption(forTargetSize targetSize: Int) -> GiphyAsset? {
-        // TODO: Global file size cap?
-
         let findLargestUnderBudget = {
             filter { $0.size <= targetSize }.max {
                 // Order by increasing width. If equal, order by decreasing file size.
@@ -130,8 +128,9 @@ private extension Sequence where Element == GiphyAsset {
             }
         }
 
+        let budgetWindow = (targetSize+1..<Int(OWSMediaUtils.kMaxFileSizeImage))
         let findSmallestOverBudget = {
-            filter { $0.size <= targetSize }.min {
+            filter { budgetWindow.contains($0.size) }.min {
                 // Order by increasing file size. If equal, order by decreasing dimension.
                 if $0.size != $1.size {
                     return $0.size < $1.size
