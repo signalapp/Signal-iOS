@@ -303,7 +303,8 @@ public enum OnionRequestAPI {
             }
         }
         guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
-        let endpoint = url.path.removingPrefix("/")
+        var endpoint = url.path.removingPrefix("/")
+        if let query = url.query { endpoint += "?\(query)" }
         let scheme = url.scheme
         let port = given(url.port) { UInt16($0) }
         let parametersAsString: String
