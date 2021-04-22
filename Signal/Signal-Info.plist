@@ -105,12 +105,23 @@
 				<true/>
 				<key>NSIncludesSubdomains</key>
 				<true/>
+				<key>NSRequiresCertificateTransparency</key>
+				<true/>
 			</dict>
 			<key>whispersystems.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSRequiresCertificateTransparency</key>
+				<true/>
+			</dict>
+			<key>signalcaptchas.org</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSRequiresCertificateTransparency</key>
 				<true/>
 			</dict>
 		</dict>
