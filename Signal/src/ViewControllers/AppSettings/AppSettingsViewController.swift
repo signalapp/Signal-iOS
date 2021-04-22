@@ -45,6 +45,11 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
     func updateTableContents() {
         let contents = OWSTableContents()
 
