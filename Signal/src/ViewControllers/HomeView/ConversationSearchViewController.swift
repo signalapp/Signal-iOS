@@ -43,8 +43,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     enum SearchSection: Int {
         case noResults
-        case chats
-        case groups
+        case contactThreads
+        case groupThreads
         case contacts
         case messages
     }
@@ -151,8 +151,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             owsFailDebug("shouldn't be able to tap 'no results' section")
-        case .chats:
-            let sectionResults = searchResultSet.chats
+        case .contactThreads:
+            let sectionResults = searchResultSet.contactThreads
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFailDebug("unknown row selected.")
                 return
@@ -160,8 +160,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose, animated: true)
-        case .groups:
-            let sectionResults = searchResultSet.groups
+        case .groupThreads:
+            let sectionResults = searchResultSet.groupThreads
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFailDebug("unknown row selected.")
                 return
@@ -204,10 +204,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             return searchResultSet.isEmpty ? 1 : 0
-        case .chats:
-            return searchResultSet.chats.count
-        case .groups:
-            return searchResultSet.groups.count
+        case .contactThreads:
+            return searchResultSet.contactThreads.count
+        case .groupThreads:
+            return searchResultSet.groupThreads.count
         case .contacts:
             return searchResultSet.contacts.count
         case .messages:
@@ -238,25 +238,25 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             let searchText = self.searchResultSet.searchText
             cell.configure(searchText: searchText)
             return cell
-        case .chats:
+        case .contactThreads:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
-            guard let searchResult = self.searchResultSet.chats[safe: indexPath.row] else {
+            guard let searchResult = self.searchResultSet.contactThreads[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
             cell.configure(withThread: searchResult.thread, isBlocked: isBlocked(thread: searchResult.thread))
             return cell
-        case .groups:
+        case .groupThreads:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
-            guard let searchResult = self.searchResultSet.groups[safe: indexPath.row] else {
+            guard let searchResult = self.searchResultSet.groupThreads[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -371,14 +371,14 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             return nil
-        case .chats:
-            if searchResultSet.chats.count > 0 {
+        case .contactThreads:
+            if searchResultSet.contactThreads.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing 1:1 chats")
             } else {
                 return nil
             }
-        case .groups:
-            if searchResultSet.groups.count > 0 {
+        case .groupThreads:
+            if searchResultSet.groupThreads.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_GROUPS", comment: "section header for search results that match existing groups")
             } else {
                 return nil

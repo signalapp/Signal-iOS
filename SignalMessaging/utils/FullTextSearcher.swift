@@ -104,31 +104,31 @@ public class ContactSearchResult: NSObject, Comparable {
 
 public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
-    public let chats: [ConversationSearchResult<ConversationSortKey>]
-    public let groups: [GroupSearchResult]
+    public let contactThreads: [ConversationSearchResult<ConversationSortKey>]
+    public let groupThreads: [GroupSearchResult]
     public let contacts: [ContactSearchResult]
     public let messages: [ConversationSearchResult<MessageSortKey>]
 
     public init(
         searchText: String,
-        chats: [ConversationSearchResult<ConversationSortKey>],
-        groups: [GroupSearchResult],
+        contactThreads: [ConversationSearchResult<ConversationSortKey>],
+        groupThreads: [GroupSearchResult],
         contacts: [ContactSearchResult],
         messages: [ConversationSearchResult<MessageSortKey>]
     ) {
         self.searchText = searchText
-        self.chats = chats
-        self.groups = groups
+        self.contactThreads = contactThreads
+        self.groupThreads = groupThreads
         self.contacts = contacts
         self.messages = messages
     }
 
     public class var empty: HomeScreenSearchResultSet {
-        return HomeScreenSearchResultSet(searchText: "", chats: [], groups: [], contacts: [], messages: [])
+        return HomeScreenSearchResultSet(searchText: "", contactThreads: [], groupThreads: [], contacts: [], messages: [])
     }
 
     public var isEmpty: Bool {
-        return chats.isEmpty && groups.isEmpty && contacts.isEmpty && messages.isEmpty
+        return contactThreads.isEmpty && groupThreads.isEmpty && contacts.isEmpty && messages.isEmpty
     }
 }
 
@@ -452,8 +452,8 @@ public class FullTextSearcher: NSObject {
                                     maxResults: UInt = kDefaultMaxResults,
                                     transaction: SDSAnyReadTransaction) -> HomeScreenSearchResultSet {
 
-        var chats: [ConversationSearchResult<ConversationSortKey>] = []
-        var groups: [GroupSearchResult] = []
+        var contactThreads: [ConversationSearchResult<ConversationSortKey>] = []
+        var groupThreads: [GroupSearchResult] = []
         var contacts: [ContactSearchResult] = []
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
@@ -527,7 +527,7 @@ public class FullTextSearcher: NSObject {
         }
 
         var remainingAllowedResults: UInt {
-            UInt(max(0, Int(maxResults) - (chats.count + groups.count + contacts.count + messages.count)))
+            UInt(max(0, Int(maxResults) - (contactThreads.count + groupThreads.count + contacts.count + messages.count)))
         }
 
         var hasReachedMaxResults: Bool {
@@ -571,11 +571,11 @@ public class FullTextSearcher: NSObject {
                 ) else {
                     return owsFailDebug("Unexpectedly failed to determine members snippet")
                 }
-                groups.append(searchResult)
+                groupThreads.append(searchResult)
             case let contactThread as TSContactThread:
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
                 existingConversationAddresses.insert(contactThread.contactAddress)
-                chats.append(searchResult)
+                contactThreads.append(searchResult)
             default:
                 owsFailDebug("unexpected thread: \(type(of: thread))")
             }
@@ -639,16 +639,16 @@ public class FullTextSearcher: NSObject {
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
-        chats.sort(by: >)
-        groups.sort(by: >)
+        contactThreads.sort(by: >)
+        groupThreads.sort(by: >)
         let sortedMessages = messages.values.sorted(by: >)
         // Order "other" contact results by display name.
         otherContacts.sort()
 
         return HomeScreenSearchResultSet(
             searchText: searchText,
-            chats: chats,
-            groups: groups,
+            contactThreads: contactThreads,
+            groupThreads: groupThreads,
             contacts: otherContacts,
             messages: sortedMessages
         )
