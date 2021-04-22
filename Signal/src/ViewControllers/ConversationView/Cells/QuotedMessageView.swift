@@ -242,7 +242,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             return CVLabelConfig(attributedText: attributedText,
                                  font: quotedTextFont,
                                  textColor: quotedTextColor,
-                                 numberOfLines: 1,
+                                 numberOfLines: isForPreview || hasQuotedAttachment ? 1 : 2,
                                  lineBreakMode: .byTruncatingTail,
                                  textAlignment: textAlignment)
         }
