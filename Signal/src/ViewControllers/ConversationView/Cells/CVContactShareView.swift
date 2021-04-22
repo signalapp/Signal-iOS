@@ -4,8 +4,7 @@
 
 import Foundation
 
-// TODO: Convert to manual layout.
-public class CVContactShareView: UIView {
+public class CVContactShareView: ManualStackView {
 
     struct State: Equatable {
         let contactShare: ContactShareViewModel
@@ -15,18 +14,20 @@ public class CVContactShareView: UIView {
         let avatar: UIImage?
     }
 
-    private let state: State
-    private var contactShare: ContactShareViewModel { state.contactShare }
-    private var isIncoming: Bool { state.isIncoming }
-    private var conversationStyle: ConversationStyle { state.conversationStyle }
-    private var firstPhoneNumber: String? { state.firstPhoneNumber }
+    private let labelStack = ManualStackView(name: "CVContactShareView.labelStack")
+    private let avatarView = AvatarImageView()
+    private let topLabel = UILabel()
+    private let bottomLabel = UILabel()
+    private let disclosureImageView = UIImageView()
 
     static func buildState(contactShare: ContactShareViewModel,
                            isIncoming: Bool,
                            conversationStyle: ConversationStyle,
                            transaction: SDSAnyReadTransaction) -> State {
         let firstPhoneNumber = contactShare.systemContactsWithSignalAccountPhoneNumbers(transaction: transaction).first
-        let avatar = contactShare.getAvatarImage(diameter: Self.iconSize, transaction: transaction)
+        let avatar = contactShare.getAvatarImage(diameter: Self.avatarSize,
+                                                 transaction: transaction)
+        owsAssertDebug(avatar != nil)
         return State(contactShare: contactShare,
                      isIncoming: isIncoming,
                      conversationStyle: conversationStyle,
@@ -34,83 +35,136 @@ public class CVContactShareView: UIView {
                      avatar: avatar)
     }
 
-    required init(state: State) {
-        self.state = state
+    private static var avatarSize: CGFloat { CGFloat(kStandardAvatarSize) }
+    private static let disclosureIconSize = CGSize.square(20)
 
-        super.init(frame: .zero)
+    func configureForRendering(state: State,
+                               cellMeasurement: CVCellMeasurement) {
 
-        createContents()
-    }
+        var labelStackSubviews = [UIView]()
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+        let topLabelConfig = Self.topLabelConfig(state: state)
+        topLabelConfig.applyForRendering(label: topLabel)
+        labelStackSubviews.append(topLabel)
 
-    private static let hMargin: CGFloat = 0
-    private static let vMargin: CGFloat = 4
-    private static let iconHSpacing: CGFloat = 8
-    private static var iconSize: CGFloat { CGFloat(kStandardAvatarSize) }
-    private static var nameFont: UIFont { UIFont.ows_dynamicTypeBody }
-    private static var subtitleFont: UIFont { UIFont.ows_dynamicTypeCaption1 }
-    private static let labelsVSpacing: CGFloat = 2
-
-    private func createContents() {
-        layoutMargins = .zero
-
-        let textColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
-
-        let avatarView = AvatarImageView()
-        avatarView.image = state.avatar
-        avatarView.autoSetDimensions(to: CGSize(square: Self.iconSize))
-        avatarView.setCompressionResistanceHigh()
-        avatarView.setContentHuggingHigh()
-
-        let topLabel = UILabel()
-        topLabel.text = contactShare.displayName
-        topLabel.textColor = textColor
-        topLabel.lineBreakMode = .byTruncatingTail
-        topLabel.font = Self.nameFont
-
-        let labelsView = UIStackView()
-        labelsView.axis = .vertical
-        labelsView.spacing = Self.labelsVSpacing
-        labelsView.addArrangedSubview(topLabel)
-
-        if let firstPhoneNumber = self.firstPhoneNumber,
-           !firstPhoneNumber.isEmpty {
-            let bottomLabel = UILabel()
-            bottomLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber)
-            bottomLabel.textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
-            bottomLabel.lineBreakMode = .byTruncatingTail
-            bottomLabel.font = Self.subtitleFont
-            labelsView.addArrangedSubview(bottomLabel)
+        if let bottomLabelConfig = Self.bottomLabelConfig(state: state) {
+            bottomLabelConfig.applyForRendering(label: bottomLabel)
+            labelStackSubviews.append(bottomLabel)
         }
 
-        let disclosureImage = UIImage(named: CurrentAppContext().isRTL ? "small_chevron_left" : "small_chevron_right")
-        owsAssertDebug(disclosureImage != nil)
-        let disclosureImageView = UIImageView()
-        disclosureImageView.image = disclosureImage?.withRenderingMode(.alwaysTemplate)
-        disclosureImageView.tintColor = textColor
-        disclosureImageView.setCompressionResistanceHigh()
-        disclosureImageView.setContentHuggingHigh()
+        labelStack.configure(config: Self.labelStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_labelStack,
+                             subviews: labelStackSubviews)
 
-        let hStackView = UIStackView()
-        hStackView.axis = .horizontal
-        hStackView.spacing = Self.iconHSpacing
-        hStackView.alignment = .center
-        hStackView.isLayoutMarginsRelativeArrangement = true
-        hStackView.layoutMargins = UIEdgeInsets(hMargin: Self.hMargin, vMargin: Self.vMargin)
-        hStackView.addArrangedSubview(avatarView)
-        hStackView.addArrangedSubview(labelsView)
-        hStackView.addArrangedSubview(disclosureImageView)
-        self.addSubview(hStackView)
-        hStackView.autoPinEdgesToSuperviewEdges()
+        avatarView.image = state.avatar
+
+        let disclosureImageName = (CurrentAppContext().isRTL
+                                    ? "small_chevron_left"
+                                    : "small_chevron_right")
+        let disclosureColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
+        disclosureImageView.setTemplateImageName(disclosureImageName,
+                                                 tintColor: disclosureColor)
+
+        self.configure(config: Self.outerStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_outerStack,
+                             subviews: [
+                                avatarView,
+                                labelStack,
+                                disclosureImageView
+                             ])
     }
 
-    static func measureHeight(state: State) -> CGFloat {
-        let labelsHeight = nameFont.lineHeight + labelsVSpacing + subtitleFont.lineHeight
-        var contentHeight = max(iconSize, labelsHeight)
-        contentHeight += vMargin * 2
-        return contentHeight
+    private static var outerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 8,
+                          layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 4))
+    }
+
+    private static var labelStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .leading,
+                          spacing: 2,
+                          layoutMargins: .zero)
+    }
+
+    private static func topLabelConfig(state: State) -> CVLabelConfig {
+        let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
+        return CVLabelConfig(text: state.contactShare.displayName,
+                             font: .ows_dynamicTypeBody,
+                             textColor: textColor,
+                             lineBreakMode: .byTruncatingTail)
+    }
+
+    private static func bottomLabelConfig(state: State) -> CVLabelConfig? {
+        guard let firstPhoneNumber = state.firstPhoneNumber?.nilIfEmpty else {
+            return nil
+        }
+        let text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber)
+        let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
+        return CVLabelConfig(text: text,
+                             font: .ows_dynamicTypeCaption1,
+                             textColor: textColor,
+                             lineBreakMode: .byTruncatingTail)
+    }
+
+    private static let measurementKey_outerStack = "CVContactShareView.measurementKey_outerStack"
+    private static let measurementKey_labelStack = "CVContactShareView.measurementKey_labelStack"
+
+    static func measure(maxWidth: CGFloat,
+                        measurementBuilder: CVCellMeasurement.Builder,
+                        state: State) -> CGSize {
+        owsAssertDebug(maxWidth > 0)
+
+        var maxContentWidth = (maxWidth -
+                                (Self.avatarSize +
+                                    disclosureIconSize.width +
+                                    outerStackConfig.spacing * 2))
+        maxContentWidth = max(0, maxContentWidth)
+
+        var labelStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let topLabelConfig = self.topLabelConfig(state: state)
+        let topLabelSize = CVText.measureLabel(config: topLabelConfig,
+                                               maxWidth: maxContentWidth)
+        labelStackSubviewInfos.append(topLabelSize.asManualSubviewInfo)
+
+        if let bottomLabelConfig = self.bottomLabelConfig(state: state) {
+            let bottomLabelSize = CVText.measureLabel(config: bottomLabelConfig,
+                                                   maxWidth: maxContentWidth)
+            labelStackSubviewInfos.append(bottomLabelSize.asManualSubviewInfo)
+        }
+
+        let labelStackMeasurement = ManualStackView.measure(config: labelStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_labelStack,
+                                                            subviewInfos: labelStackSubviewInfos)
+
+        var outerSubviewInfos = [ManualStackSubviewInfo]()
+
+        let avatarSize = CGSize(square: Self.avatarSize)
+        outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
+
+        outerSubviewInfos.append(labelStackMeasurement.measuredSize.asManualSubviewInfo)
+
+        outerSubviewInfos.append(disclosureIconSize.asManualSubviewInfo(hasFixedSize: true))
+
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: outerSubviewInfos)
+        return outerStackMeasurement.measuredSize
+    }
+
+    public override func reset() {
+        super.reset()
+
+        labelStack.reset()
+        avatarView.image = nil
+        topLabel.text = nil
+        bottomLabel.text = nil
+        disclosureImageView.image = nil
     }
 }
