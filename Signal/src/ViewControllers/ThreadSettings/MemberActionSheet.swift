@@ -10,6 +10,7 @@ class MemberActionSheet: InteractiveSheetViewController {
     let tableViewController = OWSTableViewController2()
 
     private var groupViewHelper: GroupViewHelper?
+    private let handleContainer = UIView()
 
     var avatarView: UIImageView?
     var thread: TSThread { threadViewModel.threadRecord }
@@ -84,7 +85,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
         // We add the handle directly to the content view,
         // so that it doesn't scroll with the table.
-        let handleContainer = UIView()
+        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
         contentView.addSubview(handleContainer)
         handleContainer.autoPinWidthToSuperview()
         handleContainer.autoPinEdge(toSuperviewEdge: .top)
@@ -94,8 +95,7 @@ class MemberActionSheet: InteractiveSheetViewController {
         handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
         handle.layer.cornerRadius = 5 / 2
         handleContainer.addSubview(handle)
-        handle.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
-        handle.autoPinEdge(toSuperviewEdge: .bottom, withInset: 33)
+        handle.autoPinHeightToSuperview(withMargin: 12)
         handle.autoHCenterInSuperview()
     }
 
@@ -116,6 +116,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
+        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
         updateTableContents()
     }
 

@@ -666,8 +666,9 @@ public class SDSKeyValueStore: NSObject {
         FROM \(SDSKeyValueStore.table.tableName)
         WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
         """
-        return try! String.fetchAll(grdbTransaction.database,
-                                    sql: sql,
-                                    arguments: [collection])
+
+        return grdbTransaction.database.strictRead { database in
+            try String.fetchAll(database, sql: sql, arguments: [collection])
+        }
     }
 }

@@ -1,0 +1,26 @@
+Millioner af mennesker bruger Signal hver dag til gratis og øjeblikkelig kommunikation overalt i verden. Send og modtag beskeder i høj kvalitet, deltag i tale/videoopkald i HD, og udforsk et voksende sæt af nye funktioner, der hjælper dig med at holde kontakten. Signals avancerede teknologi til beskyttelse af privatsfære er altid aktiveret, så du kan fokusere på at dele de øjeblikke, der betyder noget med de mennesker, der betyder noget for dig.
+
+• Sig hvad som helst - Avanceret end-to-end kryptering (drevet af open source Signal Protocol™) holder dine samtaler private. Privatlivet er ikke en valgfri tilstand - det er blot den måde, Signal fungerer på. Hver besked, hvert opkald, hver gang.
+
+• Vær hurtig - Beskeder leveres hurtigt og pålideligt, selv på langsomme netværk. Signal er optimeret til at fungere i det mest begrænsede og sandsynlige miljø.
+
+• Føl dig fri - Signal er en fuldstændig uafhængig 501c3 og uden profit for øje. Udviklingen understøttes af brugere som dig. Ingen reklamer. Ingen trackere. Ingen spøg.
+
+• Vær dig selv - Du kan bruge dit eksisterende telefonnummer og adressebog til at kommunikere sikkert med dine venner.
+
+• Tal frit - Uanset om de bor på tværs af byen eller endda på den anden side af middelhavet, vil Signal's forbedrede lyd- og videokvalitet få dine venner og familie til at føle sig tættere på.
+
+• Hvisk i skyggerne - Skift til det mørke tema, hvis du ikke vil blive blændet af skærmens lysskær.
+
+• Velkendt lyd - Vælg tilpassede varsler til hver kontaktperson, eller deaktiver lyde helt. Simon & Garfunkel skrev en hit-sang om den i 1964, og du kan opleve lyden af tavshed, ved at vælge “Ingen” som meddelelse-ringetone.
+
+• Billedtagende - Brug de indbyggede billedredigeringsfunktioner til at tegne, beskære og vende dine udgående billeder. Der er endda et tekstværktøj, så du kan tilføje flere ord til de 1.000, som dit billede allerede er værd.
+
+
+For support, spørgsmål eller mere information, kan du besøge:
+https://support.signal.org
+
+Kildekode:
+https://github.com/signalapp
+
+Følg os på Twitter (@signalapp) og Instagram (@signal_app) - Få de seneste opdateringer og bekendtgørelser.

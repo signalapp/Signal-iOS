@@ -1,0 +1,4 @@
+• 8 saatlik yeni sessize alma ayarıyla tüm sohbetlerde bildirimleri (dinlenirken) beklemeye alabilirsiniz. Veya bir yıl yerine "Her zaman" seçeneğini seçip geleneksel yıllık sessizlik anı yenilemeye elveda diyebilirsiniz.
+• Swipe left on any message to quickly see message details. Whether you're wondering when the message was sent (exit stage left) or when they saw the message and didn't reply (left you on read), nothing is left to the imagination with the new left-swipe shortcut.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

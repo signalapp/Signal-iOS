@@ -1,0 +1,26 @@
+Miliony osób korzystają codziennie z komunikatora Signal, aby bezpłatnie i natychmiastowo komunikować się na całym świecie. Bezpiecznie wysyłaj i otrzymuj wiadomości, bierz udział w połączeniach głosowych i wideo w jakości HD i odkrywaj coraz większy zestaw nowych funkcji, które pomagają Ci utrzymywać kontakt. W komunikatorze Signal jest zawsze włączona zaawansowana technologia zachowywania prywatności, co pozwala skupić się na istotnych chwilach z bliskimi.
+
+• Mów cokolwiek - aplikacja Signal używa zaawansowanego szyfrowania metodą end-to-end (zasilanego przez protokół typu open source „Signal Protocol”), aby zapewnić bezpieczeństwo Twoim konwersacjom. Prywatność to nie tryb opcjonalny — aplikacja Signal po prostu tak działa. Przy każdej wiadomości i każdym połączeniu, zawsze.
+
+• Nie trać czasu — Wiadomości są wysyłane szybko i sprawnie, nawet w powolnych sieciach. Aplikację Signal zoptymalizowano w celu działania w jak najbardziej ograniczonym środowisku.
+
+• Nie przepłacaj — Aplikacja Signal to oprogramowanie non-profit typu 501c3. Jej produkcja jest wspierana przez użytkowników, takich jak Ty. Żadnych reklam i śledzenia. Serio.
+
+• Bądź sobą — Możesz użyć obecnego numeru telefonu i książki adresowej, aby bezpiecznie komunikować się ze znajomymi.
+
+• Mów wyraźnie — Nieważne, czy Twoi znajomi i rodzina mieszkają za miastem czy za oceanem. Ulepszona jakość audio i wideo aplikacji Signal zmniejsza dystans.
+
+• Szepcz w ciemności — Przełącz się na ciemny motyw, jeśli nie chcesz widzieć światła.
+
+• Spersonalizuj dźwięki — Wybierz osobne alerty dla każdego kontaktu lub całkiem wyłącz dźwięki. Tak jak Simon & Garfunkel w swoim hicie z 1964 r., ty również możesz wsłuchać się w dźwięk ciszy, ustawiając dzwonek powiadomień jako „Brak”.
+
+• Zobrazuj to — Użyj wbudowanych funkcji edycji obrazów, aby szkicować, przycinać i obracać wysyłane obrazy. Jest nawet narzędzie tekstowe, pozwalające dodać nawet tysiąc słów, których wart jest już obraz.
+
+
+Aby zadać pytania, uzyskać pomoc lub więcej informacji, odwiedź stronę:
+https://support.signal.org
+
+Kod źródłowy:
+https://github.com/signalapp
+
+Śledź nas na Twitterze (@signalapp) i Instagramie (@signal_app), aby uzyskać informacje o najnowszych aktualizacjach i zapowiedziach.

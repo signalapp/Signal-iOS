@@ -1,0 +1,26 @@
+Todos los días millones de personas utilizan Signal para comunicarse en tiempo real desde cualquier parte del mundo de forma gratuita. Con Signal podrás recibir mensajes de alta fidelidad, participar en llamadas y videollamadas de alta calidad y explorar unas funciones en constante desarrollo que te ayudarán a conectarte. La tecnología avanzada de Signal especializada en proteger tu intimidad está siempre activada, así que te puedes centrar en compartir los momentos que te importan con las personas que te importan.
+
+• Di lo que quieras - El avanzado protocolo de cifrado de extremo a extremo mantiene la privacidad de tus chats gracias a la tecnología de código abierto Signal Protocol™. En Signal la privacidad no es algo opcional, sino que está integrada en su funcionamiento; en todos tus mensajes, todas tus llamadas, todo el tiempo.
+
+• Rápido - Los mensajes se entregan de forma rápida y fiable, incluso con las conexiones más lentas. Signal está diseñado para funcionar en el entorno más restringido posible.
+
+• Sé libre - Signal es una organización 501c3 sin ánimo de lucro completamente independiente. Su desarrollo depende de usuarios como tú. Sin publicidad ni rastreadores, solo sinceridad.
+
+• Sé tú mismo - Signal utiliza tu número de teléfono y libreta de direcciones existentes para que te puedas comunicar con tus amigos de forma segura.
+
+• Haz que se oiga tu voz - No importa si vives en otra ciudad o al otro lado del océano, la calidad mejorada del audio y vídeo de Signal te permitirán acercarte a tu familia y amigos.
+
+• Oculto entre las sombras - Cambia al modo oscuro si no quieres ver la luz.
+
+• Práctico y a tu medida - Elige alertas personalizadas para cada contacto o activa el modo silencioso. Si quieres disfrutar del sonido del silencio, como en la exitosa canción compuesta por Simon & Garfunkel en 1964, elige la opción "Ninguno" como tono de notificaciones.
+
+• Desarrolla tu creatividad - Utiliza las funciones de edición de imagen incorporadas para dibujar, recortar y girar las fotos que envíes. También puedes utilizar la herramienta de redacción para escribir en la foto. ¿Quién dijo que una imagen vale más que mil palabras?
+
+
+Para ayuda, preguntas o más información, ve a la página:
+https://support.signal.org
+
+Código fuente:
+https://github.com/signalapp
+
+Síguenos en Twitter (@signalapp) e Instagram (@signal_app) para ver las últimas actualizaciones y anuncios.

@@ -1,0 +1,5 @@
+• Bli kär i flera förbättringar av medieuppladdnings- och hämtningsupplevelsen. Det kan tyckas att allt händer riktigt snabbt, speciellt när du skickar flera bilder och videoklipp samtidigt, men kärlek är sådan ibland. Det är OK att börja känna sig mer knuten till att skicka fler bilagor.
+• Kärlek och förlust är oupplösligt kopplade, så vi bröt också med ett fel som gjorde det omöjligt att dela långa videor från andra appar (som iOS Photos-appen).
+• Som en del av våra pågående ansträngningar för att omforma och förbättra appen uppdaterade vi skärmen för chattinställningar för att göra vanliga åtgärder lättare att hitta och för att hjälpa dig att hitta gemensamma grunder i en-till-en-chattar genom att visa de grupper som ni båda har gemensamt.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

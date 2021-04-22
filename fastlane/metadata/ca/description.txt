@@ -1,0 +1,26 @@
+Milions de persones utilitzen el Signal cada dia per a una comunicació gratuïta i instantània a qualsevol part del món. Envieu i rebeu missatges d'alta fidelitat, participeu en trucades de veu / vídeo d'alta definició i exploreu un conjunt creixent de funcions noves que us ajudaran a estar connectat. La tecnologia avançada de preservació de la privadesa del Signal està sempre habilitada, de manera que us podeu concentrar a compartir els moments importants amb les persones que us importen.
+
+• Digueu el que vulgueu. L'encriptació d'extrem a extrem d’última generació (amb la força del protocol de codi obert del Signal) manté les converses segures. La privadesa no és un mode opcional, sinó la manera com funciona el Signal. Cada missatge, cada trucada, cada vegada.
+
+• Aneu de pressa. Els missatges es lliuren de manera ràpida i fiable, fins i tot en xarxes lentes. El Signal està optimitzat per funcionar en l’entorn més restringit possible.
+
+• Sentiu-vos lliures. El Signal és independent i no té ànim de lucre. El desenvolupament compta amb ajuts i donacions de persones com tu. Sense anuncis. Sense rastrejadors. Sense bromes.
+
+• Sigueu autèntics. Podeu usar el número de telèfon i la llibreta d'adreces per comunicar-vos amb seguretat amb les amistats.
+
+• Expresseu-vos. Tant si viuen a l'altre costat de la ciutat com de l’oceà, la qualitat d’àudio i vídeo millorada del Signal farà que els amics i familiars se sentin més a prop.
+
+• Xiuxiuegeu a l'ombra. Canvieu al tema fosc si no voleu veure la llum.
+
+• So familiar. Seleccioneu alertes personalitzades per a cada contacte o desactiveu-ne completament els sorolls. Simon i Garfunkel en van escriure una cançó d'èxit el 1964 i ara podeu experimentar el so del silenci quan vulgueu si trieu "Cap" com a to de notificació.
+
+• Imagineu-vos-ho. Useu les funcions integrades d’edició d’imatges per esbossar, retallar i capgirar les fotografies que envieu. Fins i tot hi ha una eina de text per afegir més paraules a les 1.000 que ja val la imatge.
+
+
+Per obtenir assistència, per a preguntes o més informació, visiteu
+https://support.signal.org
+
+Codi font:
+https://github.com/signalapp
+
+Seguiu-nos a Twitter (@signalapp) i Instagram (@signal_app) per estar al dia de les darreres actualitzacions i anuncis.

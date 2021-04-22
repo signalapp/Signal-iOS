@@ -324,3 +324,38 @@ public extension SDSAnyWriteTransaction {
         }
     }
 }
+
+// MARK: -
+
+public extension GRDB.Database {
+    final func throwsRead<T>(_ criticalSection: (_ database: GRDB.Database) throws -> T) throws -> T {
+        do {
+            return try criticalSection(self)
+        } catch {
+            // If the attempt to write to GRDB flagged that the database was
+            // corrupt, in addition to crashing we flag this so that we can
+            // attempt to perform recovery.
+            if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+                SSKPreferences.setHasGrdbDatabaseCorruption(true)
+                owsFail("Error: \(error)")
+            }
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
+    }
+
+    final func strictRead<T>(_ criticalSection: (_ database: GRDB.Database) throws -> T) -> T {
+        do {
+            return try criticalSection(self)
+        } catch {
+            // If the attempt to write to GRDB flagged that the database was
+            // corrupt, in addition to crashing we flag this so that we can
+            // attempt to perform recovery.
+            if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+                SSKPreferences.setHasGrdbDatabaseCorruption(true)
+                owsFail("Error: \(error)")
+            }
+            owsFail("Error: \(error)")
+        }
+    }
+}

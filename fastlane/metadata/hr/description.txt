@@ -1,0 +1,26 @@
+Milijuni ljudi svakodnevno koriste Signal za besplatnu i trenutnu komunikaciju bilo gdje u svijetu. Šaljite i primajte povjerljive poruke, sudjelujte u HD glasovnim/video pozivima i istražujte sve veći niz novih značajki koje vam pomažu da ostanete povezani. Signalova napredna tehnologija očuvanja privatnosti uvijek je omogućena, tako da se možete usredotočiti na dijeljenje važnih trenutaka s važnim osobama.
+
+• Recite bilo što - najsuvremenije end-to-end šifriranje (koje pokreće Signal Protocol™ otvorenog kôda) čuva vaše razgovore. Privatnost nije neobavezni dio - ona je način na koji Signal funkcionira. Svaka poruka, svaki poziv, svaki put.
+
+• Budite brzi - poruke se isporučuju brzo i pouzdano, čak i na sporim mrežama. Signal je optimiziran za rad u najnepoželjnijem okruženju.
+
+• Osjećajte se slobodnim - Signal je potpuno neovisna, neprofitna (501c3) organizacija. Razvoj podržavaju korisnici poput vas. Bez oglasa. Bez pratitelja. Bez šale.
+
+• Budite svoji - možete koristiti postojeći telefonski broj i popis kontakata da biste sigurno komunicirali sa svojim prijateljima.
+
+• Slobodno govorite - bilo da žive u drugom dijelu grada ili preko oceana, Signalova poboljšana kvaliteta zvuka i videa omogućiti će vam da se osjećate još bližima vašim prijateljima i obitelji.
+
+• Šapat u sjeni - Prebacite se na tamnu temu ako odbijate vidjeti svjetlost.
+
+• Zvuči poznato - odaberite prilagođena upozorenja za svaki kontakt ili u potpunosti onemogućite zvuk. Simon i Garfunkel napisali su hit pjesmu o tome 1964. godine, a zvuk tišine možete iskusiti kad god poželite odabirom „Bez zvuka“ kao zvuk obavijesti.
+
+• Vizualizirajte ovo - koristite ugrađene značajke za uređivanje fotografija da biste skicirali, izrezali i preokrenuli vaše fotografije koje šaljete. Postoji čak tekstualni alat tako da možete dodati više od 1000 riječi koje vaša fotografija već vrijedi.
+
+
+Za podršku, pitanja ili više informacija posjetite:
+https://support.signal.org
+
+Izvorni kȏd:
+https://github.com/signalapp
+
+Pratite nas na Twitteru (@signalapp) i Instagramu (@signal_app) za sva najnovija ažuriranja i najave.

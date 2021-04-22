@@ -1,0 +1,26 @@
+Miliony lidí používají Signal den co den pro bezplatnou a okamžitou komunikaci kdekoliv na světě. Odesílejte a přijímejte zprávy s kvalitní reprodukcí, účastněte se audio/videohovorů ve vysokém rozlišení a prozkoumejte stále se rozšiřující škálu nových funkcí, které vám pomohou zůstat v kontaktu s ostatními lidmi. Pokročilá technologie ochrany soukromí v aplikaci Signal je vždy aktivovaná, takže se můžete soustředit na sdílení okamžiků, na kterých vám záleží s lidmi, na kterých vám záleží.
+
+• Řekněte si cokoliv – špičkové koncové šifrování (založené na otevřeném protokolu Signal Protocol™) zajistí bezpečnost vašich konverzací. Ochrana soukromí není volitelný nadstandard – Signal tak prostě funguje. Každá zpráva, každý hovor, pokaždé znovu.
+
+• Nenechte se zdržovat – zprávy jsou doručovány rychle a spolehlivě, a to i v pomalých sítích. Signal je optimalizován tak, aby fungoval i v nejomezenějším prostředí.
+
+• Dopřejte si pocit svobody – Signal je naprosto nezávislá nezisková organizace podle amerického paragrafu 501(c)(3). Vývoj je podporován uživateli, jako jste vy. Žádná reklama. Žádné sledování. Žádné triky.
+
+• Buďte sami sebou – můžete bezpečně komunikovat s přáteli pomocí svého stávajícího telefonního čísla a adresáře.
+
+• Nechte se slyšet – ať žijí na druhém konci města nebo za oceánem, díky vylepšené kvalitě zvuku a videa v aplikaci Signal zažijí vaši přátelé a vaše rodina pocit větší blízkosti.
+
+• Šeptejte ve stínu – pokud odmítáte vidět světlo, přepněte na tmavý motiv.
+
+• Poznejte je na první poslech – vyberte si pro každý kontakt individuální upozornění nebo zvuky zcela zakažte. Simon & Garfunkel o tom v roce 1964 napsali hitovou skladbu a i vy můžete zažít zvuk ticha, kdykoli budete chtít. Stačí jako vyzváněcí tón pro oznámení vybrat možnost „Žádný“.
+
+• Přidejte obrázky – pomocí vestavěných funkcí pro úpravu obrázků můžete na fotky před odesláním kreslit, ořezávat je a překlápět. K dispozici je dokonce textový nástroj, takže můžete přidat ještě další slova k té tisícovce slov, za která váš obrázek už tak vydá.
+
+
+Podporu, odpověď na dotazy a další informace najdete zde:
+https://support.signal.org
+
+Zdrojový kód:
+https://github.com/signalapp
+
+Sledujte nás na Twitteru (@signalapp) a Instagramu (@signal_app), kde najdete veškeré nejnovější informace a oznámení.

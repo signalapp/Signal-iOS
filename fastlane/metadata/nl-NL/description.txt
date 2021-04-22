@@ -1,0 +1,26 @@
+Miljoenen mensen gebruiken Signal elke dag voor gratis en onmiddellijke communicatie, overal ter wereld. Verzend en ontvang berichten met hoge betrouwbaarheid, neem deel aan audio- en videogesprekken in HD en ontdek een groeiende reeks nieuwe functies die zorgen dat jij verbonden blijft. De geavanceerde technologie voor privacybescherming van Signal is altijd actief. Zo kun jij belangrijke momenten delen met de mensen die belangrijk zijn voor jou.
+
+• Zeg wat je maar wilt: geavanceerde end-to-end versleuteling (mogelijk gemaakt door het opensource Signal Protocol™) houdt je gesprekken veilig. Privacy is niet optioneel: het is gewoon hoe Signal werkt. Elk bericht, elke oproep, elke keer.
+
+• Ongeëvenaarde snelheid: berichten worden snel en betrouwbaar geleverd, zelfs op trage netwerken. Signal is geoptimaliseerd voor werking in de meest beperkte omgevingen.
+
+• Voel je vrij: Signal is een volledig onafhankelijke 501c3-non-profit. Ontwikkeling wordt ondersteund door gebruikers zoals jij. Geen reclame. Geen trackers. Geen geintje.
+
+• Wees jezelf: gebruik je bestaande telefoonnummer en adresboek om veilig met je vrienden te communiceren.
+
+• Laat je horen: of je vrienden en familie nou aan de andere kant van de stad of aan de andere kant van de wereld wonen, met de hoogwaardige audio- en videokwaliteit van SIgnal lijken ze altijd dichtbij.
+
+• Ook in het donker: schakel het donkere thema in als je het licht liever niet ziet.
+
+• Steeds herkenbaar: kies aangepaste waarschuwingen voor ieder contact of schakel geluiden volledig uit. Simon & Garfunkel schreven er in 1964 een nummer over, en jij kunt de 'sound of silence' wanneer je maar wilt ervaren door 'Geen' te kiezen als je beltoon voor meldingen.
+
+• Droombeelden: gebruik ingebouwde beeldbewerkingsfuncties zoals tekenen, bijsnijden en omkeren. Er is zelfs een teksttool waarmee je nog meer woorden kunt toevoegen dan de duizend woorden die je foto al waard is.
+
+
+Voor hulp, vragen of meer informatie ga je naar:
+https://support.signal.org
+
+Broncode:
+https://github.com/signalapp
+
+Volg ons op Twitter (@signalapp) en Instagram (@signal_app) voor de nieuwste updates en aankondigingen.
