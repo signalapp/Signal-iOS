@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "புதியனவற்றை சேர் உறுப்பினர்";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "ஏற்கனவே உறுப்பினர்தான்";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = " %@அவர்கள் ஏற்கனவே  %@ குழுவில் உறுப்பினராக உள்ளனர்";

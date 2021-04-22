@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mencions";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "missatge";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silencia aquesta conversa durant ...";
@@ -4925,7 +4925,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Pagaments no activats";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Torneu-vos a registrar per enviar pagaments.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Sense registrar";
