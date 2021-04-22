@@ -38,19 +38,12 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
             return
         }
 
-        // TODO: Reuse QuotedMessageView.
-        let quotedMessageView = QuotedMessageView(state: quotedReply.viewState,
-                                                  sharpCorners: sharpCornersForQuotedMessage)
-        quotedMessageView.createContents()
-        quotedMessageView.layoutMargins = .zero
-        let quotedMessageWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(quotedMessageView)
-
-        let stackView = componentView.stackView
-        stackView.reset()
-        stackView.configure(config: stackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: [ quotedMessageWrapper ])
+        let quotedMessageView = componentView.quotedMessageView
+        let adapter = QuotedMessageViewAdapter(interactionUniqueId: interaction.uniqueId)
+        quotedMessageView.configureForRendering(state: quotedReply.viewState,
+                                                delegate: adapter,
+                                                sharpCorners: sharpCornersForQuotedMessage,
+                                                cellMeasurement: cellMeasurement)
     }
 
     private var stackConfig: CVStackViewConfig {
@@ -60,17 +53,12 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
                           layoutMargins: .zero)
     }
 
-    private static let measurementKey_stackView = "CVComponentQuotedReply.measurementKey_stackView"
-
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let quotedMessageSize = QuotedMessageView.measure(state: quotedReply.viewState, maxWidth: maxWidth).ceil
-        let stackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ quotedMessageSize.asManualSubviewInfo ])
-        return stackMeasurement.measuredSize
+        return QuotedMessageView.measure(state: quotedReply.viewState,
+                                         maxWidth: maxWidth,
+                                         measurementBuilder: measurementBuilder)
     }
 
     // MARK: - Events
@@ -91,21 +79,47 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewQuotedReply: NSObject, CVComponentView {
 
-        // For now we simply use this view to host QuotedMessageView.
-        //
-        // TODO: Reuse QuotedMessageView.
-        fileprivate let stackView = ManualStackView(name: "QuotedReply.stackView")
+        fileprivate let quotedMessageView = QuotedMessageView(name: "quotedMessageView")
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            stackView
+            quotedMessageView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            stackView.reset()
+            quotedMessageView.reset()
         }
+    }
+}
+
+// MARK: -
+
+private class QuotedMessageViewAdapter: QuotedMessageViewDelegate, Dependencies {
+
+    private let interactionUniqueId: String
+
+    init(interactionUniqueId: String) {
+        self.interactionUniqueId = interactionUniqueId
+    }
+
+    func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel,
+                           failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+        Self.attachmentDownloads.enqueueDownloadOfAttachments(forMessageId: interactionUniqueId,
+                                                              attachmentGroup: .allAttachmentsOfAnyKind,
+                                                              downloadBehavior: .default,
+                                                              touchMessageImmediately: true,
+                                                              success: { _ in
+                                                                Logger.info("Success.")
+                                                              },
+                                                              failure: { error in
+                                                                owsFailDebugUnlessNetworkFailure(error)
+                                                              })
+    }
+
+    func didCancelQuotedReply() {
+        owsFailDebug("Unexpected method invocation.")
     }
 }

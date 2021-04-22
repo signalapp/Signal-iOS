@@ -16,6 +16,10 @@ public extension UIEdgeInsets {
         self.init(top: vMargin, left: hMargin, bottom: vMargin, right: hMargin)
     }
 
+    init(margin: CGFloat) {
+        self.init(top: margin, left: margin, bottom: margin, right: margin)
+    }
+
     func plus(_ inset: CGFloat) -> UIEdgeInsets {
         var newInsets = self
         newInsets.top += inset

@@ -76,6 +76,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         var innerViews = [UIView]()
 
         let avatarView = AvatarImageView(image: self.avatarImage)
+        avatarView.shouldDeactivateConstraints = true
         componentView.avatarView = avatarView
         if threadDetails.isAvatarBlurred {
             let avatarWrapper = ManualLayoutView(name: "avatarWrapper")

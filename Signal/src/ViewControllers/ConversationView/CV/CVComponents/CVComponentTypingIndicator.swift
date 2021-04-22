@@ -149,7 +149,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         fileprivate let outerStackView = ManualStackView(name: "Typing indicator outer")
         fileprivate let innerStackView = ManualStackView(name: "Typing indicator inner")
 
-        fileprivate let avatarView = AvatarImageView()
+        fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
         fileprivate let bubbleView = OWSBubbleView()
         fileprivate let typingIndicatorView = TypingIndicatorView()
 

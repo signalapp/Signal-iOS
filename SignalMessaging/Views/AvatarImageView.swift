@@ -7,6 +7,9 @@ import UIKit
 @objc
 open class AvatarImageView: UIImageView {
 
+    @objc
+    public var shouldDeactivateConstraints = false
+
     public init() {
         super.init(frame: .zero)
         self.configureView()
@@ -27,6 +30,12 @@ open class AvatarImageView: UIImageView {
         self.configureView()
     }
 
+    public init(shouldDeactivateConstraints: Bool) {
+        self.shouldDeactivateConstraints = shouldDeactivateConstraints
+        super.init(frame: .zero)
+        self.configureView()
+    }
+
     func configureView() {
         self.autoPinToSquareAspectRatio()
 
@@ -40,6 +49,14 @@ open class AvatarImageView: UIImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = frame.size.width / 2
+    }
+
+    public override func updateConstraints() {
+        super.updateConstraints()
+
+        if shouldDeactivateConstraints {
+            deactivateAllConstraints()
+        }
     }
 }
 
