@@ -96,7 +96,12 @@ open class ManualStackView: ManualLayoutView {
     }
 
     // We cache the resolved layout of the subviews.
-    private var arrangement: Arrangement?
+    private var arrangement: Arrangement? {
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
+        }
+    }
 
     override func viewSizeDidChange() {
         invalidateArrangement()
@@ -113,7 +118,7 @@ open class ManualStackView: ManualLayoutView {
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
         guard let measurement = measurement else {
             owsFailDebug("Missing measurement.")
-            return .zero
+            return super.sizeThatFits(size)
         }
         return measurement.measuredSize
     }
