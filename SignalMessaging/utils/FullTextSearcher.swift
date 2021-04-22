@@ -104,23 +104,31 @@ public class ContactSearchResult: NSObject, Comparable {
 
 public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
-    public let conversations: [ConversationSearchResult<ConversationSortKey>]
+    public let chats: [ConversationSearchResult<ConversationSortKey>]
+    public let groups: [GroupSearchResult]
     public let contacts: [ContactSearchResult]
     public let messages: [ConversationSearchResult<MessageSortKey>]
 
-    public init(searchText: String, conversations: [ConversationSearchResult<ConversationSortKey>], contacts: [ContactSearchResult], messages: [ConversationSearchResult<MessageSortKey>]) {
+    public init(
+        searchText: String,
+        chats: [ConversationSearchResult<ConversationSortKey>],
+        groups: [GroupSearchResult],
+        contacts: [ContactSearchResult],
+        messages: [ConversationSearchResult<MessageSortKey>]
+    ) {
         self.searchText = searchText
-        self.conversations = conversations
+        self.chats = chats
+        self.groups = groups
         self.contacts = contacts
         self.messages = messages
     }
 
     public class var empty: HomeScreenSearchResultSet {
-        return HomeScreenSearchResultSet(searchText: "", conversations: [], contacts: [], messages: [])
+        return HomeScreenSearchResultSet(searchText: "", chats: [], groups: [], contacts: [], messages: [])
     }
 
     public var isEmpty: Bool {
-        return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
+        return chats.isEmpty && groups.isEmpty && contacts.isEmpty && messages.isEmpty
     }
 }
 
@@ -129,12 +137,68 @@ public class HomeScreenSearchResultSet: NSObject {
 @objc
 public class GroupSearchResult: NSObject, Comparable {
     public let thread: ThreadViewModel
+    public let matchedMembersSnippet: String?
 
     private let sortKey: ConversationSortKey
 
-    init(thread: ThreadViewModel, sortKey: ConversationSortKey) {
+    class func withMatchedMembersSnippet(
+        thread: ThreadViewModel,
+        sortKey: ConversationSortKey,
+        searchText: String,
+        transaction: SDSAnyReadTransaction
+    ) -> GroupSearchResult? {
+        guard let groupThread = thread.threadRecord as? TSGroupThread else {
+            owsFailDebug("Unexpected thread type")
+            return nil
+        }
+
+        func normalize(string: String) -> String {
+            return string.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        let normalizedSearchText = normalize(string: searchText)
+
+        let members: [(
+            address: SignalServiceAddress,
+            displayName: String,
+            comparableName: String,
+            isMatched: Bool
+        )] = groupThread.groupMembership.fullMembers.map { address in
+            var displayName = contactsManager.displayName(for: address, transaction: transaction)
+            var isMatched = false
+            if let matchRange = normalize(string: displayName).range(of: normalizedSearchText) {
+                isMatched = true
+                displayName = displayName.replacingCharacters(
+                    in: matchRange,
+                    with: "<\(FullTextSearchFinder.matchTag)>\(displayName[matchRange])</\(FullTextSearchFinder.matchTag)>"
+                )
+            }
+            return (
+                address: address,
+                displayName: displayName,
+                comparableName: contactsManager.comparableName(for: address, transaction: transaction),
+                isMatched: isMatched
+            )
+        }
+
+        let matchedMembersSnippet = members.sorted { lhs, rhs in
+            // Bubble matched members to the top
+            if rhs.isMatched != lhs.isMatched { return lhs.isMatched }
+            // Sort numbers to the end of the list
+            if lhs.comparableName.hasPrefix("+") != rhs.comparableName.hasPrefix("+") {
+                return !lhs.comparableName.hasPrefix("+")
+            }
+            // Otherwise, sort by comparable name
+            return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+        }.map { $0.displayName }.joined(separator: ", ")
+
+        return GroupSearchResult(thread: thread, sortKey: sortKey, matchedMembersSnippet: matchedMembersSnippet)
+    }
+
+    init(thread: ThreadViewModel, sortKey: ConversationSortKey, matchedMembersSnippet: String? = nil) {
         self.thread = thread
         self.sortKey = sortKey
+        self.matchedMembersSnippet = matchedMembersSnippet
     }
 
     // MARK: Comparable
@@ -388,7 +452,8 @@ public class FullTextSearcher: NSObject {
                                     maxResults: UInt = kDefaultMaxResults,
                                     transaction: SDSAnyReadTransaction) -> HomeScreenSearchResultSet {
 
-        var conversations: [ConversationSearchResult<ConversationSortKey>] = []
+        var chats: [ConversationSearchResult<ConversationSortKey>] = []
+        var groups: [GroupSearchResult] = []
         var contacts: [ContactSearchResult] = []
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
@@ -462,7 +527,7 @@ public class FullTextSearcher: NSObject {
         }
 
         var remainingAllowedResults: UInt {
-            UInt(max(0, Int(maxResults) - (conversations.count + contacts.count + messages.count)))
+            UInt(max(0, Int(maxResults) - (chats.count + groups.count + contacts.count + messages.count)))
         }
 
         var hasReachedMaxResults: Bool {
@@ -495,13 +560,22 @@ public class FullTextSearcher: NSObject {
                 creationDate: thread.creationDate,
                 lastInteractionRowId: thread.lastInteractionRowId
             )
-            let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
+
             switch thread {
             case is TSGroupThread:
-                conversations.append(searchResult)
+                guard let searchResult = GroupSearchResult.withMatchedMembersSnippet(
+                    thread: threadViewModel,
+                    sortKey: sortKey,
+                    searchText: searchText,
+                    transaction: transaction
+                ) else {
+                    return owsFailDebug("Unexpectedly failed to determine members snippet")
+                }
+                groups.append(searchResult)
             case let contactThread as TSContactThread:
+                let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
                 existingConversationAddresses.insert(contactThread.contactAddress)
-                conversations.append(searchResult)
+                chats.append(searchResult)
             default:
                 owsFailDebug("unexpected thread: \(type(of: thread))")
             }
@@ -565,12 +639,19 @@ public class FullTextSearcher: NSObject {
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
-        conversations.sort(by: >)
+        chats.sort(by: >)
+        groups.sort(by: >)
         let sortedMessages = messages.values.sorted(by: >)
         // Order "other" contact results by display name.
         otherContacts.sort()
 
-        return HomeScreenSearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: sortedMessages)
+        return HomeScreenSearchResultSet(
+            searchText: searchText,
+            chats: chats,
+            groups: groups,
+            contacts: otherContacts,
+            messages: sortedMessages
+        )
     }
 
     public func searchWithinConversation(thread: TSThread,

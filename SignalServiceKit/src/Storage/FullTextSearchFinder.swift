@@ -7,6 +7,8 @@ import GRDB
 
 @objc
 public class FullTextSearchFinder: NSObject {
+    public static let matchTag = "match"
+
     public func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -196,11 +198,12 @@ extension FullTextSearchFinder {
 @objc
 class GRDBFullTextSearchFinder: NSObject {
 
-    static let contentTableName: String = "indexable_text"
-    static let ftsTableName: String = "indexable_text_fts"
-    static let uniqueIdColumn: String = "uniqueId"
-    static let collectionColumn: String = "collection"
-    static let ftsContentColumn: String = "ftsIndexableContent"
+    static let contentTableName = "indexable_text"
+    static let ftsTableName = "indexable_text_fts"
+    static let uniqueIdColumn = "uniqueId"
+    static let collectionColumn = "collection"
+    static let ftsContentColumn = "ftsIndexableContent"
+    static var matchTag: String { FullTextSearchFinder.matchTag }
 
     private class func collection(forModel model: SDSModel) -> String {
         // Note that allModelsWereRemoved(collection: ) makes the same
@@ -438,7 +441,7 @@ class GRDBFullTextSearchFinder: NSObject {
                 SELECT
                     \(contentTableName).\(collectionColumn),
                     \(contentTableName).\(uniqueIdColumn),
-                    snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '', '', '…', \(numTokens) ) as \(matchSnippet)
+                    snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens) ) as \(matchSnippet)
                 FROM \(ftsTableName)
                 LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
                 WHERE \(ftsTableName) MATCH '"\(ftsContentColumn)" : \(query)'

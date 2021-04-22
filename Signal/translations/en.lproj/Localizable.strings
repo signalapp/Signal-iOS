@@ -1027,23 +1027,23 @@
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@h";
 
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
-
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
 
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
-
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
 
 /* The present; the current time. */
 "DATE_NOW" = "Now";
+
+/* Full string for a relative time of one hour ago. */
+"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+
+/* Full string for a relative time of one minute ago. */
+"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
 
 /* The current day. */
 "DATE_TODAY" = "Today";
@@ -1299,9 +1299,6 @@
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
-
-/* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Update";
@@ -4468,8 +4465,11 @@
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Other Contacts";
 
-/* section header for search results that match existing conversations (either group or contact conversations) */
+/* section header for search results that match existing 1:1 chats */
 "SEARCH_SECTION_CONVERSATIONS" = "Chats";
+
+/* section header for search results that match existing groups */
+"SEARCH_SECTION_GROUPS" = "Groups";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Messages";
