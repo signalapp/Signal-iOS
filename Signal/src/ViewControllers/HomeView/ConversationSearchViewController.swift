@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import BonMot
 
 @objc
 protocol ConversationSearchViewDelegate: class {
@@ -42,7 +43,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     enum SearchSection: Int {
         case noResults
-        case conversations
+        case contactThreads
+        case groupThreads
         case contacts
         case messages
     }
@@ -51,7 +53,22 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     var blockListCache: BlockListCache!
 
+    static let matchSnippetStyle = StringStyle(
+        .color(Theme.secondaryTextAndIconColor),
+        .xmlRules([
+            .style(FullTextSearchFinder.matchTag, StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold)))
+        ])
+    )
+
     // MARK: View Lifecycle
+
+    init() {
+        super.init(style: .grouped)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,7 +78,9 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
-        tableView.separatorColor = Theme.cellSeparatorColor
+        tableView.separatorColor = .clear
+        tableView.separatorInset = .zero
+        tableView.separatorStyle = .none
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
@@ -132,8 +151,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             owsFailDebug("shouldn't be able to tap 'no results' section")
-        case .conversations:
-            let sectionResults = searchResultSet.conversations
+        case .contactThreads:
+            let sectionResults = searchResultSet.contactThreads
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFailDebug("unknown row selected.")
                 return
@@ -141,7 +160,15 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose, animated: true)
+        case .groupThreads:
+            let sectionResults = searchResultSet.groupThreads
+            guard let searchResult = sectionResults[safe: indexPath.row] else {
+                owsFailDebug("unknown row selected.")
+                return
+            }
 
+            let thread = searchResult.thread
+            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose, animated: true)
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -177,8 +204,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             return searchResultSet.isEmpty ? 1 : 0
-        case .conversations:
-            return searchResultSet.conversations.count
+        case .contactThreads:
+            return searchResultSet.contactThreads.count
+        case .groupThreads:
+            return searchResultSet.groupThreads.count
         case .contacts:
             return searchResultSet.contacts.count
         case .messages:
@@ -209,25 +238,41 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             let searchText = self.searchResultSet.searchText
             cell.configure(searchText: searchText)
             return cell
-        case .conversations:
+        case .contactThreads:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
-            guard let searchResult = self.searchResultSet.conversations[safe: indexPath.row] else {
+            guard let searchResult = self.searchResultSet.contactThreads[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
             cell.configure(withThread: searchResult.thread, isBlocked: isBlocked(thread: searchResult.thread))
+            return cell
+        case .groupThreads:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+                owsFailDebug("cell was unexpectedly nil")
+                return UITableViewCell()
+            }
+
+            guard let searchResult = self.searchResultSet.groupThreads[safe: indexPath.row] else {
+                owsFailDebug("searchResult was unexpectedly nil")
+                return UITableViewCell()
+            }
+
+            cell.configure(
+                withThread: searchResult.thread,
+                isBlocked: isBlocked(thread: searchResult.thread),
+                overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
+                overrideDate: nil
+            )
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
-
-            cell.setUseLargeAvatars()
 
             guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
                 owsFailDebug("searchResult was unexpectedly nil")
@@ -260,10 +305,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {
-                    overrideSnippet = NSAttributedString(string: messageSnippet,
-                                                         attributes: [
-                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryTextAndIconColor
-                    ])
+                    overrideSnippet = messageSnippet.styled(with: Self.matchSnippetStyle)
                 } else {
                     owsFailDebug("message search result is missing message snippet")
                 }
@@ -279,33 +321,45 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
+    }
+
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        UIView()
+    }
+
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        .leastNonzeroMagnitude
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
-            return 0
+            return .leastNonzeroMagnitude
         }
         return UITableView.automaticDimension
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
-            return nil
+            return UIView()
         }
 
-        let label = UILabel()
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.text = title
-        label.font = UIFont.ows_dynamicTypeBody.ows_semibold
-        label.tag = section
+        let textView = LinkingTextView()
+        textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        textView.text = title
 
-        let wrapper = UIView()
-        wrapper.backgroundColor = Theme.washColor
-        wrapper.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
+        var textContainerInset = UIEdgeInsets(
+            top: 14,
+            left: OWSTableViewController2.cellHOuterLeftMargin(in: view),
+            bottom: 8,
+            right: OWSTableViewController2.cellHOuterRightMargin(in: view)
+        )
+        textContainerInset.left += tableView.safeAreaInsets.left
+        textContainerInset.right += tableView.safeAreaInsets.right
+        textView.textContainerInset = textContainerInset
 
-        return wrapper
+        return textView
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -317,9 +371,15 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         switch searchSection {
         case .noResults:
             return nil
-        case .conversations:
-            if searchResultSet.conversations.count > 0 {
-                return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing conversations (either group or contact conversations)")
+        case .contactThreads:
+            if searchResultSet.contactThreads.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing 1:1 chats")
+            } else {
+                return nil
+            }
+        case .groupThreads:
+            if searchResultSet.groupThreads.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_GROUPS", comment: "section header for search results that match existing groups")
             } else {
                 return nil
             }
@@ -433,6 +493,7 @@ class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
 
     let messageLabel: UILabel
+    let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -454,6 +515,9 @@ class EmptySearchResultCell: UITableViewCell {
 
         messageLabel.setContentHuggingHigh()
         messageLabel.setCompressionResistanceHigh()
+
+        contentView.addSubview(activityIndicator)
+        activityIndicator.autoCenterInSuperview()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -461,12 +525,27 @@ class EmptySearchResultCell: UITableViewCell {
     }
 
     public func configure(searchText: String) {
-        let format = NSLocalizedString("HOME_VIEW_SEARCH_NO_RESULTS_FORMAT", comment: "Format string when search returns no results. Embeds {{search term}}")
-        let messageText: String = NSString(format: format as NSString, searchText) as String
-        self.messageLabel.text = messageText
+        if searchText.isEmpty {
+            activityIndicator.color = Theme.primaryIconColor
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
+            messageLabel.isHidden = true
+            messageLabel.text = nil
+        } else {
+            activityIndicator.stopAnimating()
+            activityIndicator.isHidden = true
+            messageLabel.isHidden = false
 
-        messageLabel.textColor = Theme.primaryTextColor
-        messageLabel.font = UIFont.ows_dynamicTypeBody
+            let format = NSLocalizedString(
+                "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT",
+                comment: "Format string when search returns no results. Embeds {{search term}}"
+            )
+            let messageText: String = NSString(format: format as NSString, searchText) as String
+            messageLabel.text = messageText
+
+            messageLabel.textColor = Theme.primaryTextColor
+            messageLabel.font = UIFont.ows_dynamicTypeBody
+        }
     }
 }
 

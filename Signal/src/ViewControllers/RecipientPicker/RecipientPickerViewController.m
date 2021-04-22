@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-const NSUInteger kMinimumSearchLength = 2;
+const NSUInteger kMinimumSearchLength = 1;
 
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperObserver,

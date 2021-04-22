@@ -613,7 +613,12 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
                 let getMatchCount = { (searchText: String) -> UInt in
                     var count: UInt = 0
-                    finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match, snippet, _) in
+                    finder.enumerateObjects(
+                        searchText: searchText,
+                        collections: [TSMessage.collection()],
+                        maxResults: 500,
+                        transaction: transaction
+                    ) { (match, snippet, _) in
                         Logger.verbose("searchText: \(searchText), match: \(match), snippet: \(snippet)")
                         count += 1
                     }

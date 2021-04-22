@@ -7,10 +7,19 @@ import GRDB
 
 @objc
 public class FullTextSearchFinder: NSObject {
-    public func enumerateObjects(searchText: String, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static let matchTag = "match"
+
+    public func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, transaction: grdbRead, block: block)
+            GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, collections: collections, maxResults: maxResults, transaction: grdbRead, block: block)
+        }
+    }
+
+    public func enumerateObjects<T: SDSModel>(searchText: String, maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, maxResults: maxResults, transaction: grdbRead, block: block)
         }
     }
 
@@ -189,11 +198,12 @@ extension FullTextSearchFinder {
 @objc
 class GRDBFullTextSearchFinder: NSObject {
 
-    static let contentTableName: String = "indexable_text"
-    static let ftsTableName: String = "indexable_text_fts"
-    static let uniqueIdColumn: String = "uniqueId"
-    static let collectionColumn: String = "collection"
-    static let ftsContentColumn: String = "ftsIndexableContent"
+    static let contentTableName = "indexable_text"
+    static let ftsTableName = "indexable_text_fts"
+    static let uniqueIdColumn = "uniqueId"
+    static let collectionColumn = "collection"
+    static let ftsContentColumn = "ftsIndexableContent"
+    static var matchTag: String { FullTextSearchFinder.matchTag }
 
     private class func collection(forModel model: SDSModel) -> String {
         // Note that allModelsWereRemoved(collection: ) makes the same
@@ -393,7 +403,21 @@ class GRDBFullTextSearchFinder: NSObject {
 
     // MARK: - Querying
 
-    public class func enumerateObjects(searchText: String, transaction: GRDBReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public class func enumerateObjects<T: SDSModel>(searchText: String, maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        enumerateObjects(
+            searchText: searchText,
+            collections: [T.collection()],
+            maxResults: maxResults,
+            transaction: transaction
+        ) { object, snippet, stop in
+            guard let object = object as? T else {
+                return owsFailDebug("Unexpected object type")
+            }
+            block(object, snippet, stop)
+        }
+    }
+
+    public class func enumerateObjects(searchText: String, collections: [String], maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let query = FullTextSearchFinder.query(searchText: searchText)
 
@@ -417,12 +441,15 @@ class GRDBFullTextSearchFinder: NSObject {
                 SELECT
                     \(contentTableName).\(collectionColumn),
                     \(contentTableName).\(uniqueIdColumn),
-                    snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '', '', '…', \(numTokens) ) as \(matchSnippet)
+                    snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens) ) as \(matchSnippet)
                 FROM \(ftsTableName)
                 LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
                 WHERE \(ftsTableName) MATCH '"\(ftsContentColumn)" : \(query)'
+                AND \(collectionColumn) IN (\(collections.map { "'\($0)'" }.joined(separator: ",")))
                 ORDER BY rank
+                LIMIT \(maxResults)
             """
+
             let cursor = try Row.fetchCursor(transaction.database, sql: sql)
             while let row = try cursor.next() {
                 let collection: String = row[collectionColumn]
