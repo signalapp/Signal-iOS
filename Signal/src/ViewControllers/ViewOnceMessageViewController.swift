@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
     class Content {
         enum ContentType {
-            case stillImage, animatedImage, video
+            case stillImage, animatedImage, video, loopingVideo
         }
 
         let messageId: String
@@ -119,7 +119,9 @@ class ViewOnceMessageViewController: OWSViewController {
             }
 
             let viewOnceType: Content.ContentType
-            if attachmentStream.shouldBeRenderedByYY {
+            if attachmentStream.isLoopingVideo {
+                viewOnceType = .loopingVideo
+            } else if attachmentStream.shouldBeRenderedByYY {
                 viewOnceType = .animatedImage
             } else if attachmentStream.isImage {
                 viewOnceType = .stillImage
@@ -256,6 +258,15 @@ class ViewOnceMessageViewController: OWSViewController {
         let filePath = content.filePath
 
         switch content.type {
+        case .loopingVideo:
+            guard let video = LoopingVideo(url: URL(fileURLWithPath: filePath)) else {
+                owsFailDebug("Could not load attachment.")
+                return nil
+            }
+            let view = LoopingVideoView()
+            view.contentMode = .scaleAspectFit
+            view.video = video
+            return view
         case .animatedImage:
             guard let image = YYImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")

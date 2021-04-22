@@ -528,14 +528,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
             } else if firstAttachment?.isImage == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
+            } else if firstAttachment?.isAnimated == true || firstAttachment?.isLoopingVideo == true {
+                notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
             } else if firstAttachment?.isVideo == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
             } else if firstAttachment?.isVoiceMessage == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
             } else if firstAttachment?.isAudio == true {
                 notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isAnimated == true {
-                notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
             } else {
                 notificationBody = String(format: NotificationStrings.incomingReactionFileMessageFormat, reaction.emoji)
             }

@@ -14,6 +14,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
     TSAttachmentTypeDefault = 0,
     TSAttachmentTypeVoiceMessage = 1,
     TSAttachmentTypeBorderless = 2,
+    TSAttachmentTypeGIF = 3,
 };
 
 @interface TSAttachment : BaseModel
@@ -132,6 +133,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isAudio;
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 @property (nonatomic, readonly) BOOL isBorderless;
+@property (nonatomic, readonly) BOOL isLoopingVideo;
 @property (nonatomic, readonly) BOOL isVisualMedia;
 @property (nonatomic, readonly) BOOL isOversizeText;
 

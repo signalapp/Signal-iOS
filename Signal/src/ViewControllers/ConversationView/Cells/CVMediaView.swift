@@ -60,7 +60,10 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             return configureForUndownloadedMedia()
         }
-        if attachmentStream.shouldBeRenderedByYY {
+
+        if attachmentStream.isLoopingVideo {
+            configureForLoopingVideo(attachmentStream: attachmentStream)
+        } else if attachmentStream.shouldBeRenderedByYY {
             configureForAnimatedImage(attachmentStream: attachmentStream)
         } else if attachmentStream.isImage {
             configureForStillImage(attachmentStream: attachmentStream)
@@ -170,6 +173,20 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
         let mediaViewAdapter = MediaViewAdapterBlurHash(blurHash: blurHash)
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
+    }
+
+    private func configureForLoopingVideo(attachmentStream: TSAttachmentStream) {
+        if let reusableMediaView = mediaCache.getMediaView(
+            attachmentStream.uniqueId,
+            isAnimated: true
+        ) {
+            applyReusableMediaView(reusableMediaView)
+        } else {
+            createNewReusableMediaView(
+                mediaViewAdapter: MediaViewAdapterLoopingVideo(
+                    attachmentStream: attachmentStream),
+                isAnimated: true)
+        }
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {

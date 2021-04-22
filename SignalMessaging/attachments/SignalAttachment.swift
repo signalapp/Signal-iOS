@@ -306,6 +306,7 @@ public class SignalAttachment: NSObject {
         result.isViewOnceAttachment = isViewOnceAttachment
         result.isVoiceMessage = isVoiceMessage
         result.isBorderless = isBorderless
+        result.isLoopingVideo = isLoopingVideo
         return result
     }
 
@@ -316,7 +317,8 @@ public class SignalAttachment: NSObject {
                                       sourceFilename: filenameOrDefault,
                                       caption: captionText,
                                       albumMessageId: message.uniqueId,
-                                      isBorderless: isBorderless)
+                                      isBorderless: isBorderless,
+                                      isLoopingVideo: isLoopingVideo)
     }
 
     @objc
@@ -392,6 +394,8 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var isBorderless = false
+    @objc
+    public var isLoopingVideo = false
 
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.

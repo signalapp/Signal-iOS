@@ -554,6 +554,7 @@ message AttachmentPointer {
   enum Flags {
     VOICE_MESSAGE = 1;
     BORDERLESS    = 2;
+    GIF           = 3;
   }
 
   // oneof commented out because swift generated

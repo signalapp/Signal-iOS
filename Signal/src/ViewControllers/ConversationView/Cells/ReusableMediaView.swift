@@ -262,6 +262,47 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
     }
 }
 
+// MARK: - MediaViewAdapterLoopingVideo
+
+class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
+    let attachmentStream: TSAttachmentStream
+    let videoView = LoopingVideoView()
+
+    init(attachmentStream: TSAttachmentStream) {
+        self.attachmentStream = attachmentStream
+    }
+
+    let shouldBeRenderedByYY = false
+    var mediaView: UIView { videoView }
+    var isLoaded: Bool { videoView.video != nil }
+    var cacheKey: String { attachmentStream.uniqueId }
+
+    func loadMedia() -> Promise<AnyObject> {
+        guard attachmentStream.isLoopingVideo,
+              let path = attachmentStream.originalFilePath,
+              let video = LoopingVideo(url: URL(fileURLWithPath: path)) else {
+            return Promise(error: ReusableMediaError.invalidMedia)
+        }
+        return Promise.value(video)
+    }
+
+    func applyMedia(_ media: AnyObject) {
+        AssertIsOnMainThread()
+
+        guard let video = media as? LoopingVideo else {
+            owsFailDebug("Media has unexpected type: \(type(of: media))")
+            return
+        }
+        videoView.video = video
+    }
+
+    func unloadMedia() {
+        AssertIsOnMainThread()
+
+        videoView.video = nil
+    }
+}
+
 // MARK: -
 
 class MediaViewAdapterAnimated: MediaViewAdapterSwift {

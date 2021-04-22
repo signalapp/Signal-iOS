@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -42,6 +42,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
 @property (nonatomic, readonly) BOOL isBorderless;
+@property (nonatomic, readonly) BOOL isLoopingVideo;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -51,7 +52,8 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
                     albumMessageId:(nullable NSString *)albumMessageId
-                      isBorderless:(BOOL)isBorderless NS_DESIGNATED_INITIALIZER;
+                      isBorderless:(BOOL)isBorderless
+                    isLoopingVideo:(BOOL)isLoopingVideo NS_DESIGNATED_INITIALIZER;
 
 - (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
                                                                          error:(NSError **)error;

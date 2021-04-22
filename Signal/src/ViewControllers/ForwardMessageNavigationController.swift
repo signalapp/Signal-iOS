@@ -509,6 +509,7 @@ extension TSAttachmentStream {
         }
         signalAttachment.captionText = caption
         signalAttachment.isBorderless = isBorderless
+        signalAttachment.isLoopingVideo = isLoopingVideo
         return signalAttachment
     }
 }

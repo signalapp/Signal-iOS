@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ public struct AttachmentApprovalItem: Hashable {
     }
 
     private static func videoEditorModel(for attachment: SignalAttachment) -> VideoEditorModel? {
-        guard attachment.isValidVideo else {
+        guard attachment.isValidVideo, !attachment.isLoopingVideo else {
             return nil
         }
         guard let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL else {
