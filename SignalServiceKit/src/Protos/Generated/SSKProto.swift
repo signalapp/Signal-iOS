@@ -11707,12 +11707,14 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
 public enum SSKProtoAttachmentPointerFlags: Int32 {
     case voiceMessage = 1
     case borderless = 2
+    case gif = 3
 }
 
 private func SSKProtoAttachmentPointerFlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointerFlags {
     switch value {
     case .voiceMessage: return .voiceMessage
     case .borderless: return .borderless
+    case .gif: return .gif
     }
 }
 
@@ -11720,6 +11722,7 @@ private func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPoi
     switch value {
     case .voiceMessage: return .voiceMessage
     case .borderless: return .borderless
+    case .gif: return .gif
     }
 }
 

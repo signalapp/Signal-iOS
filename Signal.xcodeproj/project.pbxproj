@@ -32,6 +32,7 @@
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
 		32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */; };
+		32FC387926295FA50086C32B /* LoopingVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FC387826295FA30086C32B /* LoopingVideoView.swift */; };
 		34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D782367747300F5215A /* VideoEditorModel.swift */; };
 		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
 		3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */; };
@@ -102,7 +103,6 @@
 		342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 342950862124CB0A0000B063 /* OWSSearchBar.m */; };
 		342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950872124CB0A0000B063 /* OWSSearchBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */; };
-		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -421,7 +421,6 @@
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
-		34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */; };
 		34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */; };
 		34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06E1F8678AA0066283D /* ConversationViewController.m */; };
 		34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
@@ -1027,6 +1026,7 @@
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
 		32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportRequestTextView.swift; sourceTree = "<group>"; };
+		32FC387826295FA30086C32B /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34035D782367747300F5215A /* VideoEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
@@ -1112,7 +1112,6 @@
 		342950862124CB0A0000B063 /* OWSSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSearchBar.m; sourceTree = "<group>"; };
 		342950872124CB0A0000B063 /* OWSSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSearchBar.h; sourceTree = "<group>"; };
 		342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
-		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
 		34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ElegantIcons.ttf; sourceTree = "<group>"; };
@@ -1458,7 +1457,6 @@
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
-		34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationInputToolbar.h; sourceTree = "<group>"; };
 		34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationInputToolbar.m; sourceTree = "<group>"; };
 		34D1F06D1F8678AA0066283D /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
@@ -2578,6 +2576,7 @@
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
 				8860CC1F2508506F00A4D18E /* Link Preview */,
 				8861DECF2445349B00BB4145 /* LinkingTextView.swift */,
+				32FC387826295FA30086C32B /* LoopingVideoView.swift */,
 				3472A4AB2620911D000803AE /* ManualLayoutView.swift */,
 				343D69A9260B870600F8638C /* ManualStackView.swift */,
 				8851DB3D24CCE9B9001EACD2 /* Mentions */,
@@ -3318,7 +3317,6 @@
 				76EB041118170B33006006FC /* environment */,
 				45D231751DC7E8C50034FA89 /* Jobs */,
 				457F3AC01D14A0F700C51351 /* Models */,
-				76EB041D18170B33006006FC /* network */,
 				45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
@@ -3337,15 +3335,6 @@
 				880D902F2481E617003D2B14 /* SignalApp.swift */,
 			);
 			path = environment;
-			sourceTree = "<group>";
-		};
-		76EB041D18170B33006006FC /* network */ = {
-			isa = PBXGroup;
-			children = (
-				3430FE171F7751D4000EC51B /* GiphyAPI.swift */,
-				34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */,
-			);
-			path = network;
 			sourceTree = "<group>";
 		};
 		76EB04C818170B33006006FC /* util */ = {
@@ -4908,6 +4897,7 @@
 				34AC09EB211B39B100997B47 /* ContactShareApprovalViewController.swift in Sources */,
 				34AC0A1F211B39EA00997B47 /* AvatarImageView.swift in Sources */,
 				3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */,
+				32FC387926295FA50086C32B /* LoopingVideoView.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
@@ -5158,7 +5148,6 @@
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
-				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				88EAD79223764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
 				323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */,
 				3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */,
@@ -5224,7 +5213,6 @@
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
-				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,

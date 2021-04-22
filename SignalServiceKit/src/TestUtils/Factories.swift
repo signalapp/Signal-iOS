@@ -492,7 +492,8 @@ public class ConversationFactory: NSObject {
                                       sourceFilename: nil,
                                       caption: caption,
                                       albumMessageId: outgoingMessage.uniqueId,
-                                      isBorderless: false)
+                                      isBorderless: false,
+                                      isLoopingVideo: false)
     }
 
 }

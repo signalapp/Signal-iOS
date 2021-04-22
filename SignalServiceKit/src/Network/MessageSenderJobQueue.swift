@@ -52,7 +52,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                     sourceFilename: sourceFilename,
                                                     caption: caption,
                                                     albumMessageId: albumMessageId,
-                                                    isBorderless: false)
+                                                    isBorderless: false,
+                                                    isLoopingVideo: false)
         let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
         add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }

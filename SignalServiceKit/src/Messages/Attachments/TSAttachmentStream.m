@@ -1126,6 +1126,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;
     } else if (self.isBorderless) {
         builder.flags = SSKProtoAttachmentPointerFlagsBorderless;
+    } else if (self.isLoopingVideo || self.isAnimated) {
+        builder.flags = SSKProtoAttachmentPointerFlagsGif;
     } else {
         builder.flags = 0;
     }

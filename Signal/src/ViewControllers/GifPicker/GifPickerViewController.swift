@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -482,17 +482,26 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }.map(on: .global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
             guard let _ = self else { throw GetFileError.noLongerRelevant }
 
-            guard let rendition = asset.assetDescription as? GiphyRendition else {
+            guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
                 throw OWSAssertionError("Invalid asset description.")
             }
 
+            let assetTypeIdentifier = giphyAsset.type.utiType
+            let assetFileExtension = giphyAsset.type.extension
             let pathForCachedAsset = asset.filePath
-            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: "gif")
+
+            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
             try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
             let dataSource = try DataSourcePath.dataSource(withFilePath: pathForConsumableFile,
                                                            shouldDeleteOnDeallocation: false)
 
-            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
+            let attachment = SignalAttachment.attachment(
+                dataSource: dataSource,
+                dataUTI: assetTypeIdentifier,
+                imageQuality: .original)
+            attachment.isLoopingVideo = attachment.isVideo
+            return attachment
+
         }.done { [weak self] attachment in
             guard let self = self else {
                 throw GetFileError.noLongerRelevant

@@ -25,7 +25,8 @@ public class AttachmentMultisend: Dependencies {
                                               sourceFilename: attachment.filenameOrDefault,
                                               caption: attachment.captionText,
                                               albumMessageId: nil,
-                                              isBorderless: attachment.isBorderless)
+                                              isBorderless: attachment.isBorderless,
+                                              isLoopingVideo: attachment.isLoopingVideo)
             }
 
             var threads: [TSThread] = []
@@ -95,7 +96,8 @@ public class AttachmentMultisend: Dependencies {
                                               sourceFilename: attachment.filenameOrDefault,
                                               caption: attachment.captionText,
                                               albumMessageId: nil,
-                                              isBorderless: attachment.isBorderless)
+                                              isBorderless: attachment.isBorderless,
+                                              isLoopingVideo: attachment.isLoopingVideo)
             }
 
             var threads: [TSThread] = []

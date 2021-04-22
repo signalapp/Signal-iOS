@@ -59,11 +59,11 @@ public class MediaGalleryItem: Equatable, Hashable {
     }
 
     var isVideo: Bool {
-        return attachmentStream.isVideo
+        return attachmentStream.isVideo && !attachmentStream.isLoopingVideo
     }
 
     var isAnimated: Bool {
-        return attachmentStream.isAnimated
+        return attachmentStream.isAnimated || attachmentStream.isLoopingVideo
     }
 
     var isImage: Bool {

@@ -74,6 +74,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
                            caption:(nullable NSString *)caption
                     albumMessageId:(nullable NSString *)albumMessageId
                       isBorderless:(BOOL)isBorderless
+                    isLoopingVideo:(BOOL)isLoopingVideo
 {
     self = [super init];
     if (!self) {
@@ -86,6 +87,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     _caption = caption;
     _albumMessageId = albumMessageId;
     _isBorderless = isBorderless;
+    _isLoopingVideo = isLoopingVideo;
 
     return self;
 }
@@ -104,6 +106,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
     } else if (self.isBorderless) {
         attachmentStream.attachmentType = TSAttachmentTypeBorderless;
+    } else if (self.isLoopingVideo || attachmentStream.isAnimated) {
+        attachmentStream.attachmentType = TSAttachmentTypeGIF;
     }
 
     BOOL success = [attachmentStream writeConsumingDataSource:self.dataSource error:error];
@@ -506,7 +510,8 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                                                                                        sourceFilename:sourceFilename
                                                                                               caption:nil
                                                                                        albumMessageId:albumMessageId
-                                                                                         isBorderless:NO];
+                                                                                         isBorderless:NO
+                                                                                       isLoopingVideo:NO];
     [self sendUnpreparedAttachments:@[
         attachmentInfo,
     ]

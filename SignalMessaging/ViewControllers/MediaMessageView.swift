@@ -69,7 +69,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     // MARK: - Create Views
 
     private func createViews() {
-        if attachment.isAnimatedImage {
+        if attachment.isLoopingVideo {
+            createLoopingVideoPreview()
+        } else if attachment.isAnimatedImage {
             createAnimatedPreview()
         } else if attachment.isImage {
             createImagePreview()
@@ -160,6 +162,21 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+    }
+
+    private func createLoopingVideoPreview() {
+        guard let url = attachment.dataUrl,
+              let video = LoopingVideo(url: url),
+              let previewImage = attachment.videoPreview() else {
+            createGenericPreview()
+            return
+        }
+        let loopingVideoView = LoopingVideoView()
+        loopingVideoView.video = video
+        loopingVideoView.placeholderProvider = { previewImage }
+
+        addSubviewWithScaleAspectFitLayout(view: loopingVideoView, aspectRatio: previewImage.size.aspectRatio)
+        contentView = loopingVideoView
     }
 
     private func createAnimatedPreview() {

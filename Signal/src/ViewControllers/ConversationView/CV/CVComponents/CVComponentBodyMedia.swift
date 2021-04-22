@@ -200,7 +200,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     var downloadSizeText = [OWSFormat.formatFileSize(UInt(totalSize))]
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
-                        if firstAttachmentPointer.isAnimated {
+                        if firstAttachmentPointer.isAnimated || firstAttachmentPointer.isLoopingVideo {
                             // Do nothing.
                         } else if firstAttachmentPointer.isImage {
                             downloadSizeText.append(CommonStrings.attachmentTypePhoto)

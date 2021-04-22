@@ -213,6 +213,11 @@ public class RemoteConfig: BaseFlags {
         isEnabled(.paymentsResetKillSwitch)
     }
 
+    @objc
+    public static var giphySendAsMP4: Bool {
+        isEnabled(.giphySendAsMP4)
+    }
+
     // MARK: -
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
@@ -351,6 +356,7 @@ private struct Flags {
         case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
+        case giphySendAsMP4
     }
 
     // Values defined in this array remain set once they are

@@ -360,7 +360,7 @@ fileprivate extension CVComponentViewOnce {
         if attachmentStream.isVideo {
             return .video
         } else {
-            owsAssertDebug(attachmentStream.isImage || attachmentStream.isAnimated)
+            owsAssertDebug(attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isLoopingVideo)
             return .photo
         }
     }

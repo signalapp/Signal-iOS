@@ -511,23 +511,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.isViewOnceMessage) {
-        if ([self isKindOfClass:TSOutgoingMessage.class]) {
+        if ([self isKindOfClass:TSOutgoingMessage.class] || mediaAttachment == nil) {
             return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
                 @"inbox cell and notification text for an already viewed view-once media message.");
+        } else if (mediaAttachment.isVideo) {
+            return NSLocalizedString(
+                @"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW", @"inbox cell and notification text for a view-once video.");
         } else {
-            if (mediaAttachment == nil) {
-                return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
-                    @"inbox cell and notification text for an already viewed view-once media message.");
-            } else {
-                if (mediaAttachment.isVideo) {
-                    return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW",
-                        @"inbox cell and notification text for a view-once video.");
-                } else {
-                    OWSAssertDebug(mediaAttachment.isImage);
-                    return NSLocalizedString(@"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW",
-                        @"inbox cell and notification text for a view-once photo.");
-                }
-            }
+            OWSAssertDebug(mediaAttachment.isImage || mediaAttachment.isLoopingVideo || mediaAttachment.isAnimated);
+            return NSLocalizedString(
+                @"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW", @"inbox cell and notification text for a view-once photo.");
         }
     }
 

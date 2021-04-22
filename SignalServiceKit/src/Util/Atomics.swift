@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,6 +101,12 @@ public class AtomicUInt: NSObject {
     @objc
     public func increment() -> UInt {
         return value.map { $0 + 1 }
+    }
+
+    @discardableResult
+    @objc
+    public func decrementOrZero() -> UInt {
+        return value.map { max($0, 1) - 1 }
     }
 }
 
