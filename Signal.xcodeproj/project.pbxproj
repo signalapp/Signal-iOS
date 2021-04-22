@@ -85,15 +85,17 @@
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34235F3824213550008C74CB /* ConversationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34235F3724213550008C74CB /* ConversationSettingsViewController.swift */; };
+		3425A5992631DC05006D5863 /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3425A5982631DC05006D5863 /* LinkPreviewState.swift */; };
+		3425A5A02631E051006D5863 /* CVCellMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3425A59D2631E051006D5863 /* CVCellMeasurement.swift */; };
+		3425A5A12631E051006D5863 /* CVUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3425A59E2631E051006D5863 /* CVUtils.swift */; };
+		3425A5A22631E051006D5863 /* CVText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3425A59F2631E051006D5863 /* CVText.swift */; };
 		3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A365255C854A0036407F /* CVItemViewModelImpl.swift */; };
 		3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A367255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift */; };
 		3426A36A255D9D7C0036407F /* ConversationViewController+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */; };
 		3426A36E255EB9F50036407F /* CVItemViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3426A36D255EB9F50036407F /* CVItemViewModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A36F25631C220036407F /* CVComponentLinkPreview.swift */; };
-		3426A372256320420036407F /* CVText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A371256320410036407F /* CVText.swift */; };
 		3426A375256321190036407F /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3426A373256321190036407F /* OWSMessageTextView.m */; };
 		3426A376256321190036407F /* OWSMessageTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3426A374256321190036407F /* OWSMessageTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3426A378256321C50036407F /* CVUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A377256321C50036407F /* CVUtils.swift */; };
 		3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3426A3792563F0EA0036407F /* CVComponentBottomButtons.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
 		342950822124C9750000B063 /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 3429507E2124C9740000B063 /* OWSTextField.m */; };
@@ -453,7 +455,6 @@
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
 		34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */; };
-		34EB0E7E2629E00500B62DC3 /* CVHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
@@ -1095,15 +1096,17 @@
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
 		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
 		34235F3724213550008C74CB /* ConversationSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationSettingsViewController.swift; sourceTree = "<group>"; };
+		3425A5982631DC05006D5863 /* LinkPreviewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewState.swift; sourceTree = "<group>"; };
+		3425A59D2631E051006D5863 /* CVCellMeasurement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVCellMeasurement.swift; sourceTree = "<group>"; };
+		3425A59E2631E051006D5863 /* CVUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVUtils.swift; sourceTree = "<group>"; };
+		3425A59F2631E051006D5863 /* CVText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVText.swift; sourceTree = "<group>"; };
 		3426A365255C854A0036407F /* CVItemViewModelImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVItemViewModelImpl.swift; sourceTree = "<group>"; };
 		3426A367255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+MessageActionsDelegate.swift"; sourceTree = "<group>"; };
 		3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Selection.swift"; sourceTree = "<group>"; };
 		3426A36D255EB9F50036407F /* CVItemViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CVItemViewModel.h; sourceTree = "<group>"; };
 		3426A36F25631C220036407F /* CVComponentLinkPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentLinkPreview.swift; sourceTree = "<group>"; };
-		3426A371256320410036407F /* CVText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVText.swift; sourceTree = "<group>"; };
 		3426A373256321190036407F /* OWSMessageTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageTextView.m; sourceTree = "<group>"; };
 		3426A374256321190036407F /* OWSMessageTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTextView.h; sourceTree = "<group>"; };
-		3426A377256321C50036407F /* CVUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVUtils.swift; sourceTree = "<group>"; };
 		3426A3792563F0EA0036407F /* CVComponentBottomButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentBottomButtons.swift; sourceTree = "<group>"; };
 		34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedMessageView.m; sourceTree = "<group>"; };
 		34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedMessageView.h; sourceTree = "<group>"; };
@@ -1511,7 +1514,6 @@
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
 		34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
-		34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVHelpers.swift; sourceTree = "<group>"; };
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
@@ -2345,6 +2347,16 @@
 			path = ThreadSettings;
 			sourceTree = "<group>";
 		};
+		3425A59C2631E051006D5863 /* ConversationView */ = {
+			isa = PBXGroup;
+			children = (
+				3425A59D2631E051006D5863 /* CVCellMeasurement.swift */,
+				3425A59F2631E051006D5863 /* CVText.swift */,
+				3425A59E2631E051006D5863 /* CVUtils.swift */,
+			);
+			path = ConversationView;
+			sourceTree = "<group>";
+		};
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -2572,8 +2584,7 @@
 				34AC09FF211B39E700997B47 /* ContactTableViewCell.m */,
 				348D8E71262DF67A0019CAA8 /* ConversationAvatarView.swift */,
 				8809CE8022F534B200D38867 /* CustomKeyboard.swift */,
-				3426A371256320410036407F /* CVText.swift */,
-				3426A377256321C50036407F /* CVUtils.swift */,
+				3425A59C2631E051006D5863 /* ConversationView */,
 				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
 				34AC0A00211B39E700997B47 /* DisappearingTimerConfigurationView.swift */,
 				4CA46F49219C78050038ABDE /* GalleryRailView.swift */,
@@ -2666,7 +2677,6 @@
 				347C3839252CE6C900F3D941 /* CVComponents */,
 				347C381E252CE69400F3D941 /* CVComponentState.swift */,
 				347C3819252CE69400F3D941 /* CVComponentState+GroupLink.swift */,
-				34EB0E7D2629E00400B62DC3 /* CVHelpers.swift */,
 				347C3824252CE69400F3D941 /* CVItemModel.swift */,
 				3426A365255C854A0036407F /* CVItemViewModelImpl.swift */,
 				347C3820252CE69400F3D941 /* CVItemViewState.swift */,
@@ -3523,8 +3533,9 @@
 		8860CC1F2508506F00A4D18E /* Link Preview */ = {
 			isa = PBXGroup;
 			children = (
-				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
 				8860CC202508507F00A4D18E /* GroupLinkPreview.swift */,
+				3425A5982631DC05006D5863 /* LinkPreviewState.swift */,
+				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
 			);
 			path = "Link Preview";
 			sourceTree = "<group>";
@@ -4875,6 +4886,7 @@
 				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */,
+				3425A5A02631E051006D5863 /* CVCellMeasurement.swift in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				4C0387532339B3220062D293 /* UIColor+OWS.swift in Sources */,
 				88D5887824846A7F00DC9AB6 /* InputAccessoryViewPlaceholder.swift in Sources */,
@@ -4908,6 +4920,7 @@
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				3465948424352FE900E5C510 /* OWSTableViewController.swift in Sources */,
+				3425A5A22631E051006D5863 /* CVText.swift in Sources */,
 				88EFF4F525AD1ACB000FAFBA /* ConversationItem.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
@@ -4919,7 +4932,6 @@
 				34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */,
 				3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */,
 				34AC0A10211B39EA00997B47 /* TappableView.swift in Sources */,
-				3426A372256320420036407F /* CVText.swift in Sources */,
 				34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */,
 				34AC09E9211B39B100997B47 /* OWSTableViewController.m in Sources */,
 				340872CE2239596100CB25B0 /* AttachmentApprovalToolbar.swift in Sources */,
@@ -4933,8 +4945,8 @@
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
-				3426A378256321C50036407F /* CVUtils.swift in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
+				3425A5A12631E051006D5863 /* CVUtils.swift in Sources */,
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
 				8860CC212508507F00A4D18E /* GroupLinkPreview.swift in Sources */,
 				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
@@ -5012,6 +5024,7 @@
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */,
 				8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */,
+				3425A5992631DC05006D5863 /* LinkPreviewState.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				886BB3D725BA871B00079781 /* Wallpaper.swift in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
@@ -5388,7 +5401,6 @@
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */,
-				34EB0E7E2629E00500B62DC3 /* CVHelpers.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,

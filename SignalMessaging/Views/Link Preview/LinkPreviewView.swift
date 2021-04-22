@@ -4,333 +4,6 @@
 
 import YYImage
 
-public extension CGPoint {
-    func offsetBy(dx: CGFloat) -> CGPoint {
-        return CGPoint(x: x + dx, y: y)
-    }
-
-    func offsetBy(dy: CGFloat) -> CGPoint {
-        return CGPoint(x: x, y: y + dy)
-    }
-}
-
-// MARK: -
-
-@objc
-public enum LinkPreviewImageState: Int {
-    case none
-    case loading
-    case loaded
-    case invalid
-}
-
-// MARK: -
-
-@objc
-public protocol LinkPreviewState {
-    func isLoaded() -> Bool
-    func urlString() -> String?
-    func displayDomain() -> String?
-    func title() -> String?
-    func imageState() -> LinkPreviewImageState
-    func image() -> UIImage?
-    var imagePixelSize: CGSize { get }
-    func previewDescription() -> String?
-    func date() -> Date?
-    var isGroupInviteLink: Bool { get }
-    var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
-    var conversationStyle: ConversationStyle? { get }
-}
-
-// MARK: -
-
-@objc
-public enum LinkPreviewLinkType: UInt {
-    case preview
-    case incomingMessage
-    case outgoingMessage
-    case incomingMessageGroupInviteLink
-    case outgoingMessageGroupInviteLink
-}
-
-// MARK: -
-
-@objc
-public class LinkPreviewLoading: NSObject, LinkPreviewState {
-
-    public let linkType: LinkPreviewLinkType
-
-    @objc
-    required init(linkType: LinkPreviewLinkType) {
-        self.linkType = linkType
-    }
-
-    public func isLoaded() -> Bool {
-        return false
-    }
-
-    public func urlString() -> String? {
-        return nil
-    }
-
-    public func displayDomain() -> String? {
-        return nil
-    }
-
-    public func title() -> String? {
-        return nil
-    }
-
-    public func imageState() -> LinkPreviewImageState {
-        return .none
-    }
-
-    public func image() -> UIImage? {
-        return nil
-    }
-
-    public let imagePixelSize: CGSize = .zero
-
-    public func previewDescription() -> String? {
-        return nil
-    }
-
-    public func date() -> Date? {
-        return nil
-    }
-
-    public var isGroupInviteLink: Bool {
-        switch linkType {
-        case .incomingMessageGroupInviteLink,
-             .outgoingMessageGroupInviteLink:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        switch linkType {
-        case .incomingMessageGroupInviteLink:
-            return .gray
-        case .outgoingMessageGroupInviteLink:
-            return .white
-        default:
-            return LinkPreviewView.defaultActivityIndicatorStyle
-        }
-    }
-
-    public let conversationStyle: ConversationStyle? = nil
-}
-
-// MARK: -
-
-@objc
-public class LinkPreviewDraft: NSObject, LinkPreviewState {
-    let linkPreviewDraft: OWSLinkPreviewDraft
-
-    @objc
-    public required init(linkPreviewDraft: OWSLinkPreviewDraft) {
-        self.linkPreviewDraft = linkPreviewDraft
-    }
-
-    public func isLoaded() -> Bool {
-        return true
-    }
-
-    public func urlString() -> String? {
-        return linkPreviewDraft.urlString
-    }
-
-    public func displayDomain() -> String? {
-        guard let displayDomain = linkPreviewDraft.displayDomain() else {
-            owsFailDebug("Missing display domain")
-            return nil
-        }
-        return displayDomain
-    }
-
-    public func title() -> String? {
-        guard let value = linkPreviewDraft.title,
-            value.count > 0 else {
-                return nil
-        }
-        return value
-    }
-
-    public func imageState() -> LinkPreviewImageState {
-        if linkPreviewDraft.imageData != nil {
-            return .loaded
-        } else {
-            return .none
-        }
-    }
-
-    public func image() -> UIImage? {
-        assert(imageState() == .loaded)
-
-        guard let imageData = linkPreviewDraft.imageData else {
-            return nil
-        }
-        guard let image = UIImage(data: imageData) else {
-            owsFailDebug("Could not load image: \(imageData.count)")
-            return nil
-        }
-        return image
-    }
-
-    public var imagePixelSize: CGSize {
-        guard let image = self.image() else {
-            return .zero
-        }
-        return image.pixelSize()
-    }
-
-    public func previewDescription() -> String? {
-        linkPreviewDraft.previewDescription
-    }
-
-    public func date() -> Date? {
-        linkPreviewDraft.date
-    }
-
-    public let isGroupInviteLink = false
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        LinkPreviewView.defaultActivityIndicatorStyle
-    }
-
-    public let conversationStyle: ConversationStyle? = nil
-}
-
-// MARK: -
-
-@objc
-public class LinkPreviewSent: NSObject, LinkPreviewState {
-    private let linkPreview: OWSLinkPreview
-    private let imageAttachment: TSAttachment?
-
-    private let _conversationStyle: ConversationStyle
-    public var conversationStyle: ConversationStyle? {
-        _conversationStyle
-    }
-
-    @objc
-    public required init(linkPreview: OWSLinkPreview,
-                  imageAttachment: TSAttachment?,
-                  conversationStyle: ConversationStyle) {
-        self.linkPreview = linkPreview
-        self.imageAttachment = imageAttachment
-        _conversationStyle = conversationStyle
-    }
-
-    public func isLoaded() -> Bool {
-        return true
-    }
-
-    public func urlString() -> String? {
-        guard let urlString = linkPreview.urlString else {
-            owsFailDebug("Missing url")
-            return nil
-        }
-        return urlString
-    }
-
-    public func displayDomain() -> String? {
-        guard let displayDomain = linkPreview.displayDomain() else {
-            Logger.error("Missing display domain")
-            return nil
-        }
-        return displayDomain
-    }
-
-    public func title() -> String? {
-        guard let value = linkPreview.title?.filterForDisplay,
-            value.count > 0 else {
-                return nil
-        }
-        return value
-    }
-
-    public func imageState() -> LinkPreviewImageState {
-        guard linkPreview.imageAttachmentId != nil else {
-            return .none
-        }
-        guard let imageAttachment = imageAttachment else {
-            Logger.warn("Missing imageAttachment.")
-            return .none
-        }
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            return .loading
-        }
-        guard attachmentStream.isImage,
-            attachmentStream.isValidImage else {
-            return .invalid
-        }
-        return .loaded
-    }
-
-    public func image() -> UIImage? {
-        assert(imageState() == .loaded)
-
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            owsFailDebug("Could not load image.")
-            return nil
-        }
-        guard attachmentStream.isImage,
-            attachmentStream.isValidImage else {
-            return nil
-        }
-        guard let imageFilepath = attachmentStream.originalFilePath else {
-            owsFailDebug("Attachment is missing file path.")
-            return nil
-        }
-
-        guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: attachmentStream.contentType) else {
-            owsFailDebug("Invalid image.")
-            return nil
-        }
-
-        let imageClass: UIImage.Type
-        if attachmentStream.contentType == OWSMimeTypeImageWebp {
-            imageClass = YYImage.self
-        } else {
-            imageClass = UIImage.self
-        }
-
-        guard let image = imageClass.init(contentsOfFile: imageFilepath) else {
-            owsFailDebug("Could not load image: \(imageFilepath)")
-            return nil
-        }
-
-        return image
-    }
-
-    @objc
-    public var imagePixelSize: CGSize {
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            return CGSize.zero
-        }
-        return attachmentStream.imageSize()
-    }
-
-    public func previewDescription() -> String? {
-        linkPreview.previewDescription
-    }
-
-    public func date() -> Date? {
-        linkPreview.date
-    }
-
-    public let isGroupInviteLink = false
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        LinkPreviewView.defaultActivityIndicatorStyle
-    }
-}
-
-// MARK: -
-
 @objc
 public protocol LinkPreviewViewDraftDelegate {
     func linkPreviewCanCancel() -> Bool
@@ -339,118 +12,8 @@ public protocol LinkPreviewViewDraftDelegate {
 
 // MARK: -
 
-private class LinkPreviewImageView: UIImageView {
-    fileprivate enum Rounding: UInt {
-        case standard
-        case asymmetrical
-        case circular
-    }
-
-    private let rounding: Rounding
-    fileprivate var isHero = false
-
-    // We only need to use a more complicated corner mask if we're
-    // drawing asymmetric corners. This is an exceptional case to match
-    // the input toolbar curve.
-    private let asymmetricCornerMask = CAShapeLayer()
-
-    init(rounding: Rounding) {
-        self.rounding = rounding
-        super.init(frame: .zero)
-
-        if rounding == .asymmetrical {
-            layer.mask = asymmetricCornerMask
-        }
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        self.rounding = .standard
-        super.init(coder: aDecoder)
-    }
-
-    override var bounds: CGRect {
-        didSet {
-            updateMaskLayer()
-        }
-    }
-
-    override var frame: CGRect {
-        didSet {
-            updateMaskLayer()
-        }
-    }
-
-    override var center: CGPoint {
-        didSet {
-            updateMaskLayer()
-        }
-    }
-
-    private func updateMaskLayer() {
-        let layerBounds = self.bounds
-        let bigRounding: CGFloat = 14
-        let smallRounding: CGFloat = 6
-
-        switch rounding {
-        case .standard:
-            layer.cornerRadius = smallRounding
-            layer.maskedCorners = isHero ? .top : .all
-        case .circular:
-            layer.cornerRadius = bounds.size.smallerAxis / 2
-            layer.maskedCorners = .all
-        case .asymmetrical:
-            // This uses a more expensive layer mask to clip corners
-            // with different radii.
-            // This should only be used in the input toolbar so perf is
-            // less of a concern here.
-            owsAssertDebug(!isHero, "Link preview drafts never use hero images")
-
-            let upperLeft = CGPoint(x: 0, y: 0)
-            let upperRight = CGPoint(x: layerBounds.size.width, y: 0)
-            let lowerRight = CGPoint(x: layerBounds.size.width, y: layerBounds.size.height)
-            let lowerLeft = CGPoint(x: 0, y: layerBounds.size.height)
-
-            let upperLeftRounding: CGFloat = CurrentAppContext().isRTL ? smallRounding : bigRounding
-            let upperRightRounding: CGFloat = CurrentAppContext().isRTL ? bigRounding : smallRounding
-            let lowerRightRounding = smallRounding
-            let lowerLeftRounding = smallRounding
-
-            let path = UIBezierPath()
-
-            // It's sufficient to "draw" the rounded corners and not the edges that connect them.
-            path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
-                        radius: upperLeftRounding,
-                        startAngle: CGFloat.pi * 1.0,
-                        endAngle: CGFloat.pi * 1.5,
-                        clockwise: true)
-
-            path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
-                        radius: upperRightRounding,
-                        startAngle: CGFloat.pi * 1.5,
-                        endAngle: CGFloat.pi * 0.0,
-                        clockwise: true)
-
-            path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
-                        radius: lowerRightRounding,
-                        startAngle: CGFloat.pi * 0.0,
-                        endAngle: CGFloat.pi * 0.5,
-                        clockwise: true)
-
-            path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
-                        radius: lowerLeftRounding,
-                        startAngle: CGFloat.pi * 0.5,
-                        endAngle: CGFloat.pi * 1.0,
-                        clockwise: true)
-
-            asymmetricCornerMask.path = path.cgPath
-        }
-    }
-}
-
-// MARK: -
-
 @objc
-public class LinkPreviewView: UIStackView {
+public class LinkPreviewView: ManualStackViewWithLayer {
     private weak var draftDelegate: LinkPreviewViewDraftDelegate?
 
     static let dateFormatter: DateFormatter = {
@@ -460,25 +23,25 @@ public class LinkPreviewView: UIStackView {
         return formatter
     }()
 
-    @objc
-    public var state: LinkPreviewState? {
-        didSet {
-            AssertIsOnMainThread()
-            updateContents()
-        }
-    }
-
-    @objc
-    public var hasAsymmetricalRounding: Bool = false {
-        didSet {
-            AssertIsOnMainThread()
-            owsAssertDebug(isDraft)
-
-            if hasAsymmetricalRounding != oldValue {
-                updateContents()
-            }
-        }
-    }
+//    @objc
+//    public var state: LinkPreviewState? {
+//        didSet {
+//            AssertIsOnMainThread()
+//            updateContents()
+//        }
+//    }
+//
+//    @objc
+//    public var hasAsymmetricalRounding: Bool = false {
+//        didSet {
+//            AssertIsOnMainThread()
+//            owsAssertDebug(isDraft)
+//
+//            if hasAsymmetricalRounding != oldValue {
+//                updateContents()
+//            }
+//        }
+//    }
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
@@ -486,20 +49,26 @@ public class LinkPreviewView: UIStackView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    override init(frame: CGRect) {
+    required init(name: String, arrangedSubviews: [UIView] = []) {
         notImplemented()
     }
 
-    private var cancelButton: UIButton?
-    private weak var heroImageView: UIView?
-    private weak var sentBodyView: UIView?
-    private var layoutConstraints = [NSLayoutConstraint]()
+//    private var cancelButton: UIButton?
+//    private weak var heroImageView: UIView?
+//    private weak var sentBodyView: UIView?
+
+    fileprivate let rightStack = ManualStackView(name: "rightStack")
+    fileprivate let textStack = ManualStackView(name: "textStack")
+
+    fileprivate let titleLabel = CVLabel()
+    fileprivate let descriptionLabel = CVLabel()
+    fileprivate let displayDomainLabel = CVLabel()
 
     @objc
     public init(draftDelegate: LinkPreviewViewDraftDelegate?) {
         self.draftDelegate = draftDelegate
 
-        super.init(frame: .zero)
+        super.init(name: "LinkPreviewView")
 
         if let draftDelegate = draftDelegate,
             draftDelegate.linkPreviewCanCancel() {
@@ -512,70 +81,76 @@ public class LinkPreviewView: UIStackView {
         return draftDelegate != nil
     }
 
-    private func resetContents() {
-        for subview in subviews {
-            subview.removeFromSuperview()
-        }
-        self.axis = .horizontal
-        self.alignment = .center
-        self.distribution = .fill
-        self.spacing = 0
-        self.isLayoutMarginsRelativeArrangement = false
-        self.layoutMargins = .zero
+    // TODO: hasAsymmetricalRounding
+    public func configureForRendering(state: LinkPreviewState,
+                                      hasAsymmetricalRounding: Bool,
+                                      cellMeasurement: CVCellMeasurement) {
+        let adapter = self.adapter(forState: state)
+        adapter.configureForRendering(linkPreviewView: self,
+                                      hasAsymmetricalRounding: hasAsymmetricalRounding,
+                                      cellMeasurement: cellMeasurement)
 
-        cancelButton = nil
-        heroImageView = nil
-        sentBodyView = nil
-
-        NSLayoutConstraint.deactivate(layoutConstraints)
-        layoutConstraints = []
+//        guard state.isLoaded() else {
+//            createDraftLoadingContents(state: state)
+//            return
+//        }
+//        if isDraft {
+//            createDraftContents(state: state)
+//        } else if state.isGroupInviteLink {
+//            createGroupLinkContents()
+//        } else {
+//            createSentContents()
+//        }
+//    }
+//
+//    private func createSentContents() {
+//        guard let state = state else {
+//            owsFailDebug("Invalid state")
+//            return
+//        }
+//        guard let conversationStyle = state.conversationStyle else {
+//            owsFailDebug("Missing conversationStyle.")
+//            return
+//        }
+//
+//        addBackgroundView(withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02)
+//
+//        if let imageView = createImageView(state: state) {
+//            if Self.sentIsHero(state: state) {
+//                createHeroSentContents(state: state,
+//                                       conversationStyle: conversationStyle,
+//                                       imageView: imageView)
+//            } else if state.previewDescription()?.isEmpty == false,
+//                      state.title()?.isEmpty == false {
+//                createNonHeroWithDescriptionSentContents(state: state, imageView: imageView)
+//            } else {
+//                createNonHeroSentContents(state: state, imageView: imageView)
+//            }
+//        } else {
+//            createNonHeroSentContents(state: state, imageView: nil)
+//        }
     }
 
-    private func updateContents() {
-        resetContents()
-
-        guard let state = state else {
-            return
-        }
-
-        guard state.isLoaded() else {
-            createDraftLoadingContents(state: state)
-            return
-        }
-        if isDraft {
-            createDraftContents(state: state)
+    private func adapter(forState state: LinkPreviewState) -> LinkPreviewViewAdapter {
+        if !state.isLoaded() {
+            return LinkPreviewViewAdapterDraftLoading(state: state)
+        } else if isDraft {
+            return LinkPreviewViewAdapterDraft(state: state)
         } else if state.isGroupInviteLink {
-            createGroupLinkContents()
+            return LinkPreviewViewAdapterGroupLink(state: state)
         } else {
-            createSentContents()
-        }
-    }
-
-    private func createSentContents() {
-        guard let state = state else {
-            owsFailDebug("Invalid state")
-            return
-        }
-        guard let conversationStyle = state.conversationStyle else {
-            owsFailDebug("Missing conversationStyle.")
-            return
-        }
-
-        addBackgroundView(withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02)
-
-        if let imageView = createImageView(state: state) {
-            if Self.sentIsHero(state: state) {
-                createHeroSentContents(state: state,
-                                       conversationStyle: conversationStyle,
-                                       imageView: imageView)
-            } else if state.previewDescription()?.isEmpty == false,
-                state.title()?.isEmpty == false {
-                createNonHeroWithDescriptionSentContents(state: state, imageView: imageView)
+            if state.hasLoadedImage {
+                if Self.sentIsHero(state: state) {
+                    return LinkPreviewViewAdapterSentHero(state: state)
+                } else if state.previewDescription()?.isEmpty == false,
+                          state.title()?.isEmpty == false {
+                    return LinkPreviewViewAdapterSentWithDescription(state: state)
+                } else {
+                    return LinkPreviewViewAdapterSent(state: state)
+                }
             } else {
-                createNonHeroSentContents(state: state, imageView: imageView)
+                return LinkPreviewViewAdapterSent(state: state)
             }
-        } else {
-            createNonHeroSentContents(state: state, imageView: nil)
         }
     }
 
@@ -828,7 +403,7 @@ public class LinkPreviewView: UIStackView {
         guard let config = Self.sentTitleLabelConfig(state: state) else {
             return nil
         }
-        let label = UILabel()
+        let label = CVLabel()
         config.applyForRendering(label: label)
         return label
     }
@@ -848,7 +423,7 @@ public class LinkPreviewView: UIStackView {
         guard let config = Self.sentDescriptionLabelConfig(state: state) else {
             return nil
         }
-        let label = UILabel()
+        let label = CVLabel()
         config.applyForRendering(label: label)
         return label
    }
@@ -863,7 +438,7 @@ public class LinkPreviewView: UIStackView {
     }
 
     private func sentDomainLabel(state: LinkPreviewState) -> UILabel {
-        let label = UILabel()
+        let label = CVLabel()
         Self.sentDomainLabelConfig(state: state).applyForRendering(label: label)
         return label
     }
@@ -884,125 +459,6 @@ public class LinkPreviewView: UIStackView {
                              textColor: Theme.secondaryTextAndIconColor)
     }
 
-    private static let draftHeight: CGFloat = 72
-    private static let draftMarginTop: CGFloat = 6
-
-    private func createDraftContents(state: LinkPreviewState) {
-        self.axis = .horizontal
-        self.alignment = .fill
-        self.distribution = .fill
-        self.spacing = 8
-        self.isLayoutMarginsRelativeArrangement = true
-
-        self.layoutConstraints.append(self.autoSetDimension(.height, toSize: Self.draftHeight + Self.draftMarginTop))
-
-        // Image
-
-        let draftImageView = createDraftImageView(state: state)
-        if let imageView = draftImageView {
-            imageView.contentMode = .scaleAspectFill
-            imageView.autoPinToSquareAspectRatio()
-            let imageSize = Self.draftHeight
-            imageView.autoSetDimensions(to: CGSize(square: imageSize))
-            imageView.setContentHuggingHigh()
-            imageView.setCompressionResistanceHigh()
-            imageView.clipsToBounds = true
-            addArrangedSubview(imageView)
-        }
-
-        let hasImage = draftImageView != nil
-        let hMarginLeading: CGFloat = hasImage ? 6 : 12
-        let hMarginTrailing: CGFloat = 12
-        self.layoutMargins = UIEdgeInsets(top: Self.draftMarginTop,
-                                          leading: hMarginLeading,
-                                          bottom: 0,
-                                          trailing: hMarginTrailing)
-
-        // Right
-
-        let rightStack = UIStackView()
-        rightStack.axis = .horizontal
-        rightStack.alignment = .fill
-        rightStack.distribution = .equalSpacing
-        rightStack.spacing = 8
-        rightStack.setContentHuggingHorizontalLow()
-        rightStack.setCompressionResistanceHorizontalLow()
-        addArrangedSubview(rightStack)
-
-        // Text
-
-        let textStack = UIStackView()
-        textStack.axis = .vertical
-        textStack.alignment = .leading
-        textStack.spacing = 2
-        textStack.setContentHuggingHorizontalLow()
-        textStack.setCompressionResistanceHorizontalLow()
-
-        if let title = state.title(),
-            title.count > 0 {
-            let label = UILabel()
-            label.text = title
-            label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeBody
-            textStack.addArrangedSubview(label)
-        }
-        if let description = state.previewDescription(), description.count > 0 {
-            let label = UILabel()
-            label.text = description
-            label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-            label.font = UIFont.ows_dynamicTypeSubheadline
-            textStack.addArrangedSubview(label)
-        }
-        if let displayDomain = state.displayDomain(),
-            displayDomain.count > 0 {
-            let label = UILabel()
-            var labelText = displayDomain.lowercased()
-            if let date = state.date() {
-                labelText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
-            }
-            label.text = labelText
-            label.textColor = Theme.secondaryTextAndIconColor
-            label.font = UIFont.ows_dynamicTypeCaption1
-            textStack.addArrangedSubview(label)
-        }
-
-        let textWrapper = UIStackView(arrangedSubviews: [textStack])
-        textWrapper.axis = .horizontal
-        textWrapper.alignment = .center
-        textWrapper.setContentHuggingHorizontalLow()
-        textWrapper.setCompressionResistanceHorizontalLow()
-
-        rightStack.addArrangedSubview(textWrapper)
-
-        // Cancel
-
-        let cancelStack = UIStackView()
-        cancelStack.axis = .horizontal
-        cancelStack.alignment = .top
-        cancelStack.setContentHuggingHigh()
-        cancelStack.setCompressionResistanceHigh()
-
-        let cancelImage = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
-        let cancelButton = UIButton(type: .custom)
-        cancelButton.setImage(cancelImage, for: .normal)
-        cancelButton.addTarget(self, action: #selector(didTapCancel(sender:)), for: .touchUpInside)
-        self.cancelButton = cancelButton
-        cancelButton.tintColor = Theme.secondaryTextAndIconColor
-        cancelButton.setContentHuggingHigh()
-        cancelButton.setCompressionResistanceHigh()
-        cancelStack.addArrangedSubview(cancelButton)
-
-        rightStack.addArrangedSubview(cancelStack)
-
-        // Stroke
-        let strokeView = UIView()
-        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
-        rightStack.addSubview(strokeView)
-        strokeView.autoPinWidthToSuperview()
-        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
-        strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
-    }
-
     private func createImageView(state: LinkPreviewState,
                                  rounding roundingParam: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
         guard state.isLoaded() else {
@@ -1021,47 +477,6 @@ public class LinkPreviewView: UIStackView {
         imageView.image = image
         imageView.isHero = Self.sentIsHero(state: state)
         return imageView
-    }
-
-    private func createDraftImageView(state: LinkPreviewState) -> UIImageView? {
-        guard state.isLoaded() else {
-            owsFailDebug("State not loaded.")
-            return nil
-        }
-
-        guard state.imageState()  == .loaded else {
-            return nil
-        }
-        guard let image = state.image() else {
-            owsFailDebug("Could not load image.")
-            return nil
-        }
-        let rounding: LinkPreviewImageView.Rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
-        let imageView = LinkPreviewImageView(rounding: rounding)
-        imageView.image = image
-        return imageView
-    }
-
-    private func createDraftLoadingContents(state: LinkPreviewState) {
-        self.axis = .vertical
-        self.alignment = .center
-
-        self.layoutConstraints.append(self.autoSetDimension(.height, toSize: Self.draftHeight + Self.draftMarginTop))
-
-        let activityIndicatorStyle = state.activityIndicatorStyle
-        let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
-        activityIndicator.startAnimating()
-        addArrangedSubview(activityIndicator)
-        let activityIndicatorSize: CGFloat = 25
-        activityIndicator.autoSetDimensions(to: CGSize(square: activityIndicatorSize))
-
-        // Stroke
-        let strokeView = UIView()
-        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
-        self.addSubview(strokeView)
-        strokeView.autoPinWidthToSuperview(withMargin: 12)
-        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
-        strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
     }
 
     static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
@@ -1088,8 +503,13 @@ public class LinkPreviewView: UIStackView {
     // MARK: Measurement
 
     @objc
-    public func measure(withState state: LinkPreviewState) -> CGSize {
-        Self.measure(withState: state)
+    public func measure(maxWidth: CGFloat,
+                        measurementBuilder: CVCellMeasurement.Builder,
+                        state: LinkPreviewState) -> CGSize {
+        let adapter = self.adapter(forState: state)
+        return adapter.measure(maxWidth: maxWidth,
+                               measurementBuilder: measurementBuilder,
+                               state: state)
     }
 
     @objc
@@ -1263,7 +683,466 @@ public class LinkPreviewView: UIStackView {
         return CGSize(width: width, height: height)
     }
 
-    @objc func didTapCancel(sender: UIButton) {
-        self.draftDelegate?.linkPreviewDidCancel()
+    @objc
+    fileprivate func didTapCancel() {
+        draftDelegate?.linkPreviewDidCancel()
+    }
+
+    public override func reset() {
+        super.reset()
+
+        rightStack.reset()
+        textStack.reset()
+
+        titleLabel.text = nil
+        descriptionLabel.text = nil
+        displayDomainLabel.text = nil
+
+//        self.axis = .horizontal
+//        self.alignment = .center
+//        self.distribution = .fill
+//        self.spacing = 0
+//        self.isLayoutMarginsRelativeArrangement = false
+//        self.layoutMargins = .zero
+//
+//        cancelButton = nil
+//        heroImageView = nil
+//        sentBodyView = nil
+    }
+
+    fileprivate static let measurementKey_rootStack = "LinkPreviewView.measurementKey_rootStack"
+    fileprivate static let measurementKey_rightStack = "LinkPreviewView.measurementKey_rightStack"
+    fileprivate static let measurementKey_textStack = "LinkPreviewView.measurementKey_textStack"
+}
+
+// MARK: -
+
+private protocol LinkPreviewViewAdapter {
+    func configureForRendering(linkPreviewView: LinkPreviewView,
+                               hasAsymmetricalRounding: Bool,
+                               cellMeasurement: CVCellMeasurement)
+
+    func measure(maxWidth: CGFloat,
+                 measurementBuilder: CVCellMeasurement.Builder,
+                 state: LinkPreviewState) -> CGSize
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
+
+    static let draftHeight: CGFloat = 72
+    static let draftMarginTop: CGFloat = 6
+    var imageSize: CGFloat { Self.draftHeight }
+    var hasImage: Bool { state.hasLoadedImage }
+    let cancelSize: CGFloat = 20
+
+    let state: LinkPreviewState
+
+    init(state: LinkPreviewState) {
+        self.state = state
+    }
+
+    var rootStackConfig: ManualStackView.Config {
+        let hMarginLeading: CGFloat = hasImage ? 6 : 12
+        let hMarginTrailing: CGFloat = 12
+        let layoutMargins = UIEdgeInsets(top: Self.draftMarginTop,
+                                         leading: hMarginLeading,
+                                         bottom: 0,
+                                         trailing: hMarginTrailing)
+        return ManualStackView.Config(axis: .horizontal,
+                                      alignment: .fill,
+                                      spacing: 8,
+                                      layoutMargins: layoutMargins)
+    }
+
+    var rightStackConfig: ManualStackView.Config {
+        return ManualStackView.Config(axis: .horizontal,
+                                      alignment: .fill,
+                                      spacing: 8,
+                                      layoutMargins: .zero)
+    }
+
+    var textStackConfig: ManualStackView.Config {
+        return ManualStackView.Config(axis: .vertical,
+                                      alignment: .leading,
+                                      spacing: 2,
+                                      layoutMargins: .zero)
+    }
+
+    var titleLabelConfig: CVLabelConfig? {
+        guard let text = state.title()?.nilIfEmpty else {
+            return nil
+        }
+        return CVLabelConfig(text: text,
+                             font: .ows_dynamicTypeBody,
+                             textColor: Theme.primaryTextColor)
+    }
+
+    var descriptionLabelConfig: CVLabelConfig? {
+        guard let text = state.previewDescription()?.nilIfEmpty else {
+            return nil
+        }
+        return CVLabelConfig(text: text,
+                             font: .ows_dynamicTypeSubheadline,
+                             textColor: Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90)
+    }
+
+    var displayDomainLabelConfig: CVLabelConfig? {
+        guard let displayDomain = state.displayDomain()?.nilIfEmpty else {
+            return nil
+        }
+        var text = displayDomain.lowercased()
+        if let date = state.date() {
+            text.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")
+        }
+        return CVLabelConfig(text: text,
+                             font: .ows_dynamicTypeCaption1,
+                             textColor: Theme.secondaryTextAndIconColor)
+    }
+
+    func configureForRendering(linkPreviewView: LinkPreviewView,
+                               hasAsymmetricalRounding: Bool,
+                               cellMeasurement: CVCellMeasurement) {
+
+        var rootStackSubviews = [UIView]()
+        var rightStackSubviews = [UIView]()
+
+        // Image
+
+        if hasImage {
+            if let imageView = buildDraftImageView(hasAsymmetricalRounding: hasAsymmetricalRounding) {
+                imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
+                rootStackSubviews.append(imageView)
+            } else {
+                owsFailDebug("Could not load image.")
+                let imageView = UIView.transparentSpacer()
+                rootStackSubviews.append(imageView)
+            }
+        }
+
+        // Text
+
+        var textStackSubviews = [UIView]()
+
+        if let titleLabelConfig = self.titleLabelConfig {
+            let titleLabel = linkPreviewView.titleLabel
+            titleLabelConfig.applyForRendering(label: titleLabel)
+            textStackSubviews.append(titleLabel)
+        }
+
+        if let descriptionLabelConfig = self.descriptionLabelConfig {
+            let descriptionLabel = linkPreviewView.descriptionLabel
+            descriptionLabelConfig.applyForRendering(label: descriptionLabel)
+            textStackSubviews.append(descriptionLabel)
+        }
+
+        if let displayDomainLabelConfig = self.displayDomainLabelConfig {
+            let displayDomainLabel = linkPreviewView.displayDomainLabel
+            displayDomainLabelConfig.applyForRendering(label: displayDomainLabel)
+            textStackSubviews.append(displayDomainLabel)
+        }
+
+        let textStack = linkPreviewView.textStack
+        textStack.configure(config: textStackConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: LinkPreviewView.measurementKey_textStack,
+                            subviews: textStackSubviews)
+        guard let textMeasurement = cellMeasurement.measurement(key: LinkPreviewView.measurementKey_textStack) else {
+            owsFailDebug("Missing measurement.")
+            return
+        }
+        let textWrapper = ManualLayoutView(name: "textWrapper")
+        textWrapper.addSubviewToCenterOnSuperview(textStack,
+                                                  size: textMeasurement.measuredSize)
+        rightStackSubviews.append(textWrapper)
+
+        // Right
+
+        let rightStack = linkPreviewView.rightStack
+        rightStack.configure(config: rightStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: LinkPreviewView.measurementKey_rightStack,
+                             subviews: rightStackSubviews)
+        rootStackSubviews.append(rightStack)
+
+        // Cancel
+
+        let cancelButton = OWSButton { [weak linkPreviewView] in
+            linkPreviewView?.didTapCancel()
+        }
+        cancelButton.setTemplateImageName("compose-cancel",
+                                          tintColor: Theme.secondaryTextAndIconColor)
+        let cancelSize = self.cancelSize
+        rightStack.addSubview(cancelButton) { view in
+            cancelButton.frame = CGRect(x: 0, y: view.bounds.width - cancelSize, width: cancelSize, height: cancelSize)
+        }
+
+        // Stroke
+
+        let strokeView = UIView()
+        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
+        rightStack.addSubviewAsBottomStroke(strokeView)
+
+        linkPreviewView.configure(config: rootStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: LinkPreviewView.measurementKey_rootStack,
+                                  subviews: rootStackSubviews)
+    }
+
+    private func buildDraftImageView(hasAsymmetricalRounding: Bool) -> UIImageView? {
+        guard state.isLoaded() else {
+            owsFailDebug("State not loaded.")
+            return nil
+        }
+        guard state.imageState()  == .loaded else {
+            return nil
+        }
+        guard let image = state.image() else {
+            owsFailDebug("Could not load image.")
+            return nil
+        }
+        let rounding: LinkPreviewImageView.Rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
+        let imageView = LinkPreviewImageView(rounding: rounding)
+        imageView.image = image
+        return imageView
+    }
+
+    func measure(maxWidth: CGFloat,
+                 measurementBuilder: CVCellMeasurement.Builder,
+                 state: LinkPreviewState) -> CGSize {
+
+        let activityIndicatorSize = CGSize.square(25)
+        let strokeSize = CGSize(width: 0, height: CGHairlineWidth())
+
+        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
+                                                           measurementBuilder: measurementBuilder,
+                                                           measurementKey: LinkPreviewView.measurementKey_rootStack,
+                                                           subviewInfos: [
+                                                            activityIndicatorSize.asManualSubviewInfo(hasFixedSize: true),
+                                                            strokeSize.asManualSubviewInfo(hasFixedHeight: true)
+                                                           ])
+        var rootStackSize = rootStackMeasurement.measuredSize
+        rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
+                                    LinkPreviewViewAdapterDraft.draftMarginTop)
+        return rootStackSize
+    }
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
+
+    let activityIndicatorSize = CGSize.square(25)
+
+    let state: LinkPreviewState
+
+    init(state: LinkPreviewState) {
+        self.state = state
+    }
+
+    var rootStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .vertical,
+                               alignment: .fill,
+                               spacing: 0,
+                               layoutMargins: .zero)
+    }
+
+    func configureForRendering(linkPreviewView: LinkPreviewView,
+                               hasAsymmetricalRounding: Bool,
+                               cellMeasurement: CVCellMeasurement) {
+
+        let activityIndicatorStyle = state.activityIndicatorStyle
+        let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
+        activityIndicator.startAnimating()
+        linkPreviewView.addSubviewToCenterOnSuperview(activityIndicator,
+                                                      size: activityIndicatorSize)
+
+        let strokeView = UIView()
+        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
+        linkPreviewView.addSubviewAsBottomStroke(strokeView,
+                                                 layoutMargins: UIEdgeInsets(hMargin: 12,
+                                                                             vMargin: 0))
+
+        linkPreviewView.configure(config: rootStackConfig,
+                                  cellMeasurement: cellMeasurement,
+                                  measurementKey: LinkPreviewView.measurementKey_rootStack,
+                                  subviews: [
+                                    activityIndicator,
+                                    strokeView
+                                  ])
+    }
+
+    func measure(maxWidth: CGFloat,
+                 measurementBuilder: CVCellMeasurement.Builder,
+                 state: LinkPreviewState) -> CGSize {
+
+        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
+                                                  measurementBuilder: measurementBuilder,
+                                                  measurementKey: LinkPreviewView.measurementKey_rootStack,
+                                                  subviewInfos: [
+                                                  ])
+        var rootStackSize = rootStackMeasurement.measuredSize
+        rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
+                                    LinkPreviewViewAdapterDraft.draftMarginTop)
+        return rootStackSize
+    }
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
+}
+
+// MARK: -
+
+private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter {
+}
+
+// MARK: -
+
+private class LinkPreviewImageView: CVImageView {
+    fileprivate enum Rounding: UInt {
+        case standard
+        case asymmetrical
+        case circular
+    }
+
+    private let rounding: Rounding
+    fileprivate var isHero = false
+
+    // We only need to use a more complicated corner mask if we're
+    // drawing asymmetric corners. This is an exceptional case to match
+    // the input toolbar curve.
+    private let asymmetricCornerMask = CAShapeLayer()
+
+    init(rounding: Rounding) {
+        self.rounding = rounding
+        super.init(frame: .zero)
+
+        if rounding == .asymmetrical {
+            layer.mask = asymmetricCornerMask
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        self.rounding = .standard
+        super.init(coder: aDecoder)
+    }
+
+    override var bounds: CGRect {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    override var frame: CGRect {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    override var center: CGPoint {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    private func updateMaskLayer() {
+        let layerBounds = self.bounds
+        let bigRounding: CGFloat = 14
+        let smallRounding: CGFloat = 6
+
+        switch rounding {
+        case .standard:
+            layer.cornerRadius = smallRounding
+            layer.maskedCorners = isHero ? .top : .all
+        case .circular:
+            layer.cornerRadius = bounds.size.smallerAxis / 2
+            layer.maskedCorners = .all
+        case .asymmetrical:
+            // This uses a more expensive layer mask to clip corners
+            // with different radii.
+            // This should only be used in the input toolbar so perf is
+            // less of a concern here.
+            owsAssertDebug(!isHero, "Link preview drafts never use hero images")
+
+            let upperLeft = CGPoint(x: 0, y: 0)
+            let upperRight = CGPoint(x: layerBounds.size.width, y: 0)
+            let lowerRight = CGPoint(x: layerBounds.size.width, y: layerBounds.size.height)
+            let lowerLeft = CGPoint(x: 0, y: layerBounds.size.height)
+
+            let upperLeftRounding: CGFloat = CurrentAppContext().isRTL ? smallRounding : bigRounding
+            let upperRightRounding: CGFloat = CurrentAppContext().isRTL ? bigRounding : smallRounding
+            let lowerRightRounding = smallRounding
+            let lowerLeftRounding = smallRounding
+
+            let path = UIBezierPath()
+
+            // It's sufficient to "draw" the rounded corners and not the edges that connect them.
+            path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
+                        radius: upperLeftRounding,
+                        startAngle: CGFloat.pi * 1.0,
+                        endAngle: CGFloat.pi * 1.5,
+                        clockwise: true)
+
+            path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
+                        radius: upperRightRounding,
+                        startAngle: CGFloat.pi * 1.5,
+                        endAngle: CGFloat.pi * 0.0,
+                        clockwise: true)
+
+            path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
+                        radius: lowerRightRounding,
+                        startAngle: CGFloat.pi * 0.0,
+                        endAngle: CGFloat.pi * 0.5,
+                        clockwise: true)
+
+            path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
+                        radius: lowerLeftRounding,
+                        startAngle: CGFloat.pi * 0.5,
+                        endAngle: CGFloat.pi * 1.0,
+                        clockwise: true)
+
+            asymmetricCornerMask.path = path.cgPath
+        }
+    }
+}
+
+// MARK: -
+
+public extension CGPoint {
+    func offsetBy(dx: CGFloat) -> CGPoint {
+        return CGPoint(x: x + dx, y: y)
+    }
+
+    func offsetBy(dy: CGFloat) -> CGPoint {
+        return CGPoint(x: x, y: y + dy)
+    }
+}
+
+// MARK: -
+
+public extension ManualLayoutView {
+    func addSubviewAsBottomStroke(_ subview: UIView,
+                                  layoutMargins: UIEdgeInsets = .zero) {
+        addSubview(subview) { view in
+            var subviewFrame = view.bounds.inset(by: layoutMargins)
+            subviewFrame.size.height = CGHairlineWidth()
+            subviewFrame.y = view.bounds.height - (subviewFrame.height +
+                                                    layoutMargins.bottom)
+            subview.frame = subviewFrame
+        }
     }
 }
