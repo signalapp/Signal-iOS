@@ -117,7 +117,7 @@ open class ManualLayoutView: UIView {
     }
 
     @objc
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         layoutSubviews(skipLayoutBlocks: false)
     }
 

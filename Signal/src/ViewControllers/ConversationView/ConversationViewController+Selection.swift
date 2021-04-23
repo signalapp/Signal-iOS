@@ -191,7 +191,6 @@ extension ConversationViewController {
         }.map {
             self.selectionHighlightView.convert($0, from: self.collectionView)
         }
-        collectionView.sendSubviewToBack(selectionHighlightView)
         selectionHighlightView.setHighlightedFrames(frames)
     }
 

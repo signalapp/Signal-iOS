@@ -233,7 +233,7 @@ class WallpaperCell: UICollectionViewCell {
 
         self.wallpaper = wallpaper
         wallpaperView?.removeFromSuperview()
-        wallpaperView = Wallpaper.view(for: wallpaper)
+        wallpaperView = Wallpaper.view(for: wallpaper, shouldDim: false)?.asPreviewView()
 
         guard let wallpaperView = wallpaperView else {
             return owsFailDebug("Missing wallpaper view")

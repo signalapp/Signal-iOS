@@ -32,28 +32,16 @@ extension ConversationViewController {
     func updateWallpaperView() {
         AssertIsOnMainThread()
 
-        viewState.wallpaperContainer.removeAllSubviews()
-        viewState.wallpaperView = nil
-
         guard let wallpaperView = databaseStorage.read(block: { transaction in
             Wallpaper.view(for: self.thread,
                            maskDataSource: self,
                            transaction: transaction)
         }) else {
-            viewState.wallpaperContainer.backgroundColor = Theme.backgroundColor
+            viewState.backgroundContainer.set(wallpaperView: nil)
             return
         }
 
-        viewState.wallpaperContainer.backgroundColor = .clear
-        viewState.wallpaperContainer.addSubview(wallpaperView)
-        wallpaperView.autoPinEdgesToSuperviewEdges()
-        viewState.wallpaperView = wallpaperView
-    }
-
-    public func updateWallpaperMask() {
-        AssertIsOnMainThread()
-
-        viewState.wallpaperView?.updateMask()
+        viewState.backgroundContainer.set(wallpaperView: wallpaperView)
     }
 }
 
