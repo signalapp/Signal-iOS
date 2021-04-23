@@ -940,12 +940,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return operationQueue;
 }
 
-- (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
+- (nullable OWSLoadedThumbnail *)loadedThumbnailSyncWithDimensionPoints:(NSUInteger)thumbnailDimensionPoints
 {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
-    [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+    [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
         success:^(OWSLoadedThumbnail *thumbnail) {
             @synchronized(self) {
                 asyncLoadedThumbnail = thumbnail;
@@ -962,7 +962,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable UIImage *)thumbnailImageSmallSync
 {
-    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSyncWithDimensionPoints:kThumbnailDimensionPointsSmall];
     if (!loadedThumbnail) {
         OWSLogInfo(@"Couldn't load small thumbnail sync.");
         return nil;
@@ -970,9 +970,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return loadedThumbnail.image;
 }
 
+- (nullable UIImage *)thumbnailImageLargeSync
+{
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSyncWithDimensionPoints:ThumbnailDimensionPointsLarge()];
+    if (!loadedThumbnail) {
+        OWSLogInfo(@"Couldn't load large thumbnail sync.");
+        return nil;
+    }
+    return loadedThumbnail.image;
+}
+
 - (nullable NSData *)thumbnailDataSmallSync
 {
-    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSyncWithDimensionPoints:kThumbnailDimensionPointsSmall];
     if (!loadedThumbnail) {
         OWSLogInfo(@"Couldn't load small thumbnail sync.");
         return nil;
