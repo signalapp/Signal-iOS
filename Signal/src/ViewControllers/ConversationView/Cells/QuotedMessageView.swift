@@ -33,7 +33,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private weak var delegate: QuotedMessageViewDelegate?
 
     private let hStack = ManualStackView(name: "hStack")
-    private let vStack = ManualStackView(name: "vStack")
+    private let innerVStack = ManualStackView(name: "innerVStack")
+    private let outerVStack = ManualStackView(name: "outerVStack")
     private let remotelySourcedContentStack = ManualStackViewWithLayer(name: "remotelySourcedContentStack")
 
     private let stripeView = UIView()
@@ -113,7 +114,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let cancelIconMargins = UIEdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 6)
 
         var outerStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .horizontal,
+            CVStackViewConfig(axis: .vertical,
                               alignment: .fill,
                               spacing: 0,
                               layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 6,
@@ -127,11 +128,18 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               layoutMargins: .zero)
         }
 
-        var vStackConfig: CVStackViewConfig {
+        var innerVStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .vertical,
                               alignment: .leading,
                               spacing: 2,
                               layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 7))
+        }
+
+        var outerVStackConfig: CVStackViewConfig {
+            CVStackViewConfig(axis: .vertical,
+                              alignment: .fill,
+                              spacing: 0,
+                              layoutMargins: .zero)
         }
 
         var remotelySourcedContentStackConfig: CVStackViewConfig {
@@ -337,39 +345,21 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
         hStackSubviews.append(stripeView)
 
-        var vStackSubviews = [UIView]()
+        var innerVStackSubviews = [UIView]()
 
         let quotedAuthorLabelConfig = configurator.quotedAuthorLabelConfig
         quotedAuthorLabelConfig.applyForRendering(label: quotedAuthorLabel)
-        vStackSubviews.append(quotedAuthorLabel)
+        innerVStackSubviews.append(quotedAuthorLabel)
 
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
         quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
-        vStackSubviews.append(quotedTextLabel)
+        innerVStackSubviews.append(quotedTextLabel)
 
-        if quotedReplyModel.isRemotelySourced {
-            remotelySourcedContentIconView.setTemplateImageName("ic_broken_link",
-                                                                tintColor: Theme.lightThemePrimaryColor)
-
-            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
-            quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)
-
-            remotelySourcedContentStack.configure(config: configurator.remotelySourcedContentStackConfig,
-                                                  cellMeasurement: cellMeasurement,
-                                                  measurementKey: Self.measurementKey_remotelySourcedContentStack,
-                                                  subviews: [
-                                                    remotelySourcedContentIconView,
-                                                    quoteContentSourceLabel
-                                                  ])
-            remotelySourcedContentStack.backgroundColor = UIColor.white.withAlphaComponent(0.4)
-            vStackSubviews.append(remotelySourcedContentStack)
-        }
-
-        vStack.configure(config: configurator.vStackConfig,
+        innerVStack.configure(config: configurator.innerVStackConfig,
                          cellMeasurement: cellMeasurement,
-                         measurementKey: Self.measurementKey_vStack,
-                         subviews: vStackSubviews)
-        hStackSubviews.append(vStack)
+                         measurementKey: Self.measurementKey_innerVStack,
+                         subviews: innerVStackSubviews)
+        hStackSubviews.append(innerVStack)
 
         let trailingView: UIView = {
             guard configurator.hasQuotedAttachment else {
@@ -460,24 +450,49 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                          measurementKey: Self.measurementKey_hStack,
                          subviews: hStackSubviews)
 
+        var outerVStackSubviews = [UIView]()
+        outerVStackSubviews.append(hStack)
+
+        if quotedReplyModel.isRemotelySourced {
+            remotelySourcedContentIconView.setTemplateImageName("ic_broken_link",
+                                                                tintColor: Theme.lightThemePrimaryColor)
+
+            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
+            quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)
+
+            remotelySourcedContentStack.configure(config: configurator.remotelySourcedContentStackConfig,
+                                                  cellMeasurement: cellMeasurement,
+                                                  measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                                                  subviews: [
+                                                    remotelySourcedContentIconView,
+                                                    quoteContentSourceLabel
+                                                  ])
+            remotelySourcedContentStack.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+            outerVStackSubviews.append(remotelySourcedContentStack)
+        }
+
+        outerVStack.configure(config: configurator.outerVStackConfig,
+                              cellMeasurement: cellMeasurement,
+                              measurementKey: Self.measurementKey_outerVStack,
+                              subviews: outerVStackSubviews)
+
         let bubbleView = createBubbleView(sharpCorners: sharpCorners,
                                           conversationStyle: conversationStyle)
-        bubbleView.addSubviewToFillSuperviewEdges(hStack)
+        bubbleView.addSubviewToFillSuperviewEdges(outerVStack)
         bubbleView.clipsToBounds = true
 
         self.configure(config: configurator.outerStackConfig,
                        cellMeasurement: cellMeasurement,
                        measurementKey: Self.measurementKey_outerStack,
-                       subviews: [
-                        bubbleView
-                       ])
+                       subviews: [ bubbleView ])
     }
 
     // MARK: - Measurement
 
     private static let measurementKey_outerStack = "QuotedMessageView.measurementKey_outerStack"
     private static let measurementKey_hStack = "QuotedMessageView.measurementKey_hStack"
-    private static let measurementKey_vStack = "QuotedMessageView.measurementKey_vStack"
+    private static let measurementKey_innerVStack = "QuotedMessageView.measurementKey_innerVStack"
+    private static let measurementKey_outerVStack = "QuotedMessageView.measurementKey_outerVStack"
     private static let measurementKey_remotelySourcedContentStack = "QuotedMessageView.measurementKey_remotelySourcedContentStack"
 
     public static func measure(state: State,
@@ -488,7 +503,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         let outerStackConfig = configurator.outerStackConfig
         let hStackConfig = configurator.hStackConfig
-        let vStackConfig = configurator.vStackConfig
+        let innerVStackConfig = configurator.innerVStackConfig
+        let outerVStackConfig = configurator.outerVStackConfig
         let hasQuotedAttachment = configurator.hasQuotedAttachment
         let quotedAttachmentSize = configurator.quotedAttachmentSize
         let quotedReplyModel = configurator.quotedReplyModel
@@ -496,52 +512,36 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var maxLabelWidth = (maxWidth - (configurator.stripeThickness +
                                             hStackConfig.spacing * 2 +
                                             hStackConfig.layoutMargins.totalWidth +
-                                            vStackConfig.layoutMargins.totalWidth))
+                                            innerVStackConfig.layoutMargins.totalWidth +
+                                            outerVStackConfig.layoutMargins.totalWidth))
         if hasQuotedAttachment {
             maxLabelWidth -= quotedAttachmentSize
         }
         maxLabelWidth = max(0, maxLabelWidth)
 
-        var vStackSubviewInfos = [ManualStackSubviewInfo]()
+        var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
 
         let quotedAuthorLabelConfig = configurator.quotedAuthorLabelConfig
         let quotedAuthorSize = CVText.measureLabel(config: quotedAuthorLabelConfig,
                                                    maxWidth: maxLabelWidth)
-        vStackSubviewInfos.append(quotedAuthorSize.asManualSubviewInfo)
+        innerVStackSubviewInfos.append(quotedAuthorSize.asManualSubviewInfo)
 
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
         let quotedTextSize = CVText.measureLabel(config: quotedTextLabelConfig,
                                                  maxWidth: maxLabelWidth)
-        vStackSubviewInfos.append(quotedTextSize.asManualSubviewInfo)
+        innerVStackSubviewInfos.append(quotedTextSize.asManualSubviewInfo)
 
-        if quotedReplyModel.isRemotelySourced {
-            let remotelySourcedContentIconSize = CGSize.square(configurator.remotelySourcedContentIconSize)
-
-            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
-            let quoteContentSourceSize = CVText.measureLabel(config: quoteContentSourceLabelConfig,
-                                                             maxWidth: maxLabelWidth)
-
-            let vStackMeasurement = ManualStackView.measure(config: configurator.remotelySourcedContentStackConfig,
+        let innerVStackMeasurement = ManualStackView.measure(config: innerVStackConfig,
                                                             measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_remotelySourcedContentStack,
-                                                            subviewInfos: [
-                                                                remotelySourcedContentIconSize.asManualSubviewInfo(hasFixedSize: true),
-                                                                quoteContentSourceSize.asManualSubviewInfo
-                                                            ])
-            vStackSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
-        }
-
-        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_vStack,
-                                                            subviewInfos: vStackSubviewInfos)
+                                                            measurementKey: Self.measurementKey_innerVStack,
+                                                            subviewInfos: innerVStackSubviewInfos)
 
         var hStackSubviewInfos = [ManualStackSubviewInfo]()
 
         let stripeSize = CGSize(width: configurator.stripeThickness, height: 0)
         hStackSubviewInfos.append(stripeSize.asManualSubviewInfo(hasFixedWidth: true))
 
-        hStackSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
+        hStackSubviewInfos.append(innerVStackMeasurement.measuredSize.asManualSubviewInfo)
 
         let avatarSize: CGSize = (hasQuotedAttachment
                                     ? .square(quotedAttachmentSize)
@@ -559,11 +559,36 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                         measurementKey: Self.measurementKey_hStack,
                                                         subviewInfos: hStackSubviewInfos)
 
+        var outerVStackSubviewInfos = [ManualStackSubviewInfo]()
+        outerVStackSubviewInfos.append(hStackMeasurement.measuredSize.asManualSubviewInfo)
+
+        if quotedReplyModel.isRemotelySourced {
+            let remotelySourcedContentIconSize = CGSize.square(configurator.remotelySourcedContentIconSize)
+
+            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
+            let quoteContentSourceSize = CVText.measureLabel(config: quoteContentSourceLabelConfig,
+                                                             maxWidth: maxLabelWidth)
+
+            let innerVStackMeasurement = ManualStackView.measure(config: configurator.remotelySourcedContentStackConfig,
+                                                                 measurementBuilder: measurementBuilder,
+                                                                 measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                                                                 subviewInfos: [
+                                                                    remotelySourcedContentIconSize.asManualSubviewInfo(hasFixedSize: true),
+                                                                    quoteContentSourceSize.asManualSubviewInfo
+                                                                 ])
+            outerVStackSubviewInfos.append(innerVStackMeasurement.measuredSize.asManualSubviewInfo)
+        }
+
+        let outerVStackMeasurement = ManualStackView.measure(config: outerVStackConfig,
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_outerVStack,
+                                                             subviewInfos: outerVStackSubviewInfos)
+
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_outerStack,
                                                         subviewInfos: [
-                                                            hStackMeasurement.measuredSize.asManualSubviewInfo
+                                                            outerVStackMeasurement.measuredSize.asManualSubviewInfo
                                                         ])
         return outerStackMeasurement.measuredSize
     }
@@ -606,7 +631,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         self.delegate = nil
 
         hStack.reset()
-        vStack.reset()
+        innerVStack.reset()
+        outerVStack.reset()
         remotelySourcedContentStack.reset()
 
         quotedAuthorLabel.text = nil
