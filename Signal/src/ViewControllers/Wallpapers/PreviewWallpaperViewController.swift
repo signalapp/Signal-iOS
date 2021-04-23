@@ -146,7 +146,7 @@ class PreviewWallpaperViewController: UIViewController {
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
-            let standalonePage = WallpaperPage(wallpaper: .photo, photo: selectedPhoto)
+            let standalonePage = WallpaperPage(wallpaper: .photo, thread: thread, photo: selectedPhoto)
             self.standalonePage = standalonePage
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
@@ -161,7 +161,7 @@ class PreviewWallpaperViewController: UIViewController {
                 pageViewController.delegate = self
             }
 
-            currentPage = WallpaperPage(wallpaper: selectedWallpaper)
+            currentPage = WallpaperPage(wallpaper: selectedWallpaper, thread: thread)
             blurButton.isHidden = true
         }
 
@@ -209,12 +209,12 @@ class PreviewWallpaperViewController: UIViewController {
 extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper))
+        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper), thread: thread)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper))
+        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper), thread: thread)
     }
 
     func pageViewController(
@@ -274,11 +274,13 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
 
 private class WallpaperPage: UIViewController {
     let wallpaper: Wallpaper
+    let thread: TSThread?
     let photo: UIImage?
     var shouldBlur = false { didSet { updatePhoto() } }
 
-    init(wallpaper: Wallpaper, photo: UIImage? = nil) {
+    init(wallpaper: Wallpaper, thread: TSThread?, photo: UIImage? = nil) {
         self.wallpaper = wallpaper
+        self.thread = thread
         self.photo = photo
         super.init(nibName: nil, bundle: nil)
 
@@ -294,13 +296,17 @@ private class WallpaperPage: UIViewController {
     var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
 
     weak var wallpaperView: UIView?
+
     override func loadView() {
         view = UIView()
         view.backgroundColor = Theme.darkThemeBackgroundColor
 
+        let shouldDim = databaseStorage.read { transaction in
+            Wallpaper.shouldDim(thread: thread, transaction: transaction)
+        }
         guard let wallpaperView = Wallpaper.view(for: wallpaper,
                                                  photo: photo,
-                                                 shouldDim: false) else {
+                                                 shouldDim: shouldDim) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
 

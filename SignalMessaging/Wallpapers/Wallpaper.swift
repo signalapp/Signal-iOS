@@ -185,6 +185,12 @@ public enum Wallpaper: String, CaseIterable {
         return view
     }
 
+    public static func shouldDim(thread: TSThread?,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+        (Theme.isDarkThemeEnabled &&
+            dimInDarkMode(for: thread, transaction: transaction))
+    }
+
     public static func view(for wallpaper: Wallpaper,
                             photo: UIImage? = nil,
                             maskDataSource: WallpaperMaskDataSource? = nil,
@@ -412,7 +418,7 @@ public class WallpaperView {
     }
 
     public func asPreviewView() -> UIView {
-        let previewView = UIView.transparentContainer()
+        let previewView = UIView.container()
         if let contentView = self.contentView {
             previewView.addSubview(contentView)
             contentView.autoPinEdgesToSuperviewEdges()
