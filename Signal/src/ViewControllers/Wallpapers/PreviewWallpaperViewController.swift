@@ -295,7 +295,8 @@ private class WallpaperPage: UIViewController {
     var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
     var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
 
-    weak var wallpaperView: UIView?
+    var wallpaperView: WallpaperView?
+    var wallpaperPreviewView: UIView?
 
     override func loadView() {
         view = UIView()
@@ -311,7 +312,8 @@ private class WallpaperPage: UIViewController {
         }
 
         let wallpaperPreviewView = wallpaperView.asPreviewView()
-        self.wallpaperView = wallpaperPreviewView
+        self.wallpaperView = wallpaperView
+        self.wallpaperPreviewView = wallpaperPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
         if case .photo = wallpaper, let photo = photo {
@@ -378,7 +380,7 @@ private class WallpaperPage: UIViewController {
     }
 
     private func updatePhoto() {
-        guard let wallpaperImageView = wallpaperView as? UIImageView else { return }
+        guard let wallpaperImageView = wallpaperView?.contentView as? UIImageView else { return }
         UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
             wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
         } completion: { _ in }
@@ -443,7 +445,7 @@ private class WallpaperPage: UIViewController {
 
 extension WallpaperPage: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return wallpaperView
+        return wallpaperPreviewView
     }
 }
 
