@@ -69,14 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldAutoPlayVideo = shouldAutoPlayVideo;
 
     // We cache the image data in case the attachment stream is deleted.
-    __weak MediaDetailViewController *weakSelf = self;
-    [galleryItemBox.attachmentStream
-        thumbnailImageLargeWithSuccess:^(UIImage *image) {
-            weakSelf.image = image;
-            [weakSelf updateContents];
-            [weakSelf updateMinZoomScale];
-        }
-        failure:^{ OWSLogWarn(@"Could not load media."); }];
+    self.image = [galleryItemBox.attachmentStream thumbnailImageLargeSync];
 
     return self;
 }
