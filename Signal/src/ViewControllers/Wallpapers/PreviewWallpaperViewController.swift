@@ -146,7 +146,7 @@ class PreviewWallpaperViewController: UIViewController {
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
-            let standalonePage = WallpaperPage(wallpaper: .photo, photo: selectedPhoto)
+            let standalonePage = WallpaperPage(wallpaper: .photo, thread: thread, photo: selectedPhoto)
             self.standalonePage = standalonePage
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
@@ -161,7 +161,7 @@ class PreviewWallpaperViewController: UIViewController {
                 pageViewController.delegate = self
             }
 
-            currentPage = WallpaperPage(wallpaper: selectedWallpaper)
+            currentPage = WallpaperPage(wallpaper: selectedWallpaper, thread: thread)
             blurButton.isHidden = true
         }
 
@@ -209,12 +209,12 @@ class PreviewWallpaperViewController: UIViewController {
 extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper))
+        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper), thread: thread)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper))
+        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper), thread: thread)
     }
 
     func pageViewController(
@@ -274,11 +274,13 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
 
 private class WallpaperPage: UIViewController {
     let wallpaper: Wallpaper
+    let thread: TSThread?
     let photo: UIImage?
     var shouldBlur = false { didSet { updatePhoto() } }
 
-    init(wallpaper: Wallpaper, photo: UIImage? = nil) {
+    init(wallpaper: Wallpaper, thread: TSThread?, photo: UIImage? = nil) {
         self.wallpaper = wallpaper
+        self.thread = thread
         self.photo = photo
         super.init(nibName: nil, bundle: nil)
 
@@ -293,19 +295,25 @@ private class WallpaperPage: UIViewController {
     var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
     var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
 
-    weak var wallpaperView: UIView?
+    var wallpaperView: WallpaperView?
+    var wallpaperPreviewView: UIView?
+
     override func loadView() {
         view = UIView()
         view.backgroundColor = Theme.darkThemeBackgroundColor
 
+        let shouldDim = databaseStorage.read { transaction in
+            Wallpaper.shouldDim(thread: thread, transaction: transaction)
+        }
         guard let wallpaperView = Wallpaper.view(for: wallpaper,
                                                  photo: photo,
-                                                 shouldDim: false) else {
+                                                 shouldDim: shouldDim) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
 
         let wallpaperPreviewView = wallpaperView.asPreviewView()
-        self.wallpaperView = wallpaperPreviewView
+        self.wallpaperView = wallpaperView
+        self.wallpaperPreviewView = wallpaperPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
         if case .photo = wallpaper, let photo = photo {
@@ -372,7 +380,7 @@ private class WallpaperPage: UIViewController {
     }
 
     private func updatePhoto() {
-        guard let wallpaperImageView = wallpaperView as? UIImageView else { return }
+        guard let wallpaperImageView = wallpaperView?.contentView as? UIImageView else { return }
         UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
             wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
         } completion: { _ in }
@@ -437,7 +445,7 @@ private class WallpaperPage: UIViewController {
 
 extension WallpaperPage: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return wallpaperView
+        return wallpaperPreviewView
     }
 }
 

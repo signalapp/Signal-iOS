@@ -663,7 +663,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     private func searchConversations(searchText: String) -> [ThreadViewModel] {
         let results = getResultSet(searchText: searchText)
-        return results.conversations.map { $0.thread }
+        let contactThreads = results.contactThreads.map { $0.thread }
+        let groupThreads = results.groupThreads.map { $0.thread }
+        return contactThreads + groupThreads
     }
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {

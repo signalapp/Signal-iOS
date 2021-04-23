@@ -437,14 +437,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let swipeToReplySize: CGFloat
         if conversationStyle.hasWallpaper {
             swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
-            swipeToReplyIconView.layer.cornerRadius = 17
             swipeToReplyIconView.clipsToBounds = true
             swipeToReplySize = 34
             swipeToReplyIconView.setTemplateImageName("reply-outline-20",
                                                       tintColor: .ows_gray45)
         } else {
             swipeToReplyIconView.backgroundColor = .clear
-            swipeToReplyIconView.layer.cornerRadius = 0
             swipeToReplyIconView.clipsToBounds = false
             swipeToReplySize = 24
             swipeToReplyIconView.setTemplateImageName("reply-outline-24",
@@ -1157,7 +1155,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate let swipeToReplyIconView = CVImageView()
+        fileprivate let swipeToReplyIconView = CVImageView.circleView()
 
         fileprivate let cellSpacer = UIView()
 

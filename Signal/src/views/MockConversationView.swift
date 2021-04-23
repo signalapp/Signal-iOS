@@ -145,6 +145,8 @@ class MockConversationView: UIView {
         if let renderItem = outgoingRenderItem {
             outgoingMessageView.configure(renderItem: renderItem, componentDelegate: self)
             outgoingMessageView.isCellVisible = true
+            outgoingMessageView.autoSetDimension(.height,
+                                                 toSize: renderItem.cellMeasurement.cellSize.height)
         } else {
             owsFailDebug("Missing outgoingRenderItem.")
         }
@@ -153,6 +155,8 @@ class MockConversationView: UIView {
         if let renderItem = incomingRenderItem {
             incomingMessageView.configure(renderItem: renderItem, componentDelegate: self)
             incomingMessageView.isCellVisible = true
+            incomingMessageView.autoSetDimension(.height,
+                                                 toSize: renderItem.cellMeasurement.cellSize.height)
         } else {
             owsFailDebug("Missing incomingRenderItem.")
         }
@@ -161,6 +165,8 @@ class MockConversationView: UIView {
         if let renderItem = dateHeaderRenderItem {
             dateHeaderView.configure(renderItem: renderItem, componentDelegate: self)
             dateHeaderView.isCellVisible = true
+            dateHeaderView.autoSetDimension(.height,
+                                            toSize: renderItem.cellMeasurement.cellSize.height)
         } else {
             owsFailDebug("Missing incomingRenderItem.")
         }
