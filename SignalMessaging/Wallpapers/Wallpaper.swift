@@ -414,10 +414,6 @@ public class WallpaperView: ManualLayoutViewWithLayer {
             let imageView = UIImageView(image: image)
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
-            // Use trilinear filters for better scaling quality at
-            // some performance cost.
-            imageView.layer.minificationFilter = .trilinear
-            imageView.layer.magnificationFilter = .trilinear
             addSubviewToFillSuperviewEdges(imageView)
 
             addBlurView(contentView: imageView, maskDataSource: maskDataSource)
@@ -523,9 +519,16 @@ public class WallpaperView: ManualLayoutViewWithLayer {
                 let tintColor: UIColor = (isDarkThemeEnabled
                                             ? UIColor.ows_black.withAlphaComponent(0.9)
                                             : .ows_whiteAlpha60)
-                let blurRadius: CGFloat = 32
-                let blurredImage = try contentImage.withGausianBlur(radius: blurRadius,
-                                                                    tintColor: tintColor)
+                let resizeFactor: CGFloat = 8
+                let resizeDimension = contentImage.size.largerAxis / resizeFactor
+                guard let scaledImage = contentImage.resized(withMaxDimensionPoints: resizeDimension) else {
+                    owsFailDebug("Could not resize contentImage.")
+                    resetContent()
+                    return
+                }
+                let blurRadius: CGFloat = 32 / resizeFactor
+                let blurredImage = try scaledImage.withGausianBlur(radius: blurRadius,
+                                                                   tintColor: tintColor)
                 self.image = blurredImage
                 self.contentToken = newContentToken
             } catch {
