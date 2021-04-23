@@ -461,8 +461,6 @@ public class WallpaperView {
             return
         }
         let blurView = BlurView(contentView: contentView, maskDataSource: maskDataSource)
-        blurView.layer.zPosition = -0.25 + 1.0
-        blurView.layer.zPosition = 10
         _blurView = blurView
     }
 

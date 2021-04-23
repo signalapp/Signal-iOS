@@ -3244,7 +3244,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    //    OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
+    OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
 
     // scrollingAnimationCompletionTimer should already have been cleared,
     // but we need to ensure that it is cleared in a timely way.
