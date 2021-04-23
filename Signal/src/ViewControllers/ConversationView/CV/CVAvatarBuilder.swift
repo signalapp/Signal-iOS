@@ -24,35 +24,64 @@ public class CVAvatarBuilder: Dependencies {
     }
 
     func buildAvatar(forAddress address: SignalServiceAddress, diameter: UInt) -> UIImage? {
-        guard let cacheKey = address.serviceIdentifier else {
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
+                                                                           transaction: transaction)
+        guard let serviceIdentifier = address.serviceIdentifier else {
             owsFailDebug("Invalid address.")
             return nil
         }
+        let cacheKey = serviceIdentifier + ".\(shouldBlurAvatar)"
         if let avatar = cache[cacheKey] {
             return avatar
         }
         let colorName = contactsManager.conversationColorName(for: address, transaction: transaction)
-        guard let avatar = OWSContactAvatarBuilder(address: address,
-                                                   colorName: colorName,
-                                                   diameter: diameter,
-                                                   localUserAvatarMode: .asUser,
-                                                   transaction: transaction).build(with: transaction) else {
+        guard let rawAvatar = OWSContactAvatarBuilder(address: address,
+                                                      colorName: colorName,
+                                                      diameter: diameter,
+                                                      localUserAvatarMode: .asUser,
+                                                      transaction: transaction).build(with: transaction) else {
             owsFailDebug("Could build avatar image")
             return nil
         }
-        cache[cacheKey] = avatar
-        return avatar
+        let finalAvatar: UIImage
+        if shouldBlurAvatar {
+            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
+                owsFailDebug("Could build blur avatar.")
+                return nil
+            }
+            finalAvatar = blurredAvatar
+        } else {
+            finalAvatar = rawAvatar
+        }
+
+        cache[cacheKey] = finalAvatar
+        return finalAvatar
     }
 
     func buildAvatar(forGroupThread groupThread: TSGroupThread, diameter: UInt) -> UIImage? {
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
+                                                                         transaction: transaction)
         let cacheKey = groupThread.uniqueId
         if let avatar = cache[cacheKey] {
             return avatar
         }
         let avatarBuilder = OWSGroupAvatarBuilder(thread: groupThread, diameter: diameter)
-        let avatar = avatarBuilder.build(with: transaction)
-        cache[cacheKey] = avatar
-        return avatar
+        guard let rawAvatar = avatarBuilder.build(with: transaction) else {
+            owsFailDebug("Could build avatar image")
+            return nil
+        }
+        let finalAvatar: UIImage
+        if shouldBlurAvatar {
+            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
+                owsFailDebug("Could build blur avatar.")
+                return nil
+            }
+            finalAvatar = blurredAvatar
+        } else {
+            finalAvatar = rawAvatar
+        }
+        cache[cacheKey] = finalAvatar
+        return finalAvatar
     }
 
     func buildAvatar(forThread thread: TSThread, diameter: UInt) -> UIImage? {

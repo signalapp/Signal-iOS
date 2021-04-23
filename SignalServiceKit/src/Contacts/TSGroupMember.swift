@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import GRDB
 
 public extension TSGroupMember {
     @objc(groupMemberForAddress:inGroupThreadId:transaction:)
@@ -45,7 +46,8 @@ public extension TSGroupMember {
 
 public extension TSGroupThread {
     @objc(groupThreadsWithAddress:transaction:)
-    class func groupThreads(with address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
+    class func groupThreads(with address: SignalServiceAddress,
+                            transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
         let sql = """
             SELECT \(groupMemberColumn: .groupThreadId) FROM \(GroupMemberRecord.databaseTableName)
             WHERE (\(groupMemberColumn: .uuidString) = ? OR \(groupMemberColumn: .uuidString) IS NULL)
@@ -62,7 +64,8 @@ public extension TSGroupThread {
 
         var groupThreads = [TSGroupThread]()
         while let groupThreadId = try! cursor.next() {
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction) else {
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
+                                                                      transaction: transaction) else {
                 owsFailDebug("Missing group thread")
                 continue
             }
@@ -70,5 +73,24 @@ public extension TSGroupThread {
         }
 
         return groupThreads
+    }
+
+    @objc(groupThreadIdsWithAddress:transaction:)
+    class func groupThreadIds(with address: SignalServiceAddress,
+                              transaction: SDSAnyReadTransaction) -> [String] {
+        let sql = """
+            SELECT \(groupMemberColumn: .groupThreadId)
+            FROM \(GroupMemberRecord.databaseTableName)
+            WHERE (\(groupMemberColumn: .uuidString) = ? OR \(groupMemberColumn: .uuidString) IS NULL)
+            AND (\(groupMemberColumn: .phoneNumber) = ? OR \(groupMemberColumn: .phoneNumber) IS NULL)
+            AND NOT (\(groupMemberColumn: .uuidString) IS NULL AND \(groupMemberColumn: .phoneNumber) IS NULL)
+            ORDER BY \(groupMemberColumn: .lastInteractionTimestamp) DESC
+        """
+
+        return transaction.unwrapGrdbRead.database.strictRead { database in
+            try String.fetchAll(database,
+                                sql: sql,
+                                arguments: [address.uuidString, address.phoneNumber])
+        }
     }
 }

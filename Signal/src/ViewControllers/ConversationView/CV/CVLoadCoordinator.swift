@@ -135,6 +135,14 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
                                                name: .otherUsersProfileDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(skipContactAvatarBlurDidChange(notification:)),
+                                               name: OWSContactsManager.skipContactAvatarBlurDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
+                                               name: OWSContactsManager.skipGroupAvatarBlurDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -198,6 +206,38 @@ public class CVLoadCoordinator: NSObject {
             // TODO: In groups, we could reload if any group member's profile changed.
             //       Ideally we would only reload cells that use that member's profile state.            
         }
+    }
+
+    @objc
+    func skipContactAvatarBlurDidChange(notification: Notification) {
+        guard let address = notification.userInfo?[OWSContactsManager.skipContactAvatarBlurAddressKey] as? SignalServiceAddress else {
+            owsFailDebug("Missing address.")
+            return
+        }
+        if let contactThread = thread as? TSContactThread {
+            if contactThread.contactAddress == address {
+                enqueueReloadWithoutCaches()
+            }
+        } else if let groupThread = thread as? TSGroupThread {
+            if groupThread.groupMembership.allMembersOfAnyKind.contains(address) {
+                enqueueReloadWithoutCaches()
+            }
+        } else {
+            owsFailDebug("Invalid thread.")
+        }
+    }
+
+    @objc
+    func skipGroupAvatarBlurDidChange(notification: Notification) {
+        guard let groupUniqueId = notification.userInfo?[OWSContactsManager.skipGroupAvatarBlurGroupUniqueIdKey] as? String else {
+            owsFailDebug("Missing groupId.")
+            return
+        }
+        guard let groupThread = thread as? TSGroupThread,
+              groupThread.uniqueId == groupUniqueId else {
+            return
+        }
+        enqueueReloadWithoutCaches()
     }
 
     @objc

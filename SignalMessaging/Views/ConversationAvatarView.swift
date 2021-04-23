@@ -171,7 +171,7 @@ public class ConversationAvatarView: AvatarImageView {
         }
     }
 
-    // MARK: -
+    // MARK: - Notifications
 
     private func ensureObservers() {
         NotificationCenter.default.removeObserver(self)
@@ -191,10 +191,18 @@ public class ConversationAvatarView: AvatarImageView {
                                                    selector: #selector(handleSignalAccountsChanged(notification:)),
                                                    name: .OWSContactsManagerSignalAccountsDidChange,
                                                    object: nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(skipContactAvatarBlurDidChange(notification:)),
+                                                   name: OWSContactsManager.skipContactAvatarBlurDidChange,
+                                                   object: nil)
         case .group:
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(handleGroupAvatarChanged(notification:)),
                                                    name: .TSGroupThreadAvatarChanged,
+                                                   object: nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
+                                                   name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                    object: nil)
         case .unknownContact:
             break
@@ -268,9 +276,35 @@ public class ConversationAvatarView: AvatarImageView {
         }
     }
 
+    @objc
+    func skipContactAvatarBlurDidChange(notification: Notification) {
+        guard let address = notification.userInfo?[OWSContactsManager.skipContactAvatarBlurAddressKey] as? SignalServiceAddress else {
+            owsFailDebug("Missing address.")
+            return
+        }
+        guard address == state?.contactAddress else {
+            return
+        }
+        updateImageWithSneakyTransaction()
+    }
+
+    @objc
+    func skipGroupAvatarBlurDidChange(notification: Notification) {
+        guard let groupUniqueId = notification.userInfo?[OWSContactsManager.skipGroupAvatarBlurGroupUniqueIdKey] as? String else {
+            owsFailDebug("Missing groupId.")
+            return
+        }
+        guard groupUniqueId == state?.groupThreadId else {
+            return
+        }
+        updateImageWithSneakyTransaction()
+    }
+
+    // MARK: -
+
     public func updateImageWithSneakyTransaction() {
         guard diameter > 0,
-              let state = self.state else {
+              nil != self.state else {
             self.image = nil
             return
         }
@@ -291,26 +325,61 @@ public class ConversationAvatarView: AvatarImageView {
         let image = { () -> UIImage? in
             switch state {
             case .contact(let contactThread):
-                return OWSContactAvatarBuilder(address: contactThread.contactAddress,
-                                               colorName: contactThread.conversationColorName,
-                                               diameter: diameter,
-                                               localUserAvatarMode: localUserAvatarMode,
-                                               transaction: transaction).build(with: transaction)
+                return buildContactAvatar(address: contactThread.contactAddress,
+                                          conversationColorName: contactThread.conversationColorName,
+                                          transaction: transaction)
             case .group(let groupThread):
-                return OWSGroupAvatarBuilder(thread: groupThread,
-                                             diameter: diameter).build(with: transaction)
+                return buildGroupAvatar(groupThread: groupThread, transaction: transaction)
             case .unknownContact(let contactAddress):
                 let conversationColorName = TSContactThread.conversationColorName(forContactAddress: contactAddress,
                                                                                   transaction: transaction)
-                return OWSContactAvatarBuilder(address: contactAddress,
-                                               colorName: conversationColorName,
-                                               diameter: diameter,
-                                               localUserAvatarMode: localUserAvatarMode,
-                                               transaction: transaction).build(with: transaction)
+                return buildContactAvatar(address: contactAddress,
+                                          conversationColorName: conversationColorName,
+                                          transaction: transaction)
             }
         }()
         owsAssertDebug(image != nil)
         self.image = image
+    }
+
+    private func buildContactAvatar(address: SignalServiceAddress,
+                                    conversationColorName: ConversationColorName,
+                                    transaction: SDSAnyReadTransaction) -> UIImage? {
+        let builder = OWSContactAvatarBuilder(address: address,
+                                              colorName: conversationColorName,
+                                              diameter: diameter,
+                                              localUserAvatarMode: localUserAvatarMode,
+                                              transaction: transaction)
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
+                                                                           transaction: transaction)
+        return buildAvatar(avatarBuilder: builder,
+                           shouldBlurAvatar: shouldBlurAvatar,
+                           transaction: transaction)
+    }
+
+    private func buildGroupAvatar(groupThread: TSGroupThread,
+                                  transaction: SDSAnyReadTransaction) -> UIImage? {
+        let builder = OWSGroupAvatarBuilder(thread: groupThread,
+                                            diameter: diameter)
+        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
+                                                                           transaction: transaction)
+        return buildAvatar(avatarBuilder: builder,
+                           shouldBlurAvatar: shouldBlurAvatar,
+                           transaction: transaction)
+    }
+
+    private func buildAvatar(avatarBuilder: OWSAvatarBuilder,
+                             shouldBlurAvatar: Bool,
+                             transaction: SDSAnyReadTransaction) -> UIImage? {
+        guard let image = avatarBuilder.build(with: transaction) else {
+            owsFailDebug("Could not build contact avatar.")
+            return nil
+        }
+        if shouldBlurAvatar {
+            return contactsManagerImpl.blurAvatar(image)
+        } else {
+            return image
+        }
     }
 
     @objc

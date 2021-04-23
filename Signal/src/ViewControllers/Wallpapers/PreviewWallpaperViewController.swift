@@ -377,7 +377,7 @@ private class WallpaperPage: UIViewController {
 
     private var blurredPhoto: UIImage?
     private func prepareBlurredPhoto() {
-        photo?.withGausianBlur(
+        photo?.withGausianBlurPromise(
             radius: 10,
             resizeToMaxPixelDimension: 1024
         ).done(on: .main) { [weak self] blurredPhoto in

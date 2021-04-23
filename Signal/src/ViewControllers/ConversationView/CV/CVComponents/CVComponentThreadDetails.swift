@@ -71,10 +71,42 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatarView = AvatarImageView(image: self.avatarImage)
         componentView.avatarView = avatarView
-        avatarView.autoSetDimensions(to: CGSize(square: avatarDiameter))
-        avatarView.setContentHuggingHigh()
-        avatarView.setCompressionResistanceHigh()
-        innerViews.append(avatarView)
+        if threadDetails.isAvatarBlurred {
+            let avatarWrapper = ManualLayoutView(name: "avatarWrapper")
+            avatarWrapper.addSubviewToFillSuperviewEdges(avatarView)
+            innerViews.append(avatarWrapper)
+
+            var unblurAvatarSubviewInfos = [ManualStackSubviewInfo]()
+            let unblurAvatarIconView = UIImageView.withTemplateImageName("tap-outline-24",
+                                                                         tintColor: .ows_white)
+            unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
+
+            let unblurAvatarLabelConfig = CVLabelConfig(text: NSLocalizedString("THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
+                                                                                comment: "Indicator that a blurred avatar can be revealed by tapping."),
+                                                        font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                                                        textColor: .ows_white)
+            let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: avatarDiameter - 12)
+            unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
+            let unblurAvatarLabel = UILabel()
+            unblurAvatarLabelConfig.applyForRendering(label: unblurAvatarLabel)
+            let unblurAvatarStackConfig = ManualStackView.Config(axis: .vertical,
+                                                                 alignment: .center,
+                                                                 spacing: 8,
+                                                                 layoutMargins: .zero)
+            let unblurAvatarStackMeasurement = ManualStackView.measure(config: unblurAvatarStackConfig,
+                                                                       subviewInfos: unblurAvatarSubviewInfos)
+            let unblurAvatarStack = ManualStackView(name: "unblurAvatarStack")
+            unblurAvatarStack.configure(config: unblurAvatarStackConfig,
+                                        measurement: unblurAvatarStackMeasurement,
+                                        subviews: [
+                                            unblurAvatarIconView,
+                                            unblurAvatarLabel
+                                        ])
+            avatarWrapper.addSubviewToCenterOnSuperview(unblurAvatarStack,
+                                                        size: unblurAvatarStackMeasurement.measuredSize)
+        } else {
+            innerViews.append(avatarView)
+        }
         innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
@@ -179,6 +211,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         } else {
             owsFailDebug("Invalid thread.")
             return CVComponentState.ThreadDetails(avatar: nil,
+                                                  isAvatarBlurred: false,
                                                   titleText: TSGroupThread.defaultGroupName,
                                                   bioText: nil,
                                                   detailsText: nil,
@@ -190,7 +223,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             transaction: SDSAnyReadTransaction,
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
-        let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress, diameter: avatarDiameter)
+        let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
+                                               diameter: avatarDiameter)
+
+        let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(address: contactThread.contactAddress,
+                                                                          transaction: transaction)
 
         let contactName = Self.contactsManager.displayName(for: contactThread.contactAddress,
                                                            transaction: transaction)
@@ -316,6 +353,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }()
 
         return CVComponentState.ThreadDetails(avatar: avatar,
+                                              isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: bioText,
                                               detailsText: detailsText,
@@ -331,6 +369,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameter: avatarDiameter)
 
+        let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
+                                                                        transaction: transaction)
+
         let titleText = groupThread.groupNameOrDefault
 
         let detailsText = { () -> String? in
@@ -345,6 +386,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }()
 
         return CVComponentState.ThreadDetails(avatar: avatar,
+                                              isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: nil,
                                               detailsText: detailsText,
@@ -413,6 +455,41 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                             measurementKey: Self.measurementKey_outerStack,
                                                             subviewInfos: outerSubviewInfos)
         return outerStackMeasurement.measuredSize
+    }
+
+    // MARK: - Events
+
+    public override func handleTap(sender: UITapGestureRecognizer,
+                                   componentDelegate: CVComponentDelegate,
+                                   componentView: CVComponentView,
+                                   renderItem: CVRenderItem) -> Bool {
+
+        guard let componentView = componentView as? CVComponentViewThreadDetails else {
+            owsFailDebug("Unexpected componentView.")
+            return false
+        }
+        guard let avatarView = componentView.avatarView else {
+            owsFailDebug("Missing avatarView.")
+            return false
+        }
+        if threadDetails.isAvatarBlurred {
+            let location = sender.location(in: avatarView)
+            if avatarView.bounds.contains(location) {
+                Self.databaseStorage.write { transaction in
+                    if let contactThread = self.thread as? TSContactThread {
+                        Self.contactsManagerImpl.doNotBlurContactAvatar(address: contactThread.contactAddress,
+                                                                        transaction: transaction)
+                    } else if let groupThread = self.thread as? TSGroupThread {
+                        Self.contactsManagerImpl.doNotBlurGroupAvatar(groupThread: groupThread,
+                                                                      transaction: transaction)
+                    } else {
+                        owsFailDebug("Invalid thread.")
+                    }
+                }
+                return true
+            }
+        }
+        return false
     }
 
     // MARK: -
