@@ -63,6 +63,17 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                  layoutMargins: .zero)
     }
 
+    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                            componentView: CVComponentView) {
+        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewSystemMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+    }
+
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewSystemMessage()
     }
@@ -184,11 +195,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let blurView = buildBlurView(conversationStyle: conversationStyle)
+                let blurView = UIView.transparentContainer()
                 componentView.blurView = blurView
-                let blurWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView,
-                                                                                 isWrapperRendering: true)
-                bubbleView = blurWrapper
+                bubbleView = blurView
             } else {
                 let backgroundView = UIView()
                 componentView.backgroundView = backgroundView
@@ -201,6 +210,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStack.sendSubviewToBack(bubbleView)
 
                 bubbleView.layer.cornerRadius = 8
+                bubbleView.layer.maskedCorners = .all
                 bubbleView.clipsToBounds = true
             } else {
                 outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
@@ -378,7 +388,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var blurView: UIView?
         fileprivate var backgroundView: UIView?
 
         fileprivate var button: OWSButton?

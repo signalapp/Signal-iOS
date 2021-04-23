@@ -55,6 +55,9 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
+
+    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                            componentView: CVComponentView)
 }
 
 // MARK: -
@@ -278,6 +281,13 @@ public class CVComponentBase: NSObject {
             rootView.autoPinEdgesToSuperviewEdges()
         }
     }
+
+    // MARK: - 
+
+    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                   componentView: CVComponentView) {
+        // Do nothing.
+    }
 }
 
 // MARK: -
@@ -321,19 +331,6 @@ extension CVComponentBase: CVNode {
             return conversationStyle.bubbleColor(isIncoming: true)
         }
         return conversationStyle.bubbleColor(message: message)
-    }
-}
-
-// MARK: -
-
-extension CVComponentBase {
-    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        let blurOverlay = UIView()
-        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-        blurView.contentView.addSubview(blurOverlay)
-        blurOverlay.autoPinEdgesToSuperviewEdges()
-        return blurView
     }
 }
 

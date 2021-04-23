@@ -174,6 +174,15 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
                                                        renderItem: renderItem,
                                                        messageSwipeActionState: messageSwipeActionState)
     }
+
+    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
+        guard let rootComponent = rootComponent,
+              let componentView = componentView else {
+            owsFailDebug("Missing component.")
+            return
+        }
+        rootComponent.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+    }
 }
 
 // MARK: -

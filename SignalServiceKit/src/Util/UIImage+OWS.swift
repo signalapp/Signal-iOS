@@ -93,11 +93,14 @@ extension UIImage {
         return try resizedImage.cgImageWithGausianBlur(radius: radius)
     }
 
-    public func withGausianBlur(radius: CGFloat) throws -> UIImage {
-        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius))
+    public func withGausianBlur(radius: CGFloat,
+                                tintColor: UIColor? = nil) throws -> UIImage {
+        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius,
+                                                    tintColor: tintColor))
     }
 
-    public func cgImageWithGausianBlur(radius: CGFloat) throws -> CGImage {
+    public func cgImageWithGausianBlur(radius: CGFloat,
+                                       tintColor: UIColor? = nil) throws -> CGImage {
         guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
             throw OWSAssertionError("Failed to create blur filter")
         }
@@ -125,8 +128,33 @@ extension UIImage {
             throw OWSAssertionError("Failed to blur clamped image")
         }
 
+        var outputImage: CIImage = blurredOutput
+        if let tintColor = tintColor {
+            guard let tintFilter = CIFilter(name: "CIConstantColorGenerator",
+                                            parameters: [
+                                                kCIInputColorKey: CIColor(color: tintColor)
+                                            ]) else {
+                throw OWSAssertionError("Could not create tintFilter.")
+            }
+            guard let tintImage = tintFilter.outputImage else {
+                throw OWSAssertionError("Could not create tintImage.")
+            }
+
+            guard let tintOverlayFilter = CIFilter(name: "CISourceOverCompositing",
+                                                   parameters: [
+                                                    kCIInputBackgroundImageKey: outputImage,
+                                                    kCIInputImageKey: tintImage
+                                                   ]) else {
+                throw OWSAssertionError("Could not create tintOverlayFilter.")
+            }
+            guard let tintOverlayImage = tintOverlayFilter.outputImage else {
+                throw OWSAssertionError("Could not create tintOverlayImage.")
+            }
+            outputImage = tintOverlayImage
+        }
+
         let context = CIContext(options: nil)
-        guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
+        guard let blurredImage = context.createCGImage(outputImage, from: inputImage.extent) else {
             throw OWSAssertionError("Failed to create CGImage from blurred output")
         }
 

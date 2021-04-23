@@ -44,6 +44,17 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         CVComponentViewThreadDetails()
     }
 
+    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                            componentView: CVComponentView) {
+        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewThreadDetails else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+    }
+
     public func configureForRendering(componentView componentViewParam: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -105,12 +116,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
-            let blurView = buildBlurView(conversationStyle: conversationStyle)
-            blurView.clipsToBounds = true
-            blurView.layer.cornerRadius = 12
-            componentView.blurView = blurView
-            let blurWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
-            innerStackView.addSubviewToFillSuperviewEdges(blurWrapper)
+            innerStackView.layer.cornerRadius = 12
+            componentView.blurView = innerStackView
         }
 
         let titleLabel = componentView.titleLabel
@@ -505,7 +512,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
         fileprivate let innerStackView = ManualStackView(name: "Thread details inner")
 
-        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var blurView: UIView?
 
         public var isDedicatedCellView = false
 

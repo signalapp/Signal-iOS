@@ -34,6 +34,17 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         CVComponentViewUnreadIndicator()
     }
 
+    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
+                                            componentView: CVComponentView) {
+        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewUnreadIndicator else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+    }
+
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -71,38 +82,28 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
-            let contentView: UIView = {
-                if hasWallpaper {
-                    strokeView.backgroundColor = .ows_blackAlpha80
+            innerStack.reset()
+            innerStack.configure(config: innerStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: Self.measurementKey_innerStack,
+                                 subviews: [ titleLabel ])
 
-                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
-                    let blurView = buildBlurView(conversationStyle: conversationStyle)
-                    componentView.blurView = blurView
-                    blurView.clipsToBounds = true
-                    blurView.layer.cornerRadius = 8
-                    blurView.contentView.addSubview(titleLabel)
-                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
-                    titleLabel.setContentHuggingLow()
+            if hasWallpaper {
+                strokeView.backgroundColor = .ows_blackAlpha80
 
-                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
-                } else {
-                    strokeView.backgroundColor = .ows_gray45
-
-                    innerStack.reset()
-                    innerStack.configure(config: innerStackConfig,
-                                         cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_innerStack,
-                                         subviews: [ titleLabel ])
-                    return innerStack
-                }
-            }()
+                let blurView = innerStack
+                blurView.layer.cornerRadius = 8
+                componentView.blurView = blurView
+            } else {
+                strokeView.backgroundColor = .ows_gray45
+            }
 
             outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
                                  subviews: [
                                     strokeView,
-                                    contentView
+                                    innerStack
                                  ])
         }
     }
@@ -174,7 +175,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
         fileprivate let titleLabel = CVLabel()
 
-        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var blurView: UIView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
