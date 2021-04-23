@@ -102,13 +102,13 @@ extension MessageSender {
         }
         let group = thread.groupModel
         var promises: [Promise<Void>] = []
+        let zombies = SNMessagingKitConfiguration.shared.storage.getZombieMembers(for: groupPublicKey)
         // Update name if needed
         if name != group.groupName { promises.append(setName(to: name, for: groupPublicKey, using: transaction)) }
         // Add members if needed
-        let addedMembers = members.subtracting(group.groupMemberIds)
+        let addedMembers = members.subtracting(group.groupMemberIds + zombies)
         if !addedMembers.isEmpty { promises.append(addMembers(addedMembers, to: groupPublicKey, using: transaction)) }
         // Remove members if needed
-        let zombies = SNMessagingKitConfiguration.shared.storage.getZombieMembers(for: groupPublicKey)
         let removedMembers = Set(group.groupMemberIds + zombies).subtracting(members)
         if !removedMembers.isEmpty{ promises.append(removeMembers(removedMembers, to: groupPublicKey, using: transaction)) }
         // Return
