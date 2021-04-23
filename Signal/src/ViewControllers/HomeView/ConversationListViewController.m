@@ -771,11 +771,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    //  Settings button.
+    // Settings button.
     const NSUInteger kAvatarSize = 28;
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.shared localProfileAvatarImage];
-    UIImage *avatarImage = (localProfileAvatarImage
-                            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
+    OWSAvatarBuilder *avatarBuilder =
+        [[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize
+                                                  localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+    UIImage *avatarImage = (localProfileAvatarImage ?: [avatarBuilder buildDefaultImage]);
     OWSAssertDebug(avatarImage);
 
     UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];

@@ -10,21 +10,28 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSContactThread;
 
+#pragma mark -
+
 @interface OWSContactAvatarBuilder : OWSAvatarBuilder
+
+@property (nonatomic, readonly, class) LocalUserAvatarMode defaultLocalUserAvatarMode;
 
 /**
  * Build an avatar for a Signal recipient
  */
-+ (nullable UIImage *)buildImageForAddress:(SignalServiceAddress *)address
-                                  diameter:(NSUInteger)diameter
-                               transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(buildImage(address:diameter:transaction:));
++ (nullable UIImage *)buildImageForNonLocalAddress:(SignalServiceAddress *)address
+                                          diameter:(NSUInteger)diameter
+                                       transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(buildImageForNonLocalAddress(_:diameter:transaction:));
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
-                       diameter:(NSUInteger)diameter;
+                       diameter:(NSUInteger)diameter
+            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode;
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
+            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
                     transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
@@ -35,8 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
                                        diameter:(NSUInteger)diameter
     NS_SWIFT_NAME(init(nonSignalNameComponents:colorSeed:diameter:));
 
-- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
-- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter transaction:(SDSAnyReadTransaction *)transaction;
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
+                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode;
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
+                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

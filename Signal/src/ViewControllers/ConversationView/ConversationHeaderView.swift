@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -67,12 +67,13 @@ public class ConversationHeaderView: UIStackView {
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
-    private let avatarView: ConversationAvatarImageView
+    private let avatarView: ConversationAvatarView
 
     @objc
     public required init(thread: TSThread) {
-
-        let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36)
+        let avatarView = ConversationAvatarView(diameter: 36,
+                                                localUserAvatarMode: .noteToSelf)
+        avatarView.configureWithSneakyTransaction(thread: thread)
         self.avatarView = avatarView
         // remove default border on avatarView
         avatarView.layer.borderWidth = 0

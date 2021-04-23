@@ -2,6 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalMessaging/OWSContactAvatarBuilder.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
@@ -22,12 +24,17 @@ NS_ASSUME_NONNULL_BEGIN
               reuseIdentifier:(nullable NSString *)reuseIdentifier
          allowUserInteraction:(BOOL)allowUserInteraction NS_DESIGNATED_INITIALIZER;
 
-- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
-    NS_SWIFT_NAME(configureWithSneakyTransaction(recipientAddress:));
+- (void)configureWithSneakyTransactionWithRecipientAddress:(SignalServiceAddress *)address
+                                       localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+    NS_SWIFT_NAME(configureWithSneakyTransaction(recipientAddress:localUserAvatarMode:));
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
+                  localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                          transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (void)configureWithThread:(TSThread *)thread
+        localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                transaction:(SDSAnyReadTransaction *)transaction;
 
 // This method should be called _before_ the configure... methods.
 - (void)setAccessoryMessage:(nullable NSString *)accessoryMessage;
@@ -40,8 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setCustomName:(nullable NSString *)customName;
 - (void)setCustomNameAttributed:(nullable NSAttributedString *)customName;
-
-- (void)setCustomAvatar:(nullable UIImage *)customAvatar;
 
 - (void)setUseLargeAvatars;
 

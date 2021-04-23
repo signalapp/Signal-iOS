@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSPersonNameComponents *contactNameComponents;
 @property (nonatomic, readonly) ConversationColorName colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
+@property (nonatomic, readonly) LocalUserAvatarMode localUserAvatarMode;
 
 @end
 
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                  nameComponents:(nullable NSPersonNameComponents *)nameComponents
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
+            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
     self = [super init];
     if (!self) {
@@ -42,31 +44,52 @@ NS_ASSUME_NONNULL_BEGIN
     _contactNameComponents = nameComponents;
     _colorName = colorName;
     _diameter = diameter;
+    _localUserAvatarMode = localUserAvatarMode;
 
     return self;
+}
+
++ (LocalUserAvatarMode)defaultLocalUserAvatarMode
+{
+    // TODO: Convert the default to LocalUserAvatarModeAsUser.
+    return LocalUserAvatarModeNoteToSelf;
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
+            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
     // Components for avatar initials.
     __block NSPersonNameComponents *_Nullable nameComponents;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         nameComponents = [self.contactsManager nameComponentsForAddress:address transaction:transaction];
     }];
-    return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
+    return [self initWithAddress:address
+                  nameComponents:nameComponents
+                       colorName:colorName
+                        diameter:diameter
+             localUserAvatarMode:localUserAvatarMode];
+}
+
++ (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction
+{
+    // Components for avatar initials.
+    return [self.contactsManager nameComponentsForAddress:address transaction:transaction];
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
+            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
                     transaction:(SDSAnyReadTransaction *)transaction
 {
-    // Components for avatar initials.
-    NSPersonNameComponents *_Nullable nameComponents = [self.contactsManager nameComponentsForAddress:address
-                                                                                          transaction:transaction];
-    return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
+    return [self initWithAddress:address
+                  nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
+                       colorName:colorName
+                        diameter:diameter
+             localUserAvatarMode:localUserAvatarMode];
 }
 
 - (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
@@ -74,43 +97,60 @@ NS_ASSUME_NONNULL_BEGIN
                                        diameter:(NSUInteger)diameter
 {
     ConversationColorName colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
-    return [self initWithAddress:nil nameComponents:nonSignalNameComponents colorName:colorName diameter:diameter];
+    return [self initWithAddress:nil
+                  nameComponents:nonSignalNameComponents
+                       colorName:colorName
+                        diameter:diameter
+             localUserAvatarMode:OWSContactAvatarBuilder.defaultLocalUserAvatarMode];
 }
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
+                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
     OWSAssertDebug(diameter > 0);
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
+    SignalServiceAddress *address = TSAccountManager.localAddress;
     __block OWSContactAvatarBuilder *instance;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        instance = [self initWithAddress:TSAccountManager.localAddress
+        instance = [self initWithAddress:address
+                          nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address
+                                                                               transaction:transaction]
                                colorName:ConversationColorNameDefault
                                 diameter:diameter
-                             transaction:transaction];
+                     localUserAvatarMode:localUserAvatarMode];
     }];
     return instance;
 }
 
-- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
+                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                                 transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(diameter > 0);
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
-    return [self initWithAddress:TSAccountManager.localAddress
+    SignalServiceAddress *address = TSAccountManager.localAddress;
+    return [self initWithAddress:address
+                  nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
                        colorName:ConversationColorNameDefault
                         diameter:diameter
-                     transaction:transaction];
+             localUserAvatarMode:localUserAvatarMode];
 }
 
-+ (nullable UIImage *)buildImageForAddress:(SignalServiceAddress *)address
-                                  diameter:(NSUInteger)diameter
-                               transaction:(SDSAnyReadTransaction *)transaction
++ (nullable UIImage *)buildImageForNonLocalAddress:(SignalServiceAddress *)address
+                                          diameter:(NSUInteger)diameter
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
                                                                             transaction:transaction];
-    return [[[self alloc] initWithAddress:address colorName:color diameter:diameter
-                              transaction:transaction] buildWithTransaction:transaction];
+    OWSContactAvatarBuilder *avatarBuilder =
+        [[self alloc] initWithAddress:address
+                       nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
+                            colorName:color
+                             diameter:diameter
+                  localUserAvatarMode:OWSContactAvatarBuilder.defaultLocalUserAvatarMode];
+    return [avatarBuilder buildWithTransaction:transaction];
 }
 
 #pragma mark - Instance methods
@@ -121,8 +161,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.address.isLocalAddress) {
-        return self.buildImageForLocalUser;
+    if (self.address.isLocalAddress && self.localUserAvatarMode == LocalUserAvatarModeNoteToSelf) {
+        return self.buildNoteToSelfAvatarForLocalUser;
     }
 
     return [OWSContactAvatarBuilder.contactsManagerImpl imageForAddressWithSneakyTransaction:self.address];
@@ -134,14 +174,14 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.address.isLocalAddress) {
-        return self.buildImageForLocalUser;
+    if (self.address.isLocalAddress && self.localUserAvatarMode == LocalUserAvatarModeNoteToSelf) {
+        return self.buildNoteToSelfAvatarForLocalUser;
     }
 
     return [OWSContactAvatarBuilder.contactsManagerImpl imageForAddress:self.address transaction:transaction];
 }
 
-- (nullable UIImage *)buildImageForLocalUser
+- (nullable UIImage *)buildNoteToSelfAvatarForLocalUser
 {
     OWSCAssertDebug(self.address.isLocalAddress);
     NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];

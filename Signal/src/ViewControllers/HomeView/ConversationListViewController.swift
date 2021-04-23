@@ -33,11 +33,9 @@ public extension ConversationListViewController {
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
-        let avatarImage = OWSContactAvatarBuilder(address: address,
-                                                  colorName: contactThread.conversationColorName,
-                                                  diameter: Self.paymentsBannerAvatarSize,
-                                                  transaction: transaction).build(with: transaction)
-        let avatarView = AvatarImageView(image: avatarImage)
+        let avatarView = ConversationAvatarView(diameter: Self.paymentsBannerAvatarSize,
+                                                localUserAvatarMode: .asUser)
+        avatarView.configure(address: address, transaction: transaction)
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
                                                       displayName: userName,

@@ -278,7 +278,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configureWithSneakyTransaction(recipientAddress: searchResult.signalAccount.recipientAddress)
+            cell.configureWithSneakyTransaction(recipientAddress: searchResult.signalAccount.recipientAddress,
+                                                localUserAvatarMode: .noteToSelf)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {

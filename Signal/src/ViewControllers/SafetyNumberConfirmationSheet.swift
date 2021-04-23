@@ -485,7 +485,8 @@ private class SafetyNumberCell: ContactTableViewCell {
     }
 
     func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
-        configureWithSneakyTransaction(recipientAddress: item.address)
+        configureWithSneakyTransaction(recipientAddress: item.address,
+                                       localUserAvatarMode: .asUser)
 
         ows_setAccessoryView(button)
         backgroundColor = .clear

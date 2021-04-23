@@ -35,6 +35,7 @@ public class CVAvatarBuilder: Dependencies {
         guard let avatar = OWSContactAvatarBuilder(address: address,
                                                    colorName: colorName,
                                                    diameter: diameter,
+                                                   localUserAvatarMode: .asUser,
                                                    transaction: transaction).build(with: transaction) else {
             owsFailDebug("Could build avatar image")
             return nil

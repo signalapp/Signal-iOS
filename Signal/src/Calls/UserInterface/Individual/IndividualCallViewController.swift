@@ -68,7 +68,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     // MARK: - Contact Views
 
     private lazy var contactNameLabel = MarqueeLabel()
-    private lazy var contactAvatarView = AvatarImageView()
+    private lazy var contactAvatarView = ConversationAvatarView(diameter: 200,
+                                                                localUserAvatarMode: .asUser)
     private lazy var contactAvatarContainerView = UIView.container()
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()
@@ -498,8 +499,11 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     @objc
     func updateAvatarImage() {
-        contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400)
-        backgroundAvatarView.image = contactsManagerImpl.imageForAddress(withSneakyTransaction: thread.contactAddress)
+        databaseStorage.read { transaction in
+            contactAvatarView.configure(thread: thread, transaction: transaction)
+            backgroundAvatarView.image = contactsManagerImpl.image(for: thread.contactAddress,
+                                                                   transaction: transaction)
+        }
     }
 
     func createIncomingCallControls() {
@@ -598,7 +602,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarMargin)
 
         contactAvatarView.autoCenterInSuperview()
-        contactAvatarView.autoSetDimensions(to: CGSize(square: 200))
 
         ongoingAudioCallControls.autoPinEdge(toSuperviewEdge: .top, withInset: gradientMargin)
         incomingVideoCallControls.autoPinEdge(toSuperviewEdge: .top)

@@ -24,17 +24,23 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
 @implementation OWSAvatarBuilder
 
-+ (nullable UIImage *)buildImageForThread:(TSThread *)thread diameter:(NSUInteger)diameter
++ (nullable UIImage *)buildImageForThread:(TSThread *)thread
+                                 diameter:(NSUInteger)diameter
+                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
     __block UIImage *_Nullable result;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self buildImageForThread:thread diameter:diameter transaction:transaction];
+        result = [self buildImageForThread:thread
+                                  diameter:diameter
+                       localUserAvatarMode:localUserAvatarMode
+                               transaction:transaction];
     }];
     return result;
 }
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
+                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
                               transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -46,6 +52,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
                                                                colorName:colorName
                                                                 diameter:diameter
+                                                     localUserAvatarMode:localUserAvatarMode
                                                              transaction:transaction];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];

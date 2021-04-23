@@ -192,7 +192,10 @@ extension TSThread {
             sender: nil
         )
 
-        if let threadAvatar = OWSAvatarBuilder.buildImage(thread: self, diameter: 400, transaction: transaction),
+        if let threadAvatar = OWSAvatarBuilder.buildImage(thread: self,
+                                                          diameter: 400,
+                                                          localUserAvatarMode: .noteToSelf,
+                                                          transaction: transaction),
            let threadAvatarPng = threadAvatar.pngData() {
             let image = INImage(imageData: threadAvatarPng)
             sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)

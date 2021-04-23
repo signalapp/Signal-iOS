@@ -72,29 +72,37 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = self.allowUserInteraction;
 }
 
-- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
+- (void)configureWithSneakyTransactionWithRecipientAddress:(SignalServiceAddress *)address
+                                       localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
 {
-    [self.databaseStorage uiReadWithBlock:^(
-        SDSAnyReadTransaction *transaction) { [self configureWithRecipientAddress:address transaction:transaction]; }];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self configureWithRecipientAddress:address localUserAvatarMode:localUserAvatarMode transaction:transaction];
+    }];
 }
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
+                  localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithRecipientAddress:address transaction:transaction];
+    [self.cellView configureWithRecipientAddress:address
+                             localUserAvatarMode:localUserAvatarMode
+                                     transaction:transaction];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (void)configureWithThread:(TSThread *)thread
+        localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithThread:thread transaction:transaction];
+    [self.cellView configureWithThread:thread localUserAvatarMode:localUserAvatarMode transaction:transaction];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
@@ -130,11 +138,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setCustomNameAttributed:(nullable NSAttributedString *)customName
 {
     [self.cellView setCustomName:customName];
-}
-
-- (void)setCustomAvatar:(nullable UIImage *)customAvatar
-{
-    [self.cellView setCustomAvatar:customAvatar];
 }
 
 - (void)setUseLargeAvatars

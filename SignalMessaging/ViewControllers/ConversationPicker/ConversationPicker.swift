@@ -651,7 +651,9 @@ private class ConversationPickerCell: ContactTableViewCell {
 
         switch conversationItem.messageRecipient {
         case .contact(let address):
-            super.configure(withRecipientAddress: address, transaction: transaction)
+            super.configure(withRecipientAddress: address,
+                            localUserAvatarMode: .noteToSelf,
+                            transaction: transaction)
         case .group(let groupThreadId):
             guard let groupThread = TSGroupThread.anyFetchGroupThread(
                 uniqueId: groupThreadId,
@@ -660,7 +662,9 @@ private class ConversationPickerCell: ContactTableViewCell {
                 owsFailDebug("Failed to find group thread")
                 break
             }
-            super.configure(with: groupThread, transaction: transaction)
+            super.configure(with: groupThread,
+                            localUserAvatarMode: .noteToSelf,
+                            transaction: transaction)
         }
 
         selectionStyle = .none

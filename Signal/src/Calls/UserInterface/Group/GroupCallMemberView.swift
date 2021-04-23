@@ -248,7 +248,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
-    let avatarView = AvatarImageView()
+    let avatarView = ConversationAvatarView(diameter: 0,
+                                            localUserAvatarMode: .asUser)
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
@@ -310,7 +311,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         hasBeenConfigured = true
         deferredReconfigTimer?.invalidate()
 
-        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
+        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction -> (UIImage?, ConversationColorName) in
+            avatarView.diameter = avatarDiameter
+            avatarView.configure(address: device.address, transaction: transaction)
+            avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+
             return (
                 self.contactsManagerImpl.image(for: device.address, transaction: transaction),
                 self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
@@ -318,20 +323,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
 
         backgroundAvatarView.image = profileImage
-
-        let avatarBuilder = OWSContactAvatarBuilder(
-            address: device.address,
-            colorName: conversationColorName,
-            diameter: avatarDiameter
-        )
-
-        if device.address.isLocalAddress {
-            avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
-        } else {
-            avatarView.image = avatarBuilder.build()
-        }
-
-        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
         muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets

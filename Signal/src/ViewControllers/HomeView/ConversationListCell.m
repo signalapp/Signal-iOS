@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationListCell ()
 
-@property (nonatomic) AvatarImageView *avatarView;
+@property (nonatomic) ConversationAvatarView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
@@ -68,14 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     _viewConstraints = [NSMutableArray new];
 
-    self.avatarView = [[AvatarImageView alloc] init];
+    self.avatarView = [[ConversationAvatarView alloc] initWithDiameter:self.avatarSize
+                                                   localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
     [self.contentView addSubview:self.avatarView];
-    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
-    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:16];
     [self.avatarView autoVCenterInSuperview];
-    [self.avatarView setContentHuggingHigh];
-    [self.avatarView setCompressionResistanceHigh];
     // Ensure that the cell's contents never overflow the cell bounds.
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
@@ -223,6 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = thread;
     self.overrideSnippet = overrideSnippet;
     self.isBlocked = isBlocked;
+    [self.avatarView configureWithSneakyTransactionWithThread:thread.threadRecord];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -233,7 +231,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
                                                object:nil];
     [self updateNameLabel];
-    [self updateAvatarView];
 
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
@@ -386,18 +383,6 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.thread.hasUnreadMessages && self.overrideSnippet == nil);
 }
 
-- (void)updateAvatarView
-{
-    ThreadViewModel *thread = self.thread;
-    if (thread == nil) {
-        OWSFailDebug(@"thread should not be nil");
-        self.avatarView.image = nil;
-        return;
-    }
-
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord diameter:self.avatarSize];
-}
-
 - (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
 {
     OWSAssertDebug(thread);
@@ -543,6 +528,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.overrideSnippet = nil;
     self.avatarView.image = nil;
     self.messageStatusWrapper.hidden = NO;
+    [self.avatarView reset];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -567,7 +553,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateNameLabel];
-    [self updateAvatarView];
 }
 
 - (void)updateNameLabel

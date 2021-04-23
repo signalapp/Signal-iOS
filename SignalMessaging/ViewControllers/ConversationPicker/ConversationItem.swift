@@ -135,6 +135,8 @@ extension GroupConversationItem: ConversationItem {
 
     var image: UIImage? {
         guard let groupThread = groupThread else { return nil }
-        return OWSAvatarBuilder.buildImage(thread: groupThread, diameter: kStandardAvatarSize)
+        return OWSAvatarBuilder.buildImage(thread: groupThread,
+                                           diameter: kStandardAvatarSize,
+                                           localUserAvatarMode: .noteToSelf)
     }
 }
