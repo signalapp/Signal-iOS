@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self ows_applyTheme];
     }
 
+    // Do not linkify; we linkify manually.
     self.dataDetectorTypes = UIDataDetectorTypeNone;
 
     return self;
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self ows_applyTheme];
     }
 
+    // Do not linkify; we linkify manually.
     self.dataDetectorTypes = UIDataDetectorTypeNone;
 
     return self;

@@ -402,9 +402,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             }
             textView.shouldIgnoreEvents = shouldIgnoreEvents
 
-            // Do not linkify; we linkify manually.
-            textView.dataDetectorTypes = []
-
             textViewConfig.applyForRendering(textView: textView)
 
             if textView.superview == nil {
@@ -485,7 +482,23 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func linkifyData(attributedText: NSMutableAttributedString) {
-        let dataItems = bodyTextState.dataItems.sorted { (left, right) in
+        Self.linkifyData(attributedText: attributedText, dataItems: bodyTextState.dataItems)
+    }
+
+    public static func linkifyData(attributedText: NSMutableAttributedString,
+                                   hasPendingMessageRequest: Bool,
+                                   shouldAllowLinkification: Bool) {
+
+        let dataItems = detectDataItems(text: attributedText.string,
+                                        hasPendingMessageRequest: hasPendingMessageRequest,
+                                        shouldAllowLinkification: shouldAllowLinkification)
+        Self.linkifyData(attributedText: attributedText, dataItems: dataItems)
+    }
+
+    private static func linkifyData(attributedText: NSMutableAttributedString,
+                                    dataItems: [DataItem]) {
+        // Sort so that we can detect overlap.
+        let dataItems = dataItems.sorted { (left, right) in
             left.range.location < right.range.location
         }
         var lastIndex: Int = 0
