@@ -38,6 +38,69 @@ open class CVImageView: UIImageView {
 
         deactivateAllConstraints()
     }
+
+    // MARK: - Layout
+
+    public typealias LayoutBlock = (UIView) -> Void
+
+    private var layoutBlocks = [LayoutBlock]()
+
+    public func addLayoutBlock(_ layoutBlock: @escaping LayoutBlock) {
+        layoutBlocks.append(layoutBlock)
+    }
+
+    public override var bounds: CGRect {
+        didSet {
+            if oldValue.size != bounds.size {
+                viewSizeDidChange()
+            }
+        }
+    }
+
+    public override var frame: CGRect {
+        didSet {
+            if oldValue.size != frame.size {
+                viewSizeDidChange()
+            }
+        }
+    }
+
+    func viewSizeDidChange() {
+        layoutSubviews()
+    }
+
+    open override func layoutSubviews() {
+        layoutSubviews(skipLayoutBlocks: false)
+    }
+
+    public func layoutSubviews(skipLayoutBlocks: Bool = false) {
+        AssertIsOnMainThread()
+
+        super.layoutSubviews()
+
+        if !skipLayoutBlocks {
+            applyLayoutBlocks()
+        }
+    }
+
+    public func applyLayoutBlocks() {
+        AssertIsOnMainThread()
+
+        for layoutBlock in layoutBlocks {
+            layoutBlock(self)
+        }
+    }
+
+    // MARK: - Circles
+
+    @objc
+    public static func circleView() -> CVImageView {
+        let result = CVImageView()
+        result.addLayoutBlock { view in
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
+        }
+        return result
+    }
 }
 
 // MARK: -
