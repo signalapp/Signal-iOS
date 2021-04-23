@@ -146,6 +146,30 @@ extension ConversationViewController {
             }
         }
     }
+
+    @objc
+    public func showUnknownThreadWarningAlert() {
+        // TODO: Finalize this copy.
+        let message = (thread.isGroupThread
+                        ? NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE",
+                                            comment: "Message for UI warning about an unknown group thread.")
+                        : NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE",
+                                            comment: "Message for UI  warning about an unknown contact thread."))
+        let actionSheet = ActionSheetController(message: message)
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE",
+                                     comment: "Label for button to learn more about message requests."),
+            style: .default,
+            handler: { [weak self] _ in
+                // TODO: Finalize this behavior.
+                let url = URL(string: "https://support.signal.org/hc/articles/360007459591")!
+                UIApplication.shared.open(url, options: [:])
+
+            }
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
 }
 
 // MARK: - ForwardMessageDelegate

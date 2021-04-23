@@ -23,6 +23,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case typingIndicator
     case threadDetails
     case systemMessage
+    case unknownThreadWarning
 
     // MARK: - CustomStringConvertible
 
@@ -42,6 +43,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
             case .typingIndicator: return "typingIndicator"
             case .threadDetails: return "threadDetails"
             case .systemMessage: return "systemMessage"
+            case .unknownThreadWarning: return "unknownThreadWarning"
             }
         }
     }

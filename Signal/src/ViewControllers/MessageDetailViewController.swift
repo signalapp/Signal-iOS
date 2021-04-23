@@ -976,6 +976,11 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}
+
+    // TODO:
+    func cvc_didTapUnknownThreadWarningGroup() {}
+    // TODO:
+    func cvc_didTapUnknownThreadWarningContact() {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

@@ -315,7 +315,15 @@ public class CVLoader: NSObject {
                 return nil
             }
             rootComponent = CVComponentThreadDetails(itemModel: itemModel, threadDetails: threadDetails)
-        case .textOnlyMessage, .audio, .genericAttachment, .contactShare, .bodyMedia, .viewOnce, .stickerMessage:
+        case .unknownThreadWarning:
+            guard let unknownThreadWarning = itemModel.componentState.unknownThreadWarning else {
+                owsFailDebug("Missing unknownThreadWarning.")
+                return nil
+            }
+            rootComponent = CVComponentSystemMessage(itemModel: itemModel,
+                                                     systemMessage: unknownThreadWarning)
+        case .textOnlyMessage, .audio, .genericAttachment, .contactShare,
+             .bodyMedia, .viewOnce, .stickerMessage:
             rootComponent = CVComponentMessage(itemModel: itemModel)
         case .typingIndicator:
             guard let typingIndicator = itemModel.componentState.typingIndicator else {

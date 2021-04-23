@@ -24,25 +24,17 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func configure(cellView: UIView,
-                          cellMeasurement: CVCellMeasurement,
-                          componentDelegate: CVComponentDelegate,
-                          cellSelection: CVCellSelection,
-                          messageSwipeActionState: CVMessageSwipeActionState,
-                          componentView: CVComponentView) {
-
-        configureForRendering(componentView: componentView,
-                              cellMeasurement: cellMeasurement,
-                              componentDelegate: componentDelegate)
-
-        let rootView = componentView.rootView
-        if rootView.superview == nil {
-            owsAssertDebug(cellView.layoutMargins == .zero)
-            owsAssertDebug(cellView.subviews.isEmpty)
-
-            cellView.addSubview(rootView)
-            rootView.autoPinEdgesToSuperviewEdges()
-        }
+    public func configureCellRootComponent(cellView: UIView,
+                                           cellMeasurement: CVCellMeasurement,
+                                           componentDelegate: CVComponentDelegate,
+                                           cellSelection: CVCellSelection,
+                                           messageSwipeActionState: CVMessageSwipeActionState,
+                                           componentView: CVComponentView) {
+        Self.configureCellRootComponent(rootComponent: self,
+                                        cellView: cellView,
+                                        cellMeasurement: cellMeasurement,
+                                        componentDelegate: componentDelegate,
+                                        componentView: componentView)
     }
 
     private var outerHStackConfig: CVStackViewConfig {
@@ -238,7 +230,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
-    private func buttonLabelConfig(action: CVMessageAction) -> CVLabelConfig {
+    private func buttonLabelConfig(action: Action) -> CVLabelConfig {
         let textColor: UIColor
         if nil != interaction as? OWSGroupCallMessage {
             textColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
@@ -259,10 +251,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         UIFont.ows_dynamicTypeFootnote
     }
 
-    private static let measurementKey_outerHStack = "CVComponentFooter.measurementKey_outerHStack"
-    private static let measurementKey_innerVStack = "CVComponentFooter.measurementKey_innerVStack"
-    private static let measurementKey_outerVStack = "CVComponentFooter.measurementKey_outerVStack"
-    private static let measurementKey_buttonSize = "CVComponentFooter.measurementKey_buttonSize"
+    private static let measurementKey_outerHStack = "CVComponentSystemMessage.measurementKey_outerHStack"
+    private static let measurementKey_innerVStack = "CVComponentSystemMessage.measurementKey_innerVStack"
+    private static let measurementKey_outerVStack = "CVComponentSystemMessage.measurementKey_outerVStack"
+    private static let measurementKey_buttonSize = "CVComponentSystemMessage.measurementKey_buttonSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -727,12 +719,40 @@ extension CVComponentSystemMessage {
         }
     }
 
+    // MARK: - Unknown Thread Warning
+
+    static func buildUnknownThreadWarningState(interaction: TSInteraction,
+                                               threadViewModel: ThreadViewModel,
+                                               transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
+
+        let titleColor = Theme.secondaryTextAndIconColor
+        if threadViewModel.isGroupThread {
+            let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
+                                          comment: "Indicator warning about an unknown group thread.")
+            let action = Action(title: CommonStrings.learnMore,
+                                accessibilityIdentifier: "unknown_thread_warning",
+                                action: .cvc_didTapUnknownThreadWarningGroup)
+            return CVComponentState.SystemMessage(title: title.attributedString(),
+                                                  titleColor: titleColor,
+                                                  action: action)
+        } else {
+            let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
+                                          comment: "Indicator warning about an unknown contact thread.")
+            let action = Action(title: CommonStrings.learnMore,
+                                accessibilityIdentifier: "unknown_thread_warning",
+                                action: .cvc_didTapUnknownThreadWarningContact)
+            return CVComponentState.SystemMessage(title: title.attributedString(),
+                                                  titleColor: titleColor,
+                                                  action: action)
+        }
+    }
+
     // MARK: - Actions
 
     static func action(forInteraction interaction: TSInteraction,
                        threadViewModel: ThreadViewModel,
                        currentCallThreadId: String?,
-                       transaction: SDSAnyReadTransaction) -> CVMessageAction? {
+                       transaction: SDSAnyReadTransaction) -> Action? {
 
         let thread = threadViewModel.threadRecord
 
@@ -752,7 +772,7 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func action(forErrorMessage message: TSErrorMessage) -> CVMessageAction? {
+    private static func action(forErrorMessage message: TSErrorMessage) -> Action? {
         switch message.errorType {
         case .nonBlockingIdentityChange:
             guard let address = message.recipientAddress else {
@@ -761,14 +781,14 @@ extension CVComponentSystemMessage {
             }
 
             if message.wasIdentityVerified {
-                return CVMessageAction(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                                                comment: "Label for button to verify a user's safety number."),
-                                       accessibilityIdentifier: "verify_safety_number",
-                                       action: .cvc_didTapPreviouslyVerifiedIdentityChange(address: address))
+                return Action(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                                       comment: "Label for button to verify a user's safety number."),
+                              accessibilityIdentifier: "verify_safety_number",
+                              action: .cvc_didTapPreviouslyVerifiedIdentityChange(address: address))
             } else {
-                return CVMessageAction(title: CommonStrings.learnMore,
-                                       accessibilityIdentifier: "learn_more",
-                                       action: .cvc_didTapUnverifiedIdentityChange(address: address))
+                return Action(title: CommonStrings.learnMore,
+                              accessibilityIdentifier: "learn_more",
+                              action: .cvc_didTapUnverifiedIdentityChange(address: address))
             }
         case .wrongTrustedIdentityKey:
             guard let message = message as? TSInvalidIdentityKeyErrorMessage else {
@@ -808,7 +828,7 @@ extension CVComponentSystemMessage {
     }
 
     private static func action(forInfoMessage infoMessage: TSInfoMessage,
-                               transaction: SDSAnyReadTransaction) -> CVMessageAction? {
+                               transaction: SDSAnyReadTransaction) -> Action? {
 
         switch infoMessage.messageType {
         case .userNotRegistered,
@@ -935,7 +955,7 @@ extension CVComponentSystemMessage {
 
     private static func action(forCall call: TSCall,
                                thread: TSThread,
-                               transaction: SDSAnyReadTransaction) -> CVMessageAction? {
+                               transaction: SDSAnyReadTransaction) -> Action? {
 
         // TODO: Respect -canCall from ConversationViewController
 
@@ -979,7 +999,7 @@ extension CVComponentSystemMessage {
 
     private static func action(forGroupCall groupCallMessage: OWSGroupCallMessage,
                                threadViewModel: ThreadViewModel,
-                               currentCallThreadId: String?) -> CVMessageAction? {
+                               currentCallThreadId: String?) -> Action? {
 
         let thread = threadViewModel.threadRecord
         // Assume the current thread supports calling if we have no delegate. This ensures we always
