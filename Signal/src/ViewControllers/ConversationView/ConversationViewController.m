@@ -141,7 +141,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable, weak) ReactionsDetailSheet *reactionsDetailSheet;
 @property (nonatomic) MessageActionsToolbar *selectionToolbar;
-@property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
 
 @property (nonatomic) DebouncedEvent *otherUsersProfileDidChangeEvent;
 
@@ -476,45 +475,19 @@ typedef enum : NSUInteger {
 
     [self registerReuseIdentifiers];
 
-    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
-    [self.view addSubview:wallpaperContainer];
-    [wallpaperContainer autoPinEdgesToSuperviewEdges];
-    [self setupWallpaper];
-
     // The view controller will only automatically adjust content insets for a
     // scrollView at index 0, so we need the collection view to remain subview index 0.
-    // But the wallpaper should appear visually behind the collection view.
-    wallpaperContainer.layer.zPosition = -1;
-    wallpaperContainer.userInteractionEnabled = NO;
+    // But the background views should appear visually behind the collection view.
+    UIView *backgroundContainer = self.viewState.backgroundContainer;
+    [self.view addSubview:backgroundContainer];
+    [backgroundContainer autoPinEdgesToSuperviewEdges];
+    [self setupWallpaper];
 
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.bottomBar autoPinWidthToSuperview];
 
     _selectionToolbar = [self buildSelectionToolbar];
-    _selectionHighlightView = [SelectionHighlightView new];
-    self.selectionHighlightView.userInteractionEnabled = NO;
-    [self.collectionView addSubview:self.selectionHighlightView];
-#if TESTABLE_BUILD
-    self.selectionHighlightView.accessibilityIdentifier = @"selectionHighlightView";
-#endif
-
-    // Selection Highlight View Layout:
-    //
-    // We want the highlight view to have the same frame as the collectionView
-    // but [selectionHighlightView autoPinEdgesToSuperviewEdges] undesirably
-    // affects the size of the collection view. To witness this, you can longpress
-    // on an item and see the collectionView offsets change. Pinning to just the
-    // top left and the same height/width achieves the desired results without
-    // the negative side effects.
-    [self.selectionHighlightView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.selectionHighlightView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [self.selectionHighlightView autoMatchDimension:ALDimensionWidth
-                                        toDimension:ALDimensionWidth
-                                             ofView:self.collectionView];
-    [self.selectionHighlightView autoMatchDimension:ALDimensionHeight
-                                        toDimension:ALDimensionHeight
-                                             ofView:self.collectionView];
 
     // This should kick off the first load.
     OWSAssertDebug(!self.hasRenderState);
@@ -3130,7 +3103,7 @@ typedef enum : NSUInteger {
 
     [self scheduleScrollUpdateTimer];
 
-    [self updateWallpaperMask];
+    [self updateScrollingContent];
 }
 
 - (void)scheduleScrollUpdateTimer
@@ -3243,7 +3216,7 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateWallpaperMask];
+    [self updateScrollingContent];
 }
 
 - (void)collectionViewWillAnimate
@@ -3631,7 +3604,7 @@ typedef enum : NSUInteger {
     for (CVCell *cell in self.collectionView.visibleCells) {
         cell.isCellVisible = isCellVisible;
     }
-    [self updateWallpaperMask];
+    [self updateScrollingContent];
 }
 
 #pragma mark - ContactsPickerDelegate

@@ -298,11 +298,14 @@ private class WallpaperPage: UIViewController {
         view = UIView()
         view.backgroundColor = Theme.darkThemeBackgroundColor
 
-        guard let wallpaperView = Wallpaper.view(for: wallpaper, photo: photo) else {
+        guard let wallpaperView = Wallpaper.view(for: wallpaper,
+                                                 photo: photo,
+                                                 shouldDim: false) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
 
-        self.wallpaperView = wallpaperView
+        let wallpaperPreviewView = wallpaperView.asPreviewView()
+        self.wallpaperView = wallpaperPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
         if case .photo = wallpaper, let photo = photo {
@@ -313,17 +316,17 @@ private class WallpaperPage: UIViewController {
             scrollView.delegate = self
             view.addSubview(scrollView)
             scrollView.autoPinEdgesToSuperviewEdges()
-            scrollView.addSubview(wallpaperView)
+            scrollView.addSubview(wallpaperPreviewView)
 
-            wallpaperView.autoPinEdgesToSuperviewEdges()
+            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
 
             wallpaperViewWidthPriorityConstraints = [
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .width,
                     to: .width,
                     of: scrollView
                 ),
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .height,
                     to: .width,
                     of: scrollView,
@@ -333,12 +336,12 @@ private class WallpaperPage: UIViewController {
             wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightPriorityConstraints = [
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .height,
                     to: .height,
                     of: scrollView
                 ),
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .width,
                     to: .height,
                     of: scrollView,
@@ -348,12 +351,12 @@ private class WallpaperPage: UIViewController {
             wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightAndWidthPriorityConstraints = [
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .height,
                     to: .height,
                     of: scrollView
                 ),
-                wallpaperView.autoMatch(
+                wallpaperPreviewView.autoMatch(
                     .width,
                     to: .width,
                     of: scrollView
@@ -363,8 +366,8 @@ private class WallpaperPage: UIViewController {
 
             updateWallpaperConstraints(reference: view.bounds.size)
         } else {
-            view.addSubview(wallpaperView)
-            wallpaperView.autoPinEdgesToSuperviewEdges()
+            view.addSubview(wallpaperPreviewView)
+            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
         }
     }
 
