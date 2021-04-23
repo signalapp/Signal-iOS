@@ -292,7 +292,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         let allMatches = detector.matches(
             in: searchString,
             options: [],
-            range: NSRange(searchString.startIndex..<searchString.endIndex, in: searchString))
+            range: searchString.entireRange)
 
         return allMatches.first(where: {
             guard let parsedUrl = $0.url else { return false }
