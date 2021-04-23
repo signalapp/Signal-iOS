@@ -111,14 +111,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedAttachmentSize: CGFloat = 54
         let remotelySourcedContentIconSize: CGFloat = 16
         let cancelIconSize: CGFloat = 20
-        let cancelIconMargins = UIEdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 6)
+        let cancelIconMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 0, trailing: 6)
 
         var outerStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .vertical,
                               alignment: .fill,
                               spacing: 0,
                               layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 6,
-                                                          vMargin: 7))
+                                                          vMargin: 0))
         }
 
         var hStackConfig: CVStackViewConfig {
@@ -551,7 +551,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         if configurator.isForPreview {
             let cancelIconSize = CGSize.square(configurator.cancelIconSize)
             let cancelWrapperSize = cancelIconSize + configurator.cancelIconMargins.asSize
-            hStackSubviewInfos.append(cancelWrapperSize.asManualSubviewInfo(hasFixedSize: true))
+            hStackSubviewInfos.append(cancelWrapperSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
