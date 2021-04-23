@@ -29,17 +29,11 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
             return
         }
 
-        // TODO: Reuse LinkPreviewView.
-        let linkPreviewView = LinkPreviewView(draftDelegate: nil)
-        linkPreviewView.state = linkPreviewState.state
-        let linkPreviewWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(linkPreviewView)
-
-        let stackView = componentView.stackView
-        stackView.reset()
-        stackView.configure(config: stackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: [ linkPreviewWrapper ])
+        let linkPreviewView = componentView.linkPreviewView
+        linkPreviewView.configureForRendering(state: linkPreviewState.state,
+                                              isDraft: false,
+                                              hasAsymmetricalRounding: false,
+                                              cellMeasurement: cellMeasurement)
     }
 
     private var stackConfig: CVStackViewConfig {
@@ -49,17 +43,13 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
                           layoutMargins: .zero)
     }
 
-    private static let measurementKey_stackView = "CVComponentLinkPreview.measurementKey_stackView"
-
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let linkPreviewSize = LinkPreviewView.measure(withState: linkPreviewState.state).ceil
-        let stackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_stackView,
-                                                            subviewInfos: [ linkPreviewSize.asManualSubviewInfo ])
-        return stackMeasurement.measuredSize
+        return LinkPreviewView.measure(maxWidth: maxWidth,
+                                       measurementBuilder: measurementBuilder,
+                                       state: linkPreviewState.state,
+                                       isDraft: false)
     }
 
     // MARK: - Events
@@ -80,21 +70,18 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewLinkPreview: NSObject, CVComponentView {
 
-        // For now we simply use this view to host LinkPreviewView.
-        //
-        // TODO: Reuse LinkPreviewView.
-        fileprivate let stackView = ManualStackView(name: "LinkPreview.stackView")
+        fileprivate let linkPreviewView = LinkPreviewView(draftDelegate: nil)
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            stackView
+            linkPreviewView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
-            stackView.reset()
+            linkPreviewView.reset()
         }
     }
 }

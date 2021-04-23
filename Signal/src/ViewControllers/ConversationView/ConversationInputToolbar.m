@@ -552,7 +552,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [quotedMessagePreview autoPinEdgesToSuperviewMargins];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, quotedMessagePreview);
 
-    self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
+    // hasAsymmetricalRounding may have changed.
+    [self clearLinkPreviewView];
+    [self updateInputLinkPreview];
 
     [self clearDesiredKeyboard];
 }
@@ -1363,8 +1365,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self clearLinkPreviewView];
 
     LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:self];
-    linkPreviewView.state = state;
-    linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
+    [linkPreviewView configureForNonCVCWithState:state isDraft:YES hasAsymmetricalRounding:!self.quotedReply];
     self.linkPreviewView = linkPreviewView;
 
     self.linkPreviewWrapper.hidden = NO;
