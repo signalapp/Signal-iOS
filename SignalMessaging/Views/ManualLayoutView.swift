@@ -50,10 +50,15 @@ open class ManualLayoutView: UIView {
         notImplemented()
     }
 
+    @objc
+    public var shouldDeactivateConstraints = true
+
     public override func updateConstraints() {
         super.updateConstraints()
 
-        deactivateAllConstraints()
+        if shouldDeactivateConstraints {
+            deactivateAllConstraints()
+        }
     }
 
     // MARK: - Circles and Pills

@@ -68,7 +68,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         innerStackView.addSubviewToFillSuperviewEdges(bubbleView)
 
         let typingIndicatorView = componentView.typingIndicatorView
-        let typingIndicatorWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(typingIndicatorView)
+        typingIndicatorView.configureForConversationView(cellMeasurement: cellMeasurement)
 
         outerViews.append(innerStackView)
 
@@ -78,7 +78,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         innerStackView.configure(config: innerStackViewConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_innerStack,
-                             subviews: [ typingIndicatorWrapper ])
+                             subviews: [ typingIndicatorView ])
         outerStackView.configure(config: outerStackViewConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
@@ -118,7 +118,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
 
-        innerSubviewInfos.append(TypingIndicatorView.measureSize.asManualSubviewInfo(hasFixedSize: true))
+        let typingIndicatorSize = TypingIndicatorView.measure(measurementBuilder: measurementBuilder)
+        innerSubviewInfos.append(typingIndicatorSize.asManualSubviewInfo(hasFixedSize: true))
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackViewConfig,
                                                             measurementBuilder: measurementBuilder,
@@ -150,7 +151,6 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
         fileprivate let avatarView = AvatarImageView()
         fileprivate let bubbleView = OWSBubbleView()
-        // TODO:
         fileprivate let typingIndicatorView = TypingIndicatorView()
 
         public var isDedicatedCellView = false
@@ -177,7 +177,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
             avatarView.image = nil
 
-            typingIndicatorView.stopAnimation()
+            typingIndicatorView.reset()
             typingIndicatorView.removeFromSuperview()
         }
     }

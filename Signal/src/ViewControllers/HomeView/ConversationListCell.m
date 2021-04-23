@@ -170,6 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.unreadBadge];
 
     self.typingIndicatorView = [TypingIndicatorView new];
+    [self.typingIndicatorView configureForConversationList];
     [self.typingIndicatorView setContentHuggingHorizontalHigh];
     [self.typingIndicatorView setCompressionResistanceHorizontalHigh];
     [self.typingIndicatorWrapper addSubview:self.typingIndicatorView];
