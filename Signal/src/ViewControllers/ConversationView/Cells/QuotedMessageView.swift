@@ -17,10 +17,7 @@ public protocol QuotedMessageViewDelegate {
 
 // TODO: Remove OWSQuotedMessageView.
 @objc
-public class QuotedMessageView: OWSLayerView {
-
-    @objc
-    public weak var delegate: QuotedMessageViewDelegate?
+public class QuotedMessageView: ManualStackViewWithLayer {
 
     public struct State: Equatable {
         let quotedReplyModel: OWSQuotedReplyModel
@@ -30,26 +27,21 @@ public class QuotedMessageView: OWSLayerView {
         let isForPreview: Bool
         let quotedAuthorName: String
     }
-    private let state: State
 
-    private var quotedReplyModel: OWSQuotedReplyModel { state.quotedReplyModel }
+    private var state: State?
 
-    private let sharpCorners: OWSDirectionalRectCorner
+    private weak var delegate: QuotedMessageViewDelegate?
 
-    required init(state: State, sharpCorners: OWSDirectionalRectCorner) {
-        self.state = state
-        self.sharpCorners = sharpCorners
+    private let hStack = ManualStackView(name: "hStack")
+    private let vStack = ManualStackView(name: "vStack")
+    private let remotelySourcedContentStack = ManualStackViewWithLayer(name: "remotelySourcedContentStack")
 
-        super.init()
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private let quotedAuthorLabel = UILabel()
-    private let quotedTextLabel = UILabel()
-    private let quoteContentSourceLabel = UILabel()
+    private let stripeView = UIView()
+    private let quotedAuthorLabel = CVLabel()
+    private let quotedTextLabel = CVLabel()
+    private let quoteContentSourceLabel = CVLabel()
+    private let quotedImageView = CVImageView()
+    private let remotelySourcedContentIconView = CVImageView()
 
     static func stateForConversation(quotedReplyModel: OWSQuotedReplyModel,
                                      displayableQuotedText: DisplayableText?,
@@ -91,20 +83,6 @@ public class QuotedMessageView: OWSLayerView {
                      quotedAuthorName: quotedAuthorName)
     }
 
-    @objc
-    public var sharpCornersForPreview: OWSDirectionalRectCorner {
-        OWSDirectionalRectCorner(rawValue: OWSDirectionalRectCorner.bottomLeading.rawValue |
-                                    OWSDirectionalRectCorner.bottomTrailing.rawValue)
-    }
-
-    public func createContents() {
-        Configurator(state: state).createContents(rootView: self,
-                                                  quotedAuthorLabel: quotedAuthorLabel,
-                                                  quotedTextLabel: quotedTextLabel,
-                                                  quoteContentSourceLabel: quoteContentSourceLabel,
-                                                  sharpCorners: sharpCorners)
-    }
-
     // The Configurator can be used to:
     //
     // * Configure this view for rendering.
@@ -119,12 +97,7 @@ public class QuotedMessageView: OWSLayerView {
         var isForPreview: Bool { state.isForPreview }
         var quotedAuthorName: String { state.quotedAuthorName }
 
-        var bubbleHMargin: CGFloat { isForPreview ? 0 : 6 }
-
-        let hSpacing: CGFloat = 8
-        let vSpacing: CGFloat = 2
         let stripeThickness: CGFloat = 4
-        let textVMargin: CGFloat = 7
         var quotedAuthorFont: UIFont { UIFont.ows_dynamicTypeSubheadline.ows_semibold }
         var quotedAuthorColor: UIColor { conversationStyle.quotedReplyAuthorColor() }
         var quotedTextColor: UIColor { conversationStyle.quotedReplyTextColor() }
@@ -135,9 +108,38 @@ public class QuotedMessageView: OWSLayerView {
         var filenameFont: UIFont { quotedTextFont }
         var quotedAuthorHeight: CGFloat { quotedAuthorFont.lineHeight }
         let quotedAttachmentSize: CGFloat = 54
-        let kRemotelySourcedContentGlyphLength: CGFloat = 16
-        let kRemotelySourcedContentRowMargin: CGFloat = 4
-        let kRemotelySourcedContentRowSpacing: CGFloat = 3
+        let remotelySourcedContentIconSize: CGFloat = 16
+        let cancelIconSize: CGFloat = 20
+        let cancelIconMargins = UIEdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 6)
+
+        var outerStackConfig: CVStackViewConfig {
+            CVStackViewConfig(axis: .horizontal,
+                              alignment: .fill,
+                              spacing: 0,
+                              layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 6,
+                                                          vMargin: 7))
+        }
+
+        var hStackConfig: CVStackViewConfig {
+            CVStackViewConfig(axis: .horizontal,
+                              alignment: .fill,
+                              spacing: 8,
+                              layoutMargins: .zero)
+        }
+
+        var vStackConfig: CVStackViewConfig {
+            CVStackViewConfig(axis: .vertical,
+                              alignment: .leading,
+                              spacing: 2,
+                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 7))
+        }
+
+        var remotelySourcedContentStackConfig: CVStackViewConfig {
+            CVStackViewConfig(axis: .horizontal,
+                              alignment: .center,
+                              spacing: 3,
+                              layoutMargins: UIEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 4))
+        }
 
         var hasQuotedAttachment: Bool {
             contentType != nil && OWSMimeTypeOversizeTextMessage != contentType
@@ -149,6 +151,22 @@ public class QuotedMessageView: OWSLayerView {
                 return nil
             }
             return contentType
+        }
+
+        var isAudioAttachment: Bool {
+            // TODO: Are we going to use the filename?  For all mimetypes?
+            guard let contentType = self.contentType else {
+                return false
+            }
+            return MIMETypeUtil.isAudio(contentType)
+        }
+
+        var isVideoAttachment: Bool {
+            // TODO: Are we going to use the filename?  For all mimetypes?
+            guard let contentType = self.contentType else {
+                return false
+            }
+            return MIMETypeUtil.isVideo(contentType)
         }
 
         var hasQuotedAttachmentThumbnailImage: Bool {
@@ -167,257 +185,22 @@ public class QuotedMessageView: OWSLayerView {
                         : conversationStyle.quotingSelfHighlightColor())
         }
 
-        func createInnerBubbleView(sharpCorners: OWSDirectionalRectCorner) -> UIView {
-            let sharpCornerRadius: CGFloat = 4
-            let wideCornerRadius: CGFloat = 12
-
-            let innerBubbleView: UIView
-            if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
-                innerBubbleView = UIView()
-                innerBubbleView.layer.maskedCorners = .all
-                innerBubbleView.layer.cornerRadius = sharpCorners.isEmpty ? wideCornerRadius : sharpCornerRadius
-
+        var quotedAuthorLabelConfig: CVLabelConfig {
+            let text: String
+            if quotedReplyModel.authorAddress.isLocalAddress {
+                text = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
+                                         comment: "message header label when someone else is quoting you")
             } else {
-                // Slow path. CA isn't optimized to handle corners of multiple radii
-                // Let's do it by hand with a CAShapeLayer
-                let maskLayer = CAShapeLayer()
-                innerBubbleView = OWSLayerView(frame: .zero) { (layerView: UIView) in
-                    let layerFrame = layerView.bounds
-
-                    let bubbleLeft: CGFloat = 0
-                    let bubbleRight = layerFrame.width
-                    let bubbleTop: CGFloat = 0
-                    let bubbleBottom = layerFrame.height
-                    let bezierPath = OWSBubbleView.roundedBezierRect(withBubbleTop: bubbleTop,
-                                                                     bubbleLeft: bubbleLeft,
-                                                                     bubbleBottom: bubbleBottom,
-                                                                     bubbleRight: bubbleRight,
-                                                                     sharpCornerRadius: sharpCornerRadius,
-                                                                     wideCornerRadius: wideCornerRadius,
-                                                                     sharpCorners: sharpCorners)
-                    maskLayer.path = bezierPath.cgPath
-                }
-                innerBubbleView.layer.mask = maskLayer
-            }
-            innerBubbleView.backgroundColor = conversationStyle.quotedReplyBubbleColor
-            return innerBubbleView
-        }
-
-        func createContents(rootView: OWSLayerView,
-                            quotedAuthorLabel: UILabel,
-                            quotedTextLabel: UILabel,
-                            quoteContentSourceLabel: UILabel,
-                            sharpCorners: OWSDirectionalRectCorner) {
-            // Ensure only called once.
-            owsAssertDebug(rootView.subviews.isEmpty)
-
-            rootView.isUserInteractionEnabled = true
-            rootView.layoutMargins = .zero
-            rootView.clipsToBounds = true
-
-            let innerBubbleView = createInnerBubbleView(sharpCorners: sharpCorners)
-            rootView.addSubview(innerBubbleView)
-            rootView.layoutCallback = { view in
-                var bubbleFrame = view.bounds
-                bubbleFrame = bubbleFrame.inset(by: UIEdgeInsets(top: view.layoutMargins.top,
-                                                                 leading: bubbleHMargin,
-                                                                 bottom: view.layoutMargins.bottom,
-                                                                 trailing: bubbleHMargin))
-                innerBubbleView.frame = bubbleFrame
+                let format = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
+                                               comment: "Indicates the author of a quoted message. Embeds {{the author's name or phone number}}.")
+                text = String(format: format, quotedAuthorName)
             }
 
-            let hStackView = UIStackView()
-            hStackView.axis = .horizontal
-            hStackView.spacing = hSpacing
-
-            let stripeView = UIView()
-            if isForPreview {
-                stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: true)
-            } else {
-                stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: !isOutgoing)
-            }
-            stripeView.autoSetDimension(.width, toSize: stripeThickness)
-            stripeView.setContentHuggingHigh()
-            stripeView.setCompressionResistanceHigh()
-            hStackView.addArrangedSubview(stripeView)
-
-            let vStackView = UIStackView()
-            vStackView.axis = .vertical
-            vStackView.layoutMargins = UIEdgeInsets(hMargin: 0, vMargin: textVMargin)
-            vStackView.isLayoutMarginsRelativeArrangement = true
-            vStackView.spacing = vSpacing
-            vStackView.setContentHuggingHorizontalLow()
-            vStackView.setCompressionResistanceHorizontalLow()
-            hStackView.addArrangedSubview(vStackView)
-
-            quotedAuthorLabelConfig.applyForRendering(label: quotedAuthorLabel)
-            vStackView.addArrangedSubview(quotedAuthorLabel)
-            quotedAuthorLabel.autoSetDimension(.height, toSize: quotedAuthorHeight)
-            quotedAuthorLabel.setContentHuggingVerticalHigh()
-            quotedAuthorLabel.setContentHuggingHorizontalLow()
-            quotedAuthorLabel.setCompressionResistanceHorizontalLow()
-
-            quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
-            vStackView.addArrangedSubview(quotedTextLabel)
-            quotedTextLabel.setContentHuggingHorizontalLow()
-            quotedTextLabel.setCompressionResistanceHorizontalLow()
-            quotedTextLabel.setCompressionResistanceVerticalHigh()
-
-            if hasQuotedAttachment {
-                let quotedAttachmentView: UIView
-                if let thumbnailImage = tryToLoadThumbnailImage() {
-                    quotedAttachmentView = imageView(forImage: thumbnailImage)
-                    quotedAttachmentView.clipsToBounds = true
-
-                    if isVideoAttachment {
-                        let contentIcon = UIImage(named: "attachment_play_button")?.withRenderingMode(.alwaysTemplate)
-                        let contentImageView = imageView(forImage: contentIcon)
-                        contentImageView.tintColor = .white
-                        quotedAttachmentView.addSubview(contentImageView)
-                        contentImageView.autoCenterInSuperview()
-                    }
-                } else if quotedReplyModel.thumbnailDownloadFailed {
-                    // TODO: design review icon and color
-                    let contentIcon = UIImage(named: "btnRefresh--white")?.withRenderingMode(.alwaysTemplate)
-                    let contentImageView = imageView(forImage: contentIcon)
-                    contentImageView.contentMode = .scaleAspectFit
-                    contentImageView.tintColor = .white
-
-                    quotedAttachmentView = UIView.container()
-                    quotedAttachmentView.addSubview(contentImageView)
-                    quotedAttachmentView.backgroundColor = highlightColor
-                    contentImageView.autoCenterInSuperview()
-                    let imageSize = quotedAttachmentSize * 0.5
-                    contentImageView.autoSetDimensions(to: CGSize(square: imageSize))
-
-                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapFailedThumbnailDownload))
-                    quotedAttachmentView.addGestureRecognizer(tapGesture)
-                    quotedAttachmentView.isUserInteractionEnabled = true
-                } else {
-                    let contentIcon = UIImage(named: "generic-attachment")
-                    let contentImageView = imageView(forImage: contentIcon)
-                    contentImageView.contentMode = .scaleAspectFit
-
-                    let wrapper = UIView.transparentContainer()
-                    wrapper.addSubview(contentImageView)
-                    contentImageView.autoCenterInSuperview()
-                    contentImageView.autoSetDimension(.width, toSize: quotedAttachmentSize * 0.5)
-                    quotedAttachmentView = wrapper
-                }
-
-                quotedAttachmentView.autoPinToSquareAspectRatio()
-                quotedAttachmentView.setContentHuggingHigh()
-                quotedAttachmentView.setCompressionResistanceHigh()
-                hStackView.addArrangedSubview(quotedAttachmentView)
-            } else {
-                // If there's no attachment, add an empty view so that
-                // the stack view's spacing serves as a margin between
-                // the text views and the trailing edge.
-                let emptyView = UIView.transparentContainer()
-                hStackView.addArrangedSubview(emptyView)
-                emptyView.setContentHuggingHigh()
-                emptyView.autoSetDimension(.width, toSize: 0)
-            }
-
-            var contentView = hStackView
-
-            if quotedReplyModel.isRemotelySourced {
-                let quoteSourceWrapper = UIStackView(arrangedSubviews: [
-                    contentView,
-                    buildRemoteContentSourceView(quoteContentSourceLabel: quoteContentSourceLabel)
-                ])
-                quoteSourceWrapper.axis = .vertical
-                contentView = quoteSourceWrapper
-            }
-
-            if isForPreview {
-                let cancelButton = UIButton(type: .custom)
-                cancelButton.setImage(UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate),
-                                      for: .normal)
-                cancelButton.imageView?.tintColor = Theme.secondaryTextAndIconColor
-                cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
-                cancelButton.setContentHuggingHorizontalHigh()
-                cancelButton.setCompressionResistanceHorizontalHigh()
-
-                let cancelStack = UIStackView(arrangedSubviews: [ cancelButton ])
-                cancelStack.axis = .horizontal
-                cancelStack.alignment = .top
-                cancelStack.isLayoutMarginsRelativeArrangement = true
-                let hMarginLeading: CGFloat = 0
-                let hMarginTrailing: CGFloat = 6
-                cancelStack.layoutMargins = UIEdgeInsets(top: 6, leading: hMarginLeading, bottom: 0, trailing: hMarginTrailing)
-                cancelStack.setContentHuggingHorizontalHigh()
-                cancelStack.setCompressionResistanceHorizontalHigh()
-
-                let cancelWrapper = UIStackView(arrangedSubviews: [
-                    contentView,
-                    cancelStack
-                ])
-                cancelWrapper.axis = .horizontal
-
-                contentView = cancelWrapper
-            }
-
-            contentView.setContentHuggingHorizontalLow()
-            contentView.setCompressionResistanceHorizontalLow()
-
-            innerBubbleView.addSubview(contentView)
-            contentView.autoPinEdgesToSuperviewEdges()
-        }
-
-        func buildRemoteContentSourceView(quoteContentSourceLabel: UILabel) -> UIView {
-
-            let glyphImage = UIImage(named: "ic_broken_link")!.withRenderingMode(.alwaysTemplate)
-            owsAssertDebug(CGSize(square: kRemotelySourcedContentGlyphLength) == glyphImage.size)
-            let glyphView = UIImageView(image: glyphImage)
-            glyphView.tintColor = Theme.lightThemePrimaryColor
-            glyphView.autoSetDimensions(to: CGSize(square: kRemotelySourcedContentGlyphLength))
-
-            quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)
-            let sourceRow = UIStackView(arrangedSubviews: [glyphView, quoteContentSourceLabel])
-            sourceRow.axis = .horizontal
-            sourceRow.alignment = .center
-            // TODO verify spacing w/ design
-            sourceRow.spacing = kRemotelySourcedContentRowSpacing
-            sourceRow.isLayoutMarginsRelativeArrangement = true
-
-            // TODO: Should this be leading?
-            let leftMargin: CGFloat = 8
-            sourceRow.layoutMargins = UIEdgeInsets(top: kRemotelySourcedContentRowMargin,
-                                                   left: leftMargin,
-                                                   bottom: kRemotelySourcedContentRowMargin,
-                                                   right: kRemotelySourcedContentRowMargin)
-
-            let backgroundColor = UIColor.white.withAlphaComponent(0.4)
-            sourceRow.addBackgroundView(withBackgroundColor: backgroundColor)
-
-            return sourceRow
-        }
-
-        func tryToLoadThumbnailImage() -> UIImage? {
-            guard hasQuotedAttachmentThumbnailImage else {
-                return nil
-            }
-
-            // TODO: Possibly ignore data that is too large.
-            let image = quotedReplyModel.thumbnailImage
-            // TODO: Possibly ignore images that are too large.
-            return image
-        }
-
-        func imageView(forImage image: UIImage?) -> UIImageView {
-            owsAssertDebug(image != nil)
-
-            let imageView = UIImageView()
-            imageView.image = image
-            // We need to specify a contentMode since the size of the image
-            // might not match the aspect ratio of the view.
-            imageView.contentMode = .scaleAspectFill
-            // Use trilinear filters for better scaling quality at
-            // some performance cost.
-            imageView.layer.minificationFilter = .trilinear
-            imageView.layer.magnificationFilter = .trilinear
-            return imageView
+            return CVLabelConfig(text: text,
+                                 font: quotedAuthorFont,
+                                 textColor: quotedAuthorColor,
+                                 numberOfLines: 1,
+                                 lineBreakMode: .byTruncatingTail)
         }
 
         var quotedTextLabelConfig: CVLabelConfig {
@@ -459,7 +242,7 @@ public class QuotedMessageView: OWSLayerView {
             return CVLabelConfig(attributedText: attributedText,
                                  font: quotedTextFont,
                                  textColor: quotedTextColor,
-                                 numberOfLines: isForPreview ? 1 : 2,
+                                 numberOfLines: isForPreview || hasQuotedAttachment ? 1 : 2,
                                  lineBreakMode: .byTruncatingTail,
                                  textAlignment: textAlignment)
         }
@@ -498,117 +281,309 @@ public class QuotedMessageView: OWSLayerView {
             }
             return nil
         }
+    }
 
-        var isAudioAttachment: Bool {
-            // TODO: Are we going to use the filename?  For all mimetypes?
-            guard let contentType = self.contentType else {
-                return false
+    private func createBubbleView(sharpCorners: OWSDirectionalRectCorner,
+                                  conversationStyle: ConversationStyle) -> ManualLayoutView {
+        let sharpCornerRadius: CGFloat = 4
+        let wideCornerRadius: CGFloat = 12
+
+        let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
+        bubbleView.backgroundColor = conversationStyle.quotedReplyBubbleColor
+        if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
+            bubbleView.layer.maskedCorners = .all
+            bubbleView.layer.cornerRadius = sharpCorners.isEmpty ? wideCornerRadius : sharpCornerRadius
+        } else {
+            // Slow path. CA isn't optimized to handle corners of multiple radii
+            // Let's do it by hand with a CAShapeLayer
+            let maskLayer = CAShapeLayer()
+            bubbleView.addLayoutBlock { view in
+                let layerFrame = view.bounds
+                let bubbleLeft: CGFloat = 0
+                let bubbleRight = layerFrame.width
+                let bubbleTop: CGFloat = 0
+                let bubbleBottom = layerFrame.height
+                let bezierPath = OWSBubbleView.roundedBezierRect(withBubbleTop: bubbleTop,
+                                                                 bubbleLeft: bubbleLeft,
+                                                                 bubbleBottom: bubbleBottom,
+                                                                 bubbleRight: bubbleRight,
+                                                                 sharpCornerRadius: sharpCornerRadius,
+                                                                 wideCornerRadius: wideCornerRadius,
+                                                                 sharpCorners: sharpCorners)
+                maskLayer.path = bezierPath.cgPath
             }
-            return MIMETypeUtil.isAudio(contentType)
+            bubbleView.layer.mask = maskLayer
+        }
+        return bubbleView
+    }
+
+    public func configureForRendering(state: State,
+                                      delegate: QuotedMessageViewDelegate?,
+                                      sharpCorners: OWSDirectionalRectCorner,
+                                      cellMeasurement: CVCellMeasurement) {
+        self.state = state
+        self.delegate = delegate
+
+        let configurator = Configurator(state: state)
+        let conversationStyle = configurator.conversationStyle
+        let quotedReplyModel = configurator.quotedReplyModel
+
+        var hStackSubviews = [UIView]()
+
+        if configurator.isForPreview {
+            stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: true)
+        } else {
+            stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: !configurator.isOutgoing)
+        }
+        hStackSubviews.append(stripeView)
+
+        var vStackSubviews = [UIView]()
+
+        let quotedAuthorLabelConfig = configurator.quotedAuthorLabelConfig
+        quotedAuthorLabelConfig.applyForRendering(label: quotedAuthorLabel)
+        vStackSubviews.append(quotedAuthorLabel)
+
+        let quotedTextLabelConfig = configurator.quotedTextLabelConfig
+        quotedTextLabelConfig.applyForRendering(label: quotedTextLabel)
+        vStackSubviews.append(quotedTextLabel)
+
+        if quotedReplyModel.isRemotelySourced {
+            remotelySourcedContentIconView.setTemplateImageName("ic_broken_link",
+                                                                tintColor: Theme.lightThemePrimaryColor)
+
+            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
+            quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)
+
+            remotelySourcedContentStack.configure(config: configurator.remotelySourcedContentStackConfig,
+                                                  cellMeasurement: cellMeasurement,
+                                                  measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                                                  subviews: [
+                                                    remotelySourcedContentIconView,
+                                                    quoteContentSourceLabel
+                                                  ])
+            remotelySourcedContentStack.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+            vStackSubviews.append(remotelySourcedContentStack)
         }
 
-        var isVideoAttachment: Bool {
-            // TODO: Are we going to use the filename?  For all mimetypes?
-            guard let contentType = self.contentType else {
-                return false
-            }
-            return MIMETypeUtil.isVideo(contentType)
-        }
+        vStack.configure(config: configurator.vStackConfig,
+                         cellMeasurement: cellMeasurement,
+                         measurementKey: Self.measurementKey_vStack,
+                         subviews: vStackSubviews)
+        hStackSubviews.append(vStack)
 
-        var quotedAuthorLabelConfig: CVLabelConfig {
-            let text: String
-            if quotedReplyModel.authorAddress.isLocalAddress {
-                text = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
-                                         comment: "message header label when someone else is quoting you")
+        let trailingView: UIView = {
+            guard configurator.hasQuotedAttachment else {
+                // If there's no attachment, add an empty view so that
+                // the stack view's spacing serves as a margin between
+                // the text views and the trailing edge.
+                return UIView.transparentSpacer()
+            }
+
+            let quotedImageView = self.quotedImageView
+            // Use trilinear filters for better scaling quality at
+            // some performance cost.
+            quotedImageView.layer.minificationFilter = .trilinear
+            quotedImageView.layer.magnificationFilter = .trilinear
+
+            func tryToLoadThumbnailImage() -> UIImage? {
+                guard configurator.hasQuotedAttachmentThumbnailImage else {
+                    return nil
+                }
+
+                // TODO: Possibly ignore data that is too large.
+                let image = quotedReplyModel.thumbnailImage
+                // TODO: Possibly ignore images that are too large.
+                return image
+            }
+
+            if let thumbnailImage = tryToLoadThumbnailImage() {
+                quotedImageView.image = thumbnailImage
+                // We need to specify a contentMode since the size of the image
+                // might not match the aspect ratio of the view.
+                quotedImageView.contentMode = .scaleAspectFill
+                quotedImageView.clipsToBounds = true
+
+                let wrapper = ManualLayoutView(name: "thumbnailImageWrapper")
+                wrapper.addSubviewToFillSuperviewEdges(quotedImageView)
+
+                if configurator.isVideoAttachment {
+                    let contentImageView = CVImageView()
+                    contentImageView.setTemplateImageName("attachment_play_button", tintColor: .white)
+                    wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
+                }
+                return wrapper
+            } else if quotedReplyModel.thumbnailDownloadFailed {
+                let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
+                wrapper.backgroundColor = configurator.highlightColor
+
+                // TODO: design review icon and color
+                quotedImageView.setTemplateImageName("btnRefresh--white", tintColor: .white)
+                quotedImageView.contentMode = .scaleAspectFit
+                quotedImageView.clipsToBounds = false
+                let iconSize = CGSize.square(configurator.quotedAttachmentSize * 0.5)
+                wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
+
+                wrapper.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                                    action: #selector(didTapFailedThumbnailDownload)))
+                wrapper.isUserInteractionEnabled = true
+
+                return wrapper
             } else {
-                let format = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
-                                               comment: "Indicates the author of a quoted message. Embeds {{the author's name or phone number}}.")
-                text = String(format: format, quotedAuthorName)
-            }
+                quotedImageView.setTemplateImageName("generic-attachment", tintColor: .clear)
+                quotedImageView.contentMode = .scaleAspectFit
+                quotedImageView.clipsToBounds = false
+                quotedImageView.tintColor = nil
 
-            return CVLabelConfig(text: text,
-                                 font: quotedAuthorFont,
-                                 textColor: quotedAuthorColor,
-                                 numberOfLines: 1,
-                                 lineBreakMode: .byTruncatingTail)
+                let wrapper = ManualLayoutView(name: "genericAttachmentWrapper")
+                let iconSize = CGSize.square(configurator.quotedAttachmentSize * 0.5)
+                wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
+                return wrapper
+            }
+        }()
+        hStackSubviews.append(trailingView)
+
+        if configurator.isForPreview {
+            let cancelButton = UIButton(type: .custom)
+            let cancelIcon = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
+            cancelButton.setImage(cancelIcon, for: .normal)
+            cancelButton.imageView?.tintColor = Theme.secondaryTextAndIconColor
+            cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
+
+            let cancelWrapper = ManualLayoutView(name: "cancelWrapper")
+            cancelWrapper.layoutMargins = configurator.cancelIconMargins
+            cancelWrapper.addSubviewToFillSuperviewMargins(cancelButton)
+            hStackSubviews.append(cancelWrapper)
         }
 
-        // MARK: - Measurement
+        hStack.configure(config: configurator.hStackConfig,
+                         cellMeasurement: cellMeasurement,
+                         measurementKey: Self.measurementKey_hStack,
+                         subviews: hStackSubviews)
 
-        func measure(maxWidth: CGFloat) -> CGSize {
-            var result = CGSize.zero
+        let bubbleView = createBubbleView(sharpCorners: sharpCorners,
+                                          conversationStyle: conversationStyle)
+        bubbleView.addSubviewToFillSuperviewEdges(hStack)
+        bubbleView.clipsToBounds = true
 
-            result.width += bubbleHMargin * 2 + stripeThickness + hSpacing * 2
-
-            var thumbnailHeight: CGFloat = 0
-            if hasQuotedAttachment {
-                result.width += quotedAttachmentSize
-                thumbnailHeight += quotedAttachmentSize
-            }
-
-            // Quoted Author
-            var textWidth: CGFloat = 0
-            let maxTextWidth = maxWidth - result.width
-            var textHeight = textVMargin * 2 + vSpacing
-            do {
-                let quotedAuthorLabelConfig = self.quotedAuthorLabelConfig
-                let textSize = CVText.measureLabel(config: quotedAuthorLabelConfig, maxWidth: maxWidth)
-                textWidth = max(textWidth, textSize.width)
-                textHeight += textSize.height
-            }
-
-            do {
-                let textSize = CVText.measureLabel(config: quotedTextLabelConfig, maxWidth: maxWidth)
-                textWidth = max(textWidth, textSize.width)
-                textHeight += textSize.height
-            }
-
-            if quotedReplyModel.isRemotelySourced {
-                let textSize = CVText.measureLabel(config: quoteContentSourceLabelConfig, maxWidth: maxWidth)
-                //            textWidth = max(textWidth, textSize.width)
-                //            textHeight += textSize.height
-
-                let sourceStackViewHeight = max(kRemotelySourcedContentGlyphLength, textSize.height)
-
-                textWidth = max(textWidth, textSize.width + kRemotelySourcedContentGlyphLength + kRemotelySourcedContentRowSpacing)
-                result.height += kRemotelySourcedContentRowMargin * 2 + sourceStackViewHeight
-            }
-
-            textWidth = min(textWidth, maxTextWidth)
-            result.width += textWidth
-            result.height += max(textHeight, thumbnailHeight)
-
-            return result.ceil
-        }
+        self.configure(config: configurator.outerStackConfig,
+                       cellMeasurement: cellMeasurement,
+                       measurementKey: Self.measurementKey_outerStack,
+                       subviews: [
+                        bubbleView
+                       ])
     }
 
     // MARK: - Measurement
 
-    private func measure(maxWidth: CGFloat) -> CGSize {
-        Self.measure(state: state, maxWidth: maxWidth)
-    }
+    private static let measurementKey_outerStack = "QuotedMessageView.measurementKey_outerStack"
+    private static let measurementKey_hStack = "QuotedMessageView.measurementKey_hStack"
+    private static let measurementKey_vStack = "QuotedMessageView.measurementKey_vStack"
+    private static let measurementKey_remotelySourcedContentStack = "QuotedMessageView.measurementKey_remotelySourcedContentStack"
 
-    static func measure(state: State, maxWidth: CGFloat) -> CGSize {
-        Configurator(state: state).measure(maxWidth: maxWidth)
+    public static func measure(state: State,
+                               maxWidth: CGFloat,
+                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+
+        let configurator = Configurator(state: state)
+
+        let outerStackConfig = configurator.outerStackConfig
+        let hStackConfig = configurator.hStackConfig
+        let vStackConfig = configurator.vStackConfig
+        let hasQuotedAttachment = configurator.hasQuotedAttachment
+        let quotedAttachmentSize = configurator.quotedAttachmentSize
+        let quotedReplyModel = configurator.quotedReplyModel
+
+        var maxLabelWidth = (maxWidth - (configurator.stripeThickness +
+                                            hStackConfig.spacing * 2 +
+                                            hStackConfig.layoutMargins.totalWidth +
+                                            vStackConfig.layoutMargins.totalWidth))
+        if hasQuotedAttachment {
+            maxLabelWidth -= quotedAttachmentSize
+        }
+        maxLabelWidth = max(0, maxLabelWidth)
+
+        var vStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let quotedAuthorLabelConfig = configurator.quotedAuthorLabelConfig
+        let quotedAuthorSize = CVText.measureLabel(config: quotedAuthorLabelConfig,
+                                                   maxWidth: maxLabelWidth)
+        vStackSubviewInfos.append(quotedAuthorSize.asManualSubviewInfo)
+
+        let quotedTextLabelConfig = configurator.quotedTextLabelConfig
+        let quotedTextSize = CVText.measureLabel(config: quotedTextLabelConfig,
+                                                 maxWidth: maxLabelWidth)
+        vStackSubviewInfos.append(quotedTextSize.asManualSubviewInfo)
+
+        if quotedReplyModel.isRemotelySourced {
+            let remotelySourcedContentIconSize = CGSize.square(configurator.remotelySourcedContentIconSize)
+
+            let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
+            let quoteContentSourceSize = CVText.measureLabel(config: quoteContentSourceLabelConfig,
+                                                             maxWidth: maxLabelWidth)
+
+            let vStackMeasurement = ManualStackView.measure(config: configurator.remotelySourcedContentStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                                                            subviewInfos: [
+                                                                remotelySourcedContentIconSize.asManualSubviewInfo(hasFixedSize: true),
+                                                                quoteContentSourceSize.asManualSubviewInfo
+                                                            ])
+            vStackSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
+        }
+
+        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_vStack,
+                                                            subviewInfos: vStackSubviewInfos)
+
+        var hStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let stripeSize = CGSize(width: configurator.stripeThickness, height: 0)
+        hStackSubviewInfos.append(stripeSize.asManualSubviewInfo(hasFixedWidth: true))
+
+        hStackSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
+
+        let avatarSize: CGSize = (hasQuotedAttachment
+                                    ? .square(quotedAttachmentSize)
+                                    : .square(0))
+        hStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedWidth: true))
+
+        if configurator.isForPreview {
+            let cancelIconSize = CGSize.square(configurator.cancelIconSize)
+            let cancelWrapperSize = cancelIconSize + configurator.cancelIconMargins.asSize
+            hStackSubviewInfos.append(cancelWrapperSize.asManualSubviewInfo(hasFixedSize: true))
+        }
+
+        let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
+                                                        measurementBuilder: measurementBuilder,
+                                                        measurementKey: Self.measurementKey_hStack,
+                                                        subviewInfos: hStackSubviewInfos)
+
+        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
+                                                        measurementBuilder: measurementBuilder,
+                                                        measurementKey: Self.measurementKey_outerStack,
+                                                        subviewInfos: [
+                                                            hStackMeasurement.measuredSize.asManualSubviewInfo
+                                                        ])
+        return outerStackMeasurement.measuredSize
     }
 
     // MARK: -
 
-    // TODO: Do we need this method?
     @objc
-    public override func sizeThatFits(_ size: CGSize) -> CGSize {
-        // TODO: Should we honor the size param?
-        self.measure(maxWidth: CGFloat.greatestFiniteMagnitude)
-    }
-
-    @objc
-    func didTapCancel() {
+    private func didTapCancel() {
         delegate?.didCancelQuotedReply()
     }
 
     @objc
-    func didTapFailedThumbnailDownload(_ sender: UITapGestureRecognizer) {
+    private func didTapFailedThumbnailDownload(_ sender: UITapGestureRecognizer) {
         Logger.debug("in didTapFailedThumbnailDownload")
+
+        guard let state = self.state else {
+            owsFailDebug("Missing state.")
+            return
+        }
+        let quotedReplyModel = state.quotedReplyModel
 
         if !quotedReplyModel.thumbnailDownloadFailed {
             owsFailDebug("thumbnailDownloadFailed was unexpectedly false")
@@ -622,5 +597,22 @@ public class QuotedMessageView: OWSLayerView {
 
         delegate?.didTapQuotedReply(quotedReplyModel,
                                     failedThumbnailDownloadAttachmentPointer: thumbnailAttachmentPointer)
+    }
+
+    public override func reset() {
+        super.reset()
+
+        self.state = nil
+        self.delegate = nil
+
+        hStack.reset()
+        vStack.reset()
+        remotelySourcedContentStack.reset()
+
+        quotedAuthorLabel.text = nil
+        quotedTextLabel.text = nil
+        quoteContentSourceLabel.text = nil
+        quotedImageView.image = nil
+        remotelySourcedContentIconView.image = nil
     }
 }

@@ -1141,7 +1141,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // * Reactions view, which uses a custom layout block.
         fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
 
-        fileprivate let avatarView = AvatarImageView()
+        fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
 
         fileprivate let bubbleView = OWSBubbleView()
 

@@ -15,10 +15,11 @@ public class CVContactShareView: ManualStackView {
     }
 
     private let labelStack = ManualStackView(name: "CVContactShareView.labelStack")
-    private let avatarView = AvatarImageView()
-    private let topLabel = UILabel()
-    private let bottomLabel = UILabel()
-    private let disclosureImageView = UIImageView()
+    private let avatarView: AvatarImageView = AvatarImageView(shouldDeactivateConstraints: true)
+
+    private let topLabel = CVLabel()
+    private let bottomLabel = CVLabel()
+    private let disclosureImageView = CVImageView()
 
     static func buildState(contactShare: ContactShareViewModel,
                            isIncoming: Bool,
