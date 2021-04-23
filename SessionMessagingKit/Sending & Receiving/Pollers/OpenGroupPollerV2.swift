@@ -78,6 +78,7 @@ public final class OpenGroupPollerV2 : NSObject {
             let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: message.sentTimestamp)
             envelope.setContent(data)
             envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
+            envelope.setServerTimestamp(message.sentTimestamp)
             let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: UInt64(message.serverID!), openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll)
             SNMessagingKitConfiguration.shared.storage.write { transaction in
                 SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
