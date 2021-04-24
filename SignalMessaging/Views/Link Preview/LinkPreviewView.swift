@@ -112,7 +112,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         let cellMeasurement = measurementBuilder.build()
         configureForRendering(state: state,
                               isDraft: isDraft,
-                              hasAsymmetricalRounding: false,
+                              hasAsymmetricalRounding: hasAsymmetricalRounding,
                               cellMeasurement: cellMeasurement)
 
         if let nonCvcLayoutConstraint = self.nonCvcLayoutConstraint {
