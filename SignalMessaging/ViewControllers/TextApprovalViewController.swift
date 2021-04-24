@@ -112,7 +112,11 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     // MARK: - Link Previews
 
     private var wasLinkPreviewCancelled = false
-    private lazy var linkPreviewView = LinkPreviewView(draftDelegate: self)
+    private lazy var linkPreviewView: LinkPreviewView = {
+        let linkPreviewView = LinkPreviewView(draftDelegate: self)
+        linkPreviewView.isHidden = true
+        return linkPreviewView
+    }()
 
     private var currentPreviewUrl: URL? {
         didSet {
