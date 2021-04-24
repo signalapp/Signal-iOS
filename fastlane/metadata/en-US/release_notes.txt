@@ -1,5 +1,6 @@
-• Fall in love with several improvements to the media upload and download experience. It may seem like everything is happening really fast, especially when you send multiple photos and videos all at once, but love is like that sometimes. It's OK to start feeling more attached to sending more attachments.
-• Love and loss are inextricably connected, so we also broke up with a bug that made it impossible to share long videos from other apps (like the iOS Photos app).
-• As part of our ongoing efforts to redesign and enhance the app, we updated the chat settings screen to make common actions easier to find and to help you find common ground in one-on-one chats by displaying the groups that both of you have in common.
+• We still have more improvements in the works, but the conversation scrolling enhancements in this release will make you feel like such a "Smooth Operator" that you're basically performing an unofficial cover of Sade's hit song from 1984.
+• Numerous bugs in conversation search have vanished without a trace, including one that made it impossible to find results for single Chinese characters.
+• Search results are better organized to make things easier to find. If you are looking for a group named "Hi" it will no longer get buried by every single message where someone said hello.
+• Animated GIF search results now show up in a jiffy (even though that isn't how GIF is pronounced).
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

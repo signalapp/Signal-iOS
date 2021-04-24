@@ -1,5 +1,6 @@
-• Bli kär i flera förbättringar av medieuppladdnings- och hämtningsupplevelsen. Det kan tyckas att allt händer riktigt snabbt, speciellt när du skickar flera bilder och videoklipp samtidigt, men kärlek är sådan ibland. Det är OK att börja känna sig mer knuten till att skicka fler bilagor.
-• Kärlek och förlust är oupplösligt kopplade, så vi bröt också med ett fel som gjorde det omöjligt att dela långa videor från andra appar (som iOS Photos-appen).
-• Som en del av våra pågående ansträngningar för att omforma och förbättra appen uppdaterade vi skärmen för chattinställningar för att göra vanliga åtgärder lättare att hitta och för att hjälpa dig att hitta gemensamma grunder i en-till-en-chattar genom att visa de grupper som ni båda har gemensamt.
+• We still have more improvements in the works, but the conversation scrolling enhancements in this release will make you feel like such a "Smooth Operator" that you're basically performing an unofficial cover of Sade's hit song from 1984.
+• Numerous bugs in conversation search have vanished without a trace, including one that made it impossible to find results for single Chinese characters.
+• Search results are better organized to make things easier to find. If you are looking for a group named "Hi" it will no longer get buried by every single message where someone said hello.
+• Animated GIF search results now show up in a jiffy (even though that isn't how GIF is pronounced).
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Intresserad av att förbättra Signal? Vi anställer. Besök https://signal.org/workworkwork för att läsa mera.

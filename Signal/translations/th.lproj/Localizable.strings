@@ -124,6 +124,15 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "บันทึก";
 
+/* Message for UI  warning about an unknown contact thread. */
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+
+/* Message for UI warning about an unknown group thread. */
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+
+/* Label for button to learn more about message requests. */
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
 
@@ -1004,7 +1013,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "ลบทั้งหมด";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังโหลดข้อความเพิ่ม...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังเรียกข้อความเพิ่ม...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "อ่านเพิ่มเติม";
@@ -1025,13 +1034,25 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "จัดระเบียบฐานข้อมูล";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ชม.";
+"DATE_HOURS_AGO_FORMAT" = "%@ ชม.";
+
+/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ นาที";
 
+/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+
 /* The present; the current time. */
 "DATE_NOW" = "เดี๋ยวนี้";
+
+/* Full string for a relative time of one hour ago. */
+"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+
+/* Full string for a relative time of one minute ago. */
+"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
 
 /* The current day. */
 "DATE_TODAY" = "วันนี้";
@@ -1287,9 +1308,6 @@
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "รูปใช้ไม่ได้";
-
-/* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "ชื่อกลุ่ม";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "ปรับปรุง";
@@ -2492,7 +2510,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "เปลี่ยนรูปภาพ";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "มอบการเข้าถึงอย่างเต็มรูปแบบได้จากเมนูการตั้งค่าหรือเปลี่ยนรูปที่ Signal สามารถเข้าถึงได้";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "มอบการเข้าถึงเต็มที่ได้ใน การตั้งค่า หรือกำหนดว่ารูปใดบ้างที่ Signal สามารถเข้าถึงได้";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ไม่เห็นรูปภาพของคุณ?";
@@ -4289,16 +4307,16 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "การรับรองความถูกต้องไม่สำเร็จ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "คุณทำรายการรับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่ในภายหลัง";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "รับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่ในภายหลัง";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "คุณต้องเปิดใช้งานรหัสในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "คุณต้องเปิดใช้งานรหัสในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "คุณต้องเปิดใช้งานรหัสในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "คุณต้องเปิดใช้งานรหัสผ่านในการตั้งค่า iOS ของคุณเพื่อใช้งานการล็อกหน้าจอ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "การรับรองความถูกต้องเพื่อเปิด Signal";
@@ -4456,8 +4474,11 @@
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "ผู้ติดต่ออื่น";
 
-/* section header for search results that match existing conversations (either group or contact conversations) */
+/* section header for search results that match existing 1:1 chats */
 "SEARCH_SECTION_CONVERSATIONS" = "การพูดคุย";
+
+/* section header for search results that match existing groups */
+"SEARCH_SECTION_GROUPS" = "กลุ่ม";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "ข้อความ";
@@ -5518,6 +5539,12 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ตรวจยืนยัน";
 
+/* Indicator warning about an unknown contact thread. */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+
+/* Indicator warning about an unknown group thread. */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No group members in common. Review requests carefully.";
+
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ข้อความนี้ถูกลบแล้ว";
 
@@ -5529,6 +5556,9 @@
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "สมาชิกของ %@";
+
+/* Indicator that a blurred avatar can be revealed by tapping. */
+"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "ดู";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "สมาชิกของ %@, %@, และ %@";
