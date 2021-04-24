@@ -109,46 +109,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         titleLabelConfig.applyForRendering(label: titleLabel)
         titleLabel.accessibilityLabel = titleLabelConfig.stringValue
 
-        var innerVStackViews: [UIView] = [
-            titleLabel
-        ]
-        let outerVStackViews = [
-            innerVStack
-        ]
-        var outerHStackViews = [UIView]()
-        if isShowingSelectionUI {
-            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
-            outerHStackViews.append(selectionView)
-        }
-        outerHStackViews.append(contentsOf: [
-            UIView.transparentSpacer(),
-            outerVStack,
-            UIView.transparentSpacer()
-        ])
-
         var hasActionButton = false
-        if let action = action,
+        if nil != action,
            !itemViewState.shouldCollapseSystemMessageAction,
-           let actionButtonSize = cellMeasurement.size(key: Self.measurementKey_buttonSize) {
-
-            let buttonLabelConfig = self.buttonLabelConfig(action: action)
-            let button = OWSButton(title: action.title) {}
-            componentView.button = button
-            button.accessibilityIdentifier = action.accessibilityIdentifier
-            button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = buttonLabelConfig.font
-            button.setTitleColor(buttonLabelConfig.textColor, for: .normal)
-            if nil == interaction as? OWSGroupCallMessage {
-                if isDarkThemeEnabled && hasWallpaper {
-                    button.backgroundColor = .ows_gray65
-                } else {
-                    button.backgroundColor = Theme.conversationButtonBackgroundColor
-                }
-            }
-            button.contentEdgeInsets = buttonContentEdgeInsets
-            button.layer.cornerRadius = actionButtonSize.height / 2
-            button.isUserInteractionEnabled = false
-            innerVStackViews.append(button)
+           nil != cellMeasurement.size(key: Self.measurementKey_buttonSize) {
             hasActionButton = true
         }
 
@@ -169,6 +133,47 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_outerHStack)
         } else {
+            var innerVStackViews: [UIView] = [
+                titleLabel
+            ]
+            let outerVStackViews = [
+                innerVStack
+            ]
+            var outerHStackViews = [UIView]()
+            if isShowingSelectionUI {
+                selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
+                outerHStackViews.append(selectionView)
+            }
+            outerHStackViews.append(contentsOf: [
+                UIView.transparentSpacer(),
+                outerVStack,
+                UIView.transparentSpacer()
+            ])
+
+            if let action = action,
+               !itemViewState.shouldCollapseSystemMessageAction,
+               let actionButtonSize = cellMeasurement.size(key: Self.measurementKey_buttonSize) {
+
+                let buttonLabelConfig = self.buttonLabelConfig(action: action)
+                let button = OWSButton(title: action.title) {}
+                componentView.button = button
+                button.accessibilityIdentifier = action.accessibilityIdentifier
+                button.titleLabel?.textAlignment = .center
+                button.titleLabel?.font = buttonLabelConfig.font
+                button.setTitleColor(buttonLabelConfig.textColor, for: .normal)
+                if nil == interaction as? OWSGroupCallMessage {
+                    if isDarkThemeEnabled && hasWallpaper {
+                        button.backgroundColor = .ows_gray65
+                    } else {
+                        button.backgroundColor = Theme.conversationButtonBackgroundColor
+                    }
+                }
+                button.contentEdgeInsets = buttonContentEdgeInsets
+                button.layer.cornerRadius = actionButtonSize.height / 2
+                button.isUserInteractionEnabled = false
+                innerVStackViews.append(button)
+            }
+
             outerHStack.reset()
             innerVStack.reset()
             outerVStack.reset()
@@ -431,19 +436,18 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 backgroundView?.removeFromSuperview()
                 backgroundView = nil
 
+                button?.removeFromSuperview()
+                button = nil
+
                 hasWallpaper = false
                 isDarkThemeEnabled = false
                 isFirstInCluster = false
                 isLastInCluster = false
+                isShowingSelectionUI = false
+                hasActionButton = false
             }
 
             titleLabel.text = nil
-
-            button?.removeFromSuperview()
-            button = nil
-
-            isShowingSelectionUI = false
-            hasActionButton = false
         }
     }
 }
