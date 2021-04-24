@@ -152,10 +152,6 @@ public class GroupSearchResult: NSObject, Comparable {
             return nil
         }
 
-        func normalize(string: String) -> String { string.lowercased() }
-
-        let normalizedSearchText = normalize(string: searchText)
-
         let members: [(
             address: SignalServiceAddress,
             displayName: String,
@@ -164,7 +160,7 @@ public class GroupSearchResult: NSObject, Comparable {
         )] = groupThread.groupMembership.fullMembers.map { address in
             var displayName = contactsManager.displayName(for: address, transaction: transaction)
             var isMatched = false
-            if let matchRange = normalize(string: displayName).range(of: normalizedSearchText) {
+            if let matchRange = displayName.range(of: searchText, options: [.caseInsensitive, .diacriticInsensitive]) {
                 isMatched = true
                 displayName = displayName.replacingCharacters(
                     in: matchRange,
