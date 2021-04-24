@@ -62,6 +62,8 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         }
     }
 
+    private var nonCvcLayoutConstraint: NSLayoutConstraint?
+
     // This view is used in a number of places to display "drafts"
     // of outgoing link previews.  In these cases, the view will
     // be embedded within views using iOS auto layout and will need
@@ -103,15 +105,22 @@ public class LinkPreviewView: ManualStackViewWithLayer {
                             : CGFloat.greatestFiniteMagnitude)
 
         let measurementBuilder = CVCellMeasurement.Builder()
-        _ = Self.measure(maxWidth: maxWidth,
-                         measurementBuilder: measurementBuilder,
-                         state: state,
-                         isDraft: isDraft)
+        let linkPreviewSize = Self.measure(maxWidth: maxWidth,
+                                           measurementBuilder: measurementBuilder,
+                                           state: state,
+                                           isDraft: isDraft)
         let cellMeasurement = measurementBuilder.build()
         configureForRendering(state: state,
                               isDraft: isDraft,
-                              hasAsymmetricalRounding: false,
+                              hasAsymmetricalRounding: hasAsymmetricalRounding,
                               cellMeasurement: cellMeasurement)
+
+        if let nonCvcLayoutConstraint = self.nonCvcLayoutConstraint {
+            nonCvcLayoutConstraint.constant = linkPreviewSize.height
+        } else {
+            self.nonCvcLayoutConstraint = self.autoSetDimension(.height,
+                                                                toSize: linkPreviewSize.height)
+        }
     }
 
     public func configureForRendering(state: LinkPreviewState,
@@ -283,6 +292,9 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         }
 
         cancelButton = nil
+
+        nonCvcLayoutConstraint?.autoRemove()
+        nonCvcLayoutConstraint = nil
     }
 }
 
@@ -554,15 +566,6 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
         rightStackSubviews.append(textWrapper)
 
-        // Right
-
-        let rightStack = linkPreviewView.rightStack
-        rightStack.configure(config: rightStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_rightStack,
-                             subviews: rightStackSubviews)
-        rootStackSubviews.append(rightStack)
-
         // Cancel
 
         let cancelButton = OWSButton { [weak linkPreviewView] in
@@ -572,9 +575,23 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         cancelButton.setTemplateImageName("compose-cancel",
                                           tintColor: Theme.secondaryTextAndIconColor)
         let cancelSize = self.cancelSize
-        rightStack.addSubview(cancelButton) { view in
-            cancelButton.frame = CGRect(x: 0, y: view.bounds.width - cancelSize, width: cancelSize, height: cancelSize)
+        let cancelContainer = ManualLayoutView(name: "cancelContainer")
+        cancelContainer.addSubview(cancelButton) { view in
+            cancelButton.frame = CGRect(x: 0,
+                                        y: view.bounds.width - cancelSize,
+                                        width: cancelSize,
+                                        height: cancelSize)
         }
+        rightStackSubviews.append(cancelContainer)
+
+        // Right
+
+        let rightStack = linkPreviewView.rightStack
+        rightStack.configure(config: rightStackConfig,
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_rightStack,
+                             subviews: rightStackSubviews)
+        rootStackSubviews.append(rightStack)
 
         // Stroke
 
@@ -630,6 +647,8 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         rightStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
 
         // Right
+
+        rightStackSubviewInfos.append(CGSize.square(cancelSize).asManualSubviewInfo(hasFixedWidth: true))
 
         let rightStackMeasurement = ManualStackView.measure(config: rightStackConfig,
                                                            measurementBuilder: measurementBuilder,

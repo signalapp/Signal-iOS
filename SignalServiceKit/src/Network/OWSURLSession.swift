@@ -321,8 +321,9 @@ public class OWSURLSession: NSObject {
                     }
                     #endif
 
-                    if requestConfig.failOnError {
-                        owsFailDebug("Request failed: \(error)")
+                    if requestConfig.failOnError,
+                       !error.isUnknownDomainError {
+                        owsFailDebugUnlessNetworkFailure(error)
                     } else {
                         Logger.error("Request failed: \(error)")
                     }
@@ -1181,3 +1182,13 @@ private class URLSessionDelegateBox: NSObject {
                                  didReceive: data)
     }
  }
+
+// MARK: -
+
+extension Error {
+    var isUnknownDomainError: Bool {
+        let nsError = self as NSError
+        return (nsError.domain == NSURLErrorDomain &&
+                    nsError.code == -1003)
+    }
+}

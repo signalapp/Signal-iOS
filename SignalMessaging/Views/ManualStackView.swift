@@ -116,6 +116,9 @@ open class ManualStackView: ManualLayoutView {
     }
 
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        guard !isHidden else {
+            return .zero
+        }
         guard let measurement = measurement else {
             owsFailDebug("Missing measurement.")
             return super.sizeThatFits(size)
