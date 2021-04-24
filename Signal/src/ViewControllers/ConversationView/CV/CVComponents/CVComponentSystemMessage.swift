@@ -121,7 +121,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                             !wallpaperModeHasChanged &&
                             !hasClusteringChanges &&
                             componentView.isShowingSelectionUI == isShowingSelectionUI &&
-                            componentView.hasActionButton == hasActionButton)
+                            !componentView.hasActionButton &&
+                            !hasActionButton)
         if isReusing {
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
@@ -436,9 +437,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 backgroundView?.removeFromSuperview()
                 backgroundView = nil
 
-                button?.removeFromSuperview()
-                button = nil
-
                 hasWallpaper = false
                 isDarkThemeEnabled = false
                 isFirstInCluster = false
@@ -448,6 +446,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             }
 
             titleLabel.text = nil
+
+            button?.removeFromSuperview()
+            button = nil
         }
     }
 }
