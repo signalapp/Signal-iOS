@@ -152,9 +152,7 @@ public class GroupSearchResult: NSObject, Comparable {
             return nil
         }
 
-        func normalize(string: String) -> String {
-            return string.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        }
+        func normalize(string: String) -> String { string.lowercased() }
 
         let normalizedSearchText = normalize(string: searchText)
 
