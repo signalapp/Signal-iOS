@@ -59,7 +59,8 @@ lane :release do
     scheme: scheme,
     configuration: configuration,
     clean: true,
-    derived_data_path: './build'
+    derived_data_path: './build',
+    xcargs: "WARNING_CFLAGS='$(inherited) -Wno-everything'"
   )
 
   # Transporter only allows uploading one instance of
