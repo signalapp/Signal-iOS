@@ -134,6 +134,10 @@ public extension OWSContactsManager {
         if cacheContains() {
             return false
         }
+        if nil == groupThread.groupModel.groupAvatarData {
+            // DO NOT add to the cache.
+            return false
+        }
         if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
             addToCache()
             return false
