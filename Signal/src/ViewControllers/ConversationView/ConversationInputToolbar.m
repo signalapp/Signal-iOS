@@ -1362,6 +1362,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSAssertIsOnMainThread();
 
+    // TODO: We could re-use LinkPreviewView now.
     [self clearLinkPreviewView];
 
     LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:self];
