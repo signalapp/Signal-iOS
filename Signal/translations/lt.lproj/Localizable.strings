@@ -1391,7 +1391,7 @@
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Nepavyko sukurti palaikymo užklausos";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nepavyko išsiųsti žurnalų.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nepavyko nusiųsti žurnalų.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nepavyko išsiųsti dėl pasenusių išankstinio rakto duomenų.";
@@ -5375,7 +5375,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Nepavyko išsiųsti priedą";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Išsiunčiama %1$@ iš %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Nusiunčiama %1$@ iš %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nusiunčiama…";

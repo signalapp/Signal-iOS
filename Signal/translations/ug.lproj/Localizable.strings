@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "سىز";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "چىراي ئىپادە";
+"ACCESSIBILITY_LABEL_STICKER" = "چاپلاق";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "ئۈن ئۇچۇر";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "ساقلا";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "بۇ گىشى بىلەن ئورتاق گۇرۇپپىڭىز يوق. كېرەكسىز ئۇچۇرلاردىن ساقلىنىش ئۈچۈن قوشۇلۇشتىن ئىلگىرى تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "بۇ گۇرۇپپا بىلەن ئورتاق ئەزالىرىڭىز يوق. كېرەكسىز ئۇچۇرلاردىن ساقلىنىش ئۈچۈن قوشۇلۇشتىن ئىلگىرى تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "ئۇچۇر ئىلتىماسى ھەققىدە";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "جاۋاب";
@@ -416,7 +416,7 @@
 "BUTTON_EDIT" = "تەھرىر";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "كېيىنكىسى";
+"BUTTON_NEXT" = "كېيىنكى";
 
 /* Label for the 'no' button. */
 "BUTTON_NO" = "ياق";
@@ -440,7 +440,7 @@
 "BUTTON_SUBMIT" = "تاپشۇر";
 
 /* Label for the 'view' button. */
-"BUTTON_VIEW" = "كۆرۈش";
+"BUTTON_VIEW" = "كۆرسەت";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "ھەئە";
@@ -614,7 +614,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "تەھرىر";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "تورخەت";
+"CONTACT_EMAIL" = "ئېلخەت";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "شەھەر";
@@ -683,7 +683,7 @@
 "CONTACT_PHONE" = "تېلېفون";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "تورخەت يوق";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "ئېلخەت يوق";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "تېلېفون نومۇر يوق.";
@@ -770,7 +770,7 @@
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "خەرىتەدە ئاچ";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "تورخەت يوللا";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "ئېلخەت يوللا";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "ئاتسىز ئالاقەداش";
@@ -1037,22 +1037,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@ سائەت";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ سائەت ئىلگىرى";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ مىنۇت";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ مىنۇت ئىلگىرى";
 
 /* The present; the current time. */
 "DATE_NOW" = "ھازىر";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+"DATE_ONE_HOUR_AGO_LONG" = "1 سائەت ئىلگىرى";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+"DATE_ONE_MINUTE_AGO_LONG" = "1 مىنۇت ئىلگىرى";
 
 /* The current day. */
 "DATE_TODAY" = "بۈگۈن";
@@ -1328,7 +1328,7 @@
 "EMAIL_INVITE_SUBJECT" = "‫Signal دا پاراڭلىشايلى";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "ئۈسكۈنىڭىزدە تورخەت يوللاش تەڭشىكى سەپلەنمىگەن. ياردەم ئىلتىماسى يوللاش ئۈچۈن، ئۈسكۈنىڭىزدە تورخەتنى تەڭشەڭ ياكى support@signal.org غا تورخەت يوللاڭ";
+"EMAIL_SIGNAL_MESSAGE" = "ئۈسكۈنىڭىزدە ئېلخەت يوللاش تەڭشىكى سەپلەنمىگەن. ياردەم ئىلتىماسى يوللاش ئۈچۈن، ئۈسكۈنىڭىزدە تورخەتنى تەڭشەڭ ياكى support@signal.org غا ئېلخەت يوللاڭ";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "ئېلخەت يوق";
@@ -2297,7 +2297,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "نۆۋەتتىكى گۇرۇپپا ئەزالىرىنىڭ ھەممىسى «يېڭى گۇرۇپپا»غا كىرىش ئىقتىدارىغا ئىگە Signal نۇسخىسىنى ئىشلەتكەندە، بۇ گۇرۇپپا يۇقىرىتىلىدۇ.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيا يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "يېڭىلاشتىن ئىلگىرى بارلىق ئۇچۇر تارىخى ۋە ۋاسىتە ساقلاپ قېلىنىدۇ.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "بۇ گۇرۇپپىنى قۇرغىلى بولمىدى چۈنكى 1 ئەزا كونا نەشرىدىكى Signal ئىشلىتىۋاتىدۇ. ئۇلارنىڭ ھەممىسى Signal يېڭى نەشرىگە يېڭىلىغاندىن كېيىن ئاندىن سىز «يېڭى ئۇسلۇبتىكى گۇرۇپپا» قۇرالايسىز، ياكى گۇرۇپپا قۇرۇشتىن ئىلگىرى ئۇلارنى گۇرۇپپىدىن چىقىرىۋېتىڭ.";
@@ -2357,7 +2357,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "«يېڭى گۇرۇپپىلار» دېگەن نېمە؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيالار يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "يېڭىلاشتىن ئىلگىرى بارلىق ئۇچۇر تارىخى ۋە ۋاسىتە ساقلاپ قېلىنىدى.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "يېڭى گۇرۇپپىلارنىڭ @ئەتىكەتلەش(يەنى @mentions) ۋە گۇرۇپپا باشقۇرغۇچىلىرىغا ئوخشاش ئىقتىدارلىرى بار، كەلگۈسىدە تېخىمۇ كۆپ ئىقتىدارلارنى قوللايدۇ.";
@@ -2384,7 +2384,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "يۇقىرىلىتىلىپ بولۇنغاندا، بۇ ئەزالارنى «يېڭى گۇرۇپپا»غا ئاپتوماتىك قوشقىلى بولمايدۇ:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "بارلىق ئۇچۇر تارىخى ۋە مېدىيالار يېڭىلاشتىن بۇرۇن ساقلىنىدۇ.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "يېڭىلاشتىن ئىلگىرى بارلىق ئۇچۇر تارىخى ۋە ۋاسىتە ساقلاپ قېلىنىدى.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "بۇ ئەزا گۇرۇپپىدىن چىقىرىۋېتىلدى ۋە ئۇلار يۇقىرلاتمىغۇچە قايتىدىن گۇرۇپپىغا قوشۇلالمايدۇ:";
@@ -2564,7 +2564,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal غا قوشۇلدى!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ئىپادىلەر";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "چاپلاقلار";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ئاۋازلىق ئۇچۇر";
@@ -2594,7 +2594,7 @@
 "JOIN_CALL_PILL_BUTTON" = "قوشۇل";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "بارلىق مېدىيالارغا بېرىڭ";
+"KEY_COMMAND_ALL_MEDIA" = "بارلىق ۋاسىتىلەرگە يۆتكەل";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "سۆھبەتلەرنى ئارخىپلاڭ";
@@ -2630,7 +2630,7 @@
 "KEY_COMMAND_SETTINGS" = "تەڭشەكلەر";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "ئىپادىلەرنى كۆرسىتىش";
+"KEY_COMMAND_STICKERS" = "چاپلاقلارنى كۆرسەت";
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "سۆھبەتنى ئارخىپدىن چىقىرىڭ";
@@ -2795,7 +2795,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "كۆپ تاللاڭ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "مېدىيا ھەمبەھىرلەڭ";
+"MESSAGE_ACTION_SHARE_MEDIA" = "ۋاسىتە ھەمبەھىر";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "ئۇچۇر";
@@ -3893,7 +3893,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN چەكلەندى.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "مېدىيا قويۇڭ";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "ۋاسىتە قوي";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@غا دەلىللەندى بەلگىسى قويمىدىڭىز.";
@@ -4094,7 +4094,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "سۈرەتىڭىزگە %@ ئىنكاس قايتۇردى";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "چاپلانمىڭىزغا %@ ئىنكاس قايتۇردى";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "چاپلىقىڭىزغا %@ ئىنكاس قايتۇردى";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%@ قايتۇرغان ئىنكاسى: «%@»";
@@ -5432,7 +5432,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "يېڭى گۇرۇپپا ئىقتىدارلىرى @ئەتىكەتلەش، باشقۇرغۇچىلار ۋە تېخمۇ جىقلارنى ئۆز ئىچىگە ئالىدۇ. چېكىپ سىناپ بېقىڭ.";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "ئىپادە ئۇچۇرى";
+"STICKER_MESSAGE_PREVIEW" = "چاپلاق ئۇچۇرى";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "ئورنات";
@@ -5441,34 +5441,34 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "‫Signal ئارتىس يۈرۈشلۈكى";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "تاپشۇرۇۋالغان چىراي ئىپادىلىرى";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "تاپشۇرۇۋالغان چاپلاقلار";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "بەزى چىراي ئىپادە بوغچىلىرىنى يۈكلەش مەغلۇپ بولدى";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "بەزى چاپلاق بوغچىلىرىنى يۈكلىيەلمىدى";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ئورنىتىلغان چىراي ئىپادىلىرى";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ئورنىتىلغان چاپلاقلار";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "قاچىلىنىۋاتىدۇ...";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "چىراي ئىپادىسى ئورنىتىلمىغان";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "ھېچقانداق چاپلاق ئورنىتىلمىغان";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "بۇ جايدا كەلگەن ئۇچۇرلاردىكى چىراي ئىپادىلىرى كۆرۈنىدۇ";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "بۇ جايدا كەلگەن ئۇچۇرلاردىكى چاپلاقلار كۆرۈنىدۇ";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "ئىپادىلەر";
+"STICKERS_MANAGE_VIEW_TITLE" = "چاپلاقلار";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "چىراي ئىپادە بوغچىسى";
+"STICKERS_PACK_DEFAULT_TITLE" = "چاپلاق بوغچىسى";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "چىراي ئىپادە بوغ";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "چاپلاق بوغچىسى";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "چىراي ئىپادە بوغچىسى يۈكلەش مەغلۇپ بولدى";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "چاپلاق بوغچىسىنى يۈكلىيەلمىدى";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "سۆكۈش";
@@ -5540,10 +5540,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "دەلىللەش";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ھېچقانداق ئورتاق گۇرۇپپا يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No group members in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "ھېچقانداق ئورتاق گۇرۇپپا ئەزاسى يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "بۇ ئۇچۇر ئۆچۈرۈلگەن";
@@ -5813,7 +5813,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "بۇ جاي چېكىلسە ئوقۇلغاندىن كېيىن غايىپ بولىدىغان ئۇچۇر قۇرۇلىدۇ.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "بىر قېتىملا كۆرۈنىدىغان مېدىيا ھۆججەتلىرى ئەۋەتىلگەندىن كېيىن ئاپتوماتىك ئۆچۈرۈلىدۇ.";
+"VIEW_ONCE_OUTGOING_TOAST" = "بىر قېتىملا كۆرۈنىدىغان ۋاسىتە ھۆججەتلىرى ئەۋەتىلگەندىن كېيىن ئاپتوماتىك ئۆچۈرۈلىدۇ.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "بىكار قىلىش ئۈچۈن سىيرىڭ";
