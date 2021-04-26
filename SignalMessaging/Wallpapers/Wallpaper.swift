@@ -383,6 +383,7 @@ public struct WallpaperMaskBuilder {
 
 public protocol WallpaperMaskDataSource: class {
     func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder)
+    var isWallpaperPreview: Bool { get }
 }
 
 // MARK: -
@@ -466,11 +467,18 @@ public class WallpaperView {
         let contentView: UIView = {
             switch mode {
             case .solidColor(let solidColor):
-                let contentView = OWSLayerView(frame: .zero) { [weak self] _ in
-                    self?.updateBlurContentAndMask()
+                let isWallpaperPreview = maskDataSource?.isWallpaperPreview ?? false
+                 if isWallpaperPreview {
+                    let contentView = OWSLayerView(frame: .zero) { [weak self] _ in
+                        self?.updateBlurContentAndMask()
+                    }
+                    contentView.backgroundColor = solidColor
+                    return contentView
+                } else {
+                    let contentView = UIView()
+                    contentView.backgroundColor = solidColor
+                    return contentView
                 }
-                contentView.backgroundColor = solidColor
-                return contentView
             case .gradientView(let gradientView):
                 return gradientView
             case .image(let image):

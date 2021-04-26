@@ -203,6 +203,8 @@ extension MockConversationView: WallpaperMaskDataSource {
         incomingMessageView.buildWallpaperMask(wallpaperMaskBuilder)
         dateHeaderView.buildWallpaperMask(wallpaperMaskBuilder)
     }
+
+    var isWallpaperPreview: Bool { true }
 }
 
 // MARK: - Mock Classes
