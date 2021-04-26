@@ -620,7 +620,7 @@ fileprivate extension CVMessageMapping {
     }
     func shouldShowUnknownThreadWarning(thread: TSThread,
                                         transaction: SDSAnyReadTransaction) -> Bool {
-        !canLoadOlder && Self.contactsManagerImpl.isLowTrustThread(thread: thread,
+        !canLoadOlder && Self.contactsManagerImpl.isLowTrustThread(thread,
                                                                    allowUserToDismiss: false,
                                                                    transaction: transaction)
     }

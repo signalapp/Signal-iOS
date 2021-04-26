@@ -8,8 +8,8 @@ fileprivate extension OWSContactsManager {
     static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
 
-    static var ignoreLowTrustContactCache = AtomicSet<UUID>()
-    static var ignoreLowTrustGroupCache = AtomicSet<Data>()
+    static var notLowTrustContactCache = AtomicSet<UUID>()
+    static var notLowTrustGroupCache = AtomicSet<Data>()
 }
 
 // MARK: -
@@ -71,13 +71,13 @@ public extension OWSContactsManager {
             guard let uuid = address.uuid else {
                 return false
             }
-            return Self.ignoreLowTrustContactCache.contains(uuid)
+            return Self.notLowTrustContactCache.contains(uuid)
         }
         func addToCache() {
             guard let uuid = address.uuid else {
                 return
             }
-            Self.ignoreLowTrustContactCache.insert(uuid)
+            Self.notLowTrustContactCache.insert(uuid)
         }
         if cacheContains() {
             return false
@@ -100,13 +100,13 @@ public extension OWSContactsManager {
             guard let uuid = address.uuid else {
                 return false
             }
-            return Self.ignoreLowTrustContactCache.contains(uuid)
+            return Self.notLowTrustContactCache.contains(uuid)
         }
         func addToCache() {
             guard let uuid = address.uuid else {
                 return
             }
-            Self.ignoreLowTrustContactCache.insert(uuid)
+            Self.notLowTrustContactCache.insert(uuid)
         }
         if cacheContains() {
             return false
@@ -138,10 +138,10 @@ public extension OWSContactsManager {
                          transaction: SDSAnyReadTransaction) -> Bool {
         let groupId = groupThread.groupId
         func cacheContains() -> Bool {
-            Self.ignoreLowTrustGroupCache.contains(groupId)
+            Self.notLowTrustGroupCache.contains(groupId)
         }
         func addToCache() {
-            Self.ignoreLowTrustGroupCache.insert(groupId)
+            Self.notLowTrustGroupCache.insert(groupId)
         }
         if cacheContains() {
             return false
