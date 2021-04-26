@@ -433,6 +433,9 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 
+/* Label for the 'set' button. */
+"BUTTON_SET" = "Set";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Start";
 
@@ -5880,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Preview";

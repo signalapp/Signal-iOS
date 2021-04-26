@@ -562,6 +562,12 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
+        builder.setUniversalExpireTimer(
+            OWSDisappearingMessagesConfiguration
+                .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+                .durationSeconds
+        )
+
         return try builder.build()
     }
 
@@ -727,6 +733,21 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             Self.paymentsSwift.setPaymentsState(mergedPaymentsState,
                                                 updateStorageService: false,
                                                 transaction: transaction)
+        }
+
+        let localConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        let localExpireToken = localConfiguration.asToken
+        let expireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
+        if localExpireToken != expireToken {
+            if expireToken.isEnabled {
+                localConfiguration
+                    .copyAsEnabled(withDurationSeconds: expireToken.durationSeconds)
+                    .anyUpsert(transaction: transaction)
+            } else {
+                localConfiguration
+                    .copy(withIsEnabled: false)
+                    .anyUpsert(transaction: transaction)
+            }
         }
 
         return mergeState

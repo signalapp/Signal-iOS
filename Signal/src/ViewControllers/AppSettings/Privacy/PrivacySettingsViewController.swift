@@ -137,10 +137,11 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 )
                 return cell
             }, actionBlock: { [weak self] in
-                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration) { configuration in
+                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration, isUniversal: true) { configuration in
                     self?.databaseStorage.write { transaction in
                         configuration.anyUpsert(transaction: transaction)
                     }
+                    self?.storageServiceManager.recordPendingLocalAccountUpdates()
                     self?.updateTableContents()
                 }
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)

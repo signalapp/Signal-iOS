@@ -84,12 +84,7 @@ class PreviewWallpaperViewController: UIViewController {
 
         buttonStack.addArrangedSubview(divider)
 
-        let setButton = OWSButton(
-            title: NSLocalizedString(
-                "WALLPAPER_PREVIEW_SET_BUTTON",
-                comment: "The text for the set button on wallpaper preview view."
-            )
-        ) { [weak self] in
+        let setButton = OWSButton(title: CommonStrings.setButton) { [weak self] in
             self?.setCurrentWallpaperAndDismiss()
         }
         setButton.setTitleColor(Theme.primaryTextColor, for: .normal)

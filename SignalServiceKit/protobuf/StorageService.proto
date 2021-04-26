@@ -151,4 +151,5 @@ message AccountRecord {
   repeated PinnedConversation     pinnedConversations          = 14;
            bool                   preferContactAvatars         = 15;
            Payments               payments                     = 16;
+           uint32                 universalExpireTimer         = 17; 
 }

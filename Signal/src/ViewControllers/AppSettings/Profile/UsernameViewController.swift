@@ -70,10 +70,11 @@ class UsernameViewController: OWSTableViewController2 {
 
         if hasUnsavedChanges {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .done,
+                title: CommonStrings.setButton,
+                style: .done,
                 target: self,
                 action: #selector(didTapDone),
-                accessibilityIdentifier: "done_button"
+                accessibilityIdentifier: "set_button"
             )
         } else {
             navigationItem.rightBarButtonItem = nil

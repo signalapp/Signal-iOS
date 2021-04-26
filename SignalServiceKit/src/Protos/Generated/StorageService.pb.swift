@@ -480,6 +480,11 @@ struct StorageServiceProtos_AccountRecord {
   /// Clears the value of `payments`. Subsequent reads from it will return its default value.
   mutating func clearPayments() {_uniqueStorage()._payments = nil}
 
+  var universalExpireTimer: UInt32 {
+    get {return _storage._universalExpireTimer}
+    set {_uniqueStorage()._universalExpireTimer = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -1247,7 +1252,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     13: .same(proto: "notDiscoverableByPhoneNumber"),
     14: .same(proto: "pinnedConversations"),
     15: .same(proto: "preferContactAvatars"),
-    16: .same(proto: "payments")
+    16: .same(proto: "payments"),
+    17: .same(proto: "universalExpireTimer")
   ]
 
   fileprivate class _StorageClass {
@@ -1267,6 +1273,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
     var _preferContactAvatars: Bool = false
     var _payments: StorageServiceProtos_AccountRecord.Payments?
+    var _universalExpireTimer: UInt32 = 0
 
     static let defaultInstance = _StorageClass()
 
@@ -1289,6 +1296,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _pinnedConversations = source._pinnedConversations
       _preferContactAvatars = source._preferContactAvatars
       _payments = source._payments
+      _universalExpireTimer = source._universalExpireTimer
     }
   }
 
@@ -1323,6 +1331,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 14: try { try decoder.decodeRepeatedMessageField(value: &_storage._pinnedConversations) }()
         case 15: try { try decoder.decodeSingularBoolField(value: &_storage._preferContactAvatars) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._payments) }()
+        case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._universalExpireTimer) }()
         default: break
         }
       }
@@ -1379,6 +1388,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if let v = _storage._payments {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
       }
+      if _storage._universalExpireTimer != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._universalExpireTimer, fieldNumber: 17)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1404,6 +1416,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._pinnedConversations != rhs_storage._pinnedConversations {return false}
         if _storage._preferContactAvatars != rhs_storage._preferContactAvatars {return false}
         if _storage._payments != rhs_storage._payments {return false}
+        if _storage._universalExpireTimer != rhs_storage._universalExpireTimer {return false}
         return true
       }
       if !storagesAreEqual {return false}

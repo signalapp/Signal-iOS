@@ -280,12 +280,15 @@ NS_ASSUME_NONNULL_BEGIN
     __block DisappearingMessageToken *defaultTimerToken;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
-        OWSDisappearingMessagesConfiguration *configuration =
+
+        defaultTimerToken =
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultUniversalConfigurationWithTransaction:transaction]
+                .asToken;
+        OWSDisappearingMessagesConfiguration *currentConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
-        needsDefaultTimerSet = thread.lastInteractionRowId == 0
-            && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:configuration.uniqueId
+        needsDefaultTimerSet = defaultTimerToken.isEnabled && thread.lastInteractionRowId == 0
+            && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:currentConfiguration.uniqueId
                                                                 transaction:transaction];
-        defaultTimerToken = configuration.asToken;
     }];
 
     if (needsDefaultTimerSet) {
@@ -319,12 +322,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    OWSDisappearingMessagesConfiguration *defaultConfiguration =
+    DisappearingMessageToken *defaultTimerToken =
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultUniversalConfigurationWithTransaction:transaction]
+            .asToken;
+    OWSDisappearingMessagesConfiguration *currentConfiguration =
         [thread disappearingMessagesConfigurationWithTransaction:transaction];
-    BOOL needsDefaultTimerSet = thread.lastInteractionRowId == 0
-        && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:defaultConfiguration.uniqueId
+    BOOL needsDefaultTimerSet = thread.lastInteractionRowId == 0 && defaultTimerToken.isEnabled
+        && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:currentConfiguration.uniqueId
                                                             transaction:transaction];
-    DisappearingMessageToken *defaultTimerToken = defaultConfiguration.asToken;
 
     if (needsDefaultTimerSet) {
         OWSDisappearingMessagesConfiguration *configuration =
