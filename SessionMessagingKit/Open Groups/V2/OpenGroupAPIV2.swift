@@ -6,8 +6,8 @@ public final class OpenGroupAPIV2 : NSObject {
     private static var authTokenPromises: [String:Promise<String>] = [:]
     
     public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    public static let defaultServer = "http://sessionopengroup.com"
-    public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
+    public static let defaultServer = "http://116.203.70.33"
+    public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     public static var defaultRoomsPromise: Promise<[Info]>?
     public static var groupImagePromises: [String:Promise<Data>] = [:]
     
