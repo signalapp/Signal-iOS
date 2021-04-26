@@ -314,9 +314,8 @@ private class WallpaperPage: UIViewController {
     var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
     var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
 
-    var wallpaperContentView: WallpaperView?
+    var wallpaperView: WallpaperView?
     var wallpaperContentPreviewView: UIView?
-    var wallpaperBlurView: WallpaperView?
     var wallpaperBlurPreviewView: UIView?
 
     override func loadView() {
@@ -326,31 +325,25 @@ private class WallpaperPage: UIViewController {
         rootView.backgroundColor = Theme.darkThemeBackgroundColor
         rootView.addLayoutBlock { [weak self] _ in
             guard let self = self else { return }
-            self.wallpaperBlurView?.updateBlurContentAndMask()
+            self.wallpaperView?.updateBlurContentAndMask()
         }
         view = rootView
 
         let shouldDim = databaseStorage.read { transaction in
             Wallpaper.shouldDim(thread: thread, transaction: transaction)
         }
-        guard let wallpaperContentView = Wallpaper.view(for: wallpaper,
-                                                        maskDataSource: maskDataSource,
-                                                        photo: photo,
-                                                        shouldDim: shouldDim) else {
+        guard let wallpaperView = Wallpaper.view(for: wallpaper,
+                                                 maskDataSource: maskDataSource,
+                                                 photo: photo,
+                                                 shouldDim: shouldDim) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
-        self.wallpaperContentView = wallpaperContentView
-        let wallpaperContentPreviewView = wallpaperContentView.asPreviewView(mode: .contentAndDimming)
+        self.wallpaperView = wallpaperView
+
+        let wallpaperContentPreviewView = wallpaperView.asPreviewView(mode: .contentAndDimming)
         self.wallpaperContentPreviewView = wallpaperContentPreviewView
 
-        guard let wallpaperBlurView = Wallpaper.view(for: wallpaper,
-                                                     maskDataSource: maskDataSource,
-                                                     photo: photo,
-                                                     shouldDim: shouldDim) else {
-            return owsFailDebug("Failed to create photo wallpaper view")
-        }
-        self.wallpaperBlurView = wallpaperBlurView
-        let wallpaperBlurPreviewView = wallpaperBlurView.asPreviewView(mode: .blur)
+        let wallpaperBlurPreviewView = wallpaperView.asPreviewView(mode: .blur)
         self.wallpaperBlurPreviewView = wallpaperBlurPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
@@ -423,17 +416,17 @@ private class WallpaperPage: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.wallpaperBlurView?.updateBlurContentAndMask()
+        self.wallpaperView?.updateBlurContentAndMask()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.wallpaperBlurView?.updateBlurContentAndMask()
+        self.wallpaperView?.updateBlurContentAndMask()
     }
 
     private func updatePhoto() {
-        guard let wallpaperImageView = wallpaperContentView?.contentView as? UIImageView else { return }
+        guard let wallpaperImageView = wallpaperView?.contentView as? UIImageView else { return }
         UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
             wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
         } completion: { _ in }

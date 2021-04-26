@@ -466,7 +466,9 @@ public class WallpaperView {
         let contentView: UIView = {
             switch mode {
             case .solidColor(let solidColor):
-                let contentView = UIView()
+                let contentView = OWSLayerView(frame: .zero) { [weak self] _ in
+                    self?.updateBlurContentAndMask()
+                }
                 contentView.backgroundColor = solidColor
                 return contentView
             case .gradientView(let gradientView):
