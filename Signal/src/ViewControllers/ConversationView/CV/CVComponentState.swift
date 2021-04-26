@@ -210,6 +210,9 @@ public class CVComponentState: Equatable, Dependencies {
     typealias UnknownThreadWarning = CVComponentState.SystemMessage
     let unknownThreadWarning: UnknownThreadWarning?
 
+    typealias DefaultDisappearingMessageTimer = CVComponentState.SystemMessage
+    let defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?
+
     struct BottomButtons: Equatable {
         let actions: [CVMessageAction]
     }
@@ -243,6 +246,7 @@ public class CVComponentState: Equatable, Dependencies {
                      typingIndicator: TypingIndicator?,
                      threadDetails: ThreadDetails?,
                      unknownThreadWarning: UnknownThreadWarning?,
+                     defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?,
                      bottomButtons: BottomButtons?,
                      failedOrPendingDownloads: FailedOrPendingDownloads?,
                      sendFailureBadge: SendFailureBadge?) {
@@ -266,6 +270,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.typingIndicator = typingIndicator
         self.threadDetails = threadDetails
         self.unknownThreadWarning = unknownThreadWarning
+        self.defaultDisappearingMessageTimer = defaultDisappearingMessageTimer
         self.bottomButtons = bottomButtons
         self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
@@ -293,6 +298,7 @@ public class CVComponentState: Equatable, Dependencies {
                     lhs.typingIndicator == rhs.typingIndicator &&
                     lhs.threadDetails == rhs.threadDetails &&
                     lhs.unknownThreadWarning == rhs.unknownThreadWarning &&
+                    lhs.defaultDisappearingMessageTimer == rhs.defaultDisappearingMessageTimer &&
                     lhs.bottomButtons == rhs.bottomButtons &&
                     lhs.failedOrPendingDownloads == rhs.failedOrPendingDownloads &&
                     lhs.sendFailureBadge == rhs.sendFailureBadge)
@@ -318,6 +324,7 @@ public class CVComponentState: Equatable, Dependencies {
         typealias TypingIndicator = CVComponentState.TypingIndicator
         typealias ThreadDetails = CVComponentState.ThreadDetails
         typealias UnknownThreadWarning = CVComponentState.UnknownThreadWarning
+        typealias DefaultDisappearingMessageTimer = CVComponentState.DefaultDisappearingMessageTimer
         typealias FailedOrPendingDownloads = CVComponentState.FailedOrPendingDownloads
         typealias BottomButtons = CVComponentState.BottomButtons
         typealias SendFailureBadge = CVComponentState.SendFailureBadge
@@ -342,6 +349,7 @@ public class CVComponentState: Equatable, Dependencies {
         var typingIndicator: TypingIndicator?
         var threadDetails: ThreadDetails?
         var unknownThreadWarning: UnknownThreadWarning?
+        var defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?
         var reactions: Reactions?
         var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
@@ -378,6 +386,7 @@ public class CVComponentState: Equatable, Dependencies {
                                     typingIndicator: typingIndicator,
                                     threadDetails: threadDetails,
                                     unknownThreadWarning: unknownThreadWarning,
+                                    defaultDisappearingMessageTimer: defaultDisappearingMessageTimer,
                                     bottomButtons: bottomButtons,
                                     failedOrPendingDownloads: failedOrPendingDownloads,
                                     sendFailureBadge: sendFailureBadge)
@@ -408,6 +417,9 @@ public class CVComponentState: Equatable, Dependencies {
             }
             if unknownThreadWarning != nil {
                 return .unknownThreadWarning
+            }
+            if defaultDisappearingMessageTimer != nil {
+                return .defaultDisappearingMessageTimer
             }
             if systemMessage != nil {
                 return .systemMessage
@@ -503,6 +515,9 @@ public class CVComponentState: Equatable, Dependencies {
         }
         if unknownThreadWarning != nil {
             result.insert(.unknownThreadWarning)
+        }
+        if defaultDisappearingMessageTimer != nil {
+            result.insert(.defaultDisappearingMessageTimer)
         }
         if bottomButtons != nil {
             result.insert(.bottomButtons)
@@ -610,6 +625,13 @@ fileprivate extension CVComponentState.Builder {
             self.unknownThreadWarning = CVComponentSystemMessage.buildUnknownThreadWarningState(interaction: interaction,
                                                                                                 threadViewModel: threadViewModel,
                                                                                                 transaction: transaction)
+            return build()
+        case .defaultDisappearingMessageTimer:
+            self.unknownThreadWarning = CVComponentSystemMessage.buildDefaultDisappearingMessageTimerState(
+                interaction: interaction,
+                threadViewModel: threadViewModel,
+                transaction: transaction
+            )
             return build()
         case .typingIndicator:
             guard let typingIndicatorInteraction = interaction as? TypingIndicatorInteraction else {

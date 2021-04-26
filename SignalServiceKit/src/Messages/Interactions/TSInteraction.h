@@ -20,7 +20,8 @@ typedef NS_CLOSED_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_ThreadDetails,
     OWSInteractionType_UnreadIndicator,
     OWSInteractionType_DateHeader,
-    OWSInteractionType_UnknownThreadWarning
+    OWSInteractionType_UnknownThreadWarning,
+    OWSInteractionType_DefaultDisappearingMessageTimer
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);

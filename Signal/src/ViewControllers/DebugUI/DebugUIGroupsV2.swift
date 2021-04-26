@@ -589,6 +589,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return firstly {
                 GroupManager.localCreateNewGroup(members: [otherUserAddress],
                                                  name: "Real group, both users are in the group",
+                                                 disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
             }.map(on: .global()) { (groupThread: TSGroupThread) in
                 guard let validGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
@@ -602,6 +603,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return firstly {
                 GroupManager.localCreateNewGroup(members: [],
                                                  name: "Real group, recipient is not in the group",
+                                                 disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
             }.map(on: .global()) { (groupThread: TSGroupThread) in
                 guard let missingOtherUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
@@ -617,6 +619,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return firstly { () -> Promise<TSGroupThread> in
                 GroupManager.localCreateNewGroup(members: [otherUserAddress],
                                                  name: "Real group, sender is not in the group",
+                                                 disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {

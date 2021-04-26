@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -8,6 +8,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 @interface OWSDisappearingMessagesConfiguration ()
 
@@ -96,8 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [[self alloc] initWithThreadId:threadId
-                                  enabled:NO
+                                  enabled:OWSDisappearingMessagesConfigurationDefaultExpirationDuration > 0
                           durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+}
+
++ (instancetype)fetchOrBuildDefaultUniversalConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchOrBuildDefaultWithThreadId:kUniversalTimerThreadId transaction:transaction];
 }
 
 + (NSArray<NSNumber *> *)validDurationsSeconds
@@ -113,7 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
         @(6 * kHourInterval),
         @(12 * kHourInterval),
         @(24 * kHourInterval),
-        @(1 * kWeekInterval)
+        @(1 * kWeekInterval),
+        @(4 * kWeekInterval)
     ];
 }
 

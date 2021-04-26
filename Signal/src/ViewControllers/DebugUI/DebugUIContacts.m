@@ -103,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         groupId:nil
         name:groupName
         avatarData:nil
+        disappearingMessageToken:DisappearingMessageToken.disabledToken
         newGroupSeed:nil
         shouldSendMessage:YES
         success:^(TSGroupThread *thread) { [SignalApp.shared presentConversationForThread:thread animated:YES]; }

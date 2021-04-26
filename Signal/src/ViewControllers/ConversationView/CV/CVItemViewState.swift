@@ -91,7 +91,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             // The thread details should have a stable timestamp.
             let threadDetailsTimestamp: UInt64
             if let firstInteraction = messageMapping.loadedInteractions.first {
-                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 2
+                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 3
             } else {
                 threadDetailsTimestamp = 1
             }
@@ -109,13 +109,32 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             // The "Unknown Thread Warning" should have a stable timestamp.
             let timestamp: UInt64
             if let firstInteraction = messageMapping.loadedInteractions.first {
-                timestamp = max(1, firstInteraction.timestamp) - 1
+                timestamp = max(1, firstInteraction.timestamp) - 2
             } else {
                 timestamp = 2
             }
             let unknownThreadWarning = UnknownThreadWarningInteraction(thread: thread,
                                                                        timestamp: timestamp)
             let item = addItem(interaction: unknownThreadWarning)
+            owsAssertDebug(item != nil)
+        }
+
+        if messageMapping.shouldShowDefaultTimerIndicator(
+            thread: thread,
+            transaction: transaction
+        ) {
+            // The default timer message should have a stable timestamp.
+            let timestamp: UInt64
+            if let firstInteraction = messageMapping.loadedInteractions.first {
+                timestamp = max(1, firstInteraction.timestamp) - 1
+            } else {
+                timestamp = 3
+            }
+            let interaction = DefaultDisappearingMessageTimerInteraction(
+                thread: thread,
+                timestamp: timestamp
+            )
+            let item = addItem(interaction: interaction)
             owsAssertDebug(item != nil)
         }
 
@@ -623,6 +642,11 @@ fileprivate extension CVMessageMapping {
         !canLoadOlder && Self.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread,
                                                                                  transaction: transaction)
     }
+    func shouldShowDefaultTimerIndicator(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        guard !thread.shouldThreadBeVisible else { return false }
+        guard thread.lastInteractionRowId == 0 else { return false }
+        return OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction).isEnabled
+    }
 }
 
 // MARK: -
@@ -655,7 +679,7 @@ private class ItemBuilder {
 
     var canShowDate: Bool {
         switch interaction.interactionType() {
-        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning:
+        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return false
         case .info:
             guard let infoMessage = interaction as? TSInfoMessage else {

@@ -27,6 +27,10 @@ public class NewGroupConfirmViewController: OWSViewController {
 
     private let recipientTableView = OWSTableViewController2()
 
+    private lazy var disappearingMessagesConfiguration = databaseStorage.read { transaction in
+        OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+    }
+
     required init(newGroupState: NewGroupState) {
         self.newGroupState = newGroupState
 
@@ -203,6 +207,39 @@ public class NewGroupConfirmViewController: OWSViewController {
     // MARK: -
 
     private func updateTableContents() {
+        let contents = OWSTableContents()
+
+        let disappearingMessagesSection = OWSTableSection()
+        disappearingMessagesSection.add(.init(
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let cell = OWSTableItem.buildIconNameCell(
+                    icon: self.disappearingMessagesConfiguration.isEnabled
+                        ? .settingsTimer
+                        : .settingsTimerDisabled,
+                    itemName: NSLocalizedString(
+                        "DISAPPEARING_MESSAGES",
+                        comment: "table cell label in conversation settings"
+                    ),
+                    accessoryText: self.disappearingMessagesConfiguration.isEnabled
+                        ? NSString.formatDurationSeconds(self.disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                        : CommonStrings.switchOff,
+                    accessoryType: .disclosureIndicator,
+                    accessoryImage: nil,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
+                )
+                return cell
+            }, actionBlock: { [weak self] in
+                guard let self = self else { return }
+                let vc = DisappearingMessagesTimerSettingsViewController(configuration: self.disappearingMessagesConfiguration) { configuration in
+                    self.disappearingMessagesConfiguration = configuration
+                    self.updateTableContents()
+                }
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            }
+        ))
+        contents.addSection(disappearingMessagesSection)
+
         let section = OWSTableSection()
         section.headerTitle = NSLocalizedString("GROUP_MEMBERS_SECTION_TITLE_MEMBERS",
                                                 comment: "Title for the 'members' section of the 'group members' view.")
@@ -251,9 +288,8 @@ public class NewGroupConfirmViewController: OWSViewController {
                 return cell
             }, actionBlock: nil))
         }
-
-        let contents = OWSTableContents()
         contents.addSection(section)
+
         recipientTableView.contents = contents
     }
 
@@ -284,6 +320,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         let memberSet = Set([localAddress] + recipientSet.orderedMembers.compactMap { $0.address })
         let members = Array(memberSet)
         let newGroupSeed = groupSeed
+        let disappearingMessageToken = disappearingMessagesConfiguration.asToken
 
         // GroupsV2 TODO: Should we allow cancel here?
         ModalActivityIndicatorViewController.present(fromViewController: self,
@@ -293,6 +330,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                                              groupId: nil,
                                                                                              name: groupName,
                                                                                              avatarData: avatarData,
+                                                                                             disappearingMessageToken: disappearingMessageToken,
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in

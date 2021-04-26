@@ -782,6 +782,36 @@ extension CVComponentSystemMessage {
         }
     }
 
+    // MARK: - Default Disappearing Message Timer
+
+    static func buildDefaultDisappearingMessageTimerState(
+        interaction: TSInteraction,
+        threadViewModel: ThreadViewModel,
+        transaction: SDSAnyReadTransaction
+    ) -> CVComponentState.SystemMessage {
+        let configuration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+
+        let labelText = NSMutableAttributedString()
+        labelText.appendImage(
+            Theme.iconImage(.timer16).withRenderingMode(.alwaysTemplate),
+            font: Self.titleLabelFont,
+            heightReference: ImageAttachmentHeightReference.lineHeight
+        )
+        labelText.append("  ", attributes: [:])
+
+        let titleFormat = NSLocalizedString(
+            "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT",
+            comment: "Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time}"
+        )
+        labelText.append(String(format: titleFormat, configuration.durationString))
+
+        return CVComponentState.SystemMessage(
+            title: labelText,
+            titleColor: Theme.secondaryTextAndIconColor,
+            action: nil
+        )
+    }
+
     // MARK: - Actions
 
     static func action(forInteraction interaction: TSInteraction,

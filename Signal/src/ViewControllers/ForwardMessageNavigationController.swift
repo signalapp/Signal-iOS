@@ -142,7 +142,7 @@ extension ForwardMessageNavigationController {
 
             pushViewController(approvalViewController, animated: true)
         case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
-             .threadDetails, .systemMessage, .unknownThreadWarning:
+             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             throw OWSAssertionError("Invalid message type.")
         }
     }
@@ -257,7 +257,7 @@ extension ForwardMessageNavigationController {
                 }
 //            }
         case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
-             .threadDetails, .systemMessage, .unknownThreadWarning:
+             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             throw OWSAssertionError("Invalid message type.")
         }
     }

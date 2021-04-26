@@ -26,6 +26,7 @@ public extension DebugUIStress {
                                                     groupId: nil,
                                                     name: groupName,
                                                     avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                    disappearingMessageToken: .disabledToken,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)
         }.done { newGroupThread in
@@ -103,6 +104,7 @@ public extension DebugUIStress {
                                                     groupId: nil,
                                                     name: groupName,
                                                     avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                    disappearingMessageToken: .disabledToken,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)
         }.done { (newGroupThread) in
