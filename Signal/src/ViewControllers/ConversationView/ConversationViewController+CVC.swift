@@ -204,6 +204,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     // confidence we have that CVC view state is always up-to-date.
     // But that can make "minor update" updates more expensive.
     private func updateViewToReflectLoad(loadedRenderState: CVRenderState) {
+
         // We can skip some of this work
         guard self.hasViewWillAppearEverBegun else {
             return
@@ -567,6 +568,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
+        self.startUpdateScrollingContentTimer()
+
         let completion = { [weak self] (finished: Bool) in
             AssertIsOnMainThread()
 
@@ -589,6 +592,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
 
             viewState.scrollActionForUpdate = nil
+
+            self.stopUpdateScrollingContentTimer()
 
             if !finished {
                 Logger.warn("performBatchUpdates did not finish")

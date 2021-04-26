@@ -7,6 +7,7 @@ import Foundation
 @objc
 public protocol CVBackgroundContainerDelegate: class {
     func updateSelectionHighlight()
+    func updateScrollingContent()
 }
 
 // MARK: -
@@ -24,6 +25,9 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
     fileprivate var wallpaperView: WallpaperView?
 
     public let selectionHighlightView = SelectionHighlightView()
+
+    fileprivate var updateScrollingContentTimer: Timer?
+    fileprivate var shouldHaveUpdateScrollingContentTimer = AtomicUInt(0)
 
     @objc
     public weak var delegate: CVBackgroundContainerDelegate?
@@ -102,6 +106,60 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
 // MARK: -
 
+fileprivate extension CVBackgroundContainer {
+
+    func updateWallpaperBlurMask() {
+        AssertIsOnMainThread()
+
+        let isAnimating = shouldHaveUpdateScrollingContentTimer.get() > 0
+        wallpaperView?.updateBlurMask(isAnimating: isAnimating)
+    }
+
+    func updateScrollingContentForAnimation(duration: TimeInterval) {
+        AssertIsOnMainThread()
+
+        startUpdateScrollingContentTimer()
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+            self?.stopUpdateScrollingContentTimer()
+        }
+    }
+
+    func startUpdateScrollingContentTimer() {
+        AssertIsOnMainThread()
+
+        shouldHaveUpdateScrollingContentTimer.increment()
+
+        if updateScrollingContentTimer == nil {
+            let timerInterval: TimeInterval = TimeInterval(1) / TimeInterval(60)
+            updateScrollingContentTimer = WeakTimer.scheduledTimer(timeInterval: timerInterval,
+                                                                   target: self,
+                                                                   userInfo: nil,
+                                                                   repeats: true) { [weak self] _ in
+                self?.updateScrollingContentTimerDidFire()
+            }
+        }
+    }
+
+    func stopUpdateScrollingContentTimer() {
+        AssertIsOnMainThread()
+
+        shouldHaveUpdateScrollingContentTimer.decrementOrZero()
+    }
+
+    func updateScrollingContentTimerDidFire() {
+        AssertIsOnMainThread()
+
+        if shouldHaveUpdateScrollingContentTimer.get() == 0 {
+            // Stop
+            updateScrollingContentTimer?.invalidate()
+            updateScrollingContentTimer = nil
+        }
+        delegate?.updateScrollingContent()
+    }
+}
+
+// MARK: -
+
 extension ConversationViewController: CVBackgroundContainerDelegate {
     var selectionHighlightView: SelectionHighlightView {
         viewState.backgroundContainer.selectionHighlightView
@@ -111,7 +169,28 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
     public func updateScrollingContent() {
         AssertIsOnMainThread()
 
-        viewState.backgroundContainer.wallpaperView?.updateBlurMask()
+        viewState.backgroundContainer.updateWallpaperBlurMask()
         updateSelectionHighlight()
+    }
+
+    @objc
+    public func updateScrollingContentForAnimation(duration: TimeInterval) {
+        AssertIsOnMainThread()
+
+        viewState.backgroundContainer.updateScrollingContentForAnimation(duration: duration)
+    }
+
+    @objc
+    public func startUpdateScrollingContentTimer() {
+        AssertIsOnMainThread()
+
+        viewState.backgroundContainer.startUpdateScrollingContentTimer()
+    }
+
+    @objc
+    public func stopUpdateScrollingContentTimer() {
+        AssertIsOnMainThread()
+
+        viewState.backgroundContainer.stopUpdateScrollingContentTimer()
     }
 }
