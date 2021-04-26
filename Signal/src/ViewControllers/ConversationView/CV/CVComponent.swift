@@ -76,6 +76,10 @@ public protocol CVRootComponent: CVComponent {
                                     componentView: CVComponentView)
 
     var isDedicatedCell: Bool { get }
+
+    func willSnapshotForMessageActions(componentView: CVComponentView)
+
+    func didSnapshotForMessageActions(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -155,6 +159,14 @@ public class CVComponentBase: NSObject {
 
     var isShowingSelectionUI: Bool {
         itemModel.itemViewState.isShowingSelectionUI
+    }
+
+    public func willSnapshotForMessageActions(componentView: CVComponentView) {
+        // Do nothing.
+    }
+
+    public func didSnapshotForMessageActions(componentView: CVComponentView) {
+        // Do nothing.
     }
 
     // MARK: - Root Components

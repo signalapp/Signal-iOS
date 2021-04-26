@@ -183,6 +183,24 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         }
         rootComponent.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
     }
+
+    public func willSnapshotForMessageActions() {
+        guard let rootComponent = rootComponent,
+              let componentView = componentView else {
+            owsFailDebug("Missing component.")
+            return
+        }
+        rootComponent.willSnapshotForMessageActions(componentView: componentView)
+    }
+
+    public func didSnapshotForMessageActions() {
+        guard let rootComponent = rootComponent,
+              let componentView = componentView else {
+            owsFailDebug("Missing component.")
+            return
+        }
+        rootComponent.didSnapshotForMessageActions(componentView: componentView)
+    }
 }
 
 // MARK: -

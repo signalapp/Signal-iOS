@@ -521,6 +521,21 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let dataItems = dataItems.sorted { (left, right) in
             left.range.location < right.range.location
         }
+
+        var mentionRanges = [NSRange]()
+        attributedText.enumerateMentions { mention, subrange, _ in
+            guard nil != mention else { return }
+            mentionRanges.append(subrange)
+        }
+        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
+            for mentionRange in mentionRanges {
+                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
+                    return true
+                }
+            }
+            return false
+        }
+
         var lastIndex: Int = 0
         for dataItem in dataItems {
             let snippet = dataItem.snippet
@@ -528,6 +543,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             guard range.location >= lastIndex else {
                 owsFailDebug("Overlapping ranges.")
+                continue
+            }
+            if shouldSkipDataRange(range) {
+                Logger.warn("Not link-ifying range: \(range)")
                 continue
             }
 

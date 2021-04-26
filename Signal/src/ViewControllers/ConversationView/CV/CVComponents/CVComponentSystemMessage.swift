@@ -37,6 +37,26 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                         componentView: componentView)
     }
 
+    public override func willSnapshotForMessageActions(componentView: CVComponentView) {
+        guard let componentView = componentView as? CVComponentViewSystemMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.blurView?.backgroundColor = bubbleBackgroundColor
+    }
+
+    public override func didSnapshotForMessageActions(componentView: CVComponentView) {
+        guard let componentView = componentView as? CVComponentViewSystemMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.blurView?.backgroundColor = .clear
+    }
+
+    private var bubbleBackgroundColor: UIColor {
+        Theme.backgroundColor
+    }
+
     private var outerHStackConfig: CVStackViewConfig {
         let cellLayoutMargins = UIEdgeInsets(top: 0,
                                              leading: conversationStyle.fullWidthGutterLeading,
@@ -201,7 +221,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let blurView = UIView.transparentContainer()
+                // This view doesn't need to render to render blur,
+                // but it does need to render for the message actions snapshot.
+                let blurView = UIView.container()
                 componentView.blurView = blurView
                 bubbleView = blurView
             } else {
