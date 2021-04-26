@@ -363,7 +363,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
             AnyPromise *promise;
-            if (SNFileServerAPIV2.useV2FileServer) {
+            if (SNFeatures.useV2FileServer) {
                 promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
             } else {
                 promise = [SNFileServerAPI uploadProfilePicture:encryptedAvatarData];

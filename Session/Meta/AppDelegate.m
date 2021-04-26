@@ -400,7 +400,7 @@ static NSTimeInterval launchStartedAt;
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
             NSDate *now = [NSDate new];
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
-            if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 4 * 24 * 60 * 60) {
+            if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 14 * 24 * 60 * 60) {
                 OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
                 NSString *name = [[LKStorage.shared getUser] name];
                 UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userPublicKey];
@@ -411,7 +411,7 @@ static NSTimeInterval launchStartedAt;
                 } requiresSync:YES];
             }
             
-            if (CurrentAppContext().isMainApp && SNOpenGroupManagerV2.useV2OpenGroups) {
+            if (CurrentAppContext().isMainApp && SNFeatures.useV2OpenGroups) {
                 [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
 

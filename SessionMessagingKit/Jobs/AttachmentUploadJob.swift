@@ -67,7 +67,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         let storage = SNMessagingKitConfiguration.shared.storage
         if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
             AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: handleSuccess, onFailure: handleFailure)
-        } else if FileServerAPIV2.useV2FileServer && storage.getOpenGroup(for: threadID) == nil {
+        } else if Features.useV2FileServer && storage.getOpenGroup(for: threadID) == nil {
             AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
         } else { // Legacy
             let openGroup = storage.getOpenGroup(for: threadID)

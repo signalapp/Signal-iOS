@@ -47,7 +47,7 @@ extension MessageSender {
                 let (promise, seal) = Promise<Void>.pending()
                 AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
                 return promise
-            } else if FileServerAPIV2.useV2FileServer && storage.getOpenGroup(for: thread.uniqueId!) == nil {
+            } else if Features.useV2FileServer && storage.getOpenGroup(for: thread.uniqueId!) == nil {
                 let (promise, seal) = Promise<Void>.pending()
                 AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
                 return promise

@@ -6,7 +6,6 @@ public final class FileServerAPIV2 : NSObject {
     
     @objc public static let server = "http://88.99.175.227"
     public static let serverPublicKey = "7cb31905b55cd5580c686911debf672577b3fb0bff81df4ce2d5c4cb3a7aaa69"
-    @objc public static let useV2FileServer = false
     
     private override init() { }
     
