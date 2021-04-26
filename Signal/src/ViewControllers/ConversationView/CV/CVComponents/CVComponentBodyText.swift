@@ -104,15 +104,32 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private static let unfairLock = UnfairLock()
 
     fileprivate struct DataItem: Equatable {
-        enum DataType: Equatable {
+        enum DataType: UInt, Equatable, CustomStringConvertible {
             case link
             case address
             case phoneNumber
+
+            // MARK: - CustomStringConvertible
+
+            public var description: String {
+                switch self {
+                case .link:
+                    return ".link"
+                case .address:
+                    return ".address"
+                case .phoneNumber:
+                    return ".phoneNumber"
+                @unknown default:
+                    owsFailDebug("unexpected DataItem.DataType: \(self.rawValue)")
+                    return "unknown"
+                }
+            }
         }
 
         let dataType: DataType
         let range: NSRange
         let snippet: String
+        let matchUrl: URL?
     }
 
     private static func detectDataItems(text: String,
@@ -141,57 +158,60 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 }
 
-                // NSTextCheckingResult.CheckingType
                 let dataType: DataItem.DataType
-                if match.resultType.contains(.orthography) {
+                let resultType: NSTextCheckingResult.CheckingType = match.resultType
+                if resultType.contains(.orthography) {
                     Logger.verbose("orthography")
                     continue
-                } else if match.resultType.contains(.spelling) {
+                } else if resultType.contains(.spelling) {
                     Logger.verbose("spelling")
                     continue
-                } else if match.resultType.contains(.grammar) {
+                } else if resultType.contains(.grammar) {
                     Logger.verbose("grammar")
                     continue
-                } else if match.resultType.contains(.date) {
+                } else if resultType.contains(.date) {
                     Logger.verbose("date")
                     continue
-                } else if match.resultType.contains(.address) {
+                } else if resultType.contains(.address) {
                     Logger.verbose("address")
                     dataType = .address
-                } else if match.resultType.contains(.link) {
+                } else if resultType.contains(.link) {
                     Logger.verbose("link")
                     dataType = .link
-                } else if match.resultType.contains(.quote) {
+                } else if resultType.contains(.quote) {
                     Logger.verbose("quote")
                     continue
-                } else if match.resultType.contains(.dash) {
+                } else if resultType.contains(.dash) {
                     Logger.verbose("dash")
                     continue
-                } else if match.resultType.contains(.replacement) {
+                } else if resultType.contains(.replacement) {
                     Logger.verbose("replacement")
                     continue
-                } else if match.resultType.contains(.correction) {
+                } else if resultType.contains(.correction) {
                     Logger.verbose("correction")
                     continue
-                } else if match.resultType.contains(.regularExpression) {
+                } else if resultType.contains(.regularExpression) {
                     Logger.verbose("regularExpression")
                     continue
-                } else if match.resultType.contains(.phoneNumber) {
+                } else if resultType.contains(.phoneNumber) {
                     Logger.verbose("phoneNumber")
                     dataType = .phoneNumber
-                } else if match.resultType.contains(.transitInformation) {
+                } else if resultType.contains(.transitInformation) {
                     Logger.verbose("transitInformation")
                     continue
                 } else {
                     let snippet = (text as NSString).substring(with: match.range)
                     Logger.verbose("snippet: '\(snippet)'")
-                    owsFailDebug("Unknown link type: \(match.resultType.rawValue)")
+                    owsFailDebug("Unknown link type: \(resultType.rawValue)")
                     continue
                 }
 
+                let matchUrl = match.url
+
                 dataItems.append(DataItem(dataType: dataType,
                                           range: match.range,
-                                          snippet: snippet))
+                                          snippet: snippet,
+                                          matchUrl: matchUrl))
             }
             return dataItems
         }
@@ -511,20 +531,29 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
 
-            let link: String
-            switch dataItem.dataType {
-            case .link:
-                link = snippet
-            case .address:
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-                guard let urlEncodedAddress = snippet.encodeURIComponent else {
-                    owsFailDebug("Could not URL encode address.")
-                    continue
+            func buildLink() -> String? {
+                if let url = dataItem.matchUrl,
+                   let urlString = url.absoluteString.nilIfEmpty {
+                    return urlString
                 }
-                link = "https://maps.apple.com/?q=" + urlEncodedAddress
-            case .phoneNumber:
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-                link = "tel:" + snippet
+                switch dataItem.dataType {
+                case .link:
+                    return snippet
+                case .address:
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
+                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
+                        owsFailDebug("Could not URL encode address.")
+                        return nil
+                    }
+                    return "https://maps.apple.com/?q=" + urlEncodedAddress
+                case .phoneNumber:
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
+                    return "tel:" + snippet
+                }
+            }
+            guard let link = buildLink() else {
+                owsFailDebug("Could not build data link.")
+                continue
             }
             attributedText.addAttribute(.link, value: link, range: range)
 
