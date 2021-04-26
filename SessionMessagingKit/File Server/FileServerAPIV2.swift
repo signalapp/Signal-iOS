@@ -4,9 +4,9 @@ import SessionSnodeKit
 @objc(SNFileServerAPIV2)
 public final class FileServerAPIV2 : NSObject {
     
-    public static let server = "http://88.99.175.227"
+    @objc public static let server = "http://88.99.175.227"
     public static let serverPublicKey = "7cb31905b55cd5580c686911debf672577b3fb0bff81df4ce2d5c4cb3a7aaa69"
-    public static let useV2FileServer = true
+    @objc public static let useV2FileServer = false
     
     private override init() { }
     
@@ -71,6 +71,11 @@ public final class FileServerAPIV2 : NSObject {
     }
     
     // MARK: File Storage
+    @objc(upload:)
+    public static func objc_upload(file: Data) -> AnyPromise {
+        return AnyPromise.from(upload(file))
+    }
+    
     public static func upload(_ file: Data) -> Promise<UInt64> {
         let base64EncodedFile = file.base64EncodedString()
         let parameters = [ "file" : base64EncodedFile ]
@@ -79,6 +84,11 @@ public final class FileServerAPIV2 : NSObject {
             guard let fileID = json["result"] as? UInt64 else { throw Error.parsingFailed }
             return fileID
         }
+    }
+    
+    @objc(download:)
+    public static func objc_download(file: UInt64) -> AnyPromise {
+        return AnyPromise.from(download(file))
     }
     
     public static func download(_ file: UInt64) -> Promise<Data> {

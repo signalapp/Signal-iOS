@@ -362,8 +362,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
-            [[SNFileServerAPI uploadProfilePicture:encryptedAvatarData]
-            .thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
+            AnyPromise *promise;
+            if (SNFileServerAPIV2.useV2FileServer) {
+                promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
+            } else {
+                promise = [SNFileServerAPI uploadProfilePicture:encryptedAvatarData];
+            }
+            
+            [promise.thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
                    successBlock(downloadURL);
                 }];
@@ -801,7 +807,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
         NSString *profilePictureURL = userProfile.avatarUrlPath;
-        [[SNFileServerAPI downloadAttachmentFrom:profilePictureURL].then(^(NSData *data) {
+        
+        AnyPromise *promise;
+        if ([profilePictureURL containsString:SNFileServerAPIV2.server]) {
+            uint64_t *file = (uint64_t)[[profilePictureURL lastPathComponent] intValue];
+            promise = [SNFileServerAPIV2 download:file];
+        } else {
+            promise = [SNFileServerAPI downloadAttachmentFrom:profilePictureURL];
+        }
+        
+        [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
             {
                 [self.currentAvatarDownloads removeObject:userProfile.recipientId];

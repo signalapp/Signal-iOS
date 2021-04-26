@@ -66,9 +66,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
         let storage = SNMessagingKitConfiguration.shared.storage
         if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
-            upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false)
+            AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: handleSuccess, onFailure: handleFailure)
         } else if FileServerAPIV2.useV2FileServer && storage.getOpenGroup(for: threadID) == nil {
-            upload(stream, using: FileServerAPIV2.upload, encrypt: true)
+            AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
         } else { // Legacy
             let openGroup = storage.getOpenGroup(for: threadID)
             let server = openGroup?.server ?? FileServerAPI.server
@@ -87,11 +87,11 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         }
     }
     
-    private func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool) {
+    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool, onSuccess: (() -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
         // Get the attachment
         guard var data = try? stream.readDataFromFile() else {
             SNLog("Couldn't read attachment from disk.")
-            return handleFailure(error: Error.noAttachment)
+            onFailure?(Error.noAttachment); return
         }
         // Encrypt the attachment if needed
         if encrypt {
@@ -99,7 +99,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
             var digest = NSData()
             guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: false, outKey: &encryptionKey, outDigest: &digest) else {
                 SNLog("Couldn't encrypt attachment.")
-                return handleFailure(error: Error.encryptionFailed)
+                onFailure?(Error.encryptionFailed); return
             }
             stream.encryptionKey = encryptionKey as Data
             stream.digest = digest as Data
@@ -108,7 +108,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         // Check the file size
         SNLog("File size: \(data.count) bytes.")
         if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
-            return handleFailure(error: FileServerAPI.Error.maxFileSizeExceeded)
+            onFailure?(FileServerAPI.Error.maxFileSizeExceeded); return
         }
         // Send the request
         stream.isUploaded = false
@@ -119,9 +119,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
             stream.isUploaded = true
             stream.downloadURL = downloadURL
             stream.save()
-            self.handleSuccess()
+            onSuccess?()
         }.catch { error in
-            self.handleFailure(error: error)
+            onFailure?(error)
         }
     }
 
