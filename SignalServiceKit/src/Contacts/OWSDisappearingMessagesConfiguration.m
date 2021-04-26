@@ -107,18 +107,13 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
     return [self fetchOrBuildDefaultWithThreadId:kUniversalTimerThreadId transaction:transaction];
 }
 
-+ (NSArray<NSNumber *> *)validDurationsSeconds
++ (NSArray<NSNumber *> *)presetDurationsSeconds
 {
     return @[
-        @(5 * kSecondInterval),
-        @(10 * kSecondInterval),
         @(30 * kSecondInterval),
-        @(1 * kMinuteInterval),
         @(5 * kMinuteInterval),
-        @(30 * kMinuteInterval),
         @(1 * kHourInterval),
-        @(6 * kHourInterval),
-        @(12 * kHourInterval),
+        @(8 * kHourInterval),
         @(24 * kHourInterval),
         @(1 * kWeekInterval),
         @(4 * kWeekInterval)
@@ -127,21 +122,7 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 + (uint32_t)maxDurationSeconds
 {
-    static uint32_t max;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        max = [[self.validDurationsSeconds valueForKeyPath:@"@max.intValue"] unsignedIntValue];
-
-        // It's safe to update this assert if we add a larger duration
-        OWSAssertDebug(max == 1 * kWeekInterval);
-    });
-
-    return max;
-}
-
-- (NSUInteger)durationIndex
-{
-    return [[self.class validDurationsSeconds] indexOfObject:@(self.durationSeconds)];
+    return kYearInterval;
 }
 
 - (NSString *)durationString

@@ -178,9 +178,9 @@ private class ButtonRow: UIButton {
         titleLabel.text = title
 
         selectedImageView.isHidden = true
-        selectedImageView.image = #imageLiteral(resourceName: "accessory-check")
+        selectedImageView.setTemplateImageName(Theme.iconName(.accessoryCheckmark), tintColor: Theme.primaryIconColor)
         selectedImageView.contentMode = .scaleAspectFit
-        selectedImageView.autoSetDimension(.width, toSize: 15)
+        selectedImageView.autoSetDimension(.width, toSize: 24)
 
         let stackView = UIStackView(arrangedSubviews: [titleLabel, .hStretchingSpacer(), selectedImageView])
         stackView.isUserInteractionEnabled = false

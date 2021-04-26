@@ -124,9 +124,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildIconNameCell(
-                    icon: disappearingMessagesConfiguration.isEnabled
-                        ? .settingsTimer
-                        : .settingsTimerDisabled,
                     itemName: NSLocalizedString(
                         "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES",
                         comment: "table cell label in conversation settings"

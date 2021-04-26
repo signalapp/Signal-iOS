@@ -3484,7 +3484,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration presetDurationsSeconds][0];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
@@ -3498,7 +3498,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration presetDurationsSeconds][0];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
@@ -3512,7 +3512,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
+        NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration presetDurationsSeconds] lastObject];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
