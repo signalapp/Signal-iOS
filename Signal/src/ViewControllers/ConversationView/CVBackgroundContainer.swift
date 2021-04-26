@@ -118,6 +118,10 @@ fileprivate extension CVBackgroundContainer {
     func updateScrollingContentForAnimation(duration: TimeInterval) {
         AssertIsOnMainThread()
 
+        // To ensure a "smooth landing" of these animations, we need to continue
+        // to update the mask for a short period after the animations lands.
+        let duration = duration * 2
+        
         startUpdateScrollingContentTimer()
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             self?.stopUpdateScrollingContentTimer()
