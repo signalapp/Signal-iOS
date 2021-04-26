@@ -100,6 +100,18 @@ class MockConversationView: UIView {
         }
     }
 
+    private let outgoingMessageView = CVCellView()
+    private let incomingMessageView = CVCellView()
+    private let dateHeaderView = CVCellView()
+
+    private func reset() {
+        stackView.removeAllSubviews()
+
+        outgoingMessageView.reset()
+        incomingMessageView.reset()
+        dateHeaderView.reset()
+    }
+
     private func update() {
         let viewWidth = max(bounds.size.width, kMinimumConversationWidth)
         self.conversationStyle = ConversationStyle(
@@ -109,7 +121,7 @@ class MockConversationView: UIView {
             hasWallpaper: hasWallpaper
         )
 
-        stackView.removeAllSubviews()
+        reset()
 
         var outgoingRenderItem: CVRenderItem?
         var incomingRenderItem: CVRenderItem?
@@ -141,7 +153,6 @@ class MockConversationView: UIView {
             )
         }
 
-        let outgoingMessageView = CVCellView()
         if let renderItem = outgoingRenderItem {
             outgoingMessageView.configure(renderItem: renderItem, componentDelegate: self)
             outgoingMessageView.isCellVisible = true
@@ -151,7 +162,6 @@ class MockConversationView: UIView {
             owsFailDebug("Missing outgoingRenderItem.")
         }
 
-        let incomingMessageView = CVCellView()
         if let renderItem = incomingRenderItem {
             incomingMessageView.configure(renderItem: renderItem, componentDelegate: self)
             incomingMessageView.isCellVisible = true
@@ -161,7 +171,6 @@ class MockConversationView: UIView {
             owsFailDebug("Missing incomingRenderItem.")
         }
 
-        let dateHeaderView = CVCellView()
         if let renderItem = dateHeaderRenderItem {
             dateHeaderView.configure(renderItem: renderItem, componentDelegate: self)
             dateHeaderView.isCellVisible = true
@@ -183,6 +192,16 @@ class MockConversationView: UIView {
             stackView.addArrangedSubview(.spacer(withHeight: 12))
             stackView.addArrangedSubview(outgoingMessageView)
         }
+    }
+}
+
+// MARK: -
+
+extension MockConversationView: WallpaperMaskDataSource {
+    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
+        outgoingMessageView.buildWallpaperMask(wallpaperMaskBuilder)
+        incomingMessageView.buildWallpaperMask(wallpaperMaskBuilder)
+        dateHeaderView.buildWallpaperMask(wallpaperMaskBuilder)
     }
 }
 

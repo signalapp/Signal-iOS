@@ -175,15 +175,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
                                                        messageSwipeActionState: messageSwipeActionState)
     }
 
-    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
-        guard let rootComponent = rootComponent,
-              let componentView = componentView else {
-            owsFailDebug("Missing component.")
-            return
-        }
-        rootComponent.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
-    }
-
     public func willSnapshotForMessageActions() {
         guard let rootComponent = rootComponent,
               let componentView = componentView else {
@@ -220,6 +211,7 @@ public class CVCellView: UIView, CVRootComponentHost {
     public var renderItem: CVRenderItem?
     public var componentView: CVComponentView?
     public var hostView: UIView { self }
+    public var rootComponent: CVRootComponent? { renderItem?.rootComponent }
 
     required init() {
         super.init(frame: .zero)
@@ -260,6 +252,7 @@ public class CVCellView: UIView, CVRootComponentHost {
 public protocol CVRootComponentHost: class {
     var renderItem: CVRenderItem? { get set }
     var componentView: CVComponentView? { get set }
+    var rootComponent: CVRootComponent? { get }
     var hostView: UIView { get }
     var isCellVisible: Bool { get }
 }
@@ -406,5 +399,14 @@ public extension CVRootComponentHost {
         }
         return messageComponent.albumItemView(forAttachment: attachment,
                                               componentView: componentView)
+    }
+
+    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
+        guard let rootComponent = rootComponent,
+              let componentView = componentView else {
+            owsFailDebug("Missing component.")
+            return
+        }
+        rootComponent.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
     }
 }

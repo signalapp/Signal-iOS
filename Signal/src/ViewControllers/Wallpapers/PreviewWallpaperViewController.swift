@@ -146,7 +146,10 @@ class PreviewWallpaperViewController: UIViewController {
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
-            let standalonePage = WallpaperPage(wallpaper: .photo, thread: thread, photo: selectedPhoto)
+            let standalonePage = WallpaperPage(wallpaper: .photo,
+                                               maskDataSource: mockConversationView,
+                                               thread: thread,
+                                               photo: selectedPhoto)
             self.standalonePage = standalonePage
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
@@ -161,7 +164,9 @@ class PreviewWallpaperViewController: UIViewController {
                 pageViewController.delegate = self
             }
 
-            currentPage = WallpaperPage(wallpaper: selectedWallpaper, thread: thread)
+            currentPage = WallpaperPage(wallpaper: selectedWallpaper,
+                                        maskDataSource: mockConversationView,
+                                        thread: thread)
             blurButton.isHidden = true
         }
 
@@ -206,15 +211,22 @@ class PreviewWallpaperViewController: UIViewController {
     }
 }
 
+// MARK: -
+
 extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper), thread: thread)
+        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper),
+                             maskDataSource: mockConversationView,
+                             thread: thread)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper), thread: thread)
+        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper),
+                             maskDataSource: mockConversationView,
+                             thread: thread)
     }
 
     func pageViewController(
@@ -278,10 +290,17 @@ private class WallpaperPage: UIViewController {
     let photo: UIImage?
     var shouldBlur = false { didSet { updatePhoto() } }
 
-    init(wallpaper: Wallpaper, thread: TSThread?, photo: UIImage? = nil) {
+    private weak var maskDataSource: WallpaperMaskDataSource?
+
+    init(wallpaper: Wallpaper,
+         maskDataSource: WallpaperMaskDataSource,
+         thread: TSThread?,
+         photo: UIImage? = nil) {
         self.wallpaper = wallpaper
+        self.maskDataSource = maskDataSource
         self.thread = thread
         self.photo = photo
+
         super.init(nibName: nil, bundle: nil)
 
         if photo != nil { prepareBlurredPhoto() }
@@ -295,25 +314,44 @@ private class WallpaperPage: UIViewController {
     var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
     var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
 
-    var wallpaperView: WallpaperView?
-    var wallpaperPreviewView: UIView?
+    var wallpaperContentView: WallpaperView?
+    var wallpaperContentPreviewView: UIView?
+    var wallpaperBlurView: WallpaperView?
+    var wallpaperBlurPreviewView: UIView?
 
     override func loadView() {
-        view = UIView()
-        view.backgroundColor = Theme.darkThemeBackgroundColor
+        let rootView = ManualLayoutViewWithLayer(name: "rootView")
+        rootView.shouldDeactivateConstraints = false
+        rootView.translatesAutoresizingMaskIntoConstraints = true
+        rootView.backgroundColor = Theme.darkThemeBackgroundColor
+        rootView.addLayoutBlock { [weak self] _ in
+            guard let self = self else { return }
+            self.wallpaperBlurView?.updateBlurContentAndMask()
+        }
+        view = rootView
 
         let shouldDim = databaseStorage.read { transaction in
             Wallpaper.shouldDim(thread: thread, transaction: transaction)
         }
-        guard let wallpaperView = Wallpaper.view(for: wallpaper,
-                                                 photo: photo,
-                                                 shouldDim: shouldDim) else {
+        guard let wallpaperContentView = Wallpaper.view(for: wallpaper,
+                                                        maskDataSource: maskDataSource,
+                                                        photo: photo,
+                                                        shouldDim: shouldDim) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
+        self.wallpaperContentView = wallpaperContentView
+        let wallpaperContentPreviewView = wallpaperContentView.asPreviewView(mode: .contentAndDimming)
+        self.wallpaperContentPreviewView = wallpaperContentPreviewView
 
-        let wallpaperPreviewView = wallpaperView.asPreviewView()
-        self.wallpaperView = wallpaperView
-        self.wallpaperPreviewView = wallpaperPreviewView
+        guard let wallpaperBlurView = Wallpaper.view(for: wallpaper,
+                                                     maskDataSource: maskDataSource,
+                                                     photo: photo,
+                                                     shouldDim: shouldDim) else {
+            return owsFailDebug("Failed to create photo wallpaper view")
+        }
+        self.wallpaperBlurView = wallpaperBlurView
+        let wallpaperBlurPreviewView = wallpaperBlurView.asPreviewView(mode: .blur)
+        self.wallpaperBlurPreviewView = wallpaperBlurPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
         if case .photo = wallpaper, let photo = photo {
@@ -324,17 +362,17 @@ private class WallpaperPage: UIViewController {
             scrollView.delegate = self
             view.addSubview(scrollView)
             scrollView.autoPinEdgesToSuperviewEdges()
-            scrollView.addSubview(wallpaperPreviewView)
+            scrollView.addSubview(wallpaperContentPreviewView)
 
-            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
+            wallpaperContentPreviewView.autoPinEdgesToSuperviewEdges()
 
             wallpaperViewWidthPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .width,
                     to: .width,
                     of: scrollView
                 ),
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .height,
                     to: .width,
                     of: scrollView,
@@ -344,12 +382,12 @@ private class WallpaperPage: UIViewController {
             wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .height,
                     to: .height,
                     of: scrollView
                 ),
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .width,
                     to: .height,
                     of: scrollView,
@@ -359,12 +397,12 @@ private class WallpaperPage: UIViewController {
             wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
 
             wallpaperViewHeightAndWidthPriorityConstraints = [
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .height,
                     to: .height,
                     of: scrollView
                 ),
-                wallpaperPreviewView.autoMatch(
+                wallpaperContentPreviewView.autoMatch(
                     .width,
                     to: .width,
                     of: scrollView
@@ -374,13 +412,28 @@ private class WallpaperPage: UIViewController {
 
             updateWallpaperConstraints(reference: view.bounds.size)
         } else {
-            view.addSubview(wallpaperPreviewView)
-            wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
+            view.addSubview(wallpaperContentPreviewView)
+            wallpaperContentPreviewView.autoPinEdgesToSuperviewEdges()
         }
+
+        view.addSubview(wallpaperBlurPreviewView)
+        wallpaperBlurPreviewView.autoPinEdgesToSuperviewEdges()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.wallpaperBlurView?.updateBlurContentAndMask()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.wallpaperBlurView?.updateBlurContentAndMask()
     }
 
     private func updatePhoto() {
-        guard let wallpaperImageView = wallpaperView?.contentView as? UIImageView else { return }
+        guard let wallpaperImageView = wallpaperContentView?.contentView as? UIImageView else { return }
         UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
             wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
         } completion: { _ in }
@@ -445,7 +498,7 @@ private class WallpaperPage: UIViewController {
 
 extension WallpaperPage: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return wallpaperPreviewView
+        return wallpaperContentPreviewView
     }
 }
 
