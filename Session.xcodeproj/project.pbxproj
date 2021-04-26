@@ -226,6 +226,7 @@
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
 		B879D449247E1BE300DB3608 /* PathVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B879D448247E1BE300DB3608 /* PathVC.swift */; };
+		B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87EF17026367CF800124B3C /* FileServerAPIV2.swift */; };
 		B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB07255A580700E217F9 /* OWSBackupFragment.m */; };
 		B8856CB1256F0F47001CE70E /* OWSBackupFragment.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAEA255A580500E217F9 /* OWSBackupFragment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */; };
@@ -1249,6 +1250,7 @@
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
 		B879D448247E1BE300DB3608 /* PathVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathVC.swift; sourceTree = "<group>"; };
 		B879D44A247E1D9200DB3608 /* PathStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathStatusView.swift; sourceTree = "<group>"; };
+		B87EF17026367CF800124B3C /* FileServerAPIV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServerAPIV2.swift; sourceTree = "<group>"; };
 		B8856D5F256F129B001CE70E /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		B886B4A62398B23E00211ABE /* QRCodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeVC.swift; sourceTree = "<group>"; };
@@ -3243,6 +3245,7 @@
 			isa = PBXGroup;
 			children = (
 				C3A7218F2558C0CD0043A11F /* FileServerAPI.swift */,
+				B87EF17026367CF800124B3C /* FileServerAPIV2.swift */,
 			);
 			path = "File Server";
 			sourceTree = "<group>";
@@ -4909,6 +4912,7 @@
 				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,
 				B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,
+				B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */,
 				C3A3A18A256E2092004D228D /* SignalRecipient.m in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C32C5F11256DF79A003C73A2 /* SSKIncrementingIdFinder.swift in Sources */,
