@@ -7,7 +7,6 @@
 #import "VersionMigrations.h"
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
-#import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
