@@ -376,7 +376,8 @@ extension LinkPreviewViewAdapter {
         }
         return CVLabelConfig(text: labelText,
                              font: UIFont.ows_dynamicTypeCaption1,
-                             textColor: Theme.secondaryTextAndIconColor)
+                             textColor: Theme.secondaryTextAndIconColor,
+                             lineBreakMode: .byTruncatingTail)
     }
 
     func configureSentTextStack(linkPreviewView: LinkPreviewView,
@@ -477,7 +478,8 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
         return CVLabelConfig(text: text,
                              font: .ows_dynamicTypeBody,
-                             textColor: Theme.primaryTextColor)
+                             textColor: Theme.primaryTextColor,
+                             lineBreakMode: .byTruncatingTail)
     }
 
     var descriptionLabelConfig: CVLabelConfig? {
@@ -486,7 +488,8 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
         return CVLabelConfig(text: text,
                              font: .ows_dynamicTypeSubheadline,
-                             textColor: Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90)
+                             textColor: Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90,
+                             lineBreakMode: .byTruncatingTail)
     }
 
     var displayDomainLabelConfig: CVLabelConfig? {
@@ -499,7 +502,8 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
         return CVLabelConfig(text: text,
                              font: .ows_dynamicTypeCaption1,
-                             textColor: Theme.secondaryTextAndIconColor)
+                             textColor: Theme.secondaryTextAndIconColor,
+                             lineBreakMode: .byTruncatingTail)
     }
 
     func configureForRendering(linkPreviewView: LinkPreviewView,
@@ -951,7 +955,7 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
     var textStackConfig: ManualStackView.Config {
         return ManualStackView.Config(axis: .vertical,
-                                      alignment: .center,
+                                      alignment: .leading,
                                       spacing: LinkPreviewView.sentVSpacing,
                                       layoutMargins: .zero)
     }

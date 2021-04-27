@@ -57,4 +57,6 @@ extension ConversationViewController: WallpaperMaskDataSource {
             cell.buildWallpaperMask(wallpaperMaskBuilder)
         }
     }
+
+    public var isWallpaperPreview: Bool { false }
 }

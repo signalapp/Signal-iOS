@@ -203,9 +203,11 @@ class MiniPreviewView: UIView {
 
         let stackViewContainer: UIView
         if let wallpaperView = databaseStorage.read(
-            block: { Wallpaper.view(for: thread, transaction: $0) }
+            block: { Wallpaper.view(for: thread,
+                                    maskDataSource: nil,
+                                    transaction: $0) }
         ) {
-            stackViewContainer = wallpaperView.asPreviewView()
+            stackViewContainer = wallpaperView.asPreviewView(mode: .all)
         } else {
             stackViewContainer = UIView()
             stackViewContainer.backgroundColor = Theme.backgroundColor

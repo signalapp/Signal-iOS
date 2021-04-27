@@ -23,7 +23,9 @@ public class CVAvatarBuilder: Dependencies {
         self.transaction = transaction
     }
 
-    func buildAvatar(forAddress address: SignalServiceAddress, diameter: UInt) -> UIImage? {
+    func buildAvatar(forAddress address: SignalServiceAddress,
+                     localUserAvatarMode: LocalUserAvatarMode,
+                     diameter: UInt) -> UIImage? {
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
         guard let serviceIdentifier = address.serviceIdentifier else {
@@ -38,7 +40,7 @@ public class CVAvatarBuilder: Dependencies {
         guard let rawAvatar = OWSContactAvatarBuilder(address: address,
                                                       colorName: colorName,
                                                       diameter: diameter,
-                                                      localUserAvatarMode: .asUser,
+                                                      localUserAvatarMode: localUserAvatarMode,
                                                       transaction: transaction).build(with: transaction) else {
             owsFailDebug("Could build avatar image")
             return nil
@@ -82,16 +84,5 @@ public class CVAvatarBuilder: Dependencies {
         }
         cache[cacheKey] = finalAvatar
         return finalAvatar
-    }
-
-    func buildAvatar(forThread thread: TSThread, diameter: UInt) -> UIImage? {
-        if let groupThread = thread as? TSGroupThread {
-            return buildAvatar(forGroupThread: groupThread, diameter: diameter)
-        } else if let contactThread = thread as? TSContactThread {
-            return buildAvatar(forAddress: contactThread.contactAddress, diameter: diameter)
-        } else {
-            owsFailDebug("Invalid thread.")
-            return nil
-        }
     }
 }

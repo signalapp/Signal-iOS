@@ -142,7 +142,7 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func view(for thread: TSThread? = nil,
-                            maskDataSource: WallpaperMaskDataSource? = nil,
+                            maskDataSource: WallpaperMaskDataSource?,
                             transaction: SDSAnyReadTransaction) -> WallpaperView? {
         AssertIsOnMainThread()
 
@@ -176,8 +176,8 @@ public enum Wallpaper: String, CaseIterable {
                             dimInDarkMode(for: thread, transaction: transaction))
 
         guard let view = view(for: wallpaper,
-                              photo: photo,
                               maskDataSource: maskDataSource,
+                              photo: photo,
                               shouldDim: shouldDim) else {
             return nil
        }
@@ -192,8 +192,8 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func view(for wallpaper: Wallpaper,
+                            maskDataSource: WallpaperMaskDataSource?,
                             photo: UIImage? = nil,
-                            maskDataSource: WallpaperMaskDataSource? = nil,
                             shouldDim: Bool) -> WallpaperView? {
         AssertIsOnMainThread()
 
@@ -383,6 +383,7 @@ public struct WallpaperMaskBuilder {
 
 public protocol WallpaperMaskDataSource: class {
     func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder)
+    var isWallpaperPreview: Bool { get }
 }
 
 // MARK: -
@@ -417,17 +418,44 @@ public class WallpaperView {
         owsFail("Do not use this initializer.")
     }
 
-    public func asPreviewView() -> UIView {
+    public enum PreviewMode {
+        case all
+        case blur
+        case contentAndDimming
+
+        fileprivate var showContentAndDimming: Bool {
+            switch self {
+            case .all, .contentAndDimming:
+                return true
+            case .blur:
+                return false
+            }
+        }
+
+        fileprivate var showBlur: Bool {
+            switch self {
+            case .all, .contentAndDimming:
+                return false
+            case .blur:
+                return true
+            }
+        }
+    }
+
+    public func asPreviewView(mode: PreviewMode) -> UIView {
         let previewView = UIView.container()
-        if let contentView = self.contentView {
+        if mode.showContentAndDimming,
+           let contentView = self.contentView {
             previewView.addSubview(contentView)
             contentView.autoPinEdgesToSuperviewEdges()
         }
-        if let dimmingView = self.dimmingView {
+        if mode.showContentAndDimming,
+           let dimmingView = self.dimmingView {
             previewView.addSubview(dimmingView)
             dimmingView.autoPinEdgesToSuperviewEdges()
         }
-        if let blurView = self.blurView {
+        if mode.showBlur,
+           let blurView = self.blurView {
             previewView.addSubview(blurView)
             blurView.autoPinEdgesToSuperviewEdges()
         }
@@ -436,23 +464,33 @@ public class WallpaperView {
 
     private func configure(maskDataSource: WallpaperMaskDataSource?,
                            shouldDim: Bool) {
-        switch mode {
-        case .solidColor(let solidColor):
-            let contentView = UIView()
-            contentView.backgroundColor = solidColor
-            self.contentView = contentView
-        case .gradientView(let gradientView):
-            self.contentView = gradientView
+        let contentView: UIView = {
+            switch mode {
+            case .solidColor(let solidColor):
+                let isWallpaperPreview = maskDataSource?.isWallpaperPreview ?? false
+                 if isWallpaperPreview {
+                    let contentView = OWSLayerView(frame: .zero) { [weak self] _ in
+                        self?.updateBlurContentAndMask()
+                    }
+                    contentView.backgroundColor = solidColor
+                    return contentView
+                } else {
+                    let contentView = UIView()
+                    contentView.backgroundColor = solidColor
+                    return contentView
+                }
+            case .gradientView(let gradientView):
+                return gradientView
+            case .image(let image):
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFill
+                imageView.clipsToBounds = true
+                return imageView
+            }
+        }()
+        self.contentView = contentView
 
-            addBlurView(contentView: gradientView, maskDataSource: maskDataSource)
-        case .image(let image):
-            let imageView = UIImageView(image: image)
-            imageView.contentMode = .scaleAspectFill
-            imageView.clipsToBounds = true
-            self.contentView = imageView
-
-            addBlurView(contentView: imageView, maskDataSource: maskDataSource)
-        }
+        addBlurView(contentView: contentView, maskDataSource: maskDataSource)
 
         if shouldDim {
             let dimmingView = UIView()
