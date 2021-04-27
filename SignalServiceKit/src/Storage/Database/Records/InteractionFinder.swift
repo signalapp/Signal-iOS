@@ -1173,6 +1173,57 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
     }
 
+    func hasUserInitiatedInteraction(transaction: GRDBReadTransaction) -> Bool {
+        let infoMessageTypes: [TSInfoMessageType] = [
+            .typeGroupQuit,
+            .typeGroupUpdate,
+            .typeSessionDidEnd,
+            .typeDisappearingMessagesUpdate,
+            .unknownProtocolVersion
+        ]
+
+        let errorMessageTypes: [TSErrorMessageType] = [
+            .noSession,
+            .wrongTrustedIdentityKey,
+            .invalidKeyException,
+            .missingKeyId,
+            .invalidMessage,
+            .duplicateMessage,
+            .groupCreationFailed,
+            .sessionRefresh
+        ]
+
+        let interactionTypes: [SDSRecordType] = [
+            .incomingMessage,
+            .outgoingMessage,
+            .disappearingConfigurationUpdateInfoMessage,
+            .unknownProtocolVersionMessage,
+            .call,
+            .groupCallMessage,
+            .verificationStateChangeMessage
+        ]
+
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND (
+                (
+                    \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                    AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+                ) OR (
+                    \(interactionColumn: .recordType) = \(SDSRecordType.errorMessage.rawValue)
+                    AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+                ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+            )
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments)!
+    }
+
     func possiblyHasIncomingMessages(transaction: GRDBReadTransaction) -> Bool {
         // All of these message types could have been triggered by anyone in
         // the conversation. So, if one of them exists we have to assume the conversation

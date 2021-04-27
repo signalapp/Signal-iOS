@@ -91,7 +91,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             // The thread details should have a stable timestamp.
             let threadDetailsTimestamp: UInt64
             if let firstInteraction = messageMapping.loadedInteractions.first {
-                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 3
+                threadDetailsTimestamp = max(1, firstInteraction.timestamp) - 2
             } else {
                 threadDetailsTimestamp = 1
             }
@@ -109,32 +109,13 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             // The "Unknown Thread Warning" should have a stable timestamp.
             let timestamp: UInt64
             if let firstInteraction = messageMapping.loadedInteractions.first {
-                timestamp = max(1, firstInteraction.timestamp) - 2
+                timestamp = max(1, firstInteraction.timestamp) - 1
             } else {
                 timestamp = 2
             }
             let unknownThreadWarning = UnknownThreadWarningInteraction(thread: thread,
                                                                        timestamp: timestamp)
             let item = addItem(interaction: unknownThreadWarning)
-            owsAssertDebug(item != nil)
-        }
-
-        if messageMapping.shouldShowDefaultTimerIndicator(
-            thread: thread,
-            transaction: transaction
-        ) {
-            // The default timer message should have a stable timestamp.
-            let timestamp: UInt64
-            if let firstInteraction = messageMapping.loadedInteractions.first {
-                timestamp = max(1, firstInteraction.timestamp) - 1
-            } else {
-                timestamp = 3
-            }
-            let interaction = DefaultDisappearingMessageTimerInteraction(
-                thread: thread,
-                timestamp: timestamp
-            )
-            let item = addItem(interaction: interaction)
             owsAssertDebug(item != nil)
         }
 
@@ -150,20 +131,17 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        // TODO: We need to handle unsavedOutgoingMessages, ie. optimistically
-        //       inserting messages into the "view model" so that sent messages
-        //       appear as quickly as possible.
-        //
-        //            if (self.unsavedOutgoingMessages.count > 0) {
-        //                for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
-        //                    if ([interactionIds containsObject:outgoingMessage.uniqueId]) {
-        //                        owsFailDebug("Duplicate interaction(2): %@", outgoingMessage.uniqueId);
-        //                        continue;
-        //                    }
-        //                    tryToAddViewItemForInteraction(outgoingMessage);
-        //                    [interactionIds addObject:outgoingMessage.uniqueId];
-        //                }
-        //            }
+        if messageMapping.shouldShowDefaultDisappearingMessageTimer(
+            thread: thread,
+            transaction: transaction
+        ) {
+            let interaction = DefaultDisappearingMessageTimerInteraction(
+                thread: thread,
+                timestamp: NSDate.ows_millisecondTimeStamp() - 1
+            )
+            let item = addItem(interaction: interaction)
+            owsAssertDebug(item != nil)
+        }
 
         if let typingIndicatorsSender = viewStateSnapshot.typingIndicatorsSender {
             let interaction = TypingIndicatorInteraction(thread: thread,
@@ -642,10 +620,8 @@ fileprivate extension CVMessageMapping {
         !canLoadOlder && Self.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread,
                                                                                  transaction: transaction)
     }
-    func shouldShowDefaultTimerIndicator(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        guard !thread.shouldThreadBeVisible else { return false }
-        guard thread.lastInteractionRowId == 0 else { return false }
-        return OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction).isEnabled
+    func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)
     }
 }
 

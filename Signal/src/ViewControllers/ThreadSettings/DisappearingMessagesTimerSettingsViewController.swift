@@ -99,14 +99,13 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                     let cell = OWSTableItem.newCell()
                     guard let self = self else { return cell }
 
+                    cell.selectionStyle = .none
                     cell.contentView.addSubview(self.pickerView)
                     self.pickerView.autoPinEdgesToSuperviewMargins()
 
                     return cell
                 },
-                actionBlock: {
-
-                }
+                actionBlock: {}
             ))
             contents.addSection(section)
             return

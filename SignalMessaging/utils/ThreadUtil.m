@@ -284,11 +284,9 @@ NS_ASSUME_NONNULL_BEGIN
         defaultTimerToken =
             [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultUniversalConfigurationWithTransaction:transaction]
                 .asToken;
-        OWSDisappearingMessagesConfiguration *currentConfiguration =
-            [thread disappearingMessagesConfigurationWithTransaction:transaction];
-        needsDefaultTimerSet = defaultTimerToken.isEnabled && thread.lastInteractionRowId == 0
-            && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:currentConfiguration.uniqueId
-                                                                transaction:transaction];
+        needsDefaultTimerSet =
+            [GRDBThreadFinder shouldSetDefaultDisappearingMessageTimerWithThread:thread
+                                                                     transaction:transaction.unwrapGrdbRead];
     }];
 
     if (needsDefaultTimerSet) {
@@ -325,11 +323,9 @@ NS_ASSUME_NONNULL_BEGIN
     DisappearingMessageToken *defaultTimerToken =
         [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultUniversalConfigurationWithTransaction:transaction]
             .asToken;
-    OWSDisappearingMessagesConfiguration *currentConfiguration =
-        [thread disappearingMessagesConfigurationWithTransaction:transaction];
-    BOOL needsDefaultTimerSet = thread.lastInteractionRowId == 0 && defaultTimerToken.isEnabled
-        && ![OWSDisappearingMessagesConfiguration anyExistsWithUniqueId:currentConfiguration.uniqueId
-                                                            transaction:transaction];
+    BOOL needsDefaultTimerSet =
+        [GRDBThreadFinder shouldSetDefaultDisappearingMessageTimerWithThread:thread
+                                                                 transaction:transaction.unwrapGrdbRead];
 
     if (needsDefaultTimerSet) {
         OWSDisappearingMessagesConfiguration *configuration =
