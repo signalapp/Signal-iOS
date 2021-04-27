@@ -1,3 +1,4 @@
+import PromiseKit
 import SessionUtilitiesKit
 
 public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
@@ -11,10 +12,12 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
 
     public enum Error : LocalizedError {
         case noAttachment
+        case encryptionFailed
 
         public var errorDescription: String? {
             switch self {
             case .noAttachment: return "No such attachment."
+            case .encryptionFailed: return "Couldn't encrypt file."
             }
         }
     }
@@ -63,30 +66,10 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
         let storage = SNMessagingKitConfiguration.shared.storage
         if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
-            // Get the attachment
-            guard let data = try? stream.readDataFromFile() else {
-                SNLog("Couldn't read attachment from disk.")
-                return handleFailure(error: Error.noAttachment)
-            }
-            // Check the file size
-            SNLog("File size: \(data.count) bytes.")
-            if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
-                return handleFailure(error: FileServerAPI.Error.maxFileSizeExceeded)
-            }
-            // Send the request
-            stream.isUploaded = false
-            stream.save()
-            OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { fileID in
-                let downloadURL = "\(v2OpenGroup.server)/files/\(fileID)"
-                stream.serverId = fileID
-                stream.isUploaded = true
-                stream.downloadURL = downloadURL
-                stream.save()
-                self.handleSuccess()
-            }.catch { error in
-                self.handleFailure(error: error)
-            }
-        } else {
+            AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: handleSuccess, onFailure: handleFailure)
+        } else if Features.useV2FileServer && storage.getOpenGroup(for: threadID) == nil {
+            AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
+        } else { // Legacy
             let openGroup = storage.getOpenGroup(for: threadID)
             let server = openGroup?.server ?? FileServerAPI.server
             // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
@@ -101,6 +84,44 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
                     self.handleFailure(error: error)
                 }
             }
+        }
+    }
+    
+    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool, onSuccess: (() -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
+        // Get the attachment
+        guard var data = try? stream.readDataFromFile() else {
+            SNLog("Couldn't read attachment from disk.")
+            onFailure?(Error.noAttachment); return
+        }
+        // Encrypt the attachment if needed
+        if encrypt {
+            var encryptionKey = NSData()
+            var digest = NSData()
+            guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: false, outKey: &encryptionKey, outDigest: &digest) else {
+                SNLog("Couldn't encrypt attachment.")
+                onFailure?(Error.encryptionFailed); return
+            }
+            stream.encryptionKey = encryptionKey as Data
+            stream.digest = digest as Data
+            data = ciphertext
+        }
+        // Check the file size
+        SNLog("File size: \(data.count) bytes.")
+        if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
+            onFailure?(FileServerAPI.Error.maxFileSizeExceeded); return
+        }
+        // Send the request
+        stream.isUploaded = false
+        stream.save()
+        upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileID in
+            let downloadURL = "\(FileServerAPIV2.server)/files/\(fileID)"
+            stream.serverId = fileID
+            stream.isUploaded = true
+            stream.downloadURL = downloadURL
+            stream.save()
+            onSuccess?()
+        }.catch { error in
+            onFailure?(error)
         }
     }
 

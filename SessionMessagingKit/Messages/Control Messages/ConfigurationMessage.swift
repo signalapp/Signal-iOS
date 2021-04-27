@@ -8,8 +8,6 @@ public final class ConfigurationMessage : ControlMessage {
     public var profilePictureURL: String?
     public var profileKey: Data?
     public var contacts: Set<Contact> = []
-    
-    public override var ttl: UInt64 { 4 * 24 * 60 * 60 * 1000 }
 
     public override var isSelfSendValid: Bool { true }
     

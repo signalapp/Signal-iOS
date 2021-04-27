@@ -8,6 +8,8 @@ extension Storage {
     private static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
     
     private static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
+    
+    private static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
 
     public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
         let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
@@ -35,6 +37,14 @@ extension Storage {
         let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
         (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: collection)
     }
+    
+    public func getUserClosedGroupPublicKeys() -> Set<String> {
+        var result: Set<String> = []
+        Storage.read { transaction in
+            result = Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection))
+        }
+        return result
+    }
 
     public func addClosedGroupPublicKey(_ groupPublicKey: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(groupPublicKey, forKey: groupPublicKey, inCollection: Storage.closedGroupPublicKeyCollection)
@@ -55,13 +65,19 @@ extension Storage {
     public func setClosedGroupFormationTimestamp(to timestamp: UInt64, for groupPublicKey: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(timestamp, forKey: groupPublicKey, inCollection: Storage.closedGroupFormationTimestampCollection)
     }
-
-    public func getUserClosedGroupPublicKeys() -> Set<String> {
+    
+    public func getZombieMembers(for groupPublicKey: String) -> Set<String> {
         var result: Set<String> = []
         Storage.read { transaction in
-            result = result.union(Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection)))
+            if let zombies = transaction.object(forKey: groupPublicKey, inCollection: Storage.closedGroupZombieMembersCollection) as? Set<String> {
+                result = zombies
+            }
         }
         return result
+    }
+    
+    public func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(zombies, forKey: groupPublicKey, inCollection: Storage.closedGroupZombieMembersCollection)
     }
 
     public func isClosedGroup(_ publicKey: String) -> Bool {

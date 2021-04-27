@@ -202,16 +202,9 @@ public final class MessageSender : NSObject {
             handleFailure(with: error, using: transaction)
             return promise
         }
-        // Calculate proof of work
-        let recipient = message.recipient!
-        let base64EncodedData = wrappedMessage.base64EncodedString()
-        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: message.ttl, publicKey: recipient, data: base64EncodedData) else {
-            SNLog("Proof of work calculation failed.")
-            handleFailure(with: Error.proofOfWorkCalculationFailed, using: transaction)
-            return promise
-        }
         // Send the result
-        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp, nonce: nonce)
+        let base64EncodedData = wrappedMessage.base64EncodedString()
+        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: message.sentTimestamp!)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count

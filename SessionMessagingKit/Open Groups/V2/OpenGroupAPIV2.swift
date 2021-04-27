@@ -3,11 +3,11 @@ import SessionSnodeKit
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
-    private static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    private static var authTokenPromise: Promise<String>?
+    private static var authTokenPromises: [String:Promise<String>] = [:]
     
-    public static let defaultServer = "https://sessionopengroup.com"
-    public static let defaultServerPublicKey = "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231b"
+    public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
+    public static let defaultServer = "http://116.203.70.33"
+    public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     public static var defaultRoomsPromise: Promise<[Info]>?
     public static var groupImagePromises: [String:Promise<Data>] = [:]
     
@@ -72,6 +72,14 @@ public final class OpenGroupAPIV2 : NSObject {
             self.imageID = imageID
         }
     }
+    
+    // MARK: Compact Poll Response Body
+    public struct CompactPollResponseBody {
+        let room: String
+        let messages: [OpenGroupMessageV2]
+        let deletions: [Int64]
+        let moderators: [String]
+    }
 
     // MARK: Convenience
     private static func send(_ request: Request) -> Promise<JSON> {
@@ -104,7 +112,7 @@ public final class OpenGroupAPIV2 : NSObject {
                         // we provided a valid token but it doesn't have a high enough permission level for the route in question.
                         if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 {
                             let storage = SNMessagingKitConfiguration.shared.storage
-                            storage.write { transaction in
+                            storage.writeSync { transaction in
                                 storage.removeAuthToken(for: room, on: request.server, using: transaction)
                             }
                         }
@@ -119,13 +127,61 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
+    public static func compactPoll(_ server: String) -> Promise<[CompactPollResponseBody]> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
+        var body: [JSON] = []
+        var authTokenPromises: [String:Promise<String>] = [:]
+        for room in rooms {
+            authTokenPromises[room] = getAuthToken(for: room, on: server)
+            var json: JSON = [ "room_id" : room ]
+            if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
+                json["from_message_server_id"] = lastMessageServerID
+            }
+            if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
+                json["from_deletion_server_id"] = lastDeletionServerID
+            }
+            body.append(json)
+        }
+        return when(fulfilled: [Promise<String>](authTokenPromises.values)).then(on: DispatchQueue.global(qos: .userInitiated)) { _ -> Promise<[CompactPollResponseBody]> in
+            let bodyWithAuthTokens = body.compactMap { json -> JSON? in
+                guard let roomID = json["room_id"] as? String, let authToken = authTokenPromises[roomID]?.value else { return nil }
+                var json = json
+                json["auth_token"] = authToken
+                return json
+            }
+            let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : bodyWithAuthTokens ], isAuthRequired: false)
+            return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
+                guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
+                let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
+                    guard let room = json["room_id"] as? String, let status = json["status_code"] as? UInt else { return nil }
+                    // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
+                    // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
+                    // we provided a valid token but it doesn't have a high enough permission level for the route in question.
+                    guard status != 401 else {
+                        storage.writeSync { transaction in
+                            storage.removeAuthToken(for: room, on: server, using: transaction)
+                        }
+                        return nil
+                    }
+                    let deletions = json["deletions"] as? [Int64] ?? []
+                    let moderators = json["moderators"] as? [String] ?? []
+                    return try? parseMessages(from: json, for: room, on: server).map { messages in
+                        return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
+                    }
+                }
+                return when(fulfilled: promises)
+            }
+        }
+    }
+    
     // MARK: Authorization
     private static func getAuthToken(for room: String, on server: String) -> Promise<String> {
         let storage = SNMessagingKitConfiguration.shared.storage
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
         } else {
-            if let authTokenPromise = authTokenPromise {
+            if let authTokenPromise = authTokenPromises["\(server).\(room)"] {
                 return authTokenPromise
             } else {
                 let promise = requestNewAuthToken(for: room, on: server)
@@ -140,11 +196,11 @@ public final class OpenGroupAPIV2 : NSObject {
                     return promise
                 }
                 promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    authTokenPromise = nil
+                    authTokenPromises["\(server).\(room)"] = nil
                 }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                    authTokenPromise = nil
+                    authTokenPromises["\(server).\(room)"] = nil
                 }
-                authTokenPromise = promise
+                authTokenPromises["\(server).\(room)"] = promise
                 return promise
             }
         }
@@ -224,35 +280,40 @@ public final class OpenGroupAPIV2 : NSObject {
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "messages", queryParameters: queryParameters)
         return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[OpenGroupMessageV2]> in
-            guard let rawMessages = json["messages"] as? [[String:Any]] else { throw Error.parsingFailed }
-            let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
-                guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, let sender = message.sender, let data = Data(base64Encoded: message.base64EncodedData),
-                    let base64EncodedSignature = message.base64EncodedSignature, let signature = Data(base64Encoded: base64EncodedSignature) else {
-                    SNLog("Couldn't parse open group message from JSON: \(json).")
-                    return nil
-                }
-                // Validate the message signature
-                let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
-                let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
-                guard isValid else {
-                    SNLog("Ignoring message with invalid signature.")
-                    return nil
-                }
-                return message
+            try parseMessages(from: json, for: room, on: server)
+        }
+    }
+    
+    private static func parseMessages(from json: JSON, for room: String, on server: String) throws -> Promise<[OpenGroupMessageV2]> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        guard let rawMessages = json["messages"] as? [JSON] else { throw Error.parsingFailed }
+        let messages: [OpenGroupMessageV2] = rawMessages.compactMap { json in
+            guard let message = OpenGroupMessageV2.fromJSON(json), message.serverID != nil, let sender = message.sender, let data = Data(base64Encoded: message.base64EncodedData),
+                let base64EncodedSignature = message.base64EncodedSignature, let signature = Data(base64Encoded: base64EncodedSignature) else {
+                SNLog("Couldn't parse open group message from JSON: \(json).")
+                return nil
             }
-            let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out
-            let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
-            if serverID > lastMessageServerID {
-                let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()
-                storage.write(with: { transaction in
-                    storage.setLastMessageServerID(for: room, on: server, to: serverID, using: transaction)
-                }, completion: {
-                    seal.fulfill(messages)
-                })
-                return promise
-            } else {
-                return Promise.value(messages)
+            // Validate the message signature
+            let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
+            let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
+            guard isValid else {
+                SNLog("Ignoring message with invalid signature.")
+                return nil
             }
+            return message
+        }
+        let serverID = messages.map { $0.serverID! }.max() ?? 0 // Safe because messages with a nil serverID are filtered out
+        let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) ?? 0
+        if serverID > lastMessageServerID {
+            let (promise, seal) = Promise<[OpenGroupMessageV2]>.pending()
+            storage.write(with: { transaction in
+                storage.setLastMessageServerID(for: room, on: server, to: serverID, using: transaction)
+            }, completion: {
+                seal.fulfill(messages)
+            })
+            return promise
+        } else {
+            return Promise.value(messages)
         }
     }
     

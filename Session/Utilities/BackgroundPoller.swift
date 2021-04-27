@@ -19,11 +19,11 @@ public final class BackgroundPoller : NSObject {
             poller.stop()
             promises.append(poller.pollForNewMessages(isBackgroundPoll: true))
         }
-        let v2OpenGroups: [String:OpenGroupV2] = Storage.shared.getAllV2OpenGroups()
-        v2OpenGroups.values.forEach { openGroupV2 in
-            let poller = OpenGroupPollerV2(for: openGroupV2)
+        let v2OpenGroupServers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+        v2OpenGroupServers.forEach { server in
+            let poller = OpenGroupPollerV2(for: server)
             poller.stop()
-            promises.append(poller.pollForNewMessages(isBackgroundPoll: true))
+            promises.append(poller.poll(isBackgroundPoll: true))
         }
         when(resolved: promises).done { _ in
             completionHandler(.newData)

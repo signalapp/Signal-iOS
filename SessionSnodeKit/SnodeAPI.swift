@@ -6,6 +6,7 @@ import Sodium
 public final class SnodeAPI : NSObject {
     private static var hasLoadedSnodePool = false
     private static var loadedSwarms: Set<String> = []
+    private static var getSnodePoolPromise: Promise<Set<Snode>>?
     
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     internal static var snodeFailureCount: [Snode:UInt] = [:]
@@ -17,21 +18,18 @@ public final class SnodeAPI : NSObject {
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
-    private static let minimumSwarmSnodeCount = 3
-    private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
+    private static let minSwarmSnodeCount = 3
+    private static let seedNodePool: Set<String> = Features.useTestnet ? [ "http://public.loki.foundation:38157" ] : [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
     private static let snodeFailureThreshold = 3
     private static let targetSwarmSnodeCount = 2
-
-    /// - Note: Changing this on the fly is not recommended.
-    internal static var useOnionRequests = true
-
-    public static var powDifficulty: UInt = 1
+    private static let minSnodePoolCount = 12
     
     // MARK: Error
     public enum Error : LocalizedError {
         case generic
         case clockOutOfSync
         case snodePoolUpdatingFailed
+        case inconsistentSnodePools
         // ONS
         case decryptionFailed
         case hashingFailed
@@ -42,6 +40,7 @@ public final class SnodeAPI : NSObject {
             case .generic: return "An error occurred."
             case .clockOutOfSync: return "Your clock is out of sync with the Service Node network. Please check that your device's clock is set to automatic time."
             case .snodePoolUpdatingFailed: return "Failed to update the Service Node pool."
+            case .inconsistentSnodePools: return "Received inconsistent Service Node pool information from the Service Node network."
             // ONS
             case .decryptionFailed: return "Couldn't decrypt ONS name."
             case .hashingFailed: return "Couldn't compute ONS name hash."
@@ -62,14 +61,15 @@ public final class SnodeAPI : NSObject {
         hasLoadedSnodePool = true
     }
     
-    private static func setSnodePool(to newValue: Set<Snode>, persist: Bool = true) {
-        #if DEBUG
-        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
-        #endif
+    private static func setSnodePool(to newValue: Set<Snode>, using transaction: Any? = nil) {
         snodePool = newValue
-        guard persist else { return }
-        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-            SNSnodeKitConfiguration.shared.storage.setSnodePool(to: newValue, using: transaction)
+        let storage = SNSnodeKitConfiguration.shared.storage
+        if let transaction = transaction {
+            storage.setSnodePool(to: newValue, using: transaction)
+        } else {
+            storage.writeSync { transaction in
+                storage.setSnodePool(to: newValue, using: transaction)
+            }
         }
     }
     
@@ -119,7 +119,7 @@ public final class SnodeAPI : NSObject {
     
     // MARK: Internal API
     internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
-        if useOnionRequests {
+        if Features.useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
         } else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
@@ -131,62 +131,141 @@ public final class SnodeAPI : NSObject {
     }
     
     internal static func getRandomSnode() -> Promise<Snode> {
+        // randomElement() uses the system's default random generator, which is cryptographically secure
+        return getSnodePool().map2 { $0.randomElement()! }
+    }
+    
+    private static func getSnodePool() -> Promise<Set<Snode>> {
         loadSnodePoolIfNeeded()
         let now = Date()
-        let isSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 24 * 60 * 60 } ?? true
-        let isRefreshNeeded = (snodePool.isEmpty || isSnodePoolExpired)
-        if isRefreshNeeded {
-            SNSnodeKitConfiguration.shared.storage.write { transaction in
-                Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
-            }
-            let target = seedNodePool.randomElement()!
-            let url = "\(target)/json_rpc"
-            let parameters: JSON = [
-                "method" : "get_n_service_nodes",
-                "params" : [
-                    "active_only" : true,
-                    "fields" : [
-                        "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
-                    ]
-                ]
-            ]
-            SNLog("Populating snode pool using: \(target).")
-            let (promise, seal) = Promise<Snode>.pending()
-            Threading.workQueue.async {
-                attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                    HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Snode in
-                        guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
-                        let snodePool: Set<Snode> = Set(rawSnodes.compactMap { rawSnode in
-                            guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
-                                let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                                SNLog("Failed to parse snode from: \(rawSnode).")
-                                return nil
-                            }
-                            return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
-                        })
-                        setSnodePool(to: snodePool)
-                        // randomElement() uses the system's default random generator, which is cryptographically secure
-                        if !snodePool.isEmpty {
-                            return snodePool.randomElement()!
-                        } else {
-                            throw Error.snodePoolUpdatingFailed
-                        }
-                    }
-                }.done2 { snode in
-                    SNLog("Successfully updated snode pool.")
-                    seal.fulfill(snode)
-                }.catch2 { error in
-                    SNLog("Failed to contact seed node at: \(target).")
-                    seal.reject(error)
+        let hasSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
+        let snodePool = SnodeAPI.snodePool
+        let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
+        if hasInsufficientSnodes || hasSnodePoolExpired {
+            if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
+            let promise: Promise<Set<Snode>>
+            if snodePool.count < minSnodePoolCount {
+                promise = getSnodePoolFromSeedNode()
+            } else {
+                promise = getSnodePoolFromSnode().recover2 { _ in
+                    getSnodePoolFromSeedNode()
                 }
+            }
+            getSnodePoolPromise = promise
+            promise.map2 { snodePool -> Set<Snode> in
+                if snodePool.isEmpty {
+                    throw Error.snodePoolUpdatingFailed
+                } else {
+                    return snodePool
+                }
+            }
+            promise.then2 { snodePool -> Promise<Set<Snode>> in
+                let (promise, seal) = Promise<Set<Snode>>.pending()
+                SNSnodeKitConfiguration.shared.storage.write(with: { transaction in
+                    Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
+                    setSnodePool(to: snodePool, using: transaction)
+                }, completion: {
+                    seal.fulfill(snodePool)
+                })
+                return promise
+            }
+            promise.done2 { _ in
+                getSnodePoolPromise = nil
+            }
+            promise.catch2 { _ in
+                getSnodePoolPromise = nil
             }
             return promise
         } else {
-            return Promise<Snode> { seal in
-                // randomElement() uses the system's default random generator, which is cryptographically secure
-                seal.fulfill(snodePool.randomElement()!)
+            return Promise.value(snodePool)
+        }
+    }
+    
+    private static func getSnodePoolFromSeedNode() -> Promise<Set<Snode>> {
+        let target = seedNodePool.randomElement()!
+        let url = "\(target)/json_rpc"
+        let parameters: JSON = [
+            "method" : "get_n_service_nodes",
+            "params" : [
+                "active_only" : true,
+                "limit" : 256,
+                "fields" : [
+                    "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
+                ]
+            ]
+        ]
+        SNLog("Populating snode pool using seed node: \(target).")
+        let (promise, seal) = Promise<Set<Snode>>.pending()
+        Threading.workQueue.async {
+            attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Set<Snode> in
+                    guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
+                    return Set(rawSnodes.compactMap { rawSnode in
+                        guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
+                            let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                            SNLog("Failed to parse snode from: \(rawSnode).")
+                            return nil
+                        }
+                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                    })
+                }
+            }.done2 { snodePool in
+                SNLog("Got snode pool from seed node: \(target).")
+                seal.fulfill(snodePool)
+            }.catch2 { error in
+                SNLog("Failed to contact seed node at: \(target).")
+                seal.reject(error)
             }
         }
+        return promise
+    }
+    
+    private static func getSnodePoolFromSnode() -> Promise<Set<Snode>> {
+        var snodePool = SnodeAPI.snodePool
+        var snodes: Set<Snode> = []
+        (0..<3).forEach { _ in
+            let snode = snodePool.randomElement()!
+            snodePool.remove(snode)
+            snodes.insert(snode)
+        }
+        let snodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
+            return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                let parameters: JSON = [
+                    "endpoint" : "get_service_nodes",
+                    "params" : [
+                        "limit" : 256,
+                        "active_only" : true,
+                        "fields" : [
+                            "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
+                        ]
+                    ]
+                ]
+                return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
+                    guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
+                        let rawSnodes = intermediate["service_node_states"] as? [JSON] else {
+                        throw Error.snodePoolUpdatingFailed
+                    }
+                    return Set(rawSnodes.compactMap { rawSnode in
+                        guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
+                            let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                            SNLog("Failed to parse snode from: \(rawSnode).")
+                            return nil
+                        }
+                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                    })
+                }
+            }
+        }
+        let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Snode> in
+            var result: Set<Snode> = results[0]
+            results.forEach { result = result.union($0) }
+            if result.count > 24 { // We want the snodes to agree on at least this many snodes
+                return result
+            } else {
+                throw Error.inconsistentSnodePools
+            }
+        }
+        return promise
     }
 
     // MARK: Public API
@@ -262,11 +341,11 @@ public final class SnodeAPI : NSObject {
 
     public static func getSwarm(for publicKey: String) -> Promise<Set<Snode>> {
         loadSwarmIfNeeded(for: publicKey)
-        if let cachedSwarm = swarmCache[publicKey], cachedSwarm.count >= minimumSwarmSnodeCount {
+        if let cachedSwarm = swarmCache[publicKey], cachedSwarm.count >= minSwarmSnodeCount {
             return Promise<Set<Snode>> { $0.fulfill(cachedSwarm) }
         } else {
             SNLog("Getting swarm for: \((publicKey == SNSnodeKitConfiguration.shared.storage.getUserPublicKey()) ? "self" : publicKey).")
-            let parameters: [String:Any] = [ "pubKey" : publicKey ]
+            let parameters: [String:Any] = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey ]
             return getRandomSnode().then2 { snode in
                 attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                     invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
@@ -287,7 +366,7 @@ public final class SnodeAPI : NSObject {
                 storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
             }
             let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
-            let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
+            let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
             invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
@@ -303,7 +382,7 @@ public final class SnodeAPI : NSObject {
                         storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
                     }
                     let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
-                    let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
+                    let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
                     return invoke(.getMessages, on: targetSnode, associatedWith: publicKey, parameters: parameters).map2 { rawResponse in
                         parseRawMessagesResponse(rawResponse, from: targetSnode, associatedWith: publicKey)
                     }
@@ -315,24 +394,14 @@ public final class SnodeAPI : NSObject {
 
     public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
-        let publicKey = message.recipient
+        let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 let parameters = message.toJSON()
                 return Set(targetSnodes.map { targetSnode in
-                    let result = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
                     }
-                    result.done2 { rawResponse in
-                        if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
-                            guard powDifficulty != SnodeAPI.powDifficulty, powDifficulty < 100 else { return }
-                            SNLog("Setting proof of work difficulty to \(powDifficulty).")
-                            SnodeAPI.powDifficulty = UInt(powDifficulty)
-                        } else {
-                            SNLog("Failed to update proof of work difficulty from: \(rawResponse).")
-                        }
-                    }
-                    return result
                 })
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
@@ -345,12 +414,13 @@ public final class SnodeAPI : NSObject {
 
     private static func parseSnodes(from rawResponse: Any) -> Set<Snode> {
         guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
-            SNLog("Failed to parse targets from: \(rawResponse).")
+            SNLog("Failed to parse snodes from: \(rawResponse).")
             return []
         }
         return Set(rawSnodes.compactMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                SNLog("Failed to parse target from: \(rawSnode).")
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString),
+                let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                SNLog("Failed to parse snode from: \(rawSnode).")
                 return nil
             }
             return Snode(address: "https://\(address)", port: port, publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
@@ -423,22 +493,22 @@ public final class SnodeAPI : NSObject {
         case 421:
             // The snode isn't associated with the given public key anymore
             if let publicKey = publicKey {
-                SNLog("Invalidating swarm for: \(publicKey).")
-                SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
-            } else {
-                SNLog("Got a 421 without an associated public key.")
-            }
-        case 432:
-            // The proof of work difficulty is too low
-            if let powDifficulty = json?["difficulty"] as? UInt {
-                if powDifficulty < 100 {
-                    SNLog("Setting proof of work difficulty to \(powDifficulty).")
-                    SnodeAPI.powDifficulty = UInt(powDifficulty)
+                func invalidateSwarm() {
+                    SNLog("Invalidating swarm for: \(publicKey).")
+                    SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                }
+                if let json = json {
+                    let snodes = parseSnodes(from: json)
+                    if !snodes.isEmpty {
+                        setSwarm(to: snodes, for: publicKey)
+                    } else {
+                        invalidateSwarm()
+                    }
                 } else {
-                    handleBadSnode()
+                    invalidateSwarm()
                 }
             } else {
-                SNLog("Failed to update proof of work difficulty.")
+                SNLog("Got a 421 without an associated public key.")
             }
         default:
             handleBadSnode()

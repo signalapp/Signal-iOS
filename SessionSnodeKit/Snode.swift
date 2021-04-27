@@ -15,6 +15,7 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
         case getMessages = "retrieve"
         case getSessionIDForONSName = "get_lns_mapping"
         case sendMessage = "store"
+        case getAllSnodes = "oxend_request"
     }
 
     public struct KeySet {

@@ -96,59 +96,57 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 return handleFailure(Error.invalidURL)
             }
             OpenGroupAPIV2.download(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                do {
-                    try data.write(to: temporaryFilePath, options: .atomic)
-                } catch {
-                    return handleFailure(error)
-                }
-                let stream = TSAttachmentStream(pointer: pointer)
-                do {
-                    try stream.write(data)
-                } catch {
-                    return handleFailure(error)
-                }
-                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write(with: { transaction in
-                    storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }, completion: {
-                    self.handleSuccess()
-                })
+                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
-        } else {
+        } else if pointer.downloadURL.contains(FileServerAPIV2.server) {
+            guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
+                return handleFailure(Error.invalidURL)
+            }
+            FileServerAPIV2.download(file).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
+            }.catch(on: DispatchQueue.global()) { error in
+                handleFailure(error)
+            }
+        } else { // Legacy
             FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                do {
-                    try data.write(to: temporaryFilePath, options: .atomic)
-                } catch {
-                    return handleFailure(error)
-                }
-                let plaintext: Data
-                if let key = pointer.encryptionKey, let digest = pointer.digest {
-                    do {
-                        plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
-                    } catch {
-                        return handleFailure(error)
-                    }
-                } else {
-                    plaintext = data // Open group attachments are unencrypted
-                }
-                let stream = TSAttachmentStream(pointer: pointer)
-                do {
-                    try stream.write(plaintext)
-                } catch {
-                    return handleFailure(error)
-                }
-                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-                storage.write(with: { transaction in
-                    storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
-                }, completion: {
-                    self.handleSuccess()
-                })
+                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
         }
+    }
+    
+    private func handleDownloadedAttachment(data: Data, temporaryFilePath: URL, pointer: TSAttachmentPointer, failureHandler: (Swift.Error) -> Void) {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        do {
+            try data.write(to: temporaryFilePath, options: .atomic)
+        } catch {
+            return failureHandler(error)
+        }
+        let plaintext: Data
+        if let key = pointer.encryptionKey, let digest = pointer.digest {
+            do {
+                plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
+            } catch {
+                return failureHandler(error)
+            }
+        } else {
+            plaintext = data // Open group attachments are unencrypted
+        }
+        let stream = TSAttachmentStream(pointer: pointer)
+        do {
+            try stream.write(plaintext)
+        } catch {
+            return failureHandler(error)
+        }
+        OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+        storage.write(with: { transaction in
+            storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
+        }, completion: {
+            self.handleSuccess()
+        })
     }
 
     private func handleSuccess() {

@@ -27,7 +27,7 @@ internal extension OnionRequestAPI {
                     let plaintext = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
                     let result = try AESGCM.encrypt(plaintext, for: snodeX25519PublicKey)
                     seal.fulfill(result)
-                case .server(_, _, let serverX25519PublicKey):
+                case .server(_, _, let serverX25519PublicKey, _, _):
                     let plaintext = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
                     let result = try AESGCM.encrypt(plaintext, for: serverX25519PublicKey)
                     seal.fulfill(result)
@@ -48,8 +48,10 @@ internal extension OnionRequestAPI {
             case .snode(let snode):
                 let snodeED25519PublicKey = snode.publicKeySet.ed25519Key
                 parameters = [ "destination" : snodeED25519PublicKey ]
-            case .server(let host, let target, _):
-                parameters = [ "host" : host, "target" : target, "method" : "POST" ]
+            case .server(let host, let target, _, let scheme, let port):
+                let scheme = scheme ?? "https"
+                let port = port ?? (scheme == "https" ? 443 : 80)
+                parameters = [ "host" : host, "target" : target, "method" : "POST", "protocol" : scheme, "port" : port ]
             }
             parameters["ephemeral_key"] = previousEncryptionResult.ephemeralPublicKey.toHexString()
             let x25519PublicKey: String
@@ -57,7 +59,7 @@ internal extension OnionRequestAPI {
             case .snode(let snode):
                 let snodeX25519PublicKey = snode.publicKeySet.x25519Key
                 x25519PublicKey = snodeX25519PublicKey
-            case .server(_, _, let serverX25519PublicKey):
+            case .server(_, _, let serverX25519PublicKey, _, _):
                 x25519PublicKey = serverX25519PublicKey
             }
             do {
