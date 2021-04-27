@@ -219,8 +219,6 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {
-        Logger.debug("")
-
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
 
@@ -228,8 +226,6 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
-        Logger.debug("")
-
         guard let state = self.state else {
             return
         }
@@ -251,8 +247,6 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc func handleGroupAvatarChanged(notification: Notification) {
-        Logger.debug("")
-
         guard let state = self.state else {
             return
         }
@@ -314,8 +308,6 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     public func updateImage(transaction: SDSAnyReadTransaction) {
-        Logger.debug("updateImage")
-
         guard diameter > 0,
               let state = self.state else {
             self.image = nil

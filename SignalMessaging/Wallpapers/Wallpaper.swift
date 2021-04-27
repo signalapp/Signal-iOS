@@ -357,8 +357,10 @@ fileprivate extension Wallpaper {
 // MARK: -
 
 public struct WallpaperMaskBuilder {
+
     fileprivate let maskPath = UIBezierPath()
     public let referenceView: UIView
+    fileprivate let isAnimating: Bool
 
     public func append(blurPath: UIBezierPath) {
         maskPath.append(blurPath)
@@ -369,7 +371,16 @@ public struct WallpaperMaskBuilder {
             Logger.warn("Missing blurView.")
             return
         }
-        let blurFrame = referenceView.convert(blurView.bounds, from: blurView)
+
+        let blurFrame: CGRect
+        if isAnimating,
+           let srcLayer = blurView.layer.presentation(),
+           let dstLayer = referenceView.layer.presentation() {
+            blurFrame = dstLayer.convert(srcLayer.bounds, from: srcLayer)
+        } else {
+            blurFrame = referenceView.convert(blurView.bounds, from: blurView)
+        }
+
         let blurPath: UIBezierPath = {
             return UIBezierPath(roundedRect: blurFrame,
                                 byRoundingCorners: blurView.layer.maskedCorners.asUIRectCorner,
@@ -508,12 +519,12 @@ public class WallpaperView {
         _blurView = blurView
     }
 
-    public func updateBlurContentAndMask() {
-        _blurView?.updateContentAndMask()
+    public func updateBlurContentAndMask(isAnimating: Bool = false) {
+        _blurView?.updateContentAndMask(isAnimating: isAnimating)
     }
 
-    public func updateBlurMask() {
-        _blurView?.updateMask()
+    public func updateBlurMask(isAnimating: Bool = false) {
+        _blurView?.updateMask(isAnimating: isAnimating)
     }
 
     // MARK: -
@@ -550,18 +561,18 @@ public class WallpaperView {
             updateContent()
         }
 
-        func updateContentAndMask() {
+        func updateContentAndMask(isAnimating: Bool) {
             updateContent()
-            updateMask()
+            updateMask(isAnimating: isAnimating)
         }
 
-        func updateMask() {
+        func updateMask(isAnimating: Bool) {
             guard let maskDataSource = self.maskDataSource else {
                 owsFailDebug("Missing maskDataSource.")
                 resetMask()
                 return
             }
-            let builder = WallpaperMaskBuilder(referenceView: self)
+            let builder = WallpaperMaskBuilder(referenceView: self, isAnimating: isAnimating)
             maskDataSource.buildWallpaperMask(builder)
             maskLayer.path = builder.maskPath.cgPath
         }

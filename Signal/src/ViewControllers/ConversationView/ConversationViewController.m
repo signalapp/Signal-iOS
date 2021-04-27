@@ -478,7 +478,8 @@ typedef enum : NSUInteger {
     // The view controller will only automatically adjust content insets for a
     // scrollView at index 0, so we need the collection view to remain subview index 0.
     // But the background views should appear visually behind the collection view.
-    UIView *backgroundContainer = self.viewState.backgroundContainer;
+    CVBackgroundContainer *backgroundContainer = self.viewState.backgroundContainer;
+    backgroundContainer.delegate = self;
     [self.view addSubview:backgroundContainer];
     [backgroundContainer autoPinEdgesToSuperviewEdges];
     [self setupWallpaper];
@@ -3990,6 +3991,7 @@ typedef enum : NSUInteger {
         [self updateBottomBarPosition];
         [UIView commitAnimations];
         [self updateContentInsetsAnimated:YES];
+        [self updateScrollingContentForAnimationWithDuration:animationDuration];
     } else {
         [self updateBottomBarPosition];
         [self updateContentInsetsAnimated:NO];
