@@ -8,8 +8,8 @@ fileprivate extension OWSContactsManager {
     static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
 
-    static var unblurredAvatarContactCache = AtomicSet<UUID>()
-    static var unblurredAvatarGroupCache = AtomicSet<Data>()
+    static var notLowTrustContactCache = AtomicSet<UUID>()
+    static var notLowTrustGroupCache = AtomicSet<Data>()
 }
 
 // MARK: -
@@ -45,32 +45,39 @@ public extension OWSContactsManager {
         }
     }
 
-    // MARK: - Avatar Blurring
+    // MARK: - Low Trust
 
-    func shouldBlurAvatar(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    func isLowTrustThread(_ thread: TSThread,
+                          allowUserToDismiss: Bool,
+                          transaction: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
-            return shouldBlurContactAvatar(contactThread: contactThread, transaction: transaction)
+            return isLowTrustContact(contactThread: contactThread,
+                                     allowUserToDismiss: allowUserToDismiss,
+                                     transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
-            return shouldBlurGroupAvatar(groupThread: groupThread, transaction: transaction)
+            return isLowTrustGroup(groupThread: groupThread,
+                                   allowUserToDismiss: allowUserToDismiss,
+                                   transaction: transaction)
         } else {
             owsFailDebug("Invalid thread.")
             return false
         }
     }
 
-    func shouldBlurContactAvatar(address: SignalServiceAddress,
-                                 transaction: SDSAnyReadTransaction) -> Bool {
+    func isLowTrustContact(address: SignalServiceAddress,
+                           allowUserToDismiss: Bool,
+                           transaction: SDSAnyReadTransaction) -> Bool {
         func cacheContains() -> Bool {
             guard let uuid = address.uuid else {
                 return false
             }
-            return Self.unblurredAvatarContactCache.contains(uuid)
+            return Self.notLowTrustContactCache.contains(uuid)
         }
         func addToCache() {
             guard let uuid = address.uuid else {
                 return
             }
-            Self.unblurredAvatarContactCache.insert(uuid)
+            Self.notLowTrustContactCache.insert(uuid)
         }
         if cacheContains() {
             return false
@@ -80,23 +87,26 @@ public extension OWSContactsManager {
             addToCache()
             return false
         }
-        return shouldBlurContactAvatar(contactThread: contactThread, transaction: transaction)
+        return isLowTrustContact(contactThread: contactThread,
+                                 allowUserToDismiss: allowUserToDismiss,
+                                 transaction: transaction)
     }
 
-    func shouldBlurContactAvatar(contactThread: TSContactThread,
-                                 transaction: SDSAnyReadTransaction) -> Bool {
+    func isLowTrustContact(contactThread: TSContactThread,
+                           allowUserToDismiss: Bool,
+                           transaction: SDSAnyReadTransaction) -> Bool {
         let address = contactThread.contactAddress
         func cacheContains() -> Bool {
             guard let uuid = address.uuid else {
                 return false
             }
-            return Self.unblurredAvatarContactCache.contains(uuid)
+            return Self.notLowTrustContactCache.contains(uuid)
         }
         func addToCache() {
             guard let uuid = address.uuid else {
                 return
             }
-            Self.unblurredAvatarContactCache.insert(uuid)
+            Self.notLowTrustContactCache.insert(uuid)
         }
         if cacheContains() {
             return false
@@ -112,7 +122,8 @@ public extension OWSContactsManager {
             return false
         }
         // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if let uuid = address.uuid,
+        if allowUserToDismiss,
+           let uuid = address.uuid,
            Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
                                                          defaultValue: false,
                                                          transaction: transaction) {
@@ -122,14 +133,15 @@ public extension OWSContactsManager {
         return true
     }
 
-    func shouldBlurGroupAvatar(groupThread: TSGroupThread,
-                               transaction: SDSAnyReadTransaction) -> Bool {
+    func isLowTrustGroup(groupThread: TSGroupThread,
+                         allowUserToDismiss: Bool,
+                         transaction: SDSAnyReadTransaction) -> Bool {
         let groupId = groupThread.groupId
         func cacheContains() -> Bool {
-            Self.unblurredAvatarGroupCache.contains(groupId)
+            Self.notLowTrustGroupCache.contains(groupId)
         }
         func addToCache() {
-            Self.unblurredAvatarGroupCache.insert(groupId)
+            Self.notLowTrustGroupCache.insert(groupId)
         }
         if cacheContains() {
             return false
@@ -143,13 +155,43 @@ public extension OWSContactsManager {
             return false
         }
         // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
+        if allowUserToDismiss,
+           Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
                                                           defaultValue: false,
                                                           transaction: transaction) {
             addToCache()
             return false
         }
         return true
+    }
+
+    // MARK: - Avatar Blurring
+
+    func shouldBlurAvatar(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustThread(thread,
+                         allowUserToDismiss: true,
+                         transaction: transaction)
+    }
+
+    func shouldBlurContactAvatar(address: SignalServiceAddress,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustContact(address: address,
+                          allowUserToDismiss: true,
+                          transaction: transaction)
+    }
+
+    func shouldBlurContactAvatar(contactThread: TSContactThread,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustContact(contactThread: contactThread,
+                          allowUserToDismiss: true,
+                          transaction: transaction)
+    }
+
+    func shouldBlurGroupAvatar(groupThread: TSGroupThread,
+                               transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustGroup(groupThread: groupThread,
+                        allowUserToDismiss: true,
+                        transaction: transaction)
     }
 
     static let skipContactAvatarBlurDidChange = NSNotification.Name("skipContactAvatarBlurDidChange")
@@ -323,7 +365,7 @@ extension SortableValue: Equatable, Comparable {
 
     public static func == (lhs: SortableValue<T>, rhs: SortableValue<T>) -> Bool {
         return (lhs.comparableName == rhs.comparableName &&
-            lhs.comparableAddress == rhs.comparableAddress)
+                    lhs.comparableAddress == rhs.comparableAddress)
     }
 
     // MARK: - Comparable
