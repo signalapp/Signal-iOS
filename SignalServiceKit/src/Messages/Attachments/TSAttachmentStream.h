@@ -166,6 +166,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
 - (void)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageSmallSync;
+- (nullable UIImage *)thumbnailImageMediumSync;
 - (nullable UIImage *)thumbnailImageLargeSync;
 
 // This method should only be invoked by OWSThumbnailService.

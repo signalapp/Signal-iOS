@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,14 +31,6 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         self.linkType = linkType
         self.groupInviteLinkViewModel = groupInviteLinkViewModel
         _conversationStyle = conversationStyle
-    }
-
-    @objc
-    public var imagePixelSize: CGSize {
-        guard let avatar = groupInviteLinkViewModel.avatar else {
-            return CGSize.zero
-        }
-        return avatar.imageSizePixels
     }
 
     public func isLoaded() -> Bool {
@@ -83,7 +75,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return .loading
     }
 
-    public func image() -> UIImage? {
+    public func image(imageSize: LinkPreviewImageSize) -> UIImage? {
         assert(imageState() == .loaded)
         guard let avatar = groupInviteLinkViewModel.avatar,
             avatar.isValid else {
@@ -94,6 +86,14 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
             return nil
         }
         return image
+    }
+
+    @objc
+    public var imagePixelSize: CGSize {
+        guard let avatar = groupInviteLinkViewModel.avatar else {
+            return CGSize.zero
+        }
+        return avatar.imageSizePixels
     }
 
     public func previewDescription() -> String? {

@@ -1292,7 +1292,7 @@ private class LinkPreviewImageView: CVImageView {
         guard state.imageState() == .loaded else {
             return nil
         }
-        guard let image = state.image() else {
+        guard let image = state.image(imageSize: .small) else {
             owsFailDebug("Could not load image.")
             return nil
         }
@@ -1310,13 +1310,14 @@ private class LinkPreviewImageView: CVImageView {
         guard state.imageState() == .loaded else {
             return nil
         }
-        guard let image = state.image() else {
+        let isHero = LinkPreviewView.sentIsHero(state: state)
+        guard let image = state.image(imageSize: isHero ? .medium : .small) else {
             owsFailDebug("Could not load image.")
             return nil
         }
         self.rounding = roundingParam ?? .standard
         self.image = image
-        self.isHero = LinkPreviewView.sentIsHero(state: state)
+        self.isHero = isHero
         return self
     }
 }

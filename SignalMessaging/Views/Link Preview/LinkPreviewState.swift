@@ -15,13 +15,21 @@ public enum LinkPreviewImageState: Int {
 // MARK: -
 
 @objc
+public enum LinkPreviewImageSize: UInt {
+    case small
+    case medium
+}
+
+// MARK: -
+
+@objc
 public protocol LinkPreviewState {
     func isLoaded() -> Bool
     func urlString() -> String?
     func displayDomain() -> String?
     func title() -> String?
     func imageState() -> LinkPreviewImageState
-    func image() -> UIImage?
+    func image(imageSize: LinkPreviewImageSize) -> UIImage?
     var imagePixelSize: CGSize { get }
     func previewDescription() -> String?
     func date() -> Date?
@@ -81,7 +89,7 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return .none
     }
 
-    public func image() -> UIImage? {
+    public func image(imageSize: LinkPreviewImageSize) -> UIImage? {
         return nil
     }
 
@@ -162,7 +170,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         }
     }
 
-    public func image() -> UIImage? {
+    private func image() -> UIImage? {
         assert(imageState() == .loaded)
 
         guard let imageData = linkPreviewDraft.imageData else {
@@ -173,6 +181,10 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
             return nil
         }
         return image
+    }
+
+    public func image(imageSize: LinkPreviewImageSize) -> UIImage? {
+        image()
     }
 
     public var imagePixelSize: CGSize {
@@ -266,7 +278,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         return .loaded
     }
 
-    public func image() -> UIImage? {
+    public func image(imageSize: LinkPreviewImageSize) -> UIImage? {
         assert(imageState() == .loaded)
 
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
@@ -277,29 +289,36 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             attachmentStream.isValidImage else {
             return nil
         }
-        guard let imageFilepath = attachmentStream.originalFilePath else {
-            owsFailDebug("Attachment is missing file path.")
-            return nil
-        }
-
-        guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: attachmentStream.contentType) else {
+        guard attachmentStream.isValidVisualMedia else {
             owsFailDebug("Invalid image.")
             return nil
         }
-
-        let imageClass: UIImage.Type
-        if attachmentStream.contentType == OWSMimeTypeImageWebp {
-            imageClass = YYImage.self
+        if attachmentStream.shouldBeRenderedByYY {
+            guard let imageFilepath = attachmentStream.originalFilePath else {
+                owsFailDebug("Attachment is missing file path.")
+                return nil
+            }
+            guard let image = YYImage(contentsOfFile: imageFilepath) else {
+                owsFailDebug("Could not load image: \(imageFilepath)")
+                return nil
+            }
+            return image
         } else {
-            imageClass = UIImage.self
+            switch imageSize {
+            case .small:
+                guard let thumbnail = attachmentStream.thumbnailImageSmallSync() else {
+                    owsFailDebug("Couldn't load thumbnail.")
+                    return nil
+                }
+                return thumbnail
+            case .medium:
+                guard let thumbnail = attachmentStream.thumbnailImageMediumSync() else {
+                    owsFailDebug("Couldn't load thumbnail.")
+                    return nil
+                }
+                return thumbnail
+            }
         }
-
-        guard let image = imageClass.init(contentsOfFile: imageFilepath) else {
-            owsFailDebug("Could not load image: \(imageFilepath)")
-            return nil
-        }
-
-        return image
     }
 
     @objc
