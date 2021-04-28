@@ -263,6 +263,10 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
                      receiptType:(OWSReceiptType)receiptType
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
+    if (receiptType == OWSReceiptType_Viewed && !RemoteConfig.viewedReceiptSending) {
+        return;
+    }
+
     SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
 
     OWSAssertDebug(address.isValid);

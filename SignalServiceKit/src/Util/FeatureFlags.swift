@@ -404,6 +404,9 @@ public class DebugFlags: BaseFlags {
     public static let fastPerfTests = false
 
     @objc
+    public static let forceViewedReceiptSending = build.includes(.qa)
+
+    @objc
     public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
