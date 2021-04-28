@@ -756,10 +756,18 @@ extension CVComponentSystemMessage {
         if threadViewModel.isGroupThread {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
                                           comment: "Indicator warning about an unknown group thread.")
+
+            let labelText = NSMutableAttributedString()
+            labelText.appendTemplatedImage(named: Theme.iconName(.info16),
+                                           font: Self.titleLabelFont,
+                                           heightReference: ImageAttachmentHeightReference.lineHeight)
+            labelText.append("  ", attributes: [:])
+            labelText.append(title, attributes: [:])
+
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
                                 action: .cvc_didTapUnknownThreadWarningGroup)
-            return CVComponentState.SystemMessage(title: title.attributedString(),
+            return CVComponentState.SystemMessage(title: labelText,
                                                   titleColor: titleColor,
                                                   action: action)
         } else {
