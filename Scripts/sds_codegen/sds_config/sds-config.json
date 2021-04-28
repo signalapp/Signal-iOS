@@ -111,6 +111,7 @@
 		"TSIncomingMessage.read": "wasRead",
 		"TSCall.read": "wasRead",
 		"OWSGroupCallMessage.read": "wasRead",
+		"TSIncomingMessage.viewed": "wasViewed",
 		"OWSDisappearingMessagesConfiguration.enabled": "isEnabled",
 		"OWSDisappearingMessagesConfiguration.newRecord": "isNewRecord"
 	},

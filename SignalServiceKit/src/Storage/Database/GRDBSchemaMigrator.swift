@@ -103,6 +103,7 @@ public class GRDBSchemaMigrator: NSObject {
         case fixPaymentModels
         case addGroupMember
         case createPendingViewedReceipts
+        case addViewedToInteractions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1077,6 +1078,18 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.create(index: "index_pending_viewed_receipts_on_threadId",
                               on: "pending_viewed_receipts",
                               columns: ["threadId"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addViewedToInteractions.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "viewed", .boolean)
+                }
+
+                try db.execute(sql: "UPDATE model_TSInteraction SET viewed = 0")
             } catch {
                 owsFail("Error: \(error)")
             }

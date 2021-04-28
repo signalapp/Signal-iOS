@@ -104,6 +104,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
+                          viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
@@ -137,6 +138,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
+    _viewed = viewed;
     _wasReceivedByUD = wasReceivedByUD;
 
     return self;

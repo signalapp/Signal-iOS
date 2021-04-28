@@ -116,6 +116,7 @@
     "InteractionRecord.uniqueThreadId": 3, 
     "InteractionRecord.unregisteredAddress": 47, 
     "InteractionRecord.verificationState": 48, 
+    "InteractionRecord.viewed": 63, 
     "InteractionRecord.wasIdentityVerified": 59, 
     "InteractionRecord.wasReceivedByUD": 49, 
     "InteractionRecord.wasRemotelyDeleted": 51, 

@@ -52,8 +52,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             stackView.addSubview(footerRootView)
             let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
             stackView.addLayoutBlock { view in
-                footerRootView.frame.height = min(view.bounds.height, footerSize.height)
-                footerRootView.frame.y = view.bounds.height - footerRootView.height
+                var footerFrame = view.bounds
+                footerFrame.height = min(view.bounds.height, footerSize.height)
+                footerFrame.y = view.bounds.height - footerSize.height
+                footerRootView.frame = footerFrame
             }
         }
 
@@ -61,6 +63,11 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
         let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
                                                 isIncoming: isIncoming)
+        if let incomingMessage = interaction as? TSIncomingMessage {
+            audioMessageView.setViewed(incomingMessage.wasViewed, animated: false)
+        } else if let outgoingMessage = interaction as? TSOutgoingMessage {
+            audioMessageView.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
+        }
         audioMessageView.configureForRendering(cellMeasurement: cellMeasurement,
                                                conversationStyle: conversationStyle)
         componentView.audioMessageView = audioMessageView
@@ -113,11 +120,33 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
-
+        guard let componentView = componentView as? CVComponentViewAudioAttachment else {
+            owsFailDebug("Unexpected componentView.")
+            return false
+        }
         guard let attachmentStream = attachmentStream else {
             return false
         }
         cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
+        if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) == .playing {
+            // If we just started playing, mark the message as viewed.
+            if let incomingMessage = interaction as? TSIncomingMessage, !incomingMessage.wasViewed {
+                databaseStorage.asyncWrite { [thread] transaction in
+                    let circumstance: OWSReceiptCircumstance =
+                        thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+                        ? .onThisDeviceWhilePendingMessageRequest
+                        : .onThisDevice
+                    incomingMessage.markAsViewed(
+                        atTimestamp: Date.ows_millisecondTimestamp(),
+                        thread: thread,
+                        circumstance: circumstance,
+                        transaction: transaction
+                    )
+                } completion: {
+                    componentView.audioMessageView?.setViewed(true, animated: true)
+                }
+            }
+        }
         return true
     }
 

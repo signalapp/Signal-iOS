@@ -49,6 +49,13 @@ class AudioMessageView: ManualStackView {
         return cvAudioPlayer.playbackProgress(forAttachmentStream: attachmentStream)
     }
 
+    private var isViewed = false
+    public func setViewed(_ isViewed: Bool, animated: Bool) {
+        guard isViewed != self.isViewed else { return }
+        self.isViewed = isViewed
+        updateContents(animated: animated)
+    }
+
     @objc
     init(audioAttachment: AudioAttachment, isIncoming: Bool) {
         self.audioAttachment = audioAttachment
@@ -415,6 +422,7 @@ class AudioMessageView: ManualStackView {
 
     func updateContents(animated: Bool) {
         updatePlaybackState(animated: animated)
+        updateViewedState(animated: animated)
         updateAudioProgress()
     }
 
@@ -442,11 +450,25 @@ class AudioMessageView: ManualStackView {
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
 
         if animated {
-            if isPlaying { playedDotAnimation.play(toProgress: 1) }
             playPauseAnimation.play(toProgress: destination)
         } else {
-            if isPlaying { playedDotAnimation.currentProgress = 1 }
             playPauseAnimation.currentProgress = destination
+        }
+    }
+
+    private func updateViewedState(animated: Bool = true) {
+        var isViewed = self.isViewed
+
+        // If we don't support viewed receipts yet, never show
+        // the unviewed dot.
+        if !RemoteConfig.viewedReceiptSending { isViewed = true }
+
+        let destination: AnimationProgressTime = isViewed ? 1 : 0
+
+        if animated {
+            playedDotAnimation.play(toProgress: destination)
+        } else {
+            playedDotAnimation.currentProgress = destination
         }
     }
 
