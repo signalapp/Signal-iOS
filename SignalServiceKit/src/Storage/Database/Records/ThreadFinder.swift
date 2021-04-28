@@ -243,6 +243,8 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         thread: TSThread,
         transaction: GRDBReadTransaction
     ) -> Bool {
+        guard FeatureFlags.universalDisappearingMessages else { return false }
+
         // We never set the default timer for group threads. Group thread timers
         // are set during group creation.
         guard !thread.isGroupThread else { return false }
