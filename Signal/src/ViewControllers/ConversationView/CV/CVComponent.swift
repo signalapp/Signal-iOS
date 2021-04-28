@@ -185,8 +185,8 @@ public class CVComponentBase: NSObject {
         nil
     }
 
-    public func buildWallpaperBlurView(componentDelegate: CVComponentDelegate) -> CVWallpaperBlurView {
-        let wallpaperBlurView = CVWallpaperBlurView()
+    public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
+                                           componentDelegate: CVComponentDelegate) {
         if componentDelegate.isConversationPreview {
             wallpaperBlurView.configureForPreview()
         } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
@@ -195,7 +195,6 @@ public class CVComponentBase: NSObject {
             owsFailDebug("Missing wallpaperBlurProvider.")
             wallpaperBlurView.configureForPreview()
         }
-        return wallpaperBlurView
     }
 
     public final func updateWallpaperBlur(componentView: CVComponentView) {

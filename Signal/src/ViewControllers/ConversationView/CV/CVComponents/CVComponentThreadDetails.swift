@@ -114,10 +114,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
-            let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
+            let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+            configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                       componentDelegate: componentDelegate)
             wallpaperBlurView.layer.cornerRadius = 12
             innerStackView.addSubviewToFillSuperviewEdges(wallpaperBlurView)
-            componentView.wallpaperBlurView = wallpaperBlurView
         }
 
         let titleLabel = componentView.titleLabel
@@ -514,6 +515,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let innerStackView = ManualStackView(name: "Thread details inner")
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
 
         public var isDedicatedCellView = false
 
@@ -536,7 +545,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             avatarView = nil
 
             wallpaperBlurView?.removeFromSuperview()
-            wallpaperBlurView = nil
+            wallpaperBlurView?.resetContentAndConfiguration()
         }
     }
 }

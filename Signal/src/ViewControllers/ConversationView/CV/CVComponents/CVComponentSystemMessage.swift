@@ -202,9 +202,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           componentDelegate: componentDelegate)
                 wallpaperBlurView.layer.cornerRadius = 8
-                componentView.wallpaperBlurView = wallpaperBlurView
                 bubbleView = wallpaperBlurView
             } else {
                 let backgroundView = UIView()
@@ -397,6 +398,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
+
         fileprivate var backgroundView: UIView?
 
         fileprivate var button: OWSButton?
@@ -434,7 +444,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 outerVStack.reset()
 
                 wallpaperBlurView?.removeFromSuperview()
-                wallpaperBlurView = nil
+                wallpaperBlurView?.resetContentAndConfiguration()
 
                 backgroundView?.removeFromSuperview()
                 backgroundView = nil

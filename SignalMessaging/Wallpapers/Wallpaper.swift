@@ -486,10 +486,6 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func reset() {
-        self.cachedState = nil
-    }
-
     public static let contentDownscalingFactor: CGFloat = 8
 
     public var wallpaperBlurState: WallpaperBlurState? {
@@ -505,7 +501,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
             return cachedState
         }
 
-        reset()
+        self.cachedState = nil
 
         do {
             guard bounds.width > 0, bounds.height > 0 else {

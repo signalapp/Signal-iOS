@@ -88,10 +88,11 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 strokeView.backgroundColor = .ows_blackAlpha80
 
-                let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           componentDelegate: componentDelegate)
                 wallpaperBlurView.layer.cornerRadius = 8
                 innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
-                componentView.wallpaperBlurView = wallpaperBlurView
             } else {
                 strokeView.backgroundColor = .ows_gray45
             }
@@ -174,6 +175,14 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = CVLabel()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -200,7 +209,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 innerStack.reset()
 
                 wallpaperBlurView?.removeFromSuperview()
-                wallpaperBlurView = nil
+                wallpaperBlurView?.resetContentAndConfiguration()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

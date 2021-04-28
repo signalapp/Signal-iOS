@@ -88,10 +88,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.wallpaperBlurView = nil
 
             if hasWallpaper {
-                let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           componentDelegate: componentDelegate)
                 wallpaperBlurView.layer.cornerRadius = 8
                 innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
-                componentView.wallpaperBlurView = wallpaperBlurView
             }
 
             innerStack.configure(config: innerStackConfig,
@@ -177,6 +178,14 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = CVLabel()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -204,7 +213,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                 titleLabel.removeFromSuperview()
 
                 wallpaperBlurView?.removeFromSuperview()
-                wallpaperBlurView = nil
+                wallpaperBlurView?.resetContentAndConfiguration()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

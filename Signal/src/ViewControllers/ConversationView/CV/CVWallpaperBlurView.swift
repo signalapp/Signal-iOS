@@ -50,16 +50,17 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     }
 
     public func configureForPreview() {
+        resetContentAndConfiguration()
+
         self.isPreview = true
-        imageView.isHidden = true
 
         updateIfNecessary()
     }
 
     public func configure(provider: WallpaperBlurProvider) {
+        resetContentAndConfiguration()
+
         self.isPreview = false
-        imageView.isHidden = false
-        self.backgroundColor = nil
         // TODO: Observe provider changes.
         self.provider = provider
 
@@ -69,11 +70,12 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     public func updateIfNecessary() {
         guard !isPreview else {
             self.backgroundColor = Theme.backgroundColor
+            imageView.isHidden = true
             return
         }
         guard let provider = provider else {
             owsFailDebug("Missing provider.")
-            resetContent()
+            resetContentAndConfiguration()
             return
         }
         guard let state = provider.wallpaperBlurState else {
@@ -86,6 +88,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         }
         self.state = state
         imageView.image = state.image
+        imageView.isHidden = false
 
         ensurePositioning()
     }
@@ -109,10 +112,18 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     }
 
     private func resetContent() {
-        isPreview = false
+        backgroundColor = nil
         imageView.image = nil
+        imageView.isHidden = false
         imageViewFrame = .zero
         maskFrame = .zero
+        state = nil
+    }
+
+    public func resetContentAndConfiguration() {
+        isPreview = false
         provider = nil
+
+        resetContent()
     }
 }
