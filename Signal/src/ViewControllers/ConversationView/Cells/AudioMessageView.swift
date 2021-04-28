@@ -29,7 +29,10 @@ class AudioMessageView: ManualStackView {
 
     private let isIncoming: Bool
 
+    private let playedDotAnimation = AnimationView(name: "audio-played-dot")
+    private let playedDotContainer = OWSLayerView()
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
+    private let playPauseContainer = OWSLayerView()
     private let playbackTimeLabel = CVLabel()
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
@@ -96,6 +99,9 @@ class AudioMessageView: ManualStackView {
 
         let leftView: UIView
         if isDownloaded {
+            let playPauseAnimation = self.playPauseAnimation
+            let playedDotAnimation = self.playedDotAnimation
+
             // TODO: There is a bug with Lottie where animations lag when there are a lot
             // of other things happening on screen. Since this animation generally plays
             // when the progress bar / waveform is rendering we speed up the playback to
@@ -105,10 +111,43 @@ class AudioMessageView: ManualStackView {
             playPauseAnimation.backgroundBehavior = .forceFinish
             playPauseAnimation.contentMode = .scaleAspectFit
 
-            let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
-            playPauseAnimation.setValueProvider(ColorValueProvider(thumbColor.lottieColorValue), keypath: fillColorKeypath)
+            playedDotAnimation.animationSpeed = 3
+            playedDotAnimation.backgroundBehavior = .forceFinish
+            playedDotAnimation.contentMode = .scaleAspectFit
 
-            leftView = playPauseAnimation
+            let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
+            playPauseAnimation.setValueProvider(
+                ColorValueProvider(thumbColor.lottieColorValue),
+                keypath: fillColorKeypath
+            )
+            playedDotAnimation.setValueProvider(
+                ColorValueProvider(conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming).lottieColorValue),
+                keypath: fillColorKeypath
+            )
+
+            playPauseContainer.backgroundColor = isIncoming
+                ? (Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_whiteAlpha80)
+                : .ows_whiteAlpha20
+            playPauseContainer.addSubview(playPauseAnimation)
+            playPauseContainer.layoutCallback = { view in
+                view.layer.cornerRadius = view.height / 2
+                playPauseAnimation.frame.size = CGSize(square: 24)
+                playPauseAnimation.frame.origin = CGPoint(
+                    x: (view.width / 2) - (playPauseAnimation.width / 2),
+                    y: (view.height / 2) - (playPauseAnimation.height / 2)
+                )
+            }
+
+            playedDotContainer.addSubview(playedDotAnimation)
+            playedDotContainer.layoutCallback = { view in
+                playedDotAnimation.frame.size = CGSize(square: 16)
+                playedDotAnimation.frame.origin = CGPoint(
+                    x: (view.width / 2) - (playedDotAnimation.width / 2),
+                    y: (view.height / 2) - (playedDotAnimation.height / 2)
+                )
+            }
+
+            leftView = playPauseContainer
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                 style: .withoutCircle(diameter: Self.animationSize),
@@ -118,16 +157,42 @@ class AudioMessageView: ManualStackView {
             leftView = UIView.transparentContainer()
         }
 
-        let innerStack = ManualStackView(name: "playerStack")
-        innerStack.configure(config: Self.innerStackConfig,
+        let topInnerStack = ManualStackView(name: "playerStack")
+        topInnerStack.configure(config: Self.topInnerStackConfig,
                              cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_innerStack,
+                             measurementKey: Self.measurementKey_topInnerStack,
                              subviews: [
                                 leftView,
+                                .transparentSpacer(),
                                 waveformContainer,
-                                playbackTimeLabel
+                                .transparentSpacer()
                              ])
-        outerSubviews.append(innerStack)
+        outerSubviews.append(topInnerStack)
+
+        let bottomSubviews: [UIView]
+        if isIncoming {
+            bottomSubviews = [
+                .transparentSpacer(),
+                playedDotContainer,
+                playbackTimeLabel
+            ]
+        } else {
+            bottomSubviews = [
+                .transparentSpacer(),
+                playbackTimeLabel,
+                playedDotContainer,
+                .transparentSpacer()
+            ]
+        }
+
+        let bottomInnerStack = ManualStackView(name: "playbackLabelStack")
+        bottomInnerStack.configure(
+            config: Self.bottomInnerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_bottomInnerStack,
+            subviews: bottomSubviews
+        )
+        outerSubviews.append(bottomInnerStack)
 
         self.configure(config: Self.outerStackConfig,
                        cellMeasurement: cellMeasurement,
@@ -139,7 +204,8 @@ class AudioMessageView: ManualStackView {
         cvAudioPlayer.addListener(self)
     }
 
-    private static let measurementKey_innerStack = "CVComponentAudioAttachment.measurementKey_innerStack"
+    private static let measurementKey_topInnerStack = "CVComponentAudioAttachment.measurementKey_topInnerStack"
+    private static let measurementKey_bottomInnerStack = "CVComponentAudioAttachment.measurementKey_bottomInnerStack"
     private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
 
     public static func measure(maxWidth: CGFloat,
@@ -157,25 +223,54 @@ class AudioMessageView: ManualStackView {
             outerSubviewInfos.append(topLabelSize.asManualSubviewInfo)
         }
 
-        var innerSubviewInfos = [ManualStackSubviewInfo]()
+        var topInnerSubviewInfos = [ManualStackSubviewInfo]()
         let leftViewSize = CGSize(square: animationSize)
-        innerSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
+        topInnerSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
+
+        topInnerSubviewInfos.append(CGSize(width: 12, height: 0).asManualSubviewInfo(hasFixedWidth: true))
 
         let waveformSize = CGSize(width: 0, height: waveformHeight)
-        innerSubviewInfos.append(waveformSize.asManualSubviewInfo)
+        topInnerSubviewInfos.append(waveformSize.asManualSubviewInfo(hasFixedHeight: true))
+
+        topInnerSubviewInfos.append(CGSize(width: 6, height: 0).asManualSubviewInfo(hasFixedWidth: true))
+
+        let topInnerStackMeasurement = ManualStackView.measure(config: topInnerStackConfig,
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_topInnerStack,
+                                                            subviewInfos: topInnerSubviewInfos)
+        let topInnerStackSize = topInnerStackMeasurement.measuredSize
+        outerSubviewInfos.append(topInnerStackSize.ceil.asManualSubviewInfo)
+
+        let dotSize = CGSize(square: 6)
 
         let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(audioAttachment: audioAttachment,
                                                                              isIncoming: isIncoming,
                                                                              conversationStyle: conversationStyle)
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
-        innerSubviewInfos.append(playbackTimeLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
+        let bottomInnerSubviewInfos: [ManualStackSubviewInfo]
+        if isIncoming {
+            bottomInnerSubviewInfos = [
+                .empty,
+                dotSize.asManualSubviewInfo(hasFixedSize: true),
+                playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true)
+            ]
+        } else {
+            let leadingInset = CGSize(width: 44, height: 0)
+            bottomInnerSubviewInfos = [
+                leadingInset.asManualSubviewInfo(hasFixedWidth: true),
+                playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
+                dotSize.asManualSubviewInfo(hasFixedSize: true),
+                .empty
+            ]
+        }
+
+        let bottomInnerStackMeasurement = ManualStackView.measure(config: bottomInnerStackConfig,
                                                             measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerStack,
-                                                            subviewInfos: innerSubviewInfos)
-        let innerStackSize = innerStackMeasurement.measuredSize
-        outerSubviewInfos.append(innerStackSize.ceil.asManualSubviewInfo)
+                                                            measurementKey: Self.measurementKey_bottomInnerStack,
+                                                            subviewInfos: bottomInnerSubviewInfos)
+        let bottomInnerStackSize = bottomInnerStackMeasurement.measuredSize
+        outerSubviewInfos.append(bottomInnerStackSize.ceil.asManualSubviewInfo)
 
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
@@ -196,11 +291,18 @@ class AudioMessageView: ManualStackView {
                           layoutMargins: .zero)
     }
 
-    private static var innerStackConfig: CVStackViewConfig {
+    private static var topInnerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
-                          spacing: 12,
+                          spacing: 0,
                           layoutMargins: innerLayoutMargins)
+    }
+
+    private static var bottomInnerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 8,
+                          layoutMargins: .zero)
     }
 
     private static func topLabelConfig(audioAttachment: AudioAttachment,
@@ -290,18 +392,20 @@ class AudioMessageView: ManualStackView {
     // MARK: - Contents
 
     private static var labelFont: UIFont = .ows_dynamicTypeCaption2
-    private static var waveformHeight: CGFloat = 35
-    private static var animationSize: CGFloat = 28
-    private var iconSize: CGFloat = 24
+    private static var waveformHeight: CGFloat = 32
+    private static var animationSize: CGFloat = 40
     private static var vSpacing: CGFloat = 2
     private static var innerLayoutMargins: UIEdgeInsets {
         UIEdgeInsets(hMargin: 0, vMargin: 4)
     }
 
-    private lazy var playedColor: UIColor = isIncoming ? .init(rgbHex: 0x92caff) : .ows_white
-    private lazy var unplayedColor: UIColor =
-        isIncoming ? Theme.secondaryTextAndIconColor.withAlphaComponent(0.3) : UIColor.ows_white.withAlphaComponent(0.6)
-    private lazy var thumbColor: UIColor = isIncoming ? Theme.secondaryTextAndIconColor : .ows_white
+    private lazy var playedColor: UIColor = isIncoming
+        ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
+        : .ows_white
+    private lazy var unplayedColor: UIColor = isIncoming
+        ? (Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25)
+        : .ows_whiteAlpha40
+    private lazy var thumbColor = playedColor
 
     // If set, the playback should reflect
     // this progress, not the actual progress.
@@ -338,8 +442,10 @@ class AudioMessageView: ManualStackView {
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
 
         if animated {
+            if isPlaying { playedDotAnimation.play(toProgress: 1) }
             playPauseAnimation.play(toProgress: destination)
         } else {
+            if isPlaying { playedDotAnimation.currentProgress = 1 }
             playPauseAnimation.currentProgress = destination
         }
     }

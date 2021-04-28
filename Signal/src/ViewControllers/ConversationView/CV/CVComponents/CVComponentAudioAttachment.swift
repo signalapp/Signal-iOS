@@ -11,9 +11,11 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
+    private let footerOverlay: CVComponent?
 
-    init(itemModel: CVItemModel, audioAttachment: AudioAttachment) {
+    init(itemModel: CVItemModel, audioAttachment: AudioAttachment, footerOverlay: CVComponent?) {
         self.audioAttachment = audioAttachment
+        self.footerOverlay = footerOverlay
 
         super.init(itemModel: itemModel)
     }
@@ -32,6 +34,28 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         let stackView = componentView.stackView
+        let conversationStyle = self.conversationStyle
+
+        if let footerOverlay = self.footerOverlay {
+            let footerView: CVComponentView
+            if let footerOverlayView = componentView.footerOverlayView {
+                footerView = footerOverlayView
+            } else {
+                let footerOverlayView = CVComponentFooter.CVComponentViewFooter()
+                componentView.footerOverlayView = footerOverlayView
+                footerView = footerOverlayView
+            }
+            footerOverlay.configureForRendering(componentView: footerView,
+                                                cellMeasurement: cellMeasurement,
+                                                componentDelegate: componentDelegate)
+            let footerRootView = footerView.rootView
+            stackView.addSubview(footerRootView)
+            let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
+            stackView.addLayoutBlock { view in
+                footerRootView.frame.height = min(view.bounds.height, footerSize.height)
+                footerRootView.frame.y = view.bounds.height - footerRootView.height
+            }
+        }
 
         owsAssertDebug(attachment.isAudio)
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
@@ -54,9 +78,19 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     }
 
     private static let measurementKey_stackView = "CVComponentAudioAttachment.measurementKey_stackView"
+    private static let measurementKey_footerSize = "CVComponentAudioAttachment.measurementKey_footerSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
+
+        let maxWidth = min(maxWidth, conversationStyle.maxAudioMessageWidth)
+
+        if let footerOverlay = self.footerOverlay {
+            let maxFooterWidth = max(0, maxWidth - conversationStyle.textInsets.totalWidth)
+            let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
+                                                   measurementBuilder: measurementBuilder)
+            measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
+        }
 
         let audioSize = AudioMessageView.measure(maxWidth: maxWidth,
                                                  audioAttachment: audioAttachment,
@@ -183,6 +217,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         fileprivate var audioMessageView: AudioMessageView?
 
+        fileprivate var footerOverlayView: CVComponentView?
+
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
@@ -196,6 +232,9 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
             audioMessageView?.removeFromSuperview()
             audioMessageView = nil
+
+            footerOverlayView?.reset()
+            footerOverlayView = nil
         }
     }
 }

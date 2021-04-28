@@ -28,7 +28,7 @@ class AudioWaveformProgressView: UIView {
     @objc
     var thumbColor: UIColor = Theme.primaryTextColor {
         didSet {
-            thumbImageView.tintColor = thumbColor
+            thumbView.backgroundColor = thumbColor
         }
     }
 
@@ -69,10 +69,7 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    private let thumbImageView = CVImageView(
-        image: UIImage(named: "audio_message_thumb")?.withRenderingMode(.alwaysTemplate)
-    )
-    private let thumbImageSize = CGSize.square(12)
+    private let thumbView = UIView()
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
     private let loadingAnimation = AnimationView(name: "waveformLoading")
@@ -87,8 +84,7 @@ class AudioWaveformProgressView: UIView {
         unplayedShapeLayer.fillColor = unplayedColor.cgColor
         layer.addSublayer(unplayedShapeLayer)
 
-        thumbImageView.tintColor = thumbColor
-        addSubview(thumbImageView)
+        addSubview(thumbView)
 
         loadingAnimation.contentMode = .scaleAspectFit
         loadingAnimation.loopMode = .loop
@@ -112,7 +108,7 @@ class AudioWaveformProgressView: UIView {
         func resetContents(showLoadingAnimation: Bool) {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
-            thumbImageView.isHidden = true
+            thumbView.isHidden = true
             if showLoadingAnimation {
                 loadingAnimation.isHidden = false
                 loadingAnimation.play()
@@ -126,7 +122,7 @@ class AudioWaveformProgressView: UIView {
 
         loadingAnimation.stop()
         loadingAnimation.isHidden = true
-        thumbImageView.isHidden = false
+        thumbView.isHidden = false
 
         guard width > 0 else {
             return
@@ -168,10 +164,9 @@ class AudioWaveformProgressView: UIView {
         var thumbXPos = width * progress
         if CurrentAppContext().isRTL { thumbXPos = width - thumbXPos }
 
-        var thumbImageViewFrame = CGRect(origin: .zero, size: thumbImageSize)
-        let thumbImageCenter = CGPoint(x: thumbXPos, y: layer.frame.center.y)
-        thumbImageViewFrame.origin = thumbImageCenter - (thumbImageSize.asPoint * 0.5)
-        thumbImageView.frame = thumbImageViewFrame
+        thumbView.frame.size = CGSize(width: sampleWidth, height: height)
+        thumbView.layer.cornerRadius = sampleWidth / 2
+        thumbView.frame.origin.x = thumbXPos
 
         defer {
             playedShapeLayer.path = playedBezierPath.cgPath
