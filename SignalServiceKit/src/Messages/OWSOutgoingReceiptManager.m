@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 + (SDSKeyValueStore *)readReceiptStore
 {
-    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingreceiptManagerCollection"];
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingReadReceiptManagerCollection"];
 }
 
 + (SDSKeyValueStore *)viewedReceiptStore

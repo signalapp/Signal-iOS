@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
-             pendingReadReceiptRecorder:(id<PendingReceiptRecorder>)pendingReadReceiptRecorder
+                 pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManagerRef;
 @property (nonatomic, readonly) MessageSender *messageSenderRef;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueueRef;
-@property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReadReceiptRecorderRef;
+@property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReceiptRecorderRef;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic, readonly) TSNetworkManager *networkManagerRef;
 @property (nonatomic, readonly) OWSMessageManager *messageManagerRef;

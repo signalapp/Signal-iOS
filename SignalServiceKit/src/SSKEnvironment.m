@@ -66,7 +66,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
-             pendingReadReceiptRecorder:(id<PendingReceiptRecorder>)pendingReadReceiptRecorder
+                 pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -119,7 +119,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _linkPreviewManagerRef = linkPreviewManager;
     _messageSenderRef = messageSender;
     _messageSenderJobQueueRef = messageSenderJobQueue;
-    _pendingReadReceiptRecorderRef = pendingReadReceiptRecorder;
+    _pendingReceiptRecorderRef = pendingReceiptRecorder;
     _profileManagerRef = profileManager;
     _networkManagerRef = networkManager;
     _messageManagerRef = messageManager;

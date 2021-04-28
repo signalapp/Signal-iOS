@@ -410,12 +410,12 @@ public extension NSObject {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
-    final var pendingReadReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    final var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
-    static var pendingReadReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    static var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
     final var outageDetection: OutageDetection {
@@ -851,12 +851,12 @@ public extension Dependencies {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
-    var pendingReadReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
-    static var pendingReadReceiptRecorder: PendingReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    static var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
     var outageDetection: OutageDetection {

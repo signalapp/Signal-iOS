@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
                     messageSenderJobQueue:messageSenderJobQueue
-               pendingReadReceiptRecorder:[NoopPendingReceiptRecorder new]
+                   pendingReceiptRecorder:[NoopPendingReceiptRecorder new]
                            profileManager:[OWSFakeProfileManager new]
                            networkManager:networkManager
                            messageManager:messageManager

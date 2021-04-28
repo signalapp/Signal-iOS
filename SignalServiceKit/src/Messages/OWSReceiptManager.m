@@ -189,9 +189,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             return;
         case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
             if ([self areReadReceiptsEnabled]) {
-                [self.pendingReadReceiptRecorder recordPendingReadReceiptForMessage:message
-                                                                             thread:thread
-                                                                        transaction:transaction.unwrapGrdbWrite];
+                [self.pendingReceiptRecorder recordPendingReadReceiptForMessage:message
+                                                                         thread:thread
+                                                                    transaction:transaction.unwrapGrdbWrite];
             }
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
@@ -214,9 +214,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
             [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
             if ([self areReadReceiptsEnabled]) {
-                [self.pendingReadReceiptRecorder recordPendingReadReceiptForMessage:message
-                                                                             thread:thread
-                                                                        transaction:transaction.unwrapGrdbWrite];
+                [self.pendingReceiptRecorder recordPendingReadReceiptForMessage:message
+                                                                         thread:thread
+                                                                    transaction:transaction.unwrapGrdbWrite];
             }
             break;
     }
@@ -233,9 +233,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             return;
         case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
             if ([self areReadReceiptsEnabled]) {
-                [self.pendingReadReceiptRecorder recordPendingViewedReceiptForMessage:message
-                                                                               thread:thread
-                                                                          transaction:transaction.unwrapGrdbWrite];
+                [self.pendingReceiptRecorder recordPendingViewedReceiptForMessage:message
+                                                                           thread:thread
+                                                                      transaction:transaction.unwrapGrdbWrite];
             }
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
@@ -258,9 +258,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
             [self enqueueLinkedDeviceViewedReceiptForMessage:message transaction:transaction];
             if ([self areReadReceiptsEnabled]) {
-                [self.pendingReadReceiptRecorder recordPendingViewedReceiptForMessage:message
-                                                                               thread:thread
-                                                                          transaction:transaction.unwrapGrdbWrite];
+                [self.pendingReceiptRecorder recordPendingViewedReceiptForMessage:message
+                                                                           thread:thread
+                                                                      transaction:transaction.unwrapGrdbWrite];
             }
             break;
     }

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage ()
 
 @property (nonatomic, getter=wasRead) BOOL read;
-@property (nonatomic, getter=wasviewed) BOOL viewed;
+@property (nonatomic, getter=wasViewed) BOOL viewed;
 
 @property (nonatomic, nullable) NSNumber *serverTimestamp;
 @property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;

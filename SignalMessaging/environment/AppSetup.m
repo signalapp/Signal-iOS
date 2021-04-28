@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         MessageSender *messageSender = [MessageSender new];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-        id<PendingReceiptRecorder> pendingReadReceiptRecorder = [MessageRequestPendingReceipts new];
+        id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [OWSBlockingManager new];
@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender
                                                             messageSenderJobQueue:messageSenderJobQueue
-                                                       pendingReadReceiptRecorder:pendingReadReceiptRecorder
+                                                           pendingReceiptRecorder:pendingReceiptRecorder
                                                                    profileManager:profileManager
                                                                    networkManager:networkManager
                                                                    messageManager:messageManager
