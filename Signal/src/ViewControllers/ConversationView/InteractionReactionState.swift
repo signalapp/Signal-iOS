@@ -9,8 +9,14 @@ public class InteractionReactionState: NSObject {
     @objc
     var hasReactions: Bool { return !emojiCounts.isEmpty }
 
+    struct EmojiCount {
+        let emoji: String
+        let count: Int
+        let firstReceivedAtTimestamp: UInt64
+    }
+
     let reactionsByEmoji: [Emoji: [OWSReaction]]
-    let emojiCounts: [(emoji: String, count: Int)]
+    let emojiCounts: [EmojiCount]
     let localUserEmoji: String?
 
     @objc
@@ -40,10 +46,11 @@ public class InteractionReactionState: NSObject {
         }
 
         emojiCounts = reactionsByEmoji.values.compactMap { reactions in
-            guard let mostRecentEmoji = reactions.first?.emoji else {
+            guard let mostRecentReaction = reactions.first else {
                 owsFailDebug("unexpectedly missing reactions")
                 return nil
             }
+            let mostRecentEmoji = mostRecentReaction.emoji
 
             // We show your own skintone (if you’ve reacted), or the most
             // recent skintone (if you haven’t reacted).
@@ -54,8 +61,24 @@ public class InteractionReactionState: NSObject {
                 emojiToRender = mostRecentEmoji
             }
 
-            return (emoji: emojiToRender, count: reactions.count)
-        }.sorted { $0.count > $1.count }
+            let firstReceivedAtTimestamp = (reactions.map { $0.receivedAtTimestamp }.min()
+                                                ?? mostRecentReaction.receivedAtTimestamp)
+
+            return EmojiCount(emoji: emojiToRender,
+                              count: reactions.count,
+                              firstReceivedAtTimestamp: firstReceivedAtTimestamp)
+        }.sorted { (left: EmojiCount, right: EmojiCount) in
+            if left.count != right.count {
+                // Sort more common reactions (higher counter) first.
+                return left.count > right.count
+            } else if left.firstReceivedAtTimestamp != right.firstReceivedAtTimestamp {
+                // Sort reactions received first (lower first receivedAtTimestamp) first.
+                return left.firstReceivedAtTimestamp < right.firstReceivedAtTimestamp
+            } else {
+                // Ensure stability of sort by comparing emoji.
+                return left.emoji > right.emoji
+            }
+        }
 
         localUserEmoji = localUserReaction?.emoji
     }

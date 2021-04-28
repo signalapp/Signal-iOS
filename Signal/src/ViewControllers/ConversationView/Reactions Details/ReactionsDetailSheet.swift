@@ -17,8 +17,8 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     override var interactiveScrollViews: [UIScrollView] { emojiReactorsViews }
 
-    private var emojiCounts: [(emoji: String, count: Int)] {
-        return reactionState.emojiCounts
+    private var emojiCounts: [InteractionReactionState.EmojiCount] {
+        reactionState.emojiCounts
     }
 
     private var allEmoji: [Emoji] {
@@ -96,9 +96,10 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
             self?.setSelectedEmoji(nil)
         }
 
-        emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { (emoji, count) in
-            EmojiItem(emoji: emoji, count: count) { [weak self] in
-                self?.setSelectedEmoji(Emoji(emoji))
+        emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { (emojiCount) in
+            EmojiItem(emoji: emojiCount.emoji,
+                      count: emojiCount.count) { [weak self] in
+                self?.setSelectedEmoji(Emoji(emojiCount.emoji))
             }
         }
     }
