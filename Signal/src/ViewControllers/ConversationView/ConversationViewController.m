@@ -2921,7 +2921,7 @@ typedef enum : NSUInteger {
             addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
 
         __block TSOutgoingMessage *message;
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithBody:messageBody
                                         mediaAttachments:attachments
                                                   thread:self.thread
@@ -3442,7 +3442,7 @@ typedef enum : NSUInteger {
         addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithBody:messageBody
                                               thread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply
@@ -3925,9 +3925,13 @@ typedef enum : NSUInteger {
             return;
         }
 
+        BOOL didAddToProfileWhitelist = [ThreadUtil
+            addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:strongSelf
+                                                                                                          .thread];
+
         __block TSOutgoingMessage *message;
 
-        [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             message = [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:location.messageText
                                                                                     ranges:MessageBodyRanges.empty]
                                         mediaAttachments:@[ attachment ]
@@ -3938,6 +3942,10 @@ typedef enum : NSUInteger {
         }];
 
         [strongSelf messageWasSent:message];
+
+        if (didAddToProfileWhitelist) {
+            [strongSelf ensureBannerState];
+        }
     });
 }
 
