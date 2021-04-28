@@ -331,7 +331,9 @@ public final class OpenGroupAPIV2 : NSObject {
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "deleted_messages", queryParameters: queryParameters)
         return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Int64]> in
-            guard let serverIDs = json["ids"] as? [Int64] else { throw Error.parsingFailed }
+            guard let deletions = json["ids"] as? [JSON] else { throw Error.parsingFailed }
+            let deletedMessageIDs = deletions.compactMap { $0["deleted_message_id"] as? Int64 }
+            let serverIDs = deletions.compactMap { $0["id"] as? Int64 }
             let serverID = serverIDs.max() ?? 0
             let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) ?? 0
             if serverID > lastDeletionServerID {
@@ -339,11 +341,11 @@ public final class OpenGroupAPIV2 : NSObject {
                 storage.write(with: { transaction in
                     storage.setLastDeletionServerID(for: room, on: server, to: serverID, using: transaction)
                 }, completion: {
-                    seal.fulfill(serverIDs)
+                    seal.fulfill(deletedMessageIDs)
                 })
                 return promise
             } else {
-                return Promise.value(serverIDs)
+                return Promise.value(deletedMessageIDs)
             }
         }
     }
