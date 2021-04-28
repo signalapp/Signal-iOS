@@ -44,15 +44,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         CVComponentViewThreadDetails()
     }
 
-    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                            componentView: CVComponentView) {
-        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+    public override func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
+                                             componentView: CVComponentView) {
+        super.updateWallpaperBlur(delegate: delegate,
+                                  componentView: componentView)
 
         guard let componentView = componentView as? CVComponentViewThreadDetails else {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+        componentView.wallpaperBlurView?.configure(delegate: delegate)
     }
 
     public func configureForRendering(componentView componentViewParam: CVComponentView,
@@ -117,8 +118,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
-            innerStackView.layer.cornerRadius = 12
-            componentView.blurView = innerStackView
+            let wallpaperBlurView = CVWallpaperBlurView()
+            wallpaperBlurView.layer.cornerRadius = 12
+            innerStackView.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+            componentView.wallpaperBlurView = wallpaperBlurView
         }
 
         let titleLabel = componentView.titleLabel
@@ -514,7 +517,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
         fileprivate let innerStackView = ManualStackView(name: "Thread details inner")
 
-        fileprivate var blurView: UIView?
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
 
         public var isDedicatedCellView = false
 
@@ -536,8 +539,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             mutualGroupsLabel.text = nil
             avatarView = nil
 
-            blurView?.removeFromSuperview()
-            blurView = nil
+            wallpaperBlurView?.removeFromSuperview()
+            wallpaperBlurView = nil
         }
     }
 }

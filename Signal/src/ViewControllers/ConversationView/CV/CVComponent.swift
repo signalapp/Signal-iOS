@@ -55,9 +55,6 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
-
-    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                            componentView: CVComponentView)
 }
 
 // MARK: -
@@ -77,9 +74,8 @@ public protocol CVRootComponent: CVComponent {
 
     var isDedicatedCell: Bool { get }
 
-    func willSnapshotForMessageActions(componentView: CVComponentView)
-
-    func didSnapshotForMessageActions(componentView: CVComponentView)
+    func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
+                             componentView: CVComponentView)
 }
 
 // MARK: -
@@ -161,14 +157,6 @@ public class CVComponentBase: NSObject {
         itemModel.itemViewState.isShowingSelectionUI
     }
 
-    public func willSnapshotForMessageActions(componentView: CVComponentView) {
-        // Do nothing.
-    }
-
-    public func didSnapshotForMessageActions(componentView: CVComponentView) {
-        // Do nothing.
-    }
-
     // MARK: - Root Components
 
     public static func configureCellRootComponent(rootComponent: CVRootComponent,
@@ -194,8 +182,8 @@ public class CVComponentBase: NSObject {
 
     // MARK: - 
 
-    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                   componentView: CVComponentView) {
+    public func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
+                                    componentView: CVComponentView) {
         // Do nothing.
     }
 }

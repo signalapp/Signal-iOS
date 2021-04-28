@@ -174,24 +174,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
                                                        renderItem: renderItem,
                                                        messageSwipeActionState: messageSwipeActionState)
     }
-
-    public func willSnapshotForMessageActions() {
-        guard let rootComponent = rootComponent,
-              let componentView = componentView else {
-            owsFailDebug("Missing component.")
-            return
-        }
-        rootComponent.willSnapshotForMessageActions(componentView: componentView)
-    }
-
-    public func didSnapshotForMessageActions() {
-        guard let rootComponent = rootComponent,
-              let componentView = componentView else {
-            owsFailDebug("Missing component.")
-            return
-        }
-        rootComponent.didSnapshotForMessageActions(componentView: componentView)
-    }
 }
 
 // MARK: -
@@ -401,12 +383,12 @@ public extension CVRootComponentHost {
                                               componentView: componentView)
     }
 
-    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
+    func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate) {
         guard let rootComponent = rootComponent,
               let componentView = componentView else {
             owsFailDebug("Missing component.")
             return
         }
-        rootComponent.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+        rootComponent.updateWallpaperBlur(delegate: delegate, componentView: componentView)
     }
 }

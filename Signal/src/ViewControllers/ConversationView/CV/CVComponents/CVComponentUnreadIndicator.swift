@@ -34,15 +34,16 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         CVComponentViewUnreadIndicator()
     }
 
-    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                            componentView: CVComponentView) {
-        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
+    public override func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
+                                             componentView: CVComponentView) {
+        super.updateWallpaperBlur(delegate: delegate,
+                                  componentView: componentView)
 
         guard let componentView = componentView as? CVComponentViewUnreadIndicator else {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+        componentView.wallpaperBlurView?.configure(delegate: delegate)
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -79,8 +80,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         } else {
             outerStack.reset()
             titleLabel.removeFromSuperview()
-            componentView.blurView?.removeFromSuperview()
-            componentView.blurView = nil
+            componentView.wallpaperBlurView?.removeFromSuperview()
+            componentView.wallpaperBlurView = nil
 
             innerStack.reset()
             innerStack.configure(config: innerStackConfig,
@@ -91,9 +92,10 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 strokeView.backgroundColor = .ows_blackAlpha80
 
-                let blurView = innerStack
-                blurView.layer.cornerRadius = 8
-                componentView.blurView = blurView
+                let wallpaperBlurView = CVWallpaperBlurView()
+                wallpaperBlurView.layer.cornerRadius = 8
+                innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+                componentView.wallpaperBlurView = wallpaperBlurView
             } else {
                 strokeView.backgroundColor = .ows_gray45
             }
@@ -175,7 +177,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
         fileprivate let titleLabel = CVLabel()
 
-        fileprivate var blurView: UIView?
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -201,8 +203,8 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 outerStack.reset()
                 innerStack.reset()
 
-                blurView?.removeFromSuperview()
-                blurView = nil
+                wallpaperBlurView?.removeFromSuperview()
+                wallpaperBlurView = nil
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false
