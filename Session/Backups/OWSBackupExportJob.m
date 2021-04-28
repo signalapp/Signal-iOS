@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 // See comments in `OWSBackupIO`.
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init;
 
 @end
 

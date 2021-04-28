@@ -126,7 +126,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             return failureHandler(error)
         }
         let plaintext: Data
-        if let key = pointer.encryptionKey, let digest = pointer.digest {
+        if let key = pointer.encryptionKey, let digest = pointer.digest, key.count > 0 && digest.count > 0 {
             do {
                 plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
             } catch {
