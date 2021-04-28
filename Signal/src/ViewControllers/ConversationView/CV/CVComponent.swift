@@ -74,7 +74,7 @@ public protocol CVRootComponent: CVComponent {
 
     var isDedicatedCell: Bool { get }
 
-    func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
+    func updateWallpaperBlur(provider: WallpaperBlurProvider,
                              componentView: CVComponentView)
 }
 
@@ -182,9 +182,16 @@ public class CVComponentBase: NSObject {
 
     // MARK: - 
 
-    public func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
-                                    componentView: CVComponentView) {
-        // Do nothing.
+    public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+        nil
+    }
+
+    public final func updateWallpaperBlur(provider: WallpaperBlurProvider,
+                                          componentView: CVComponentView) {
+        guard let wallpaperBlurView = self.wallpaperBlurView(componentView: componentView) else {
+            return
+        }
+        wallpaperBlurView.configure(provider: provider)
     }
 }
 

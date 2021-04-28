@@ -432,16 +432,8 @@ public class WallpaperView {
     }
 
     private func addBlurProvider(contentView: UIView) {
-        self.blurProvider = WallpaperBlurProvider(contentView: contentView)
+        self.blurProvider = WallpaperBlurProviderImpl(contentView: contentView)
     }
-
-//    public func updateBlurContentAndMask(isAnimating: Bool = false) {
-//        _blurView?.updateContentAndMask(isAnimating: isAnimating)
-//    }
-//
-//    public func updateBlurMask(isAnimating: Bool = false) {
-//        _blurView?.updateMask(isAnimating: isAnimating)
-//    }
 }
 
 // MARK: -
@@ -472,10 +464,16 @@ public class WallpaperBlurState {
 
 // MARK: -
 
-public class WallpaperBlurProvider {
+public protocol WallpaperBlurProvider: class {
+    var wallpaperBlurState: WallpaperBlurState? { get }
+}
+
+// MARK: -
+
+public class WallpaperBlurProviderImpl: WallpaperBlurProvider {
     private let contentView: UIView
 
-    private var state: WallpaperBlurState?
+    private var cachedState: WallpaperBlurState?
 
     init(contentView: UIView) {
         self.contentView = contentView
@@ -487,10 +485,10 @@ public class WallpaperBlurProvider {
     }
 
     public func reset() {
-        self.state = nil
+        self.cachedState = nil
     }
 
-    public func getState() -> WallpaperBlurState? {
+    public var wallpaperBlurState: WallpaperBlurState? {
         AssertIsOnMainThread()
 
         // De-bounce.
@@ -498,9 +496,9 @@ public class WallpaperBlurProvider {
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let newToken = WallpaperBlurToken(contentSize: bounds.size,
                                           isDarkThemeEnabled: isDarkThemeEnabled)
-        if let state = self.state,
-           state.token == newToken {
-            return state
+        if let cachedState = self.cachedState,
+           cachedState.token == newToken {
+            return cachedState
         }
 
         reset()
@@ -533,7 +531,7 @@ public class WallpaperBlurProvider {
             let state = WallpaperBlurState(image: blurredImage,
                                            referenceView: contentView,
                                            token: newToken)
-            self.state = state
+            self.cachedState = state
             return state
         } catch {
             owsFailDebug("Error: \(error).")

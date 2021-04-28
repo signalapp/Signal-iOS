@@ -67,16 +67,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                  layoutMargins: .zero)
     }
 
-    public override func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
-                                             componentView: CVComponentView) {
-        super.updateWallpaperBlur(delegate: delegate,
-                                  componentView: componentView)
-
+    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewSystemMessage else {
             owsFailDebug("Unexpected componentView.")
-            return
+            return nil
         }
-        componentView.wallpaperBlurView?.configure(delegate: delegate)
+        return componentView.wallpaperBlurView
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {

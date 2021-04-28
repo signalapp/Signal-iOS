@@ -198,7 +198,7 @@ class MockConversationView: UIView {
 // MARK: -
 
 // extension MockConversationView: WallpaperMaskDataSource {
-//    func updateWallpaperBlur(_ delegate: CVWallpaperBlurDelegate) {
+//    func updateWallpaperBlur(_ provider: WallpaperBlurProvider) {
 //        outgoingMessageView.buildWallpaperMask(delegate)
 //        incomingMessageView.buildWallpaperMask(delegate)
 //        dateHeaderView.buildWallpaperMask(delegate)

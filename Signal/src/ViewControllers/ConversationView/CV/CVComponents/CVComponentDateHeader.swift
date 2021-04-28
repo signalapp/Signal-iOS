@@ -41,16 +41,12 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         CVComponentViewDateHeader()
     }
 
-    public override func updateWallpaperBlur(delegate: CVWallpaperBlurDelegate,
-                                             componentView: CVComponentView) {
-        super.updateWallpaperBlur(delegate: delegate,
-                                  componentView: componentView)
-
+    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewDateHeader else {
             owsFailDebug("Unexpected componentView.")
-            return
+            return nil
         }
-        componentView.wallpaperBlurView?.configure(delegate: delegate)
+        return componentView.wallpaperBlurView
     }
 
     public func configureForRendering(componentView: CVComponentView,

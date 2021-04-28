@@ -99,7 +99,7 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
 fileprivate extension CVBackgroundContainer {
 
-//    func updateWallpaperBlur(_ delegate: CVWallpaperBlurDelegate) {
+//    func updateWallpaperBlur(_ provider: WallpaperBlurProvider) {
 //        AssertIsOnMainThread()
 //
 //        updateCellWallpaperBlur()
@@ -154,13 +154,9 @@ fileprivate extension CVBackgroundContainer {
 
 // MARK: -
 
-extension CVBackgroundContainer: CVWallpaperBlurDelegate {
+extension CVBackgroundContainer: WallpaperBlurProvider {
     public var wallpaperBlurState: WallpaperBlurState? {
-        wallpaperView?.blurProvider?.getState()
-    }
-
-    public var isAnimating: Bool {
-        shouldHaveUpdateScrollingContentTimer.get() > 0
+        wallpaperView?.blurProvider?.wallpaperBlurState
     }
 }
 
@@ -186,7 +182,7 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
                 owsFailDebug("Invalid cell.")
                 continue
             }
-            cell.updateWallpaperBlur(delegate: backgroundContainer)
+            cell.updateWallpaperBlur(provider: backgroundContainer)
         }
     }
 

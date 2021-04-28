@@ -4,17 +4,10 @@
 
 import Foundation
 
-public protocol CVWallpaperBlurDelegate: class {
-    var wallpaperBlurState: WallpaperBlurState? { get }
-    var isAnimating: Bool { get }
-}
-
-// MARK: -
-
 @objc
 public class CVWallpaperBlurView: ManualLayoutView {
 
-    private weak var delegate: CVWallpaperBlurDelegate?
+    private weak var provider: WallpaperBlurProvider?
 
     private let imageView = CVImageView()
 //    private let imageLayer = CALayer()
@@ -72,20 +65,20 @@ public class CVWallpaperBlurView: ManualLayoutView {
         owsFail("Do not use this initializer.")
     }
 
-    public func configure(delegate: CVWallpaperBlurDelegate) {
+    public func configure(provider: WallpaperBlurProvider) {
         // TODO: Observe provider changes.
-        self.delegate = delegate
+        self.provider = provider
 
         configure()
     }
 
     private func configure() {
-        guard let delegate = delegate else {
-            owsFailDebug("Missing delegate.")
+        guard let provider = provider else {
+            owsFailDebug("Missing provider.")
             resetContent()
             return
         }
-        guard let state = delegate.wallpaperBlurState else {
+        guard let state = provider.wallpaperBlurState else {
             resetContent()
             return
         }
@@ -148,6 +141,6 @@ public class CVWallpaperBlurView: ManualLayoutView {
 //        imageLayer.contents = nil
         imageViewFrame = .zero
         maskFrame = .zero
-        delegate = nil
+        provider = nil
     }
 }
