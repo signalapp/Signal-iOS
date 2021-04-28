@@ -90,8 +90,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 let wallpaperBlurView = componentView.ensureWallpaperBlurView()
                 configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           maskCornerRadius: 8,
                                            componentDelegate: componentDelegate)
-                wallpaperBlurView.layer.cornerRadius = 8
                 innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
             }
 

@@ -15,11 +15,13 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     private let maskLayer = CAShapeLayer()
 
     private var state: WallpaperBlurState?
+    private var maskCornerRadius: CGFloat = 0
 
     required init() {
         super.init(name: "CVWallpaperBlurView")
 
         self.clipsToBounds = true
+        self.layer.zPosition = -1
 
         imageView.contentMode = .scaleAspectFill
         imageView.layer.mask = maskLayer
@@ -38,7 +40,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
 
         imageView.frame = imageViewFrame
         maskLayer.frame = imageView.bounds
-        let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: layer.cornerRadius)
+        let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: maskCornerRadius)
         maskLayer.path = maskPath.cgPath
 
         CATransaction.commit()
@@ -49,20 +51,23 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         owsFail("Do not use this initializer.")
     }
 
-    public func configureForPreview() {
+    public func configureForPreview(maskCornerRadius: CGFloat) {
         resetContentAndConfiguration()
 
         self.isPreview = true
+        self.maskCornerRadius = maskCornerRadius
 
         updateIfNecessary()
     }
 
-    public func configure(provider: WallpaperBlurProvider) {
+    public func configure(provider: WallpaperBlurProvider,
+                          maskCornerRadius: CGFloat) {
         resetContentAndConfiguration()
 
         self.isPreview = false
         // TODO: Observe provider changes.
         self.provider = provider
+        self.maskCornerRadius = maskCornerRadius
 
         updateIfNecessary()
     }
@@ -123,6 +128,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     public func resetContentAndConfiguration() {
         isPreview = false
         provider = nil
+        maskCornerRadius = 0
 
         resetContent()
     }

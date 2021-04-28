@@ -186,14 +186,16 @@ public class CVComponentBase: NSObject {
     }
 
     public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
+                                           maskCornerRadius: CGFloat,
                                            componentDelegate: CVComponentDelegate) {
         if componentDelegate.isConversationPreview {
-            wallpaperBlurView.configureForPreview()
+            wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
         } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
-            wallpaperBlurView.configure(provider: wallpaperBlurProvider)
+            wallpaperBlurView.configure(provider: wallpaperBlurProvider,
+                                        maskCornerRadius: maskCornerRadius)
         } else {
             owsFailDebug("Missing wallpaperBlurProvider.")
-            wallpaperBlurView.configureForPreview()
+            wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
         }
     }
 
