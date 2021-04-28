@@ -107,7 +107,7 @@ public class OWSMediaUtils: NSObject {
         return isValidVideo(asset: asset)
     }
 
-    private class func isVideoOfValidContentTypeAndSize(path: String) -> Bool {
+    public class func isVideoOfValidContentTypeAndSize(path: String) -> Bool {
         guard FileManager.default.fileExists(atPath: path) else {
             Logger.error("Media file missing.")
             return false
@@ -129,7 +129,7 @@ public class OWSMediaUtils: NSObject {
         return fileSize.uintValue <= kMaxFileSizeVideo
     }
 
-    private class func isValidVideo(asset: AVURLAsset) -> Bool {
+    public class func isValidVideo(asset: AVAsset) -> Bool {
         var maxTrackSize = CGSize.zero
         for track: AVAssetTrack in asset.tracks(withMediaType: .video) {
             let trackSize: CGSize = track.naturalSize

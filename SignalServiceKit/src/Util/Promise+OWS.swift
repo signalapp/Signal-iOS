@@ -142,6 +142,11 @@ public func firstly<T>(on dispatchQueue: DispatchQueue,
     return dispatchQueue.async(.promise, execute: body)
 }
 
+public func firstly<T>(on dispatchQueue: DispatchQueue,
+                       execute body: @escaping () -> T) -> Guarantee<T> {
+    return dispatchQueue.async(.promise, execute: body)
+}
+
 // MARK: -
 
 public class Promises {

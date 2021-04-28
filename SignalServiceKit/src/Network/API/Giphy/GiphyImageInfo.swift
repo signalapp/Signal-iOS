@@ -60,22 +60,8 @@ public class GiphyImageInfo: NSObject {
 extension GiphyImageInfo {
 
     public var isValidImage: Bool {
-        [anyOriginalAsset, stillPreviewAsset, animatedPreviewAsset, fullSizeAsset]
+        [anyOriginalAsset, animatedPreviewAsset, fullSizeAsset]
             .allSatisfy { $0 != nil }
-    }
-
-    public var stillPreviewAsset: GiphyAsset? {
-        // Accept still assets without a valid file size.  Note that fileSize
-        // will be zero for assets without a valid file size, so they will pass
-        // the maxFileSize test.
-        //
-        // Don't worry about max content size; still images are tiny in comparison
-        // with animated asset.
-        assets
-            .filter { $0.rendition.isStill }
-            .filter { [.gif, .jpg].contains($0.type) }
-            .filter { $0.dimensions.fits(range: kValidPreviewDimensions) }
-            .bestOption(forTargetSize: kPreferedPreviewFileSize)
     }
 
     public var animatedPreviewAsset: GiphyAsset? {

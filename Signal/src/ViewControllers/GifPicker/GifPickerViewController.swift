@@ -418,7 +418,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return false
         }
 
-        guard cell.stillAsset != nil || cell.animatedAsset != nil else {
+        guard cell.isDisplayingPreview else {
             // we don't want to let the user blindly select a gray cell
             Logger.debug("ignoring selection of cell with no preview")
             return false
@@ -439,7 +439,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
-        guard cell.stillAsset != nil || cell.animatedAsset != nil else {
+        guard cell.isDisplayingPreview else {
             // we don't want to let the user blindly select a gray cell
             Logger.debug("ignoring selection of cell with no preview")
             return
