@@ -1205,6 +1205,7 @@ private class LinkPreviewImageView: CVImageView {
         rounding = .standard
         isHero = false
         configurationId = 0
+        image = nil
     }
 
     override var bounds: CGRect {

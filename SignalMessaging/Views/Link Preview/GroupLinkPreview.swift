@@ -92,12 +92,19 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         }
     }
 
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+
     @objc
     public var imagePixelSize: CGSize {
+        if let cachedValue = imagePixelSizeCache.get() {
+            return cachedValue
+        }
         guard let avatar = groupInviteLinkViewModel.avatar else {
             return CGSize.zero
         }
-        return avatar.imageSizePixels
+        let result = avatar.imageSizePixels
+        imagePixelSizeCache.set(result)
+        return result
     }
 
     public func previewDescription() -> String? {

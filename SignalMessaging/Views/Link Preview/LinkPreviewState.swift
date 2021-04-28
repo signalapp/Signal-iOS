@@ -186,7 +186,13 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         }
     }
 
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+
+    @objc
     public var imagePixelSize: CGSize {
+        if let cachedValue = imagePixelSizeCache.get() {
+            return cachedValue
+        }
         owsAssertDebug(imageState() == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
             owsFailDebug("Missing imageData.")
@@ -203,7 +209,9 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
             owsFailDebug("Invalid image size.")
             return .zero
         }
-        return imagePixelSize
+        let result = imagePixelSize
+        imagePixelSizeCache.set(result)
+        return result
     }
 
     public func previewDescription() -> String? {
@@ -334,12 +342,20 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         }
     }
 
+    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
+
     @objc
     public var imagePixelSize: CGSize {
+        if let cachedValue = imagePixelSizeCache.get() {
+            return cachedValue
+        }
+        owsAssertDebug(imageState() == .loaded)
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
-        return attachmentStream.imageSize()
+        let result = attachmentStream.imageSize()
+        imagePixelSizeCache.set(result)
+        return result
     }
 
     public func previewDescription() -> String? {
