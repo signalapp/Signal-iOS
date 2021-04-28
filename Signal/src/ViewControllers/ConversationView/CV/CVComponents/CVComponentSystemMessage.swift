@@ -37,22 +37,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                         componentView: componentView)
     }
 
-    public override func willSnapshotForMessageActions(componentView: CVComponentView) {
-        guard let componentView = componentView as? CVComponentViewSystemMessage else {
-            owsFailDebug("Unexpected componentView.")
-            return
-        }
-        componentView.blurView?.backgroundColor = bubbleBackgroundColor
-    }
-
-    public override func didSnapshotForMessageActions(componentView: CVComponentView) {
-        guard let componentView = componentView as? CVComponentViewSystemMessage else {
-            owsFailDebug("Unexpected componentView.")
-            return
-        }
-        componentView.blurView?.backgroundColor = .clear
-    }
-
     private var bubbleBackgroundColor: UIColor {
         Theme.backgroundColor
     }
@@ -83,15 +67,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                  layoutMargins: .zero)
     }
 
-    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                            componentView: CVComponentView) {
-        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
-
+    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewSystemMessage else {
             owsFailDebug("Unexpected componentView.")
-            return
+            return nil
         }
-        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+        return componentView.wallpaperBlurView
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -212,8 +193,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                   measurementKey: Self.measurementKey_outerHStack,
                                   subviews: outerHStackViews)
 
-            componentView.blurView?.removeFromSuperview()
-            componentView.blurView = nil
+            componentView.wallpaperBlurView?.removeFromSuperview()
+            componentView.wallpaperBlurView = nil
 
             componentView.backgroundView?.removeFromSuperview()
             componentView.backgroundView = nil
@@ -221,16 +202,16 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                // This view doesn't need to render to render blur,
-                // but it does need to render for the message actions snapshot.
-                let blurView = UIView.container()
-                componentView.blurView = blurView
-                bubbleView = blurView
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           maskCornerRadius: 0,
+                                           componentDelegate: componentDelegate)
+                bubbleView = wallpaperBlurView
             } else {
                 let backgroundView = UIView()
+                backgroundView.backgroundColor = Theme.backgroundColor
                 componentView.backgroundView = backgroundView
                 bubbleView = backgroundView
-                backgroundView.backgroundColor = Theme.backgroundColor
             }
 
             if isFirstInCluster && isLastInCluster {
@@ -416,7 +397,16 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
-        fileprivate var blurView: UIView?
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
+
         fileprivate var backgroundView: UIView?
 
         fileprivate var button: OWSButton?
@@ -453,8 +443,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 innerVStack.reset()
                 outerVStack.reset()
 
-                blurView?.removeFromSuperview()
-                blurView = nil
+                wallpaperBlurView?.removeFromSuperview()
+                wallpaperBlurView?.resetContentAndConfiguration()
 
                 backgroundView?.removeFromSuperview()
                 backgroundView = nil

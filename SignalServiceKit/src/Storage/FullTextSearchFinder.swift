@@ -410,6 +410,9 @@ class GRDBFullTextSearchFinder: NSObject {
             maxResults: maxResults,
             transaction: transaction
         ) { object, snippet, stop in
+            guard nil == object as? OWSGroupCallMessage else {
+                return
+            }
             guard let object = object as? T else {
                 return owsFailDebug("Unexpected object type")
             }

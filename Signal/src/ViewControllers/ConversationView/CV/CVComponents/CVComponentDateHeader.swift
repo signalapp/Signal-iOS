@@ -41,15 +41,12 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         CVComponentViewDateHeader()
     }
 
-    public override func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                            componentView: CVComponentView) {
-        super.buildWallpaperMask(wallpaperMaskBuilder, componentView: componentView)
-
+    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewDateHeader else {
             owsFailDebug("Unexpected componentView.")
-            return
+            return nil
         }
-        wallpaperMaskBuilder.append(blurView: componentView.blurView)
+        return componentView.wallpaperBlurView
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -87,17 +84,21 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             innerStack.reset()
             outerStack.reset()
             titleLabel.removeFromSuperview()
-            componentView.blurView?.removeFromSuperview()
-            componentView.blurView = nil
+            componentView.wallpaperBlurView?.removeFromSuperview()
+            componentView.wallpaperBlurView = nil
+
+            if hasWallpaper {
+                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                           maskCornerRadius: 8,
+                                           componentDelegate: componentDelegate)
+                innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+            }
 
             innerStack.configure(config: innerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_innerStack,
                                  subviews: [ titleLabel ])
-            if hasWallpaper {
-                innerStack.layer.cornerRadius = 8
-                componentView.blurView = innerStack
-            }
 
             outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
@@ -176,7 +177,15 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         fileprivate let innerStack = ManualStackView(name: "dateHeader.innerStackView")
         fileprivate let titleLabel = CVLabel()
 
-        fileprivate var blurView: UIView?
+        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+            if let wallpaperBlurView = self.wallpaperBlurView {
+                return wallpaperBlurView
+            }
+            let wallpaperBlurView = CVWallpaperBlurView()
+            self.wallpaperBlurView = wallpaperBlurView
+            return wallpaperBlurView
+        }
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -203,8 +212,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
                 titleLabel.removeFromSuperview()
 
-                blurView?.removeFromSuperview()
-                blurView = nil
+                wallpaperBlurView?.removeFromSuperview()
+                wallpaperBlurView?.resetContentAndConfiguration()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

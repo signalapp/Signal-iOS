@@ -55,9 +55,6 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
-
-    func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                            componentView: CVComponentView)
 }
 
 // MARK: -
@@ -77,9 +74,7 @@ public protocol CVRootComponent: CVComponent {
 
     var isDedicatedCell: Bool { get }
 
-    func willSnapshotForMessageActions(componentView: CVComponentView)
-
-    func didSnapshotForMessageActions(componentView: CVComponentView)
+    func updateWallpaperBlur(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -161,14 +156,6 @@ public class CVComponentBase: NSObject {
         itemModel.itemViewState.isShowingSelectionUI
     }
 
-    public func willSnapshotForMessageActions(componentView: CVComponentView) {
-        // Do nothing.
-    }
-
-    public func didSnapshotForMessageActions(componentView: CVComponentView) {
-        // Do nothing.
-    }
-
     // MARK: - Root Components
 
     public static func configureCellRootComponent(rootComponent: CVRootComponent,
@@ -194,9 +181,29 @@ public class CVComponentBase: NSObject {
 
     // MARK: - 
 
-    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder,
-                                   componentView: CVComponentView) {
-        // Do nothing.
+    public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+        nil
+    }
+
+    public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
+                                           maskCornerRadius: CGFloat,
+                                           componentDelegate: CVComponentDelegate) {
+        if componentDelegate.isConversationPreview {
+            wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
+        } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
+            wallpaperBlurView.configure(provider: wallpaperBlurProvider,
+                                        maskCornerRadius: maskCornerRadius)
+        } else {
+            owsFailDebug("Missing wallpaperBlurProvider.")
+            wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
+        }
+    }
+
+    public final func updateWallpaperBlur(componentView: CVComponentView) {
+        guard let wallpaperBlurView = self.wallpaperBlurView(componentView: componentView) else {
+            return
+        }
+        wallpaperBlurView.updateIfNecessary()
     }
 }
 

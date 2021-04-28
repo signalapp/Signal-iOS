@@ -898,6 +898,10 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
+    var isConversationPreview: Bool { true }
+
+    var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
+
     // MARK: - Selection
 
     // TODO:

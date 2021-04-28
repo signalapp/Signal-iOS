@@ -273,6 +273,9 @@ public extension ConversationViewController {
         get { viewState.messageActionsOriginalFocusY }
         set { viewState.messageActionsOriginalFocusY = newValue }
     }
+    var backgroundContainer: CVBackgroundContainer {
+        get { viewState.backgroundContainer }
+    }
 
     // MARK: -
 

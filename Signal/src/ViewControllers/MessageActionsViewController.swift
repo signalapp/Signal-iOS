@@ -126,14 +126,6 @@ public class MessageActionsViewController: UIViewController {
         snapshotFocusedView?.removeFromSuperview()
         snapshotFocusedView = nil
 
-        if let cell = focusedView as? CVCell {
-            cell.willSnapshotForMessageActions()
-        }
-        defer {
-            if let cell = focusedView as? CVCell {
-                cell.didSnapshotForMessageActions()
-            }
-        }
         guard let snapshotView = focusedView.snapshotView(afterScreenUpdates: true) else {
             return owsFailDebug("snapshotView was unexpectedly nil")
         }

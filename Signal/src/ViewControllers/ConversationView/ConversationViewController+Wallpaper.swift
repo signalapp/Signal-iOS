@@ -33,30 +33,12 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         guard let wallpaperView = databaseStorage.read(block: { transaction in
-            Wallpaper.view(for: self.thread,
-                           maskDataSource: self,
-                           transaction: transaction)
+            Wallpaper.view(for: self.thread, transaction: transaction)
         }) else {
-            viewState.backgroundContainer.set(wallpaperView: nil)
+            backgroundContainer.set(wallpaperView: nil)
             return
         }
 
-        viewState.backgroundContainer.set(wallpaperView: wallpaperView)
+        backgroundContainer.set(wallpaperView: wallpaperView)
     }
-}
-
-// MARK: -
-
-extension ConversationViewController: WallpaperMaskDataSource {
-    public func buildWallpaperMask(_ wallpaperMaskBuilder: WallpaperMaskBuilder) {
-        for cell in collectionView.visibleCells {
-            guard let cell = cell as? CVCell else {
-                owsFailDebug("Invalid cell.")
-                continue
-            }
-            cell.buildWallpaperMask(wallpaperMaskBuilder)
-        }
-    }
-
-    public var isWallpaperPreview: Bool { false }
 }
