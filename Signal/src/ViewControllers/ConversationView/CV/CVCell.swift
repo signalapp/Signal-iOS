@@ -383,12 +383,12 @@ public extension CVRootComponentHost {
                                               componentView: componentView)
     }
 
-    func updateWallpaperBlur(provider: WallpaperBlurProvider) {
+    func updateWallpaperBlur() {
         guard let rootComponent = rootComponent,
               let componentView = componentView else {
             owsFailDebug("Missing component.")
             return
         }
-        rootComponent.updateWallpaperBlur(provider: provider, componentView: componentView)
+        rootComponent.updateWallpaperBlur(componentView: componentView)
     }
 }

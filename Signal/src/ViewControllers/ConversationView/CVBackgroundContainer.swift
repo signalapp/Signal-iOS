@@ -26,9 +26,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     public let selectionHighlightView = SelectionHighlightView()
 
-    fileprivate var updateScrollingContentTimer: Timer?
-    fileprivate var shouldHaveUpdateScrollingContentTimer = AtomicUInt(0)
-
     @objc
     public weak var delegate: CVBackgroundContainerDelegate?
 
@@ -142,7 +139,7 @@ fileprivate extension CVBackgroundContainer {
             updateScrollingContentTimer?.invalidate()
             updateScrollingContentTimer = nil
         }
-        delegate?.updateScrollingContent()
+//        delegate?.updateScrollingContent()
     }
 }
 
@@ -176,7 +173,7 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
                 owsFailDebug("Invalid cell.")
                 continue
             }
-            cell.updateWallpaperBlur(provider: backgroundContainer)
+            cell.updateWallpaperBlur()
         }
     }
 

@@ -490,6 +490,8 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
         self.cachedState = nil
     }
 
+    public static let contentDownscalingFactor: CGFloat = 8
+
     public var wallpaperBlurState: WallpaperBlurState? {
         AssertIsOnMainThread()
 
@@ -520,14 +522,13 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
             let tintColor: UIColor = (isDarkThemeEnabled
                                         ? UIColor.ows_black.withAlphaComponent(0.3)
                                         : UIColor.white.withAlphaComponent(0.3))
-            let resizeFactor: CGFloat = 8
-            let resizeDimension = contentImage.size.largerAxis / resizeFactor
+            let resizeDimension = contentImage.size.largerAxis / Self.contentDownscalingFactor
             guard let scaledImage = contentImage.resized(withMaxDimensionPoints: resizeDimension) else {
                 owsFailDebug("Could not resize contentImage.")
                 return nil
             }
-            let blurRadius: CGFloat = 1 / resizeFactor
-//            let blurRadius: CGFloat = 32 / resizeFactor
+            let blurRadius: CGFloat = 1 / Self.contentDownscalingFactor
+//            let blurRadius: CGFloat = 32 / Self.contentDownscalingFactor
             let blurredImage = try scaledImage.withGausianBlur(radius: blurRadius,
                                                                tintColor: tintColor)
             let state = WallpaperBlurState(image: blurredImage,
