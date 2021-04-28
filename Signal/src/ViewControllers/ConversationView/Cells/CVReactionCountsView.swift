@@ -51,7 +51,7 @@ class CVReactionCountsView: ManualStackView {
     }
 
     public static func buildState(with reactionState: InteractionReactionState) -> State {
-        func buildPillState(emojiCount: (emoji: String, count: Int)) -> PillState {
+        func buildPillState(emojiCount: InteractionReactionState.EmojiCount) -> PillState {
             .emoji(emoji: emojiCount.emoji,
                    count: emojiCount.count,
                    fromLocalUser: emojiCount.emoji == reactionState.localUserEmoji)
