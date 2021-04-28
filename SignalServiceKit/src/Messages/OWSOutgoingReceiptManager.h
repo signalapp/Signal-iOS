@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
                            timestamp:(uint64_t)timestamp
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)enqueueViewedReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress
+                             timestamp:(uint64_t)timestamp
+                           transaction:(SDSAnyWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -10,7 +10,7 @@
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *qrScanningView;
 @property (nonatomic) UILabel *scanningInstructionsLabel;
 @property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
-@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
+@property (nonatomic, readonly) OWSReceiptManager *receiptManager;
 
 @end
 
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *myPrivateKey = identityKeyPair.privateKey;
     SignalServiceAddress *accountAddress = [TSAccountManager localAddress];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
-    BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;
+    BOOL areReadReceiptsEnabled = self.receiptManager.areReadReceiptsEnabled;
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
                                                                              myPrivateKey:myPrivateKey

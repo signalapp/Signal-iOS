@@ -56,7 +56,7 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -2750,7 +2750,7 @@ typedef enum : NSUInteger {
 
         [BenchManager benchAsyncWithTitle:@"marking as read"
                                     block:^(void (^_Nonnull benchCompletion)(void)) {
-                                        [[OWSReadReceiptManager shared]
+                                        [[OWSReceiptManager shared]
                                             markAsReadLocallyBeforeSortId:lastVisibleSortId
                                                                    thread:self.thread
                                                  hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest

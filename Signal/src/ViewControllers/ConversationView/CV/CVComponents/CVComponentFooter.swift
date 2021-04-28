@@ -213,7 +213,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 statusIndicator = StatusIndicator(imageName: "message_status_delivered",
                                                   imageSize: .init(width: 18, height: 12),
                                                   isAnimated: false)
-            case .read:
+            case .read, .viewed:
                 statusIndicator = StatusIndicator(imageName: "message_status_read",
                                                   imageSize: .init(width: 18, height: 12),
                                                   isAnimated: false)

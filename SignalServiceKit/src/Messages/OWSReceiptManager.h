@@ -10,17 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
+@class SSKProtoSyncMessageViewed;
 @class SignalServiceAddress;
 @class TSIncomingMessage;
 @class TSMessage;
 @class TSOutgoingMessage;
 @class TSThread;
 
-typedef NS_ENUM(NSInteger, OWSReadCircumstance) {
-    OWSReadCircumstanceReadOnLinkedDevice,
-    OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest,
-    OWSReadCircumstanceReadOnThisDevice,
-    OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+typedef NS_ENUM(NSInteger, OWSReceiptCircumstance) {
+    OWSReceiptCircumstanceOnLinkedDevice,
+    OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest,
+    OWSReceiptCircumstanceOnThisDevice,
+    OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
 };
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
@@ -43,7 +44,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 //      if they arrive before the corresponding message.
 //
 // This manager is responsible for handling and emitting all four kinds.
-@interface OWSReadReceiptManager : NSObject
+@interface OWSReceiptManager : NSObject
 
 + (SDSKeyValueStore *)keyValueStore;
 
@@ -62,6 +63,11 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                                             readTimestamp:(uint64_t)readTimestamp
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (NSArray<NSNumber *> *)processViewedReceiptsFromRecipient:(SignalServiceAddress *)address
+                                             sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                                            viewedTimestamp:(uint64_t)viewedTimestamp
+                                                transaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Linked Device Read Receipts
 
 /// Returns an array of receipts that had missing messages.
@@ -75,13 +81,30 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                    readTimestamp:(uint64_t)readTimestamp
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
+/// Returns an array of receipts that had missing messages.
+- (NSArray<SSKProtoSyncMessageViewed *> *)processViewedReceiptsFromLinkedDevice:
+                                              (NSArray<SSKProtoSyncMessageViewed *> *)viewedReceiptProtos
+                                                                viewedTimestamp:(uint64_t)viewedTimestamp
+                                                                    transaction:(SDSAnyWriteTransaction *)transaction;
+
+
+- (void)markAsViewedOnLinkedDevice:(TSMessage *)message
+                            thread:(TSThread *)thread
+                   viewedTimestamp:(uint64_t)viewedTimestamp
+                       transaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Locally Read
 
 // This method can be called from any thread.
 - (void)messageWasRead:(TSIncomingMessage *)message
                 thread:(TSThread *)thread
-          circumstance:(OWSReadCircumstance)circumstance
+          circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)messageWasViewed:(TSIncomingMessage *)message
+                  thread:(TSThread *)thread
+            circumstance:(OWSReceiptCircumstance)circumstance
+             transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId
                                thread:(TSThread *)thread
@@ -101,11 +124,15 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 @end
 
-@protocol PendingReadReceiptRecorder
+@protocol PendingReceiptRecorder
 
 - (void)recordPendingReadReceiptForMessage:(TSIncomingMessage *)message
                                     thread:(TSThread *)thread
                                transaction:(GRDBWriteTransaction *)transaction;
+
+- (void)recordPendingViewedReceiptForMessage:(TSIncomingMessage *)message
+                                      thread:(TSThread *)thread
+                                 transaction:(GRDBWriteTransaction *)transaction;
 
 @end
 

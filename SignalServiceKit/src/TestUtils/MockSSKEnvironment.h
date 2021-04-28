@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJobRef;
-@property (nonatomic) OWSReadReceiptManager *readReceiptManagerRef;
+@property (nonatomic) OWSReceiptManager *receiptManagerRef;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManagerRef;
 @property (nonatomic) id<SyncManagerProtocol> syncManagerRef;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManagerRef;

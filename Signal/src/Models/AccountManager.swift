@@ -109,7 +109,7 @@ public class AccountManager: NSObject {
             self.databaseStorage.write { transaction in
                 if !self.tsAccountManager.isReregistering {
                     // For new users, read receipts are on by default.
-                    self.readReceiptManager.setAreReadReceiptsEnabled(true,
+                    self.receiptManager.setAreReadReceiptsEnabled(true,
                                                                       transaction: transaction)
 
                     // New users also have the onboarding banner cards enabled
@@ -204,7 +204,7 @@ public class AccountManager: NSObject {
                                                            transaction: transaction)
 
                 if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
-                    self.readReceiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
+                    self.receiptManager.setAreReadReceiptsEnabled(areReadReceiptsEnabled,
                                                                       transaction: transaction)
                 }
 

@@ -618,7 +618,7 @@
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
 		4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */; };
 		4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */; };
-		4C35B08A23F8A9D2003EB937 /* MessageRequestReadReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */; };
+		4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
 		4C38E500230374D700E464B9 /* UIViewController+Permissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C38E501230374D700E464B9 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */; };
 		4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* ProvisioningController.swift */; };
@@ -1675,7 +1675,7 @@
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
 		4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingPrepViewController.swift; sourceTree = "<group>"; };
 		4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingQRCodeViewController.swift; sourceTree = "<group>"; };
-		4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestReadReceipts.swift; sourceTree = "<group>"; };
+		4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestPendingReceipts.swift; sourceTree = "<group>"; };
 		4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		4C38E4FF230374D700E464B9 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		4C3A2BC62356620E004B3986 /* ProvisioningController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningController.swift; sourceTree = "<group>"; };
@@ -2539,7 +2539,7 @@
 				346129401FD1D74B00532771 /* Environment.h */,
 				346129411FD1D74B00532771 /* Environment.m */,
 				349C3636233D198300D52012 /* LaunchJobs.swift */,
-				4C35B08823F8A9A1003EB937 /* MessageRequestReadReceipts.swift */,
+				4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
@@ -4857,7 +4857,7 @@
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
-				4C35B08A23F8A9D2003EB937 /* MessageRequestReadReceipts.swift in Sources */,
+				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */,
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,

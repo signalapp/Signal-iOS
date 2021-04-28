@@ -93,6 +93,13 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 @property (nonatomic, readonly, nullable) NSString *authorPhoneNumber;
 @property (nonatomic, readonly, nullable) NSString *authorUUID;
 
+@property (nonatomic, readonly, getter=wasViewed) BOOL viewed;
+
+- (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp
+                         thread:(TSThread *)thread
+                   circumstance:(OWSReceiptCircumstance)circumstance
+                    transaction:(SDSAnyWriteTransaction *)transaction;
+
 // convenience method for expiring a message which was just read
 - (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(debugonly_markAsReadNow(transaction:));

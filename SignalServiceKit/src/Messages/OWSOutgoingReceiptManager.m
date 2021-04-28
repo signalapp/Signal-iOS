@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     OWSReceiptType_Delivery,
     OWSReceiptType_Read,
+    OWSReceiptType_Viewed,
 };
 
 @interface OWSOutgoingReceiptManager ()
@@ -38,7 +39,12 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 + (SDSKeyValueStore *)readReceiptStore
 {
-    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingReadReceiptManagerCollection"];
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingreceiptManagerCollection"];
+}
+
++ (SDSKeyValueStore *)viewedReceiptStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kOutgoingViewedReceiptManagerCollection"];
 }
 
 #pragma mark -
@@ -102,6 +108,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
         [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Delivery]];
         [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Read]];
+        [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Viewed]];
 
         if (sendPromises.count < 1) {
             // No work to do; abort.
@@ -189,6 +196,11 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
                                                                             messageTimestamps:timestamps.allObjects];
                 receiptName = @"Read";
                 break;
+            case OWSReceiptType_Viewed:
+                message = [OWSReceiptsForSenderMessage viewedReceiptsForSenderMessageWithThread:thread
+                                                                              messageTimestamps:timestamps.allObjects];
+                receiptName = @"Viewed";
+                break;
         }
 
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
@@ -234,6 +246,16 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self enqueueReceiptForAddress:address timestamp:timestamp receiptType:OWSReceiptType_Read transaction:transaction];
+}
+
+- (void)enqueueViewedReceiptForAddress:(SignalServiceAddress *)address
+                             timestamp:(uint64_t)timestamp
+                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self enqueueReceiptForAddress:address
+                         timestamp:timestamp
+                       receiptType:OWSReceiptType_Viewed
+                       transaction:transaction];
 }
 
 - (void)enqueueReceiptForAddress:(SignalServiceAddress *)address
@@ -352,6 +374,8 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
             return OWSOutgoingReceiptManager.deliveryReceiptStore;
         case OWSReceiptType_Read:
             return OWSOutgoingReceiptManager.readReceiptStore;
+        case OWSReceiptType_Viewed:
+            return OWSOutgoingReceiptManager.viewedReceiptStore;
     }
 }
 

@@ -349,6 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
                 shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;
             case MessageReceiptStatusRead:
+            case MessageReceiptStatusViewed:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
                 shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;

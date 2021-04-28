@@ -2219,7 +2219,7 @@ public class GroupManager: NSObject {
            groupUpdateSourceAddress.isLocalAddress {
             infoMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(),
                                    thread: groupThread,
-                                   circumstance: .readOnThisDevice,
+                                   circumstance: .onThisDevice,
                                    transaction: transaction)
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.

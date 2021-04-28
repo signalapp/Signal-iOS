@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
-                 circumstance:(OWSReadCircumstance)circumstance
+                 circumstance:(OWSReceiptCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
 

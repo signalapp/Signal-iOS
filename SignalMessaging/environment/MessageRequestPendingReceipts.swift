@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
+public class MessageRequestPendingReceipts: NSObject, PendingReceiptRecorder {
 
     @objc
     public override init() {
@@ -24,13 +24,21 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
 
     // MARK: - 
 
-    let finder = PendingReadReceiptFinder()
+    let finder = PendingReceiptFinder()
 
     // MARK: -
 
     public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) {
         do {
             try finder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction)
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+    }
+
+    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) {
+        do {
+            try finder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction)
         } catch {
             owsFailDebug("error: \(error)")
         }
@@ -70,23 +78,32 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     }
 
     private func sendAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
-        let pendingReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
+        let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
-            return try self.finder.pendingReceipts(thread: thread, transaction: transaction)
+            return try self.finder.pendingReadReceipts(thread: thread, transaction: transaction)
         }
 
-        guard !pendingReceipts.isEmpty else {
+        let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
+                return []
+            }
+
+            return try self.finder.pendingViewedReceipts(thread: thread, transaction: transaction)
+        }
+
+        guard !pendingReadReceipts.isEmpty || !pendingViewedReceipts.isEmpty else {
             Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 
         databaseStorage.asyncWrite { transaction in
             do {
-                try self.enqueue(pendingReceipts: pendingReceipts, transaction: transaction.unwrapGrdbWrite)
+                try self.enqueue(pendingReadReceipts: pendingReadReceipts, pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
             } catch {
                 owsFailDebug("error: \(error)")
             }
@@ -94,38 +111,48 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     }
 
     private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
-        let pendingReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
+        let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
-            return try self.finder.pendingReceipts(thread: thread, transaction: transaction)
+            return try self.finder.pendingReadReceipts(thread: thread, transaction: transaction)
         }
 
-        guard !pendingReceipts.isEmpty else {
+        let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
+                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
+                return []
+            }
+
+            return try self.finder.pendingViewedReceipts(thread: thread, transaction: transaction)
+        }
+
+        guard !pendingReadReceipts.isEmpty || !pendingViewedReceipts.isEmpty else {
             Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 
         self.databaseStorage.asyncWrite { transaction in
             do {
-                try self.finder.delete(pendingReceipts: pendingReceipts, transaction: transaction.unwrapGrdbWrite)
+                try self.finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction.unwrapGrdbWrite)
+                try self.finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
             } catch {
                 owsFailDebug("error: \(error)")
             }
         }
     }
 
-    private func enqueue(pendingReceipts: [PendingReadReceiptRecord], transaction: GRDBWriteTransaction) throws {
-        guard readReceiptManager.areReadReceiptsEnabled() else {
-            Logger.info("Deleting all pending read receipts - user has subsequently disabled read receipts.")
+    private func enqueue(pendingReadReceipts: [PendingReadReceiptRecord], pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: GRDBWriteTransaction) throws {
+        guard receiptManager.areReadReceiptsEnabled() else {
+            Logger.info("Deleting all pending receipts - user has subsequently disabled read receipts.")
             try finder.deleteAllPendingReceipts(transaction: transaction)
             return
         }
 
         Logger.debug("Enqueuing read receipt for sender.")
-        for receipt in pendingReceipts {
+        for receipt in pendingReadReceipts {
             let address = SignalServiceAddress(uuidString: receipt.authorUuid, phoneNumber: receipt.authorPhoneNumber)
             guard address.isValid else {
                 owsFailDebug("address was invalid")
@@ -135,14 +162,26 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
                                                       timestamp: UInt64(receipt.messageTimestamp),
                                                       transaction: transaction.asAnyWrite)
         }
+        try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
 
-        try finder.delete(pendingReceipts: pendingReceipts, transaction: transaction)
+        Logger.debug("Enqueuing viewed receipt for sender.")
+        for receipt in pendingViewedReceipts {
+            let address = SignalServiceAddress(uuidString: receipt.authorUuid, phoneNumber: receipt.authorPhoneNumber)
+            guard address.isValid else {
+                owsFailDebug("address was invalid")
+                continue
+            }
+            outgoingReceiptManager.enqueueViewedReceipt(for: address,
+                                                        timestamp: UInt64(receipt.messageTimestamp),
+                                                        transaction: transaction.asAnyWrite)
+        }
+        try finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
     }
 }
 
 // MARK: - Persistence
 
-public class PendingReadReceiptFinder {
+public class PendingReceiptFinder {
     public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
         guard let threadId = thread.grdbId?.int64Value else {
             throw OWSAssertionError("threadId was unexpectedly nil")
@@ -157,7 +196,21 @@ public class PendingReadReceiptFinder {
         try record.insert(transaction.database)
     }
 
-    public func pendingReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingReadReceiptRecord] {
+    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
+        guard let threadId = thread.grdbId?.int64Value else {
+            throw OWSAssertionError("threadId was unexpectedly nil")
+        }
+
+        let record = PendingViewedReceiptRecord(threadId: threadId,
+                                                messageTimestamp: Int64(message.timestamp),
+                                                authorPhoneNumber: message.authorPhoneNumber,
+                                                authorUuid: message.authorUUID)
+
+        Logger.debug("pending viewed receipt: \(record)")
+        try record.insert(transaction.database)
+    }
+
+    public func pendingReadReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingReadReceiptRecord] {
         guard let threadId = thread.grdbId?.int64Value else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
@@ -169,21 +222,47 @@ public class PendingReadReceiptFinder {
         return try PendingReadReceiptRecord.fetchAll(transaction.database, sql: sql)
     }
 
-    public func threadsWithPendingReceipts(transaction: GRDBReadTransaction) throws -> [TSThread] {
+    public func pendingViewedReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingViewedReceiptRecord] {
+        guard let threadId = thread.grdbId?.int64Value else {
+            throw OWSAssertionError("threadId was unexpectedly nil")
+        }
+
         let sql = """
+            SELECT * FROM pending_viewed_receipts
+            WHERE threadId = \(threadId)
+        """
+        return try PendingViewedReceiptRecord.fetchAll(transaction.database, sql: sql)
+    }
+
+    public func threadsWithPendingReceipts(transaction: GRDBReadTransaction) throws -> [TSThread] {
+        let readSql = """
             SELECT DISTINCT model_TSThread.* FROM model_TSThread
             INNER JOIN pending_read_receipts
                 ON pending_read_receipts.threadId = model_TSThread.id
         """
-        return try TSThread.grdbFetchCursor(sql: sql, transaction: transaction).all()
+        let readThreads = try TSThread.grdbFetchCursor(sql: readSql, transaction: transaction).all()
+
+        let viewedSql = """
+            SELECT DISTINCT model_TSThread.* FROM model_TSThread
+            INNER JOIN pending_viewed_receipts
+                ON pending_viewed_receipts.threadId = model_TSThread.id
+        """
+        let viewedThreads = try TSThread.grdbFetchCursor(sql: viewedSql, transaction: transaction).all()
+
+        return Array(Set(readThreads + viewedThreads))
     }
 
-    public func delete(pendingReceipts: [PendingReadReceiptRecord], transaction: GRDBWriteTransaction) throws {
-        try PendingReadReceiptRecord.deleteAll(transaction.database, keys: pendingReceipts.compactMap { $0.id })
+    public func delete(pendingReadReceipts: [PendingReadReceiptRecord], transaction: GRDBWriteTransaction) throws {
+        try PendingReadReceiptRecord.deleteAll(transaction.database, keys: pendingReadReceipts.compactMap { $0.id })
+    }
+
+    public func delete(pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: GRDBWriteTransaction) throws {
+        try PendingViewedReceiptRecord.deleteAll(transaction.database, keys: pendingViewedReceipts.compactMap { $0.id })
     }
 
     public func deleteAllPendingReceipts(transaction: GRDBWriteTransaction) throws {
         try PendingReadReceiptRecord.deleteAll(transaction.database)
+        try PendingViewedReceiptRecord.deleteAll(transaction.database)
     }
 }
 

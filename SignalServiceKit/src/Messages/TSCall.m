@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSCall.h"
@@ -188,7 +188,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
-                 circumstance:(OWSReadCircumstance)circumstance
+                 circumstance:(OWSReceiptCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
 

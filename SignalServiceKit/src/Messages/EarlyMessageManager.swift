@@ -21,12 +21,15 @@ public class EarlyMessageManager: NSObject {
     private enum EarlyReceipt {
         case outgoingMessageRead(sender: SignalServiceAddress, timestamp: UInt64)
         case outgoingMessageDelivered(sender: SignalServiceAddress, timestamp: UInt64)
-        case messageReadOnLinkedDevice(timestamp: UInt64)
+        case outgoingMessageViewed(sender: SignalServiceAddress, timestamp: UInt64)
+        case messageOnLinkedDevice(timestamp: UInt64)
+        case messageViewedOnLinkedDevice(timestamp: UInt64)
 
         init(receiptType: SSKProtoReceiptMessageType, sender: SignalServiceAddress, timestamp: UInt64) {
             switch receiptType {
             case .delivery: self = .outgoingMessageDelivered(sender: sender, timestamp: timestamp)
             case .read: self = .outgoingMessageRead(sender: sender, timestamp: timestamp)
+            case .viewed: self = .outgoingMessageViewed(sender: sender, timestamp: timestamp)
             }
         }
     }
@@ -134,7 +137,23 @@ public class EarlyMessageManager: NSObject {
         Logger.info("Recording early read receipt from linked device for message \(identifier)")
 
         recordEarlyReceipt(
-            .messageReadOnLinkedDevice(timestamp: timestamp),
+            .messageOnLinkedDevice(timestamp: timestamp),
+            identifier: identifier
+        )
+    }
+
+    @objc
+    public func recordEarlyViewedReceiptFromLinkedDevice(
+        timestamp: UInt64,
+        associatedMessageTimestamp: UInt64,
+        associatedMessageAuthor: SignalServiceAddress
+    ) {
+        let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
+
+        Logger.info("Recording early viewed receipt from linked device for message \(identifier)")
+
+        recordEarlyReceipt(
+            .messageViewedOnLinkedDevice(timestamp: timestamp),
             identifier: identifier
         )
     }
@@ -199,6 +218,18 @@ public class EarlyMessageManager: NSObject {
                     readTimestamp: timestamp,
                     transaction: transaction
                 )
+            case .outgoingMessageViewed(let sender, let timestamp):
+                Logger.info("Applying early viewed receipt from \(sender) for outgoing message \(identifier)")
+
+                guard let message = message as? TSOutgoingMessage else {
+                    owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
+                    continue
+                }
+                message.update(
+                    withViewedRecipient: sender,
+                    viewedTimestamp: timestamp,
+                    transaction: transaction
+                )
             case .outgoingMessageDelivered(let sender, let timestamp):
                 Logger.info("Applying early delivery receipt from \(sender) for outgoing message \(identifier)")
 
@@ -211,13 +242,22 @@ public class EarlyMessageManager: NSObject {
                     deliveryTimestamp: NSNumber(value: timestamp),
                     transaction: transaction
                 )
-            case .messageReadOnLinkedDevice(let timestamp):
+            case .messageOnLinkedDevice(let timestamp):
                 Logger.info("Applying early read receipt from linked device for message \(identifier)")
 
-                OWSReadReceiptManager.shared.markAsRead(
+                OWSReceiptManager.shared.markAsRead(
                     onLinkedDevice: message,
                     thread: message.thread(transaction: transaction),
                     readTimestamp: timestamp,
+                    transaction: transaction
+                )
+            case .messageViewedOnLinkedDevice(let timestamp):
+                Logger.info("Applying early viewed receipt from linked device for message \(identifier)")
+
+                OWSReceiptManager.shared.markAsViewed(
+                    onLinkedDevice: message,
+                    thread: message.thread(transaction: transaction),
+                    viewedTimestamp: timestamp,
                     transaction: transaction
                 )
             }

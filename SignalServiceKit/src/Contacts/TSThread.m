@@ -388,9 +388,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
-    OWSReadCircumstance circumstance = hasPendingMessageRequest
-        ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
-        : OWSReadCircumstanceReadOnThisDevice;
+    OWSReceiptCircumstance circumstance = hasPendingMessageRequest
+        ? OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
+        : OWSReceiptCircumstanceOnThisDevice;
 
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
 

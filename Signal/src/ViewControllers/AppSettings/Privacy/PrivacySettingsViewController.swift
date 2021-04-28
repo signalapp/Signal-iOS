@@ -93,7 +93,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_READ_RECEIPT",
                 comment: "Label for the 'read receipts' setting."
             ),
-            isOn: { Self.readReceiptManager.areReadReceiptsEnabled() },
+            isOn: { self.receiptManager.areReadReceiptsEnabled() },
             target: self,
             selector: #selector(didToggleReadReceiptsSwitch)
         ))
@@ -238,7 +238,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     func didToggleReadReceiptsSwitch(_ sender: UISwitch) {
-        readReceiptManager.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
+        receiptManager.setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(sender.isOn)
     }
 
     @objc

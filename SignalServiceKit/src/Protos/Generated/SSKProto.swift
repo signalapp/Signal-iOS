@@ -7604,12 +7604,14 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
 public enum SSKProtoReceiptMessageType: Int32 {
     case delivery = 0
     case read = 1
+    case viewed = 2
 }
 
 private func SSKProtoReceiptMessageTypeWrap(_ value: SignalServiceProtos_ReceiptMessage.TypeEnum) -> SSKProtoReceiptMessageType {
     switch value {
     case .delivery: return .delivery
     case .read: return .read
+    case .viewed: return .viewed
     }
 }
 
@@ -7617,6 +7619,7 @@ private func SSKProtoReceiptMessageTypeUnwrap(_ value: SSKProtoReceiptMessageTyp
     switch value {
     case .delivery: return .delivery
     case .read: return .read
+    case .viewed: return .viewed
     }
 }
 
@@ -9510,6 +9513,245 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageViewed
+
+@objc
+public class SSKProtoSyncMessageViewed: NSObject, Codable {
+
+    // MARK: - SSKProtoSyncMessageViewedBuilder
+
+    @objc
+    public static func builder(timestamp: UInt64) -> SSKProtoSyncMessageViewedBuilder {
+        return SSKProtoSyncMessageViewedBuilder(timestamp: timestamp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageViewedBuilder {
+        let builder = SSKProtoSyncMessageViewedBuilder(timestamp: timestamp)
+        if let _value = senderE164 {
+            builder.setSenderE164(_value)
+        }
+        if let _value = senderUuid {
+            builder.setSenderUuid(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoSyncMessageViewedBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.Viewed()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(timestamp: UInt64) {
+            super.init()
+
+            setTimestamp(timestamp)
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderE164 = valueParam
+        }
+
+        public func setSenderE164(_ valueParam: String) {
+            proto.senderE164 = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderUuid = valueParam
+        }
+
+        public func setSenderUuid(_ valueParam: String) {
+            proto.senderUuid = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoSyncMessageViewed {
+            return try SSKProtoSyncMessageViewed(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageViewed(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Viewed
+
+    @objc
+    public let timestamp: UInt64
+
+    @objc
+    public var senderE164: String? {
+        guard hasSenderE164 else {
+            return nil
+        }
+        return proto.senderE164
+    }
+    @objc
+    public var hasSenderE164: Bool {
+        return proto.hasSenderE164 && !proto.senderE164.isEmpty
+    }
+
+    @objc
+    public var senderUuid: String? {
+        guard hasSenderUuid else {
+            return nil
+        }
+        return proto.senderUuid
+    }
+    @objc
+    public var hasSenderUuid: Bool {
+        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
+    }
+
+    @objc
+    public var hasValidSender: Bool {
+        return senderAddress != nil
+    }
+    @objc
+    public let senderAddress: SignalServiceAddress?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Viewed,
+                 timestamp: UInt64) {
+        self.proto = proto
+        self.timestamp = timestamp
+
+        let hasSenderUuid = proto.hasSenderUuid && !proto.senderUuid.isEmpty
+        let hasSenderE164 = proto.hasSenderE164 && !proto.senderE164.isEmpty
+        let senderUuid: String? = proto.senderUuid
+        let senderE164: String? = proto.senderE164
+        self.senderAddress = {
+            guard hasSenderE164 || hasSenderUuid else { return nil }
+
+            let uuidString: String? = {
+                guard hasSenderUuid else { return nil }
+
+                guard let senderUuid = senderUuid else {
+                    owsFailDebug("senderUuid was unexpectedly nil")
+                    return nil
+                }
+
+                return senderUuid
+            }()
+
+            let phoneNumber: String? = {
+                guard hasSenderE164 else {
+                    return nil
+                }
+
+                guard let senderE164 = senderE164 else {
+                    owsFailDebug("senderE164 was unexpectedly nil")
+                    return nil
+                }
+
+                guard !senderE164.isEmpty else {
+                    owsFailDebug("senderE164 was unexpectedly empty")
+                    return nil
+                }
+
+                return senderE164
+            }()
+
+            let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
+
+            return address
+        }()
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Viewed(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Viewed) throws {
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageViewed -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageViewed -
+
+        self.init(proto: proto,
+                  timestamp: timestamp)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageViewed {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageViewed.SSKProtoSyncMessageViewedBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageViewed? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessageConfiguration
 
 @objc
@@ -11280,6 +11522,7 @@ public class SSKProtoSyncMessage: NSObject, Codable {
         if let _value = outgoingPayment {
             builder.setOutgoingPayment(_value)
         }
+        builder.setViewed(viewed)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11457,6 +11700,16 @@ public class SSKProtoSyncMessage: NSObject, Codable {
             proto.outgoingPayment = valueParam.proto
         }
 
+        @objc
+        public func addViewed(_ valueParam: SSKProtoSyncMessageViewed) {
+            proto.viewed.append(valueParam.proto)
+        }
+
+        @objc
+        public func setViewed(_ wrappedItems: [SSKProtoSyncMessageViewed]) {
+            proto.viewed = wrappedItems.map { $0.proto }
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -11517,6 +11770,9 @@ public class SSKProtoSyncMessage: NSObject, Codable {
     public let outgoingPayment: SSKProtoSyncMessageOutgoingPayment?
 
     @objc
+    public let viewed: [SSKProtoSyncMessageViewed]
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -11550,7 +11806,8 @@ public class SSKProtoSyncMessage: NSObject, Codable {
                  fetchLatest: SSKProtoSyncMessageFetchLatest?,
                  keys: SSKProtoSyncMessageKeys?,
                  messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?,
-                 outgoingPayment: SSKProtoSyncMessageOutgoingPayment?) {
+                 outgoingPayment: SSKProtoSyncMessageOutgoingPayment?,
+                 viewed: [SSKProtoSyncMessageViewed]) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -11566,6 +11823,7 @@ public class SSKProtoSyncMessage: NSObject, Codable {
         self.keys = keys
         self.messageRequestResponse = messageRequestResponse
         self.outgoingPayment = outgoingPayment
+        self.viewed = viewed
     }
 
     @objc
@@ -11646,6 +11904,9 @@ public class SSKProtoSyncMessage: NSObject, Codable {
             outgoingPayment = try SSKProtoSyncMessageOutgoingPayment(proto.outgoingPayment)
         }
 
+        var viewed: [SSKProtoSyncMessageViewed] = []
+        viewed = try proto.viewed.map { try SSKProtoSyncMessageViewed($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -11664,7 +11925,8 @@ public class SSKProtoSyncMessage: NSObject, Codable {
                   fetchLatest: fetchLatest,
                   keys: keys,
                   messageRequestResponse: messageRequestResponse,
-                  outgoingPayment: outgoingPayment)
+                  outgoingPayment: outgoingPayment,
+                  viewed: viewed)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

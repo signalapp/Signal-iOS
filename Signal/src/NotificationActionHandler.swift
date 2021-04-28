@@ -183,7 +183,7 @@ class NotificationActionHandler: Dependencies {
             return Promise(error: OWSAssertionError("missing interaction"))
         }
         let (promise, resolver) = Promise<Void>.pending()
-        self.readReceiptManager.markAsReadLocally(beforeSortId: interaction.sortId,
+        self.receiptManager.markAsReadLocally(beforeSortId: interaction.sortId,
                                                   thread: notificationMessage.thread,
                                                   hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest) {
                                                     resolver.fulfill(())
