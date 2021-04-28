@@ -75,17 +75,21 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return .loading
     }
 
-    public func image(imageSize: LinkPreviewImageSize) -> UIImage? {
-        assert(imageState() == .loaded)
-        guard let avatar = groupInviteLinkViewModel.avatar,
-            avatar.isValid else {
-            return nil
+    public func imageAsync(imageSize: LinkPreviewImageSize, completion: @escaping (UIImage) -> Void) {
+        owsAssertDebug(imageState() == .loaded)
+
+        let groupInviteLinkViewModel = self.groupInviteLinkViewModel
+        DispatchQueue.global().async {
+            guard let avatar = groupInviteLinkViewModel.avatar,
+                  avatar.isValid else {
+                return
+            }
+            guard let image = UIImage(contentsOfFile: avatar.cacheFileUrl.path) else {
+                owsFailDebug("Couldn't load group avatar.")
+                return
+            }
+            completion(image)
         }
-        guard let image = UIImage(contentsOfFile: avatar.cacheFileUrl.path) else {
-            owsFailDebug("Couldn't load group avatar.")
-            return nil
-        }
-        return image
     }
 
     @objc

@@ -1189,6 +1189,9 @@ private class LinkPreviewImageView: CVImageView {
     // the input toolbar curve.
     private let asymmetricCornerMask = CAShapeLayer()
 
+    private static let configurationIdCounter = AtomicUInt(0)
+    private var configurationId: UInt = 0
+
     init() {
         super.init(frame: .zero)
     }
@@ -1201,6 +1204,7 @@ private class LinkPreviewImageView: CVImageView {
     func reset() {
         rounding = .standard
         isHero = false
+        configurationId = 0
     }
 
     override var bounds: CGRect {
@@ -1292,12 +1296,16 @@ private class LinkPreviewImageView: CVImageView {
         guard state.imageState() == .loaded else {
             return nil
         }
-        guard let image = state.image(imageSize: .small) else {
-            owsFailDebug("Could not load image.")
-            return nil
-        }
         self.rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
-        self.image = image
+        let configurationId = Self.configurationIdCounter.increment()
+        self.configurationId = configurationId
+        state.imageAsync(imageSize: .small) { [weak self] image in
+            DispatchMainThreadSafe {
+                guard let self = self else { return }
+                guard self.configurationId == configurationId else { return }
+                self.image = image
+            }
+        }
         return self
     }
 
@@ -1310,14 +1318,18 @@ private class LinkPreviewImageView: CVImageView {
         guard state.imageState() == .loaded else {
             return nil
         }
-        let isHero = LinkPreviewView.sentIsHero(state: state)
-        guard let image = state.image(imageSize: isHero ? .medium : .small) else {
-            owsFailDebug("Could not load image.")
-            return nil
-        }
         self.rounding = roundingParam ?? .standard
-        self.image = image
+        let isHero = LinkPreviewView.sentIsHero(state: state)
         self.isHero = isHero
+        let configurationId = Self.configurationIdCounter.increment()
+        self.configurationId = configurationId
+        state.imageAsync(imageSize: isHero ? .medium : .small) { [weak self] image in
+            DispatchMainThreadSafe {
+                guard let self = self else { return }
+                guard self.configurationId == configurationId else { return }
+                self.image = image
+            }
+        }
         return self
     }
 }
