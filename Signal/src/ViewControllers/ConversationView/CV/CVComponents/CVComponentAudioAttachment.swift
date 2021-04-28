@@ -193,11 +193,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             // we still call `scrubToLocation` above in order to update the slider.
             audioMessageView.clearOverrideProgress(animated: false)
             let scrubbedTime = audioMessageView.scrubToLocation(location)
-            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime,
-                                            forAttachmentStream: attachmentStream)
-            if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) != .playing {
-                cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
-            }
+            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime, forAttachmentStream: attachmentStream)
         case .possible, .began, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
         @unknown default:
