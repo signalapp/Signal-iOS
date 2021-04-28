@@ -55,7 +55,13 @@ public class InteractionReactionState: NSObject {
             }
 
             return (emoji: emojiToRender, count: reactions.count)
-        }.sorted { $0.count > $1.count }
+        }.sorted { (left, right) in
+            if left.count != right.count {
+                return left.count > right.count
+            } else {
+                return left.emoji > right.emoji
+            }
+        }
 
         localUserEmoji = localUserReaction?.emoji
     }
