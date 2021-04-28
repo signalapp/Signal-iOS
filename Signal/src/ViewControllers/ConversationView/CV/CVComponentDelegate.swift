@@ -106,6 +106,10 @@ public protocol CVComponentDelegate {
     @objc
     var view: UIView { get }
 
+    var isConversationPreview: Bool { get }
+
+    var wallpaperBlurProvider: WallpaperBlurProvider? { get }
+
     // MARK: - Selection
 
     @objc

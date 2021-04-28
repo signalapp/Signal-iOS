@@ -202,7 +202,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let wallpaperBlurView = CVWallpaperBlurView()
+                let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
                 wallpaperBlurView.layer.cornerRadius = 8
                 componentView.wallpaperBlurView = wallpaperBlurView
                 bubbleView = wallpaperBlurView

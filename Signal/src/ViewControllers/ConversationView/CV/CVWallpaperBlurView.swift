@@ -5,7 +5,9 @@
 import Foundation
 
 @objc
-public class CVWallpaperBlurView: ManualLayoutView {
+public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
+
+    private var isPreview = false
 
     private weak var provider: WallpaperBlurProvider?
 
@@ -41,7 +43,6 @@ public class CVWallpaperBlurView: ManualLayoutView {
         addLayoutBlock { [weak self] _ in
             self?.applyLayout()
         }
-        addRedBorder()
 //        addLayoutBlock { view in
 //            guard let view = view as? CVWallpaperBlurView else {
 //                owsFailDebug("Invalid view.")
@@ -65,7 +66,15 @@ public class CVWallpaperBlurView: ManualLayoutView {
         owsFail("Do not use this initializer.")
     }
 
+    public func configureForPreview() {
+        self.isPreview = true
+        imageView.isHidden = true
+    }
+
     public func configure(provider: WallpaperBlurProvider) {
+        self.isPreview = false
+        imageView.isHidden = false
+        self.backgroundColor = nil
         // TODO: Observe provider changes.
         self.provider = provider
 
@@ -73,6 +82,10 @@ public class CVWallpaperBlurView: ManualLayoutView {
     }
 
     private func configure() {
+        guard !isPreview else {
+            self.backgroundColor = Theme.backgroundColor
+            return
+        }
         guard let provider = provider else {
             owsFailDebug("Missing provider.")
             resetContent()
@@ -97,6 +110,9 @@ public class CVWallpaperBlurView: ManualLayoutView {
     private var maskFrame: CGRect = .zero
 
     private func ensurePositioning() {
+        guard !isPreview else {
+            return
+        }
 //        guard let delegate = delegate else {
 //            owsFailDebug("Missing delegate.")
 //            resetContent()
@@ -137,6 +153,7 @@ public class CVWallpaperBlurView: ManualLayoutView {
     }
 
     private func resetContent() {
+        isPreview = false
         imageView.image = nil
 //        imageLayer.contents = nil
         imageViewFrame = .zero

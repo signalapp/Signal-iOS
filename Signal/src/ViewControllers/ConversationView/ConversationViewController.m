@@ -4519,6 +4519,16 @@ typedef enum : NSUInteger {
     [self prepareDetailViewForInteractivePresentation:itemViewModel];
 }
 
+- (BOOL)isConversationPreview
+{
+    return NO;
+}
+
+- (nullable id<WallpaperBlurProvider>)wallpaperBlurProvider
+{
+    return self.backgroundContainer;
+}
+
 #pragma mark - Selection
 
 // TODO: Move these methods to +Selection.swift

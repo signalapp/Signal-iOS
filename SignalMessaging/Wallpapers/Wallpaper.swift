@@ -445,7 +445,8 @@ private struct WallpaperBlurToken: Equatable {
 
 // MARK: -
 
-public class WallpaperBlurState {
+@objc
+public class WallpaperBlurState: NSObject {
     public let image: UIImage
     public let referenceView: UIView
     fileprivate let token: WallpaperBlurToken
@@ -464,13 +465,14 @@ public class WallpaperBlurState {
 
 // MARK: -
 
-public protocol WallpaperBlurProvider: class {
+@objc
+public protocol WallpaperBlurProvider: AnyObject {
     var wallpaperBlurState: WallpaperBlurState? { get }
 }
 
 // MARK: -
 
-public class WallpaperBlurProviderImpl: WallpaperBlurProvider {
+public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
     private let contentView: UIView
 
     private var cachedState: WallpaperBlurState?

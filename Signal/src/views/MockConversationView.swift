@@ -195,18 +195,6 @@ class MockConversationView: UIView {
     }
 }
 
-// MARK: -
-
-// extension MockConversationView: WallpaperMaskDataSource {
-//    func updateWallpaperBlur(_ provider: WallpaperBlurProvider) {
-//        outgoingMessageView.buildWallpaperMask(delegate)
-//        incomingMessageView.buildWallpaperMask(delegate)
-//        dateHeaderView.buildWallpaperMask(delegate)
-//    }
-//
-//    var isWallpaperPreview: Bool { true }
-// }
-
 // MARK: - Mock Classes
 
 @objc
@@ -376,6 +364,10 @@ extension MockConversationView: CVComponentDelegate {
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
     var view: UIView { self }
+
+    var isConversationPreview: Bool { true }
+
+    var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
     // MARK: - Selection
 

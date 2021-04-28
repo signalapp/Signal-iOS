@@ -114,7 +114,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerViews.append(UIView.spacer(withHeight: 1))
 
         if conversationStyle.hasWallpaper {
-            let wallpaperBlurView = CVWallpaperBlurView()
+            let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
             wallpaperBlurView.layer.cornerRadius = 12
             innerStackView.addSubviewToFillSuperviewEdges(wallpaperBlurView)
             componentView.wallpaperBlurView = wallpaperBlurView

@@ -99,12 +99,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
 fileprivate extension CVBackgroundContainer {
 
-//    func updateWallpaperBlur(_ provider: WallpaperBlurProvider) {
-//        AssertIsOnMainThread()
-//
-//        updateCellWallpaperBlur()
-//    }
-
     func updateScrollingContentForAnimation(duration: TimeInterval) {
         AssertIsOnMainThread()
 
@@ -154,6 +148,7 @@ fileprivate extension CVBackgroundContainer {
 
 // MARK: -
 
+@objc
 extension CVBackgroundContainer: WallpaperBlurProvider {
     public var wallpaperBlurState: WallpaperBlurState? {
         wallpaperView?.blurProvider?.wallpaperBlurState
@@ -176,7 +171,6 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
     }
 
     public func updateCellWallpaperBlur() {
-        let provider = backgroundContainer.wallpaperView?.blurProvider
         for cell in collectionView.visibleCells {
             guard let cell = cell as? CVCell else {
                 owsFailDebug("Invalid cell.")

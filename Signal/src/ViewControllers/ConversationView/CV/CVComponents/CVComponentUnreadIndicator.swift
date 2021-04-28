@@ -88,7 +88,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             if hasWallpaper {
                 strokeView.backgroundColor = .ows_blackAlpha80
 
-                let wallpaperBlurView = CVWallpaperBlurView()
+                let wallpaperBlurView = buildWallpaperBlurView(componentDelegate: componentDelegate)
                 wallpaperBlurView.layer.cornerRadius = 8
                 innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
                 componentView.wallpaperBlurView = wallpaperBlurView
