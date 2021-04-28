@@ -568,8 +568,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        self.startUpdateScrollingContentTimer()
-
         let completion = { [weak self] (finished: Bool) in
             AssertIsOnMainThread()
 
@@ -592,8 +590,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
 
             viewState.scrollActionForUpdate = nil
-
-            self.stopUpdateScrollingContentTimer()
 
             if !finished {
                 Logger.warn("performBatchUpdates did not finish")

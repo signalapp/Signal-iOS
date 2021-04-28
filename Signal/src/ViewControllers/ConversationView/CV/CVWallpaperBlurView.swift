@@ -32,10 +32,16 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
     }
 
     private func applyLayout() {
+        // Prevent the layers from animating changes.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
         imageView.frame = imageViewFrame
         maskLayer.frame = imageView.bounds
         let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: layer.cornerRadius)
         maskLayer.path = maskPath.cgPath
+
+        CATransaction.commit()
     }
 
     @available(swift, obsoleted: 1.0)

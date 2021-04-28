@@ -94,57 +94,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
 // MARK: -
 
-fileprivate extension CVBackgroundContainer {
-
-    func updateScrollingContentForAnimation(duration: TimeInterval) {
-        AssertIsOnMainThread()
-
-        // To ensure a "smooth landing" of these animations, we need to continue
-        // to update the mask for a short period after the animations lands.
-        let duration = duration * 2
-
-        startUpdateScrollingContentTimer()
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
-            self?.stopUpdateScrollingContentTimer()
-        }
-    }
-
-    func startUpdateScrollingContentTimer() {
-        AssertIsOnMainThread()
-
-        shouldHaveUpdateScrollingContentTimer.increment()
-
-        if updateScrollingContentTimer == nil {
-            let timerInterval: TimeInterval = TimeInterval(1) / TimeInterval(60)
-            updateScrollingContentTimer = WeakTimer.scheduledTimer(timeInterval: timerInterval,
-                                                                   target: self,
-                                                                   userInfo: nil,
-                                                                   repeats: true) { [weak self] _ in
-                self?.updateScrollingContentTimerDidFire()
-            }
-        }
-    }
-
-    func stopUpdateScrollingContentTimer() {
-        AssertIsOnMainThread()
-
-        shouldHaveUpdateScrollingContentTimer.decrementOrZero()
-    }
-
-    func updateScrollingContentTimerDidFire() {
-        AssertIsOnMainThread()
-
-        if shouldHaveUpdateScrollingContentTimer.get() == 0 {
-            // Stop
-            updateScrollingContentTimer?.invalidate()
-            updateScrollingContentTimer = nil
-        }
-//        delegate?.updateScrollingContent()
-    }
-}
-
-// MARK: -
-
 @objc
 extension CVBackgroundContainer: WallpaperBlurProvider {
     public var wallpaperBlurState: WallpaperBlurState? {
@@ -175,26 +124,5 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
             }
             cell.updateWallpaperBlur()
         }
-    }
-
-    @objc
-    public func updateScrollingContentForAnimation(duration: TimeInterval) {
-        AssertIsOnMainThread()
-
-        backgroundContainer.updateScrollingContentForAnimation(duration: duration)
-    }
-
-    @objc
-    public func startUpdateScrollingContentTimer() {
-        AssertIsOnMainThread()
-
-        backgroundContainer.startUpdateScrollingContentTimer()
-    }
-
-    @objc
-    public func stopUpdateScrollingContentTimer() {
-        AssertIsOnMainThread()
-
-        backgroundContainer.stopUpdateScrollingContentTimer()
     }
 }

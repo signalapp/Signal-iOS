@@ -516,19 +516,15 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
                 return nil
             }
             // We approximate the behavior of UIVisualEffectView(effect: UIBlurEffect(style: .regular)).
-//            let tintColor: UIColor = (isDarkThemeEnabled
-//                                        ? UIColor.ows_black.withAlphaComponent(0.9)
-//                                        : UIColor.white.withAlphaComponent(0.6)
             let tintColor: UIColor = (isDarkThemeEnabled
-                                        ? UIColor.ows_black.withAlphaComponent(0.3)
-                                        : UIColor.white.withAlphaComponent(0.3))
+                                        ? UIColor.ows_black.withAlphaComponent(0.9)
+                                        : UIColor.white.withAlphaComponent(0.6))
             let resizeDimension = contentImage.size.largerAxis / Self.contentDownscalingFactor
             guard let scaledImage = contentImage.resized(withMaxDimensionPoints: resizeDimension) else {
                 owsFailDebug("Could not resize contentImage.")
                 return nil
             }
-            let blurRadius: CGFloat = 1 / Self.contentDownscalingFactor
-//            let blurRadius: CGFloat = 32 / Self.contentDownscalingFactor
+            let blurRadius: CGFloat = 32 / Self.contentDownscalingFactor
             let blurredImage = try scaledImage.withGausianBlur(radius: blurRadius,
                                                                tintColor: tintColor)
             let state = WallpaperBlurState(image: blurredImage,

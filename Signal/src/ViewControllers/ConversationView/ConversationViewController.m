@@ -3991,7 +3991,6 @@ typedef enum : NSUInteger {
         [self updateBottomBarPosition];
         [UIView commitAnimations];
         [self updateContentInsetsAnimated:YES];
-        [self updateScrollingContentForAnimationWithDuration:animationDuration];
     } else {
         [self updateBottomBarPosition];
         [self updateContentInsetsAnimated:NO];
