@@ -162,6 +162,8 @@
 "LEAVE_GROUP_ACTION" = "Покинуть группу";
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Сообщение";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Все медиа";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Библиотека фотографий";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */

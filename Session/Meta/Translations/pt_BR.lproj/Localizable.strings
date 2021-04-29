@@ -162,6 +162,8 @@
 "LEAVE_GROUP_ACTION" = "Sair do Grupo";
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mensagem";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Todas as mídias";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fototeca";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */

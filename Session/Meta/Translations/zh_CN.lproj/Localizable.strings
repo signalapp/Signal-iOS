@@ -162,6 +162,8 @@
 "LEAVE_GROUP_ACTION" = "离开群聊";
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "消息";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "相册";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */

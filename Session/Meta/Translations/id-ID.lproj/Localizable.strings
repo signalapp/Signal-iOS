@@ -162,6 +162,8 @@
 "LEAVE_GROUP_ACTION" = "Meninggalkan Grup.";
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Pesan";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Semua Media";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Pustaka Foto";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */

@@ -162,6 +162,8 @@
 "LEAVE_GROUP_ACTION" = "グループを離脱";
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "メッセージ";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "すべてのメディア";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "写真を選択";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
