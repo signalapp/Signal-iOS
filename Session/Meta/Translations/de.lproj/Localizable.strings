@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "QR-Code scannen";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code eines Benutzers, um eine Session zu starten. QR-Codes finden Sie, indem Sie in den Einstellungen auf das QR-Code-Symbol tippen.";
 
-"vc_enter_public_key_text_field_hint" = "Geben Sie eine Session ID ein.";
 "vc_enter_public_key_explanation" = "Benutzer können ihre Session ID freigeben, indem sie in ihren Einstellungen auf \"Session ID freigeben\" tippen oder ihren QR-Code freigeben.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session benötigt Kamerazugriff, um die QR-Codes scannen zu können.";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "Neue geschlossene Gruppe";
 "vc_create_closed_group_text_field_hint" = "Geben Sie einen Gruppennamen ein.";
-"vc_create_closed_group_explanation" = "Geschlossene Gruppen unterstützen bis zu 10 Mitglieder und bieten den gleichen Schutz der Privatsphäre wie Einzelgespräche.";
 "vc_create_closed_group_empty_state_message" = "Sie haben noch keine Kontakte.";
 "vc_create_closed_group_empty_state_button_title" = "Session starten";
 "vc_create_closed_group_group_name_missing_error" = "Bitte geben Sie einen Gruppennamen ein.";
@@ -2662,34 +2660,7 @@
 
 "vc_chat_settings_title" = "Chats";
 
-"vc_linked_devices_title" = "Geräte";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Gerätelimit erreicht";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Es ist derzeit nicht erlaubt, mehr als ein Gerät zu verbinden.";
-"vc_linked_devices_unlinking_failed_message" = "Gerät konnte nicht getrennt werden.";
-"vc_linked_devices_unlinking_successful_message" = "Ihr Gerät wurde erfolgreich getrennt.";
-"vc_linked_devices_linking_failed_message" = "Das Gerät konnte nicht verbunden werden.";
-"vc_linked_devices_empty_state_message" = "Sie haben noch keine Geräte verlinkt.";
-"vc_linked_devices_empty_state_button_title" = "Gerät (Beta) verknüpfen";
-
 "preferences_notifications_strategy_category_title" = "Benachrichtigungsstrategie";
-
-"modal_link_device_slave_mode_title_1" = "Warten auf Autorisierung";
-"modal_link_device_slave_mode_title_2" = "Geräteverbindung autorisiert";
-"modal_link_device_slave_mode_explanation_1" = "Bitte überprüfen Sie, ob die folgenden Wörter mit denen auf Ihrem anderen Gerät übereinstimmen.";
-"modal_link_device_slave_mode_explanation_2" = "Ihr Gerät wurde erfolgreich verknüpft.";
-
-"modal_link_device_master_mode_title_1" = "Warten auf Gerät";
-"modal_link_device_master_mode_title_2" = "Verknüpfungsanfrage empfangen";
-"modal_link_device_master_mode_title_3" = "Gerätelink wird autorisiert";
-"modal_link_device_master_mode_explanation_1" = "Laden Sie Session auf Ihr anderes Gerät herunter und tippen Sie unten auf dem Startbildschirm auf \"Mit einem bestehenden Konto verlinken\". Wenn Sie bereits ein Konto auf Ihrem anderen Gerät haben, müssen Sie dieses Konto zuerst löschen.";
-"modal_link_device_master_mode_explanation_2" = "Bitte überprüfen Sie, ob die folgenden Wörter mit denen auf Ihrem anderen Gerät übereinstimmen.";
-"modal_link_device_master_mode_explanation_3" = "Bitte warten Sie, während der Gerätelink erstellt wird. Dies kann bis zu einer Minute dauern.";
-"modal_link_device_master_mode_authorize_button_title" = "Autorisieren";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Namen ändern";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Gerät trennen";
-
-"modal_edit_device_name_text_field_hint" = "Geben Sie einen Namen ein.";
 
 "modal_seed_title" = "Ihr Wiederherstellungssatz";
 "modal_seed_explanation" = "Das ist Ihr Wiederherstellungssatz. Damit können Sie Ihre Session ID wiederherstellen oder auf ein neues Gerät migrieren.";
@@ -2704,10 +2675,6 @@
 
 "vc_view_my_qr_code_explanation" = "Das ist Ihr QR-Code. Andere Benutzer können ihn scannen, um eine Session mit Ihnen zu starten.";
 "vc_view_my_qr_code_share_title" = "QR-Code freigeben";
-
-"session_reset_banner_message" = "Möchten Sie Ihre Session mit %@ wiederherstellen?";
-"session_reset_banner_dismiss_button_title" = "Verwerfen";
-"session_reset_banner_restore_button_title" = "Wiederherstellen";
 
 "vc_contact_selection_contacts_title" = "Kontakte";
 "vc_contact_selection_closed_groups_title" = "Geschlossene Gruppen";

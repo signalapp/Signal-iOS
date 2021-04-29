@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skanowania QR code";
 "vc_create_private_chat_scan_qr_code_explanation" = "Zeskanuj kod QR użytkownika, aby rozpocząć sesję. Kody QR można znaleźć, dotykając ikony kodu QR w ustawieniach konta.";
 
-"vc_enter_public_key_text_field_hint" = "Wprowadź identyfikator Session odbiorcy";
 "vc_enter_public_key_explanation" = "Użytkownicy mogą udostępnić swój identyfikator Session, przechodząc do ustawień konta i stukając opcję Udostępnij identyfikator Session lub udostępniając kod QR.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Sesja wymaga dostępu do kamery, aby skanować kody QR";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "Nowa grupa zamknięta";
 "vc_create_closed_group_text_field_hint" = "Wpisz nazwę grupy";
-"vc_create_closed_group_explanation" = "Grupy zamknięte obsługują do 10 członków i zapewniają taką samą ochronę prywatności jak sesje jeden na jednego.";
 "vc_create_closed_group_empty_state_message" = "Nie masz jeszcze żadnych kontaktów";
 "vc_create_closed_group_empty_state_button_title" = "Rozpocznij sesję";
 "vc_create_closed_group_group_name_missing_error" = "Wpisz nazwę grupy";
@@ -2662,34 +2660,7 @@
 
 "vc_chat_settings_title" = "Czaty";
 
-"vc_linked_devices_title" = "Urządzenia";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Osiągnięto limit urządzeń";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Obecnie nie można łączyć więcej niż jednego urządzenia.";
-"vc_linked_devices_unlinking_failed_message" = "Nie można odłączyć urządzenia.";
-"vc_linked_devices_unlinking_successful_message" = "Twoje urządzenie zostało rozłączone pomyślnie";
-"vc_linked_devices_linking_failed_message" = "Nie można połączyć urządzenia.";
-"vc_linked_devices_empty_state_message" = "Nie podłączyłeś jeszcze żadnych urządzeń";
-"vc_linked_devices_empty_state_button_title" = "Połącz urządzenie (Beta)";
-
 "preferences_notifications_strategy_category_title" = "Strategia powiadomień";
-
-"modal_link_device_slave_mode_title_1" = "Oczekiwanie na autoryzację";
-"modal_link_device_slave_mode_title_2" = "Link do urządzenia autoryzowany";
-"modal_link_device_slave_mode_explanation_1" = "Sprawdź, czy poniższe słowa odpowiadają słowom wyświetlanym na drugim urządzeniu.";
-"modal_link_device_slave_mode_explanation_2" = "Twoje urządzenie zostało pomyślnie połączone";
-
-"modal_link_device_master_mode_title_1" = "Oczekiwanie na urządzenie";
-"modal_link_device_master_mode_title_2" = "Otrzymano żądanie połączenia";
-"modal_link_device_master_mode_title_3" = "Link do urządzenia autoryzującego";
-"modal_link_device_master_mode_explanation_1" = "Pobierz Sesję na drugie urządzenie i dotknij Połącz z istniejącym kontem u dołu ekranu docelowego. Jeśli masz już konto na drugim urządzeniu, najpierw musisz je usunąć.";
-"modal_link_device_master_mode_explanation_2" = "Sprawdź, czy poniższe słowa odpowiadają słowom wyświetlanym na drugim urządzeniu.";
-"modal_link_device_master_mode_explanation_3" = "Poczekaj, aż łącze urządzenia zostanie utworzone. Może to potrwać do minuty.";
-"modal_link_device_master_mode_authorize_button_title" = "Autoryzować";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Zmień nazwę";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Odłącz urządzenie";
-
-"modal_edit_device_name_text_field_hint" = "Wpisz imię";
 
 "modal_seed_title" = "Twoja fraza odzyskiwania";
 "modal_seed_explanation" = "To jest twoja fraza odzyskiwania. Dzięki niemu możesz przywrócić lub przenieść identyfikator Session na nowe urządzenie.";
@@ -2704,10 +2675,6 @@
 
 "vc_view_my_qr_code_explanation" = "To jest twój kod QR. Inni użytkownicy mogą go zeskanować, aby rozpocząć z tobą sesję.";
 "vc_view_my_qr_code_share_title" = "Udostępnij kod QR";
-
-"session_reset_banner_message" = "Czy chcesz przywrócić sesję za pomocą %@?";
-"session_reset_banner_dismiss_button_title" = "Oddalić";
-"session_reset_banner_restore_button_title" = "Przywracać";
 
 "vc_contact_selection_contacts_title" = "Łączność";
 "vc_contact_selection_closed_groups_title" = "Grupy zamknięte";

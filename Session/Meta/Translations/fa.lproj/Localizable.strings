@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "کد QR را اسکن کنید";
 "vc_create_private_chat_scan_qr_code_explanation" = "برای شروع Session، کد QR کاربر را اسکن کنید. با ضربه زدن روی نماد کد QR در تنظیمات حساب کاربری، کدهای QR را می‌توان یافت.";
 
-"vc_enter_public_key_text_field_hint" = "شناسه گیرنده را وارد کنید";
 "vc_enter_public_key_explanation" = "کاربران می‌توانند شناسه‌ی Session خود را با رفتن به تنظیمات حساب خود و ضربه زدن به Share Session ID یا با به اشتراک گذاشتن کد QR خود‌، با دیگران به اشتراک بگذارند.";
 
 "vc_scan_qr_code_camera_access_explanation" = "اپ Session برای اسکن کدهای QR احتیاج دارد به دوربین دسترسی داشته باشد";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "گروه خصوصی جدید";
 "vc_create_closed_group_text_field_hint" = "نام گروه را وارد کنید";
-"vc_create_closed_group_explanation" = "گروه‌های خصوصی تا ۱۰ عضو را پشتیبانی می‌کنند و همان شکل از محافظت از حریم خصوصی را که در Sessionهای فرد به فرد وجود دارد، ارائه می‌دهند.";
 "vc_create_closed_group_empty_state_message" = "فهرست مخاطبان شما خالی است";
 "vc_create_closed_group_empty_state_button_title" = "شروع Session";
 "vc_create_closed_group_group_name_missing_error" = "لطفا یک نام گروه وارد کنید";
@@ -2662,34 +2660,7 @@
 
 "vc_chat_settings_title" = "گفت‌وگوها";
 
-"vc_linked_devices_title" = "دستگاه‌ها";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "امکان اضافه کردن دستگاه دیگری نیست";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "در حال حاضر اتصال بیشتر از یک دستگاه مجاز نیست.";
-"vc_linked_devices_unlinking_failed_message" = "اتصال دستگاه انجام نشد";
-"vc_linked_devices_unlinking_successful_message" = "اتصال دستگاه شما با موفقیت قطع شد";
-"vc_linked_devices_linking_failed_message" = "اتصال دستگاه انجام نشد";
-"vc_linked_devices_empty_state_message" = "شما هنوز هیچ دستگاهی را متصل نکرده‌اید";
-"vc_linked_devices_empty_state_button_title" = "اتصال یک دستگاه (بتا)";
-
 "preferences_notifications_strategy_category_title" = "استراتژی اعلان";
-
-"modal_link_device_slave_mode_title_1" = "در انتظار مجوز";
-"modal_link_device_slave_mode_title_2" = "پیوند دستگاه مجاز است";
-"modal_link_device_slave_mode_explanation_1" = "لطفاً بررسی کنید که کلمات زیر با کلمات نشان داده شده در دستگاه دیگر شما مطابقت دارند.";
-"modal_link_device_slave_mode_explanation_2" = "دستگاه شما با موفقیت متصل شد";
-
-"modal_link_device_master_mode_title_1" = "منتظر دستگاه";
-"modal_link_device_master_mode_title_2" = "درخواست اتصال دریافت شد";
-"modal_link_device_master_mode_title_3" = "در حال مجوز صادر کردن برای اتصال دستگاه";
-"modal_link_device_master_mode_explanation_1" = "اپ Session را در دستگاه دیگر خود دانلود کنید و روی \"اتصال به یک حساب موجود\" در پایین صفحه ورودی ضربه بزنید. اگر در حال حاضر دارای یک حساب کاربری در دستگاه دیگر خود هستید، ابتدا باید آن حساب را حذف کنید.";
-"modal_link_device_master_mode_explanation_2" = "لطفاً بررسی کنید که کلمات زیر با کلمات نشان داده شده در دستگاه دیگر شما مطابقت دارند.";
-"modal_link_device_master_mode_explanation_3" = "لطفاً منتظر بمانید تا اتصال دستگاه ایجاد شود. این ممکن است تا یک دقیقه طول بکشد.";
-"modal_link_device_master_mode_authorize_button_title" = "اجازه دهید";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "تغییر نام";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "قطع اتصال دستگاه";
-
-"modal_edit_device_name_text_field_hint" = "یک نام وارد کنید";
 
 "modal_seed_title" = "عبارت بازیابی شما";
 "modal_seed_explanation" = "این عبارت بازیابی شماست. با استفاده از آن می‌توانید شناسه‌ی Session خود را به دستگاه جدید بازیابی یا انتقال دهید.";
@@ -2704,10 +2675,6 @@
 
 "vc_view_my_qr_code_explanation" = "این کد QR شماست. سایر کاربران می‌توانند برای شروع Session با شما آن را اسکن کنند.";
 "vc_view_my_qr_code_share_title" = "کد QR را به اشتراک بگذارید";
-
-"session_reset_banner_message" = "آیا می‌خواهید Session خود را با آن بازیابی کنید %@ ؟";
-"session_reset_banner_dismiss_button_title" = "رد";
-"session_reset_banner_restore_button_title" = "بازیابی";
 
 "vc_contact_selection_contacts_title" = "مخاطبین";
 "vc_contact_selection_closed_groups_title" = "گروه‌های خصوصی";

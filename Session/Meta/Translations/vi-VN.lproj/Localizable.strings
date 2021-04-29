@@ -2627,7 +2627,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Quét mã QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Quét mã QR của người dùng để bắt đầu session. Tìm mã QR bằng cách chạm vào biểu tượng mã QR trong mục cài đặt tài khoản.";
 
-"vc_enter_public_key_text_field_hint" = "Nhập Session ID của người nhận";
 "vc_enter_public_key_explanation" = "Người dùng có thể chia sẻ Session ID của mình bằng cách tới mục cài đặt tài khoản và chạm vào “Chia sẻ Session ID”, hoặc bằng cách chia sẻ mã QR của họ.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session cần truy cập máy ảnh để quét mã QR ";
@@ -2635,7 +2634,6 @@
 
 "vc_create_closed_group_title" = "Nhóm kín mới ";
 "vc_create_closed_group_text_field_hint" = "Nhập tên nhóm";
-"vc_create_closed_group_explanation" = "Nhóm kín hỗ trợ tối đa 10 thành viên và cung cấp dịch vụ bảo mật giống như các session một-một";
 "vc_create_closed_group_empty_state_message" = "Bạn chưa có danh bạ nào ";
 "vc_create_closed_group_empty_state_button_title" = "Bắt đầu Session";
 "vc_create_closed_group_group_name_missing_error" = "Vui lòng nhập tên nhóm";
@@ -2672,34 +2670,7 @@
 
 "vc_chat_settings_title" = "Trò chuyện";
 
-"vc_linked_devices_title" = "Thiết bị";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Đã đạt tới giới hạn thiết bị";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Hiện tại không cho phép kết nối với nhiều hơn một thiết bị.";
-"vc_linked_devices_unlinking_failed_message" = "Không thể hủy liên kết thiết bị.";
-"vc_linked_devices_unlinking_successful_message" = "Thiết bị của bạn đã được hủy liên kết thành công";
-"vc_linked_devices_linking_failed_message" = "Không thể liên kết thiết bị.";
-"vc_linked_devices_empty_state_message" = "Bạn chưa liên kết thiết bị nào";
-"vc_linked_devices_empty_state_button_title" = "Kết nối một thiết bị (Beta)";
-
 "preferences_notifications_strategy_category_title" = "Chiến lược thông báo";
-
-"modal_link_device_slave_mode_title_1" = "Đang chờ được cho phép";
-"modal_link_device_slave_mode_title_2" = "Liên kết thiết bị được cho phép ";
-"modal_link_device_slave_mode_explanation_1" = "Hãy kiểm tra xem các từ bên dưới có khớp với các từ được hiển thị trên thiết bị khác của bạn không.";
-"modal_link_device_slave_mode_explanation_2" = "Thiết bị của bạn đã được liên kết thành công ";
-
-"modal_link_device_master_mode_title_1" = "Đang đợi thiết bị ";
-"modal_link_device_master_mode_title_2" = "Đã nhận được yêu cầu liên kết";
-"modal_link_device_master_mode_title_3" = "Đang cho phép liên kết thiết bị";
-"modal_link_device_master_mode_explanation_1" = "Tải Session về thiết bị khác của bạn và chọn \"Liên kết với một tài khoản đã tồn tại\" ở phía cuối của màn hình đích. Nếu tại khoản hiện tại của bạn đang ở một thiết bị khác, bạn cần phải xóa tài khoản đó trước.";
-"modal_link_device_master_mode_explanation_2" = " Hãy kiểm tra xem các từ bên dưới có khớp với các từ được hiển thị trên thiết bị khác của bạn không.";
-"modal_link_device_master_mode_explanation_3" = "Liên kết thiết bị đang được tạo, vui lòng chờ đợi. Quá trình này có thể mất khoảng một phút.";
-"modal_link_device_master_mode_authorize_button_title" = "Cho phép";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Đổi tên";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Hủy liên kết thiết bị";
-
-"modal_edit_device_name_text_field_hint" = "Nhập tên";
 
 "modal_seed_title" = "Cụm từ khôi phục của bạn";
 "modal_seed_explanation" = "Đây là cụm từ khôi phục của bạn. Bạn có thể dùng nó để khôi phục hoặc chuyển Session ID của mình sang một thiết bị mới.";
@@ -2714,10 +2685,6 @@
 
 "vc_view_my_qr_code_explanation" = "Đây là mã QR của bạn. Những người dùng khác có thể quét mã này và bắt đầu session với bạn.";
 "vc_view_my_qr_code_share_title" = "Chia sẻ mã QR ";
-
-"session_reset_banner_message" = "Bạn có muốn khôi phục lại session của bạn với %2 không?";
-"session_reset_banner_dismiss_button_title" = "Bỏ qua";
-"session_reset_banner_restore_button_title" = "Khôi phục";
 
 "vc_contact_selection_contacts_title" = "Danh bạ";
 "vc_contact_selection_closed_groups_title" = "Nhóm kín";

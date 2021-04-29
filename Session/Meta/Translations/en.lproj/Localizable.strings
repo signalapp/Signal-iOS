@@ -2627,7 +2627,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR Code";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
 
-"vc_enter_public_key_text_field_hint" = "Enter Session ID of recipient";
 "vc_enter_public_key_explanation" = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session needs camera access to scan QR codes";
@@ -2635,7 +2634,6 @@
 
 "vc_create_closed_group_title" = "New Closed Group";
 "vc_create_closed_group_text_field_hint" = "Enter a group name";
-"vc_create_closed_group_explanation" = "Closed groups support up to 10 members and provide the same privacy protections as one-on-one sessions.";
 "vc_create_closed_group_empty_state_message" = "You don't have any contacts yet";
 "vc_create_closed_group_empty_state_button_title" = "Start a Session";
 "vc_create_closed_group_group_name_missing_error" = "Please enter a group name";
@@ -2671,34 +2669,7 @@
 
 "vc_chat_settings_title" = "Chats";
 
-"vc_linked_devices_title" = "Devices";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Device Limit Reached";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "It's currently not allowed to link more than one device.";
-"vc_linked_devices_unlinking_failed_message" = "Couldn't unlink device.";
-"vc_linked_devices_unlinking_successful_message" = "Your device was unlinked successfully";
-"vc_linked_devices_linking_failed_message" = "Couldn't link device.";
-"vc_linked_devices_empty_state_message" = "You haven't linked any devices yet";
-"vc_linked_devices_empty_state_button_title" = "Link a Device (Beta)";
-
 "preferences_notifications_strategy_category_title" = "Notification Strategy";
-
-"modal_link_device_slave_mode_title_1" = "Waiting for Authorization";
-"modal_link_device_slave_mode_title_2" = "Device Link Authorized";
-"modal_link_device_slave_mode_explanation_1" = "Please check that the words below match those shown on your other device.";
-"modal_link_device_slave_mode_explanation_2" = "Your device has been linked successfully";
-
-"modal_link_device_master_mode_title_1" = "Waiting for Device";
-"modal_link_device_master_mode_title_2" = "Linking Request Received";
-"modal_link_device_master_mode_title_3" = "Authorizing Device Link";
-"modal_link_device_master_mode_explanation_1" = "Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first.";
-"modal_link_device_master_mode_explanation_2" = "Please check that the words below match those shown on your other device.";
-"modal_link_device_master_mode_explanation_3" = "Please wait while the device link is created. This can take up to a minute.";
-"modal_link_device_master_mode_authorize_button_title" = "Authorize";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Change name";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Unlink device";
-
-"modal_edit_device_name_text_field_hint" = "Enter a name";
 
 "modal_seed_title" = "Your Recovery Phrase";
 "modal_seed_explanation" = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
@@ -2714,17 +2685,15 @@
 "vc_view_my_qr_code_explanation" = "This is your QR code. Other users can scan it to start a session with you.";
 "vc_view_my_qr_code_share_title" = "Share QR Code";
 
-"session_reset_banner_message" = "Would you like to restore your session with %@?";
-"session_reset_banner_dismiss_button_title" = "Dismiss";
-"session_reset_banner_restore_button_title" = "Restore";
-
 "vc_contact_selection_contacts_title" = "Contacts";
 "vc_contact_selection_closed_groups_title" = "Closed Groups";
 "vc_contact_selection_open_groups_title" = "Open Groups";
 
 // MARK: - Not Yet Translated
 "vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code."
+"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
 
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
 "vc_enter_recovery_phrase_explanation" = "Recovery Phrase";
+
+"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";

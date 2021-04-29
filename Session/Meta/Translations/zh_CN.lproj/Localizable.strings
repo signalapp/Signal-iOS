@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "扫描二维码";
 "vc_create_private_chat_scan_qr_code_explanation" = "扫描其他用户的二维码来发起对话。您可以在帐号设置中点击二维码图标找到二维码。";
 
-"vc_enter_public_key_text_field_hint" = "输入对方的Session ID";
 "vc_enter_public_key_explanation" = "用户可以通过进入帐号设置并点击\"共享Session ID\"来分享自己的Session ID，或通过共享其二维码来分享其Session ID。";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session需要摄像头访问权限才能扫描二维码";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "创建私密群组";
 "vc_create_closed_group_text_field_hint" = "输入群组名称";
-"vc_create_closed_group_explanation" = "私密群组最多支持10位成员，并提供与一对一对话相同的隐私保护。";
 "vc_create_closed_group_empty_state_message" = "您还没有任何联系人";
 "vc_create_closed_group_empty_state_button_title" = "开始对话";
 "vc_create_closed_group_group_name_missing_error" = "请输入群组名称";
@@ -2662,34 +2660,7 @@
 
 "vc_chat_settings_title" = "会话";
 
-"vc_linked_devices_title" = "设备";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "达到设备限制";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "当前不允许关联多个设备。";
-"vc_linked_devices_unlinking_failed_message" = "无法断开关联设备。";
-"vc_linked_devices_unlinking_successful_message" = "您的设备已成功取消关联";
-"vc_linked_devices_linking_failed_message" = "无法关联设备。";
-"vc_linked_devices_empty_state_message" = "您尚未关联任何设备";
-"vc_linked_devices_empty_state_button_title" = "关联设备（测试版）";
-
 "preferences_notifications_strategy_category_title" = "通知选项";
-
-"modal_link_device_slave_mode_title_1" = "等待授权";
-"modal_link_device_slave_mode_title_2" = "设备关联已授权";
-"modal_link_device_slave_mode_explanation_1" = "请检查以下单词是否与您其他设备上显示的单词匹配。";
-"modal_link_device_slave_mode_explanation_2" = "您的设备已成功关联";
-
-"modal_link_device_master_mode_title_1" = "等待设备";
-"modal_link_device_master_mode_title_2" = "收到关联请求";
-"modal_link_device_master_mode_title_3" = "授权设备关联";
-"modal_link_device_master_mode_explanation_1" = "在其他设备上下载Session，然后点击登陆页面屏幕底部的“关联到现有帐号”。如果您的其他设备上已有一个帐号，则必须先删除已有帐号。";
-"modal_link_device_master_mode_explanation_2" = "请检查以下单词是否与您其他设备上显示的单词匹配。";
-"modal_link_device_master_mode_explanation_3" = "创建设备关联时，请耐心等待。这可能需要一分钟左右的时间。";
-"modal_link_device_master_mode_authorize_button_title" = "授权";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "更换名称";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "断开设备关联";
-
-"modal_edit_device_name_text_field_hint" = "输入名称";
 
 "modal_seed_title" = "您的恢复口令";
 "modal_seed_explanation" = "这是您的恢复口令。您可以通过该口令将Session ID还原或迁移到新设备上。";
@@ -2704,10 +2675,6 @@
 
 "vc_view_my_qr_code_explanation" = "这是您的二维码。其他用户可以对其进行扫描以发起与您的对话。";
 "vc_view_my_qr_code_share_title" = "分享二维码";
-
-"session_reset_banner_message" = "您要恢复与%@的对话吗？";
-"session_reset_banner_dismiss_button_title" = "取消";
-"session_reset_banner_restore_button_title" = "恢复";
 
 "vc_contact_selection_contacts_title" = "联系人";
 "vc_contact_selection_closed_groups_title" = "私密群组";

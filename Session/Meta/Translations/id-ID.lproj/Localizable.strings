@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Pindai kode QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Pindai kode QR pengguna lain untuk memulai Session. Kode QR bisa ditemukan dengan mengetukan gambar kode QR di pengaturan akun";
 
-"vc_enter_public_key_text_field_hint" = "Masukkan Session ID penerima";
 "vc_enter_public_key_explanation" = "Pengguna bisa membagikan Session ID miliknya dengan masuk ke pengaturan akun dan mengetuk \"Bagikan Session ID\" atau dengan membagikan kode QR mereka";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session membutuhkan akses kamera untuk memindai kode QR";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "Grup tertutup baru";
 "vc_create_closed_group_text_field_hint" = "Masukkan nama grup";
-"vc_create_closed_group_explanation" = "Grup tertutup maksimal berisi 10 anggota dan memiliki perlindungan privasi yang sama dengan Session antara dua pengguna";
 "vc_create_closed_group_empty_state_message" = "anda belum memiliki kontak";
 "vc_create_closed_group_empty_state_button_title" = "Mulai sebuah Session";
 "vc_create_closed_group_group_name_missing_error" = "Masukkan nama grup";
@@ -2663,33 +2661,7 @@
 
 "vc_chat_settings_title" = "Percakapan";
 
-"vc_linked_devices_title" = "Perangkat";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Saat ini anda tak diperbolehkan menautkan lebih dari satu perangkat";
-"vc_linked_devices_unlinking_failed_message" = "Tak bisa memutus perangkat";
-"vc_linked_devices_unlinking_successful_message" = "Sukses memutus perangkat";
-"vc_linked_devices_linking_failed_message" = "Tidak bisa menautkan perangkat";
-"vc_linked_devices_empty_state_message" = "anda belum menautkan satupun perangkat";
-"vc_linked_devices_empty_state_button_title" = "tautkan perangkat (beta)";
-
 "preferences_notifications_strategy_category_title" = "Strategi notofikasi";
-
-"modal_link_device_slave_mode_title_1" = "Menunggu otorisasi";
-"modal_link_device_slave_mode_title_2" = "Menautkan perangkat diotorisasi";
-"modal_link_device_slave_mode_explanation_1" = "Pastikan kata di bawah sama dengan kata yang muncul di perangkat lainnya";
-"modal_link_device_slave_mode_explanation_2" = "Perangkat sukses ditautkan";
-
-"modal_link_device_master_mode_title_1" = "Menunggu perangkat";
-"modal_link_device_master_mode_title_2" = "Permintaan penautan diterima";
-"modal_link_device_master_mode_title_3" = "Mengotorisasi tautan perangkat";
-"modal_link_device_master_mode_explanation_1" = "Unduh Session di perangkat baru anda lalu ketuk \"Tautkan ke akun yang sudah ada\" di bagian bawah layar. Jika ada akun lain di perangkat baru tersebut, anda harus menghapusnya terlebih dahulu";
-"modal_link_device_master_mode_explanation_2" = "Pastikan kata di bawah sama dengan kata yang muncul di perangkat lainnya";
-"modal_link_device_master_mode_explanation_3" = "Mohon tunggu, tautan perangkat sedang dibuat. Proses ini mungkin berlangsung hingga beberapa menit";
-"modal_link_device_master_mode_authorize_button_title" = "Otorisasi";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Ubah nama";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Putuskan koneksi dengan perangkat";
-
-"modal_edit_device_name_text_field_hint" = "Masukkan nama";
 
 "modal_seed_title" = "Kata pemulihan anda";
 "modal_seed_explanation" = "Ini adalah kata pemulihan anda. Gunakan untuk mengembalikan atau memindahkan Session ID anda ke perangkat lain";
@@ -2704,10 +2676,6 @@
 
 "vc_view_my_qr_code_explanation" = "Ini adalah kode QR anda. Pengguna lain bisa memindainya untuk memulai percakapan dengan anda";
 "vc_view_my_qr_code_share_title" = "Bagikan kode QR";
-
-"session_reset_banner_message" = "Apakah anda ingin mengembalikan session dengan %@";
-"session_reset_banner_dismiss_button_title" = "Batalkan";
-"session_reset_banner_restore_button_title" = "Kembalikan";
 
 "vc_contact_selection_contacts_title" = "Kontak";
 "vc_contact_selection_closed_groups_title" = "Grup tertutup";

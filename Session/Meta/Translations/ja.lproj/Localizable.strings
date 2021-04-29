@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "QR コードをスキャンする";
 "vc_create_private_chat_scan_qr_code_explanation" = "ユーザーの QR コードをスキャンして、Session を開始します。QR コードは、アカウント設定の QR コードアイコンをタップすると見つかります。";
 
-"vc_enter_public_key_text_field_hint" = "受信者の Session ID を入力してください";
 "vc_enter_public_key_explanation" = "ユーザーは、アカウント設定に移動して「Session ID を共有」をタップするか、QR コードを共有することで、Session ID を共有できます。";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session で QR コードをスキャンするにはカメラへのアクセスが必要です";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "新しいクローズドグループ";
 "vc_create_closed_group_text_field_hint" = "グループ名を入力してください";
-"vc_create_closed_group_explanation" = "クローズドグループは最大 10 人のメンバーをサポートし、1 対 1 の Session と同じプライバシー保護を提供します。";
 "vc_create_closed_group_empty_state_message" = "まだ連絡先がありません";
 "vc_create_closed_group_empty_state_button_title" = "Session を開始する";
 "vc_create_closed_group_group_name_missing_error" = "グループ名を入力してください";
@@ -2663,34 +2661,7 @@
 
 "vc_chat_settings_title" = "チャット";
 
-"vc_linked_devices_title" = "端末";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "端末リンクの制限に達しました";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "現在、複数の端末をリンクすることはできません。";
-"vc_linked_devices_unlinking_failed_message" = "端末のリンクを解除できませんでした。";
-"vc_linked_devices_unlinking_successful_message" = "端末は正常にリンク解除されました";
-"vc_linked_devices_linking_failed_message" = "端末をリンクできませんでした。";
-"vc_linked_devices_empty_state_message" = "まだ端末をリンクしていません";
-"vc_linked_devices_empty_state_button_title" = "端末をリンクする（ベータ）";
-
 "preferences_notifications_strategy_category_title" = "通知戦略";
-
-"modal_link_device_slave_mode_title_1" = "承認待ち";
-"modal_link_device_slave_mode_title_2" = "承認された端末リンク";
-"modal_link_device_slave_mode_explanation_1" = "以下の単語が、他の端末に表示されている単語と一致することを確認してください。";
-"modal_link_device_slave_mode_explanation_2" = "端末が正常にリンクされました";
-
-"modal_link_device_master_mode_title_1" = "端末待ち";
-"modal_link_device_master_mode_title_2" = "リンクリクエストを受け取りました";
-"modal_link_device_master_mode_title_3" = "端末リンクの認証";
-"modal_link_device_master_mode_explanation_1" = "他の端末でSessionをダウンロードし、ランディング画面の下部にある「既存のアカウントにリンクする」をタップします。他の端末に既存のアカウントがある場合は、最初にそのアカウントを削除する必要があります。";
-"modal_link_device_master_mode_explanation_2" = "以下の単語が、他の端末に表示されている単語と一致することを確認してください。";
-"modal_link_device_master_mode_explanation_3" = "端末リンクが作成されるまでお待ちください。これには 1 分ほどかかる場合があります。";
-"modal_link_device_master_mode_authorize_button_title" = "承認する";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "名前を変更する";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "端末のリンクを解除する";
-
-"modal_edit_device_name_text_field_hint" = "名前を入力する";
 
 "modal_seed_title" = "あなたのリカバリーフレーズ";
 "modal_seed_explanation" = "これはあなたのリカバリーフレーズです。これにより、Session ID を新しい端末に復元または移行できます。";
@@ -2705,10 +2676,6 @@
 
 "vc_view_my_qr_code_explanation" = "これはあなたの QR コードです。他のユーザーはそれをスキャンして、あなたとの Session を開始できます。";
 "vc_view_my_qr_code_share_title" = "QR コードを共有する";
-
-"session_reset_banner_message" = "...%@との Session を復元しますか？";
-"session_reset_banner_dismiss_button_title" = "はねつける";
-"session_reset_banner_restore_button_title" = "戻す";
 
 "vc_contact_selection_contacts_title" = "連絡先";
 "vc_contact_selection_closed_groups_title" = "非公開グループ";

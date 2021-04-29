@@ -2618,7 +2618,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Сканировать QR-код";
 "vc_create_private_chat_scan_qr_code_explanation" = "Сканируйте QR-код пользователя, чтобы начать сессию. QR-коды можно найти, нажав значок QR-кода в настройках учетной записи.";
 
-"vc_enter_public_key_text_field_hint" = "Введите Session ID получателя";
 "vc_enter_public_key_explanation" = "Пользователи могут поделиться своим Session ID, зайдя в настройки своей учетной записи и нажав «Отправить Session ID», или поделившись своим QR-кодом.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session нужен доступ к камере для сканирования QR-кодов";
@@ -2626,7 +2625,6 @@
 
 "vc_create_closed_group_title" = "Новая закрытая группа";
 "vc_create_closed_group_text_field_hint" = "Введите название группы";
-"vc_create_closed_group_explanation" = "Закрытые группы поддерживают до 10 участников и обеспечивают те же меры защиты конфиденциальности, что и сессии один-на-один.";
 "vc_create_closed_group_empty_state_message" = "У вас еще нет контактов";
 "vc_create_closed_group_empty_state_button_title" = "Начать Сессию";
 "vc_create_closed_group_group_name_missing_error" = "Пожалуйста, введите название группы";
@@ -2662,34 +2660,7 @@
 
 "vc_chat_settings_title" = "Чаты";
 
-"vc_linked_devices_title" = "Устройства";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Достигнуто предельное кол-во устройств";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "В настоящее время запрещено привязывать более одного устройства.";
-"vc_linked_devices_unlinking_failed_message" = "Не удалось отвязать устройство.";
-"vc_linked_devices_unlinking_successful_message" = "Ваше устройство успешно отвязано";
-"vc_linked_devices_linking_failed_message" = "Не удалось привязать устройство.";
-"vc_linked_devices_empty_state_message" = "Вы еще не привязали ни одного устройства";
-"vc_linked_devices_empty_state_button_title" = "Привязать устройство";
-
 "preferences_notifications_strategy_category_title" = "Метод уведомлений";
-
-"modal_link_device_slave_mode_title_1" = "Ожидание авторизации";
-"modal_link_device_slave_mode_title_2" = "Привязка устройства авторизована";
-"modal_link_device_slave_mode_explanation_1" = "Пожалуйста, убедитесь, что слова ниже соответствуют тем, которые показаны на вашем другом устройстве.";
-"modal_link_device_slave_mode_explanation_2" = "Ваше устройство успешно привязано";
-
-"modal_link_device_master_mode_title_1" = "Ожидание устройства";
-"modal_link_device_master_mode_title_2" = "Запрос на привязывание получен";
-"modal_link_device_master_mode_title_3" = "Ссылка на авторизирующее устройство";
-"modal_link_device_master_mode_explanation_1" = "Загрузите Session на другое устройство и нажмите «Привязать к существующей учетной записи» в нижней части целевого экрана. Если у вас уже есть учетная запись на другом устройстве, вам придется сначала удалить ту учетную запись.";
-"modal_link_device_master_mode_explanation_2" = "Пожалуйста, убедитесь, что слова ниже соответствуют тем, которые показаны на вашем другом устройстве.";
-"modal_link_device_master_mode_explanation_3" = "Пожалуйста, подождите, пока будет создана ссылка на устройство. Это может занять до минуты.";
-"modal_link_device_master_mode_authorize_button_title" = "Авторизация";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Сменить имя";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Отключить устройство";
-
-"modal_edit_device_name_text_field_hint" = "Введите имя";
 
 "modal_seed_title" = "Ваша секретная фраза";
 "modal_seed_explanation" = "Это ваша секретная фраза. С ее помощью вы можете восстановить или перенести свой Session ID на новое устройство.";
@@ -2704,10 +2675,6 @@
 
 "vc_view_my_qr_code_explanation" = "Это ваш QR-код. Другие пользователи могут сканировать его, чтобы начать диалог с вами.";
 "vc_view_my_qr_code_share_title" = "Поделиться QR-кодом";
-
-"session_reset_banner_message" = "Хотите восстановить сессию с %@?";
-"session_reset_banner_dismiss_button_title" = "Отклонить";
-"session_reset_banner_restore_button_title" = "Восстановить";
 
 "vc_contact_selection_contacts_title" = "Контакты";
 "vc_contact_selection_closed_groups_title" = "Закрытые группы";

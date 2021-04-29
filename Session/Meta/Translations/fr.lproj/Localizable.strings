@@ -2628,7 +2628,6 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scanner un Code QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scannez le code QR d'un utilisateur pour démarrer une session. Les codes QR peuvent se trouver en appuyant sur l'icône du code QR dans les paramètres du compte.";
 
-"vc_enter_public_key_text_field_hint" = "Saisissez le Session ID du destinataire";
 "vc_enter_public_key_explanation" = "Les utilisateurs peuvent partager leur Session ID depuis les paramètres du compte ou en utilisant le code QR.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session a besoin d'accéder à l'appareil photo pour scanner les codes QR";
@@ -2636,7 +2635,6 @@
 
 "vc_create_closed_group_title" = "Nouveau groupe privé";
 "vc_create_closed_group_text_field_hint" = "Saisissez un nom de groupe";
-"vc_create_closed_group_explanation" = "Les groupes privés prennent en charge jusqu'à 10 membres et offrent le même niveau de confidentialité que les sessions individuelles.";
 "vc_create_closed_group_empty_state_message" = "Vous n'avez pas encore de contacts";
 "vc_create_closed_group_empty_state_button_title" = "Démarrer une session";
 "vc_create_closed_group_group_name_missing_error" = "Veuillez saisir un nom de groupe";
@@ -2672,34 +2670,7 @@
 
 "vc_chat_settings_title" = "Chats";
 
-"vc_linked_devices_title" = "Appareils reliés";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Limite d'appareils atteinte";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Il n'est actuellement pas possible de relier plus d'un appareil.";
-"vc_linked_devices_unlinking_failed_message" = "Impossible de déconnecter l'appareil.";
-"vc_linked_devices_unlinking_successful_message" = "Votre appareil a été déconnecté avec succès";
-"vc_linked_devices_linking_failed_message" = "Impossible de relier l'appareil.";
-"vc_linked_devices_empty_state_message" = "Vous n'avez encore relié aucun appareil";
-"vc_linked_devices_empty_state_button_title" = "Relier un appareil";
-
 "preferences_notifications_strategy_category_title" = "Stratégie de notification";
-
-"modal_link_device_slave_mode_title_1" = "En attente d'autorisation";
-"modal_link_device_slave_mode_title_2" = "Liaison de l'appareil autorisée";
-"modal_link_device_slave_mode_explanation_1" = "Veuillez vérifier que les mots ci-dessous correspondent à ceux affichés sur votre autre appareil.";
-"modal_link_device_slave_mode_explanation_2" = "Votre appareil a été connecté avec succès";
-
-"modal_link_device_master_mode_title_1" = "En attente d'une demande de liaison";
-"modal_link_device_master_mode_title_2" = "Demande de liaison reçue";
-"modal_link_device_master_mode_title_3" = "Autorisation de la liaison de l'appareil";
-"modal_link_device_master_mode_explanation_1" = "Téléchargez Session sur votre autre appareil, puis cliquez sur \"Relier à un compte existant\" en bas de l'écran de d’accueil. Si vous possédez déjà un compte sur votre autre appareil, vous devrez d'abord le supprimer.";
-"modal_link_device_master_mode_explanation_2" = "Veuillez vérifier que les mots ci-dessous correspondent à ceux affichés sur votre autre appareil.";
-"modal_link_device_master_mode_explanation_3" = "Veuillez patienter pendant la création de la liaison. Cela peut prendre jusqu'à une minute.";
-"modal_link_device_master_mode_authorize_button_title" = "Autoriser";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Modifier le nom";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Déconnecter l'appareil";
-
-"modal_edit_device_name_text_field_hint" = "Saisissez un nom";
 
 "modal_seed_title" = "Votre phrase de récupération";
 "modal_seed_explanation" = "Ceci est votre phrase de récupération. Elle vous permet de restaurer ou migrer votre Session ID vers un nouvel appareil.";
@@ -2714,10 +2685,6 @@
 
 "vc_view_my_qr_code_explanation" = "Ceci est votre code QR. Les autres utilisateurs peuvent le scanner pour démarrer une session avec vous.";
 "vc_view_my_qr_code_share_title" = "Partager le code QR";
-
-"session_reset_banner_message" = "Voulez-vous restaurer votre session avec %@ ?";
-"session_reset_banner_dismiss_button_title" = "Fermer";
-"session_reset_banner_restore_button_title" = "Restaurer";
 
 "vc_contact_selection_contacts_title" = "Contacts";
 "vc_contact_selection_closed_groups_title" = "Groupes privés";
