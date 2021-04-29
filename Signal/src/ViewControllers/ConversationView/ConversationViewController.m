@@ -1370,7 +1370,7 @@ typedef enum : NSUInteger {
     [self removeGroupCallTooltip];
 
     // We initiated a call, so if there was a pending message request we should accept it.
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
 
     [GroupCallViewController presentLobbyForThread:(TSGroupThread *)self.thread];
 }
@@ -1420,7 +1420,7 @@ typedef enum : NSUInteger {
     }
 
     // We initiated a call, so if there was a pending message request we should accept it.
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
 
     [self.outboundIndividualCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
@@ -2370,8 +2370,9 @@ typedef enum : NSUInteger {
     __block BOOL didAddToProfileWhitelist;
     TSThread *thread = self.thread;
     DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread
-                                                                                      transaction:transaction];
+        didAddToProfileWhitelist =
+            [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer:thread
+                                                                                 transaction:transaction];
 
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
@@ -2777,7 +2778,8 @@ typedef enum : NSUInteger {
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         // We updated the group, so if there was a pending message request we should accept it.
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread transaction:transaction];
+        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer:self.thread
+                                                                             transaction:transaction];
     });
 }
 
@@ -2915,11 +2917,11 @@ typedef enum : NSUInteger {
             }
         }
 
-        BOOL didAddToProfileWhitelist =
-            [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+        BOOL didAddToProfileWhitelist = [ThreadUtil
+            addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
 
         __block TSOutgoingMessage *message;
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithBody:messageBody
                                         mediaAttachments:attachments
                                                   thread:self.thread
@@ -3436,11 +3438,11 @@ typedef enum : NSUInteger {
         return;
     }
 
-    BOOL didAddToProfileWhitelist =
-        [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+    BOOL didAddToProfileWhitelist = [ThreadUtil
+        addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithBody:messageBody
                                               thread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply
@@ -3923,9 +3925,13 @@ typedef enum : NSUInteger {
             return;
         }
 
+        BOOL didAddToProfileWhitelist = [ThreadUtil
+            addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:strongSelf
+                                                                                                          .thread];
+
         __block TSOutgoingMessage *message;
 
-        [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             message = [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:location.messageText
                                                                                     ranges:MessageBodyRanges.empty]
                                         mediaAttachments:@[ attachment ]
@@ -3936,6 +3942,10 @@ typedef enum : NSUInteger {
         }];
 
         [strongSelf messageWasSent:message];
+
+        if (didAddToProfileWhitelist) {
+            [strongSelf ensureBannerState];
+        }
     });
 }
 

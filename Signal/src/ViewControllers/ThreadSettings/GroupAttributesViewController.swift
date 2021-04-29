@@ -71,11 +71,6 @@ class GroupAttributesViewController: OWSTableViewController2 {
         helper.delegate = self
         helper.buildContents(avatarViewHelperDelegate: self)
 
-        let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
-        helper.avatarWrapper.addSubview(cameraButton)
-        cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
-        cameraButton.autoPinEdge(toSuperviewEdge: .bottom)
-
         updateTableContents()
     }
 

@@ -64,7 +64,7 @@ public extension DebugUIMessages {
         let members = uuidMembers + [TSAccountManager.localAddress!]
         let groupName = "UUID Group"
 
-        _ = GroupManager.localCreateNewGroup(members: members, name: groupName, shouldSendMessage: true)
+        _ = GroupManager.localCreateNewGroup(members: members, name: groupName, disappearingMessageToken: .disabledToken, shouldSendMessage: true)
     }
 }
 

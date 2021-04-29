@@ -131,20 +131,17 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
-        // TODO: We need to handle unsavedOutgoingMessages, ie. optimistically
-        //       inserting messages into the "view model" so that sent messages
-        //       appear as quickly as possible.
-        //
-        //            if (self.unsavedOutgoingMessages.count > 0) {
-        //                for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
-        //                    if ([interactionIds containsObject:outgoingMessage.uniqueId]) {
-        //                        owsFailDebug("Duplicate interaction(2): %@", outgoingMessage.uniqueId);
-        //                        continue;
-        //                    }
-        //                    tryToAddViewItemForInteraction(outgoingMessage);
-        //                    [interactionIds addObject:outgoingMessage.uniqueId];
-        //                }
-        //            }
+        if messageMapping.shouldShowDefaultDisappearingMessageTimer(
+            thread: thread,
+            transaction: transaction
+        ) {
+            let interaction = DefaultDisappearingMessageTimerInteraction(
+                thread: thread,
+                timestamp: NSDate.ows_millisecondTimeStamp() - 1
+            )
+            let item = addItem(interaction: interaction)
+            owsAssertDebug(item != nil)
+        }
 
         if let typingIndicatorsSender = viewStateSnapshot.typingIndicatorsSender {
             let interaction = TypingIndicatorInteraction(thread: thread,
@@ -623,6 +620,9 @@ fileprivate extension CVMessageMapping {
         !canLoadOlder && Self.contactsManagerImpl.shouldShowUnknownThreadWarning(thread: thread,
                                                                                  transaction: transaction)
     }
+    func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        GRDBThreadFinder.shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction.unwrapGrdbRead)
+    }
 }
 
 // MARK: -
@@ -655,7 +655,7 @@ private class ItemBuilder {
 
     var canShowDate: Bool {
         switch interaction.interactionType() {
-        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning:
+        case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return false
         case .info:
             guard let infoMessage = interaction as? TSInfoMessage else {

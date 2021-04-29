@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,10 +66,13 @@ public class DisappearingMessageToken: MTLModel {
 // MARK: -
 
 public extension OWSDisappearingMessagesConfiguration {
+    @objc
     var asToken: DisappearingMessageToken {
         return DisappearingMessageToken(isEnabled: isEnabled, durationSeconds: durationSeconds)
     }
 
+    @objc
+    @discardableResult
     static func applyToken(_ token: DisappearingMessageToken,
                            toThread thread: TSThread,
                            transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
@@ -78,6 +81,8 @@ public extension OWSDisappearingMessagesConfiguration {
         return oldConfiguration.applyToken(token, transaction: transaction)
     }
 
+    @objc
+    @discardableResult
     func applyToken(_ token: DisappearingMessageToken,
                     transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
         let newConfiguration: OWSDisappearingMessagesConfiguration

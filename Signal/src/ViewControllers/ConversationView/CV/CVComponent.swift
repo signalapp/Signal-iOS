@@ -302,6 +302,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case threadDetails
     case failedOrPendingDownloads
     case unknownThreadWarning
+    case defaultDisappearingMessageTimer
 
     public var description: String {
         switch self {
@@ -349,6 +350,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".failedOrPendingDownloads"
         case .sendFailureBadge:
             return ".sendFailureBadge"
+        case .defaultDisappearingMessageTimer:
+            return ".defaultDisappearingMessageTimer"
         }
     }
 

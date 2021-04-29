@@ -40,6 +40,7 @@ class GroupAttributesEditorHelper: NSObject {
     private let iconViewSize: UInt
 
     private let cameraButton = GroupAttributesEditorHelper.buildCameraButtonForCenter()
+    private let cameraCornerButton = GroupAttributesEditorHelper.buildCameraButtonForCorner()
 
     let nameTextField = UITextField()
 
@@ -101,6 +102,10 @@ class GroupAttributesEditorHelper: NSObject {
         avatarWrapper.addSubview(cameraButton)
         cameraButton.autoCenterInSuperview()
 
+        avatarWrapper.addSubview(cameraCornerButton)
+        cameraCornerButton.autoPinEdge(toSuperviewEdge: .trailing)
+        cameraCornerButton.autoPinEdge(toSuperviewEdge: .bottom)
+
         nameTextField.text = groupNameOriginal
         nameTextField.font = .ows_dynamicTypeBody
         nameTextField.backgroundColor = .clear
@@ -143,7 +148,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     public static func buildCameraButtonForCenter() -> UIView {
         let cameraImageView = UIImageView()
-        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: Theme.accentBlueColor)
+        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: Theme.primaryIconColor)
         let iconSize: CGFloat = 32
         cameraImageView.autoSetDimensions(to: CGSize(square: iconSize))
         return cameraImageView
@@ -152,12 +157,16 @@ class GroupAttributesEditorHelper: NSObject {
     private func updateAvatarView(groupAvatar: GroupAvatar?) {
         if let groupAvatar = groupAvatar {
             avatarImageView.image = groupAvatar.image
-            avatarImageView.backgroundColor = nil
+            avatarImageView.layer.borderWidth = 0
+            avatarImageView.layer.borderColor = nil
             cameraButton.isHidden = true
+            cameraCornerButton.isHidden = false
         } else {
             avatarImageView.image = nil
-            avatarImageView.backgroundColor = Theme.washColor
+            avatarImageView.layer.borderWidth = 2
+            avatarImageView.layer.borderColor = Theme.outlineColor.cgColor
             cameraButton.isHidden = false
+            cameraCornerButton.isHidden = true
         }
     }
 

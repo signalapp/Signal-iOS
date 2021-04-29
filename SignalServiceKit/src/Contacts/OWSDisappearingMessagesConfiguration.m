@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -8,6 +8,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 @interface OWSDisappearingMessagesConfiguration ()
 
@@ -96,44 +98,31 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [[self alloc] initWithThreadId:threadId
-                                  enabled:NO
+                                  enabled:OWSDisappearingMessagesConfigurationDefaultExpirationDuration > 0
                           durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
 }
 
-+ (NSArray<NSNumber *> *)validDurationsSeconds
++ (instancetype)fetchOrBuildDefaultUniversalConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchOrBuildDefaultWithThreadId:kUniversalTimerThreadId transaction:transaction];
+}
+
++ (NSArray<NSNumber *> *)presetDurationsSeconds
 {
     return @[
-        @(5 * kSecondInterval),
-        @(10 * kSecondInterval),
         @(30 * kSecondInterval),
-        @(1 * kMinuteInterval),
         @(5 * kMinuteInterval),
-        @(30 * kMinuteInterval),
         @(1 * kHourInterval),
-        @(6 * kHourInterval),
-        @(12 * kHourInterval),
+        @(8 * kHourInterval),
         @(24 * kHourInterval),
-        @(1 * kWeekInterval)
+        @(1 * kWeekInterval),
+        @(4 * kWeekInterval)
     ];
 }
 
 + (uint32_t)maxDurationSeconds
 {
-    static uint32_t max;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        max = [[self.validDurationsSeconds valueForKeyPath:@"@max.intValue"] unsignedIntValue];
-
-        // It's safe to update this assert if we add a larger duration
-        OWSAssertDebug(max == 1 * kWeekInterval);
-    });
-
-    return max;
-}
-
-- (NSUInteger)durationIndex
-{
-    return [[self.class validDurationsSeconds] indexOfObject:@(self.durationSeconds)];
+    return kYearInterval;
 }
 
 - (NSString *)durationString

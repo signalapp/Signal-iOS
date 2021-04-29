@@ -1469,8 +1469,18 @@ extension GroupUpdateCopy {
 
         guard let oldToken = oldToken else {
             if newToken.isEnabled {
-                let format = NSLocalizedString("DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
-                                               comment: "Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context.")
+                let format: String
+                if updater == .localUser {
+                    format = NSLocalizedString(
+                        "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                        comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
+                    )
+                } else {
+                    format = NSLocalizedString(
+                        "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
+                        comment: "Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context."
+                    )
+                }
                 addItem(.disappearingMessagesState_enabled, format: format, durationString)
             }
             return
@@ -1831,7 +1841,7 @@ extension GroupUpdateCopy {
 
     // MARK: - Updater
 
-    enum Updater {
+    enum Updater: Equatable {
         case localUser
         case otherUser(updaterName: String, updaterAddress: SignalServiceAddress)
         case unknown

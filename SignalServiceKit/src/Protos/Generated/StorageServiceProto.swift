@@ -2555,6 +2555,9 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if let _value = payments {
             builder.setPayments(_value)
         }
+        if hasUniversalExpireTimer {
+            builder.setUniversalExpireTimer(universalExpireTimer)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2663,6 +2666,10 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setPayments(_ valueParam: StorageServiceProtoAccountRecordPayments) {
             proto.payments = valueParam.proto
+        }
+
+        public mutating func setUniversalExpireTimer(_ valueParam: UInt32) {
+            proto.universalExpireTimer = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2802,6 +2809,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return proto.preferContactAvatars
     }
     public var hasPreferContactAvatars: Bool {
+        return true
+    }
+
+    public var universalExpireTimer: UInt32 {
+        return proto.universalExpireTimer
+    }
+    public var hasUniversalExpireTimer: Bool {
         return true
     }
 

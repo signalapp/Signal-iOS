@@ -575,6 +575,7 @@ NS_ASSUME_NONNULL_BEGIN
         groupId:nil
         name:NSUUID.UUID.UUIDString
         avatarData:nil
+        disappearingMessageToken:DisappearingMessageToken.disabledToken
         newGroupSeed:nil
         shouldSendMessage:NO
         success:^(TSGroupThread *thread) { [SignalApp.shared presentConversationForThread:thread animated:YES]; }

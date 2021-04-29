@@ -171,6 +171,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let paymentsScrubDetails = false
 
+    @objc
+    public static let universalDisappearingMessages = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)

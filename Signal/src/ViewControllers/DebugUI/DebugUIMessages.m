@@ -3484,7 +3484,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration presetDurationsSeconds][0];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
@@ -3498,7 +3498,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration presetDurationsSeconds][0];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
@@ -3512,7 +3512,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     {
-        NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
+        NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration presetDurationsSeconds] lastObject];
         OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
             [thread disappearingMessagesConfigurationWithTransaction:transaction];
         disappearingMessagesConfiguration =
@@ -4362,14 +4362,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         groupId:nil
         name:groupName
         avatarData:nil
+        disappearingMessageToken:DisappearingMessageToken.disabledToken
         newGroupSeed:nil
         shouldSendMessage:YES
-        success:^(TSGroupThread *thread) {
-            success(thread);
-        }
-        failure:^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-        }];
+        success:^(TSGroupThread *thread) { success(thread); }
+        failure:^(NSError *error) { OWSFailDebug(@"Error: %@", error); }];
 }
 
 + (void)testIndicScriptsInThread:(TSThread *)thread

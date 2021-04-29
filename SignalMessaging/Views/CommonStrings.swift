@@ -59,6 +59,9 @@ import Foundation
     static public let copyButton = NSLocalizedString("BUTTON_COPY", comment: "Label for the 'copy' button.")
 
     @objc
+    static public let setButton = NSLocalizedString("BUTTON_SET", comment: "Label for the 'set' button.")
+
+    @objc
     static public let editButton = NSLocalizedString("BUTTON_EDIT", comment: "Label for the 'edit' button.")
 
     @objc
