@@ -39,6 +39,8 @@ class GifPickerCell: UICollectionViewCell {
         [imageView, mp4View, activityIndicator].forEach {
             contentView.addSubview($0)
         }
+        imageView.isHidden = true
+        mp4View.isHidden = true
 
         imageView.autoPinEdgesToSuperviewEdges()
         mp4View.autoPinEdgesToSuperviewEdges()
@@ -197,12 +199,15 @@ class GifPickerCell: UICollectionViewCell {
         if asset.assetDescription.fileExtension == "mp4",
            let video = LoopingVideo(url: URL(fileURLWithPath: asset.filePath)) {
             mp4View.video = video
+            mp4View.isHidden = false
         } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageGif),
                   let image = YYImage(contentsOfFile: asset.filePath) {
             imageView.image = image
+            imageView.isHidden = false
         } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageJpeg),
                   let image = UIImage(contentsOfFile: asset.filePath) {
             imageView.image = image
+            imageView.isHidden = false
         } else {
             owsFailDebug("could not load asset.")
             clearViewState()
@@ -212,7 +217,9 @@ class GifPickerCell: UICollectionViewCell {
 
     private func clearViewState() {
         imageView.image = nil
+        imageView.isHidden = true
         mp4View.video = nil
+        mp4View.isHidden = true
         activityIndicator.stopAnimating()
     }
 }
