@@ -4526,6 +4526,31 @@ typedef enum : NSUInteger {
     [self prepareDetailViewForInteractivePresentation:itemViewModel];
 }
 
+- (void (^)(void))cvc_beginCellAnimationWithMaximumDuration:(NSTimeInterval)maximumDuration
+{
+    OWSAssertIsOnMainThread();
+
+    NSUUID *identifier = [NSUUID new];
+    [self.viewState beginCellAnimationWithIdentifier:identifier];
+
+    __block NSTimer *_Nullable timer;
+    __weak ConversationViewController *weakSelf = self;
+    void (^endAnimation)(void) = ^{
+        OWSAssertIsOnMainThread();
+        [timer invalidate];
+        [weakSelf.viewState endCellAnimationWithIdentifier:identifier];
+        [weakSelf.loadCoordinator enqueueReload];
+    };
+
+    // Automatically unblock loads once the max duration is reached, even
+    // if the cell didn't tell us it finished.
+    timer = [NSTimer scheduledTimerWithTimeInterval:maximumDuration
+                                            repeats:NO
+                                              block:^(NSTimer *timer) { endAnimation(); }];
+
+    return endAnimation;
+}
+
 - (BOOL)isConversationPreview
 {
     return NO;

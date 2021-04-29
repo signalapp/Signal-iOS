@@ -902,6 +902,10 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
+        return {}
+    }
+
     var isConversationPreview: Bool { true }
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }

@@ -76,6 +76,19 @@ public class CVViewState: NSObject {
     @objc
     public var lastSearchedText: String?
 
+    @objc
+    public var activeCellAnimations = Set<UUID>()
+
+    @objc
+    public func beginCellAnimation(identifier: UUID) {
+        activeCellAnimations.insert(identifier)
+    }
+
+    @objc
+    public func endCellAnimation(identifier: UUID) {
+        activeCellAnimations.remove(identifier)
+    }
+
     var bottomViewType: CVCBottomViewType = .none
 
     @objc

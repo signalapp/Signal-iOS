@@ -64,7 +64,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         owsAssertDebug(attachment.isAudio)
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
         let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
-                                                isIncoming: isIncoming)
+                                                isIncoming: isIncoming,
+                                                componentDelegate: componentDelegate)
         if let incomingMessage = interaction as? TSIncomingMessage {
             audioMessageView.setViewed(incomingMessage.wasViewed, animated: false)
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
@@ -255,6 +256,8 @@ extension CVComponentAudioAttachment: CVAudioPlayerListener {
         guard attachmentId == audioAttachment.attachment.uniqueId else { return }
         cvAudioPlayer.autoplayNextAudioAttachment(nextAudioAttachment)
     }
+
+    func audioPlayerDidMarkViewed(attachmentId: String) {}
 }
 
 // MARK: -

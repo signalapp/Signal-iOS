@@ -75,8 +75,9 @@ public class AudioAttachment: NSObject {
     }
 
     @objc
-    public func markOwningMessageAsViewed() {
-        guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return }
+    public func markOwningMessageAsViewed() -> Bool {
+        AssertIsOnMainThread()
+        guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return false }
         databaseStorage.asyncWrite { transaction in
             let thread = incomingMessage.thread(transaction: transaction)
             let circumstance: OWSReceiptCircumstance =
@@ -90,5 +91,6 @@ public class AudioAttachment: NSObject {
                 transaction: transaction
             )
         }
+        return true
     }
 }

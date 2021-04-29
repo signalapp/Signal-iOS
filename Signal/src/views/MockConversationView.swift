@@ -363,6 +363,10 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
+        return {}
+    }
+
     var view: UIView { self }
 
     var isConversationPreview: Bool { true }

@@ -25,7 +25,6 @@ typedef NS_ENUM(NSInteger, OWSReceiptCircumstance) {
 };
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
-extern NSString *const kIncomingMessageMarkedAsViewedNotification;
 
 #pragma mark -
 

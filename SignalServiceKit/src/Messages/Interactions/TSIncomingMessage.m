@@ -246,11 +246,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                             block:^(TSIncomingMessage *message) { message.viewed = YES; }];
 
     [OWSReceiptManager.shared messageWasViewed:self thread:thread circumstance:circumstance transaction:transaction];
-
-    [transaction addAsyncCompletion:^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsViewedNotification
-                                                                 object:self];
-    }];
 }
 
 - (SignalServiceAddress *)authorAddress

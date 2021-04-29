@@ -7,6 +7,7 @@ import Foundation
 protocol CVAudioPlayerListener {
     func audioPlayerStateDidChange(attachmentId: String)
     func audioPlayerDidFinish(attachmentId: String)
+    func audioPlayerDidMarkViewed(attachmentId: String)
 }
 
 // MARK: -
@@ -108,7 +109,13 @@ public class CVAudioPlayer: NSObject {
             owsFailDebug("Could not play audio attachment.")
             return
         }
-        audioAttachment.markOwningMessageAsViewed()
+
+        if audioAttachment.markOwningMessageAsViewed() {
+            for listener in listeners.elements {
+                listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
+            }
+        }
+
         audioPlayback.togglePlayState()
     }
 
@@ -138,7 +145,12 @@ public class CVAudioPlayer: NSObject {
                 guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
                 guard audioPlayback.audioPlaybackState != .playing else { return }
 
-                audioAttachment.markOwningMessageAsViewed()
+                if audioAttachment.markOwningMessageAsViewed() {
+                    for listener in self?.listeners.elements ?? [] {
+                        listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
+                    }
+                }
+
                 audioPlayback.setProgress(0)
                 audioPlayback.togglePlayState()
             }

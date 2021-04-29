@@ -19,7 +19,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
-NSString *const kIncomingMessageMarkedAsViewedNotification = @"kIncomingMessageMarkedAsViewedNotification";
 
 #pragma mark -
 

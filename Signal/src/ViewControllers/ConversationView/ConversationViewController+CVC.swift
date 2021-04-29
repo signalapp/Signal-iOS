@@ -64,6 +64,11 @@ extension ConversationViewController {
     public var isLayoutApplyingUpdate: Bool {
         layout.isApplyingUpdate
     }
+
+    @objc
+    public var areCellsAnimating: Bool {
+        !viewState.activeCellAnimations.isEmpty
+    }
 }
 
 // MARK: -

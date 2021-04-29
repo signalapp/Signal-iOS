@@ -28,6 +28,7 @@ class AudioMessageView: ManualStackView {
     }
 
     private let isIncoming: Bool
+    private weak var componentDelegate: CVComponentDelegate!
 
     private let playedDotAnimation = AnimationView(name: "audio-played-dot")
     private let playedDotContainer = OWSLayerView()
@@ -57,20 +58,12 @@ class AudioMessageView: ManualStackView {
     }
 
     @objc
-    init(audioAttachment: AudioAttachment, isIncoming: Bool) {
+    init(audioAttachment: AudioAttachment, isIncoming: Bool, componentDelegate: CVComponentDelegate) {
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
+        self.componentDelegate = componentDelegate
 
         super.init(name: "AudioMessageView")
-
-        if let owningMessage = audioAttachment.owningMessage as? TSIncomingMessage {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(viewedStateChanged),
-                name: NSNotification.Name.incomingMessageMarkedAsViewed,
-                object: owningMessage
-            )
-        }
     }
 
     public func configureForRendering(cellMeasurement: CVCellMeasurement,
@@ -459,16 +452,13 @@ class AudioMessageView: ManualStackView {
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
 
         if animated {
-            playPauseAnimation.play(toProgress: destination)
+            let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
+            playPauseAnimation.play(toProgress: destination) { _ in
+                endCellAnimation()
+            }
         } else {
             playPauseAnimation.currentProgress = destination
         }
-    }
-
-    @objc
-    private func viewedStateChanged() {
-        guard let incomingMessage = audioAttachment.owningMessage as? TSIncomingMessage else { return }
-        setViewed(incomingMessage.wasViewed, animated: true)
     }
 
     private func updateViewedState(animated: Bool = true) {
@@ -481,7 +471,10 @@ class AudioMessageView: ManualStackView {
         let destination: AnimationProgressTime = isViewed ? 1 : 0
 
         if animated {
-            playedDotAnimation.play(toProgress: destination)
+            let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
+            playedDotAnimation.play(toProgress: destination) { _ in
+                endCellAnimation()
+            }
         } else {
             playedDotAnimation.currentProgress = destination
         }
@@ -537,5 +530,13 @@ extension AudioMessageView: CVAudioPlayerListener {
         AssertIsOnMainThread()
 
         updateContents(animated: true)
+    }
+
+    func audioPlayerDidMarkViewed(attachmentId: String) {
+        AssertIsOnMainThread()
+
+        guard !isViewed, attachmentId == attachment.uniqueId else { return }
+
+        setViewed(true, animated: true)
     }
 }
