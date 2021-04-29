@@ -134,11 +134,6 @@ public class CVViewState: NSObject {
     @objc
     public let backgroundContainer = CVBackgroundContainer()
 
-    @objc
-    public let loadLabel = UILabel()
-    @objc
-    public let startDate = Date()
-
     // MARK: - 
 
     @objc

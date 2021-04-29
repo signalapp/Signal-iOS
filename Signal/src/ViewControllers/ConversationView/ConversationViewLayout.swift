@@ -411,7 +411,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
     }
 
-    // TODO: Remove.
     @objc
     public var isUpdating: Bool {
         isPerformingBatchUpdates || isReloadingData
@@ -584,10 +583,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                      layoutInfoCurrent layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
         let layoutInfoBeforeUpdate = updateScrollContinuity.layoutInfo
         let contentOffsetBeforeUpdate = updateScrollContinuity.contentOffset
-
-        //        guard let scrollContinuityMap = viewState.scrollContinuityMap else {
-        //            return nil
-        //        }
 
         var beforeItemLayoutMap = [String: ItemLayout]()
         for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
