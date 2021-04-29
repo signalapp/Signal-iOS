@@ -56,7 +56,7 @@ private class LoopingVideoPlayer: AVPlayer {
         if let item = currentItem {
             NotificationCenter.default.addObserver(
                 self,
-                selector: #selector(self.playerItemDidPlayToCompletion),
+                selector: #selector(self.playerItemDidPlayToCompletion(_:)),
                 name: .AVPlayerItemDidPlayToEndTime,
                 object: item)
         }
@@ -83,12 +83,13 @@ private class LoopingVideoPlayer: AVPlayer {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(self.playerItemDidPlayToCompletion),
+            selector: #selector(self.playerItemDidPlayToCompletion(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: newItem)
     }
 
-    @objc private func playerItemDidPlayToCompletion() {
+    @objc private func playerItemDidPlayToCompletion(_ notification: NSNotification) {
+        guard (notification.object as AnyObject) === currentItem else { return }
         seek(to: .zero)
         play()
     }
