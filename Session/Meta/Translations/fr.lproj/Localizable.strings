@@ -165,9 +165,21 @@
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Il n’y a aucun résultat.";
 /* No comment provided by engineer. */
+"GROUP_CREATED" = "Le groupe a été créé.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ s’est joint au groupe.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ a quitté le groupe.";
+/* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ a été retiré du groupe. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ ont été retirés du groupe. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Le titre est maintenant « %@ ».";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Le groupe a été mis à jour.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
 /* No comment provided by engineer. */
 "YOU_WERE_REMOVED" = " Vous avez été retiré du groupe. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */

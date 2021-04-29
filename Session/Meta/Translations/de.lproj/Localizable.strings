@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "Fehler. Für erneuten Versuch antippen.";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Keine Ergebnisse.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Gruppe erstellt.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = " %@ ist der Gruppe beigetreten.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ hat die Gruppe verlassen.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Gruppe aktualisiert.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Du hast die Gruppe verlassen.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kannst nicht mehr als %@ Elemente teilen.";
 /* alert title */

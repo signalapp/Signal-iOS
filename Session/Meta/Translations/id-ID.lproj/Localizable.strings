@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "Gagal. Ketuk untuk Mencoba Ulang.";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Tak Ada Hasil.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Grup dibuat.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ tergabung dalam group.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ keluar dari group.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Topik baru saat ini '%@'.";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Group dimutakhirkan";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Anda telah keluar dari group";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 /* alert title */

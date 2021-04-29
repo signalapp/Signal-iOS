@@ -165,9 +165,21 @@
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
 /* No comment provided by engineer. */
+"GROUP_CREATED" = "Group created";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = " %@ joined the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = " %@ left the group. ";
+/* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Title is now '%@'. ";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Group updated.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "You have left the group.";
 /* No comment provided by engineer. */
 "YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -437,3 +449,4 @@
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
 "vc_enter_recovery_phrase_explanation" = "Recovery Phrase";
 "vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
+"vc_home_title" = "Messages"
