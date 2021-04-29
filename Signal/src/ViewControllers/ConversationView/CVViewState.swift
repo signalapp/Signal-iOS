@@ -63,10 +63,13 @@ public class CVViewState: NSObject {
     @objc
     public var scrollingAnimationCompletionTimer: Timer?
     @objc
-    public var hasScrollingAnimation: Bool { scrollingAnimationCompletionTimer != nil }
+    public var hasScrollingAnimation: Bool {
+        AssertIsOnMainThread()
+
+        return scrollingAnimationCompletionTimer != nil
+    }
     @objc
     public var scrollContinuity: ScrollContinuity = .bottom
-    public var scrollContinuityMap: CVScrollContinuityMap?
     public var scrollActionForSizeTransition: CVScrollAction?
     public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
@@ -130,6 +133,11 @@ public class CVViewState: NSObject {
 
     @objc
     public let backgroundContainer = CVBackgroundContainer()
+
+    @objc
+    public let loadLabel = UILabel()
+    @objc
+    public let startDate = Date()
 
     // MARK: - 
 
@@ -558,16 +566,4 @@ public extension ConversationViewController {
     var viewHasEverAppeared: Bool {
         hasViewDidAppearEverCompleted
     }
-}
-
-// MARK: -
-
-public struct CVScrollContinuityMap {
-    let renderStateId: UInt
-
-    public struct Item {
-        let sortId: UInt64
-        let distanceY: CGFloat
-    }
-    public let items: [Item]
 }
