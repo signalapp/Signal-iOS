@@ -540,9 +540,6 @@ public class CVLoadCoordinator: NSObject {
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
         func canLandLoad() -> Bool {
-            if delegate.isLayoutApplyingUpdate {
-                Logger.verbose("----")
-            }
             return !delegate.isLayoutApplyingUpdate
         }
 
