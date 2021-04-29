@@ -1,2610 +1,357 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "以后再说";
-
-/* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "接受新的安全码";
-
-/* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Session 通话";
-
-/* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "邀请朋友使用 Session";
-
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "发送消息";
-
-/* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "分享联系人";
-
-/* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "视频通话";
-
-/* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "添加";
-
-/* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "添加联系人";
-
-/* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "通过手机号码添加";
-
-/* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "添加新成员";
-
-/* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "是否与该群组共享您的资料？";
-
-/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "您希望将此用户添加为联系人吗？";
-
-/* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "是否与该用户共享您的资料？";
-
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "放弃";
-
-/* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "不要保存";
-
-/* No comment provided by engineer. */
-"ALERT_ERROR_TITLE" = "错误";
-
-/* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "保存";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "接听";
-
-/* notification body */
-"APN_Message" = "新消息！";
-
-/* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Session 无法启动。恳请您将调试日志发送至 support@signal.org，以助我们解决此问题。";
-
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "错误";
-
-/* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "输入您的名字";
-
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "以后再说";
-
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ 版已在 App Store 上线。";
-
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Session 有新版本啦";
-
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "更新";
-
-/* Name of application */
-"APPLICATION_NAME" = "Session";
-
-/* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "存档";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "附件";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "注释字数已达上限。";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "添加注释...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "注释";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "文件类型: %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "大小: %@";
-
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "消息字数已满。";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "发送";
-
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "附件";
-
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "下载失败，点击重试。";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "附件发送错误";
-
-/* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "无法转换图片。";
-
-/* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "无法解析该视频。";
-
-/* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "无法识别图片。";
-
-/* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "无法清除图片元数据。";
-
-/* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "无法调整图像大小。";
-
-/* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附件过大。";
-
-/* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "附件中存在无效内容。";
-
-/* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "附件的文件格式无效。";
-
-/* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "无附件。";
-
-/* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "选择或拍摄图片并发送";
-
-/* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "附件";
-
-/* attachment menu option to send contact */
-"ATTACHMENT_MENU_CONTACT_BUTTON" = "联系人";
-
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文件选取失败。";
-
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "请将此文件或目录压缩后再发送。";
-
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支持的文件";
-
-/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "语音消息";
-
-/* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "扬声器";
-
-/* button text for back button */
-"BACK_BUTTON" = "返回";
-
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "无法导出要备份的数据。";
-
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "服务端返回无效响应";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "正在清除备份";
-
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "正在准备备份";
-
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "正在导出数据";
-
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "正在导出备份";
-
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "正在上传备份";
-
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "无法导入备份。";
-
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "正在准备备份";
-
 /* Indicates that the backup import data is being downloaded. */
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "正在下载备份数据";
-
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "备份准备即将完成";
-
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "正在导入备份。";
-
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "正在恢复数据库";
-
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "正在恢复文件";
-
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "有可用的备份";
-
 /* Label for the backup restore description. */
 "BACKUP_RESTORE_DESCRIPTION" = "正在从备份恢复";
-
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "进度";
-
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "状态";
-
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "未知的备份错误";
-
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "您将不会收到此群组的消息或更新。";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "加入黑名单";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "屏蔽并退出“%@”群组？";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "屏蔽 %@？";
-
-/* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "已屏蔽的群组";
-
-/* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "已屏蔽的用户";
-
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "从黑名单中移除";
-
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "现有成员可再次将您加入群组。";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "取消屏蔽此群组？";
-
-/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "从黑名单中移除 %@ 吗？";
-
-/* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "加入黑名单";
-
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "已屏蔽 %@。";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "该用户已被加入黑名单";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "群组已屏蔽";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "不能将自己加入黑名单";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "错误";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "已取消屏蔽 %@。";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "现有成员可再次将您加入群组。";
-
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "加入黑名单";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "将 %@ 加入黑名单";
-
-/* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "被屏蔽的用户将无法向您发起通话，或发送消息。";
-
-/* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "继续";
-
-/* Label for generic done button. */
-"BUTTON_DONE" = "完成";
-
-/* Label for the 'next' button. */
-"BUTTON_NEXT" = "下一步";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "选择";
-
-/* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "重拨";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "您可在 iOS 设置中启用麦克风权限，以允许 Session 拨打电话或录制语音消息。";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "请求访问麦克风";
-
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "来电";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "呼叫";
-
-/* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "未接来电，因为对方的安全码发生了变化。";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "未接来电";
-
-/* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "无应答";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Session %@";
-
-/* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "拨号";
-
-/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "您要呼叫 %@ 吗？";
-
-/* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "呼叫？";
-
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "接听来电";
-
-/* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "音频";
-
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "拒接来电";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "点击这里以启用视频";
-
-/* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "结束通话";
-
-/* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "静音";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "您可在 Session 隐私设置中启用 iOS 呼叫整合，以便在锁屏时接听 Session 来电。";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "您可在 Session 隐私设置中启用 iOS 呼叫整合，以便查看 Session 来电人的名称和号码。";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "下次再说";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "显示隐私设置";
-
-/* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "切换前后摄像头";
-
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "转为语音通话";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "转为视频通话";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "点击回到通话";
-
-/* notification action */
-"CALLBACK_BUTTON_TITLE" = "回拨";
-
-/* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Session 用户";
-
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "此用户在您和他通信之前将不能被验证。";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "错误";
-
-/* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "选择国家";
-
 /* The label for the 'do not restore backup' button. */
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "不要恢复";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "不能确定是否有可恢复的备份。";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "错误";
-
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "恢复";
-
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session无法确定您的iCloud账户状态。请在iOS设置中登陆iCloud账户来备份您在Session中的数据。";
-
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "没有iCloud账户。请在iOS设置中登陆iCloud账户来备份您在Session中的数据。";
-
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Session访问您iCloud账户以备份数据的请求被拒绝了。请在iOS设置中允许Session访问iCloud账户来备份您在Session中的数据。";
-
-/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "选择此对话中发出消息的颜色。";
-
-/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "只有您才能看到所选的颜色。";
-
-/* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "对话颜色";
-
-/* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "和剪切版比较";
-
-/* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "联系人";
-
-/* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "群组";
-
-/* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "邀请";
-
-/* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可在 iOS 设置中启用联系人访问权限，以便查看哪些联系人使用了 Session。";
-
-/* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "重置操作将删除您的消息，并从服务器上注销您的账户。应用将在操作完成后自动关闭。";
-
-/* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "您确定要删除您的账号吗？";
-
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "您将无法在这个群聊里面发送和接收消息。";
-
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "确定离开群聊？";
-
-/* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "连接新设备";
-
-/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ 可能重新安装了APP或者更换了设备。请让其验证您的安全码以确保安全。";
-
-/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ 的安全码改变了";
-
-/* Generic button text to proceed with an action */
-"CONFIRMATION_TITLE" = "确认";
-
-/* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "地址";
-
-/* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "已加入黑名单";
-
-/* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "未验证";
-
-/* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "未注册的号码";
-
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "编辑";
-
-/* Label for a contact's email address. */
-"CONTACT_EMAIL" = "邮箱";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "城市";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "国家";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "邻居";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "邮政信箱";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "邮政编码";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "地区";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "街道";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "姓氏";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "名字";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "中间名";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "称谓（姓名前）";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "称谓（姓名后）";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "机构";
-
-/* Label for a contact's phone number. */
-"CONTACT_PHONE" = "电话";
-
-/* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "无可用的 E-mail";
-
-/* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "无可用的手机号码";
-
-/* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "选择联系人";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "分享联系人";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "编辑名称";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "无效联系人。";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "未选择任何联系人。";
-
-/* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "在地图中打开";
-
-/* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "发送邮件";
-
-/* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "未命名的联系人";
-
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "该操作无法撤销。";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除会话？";
-
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "没有结果";
-
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1个结果";
-
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d条结果(共%d条)";
-
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会话设置";
-
-/* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "添加已有的联系人";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "屏蔽此群组";
-
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "屏蔽该用户";
-
-/* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "联系人信息";
-
-/* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "对话颜色";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "群组信息";
-
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "静音";
-
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "静音";
-
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "未被静音";
-
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "静音一天";
-
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "静音一小时";
-
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "静音一分钟";
-
 /* Label for button to mute a thread for a week. */
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "静音一星期";
-
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "静音一年";
-
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "直到 %@";
-
-/* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "新建联系人";
-
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "搜索对话";
-
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "点击更改";
-
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "取消静音";
-
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "该群组可查看您的资料";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "该用户可查看您的资料";
-
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "共享资料";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "共享您的资料";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "共享您的资料";
-
-/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "添加到联系人";
-
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "分享您的资料给该用户";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "该用户不在您的联系人列表中。";
-
-/* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在载入更多消息...";
-
-/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "点击查看更多";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "屏蔽该用户";
-
-/* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "重置此 session 后可以收到来自 %@的消息, 但是无法恢复已损坏的消息.";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
-
-/* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "创建新的组群";
-
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移动与缩放";
-
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "这需要几分钟的时间。";
-
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "正在优化数据库";
-
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@小时前";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@分钟前";
-
 /* The present; the current time. */
 "DATE_NOW" = "现在";
-
 /* The current day. */
 "DATE_TODAY" = "今日";
-
 /* The day before today. */
 "DATE_YESTERDAY" = "昨日";
-
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "无法复制日志。";
-
-/* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "无法打包日志。";
-
-/* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "无法上传日志。";
-
-/* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "如何把这条链接传送到调试记录？";
-
-/* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "未找到日志。";
-
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "打开调试报告";
-
-/* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "复制链接";
-
-/* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "邮件支持";
-
-/* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "发送到最后一个线程";
-
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "发送给自己";
-
-/* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "分享";
-
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "再多一步";
-
-/* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "无法打开邮件应用。";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "本连结已复製至剪贴板。你现在将重新导向到 GitHub 错误回馈列表。";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "重新定向到GitHub";
-
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注册此手机号码";
-
-/* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "设备已为未注册状态。您的手机号码可在另一台设备上注册 Session。点击可重新注册。";
-
-/* {{Short Date}} when device last communicated with Session Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "最新活动设备: %@";
-
-/* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "已绑定: %@";
-
-/* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "设备列表更新失败。";
-
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "阅后即焚";
-
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此对话中的消息将在%@后消失。";
-
-/* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "开启阅后即焚后，该群聊里面发送和接收的消息将在阅读后消失。";
-
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "当前消息会在 %@ 之后消失";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "阅后即焚设置";
-
-/* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "清除";
-
-/* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "执行审查规避的地点";
-
-/* Alert body for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可在 iOS 系统设置中启用此权限。";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Session 需要联系人访问权限来修改联系人信息";
-
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "编辑群聊";
-
-/* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "联系人";
-
-/* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "编辑群组";
-
-/* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "添加...";
-
-/* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "成员";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "已添加";
-
-/* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "更新";
-
-/* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "需要保留对此群组的修改吗？";
-
-/* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未保存的修改";
-
-/* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "复制";
-
-/* No comment provided by engineer. */
-"EDIT_TXT" = "编辑";
-
-/* body of email sent to contacts when inviting to install Session. Embeds {{link to install Session}} and {{link to the Session home page}} */
-"EMAIL_INVITE_BODY" = "你好,\n\n最近我在使用Session来保护iPhone聊天的私密性。 我希望你也可以安装Session, 这样我们可以有确保只有你我可以看到我们发的消息, 听到我们打的电话。\n\nSession可以在iPhone和Android上使用。可以在以下的链接下载: %@\n\nSession像你用过的聊天软件一样工作。我们可以发照片或者视频, 打电话, 也可以群聊。 最好的地方在于, 没任何其它人可以看到这些内容, 即使是开发Session的人也不能!\n\n你可以在以下的链接了解更多关于开发Session的Open Whisper Systems:  %@";
-
-/* subject of email sent to contacts when inviting to install Session */
-"EMAIL_INVITE_SUBJECT" = "切换到 Session";
-
-/* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "暂时没有联系人使用 Session.";
-
-/* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友呢?";
-
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "确认您的PIN码。";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "无法禁用注册锁。";
-
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "无法启用注册锁。";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "关闭";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "开启";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "下一步";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN 码不正确。";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "请输入注册锁的 PIN 码。以后您使用此号码注册 Session 时，将需要输入这个 PIN 码。";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "为了加强账户安全，请启用 PIN 码注册锁。打开后，再次使用此号码注册 Session 时，您将需要输入这个 PIN 码。";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "注册锁已启用。您只有输入正确的 PIN 码后，才能重新使用这个号码注册 Session。";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "注册锁";
-
-/* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "忙碌";
-
-/* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "呼叫失败。";
-
-/* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "无法访问联系人列表。";
-
-/* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Prekey 更新失败，无法发送消息。";
-
-/* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "无法向黑名单用户发送消息";
-
-/* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "附件写入、发送失败。";
-
-/* Generic error used whenever Session can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Session 无法连接网络，请重试。";
-
-/* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "缺少有效接收人，消息发送失败。";
-
-/* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "网络请求失败。";
-
-/* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "网络请求超时。";
-
-/* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "服务返回无效响应。";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "此设备已不再与您的电话号码关联。请重新安装 Session。";
-
-/* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "服务器出错。请稍候再试。";
-
-/* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "发生了未知错误。";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "联系人不是 Session 用户。";
-
-/* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "附件出错：请通知发送者升级新版 Session 后，再重新发送消息。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "收到了一条重复的消息。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "对方的密钥无效。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "收到的消息已损坏。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "收到了一条不兼容此版本软件的消息。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "没有对方可用的会话。";
-
-/* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "安全码已经改变.";
-
-/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "您与%@的安全码已经改变。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "发生未知错误。";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全码已改变。";
-
-/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "用户未注册：%@";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "以后再说";
-
-/* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "与此联系人通信时发生大量错误，请稍后再试。";
-
-/* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "您与%@的安全码已改变，建议您验证新安全码后再发送此消息。";
-
-/* alert title */
-"FAILED_VERIFICATION_TITLE" = "验证安全码失败!";
-
-/* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "标记为已验证";
-
-/* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "重置会话";
-
-/* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
-
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有您的媒体数据。";
-
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体...";
-
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "正在加载较早媒体...";
-
-/* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "附件";
-
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "无法读取所请求的 GIF。请确认您是否处于在线状态。";
-
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "发生了未知错误。";
-
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "无法选择 GIF";
-
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "请输入您的搜索词。";
-
-/* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF 查找";
-
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "错误。点击重试。";
-
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "无结果。";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "输入您的搜索词";
-
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "头像更变成功。";
-
-/* No comment provided by engineer. */
-"GROUP_CREATED" = "组群已成功创建。";
-
-/* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "不是所有成员都能被添加到群组中。点击重试。";
-
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "管理群聊";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ 加入了群组。";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ 已退出群组。";
-
-/* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "添加联系人";
-
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "呼叫";
-
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "清除所有“验证”信息";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "这会清除群组中所有自最后一次验证以来安全码发生改变的成员的验证信息。";
-
-/* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "成员";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "不再标记为已验证";
-
-/* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "发送消息";
-
-/* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "联系人信息";
-
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "群组名称已改为 '%@'。";
-
-/* No comment provided by engineer. */
-"GROUP_UPDATED" = "群组更新完成。";
-
-/* No comment provided by engineer. */
-"GROUP_YOU_LEFT" = "您退出了这个群。";
-
-/* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "已归档对话";
-
-/* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "已屏蔽";
-
-/* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "搜索";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Session contact.  Embeds {{The name of 1 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "您的一些联系人已经在使用Session了，比如%@。";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Session contacts.  Embeds {{The names of 2 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "您的一些联系人已经在使用Session了，比如%@和%@。";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Session contacts.  Embeds {{The names of 3 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "您的一些联系人已经在使用Session了，比如%@，%@，以及%@。";
-
-/* A label offering to start a new conversation with your contacts, if you have no Session contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "从这里开始新的会话。";
-
-/* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "没有找到“%@”的相关结果。";
-
-/* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "归档";
-
-/* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Session";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "您最多分享%@项。";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "选择附件失败。";
-
-/* Call setup status label */
-"IN_CALL_CONNECTING" = "链接中...";
-
-/* Call setup status label */
-"IN_CALL_RECONNECTING" = "重连中...";
-
-/* Call setup status label */
-"IN_CALL_RINGING" = "响铃中...";
-
-/* Call setup status label */
-"IN_CALL_SECURING" = "已接通。确保安全中...";
-
-/* Call setup status label */
-"IN_CALL_TERMINATED" = "通话结束。";
-
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "这些对话已被归档，仅当有新消息到达时，它们才会重新出现在收件箱中。";
-
-/* Message shown in the home view when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "收件箱闲得发慌。快开始找您的朋友聊天吧。";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "在“iOS - 设置”中开启联系人访问权限后，您就可以在 Session 对话列表中看到对应联系人的名字。";
-
-/* info message text in conversation view */
-"INCOMING_CALL" = "来电";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "您拒接了一个来电";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "来电";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "来电未接，因为他们的安全码已改变。";
-
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "语音文件无效";
-
-/* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "在“iOS - 设置”中启用联系人访问权限后，您就可以邀请您的朋友加入 Session。";
-
-/* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "允许访问联系人";
-
-/* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "邀请朋友使用 Session";
-
-/* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "搜索";
-
-/* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "邀请朋友";
-
-/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "同时邀请多位用户时，您将创建一个群组，其中的受邀用户将能看到彼此。";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "消息在 %@ 后消失。";
-
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "取消阅后即焚";
-
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "离开群组";
-
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "离开群聊";
-
-/* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "此二维码无效，请确认您想要连接的设备所显示的是此二维码。";
-
-/* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "绑定设备失败";
-
-/* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "此设备将能查看您的群组和联系人，读取您的对话，以及用您的名义发送消息。";
-
-/* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "绑定当前设备？";
-
-/* attempt another linking */
-"LINK_DEVICE_RESTART" = "重试";
-
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "扫描在您想要连接的设备上所显示的二维码。";
-
-/* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "扫描二维码";
-
-/* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "绑定新设备";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "链接预览";
-
-/* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "已绑定的设备";
-
-/* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "绑定设备失败";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "成员列表";
-
-/* No comment provided by engineer. */
-"LOGGING_SECTION" = "信息记录日志";
-
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "消息";
-
-/* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
-
-/* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "相机";
-
-/* action sheet button title when choosing attachment type */
-"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "文档";
-
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "相册";
-
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "删除%d条消息";
-
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "删除消息";
-
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
 "MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ 于 %@";
-
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
-
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "您";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "这个月";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "复制媒体";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "复制消息文本";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "删除此消息";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "删除操作仅在此设备生效。";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "更多信息";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "回复此消息";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "保存媒体";
-
-/* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "消息";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "致：";
-
-/* No comment provided by engineer. */
-"MESSAGE_COMPOSEVIEW_TITLE" = "新信息";
-
-/* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "文件大小";
-
-/* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 类型";
-
-/* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "已投递";
-
-/* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "失败";
-
-/* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "已读";
-
-/* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "正在发送";
-
-/* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "已发送";
-
-/* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "已跳过";
-
-/* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "正在上传";
-
-/* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "该消息没有内容或附件";
-
-/* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "已接收";
-
-/* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "发送人";
-
-/* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "已发送";
-
-/* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "文件名";
-
-/* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "消息";
-
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "已传达";
-
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "发送失败。";
-
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "失败";
-
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "已读";
-
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "已跳过";
-
-/* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "发送失败。";
-
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "发送中...";
-
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "已发送";
-
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "上传中...";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "新消息";
-
-/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@不再标记为已验证。点击打开选项。";
-
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "您已屏蔽此用户";
-
-/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@不再标记为已验证。点击打开选项。";
-
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "您已屏蔽此群组的一名成员";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "您已屏蔽此群组";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "您已屏蔽此群组的%@名成员";
-
-/* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "是否与该群组共享您的资料?";
-
-/* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "该群组多个成员不再标记为已验证。点击打开选项。";
-
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "点击此处前往设置";
-
-/* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "新消息";
-
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "还有更多未读消息。";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "还有更多未读消息（包含安全码更变）。";
-
-/* info message text in conversation view */
-"MISSED_CALL" = "未接来电";
-
-/* Alert body
-   Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "在“iOS 设置”中启用摄像头权限后，即可进行 Session 视频通话。";
-
-/* Alert title
-   Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Session需要访问您的摄像头";
-
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "您可在”iOS 设置“中启用此权限。";
-
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "您授予照片访问权限后，Session 才能启用此功能。";
-
-/* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "您不能匹配更多设备。";
-
-/* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "关联在您当前账户的设备数量以达上限，请移除一个设备后再试。";
-
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "您将不会收到来自静音对话的通知。";
-
-/* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
-
-/* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "请检查您的网络后再试。";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "审查规避：打开";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "已连接";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "正在连接";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "未注册";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "网络状态";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "离线";
-
-/* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过电话号码寻找";
-
-/* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "通过手机号码添加";
-
-/* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "设置组群照片";
-
-/* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "新建";
-
-/* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "新群组";
-
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "成员";
-
-/* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@至%@";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "为此群组命名";
-
-/* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "其他用户";
-
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "您是否要撤销这些修改？";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未保存的修改";
-
-/* No comment provided by engineer. */
-"new_message" = "新消息";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "搜索";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "查找用户";
-
-/* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
-
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "备忘录";
-
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "您可能在%@重启时收到了新消息。";
-
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "由于苹果通知推送系统的已知缺陷，消息只有在发送的30秒之内被接收才会显示预览。因此，应用图标上的显示可能并不准确。";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "没有名字或者内容";
-
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "应用内播放提示音";
-
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字和内容";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
-
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "显示";
-
 /* No comment provided by engineer. */
 "OK" = "好";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "该电话号码已经开启注册锁。请输入注册锁PIN码。";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "您的注册锁 PIN 码与最后一步时发送给您的验证码是不同的。";
-
-/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "我忘记了PIN码";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "注册锁";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "给您的消息添加一点人情味";
-
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "开启权限";
-
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "您的联系人信息一直是加密传送的。";
-
-/* Label for the 'not now' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "以后再说";
-
-/* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Session会及时提醒您收到了谁的信息";
-
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "输入您的手机号以开始使用";
-
-/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "无效的号码";
-
-/* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Session的个人资料都是端到端加密的。Session服务器永远不会有权访问此数据。";
-
-/* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "你的名字";
-
-/* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "设置您的资料";
-
-/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "协议与隐私政策";
-
-/* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "让隐私与您形影不离。\n在每一条消息中展现真正的自己。";
-
-/* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "错误的号码？";
-
-/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "我没有收到验证码（%@后可用）";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "验证码不正确";
-
-/* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "我没有收到验证码";
-
-/* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "请确保您可以联网并接收短信。";
-
-/* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "没收到验证码？";
-
-/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "重新发送验证码";
-
-/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "改成给我打电话";
-
-/* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "仍然没收到验证码？";
-
-/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "请输入我们发送到%@的验证码";
-
-/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "我们刚刚向%@发送了验证码";
-
-/* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "设置";
-
-/* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ 取消了阅后即焚。";
-
-/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ 设置了消息 %@ 后消失。";
-
-/* Label warning the user that the Session service may be down. */
-"OUTAGE_WARNING" = "Session 遇到了一些技术故障。我们正努力使服务尽快恢复。";
-
-/* info message text in conversation view */
-"OUTGOING_CALL" = "去电";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "呼叫";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "未接呼叫";
-
-/* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
-
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "范例：%@";
-
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
-
-/* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "住宅";
-
-/* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "住宅传真";
-
-/* Label for 'iPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
-
-/* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "主要";
-
-/* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "手机";
-
-/* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "其他";
-
-/* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "其他传真";
-
-/* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "寻呼机";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "未知";
-
-/* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "工作";
-
-/* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "工作传真";
-
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "无法拍摄图片。";
-
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "无法拍摄图片。";
-
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "配置摄像头失败。";
-
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相册";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
-
-/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "您未将%@标记为已验证。";
-
-/* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "已验证";
-
-/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "已验证%@。";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "了解更多";
-
-/* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "点击扫描";
-
-/* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "清除验证信息";
-
-/* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
-
-/* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "剪贴板中的数字不是当前会话的正确的安全码.";
-
-/* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Session 无法在剪贴板中找到安全码. 你正确的复制了吗?";
-
-/* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "每一组Session用户共享一个不同的安全码. 重复检查 %@ 显示你的安全码.";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "您的版本过低。升级后才可以继续校验。";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "您的好友版本过低。请对方升级后继续验证。";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "此二维码不是一个有效的安全码，请确保双方都使用了最新版的 Session。";
-
-/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "如需确认你和 %@ 的端对端加密安全性，请在双方设备上面比较上述数字。\n\n或者可以通过扫描上述二维码进行验证。";
-
-/* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "验证安全码";
-
-/* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "标记为已验证";
-
-/* No comment provided by engineer. */
-"PROCEED_BUTTON" = "继续";
-
-/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
-"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
-
-/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
-"PROFILE_NAME_LABEL_FORMAT" = "~%@";
-
-/* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "设置头像";
-
-/* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "清除头像";
-
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "您的资料名称太长。";
-
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "资料更新失败。";
-
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "输入您的名称";
-
-/* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "头像";
-
-/* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "您的 Session 资料将对您的联系人可见，包括：建立新对话，或您与其它用户群组共享资料时。";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "点击了解更多资讯。";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "资料名称";
-
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "保存";
-
-/* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "资料";
-
-/* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "标记为已读";
-
-/* Notification action button title */
-"PUSH_MANAGER_REPLY" = "回复";
-
-/* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "成功重新注册了推送.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "推送通知";
-
-/* No comment provided by engineer. */
-"QUESTIONMARK_PUNCTUATION" = "？";
-
-/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "回复 %@";
-
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "给您的回复";
-
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "给您自己的回复";
-
-/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "未找到原始消息。";
-
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "原始消息已失效。";
-
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "未找到原始消息。";
-
-/* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "附件";
-
-/* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "音频";
-
-/* Indicates this message is a quoted reply to animated GIF file. */
-"QUOTED_REPLY_TYPE_GIF" = "GIF";
-
-/* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "图片";
-
-/* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "视频";
-
-/* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "我忘记了我的PIN码。";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "从上一次此号码成功激活 Session 开始，7日之后，您无需输入注册锁 PIN 码就能用这个手机号码重新注册 Session。";
-
-/* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "提交";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "欢迎！";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "重试";
-
-/* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "您的尝试过于频繁。请等待一分钟后再重试。";
-
-/* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "您的尝试过于频繁。请等待一分钟后再重试。";
-
-/* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "重新注册推送失败.";
-
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "国家编码";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "输入电话号码";
-
-/* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "注册错误";
-
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "在验证发给你的验证码之前，我们无法激活你的帐户.";
-
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "此次注册将会使已和此电话关联的其他设备无法使用。";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "注册此 iPad";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "已有 Session 帐号？";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "不支持这个电话号码格式，请联系支持。";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "电话号码";
-
-/* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "您需要先注册才能发送消息。";
-
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "验证失败";
-
-/* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "你提交的数字和我们发给你的数字不匹配. 想要再次检查?";
-
-/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "注册锁 PIN 码不正确。";
-
-/* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "请输入一个有效的电话号码来注册。";
-
-/* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "电话号码无效";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "请输入手机号码进行注册。";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "无手机号码";
-
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "拒绝";
-
-/* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "您要注册的电话号码已经在别的服务器被注册，请注销该号码后再次尝试。";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "已为您的号码启用了注册锁。为了帮助您记住注册锁 PIN 码，Session 会定期向您确认 PIN 码。";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "提醒：";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "注册锁能防范他人在没有您许可的情况下，使用您的号码进行注册。您随时可在 Session 隐私设置里关闭该功能。";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "请输入您的注册锁 PIN 码";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "您可以在隐私设置里设置一个新的PIN码。";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "不正确的PIN码。";
-
-/* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "重新注册推送通知服务";
-
-/* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "重试";
-
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "依然添加到群组";
-
-/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "依然呼叫";
-
-/* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "依然发送";
-
-/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "我们的 Session 安全码:\n%@";
-
-/* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "你的安全码 %@ 被改变了. 你可以想要验证它.";
-
-/* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "在你联系人设备上扫描QR码";
-
-/* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "扫描二维码";
-
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
-
-/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "无法访问认证数据。";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "认证失败。";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "认证失败次数太多，请稍后再试。";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "您需要先设置您的密码来开启屏幕锁功能。";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "您需要先设置您的密码来开启屏幕锁功能。";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "您需要先设置您的密码来开启屏幕锁功能。";
-
-/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证来打开 Session。";
-
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
-
-/* Label for button on lock screen that lets users unlock Session. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "解锁 Session";
-
-/* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜索姓名或号码";
-
-/* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "其他联系人";
-
-/* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "对话";
-
-/* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "消息";
-
-/* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "安全会话被重置。";
-
-/* Label for 'select GIF to attach' action sheet button */
-"SELECT_GIF_BUTTON" = "GIF";
-
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "其他联系人";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "最近聊天";
-
-/* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "重新发送";
-
-/* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "发送";
-
-/* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "您的信息发送失败。";
-
-/* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "发送邀请失败, 请稍候再试.";
-
-/* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "您已邀请了一位好友使用 Session！";
-
-/* Text for button to send a Session invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "通过短信邀请：%@";
-
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "丢弃媒体？";
-
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "丢弃媒体";
-
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "返回相机";
-
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返回媒体库";
-
-/* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "通过非加密的短信邀请好友？";
-
-/* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "您是否希望邀请以下号码加入Session：";
-
-/* Navbar title */
-"SETTINGS_ABOUT" = "关于";
-
-/* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "将用户加入黑名单";
-
-/* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "将号码加入黑名单";
-
-/* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "加入黑名单";
-
-/* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "审查规避";
-
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "位置：%@";
-
-/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "若启用，Session 会尝试规避审查。除非 Session 在您所在地受到审查，否则不要打开该功能。";
-
-/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "已根据您的电话号码启动审查规避。";
-
-/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "您已手动禁用了审查规避功能";
-
-/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "审查规避只能在联网时启动。";
-
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Session service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "不需要规避审查；您已连接上了 Session 服务。";
-
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "审查规避";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "启用调试日志";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "提交调试日志";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "高级";
-
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（默认）";
-
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "备份";
-
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "现在备份";
-
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "取消备份";
-
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "备份已启用";
-
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud状态";
-
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "恢复备份失败";
-
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "恢复备份未在进行";
-
 /* Indicates that app is restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "恢复备份正在进行";
-
 /* Indicates that the last backup restore succeeded. */
 "SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "恢复备份成功";
-
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "阶段";
-
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "进度";
-
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "状态";
-
 /* Indicates that the last backup failed. */
 "SETTINGS_BACKUP_STATUS_FAILED" = "备份失败";
-
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "等待中";
-
 /* Indicates that app is backing up. */
 "SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "正在备份";
-
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "备份成功";
-
-/* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "添加屏蔽用户";
-
-/* A label that indicates the user has no Session contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何 Session 联系人。";
-
-/* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "无搜索结果";
-
-/* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "已加入黑名单";
-
-/* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "始终使用中继进行通话";
-
-/* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Session 服务器中继所有通话，这能防止联系人获取您的 IP 地址，但此功能会降低通话质量。";
-
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
-
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "版权所有 Session Messenger \n根据 GPLv3 授权";
-
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "删除账号";
-
-/* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "删除所有数据";
-
-/* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您确定要清除所有历史记录吗（包括信息，附件，通话记录等）？ 此操作是不可恢复的。";
-
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部删除";
-
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "帮助";
-
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "清除聊天记录";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "信息";
-
-/* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "邀请您的朋友";
-
-/* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "你可以通过 @signalapp 来联系我。现在可以在 https://signal.org/download/ 下载。";
-
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "消息提示音";
-
-/* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "条款和隐私政策";
-
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "发送链接预览";
-
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
-
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "链接预览";
-
-/* Title for settings activity */
-"SETTINGS_NAV_BAR_TITLE" = "设置";
-
-/* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "电话和消息的提示将能够在锁屏状态下显示。您可以选择是否显示这些通知内容。";
-
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知内容";
-
-/* No comment provided by engineer. */
-"SETTINGS_NOTIFICATIONS" = "通知";
-
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "显示呼叫者的名称与号码";
-
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "将Session通话记录整合在iOS通话记录中。";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "显示最近通话";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "与iOS 通话记录整合";
-
-/* Settings table view cell label */
-"SETTINGS_PRIVACY_TITLE" = "隐私";
-
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "已读回执";
-
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "消息已读时，查看和分享已读状态。该设置为可选设置，且对所有对话生效。";
-
-/* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "重新注册";
-
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "屏幕锁超时";
-
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "请使用 触控ID、面容ID 或 iOS 密码来解锁 Session 。 在屏幕锁定的状态下，您仍可以接听电话和收到信息提示。您可以在 Session 的提醒设定中自定义您希望在锁屏状态下显示的信息。";
-
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "屏幕锁🔒";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "屏幕锁🔒";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "开启屏幕锁定功能";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "阻止 Session 预览页面显示在应用切换窗口。";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS 通话整合会在您的锁屏界面和系统通话记录中显示您的Session通话记录。您可以选择显示您的联系人的名称与号码。如果您已开启iCloud，系统会与苹果公司共享通话记录。";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "通知";
-
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "声音";
-
-/* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "拨号中";
-
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "屏幕安全";
-
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "支持";
-
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "关闭";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "开启";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "注册锁";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "注册锁";
-
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "查看并分享输入消息的状态。此设置为可选设置，且对所有对话生效。";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "了解更多";
-
-/* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "私密发件人";
-
-/* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "显示“正在输入”提示";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "在使用私密发件人发送的信息上查看“更多信息”时，显示一个状态图标。";
-
-/* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "允许来自任何人";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "为非联系人和你没有分享个人资料的人发来的信息启用私密发件人功能。";
-
-/* No comment provided by engineer. */
-"SETTINGS_VERSION" = "版本";
-
-/* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Email";
-
-/* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "短信";
-
-/* action sheet item */
-"SHARE_ACTION_TWEET" = "推特";
-
-/* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "近期您与%@的安全码已改变。在您重新发送前，建议您在主应用中验证新的安全码。";
-
-/* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "加载中...";
-
-/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "启动 Session 来注册。";
-
-/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "未注册";
-
-/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "启动 Session 来更新或注册。";
-
-/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "还未准备好";
-
-/* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "无法发送附件";
-
-/* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上传中...";
-
-/* Shown when trying to share content to a Session user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "无法准备附件";
-
-/* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "分享到 Session";
-
-/* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "显示安全码";
-
-/* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "显示对话";
-
-/* body sent to contacts when inviting to Install Session */
-"SMS_INVITE_BODY" = "请你下载Session加密通讯软件！链接：";
-
-/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "无";
-
-/* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "您的安全码与%@一致。您可以将此联系人标记为已验证。";
-
-/* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "安全码一致！";
-
-/* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "验证安全码";
-
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@天";
-
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@天";
-
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@小时";
-
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@时";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@分钟";
-
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@分";
-
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@秒";
-
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@秒";
-
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@天";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@小时";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@分钟";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@个星期";
-
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@个星期";
-
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@周";
-
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";
-
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "删除";
-
-/* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "未存档";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "该用户不在你的联系人里，是否将其加入黑名单？";
-
-/* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "未知的联系人";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "未知国家";
-
-/* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "无法识别";
-
-/* button title for unlinking a device */
-"UNLINK_ACTION" = "解绑";
-
-/* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "如果取消关联此设备，它将不能再接收或发送信息。";
-
-/* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "确定解绑 \"%@\"?";
-
-/* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "解绑设备失败。";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "未命名设备";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "无法从 Session 注销。";
-
-/* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "收到了不支持的附件类型。";
-
-/* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "您的设备不支持此功能。";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "您无法删除群组成员。只能其自行退出，或者您可以新建一个不包含该成员的群组。";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不支持";
-
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单地从锁定屏幕来接听电话。默认设置显示匿名呼叫人，所以您不必担心隐私泄露。";
-
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "更多信息请见您的隐私设置。";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑动即可应答";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "打开“正在输入”提示";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "可选的链接预览功能现支持互联网上一些最热门的站点。";
-
-/* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "您可以随时在Session设置中启用或禁用此功能（隐私 &gt; 发送链接预览）。";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "链接预览";
-
-/* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您既可以为所有对话设置一个默认提示音，也可以为每一个对话选择单独的提示音。您的来电铃声将与 iOS 联系人中所设置的铃声一致。";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "检查通知设置";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "新的通话和消息提示音";
-
-/* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "设置您的资料";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "您现在可以与您的 Session 好友分享分享资料照片和名称。";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "准备好来张特写了吗？";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "您现在可以选择查看和分享消息的已读状态。";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "在隐私设置中启用已读回执。";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "加入已读回执功能";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "现在，你可以选择分享你在撰写消息时的打字状态提示了。";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "隆重推出“正在输入”提示功能。";
-
-/* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Session 已开始支持安全的视频通话。正常的开始Session通话，点击相机按钮，对方即可看到您。";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "现推出安全的视频通话！";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Session 即将仅支持 iOS 10 或更新的系统版本。请到 设置 >> 通用 >> 软件更新 升级 iOS。";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "升级 iOS";
-
-/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "您已将%@标记为未验证。";
-
-/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "您已在其它设备将%@标记为未验证。";
-
-/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "您已将%@标记为已验证。";
-
-/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "您已在其它设备将%@标记为已验证。";
-
-/* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "验证状态改变。";
-
-/* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "查看安全码";
-
-/* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "检查安全码";
-
-/* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = " 滑动以取消";
-
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "语音消息";
-
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "按住不放来录取语音消息。";
-
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "语音消息";
-
-/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "请完成 Session 桌面版设置。";
-
-/* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您取消了阅后即焚。";
-
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您设置了消息%@后消失。";
-
-
-
 // MARK: - Session
 "continue_2" = "继续";
 "copy" = "复制";
 "invalid_url" = "无效的链接";
-"copied_to_clipboard" = "复制到剪贴板";
-"device_linking_failed" = "无法链接设备。";
 "next" = "下一步";
 "share" = "共享";
 "invalid_session_id" = "无效的Session ID";
 "cancel" = "取消";
 "your_session_id" = "您的Session ID";
-
 "vc_landing_title_2" = "您的Session从这里开始...";
 "vc_landing_register_button_title" = "创建Session ID";
 "vc_landing_restore_button_title" = "继续使用您的Session ID";
 "vc_landing_link_button_title" = "关联现有帐号";
-
 "view_fake_chat_bubble_1" = "什么是Session？";
 "view_fake_chat_bubble_2" = "Session是一个去中心化的加密消息应用。";
 "view_fake_chat_bubble_3" = "所以Session不会收集我的个人信息或者对话元数据？怎么做到的？";
 "view_fake_chat_bubble_4" = "通过结合高效的匿名路由和端到端的加密技术。";
 "view_fake_chat_bubble_5" = "好朋友之间就要使用能够保证信息安全的聊天工具，不用谢啦！";
-
 "vc_register_title" = "向您的Session ID打个招呼吧";
 "vc_register_explanation" = "您的Session ID是其他用户在与您聊天时使用的独一无二的地址。Session ID与您的真实身份无关，它在设计上完全是匿名且私密的。";
-"vc_register_public_key_copied_message" = "复制到剪贴板";
-
 "vc_restore_title" = "恢复您的帐号";
 "vc_restore_explanation" = "在您重新登陆并需要恢复账户时，请输入您注册帐号时的恢复口令。";
 "vc_restore_seed_text_field_hint" = "输入您的恢复口令";
-
 "vc_link_device_title" = "关联设备";
 "vc_link_device_scan_qr_code_tab_title" = "扫描二维码";
-
 "vc_display_name_title_2" = "选择您想显示的名称";
 "vc_display_name_explanation" = "这就是您在使用Session时的名字。它可以是您的真实姓名，别名或您喜欢的其他任何名称。";
 "vc_display_name_text_field_hint" = "输入您想显示的名称";
 "vc_display_name_display_name_missing_error" = "请设定一个名称";
-"vc_display_name_display_name_invalid_error" = "请设定一个仅包含 a-z，A-Z，0-9 和 _ 的名称";
 "vc_display_name_display_name_too_long_error" = "请设定一个较短的名称";
-
 "vc_pn_mode_recommended_option_tag" = "推荐的选项";
 "vc_pn_mode_no_option_picked_modal_title" = "请选择一个选项";
-
 "vc_home_empty_state_message" = "您还没有任何联系人";
 "vc_home_empty_state_button_title" = "开始对话";
-"vc_home_leave_group_modal_message" = "您确定要离开这个群组吗？";
-"vc_home_leaving_group_failed_message" = "无法离开群组";
-"vc_home_delete_conversation_modal_message" = "您确定要删除此对话吗？";
-"vc_home_conversation_deleted_message" = "对话已删除";
-
 "vc_seed_title" = "您的恢复口令";
 "vc_seed_title_2" = "这里是您的恢复口令";
 "vc_seed_explanation" = "您的恢复口令是Session ID的主密钥 - 如果您无法访问您的现有设备，则可以使用它在其他设备上恢复您的Session ID。请将您的恢复口令存储在安全的地方，不要将其提供给任何人。";
 "vc_seed_reveal_button_title" = "长按显示内容";
-
 "view_seed_reminder_subtitle_1" = "保存恢复口令以保护您的帐号安全";
 "view_seed_reminder_subtitle_2" = "点击并按住遮盖住的单词以显示您的恢复口令，请将它安全地存储以保护您的Session ID。";
 "view_seed_reminder_subtitle_3" = "请确保将恢复口令存储在安全的地方";
-
 "vc_path_title" = "路径";
 "vc_path_explanation" = "Session会通过其去中心化网络中的多个服务节点跳转消息以隐藏IP。以下国家是您目前的消息连接跳转服务节点所在地：";
 "vc_path_device_row_title" = "您";
@@ -2612,17 +359,13 @@
 "vc_path_service_node_row_title" = "服务节点";
 "vc_path_destination_row_title" = "目的地";
 "vc_path_learn_more_button_title" = "了解更多";
-
 "vc_create_private_chat_title" = "新建私人聊天";
 "vc_create_private_chat_enter_session_id_tab_title" = "输入Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "扫描二维码";
 "vc_create_private_chat_scan_qr_code_explanation" = "扫描其他用户的二维码来发起对话。您可以在帐号设置中点击二维码图标找到二维码。";
-
 "vc_enter_public_key_explanation" = "用户可以通过进入帐号设置并点击\"共享Session ID\"来分享自己的Session ID，或通过共享其二维码来分享其Session ID。";
-
 "vc_scan_qr_code_camera_access_explanation" = "Session需要摄像头访问权限才能扫描二维码";
 "vc_scan_qr_code_grant_camera_access_button_title" = "授予摄像头访问权限";
-
 "vc_create_closed_group_title" = "创建私密群组";
 "vc_create_closed_group_text_field_hint" = "输入群组名称";
 "vc_create_closed_group_empty_state_message" = "您还没有任何联系人";
@@ -2630,52 +373,28 @@
 "vc_create_closed_group_group_name_missing_error" = "请输入群组名称";
 "vc_create_closed_group_group_name_too_long_error" = "请输入较短的群组名称";
 "vc_create_closed_group_too_many_group_members_error" = "私密群组成员不得超过100个";
-"vc_create_closed_group_invalid_session_id_error" = "您群组中的一位成员的Session ID无效";
-
 "vc_join_public_chat_title" = "加入公开群组";
-"vc_join_public_chat_error" = "无法加入群组";
 "vc_join_public_chat_enter_group_url_tab_title" = "公开群组链接";
 "vc_join_public_chat_scan_qr_code_tab_title" = "扫描二维码";
 "vc_join_public_chat_scan_qr_code_explanation" = "扫描您想加入的公开群组的二维码";
-
 "vc_enter_chat_url_text_field_hint" = "输入公开群组链接";
-
 "vc_settings_title" = "设置";
 "vc_settings_display_name_text_field_hint" = "输入您想显示的名称";
 "vc_settings_display_name_missing_error" = "请设定一个名称";
-"vc_settings_invalid_display_name_error" = "请设定一个仅包含 a-z，A-Z，0-9 和 _ 的名称";
 "vc_settings_display_name_too_long_error" = "请设定一个较短的名称";
 "vc_settings_privacy_button_title" = "隐私";
 "vc_settings_notifications_button_title" = "通知";
-"vc_settings_chats_button_title" = "聊天";
-"vc_settings_devices_button_title" = "设备";
 "vc_settings_recovery_phrase_button_title" = "恢复口令";
 "vc_settings_clear_all_data_button_title" = "清除数据";
-
 "vc_notification_settings_title" = "通知";
-"vc_notification_settings_style_section_title" = "通知风格";
-"vc_notification_settings_content_section_title" = "通知内容";
-
 "vc_privacy_settings_title" = "隐私";
-
-"vc_chat_settings_title" = "会话";
-
 "preferences_notifications_strategy_category_title" = "通知选项";
-
 "modal_seed_title" = "您的恢复口令";
 "modal_seed_explanation" = "这是您的恢复口令。您可以通过该口令将Session ID还原或迁移到新设备上。";
-
 "modal_clear_all_data_title" = "清除所有数据";
 "modal_clear_all_data_explanation" = "这将永久删除您的消息、对话和联系人。";
-
 "vc_qr_code_title" = "二维码";
 "vc_qr_code_view_my_qr_code_tab_title" = "查看我的二维码";
 "vc_qr_code_view_scan_qr_code_tab_title" = "扫描二维码";
 "vc_qr_code_view_scan_qr_code_explanation" = "扫描对方的二维码以发起对话";
-
 "vc_view_my_qr_code_explanation" = "这是您的二维码。其他用户可以对其进行扫描以发起与您的对话。";
-"vc_view_my_qr_code_share_title" = "分享二维码";
-
-"vc_contact_selection_contacts_title" = "联系人";
-"vc_contact_selection_closed_groups_title" = "私密群组";
-"vc_contact_selection_open_groups_title" = "公开群组";
