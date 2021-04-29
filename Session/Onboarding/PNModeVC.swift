@@ -12,14 +12,14 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
 
     // MARK: Components
     private lazy var apnsOptionView: OptionView = {
-        let explanation = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple."
+        let explanation = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers."
         let result = OptionView(title: "Fast Mode", explanation: explanation, delegate: self, isRecommended: true)
         result.accessibilityLabel = "Fast mode option"
         return result
     }()
     
     private lazy var backgroundPollingOptionView: OptionView = {
-        let explanation = "Session will occasionally check for new messages in the background. Full metadata protection is guaranteed, but message notifications will be unreliable."
+        let explanation = "Session will occasionally check for new messages in the background."
         let result = OptionView(title: "Slow Mode", explanation: explanation, delegate: self)
         result.accessibilityLabel = "Slow mode option"
         return result
@@ -41,13 +41,6 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         titleLabel.text = "Message Notifications"
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "There are two ways Session can notify you of new messages."
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -66,8 +59,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         optionsStackView.spacing = Values.smallSpacing
         optionsStackView.alignment = .fill
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing),
-            explanationLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing), optionsStackView ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing), optionsStackView ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
         // Set up top stack view container
@@ -79,6 +71,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        // Preselect APNs mode
+        optionViews[0].isSelected = true
     }
 
     // MARK: Interaction

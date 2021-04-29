@@ -54,7 +54,7 @@
                               }
                               target:weakSelf
                               selector:@selector(didToggleAPNsSwitch:)]];
-    strategySection.footerTitle = @"You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple.";
+    strategySection.footerTitle = @"You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
     [contents addSection:strategySection];
 
     // Sounds section.
