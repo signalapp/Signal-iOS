@@ -112,11 +112,11 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             let disappearingMessagesSection = OWSTableSection()
             disappearingMessagesSection.headerTitle = NSLocalizedString(
                 "SETTINGS_DISAPPEARING_MESSAGES",
-                comment: "Label for the 'disappearig messages' privacy settings."
+                comment: "Label for the 'disappearing messages' privacy settings."
             )
             disappearingMessagesSection.footerTitle = NSLocalizedString(
                 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
-                comment: "Explanation for the 'disappearig messages' privacy settings."
+                comment: "Explanation for the 'disappearing messages' privacy settings."
             )
             let disappearingMessagesConfiguration = databaseStorage.read { transaction in
                 OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)

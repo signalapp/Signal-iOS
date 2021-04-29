@@ -627,7 +627,7 @@ fileprivate extension CVComponentState.Builder {
                                                                                                 transaction: transaction)
             return build()
         case .defaultDisappearingMessageTimer:
-            self.unknownThreadWarning = CVComponentSystemMessage.buildDefaultDisappearingMessageTimerState(
+            self.defaultDisappearingMessageTimer = CVComponentSystemMessage.buildDefaultDisappearingMessageTimerState(
                 interaction: interaction,
                 threadViewModel: threadViewModel,
                 transaction: transaction

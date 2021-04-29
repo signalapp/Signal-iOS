@@ -737,17 +737,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         let localConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
         let localExpireToken = localConfiguration.asToken
-        let expireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
-        if localExpireToken != expireToken {
-            if expireToken.isEnabled {
-                localConfiguration
-                    .copyAsEnabled(withDurationSeconds: expireToken.durationSeconds)
-                    .anyUpsert(transaction: transaction)
-            } else {
-                localConfiguration
-                    .copy(withIsEnabled: false)
-                    .anyUpsert(transaction: transaction)
-            }
+        let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
+        if localExpireToken != remoteExpireToken {
+            localConfiguration.applyToken(remoteExpireToken, transaction: transaction)
         }
 
         return mergeState

@@ -72,6 +72,7 @@ public extension OWSDisappearingMessagesConfiguration {
     }
 
     @objc
+    @discardableResult
     static func applyToken(_ token: DisappearingMessageToken,
                            toThread thread: TSThread,
                            transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
@@ -81,6 +82,7 @@ public extension OWSDisappearingMessagesConfiguration {
     }
 
     @objc
+    @discardableResult
     func applyToken(_ token: DisappearingMessageToken,
                     transaction: SDSAnyWriteTransaction) -> OWSDisappearingMessagesConfiguration {
         let newConfiguration: OWSDisappearingMessagesConfiguration

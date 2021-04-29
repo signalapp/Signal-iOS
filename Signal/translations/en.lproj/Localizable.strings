@@ -4759,10 +4759,10 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
-/* Label for the 'disappearig messages' privacy settings. */
+/* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Disappearing Messages";
 
-/* Explanation for the 'disappearig messages' privacy settings. */
+/* Explanation for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
