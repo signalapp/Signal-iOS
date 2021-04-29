@@ -8,8 +8,226 @@ fileprivate extension OWSContactsManager {
     static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
 
-    static var notLowTrustContactCache = AtomicSet<UUID>()
-    static var notLowTrustGroupCache = AtomicSet<Data>()
+    // MARK: - Low Trust
+
+    enum LowTrustType {
+        case avatarBlurring
+        case unknownThreadWarning
+
+        var allowUserToDismiss: Bool {
+            self == .avatarBlurring
+        }
+
+        var checkForTrustedGroupMembers: Bool {
+            self == .unknownThreadWarning
+        }
+
+        var cache: LowTrustCache {
+            switch self {
+            case .avatarBlurring:
+                return OWSContactsManager.avatarBlurringCache
+            case .unknownThreadWarning:
+                return OWSContactsManager.unknownThreadWarningCache
+            }
+        }
+    }
+
+    struct LowTrustCache {
+        let contactCache = AtomicSet<UUID>()
+        let groupCache = AtomicSet<Data>()
+
+        func contains(groupThread: TSGroupThread) -> Bool {
+            groupCache.contains(groupThread.groupId)
+        }
+
+        func contains(contactThread: TSContactThread) -> Bool {
+            contains(address: contactThread.contactAddress)
+        }
+
+        func contains(address: SignalServiceAddress) -> Bool {
+            guard let uuid = address.uuid else {
+                return false
+            }
+            return contactCache.contains(uuid)
+        }
+
+        func add(groupThread: TSGroupThread) {
+            groupCache.insert(groupThread.groupId)
+        }
+
+        func add(contactThread: TSContactThread) {
+            add(address: contactThread.contactAddress)
+        }
+
+        func add(address: SignalServiceAddress) {
+            guard let uuid = address.uuid else {
+                return
+            }
+            contactCache.insert(uuid)
+        }
+    }
+
+    static let unknownThreadWarningCache = LowTrustCache()
+    static let avatarBlurringCache = LowTrustCache()
+
+    private func isLowTrustThread(_ thread: TSThread,
+                                  lowTrustType: LowTrustType,
+                                  transaction: SDSAnyReadTransaction) -> Bool {
+        if let contactThread = thread as? TSContactThread {
+            return isLowTrustContact(contactThread: contactThread,
+                                     lowTrustType: lowTrustType,
+                                     transaction: transaction)
+        } else if let groupThread = thread as? TSGroupThread {
+            return isLowTrustGroup(groupThread: groupThread,
+                                   lowTrustType: lowTrustType,
+                                   transaction: transaction)
+        } else {
+            owsFailDebug("Invalid thread.")
+            return false
+        }
+    }
+
+    private func isLowTrustContact(address: SignalServiceAddress,
+                                   lowTrustType: LowTrustType,
+                                   transaction: SDSAnyReadTransaction) -> Bool {
+        let cache = lowTrustType.cache
+        if cache.contains(address: address) {
+            return false
+        }
+        guard let contactThread = TSContactThread.getWithContactAddress(address,
+                                                                        transaction: transaction) else {
+            cache.add(address: address)
+            return false
+        }
+        return isLowTrustContact(contactThread: contactThread,
+                                 lowTrustType: lowTrustType,
+                                 transaction: transaction)
+    }
+
+    private func isLowTrustContact(contactThread: TSContactThread,
+                                   lowTrustType: LowTrustType,
+                                   transaction: SDSAnyReadTransaction) -> Bool {
+        let cache = lowTrustType.cache
+        let address = contactThread.contactAddress
+        if cache.contains(address: address) {
+            return false
+        }
+        if !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+            cache.add(address: address)
+            return false
+        }
+        // ...and not in a whitelisted group with the locar user.
+        if isInWhitelistedGroupWithLocalUser(address: address,
+                                             transaction: transaction) {
+            cache.add(address: address)
+            return false
+        }
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if lowTrustType.allowUserToDismiss,
+           let uuid = address.uuid,
+           Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
+                                                         defaultValue: false,
+                                                         transaction: transaction) {
+            cache.add(address: address)
+            return false
+        }
+        return true
+    }
+
+    private func isLowTrustGroup(groupThread: TSGroupThread,
+                                 lowTrustType: LowTrustType,
+                                 transaction: SDSAnyReadTransaction) -> Bool {
+        let cache = lowTrustType.cache
+        let groupId = groupThread.groupId
+        if cache.contains(groupThread: groupThread) {
+            return false
+        }
+        if nil == groupThread.groupModel.groupAvatarData {
+            // DO NOT add to the cache.
+            return false
+        }
+        if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+            cache.add(groupThread: groupThread)
+            return false
+        }
+        // We can skip avatar blurring if the user has explicitly waived the blurring.
+        if lowTrustType.allowUserToDismiss,
+           Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
+                                                          defaultValue: false,
+                                                          transaction: transaction) {
+            cache.add(groupThread: groupThread)
+            return false
+        }
+        // We can skip "unknown thread warnings" if a group has members which are trusted.
+        if lowTrustType.checkForTrustedGroupMembers,
+           hasWhitelistedGroupMember(groupThread: groupThread, transaction: transaction) {
+            cache.add(groupThread: groupThread)
+            return false
+        }
+        return true
+    }
+
+    // MARK: -
+
+    private static let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<UUID, Bool>()
+
+    private func isInWhitelistedGroupWithLocalUser(address otherAddress: SignalServiceAddress,
+                                                   transaction: SDSAnyReadTransaction) -> Bool {
+        let cache = Self.isInWhitelistedGroupWithLocalUserCache
+        if let cacheKey = otherAddress.uuid,
+           let cachedValue = cache[cacheKey] {
+            return cachedValue
+        }
+        let result: Bool = {
+            guard let localAddress = tsAccountManager.localAddress else {
+                owsFailDebug("Missing localAddress.")
+                return false
+            }
+            let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: transaction)
+            guard !otherGroupThreadIds.isEmpty else {
+                return false
+            }
+            let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: transaction)
+            let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
+            for groupThreadId in groupThreadIds {
+                guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
+                                                                          transaction: transaction) else {
+                    owsFailDebug("Missing group thread")
+                    continue
+                }
+                if profileManager.isGroupId(inProfileWhitelist: groupThread.groupId,
+                                            transaction: transaction) {
+                    return true
+                }
+            }
+            return false
+        }()
+        if let cacheKey = otherAddress.uuid {
+            cache[cacheKey] = result
+        }
+        return result
+    }
+
+    private static let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>()
+
+    private func hasWhitelistedGroupMember(groupThread: TSGroupThread,
+                                           transaction: SDSAnyReadTransaction) -> Bool {
+        let cache = Self.hasWhitelistedGroupMemberCache
+        let cacheKey = groupThread.groupId
+        if let cachedValue = cache[cacheKey] {
+            return cachedValue
+        }
+        let result: Bool = {
+            for groupMember in groupThread.groupMembership.fullMembers {
+                if profileManager.isUser(inProfileWhitelist: groupMember, transaction: transaction) {
+                    return true
+                }
+            }
+            return false
+        }()
+        cache[cacheKey] = result
+        return result
+    }
 }
 
 // MARK: -
@@ -45,152 +263,40 @@ public extension OWSContactsManager {
         }
     }
 
-    // MARK: - Low Trust
+    // MARK: - Low Trust Thread Warnings
 
-    func isLowTrustThread(_ thread: TSThread,
-                          allowUserToDismiss: Bool,
-                          transaction: SDSAnyReadTransaction) -> Bool {
-        if let contactThread = thread as? TSContactThread {
-            return isLowTrustContact(contactThread: contactThread,
-                                     allowUserToDismiss: allowUserToDismiss,
-                                     transaction: transaction)
-        } else if let groupThread = thread as? TSGroupThread {
-            return isLowTrustGroup(groupThread: groupThread,
-                                   allowUserToDismiss: allowUserToDismiss,
-                                   transaction: transaction)
-        } else {
-            owsFailDebug("Invalid thread.")
-            return false
-        }
-    }
-
-    func isLowTrustContact(address: SignalServiceAddress,
-                           allowUserToDismiss: Bool,
-                           transaction: SDSAnyReadTransaction) -> Bool {
-        func cacheContains() -> Bool {
-            guard let uuid = address.uuid else {
-                return false
-            }
-            return Self.notLowTrustContactCache.contains(uuid)
-        }
-        func addToCache() {
-            guard let uuid = address.uuid else {
-                return
-            }
-            Self.notLowTrustContactCache.insert(uuid)
-        }
-        if cacheContains() {
-            return false
-        }
-        guard let contactThread = TSContactThread.getWithContactAddress(address,
-                                                                        transaction: transaction) else {
-            addToCache()
-            return false
-        }
-        return isLowTrustContact(contactThread: contactThread,
-                                 allowUserToDismiss: allowUserToDismiss,
-                                 transaction: transaction)
-    }
-
-    func isLowTrustContact(contactThread: TSContactThread,
-                           allowUserToDismiss: Bool,
-                           transaction: SDSAnyReadTransaction) -> Bool {
-        let address = contactThread.contactAddress
-        func cacheContains() -> Bool {
-            guard let uuid = address.uuid else {
-                return false
-            }
-            return Self.notLowTrustContactCache.contains(uuid)
-        }
-        func addToCache() {
-            guard let uuid = address.uuid else {
-                return
-            }
-            Self.notLowTrustContactCache.insert(uuid)
-        }
-        if cacheContains() {
-            return false
-        }
-        if !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
-            addToCache()
-            return false
-        }
-        // ...and not in a whitelisted group with the locar user.
-        if isInWhitelistedGroupWithLocalUser(address: address,
-                                             transaction: transaction) {
-            addToCache()
-            return false
-        }
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if allowUserToDismiss,
-           let uuid = address.uuid,
-           Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
-                                                         defaultValue: false,
-                                                         transaction: transaction) {
-            addToCache()
-            return false
-        }
-        return true
-    }
-
-    func isLowTrustGroup(groupThread: TSGroupThread,
-                         allowUserToDismiss: Bool,
-                         transaction: SDSAnyReadTransaction) -> Bool {
-        let groupId = groupThread.groupId
-        func cacheContains() -> Bool {
-            Self.notLowTrustGroupCache.contains(groupId)
-        }
-        func addToCache() {
-            Self.notLowTrustGroupCache.insert(groupId)
-        }
-        if cacheContains() {
-            return false
-        }
-        if nil == groupThread.groupModel.groupAvatarData {
-            // DO NOT add to the cache.
-            return false
-        }
-        if !groupThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
-            addToCache()
-            return false
-        }
-        // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if allowUserToDismiss,
-           Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
-                                                          defaultValue: false,
-                                                          transaction: transaction) {
-            addToCache()
-            return false
-        }
-        return true
+    func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        isLowTrustThread(thread,
+                         lowTrustType: .unknownThreadWarning,
+                         transaction: transaction)
     }
 
     // MARK: - Avatar Blurring
 
     func shouldBlurAvatar(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         isLowTrustThread(thread,
-                         allowUserToDismiss: true,
+                         lowTrustType: .avatarBlurring,
                          transaction: transaction)
     }
 
     func shouldBlurContactAvatar(address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool {
         isLowTrustContact(address: address,
-                          allowUserToDismiss: true,
+                          lowTrustType: .avatarBlurring,
                           transaction: transaction)
     }
 
     func shouldBlurContactAvatar(contactThread: TSContactThread,
                                  transaction: SDSAnyReadTransaction) -> Bool {
         isLowTrustContact(contactThread: contactThread,
-                          allowUserToDismiss: true,
+                          lowTrustType: .avatarBlurring,
                           transaction: transaction)
     }
 
     func shouldBlurGroupAvatar(groupThread: TSGroupThread,
                                transaction: SDSAnyReadTransaction) -> Bool {
         isLowTrustGroup(groupThread: groupThread,
-                        allowUserToDismiss: true,
+                        lowTrustType: .avatarBlurring,
                         transaction: transaction)
     }
 
@@ -240,34 +346,6 @@ public extension OWSContactsManager {
             owsFailDebug("Error: \(error)")
             return nil
         }
-    }
-
-    // MARK: - Shared Groups
-
-    func isInWhitelistedGroupWithLocalUser(address otherAddress: SignalServiceAddress,
-                                           transaction: SDSAnyReadTransaction) -> Bool {
-        let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: transaction)
-        guard !otherGroupThreadIds.isEmpty else {
-            return false
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: transaction)
-        let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
-        for groupThreadId in groupThreadIds {
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
-                                                                      transaction: transaction) else {
-                owsFailDebug("Missing group thread")
-                continue
-            }
-            if profileManager.isGroupId(inProfileWhitelist: groupThread.groupId,
-                                        transaction: transaction) {
-                return true
-            }
-        }
-        return false
     }
 
     // MARK: - Sorting
