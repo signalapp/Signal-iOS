@@ -1,2627 +1,363 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Pas maintenant";
-
-/* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accepter le nouveau numéro de sécurité";
-
-/* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Appel Session";
-
-/* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Inviter à Session";
-
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Envoyer un message";
-
-/* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Partager un contact";
-
-/* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Appel vidéo";
-
-/* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "Ajouter";
-
-/* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Ajouter comme contact";
-
-/* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Ajouter par numéro de téléphone";
-
-/* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Ajouter un membre";
-
-/* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec ce groupe ?";
-
-/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Voulez-vous ajouter cet utilisateur à vos contacts ?";
-
-/* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec cet utilisateur ?";
-
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Abandonner";
-
-/* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "Ne pas enregistrer";
-
-/* No comment provided by engineer. */
-"ALERT_ERROR_TITLE" = "Erreur";
-
-/* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Enregistrer";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Répondre";
-
-/* notification body */
-"APN_Message" = "Nouveau message !";
-
-/* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Session ne peut pas démarrer. Veuillez envoyer un journal de débogage à support@signal.org afin que nous cherchions la cause de ce problème.";
-
-/* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Erreur";
-
-/* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Saisir votre nom";
-
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Pas maintenant";
-
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %@ est maintenant proposée dans la logithèque App Store.";
-
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Session est proposée";
-
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mise à jour";
-
-/* Name of application */
-"APPLICATION_NAME" = "Session";
-
-/* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "Archiver";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Fichier joint";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La limite de la légende est atteinte.";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ajouter une légende…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Légende";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Type de fichier : %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Taille : %@";
-
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La limite du message a été atteinte.";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
-
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Fichier joint";
-
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Échec de téléchargement. Touchez pour ressayer.";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Erreur d’envoi du fichier joint";
-
-/* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Impossible de convertir l’image.";
-
-/* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Impossible de traiter la vidéo.";
-
-/* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Impossible d’analyser l’image.";
-
-/* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Impossible de supprimer les métadonnées de l’image.";
-
-/* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossible de redimensionner l’image.";
-
-/* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Le fichier joint est trop volumineux.";
-
-/* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Le fichier joint comporte du contenu non valide.";
-
-/* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Le fichier joint présente un format de fichier invalide.";
-
-/* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Le fichier joint est vide.";
-
-/* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choisissez ou prenez une photo, puis envoyez-la.";
-
-/* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Fichier joint";
-
-/* attachment menu option to send contact */
-"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
-
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Échec de sélection du document.";
-
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez compresser ce fichier ou ce dossier et essayez plutôt d’envoyer le fichier compressé.";
-
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non pris en charge";
-
-/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message vocal";
-
-/* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleur";
-
-/* button text for back button */
-"BACK_BUTTON" = "Retour";
-
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Impossible d’exporter les données de sauvegarde.";
-
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "La réponse du service est invalide";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Nettoyage de la sauvegarde";
-
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialisation de la sauvegarde";
-
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exportation des données";
-
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exportation de la sauvegarde";
-
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Téléversement de la sauvegarde";
-
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Impossible d’importer la sauvegarde.";
-
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuration de la sauvegarde";
-
 /* Indicates that the backup import data is being downloaded. */
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Téléchargement des données de la sauvegarde";
-
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "Finalisation de la sauvegarde";
-
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importation de la sauvegarde";
-
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restauration de la base de données";
-
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restauration des fichiers";
-
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "Une sauvegarde existe";
-
 /* Label for the backup restore description. */
 "BACKUP_RESTORE_DESCRIPTION" = "Restauration de la sauvegarde";
-
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progression";
-
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "État";
-
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Erreur inattendue de sauvegarde";
-
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Vous ne recevrez plus ni messages ni mises à jour de ce groupe";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer le groupe « %@ » et le quitter ?";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquer %@ ?";
-
-/* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Groupes bloqués";
-
-/* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Utilisateurs bloqués";
-
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Débloquer";
-
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Les membres actuels pourront vous ajouter au groupe de nouveau.";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
-
-/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Débloquer %@ ?";
-
-/* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Bloquer";
-
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ a été bloqué.";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "L’utilisateur est bloqué";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Le groupe a été bloqué";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Vous ne pouvez pas vous bloquer.";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Erreur";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ a été débloqué.";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Les membres actuels peuvent désormais vous ajouter au groupe de nouveau.";
-
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquer";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquer %@ ?";
-
-/* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
-
-/* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continuer";
-
-/* Label for generic done button. */
-"BUTTON_DONE" = "Terminé";
-
-/* Label for the 'next' button. */
-"BUTTON_NEXT" = "Suivant";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Sélectionner";
-
-/* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Rappeler";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès au microphone dans l’appli Réglages d’iOS pour passer des appels et enregistrer des messages vocaux avec Session.";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "L’accès au microphone est exigé";
-
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Appel entrant";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "Appeller";
-
-/* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Appel manqué, car le numéro de sécurité de l’appelant a changé.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Appel manqué";
-
-/* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Pas de réponse";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Session %@";
-
-/* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Appeler";
-
-/* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Souhaitez-vous appeler %@ ?";
-
-/* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Appeler ?";
-
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accepter l’appel entrant";
-
-/* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Source audio";
-
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Refuser l’appel entrant";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Touchez ici pour activer votre caméra";
-
-/* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "Raccrocher";
-
-/* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Couper le microphone";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Vous pouvez activer l’intégration des appels dans iOS dans les paramètres de confidentialité de Session afin de répondre aux appels entrants à partir de votre écran de verrouillage.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Vous pouvez activer l’intégration des appels dans iOS dans les paramètres de confidentialité de Session afin de voir le nom et le numéro de téléphone pour les appels entrants.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Pas maintenant";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Afficher les paramètres de confidentialité";
-
-/* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Intervertir les appareils photos";
-
-/* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Passer en appel audio";
-
-/* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Passer en appel vidéo";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touchez pour revenir à l’appel";
-
-/* notification action */
-"CALLBACK_BUTTON_TITLE" = "Rappeler";
-
-/* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilisateur de Session";
-
-/* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Cet utilisateur ne pourra pas être vérifié tant que vous n’aurez pas échangé de messages.";
-
-/* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Erreur";
-
-/* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Sélectionner un pays";
-
 /* The label for the 'do not restore backup' button. */
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne pas restaurer";
-
-/* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Impossible de déterminer s’il existe une sauvegarde à restaurer.";
-
-/* Title for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_TITLE" = "Erreur";
-
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurer";
-
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session n’a pas pu déterminer l’état de votre compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
-
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Il n’y a pas de compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
-
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Session s’est vu refuser l’accès à votre compte iCloud pour effectuer des sauvegardes. Accordez l’accès à votre compte iCloud à Session dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
-
-/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choisissez la couleur des messages sortants de cette conversation.";
-
-/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Vous seul verrez la couleur que vous avez choisie.";
-
-/* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Couleur de la conversation";
-
-/* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le presse-papiers";
-
-/* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
-
-/* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groupes";
-
-/* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Inviter";
-
-/* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir qui de vos contacts utilise Session.";
-
-/* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "L’application sera réinitialisée en supprimant vos messages et en vous désinscrivant du serveur. L’appli se fermera une fois le processus terminé.";
-
-/* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Voulez-vous vraiment supprimer votre compte ?";
-
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus recevoir ni envoyer de messages dans ce groupe.";
-
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
-
-/* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil";
-
-/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ a peut-être réinstallé Session ou changé d’appareil. Pour assurer la confidentialité, vérifiez votre numéro de sécurité avec cet utilisateur.";
-
-/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Le numéro de sécurité avec %@ a changé";
-
-/* Generic button text to proceed with an action */
-"CONFIRMATION_TITLE" = "Confirmer";
-
-/* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Adresse";
-
-/* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Bloqué";
-
-/* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Non vérifié";
-
-/* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Numéro non inscrit";
-
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Modifier";
-
-/* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Adresse courriel";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Ville";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Pays";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Quartier";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "Boîte postale";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Code postal";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Région";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Rue";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Nom de famille";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Prénom";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Deuxième prénom";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Titre";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffixe";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organisation";
-
-/* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Téléphone";
-
-/* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Aucune adresse courriel indiquée.";
-
-/* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Aucun numéro de téléphone indiqué.";
-
-/* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Sélectionner un contact";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partager un contact";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Modifier le nom";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Le contact est invalide";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Aucun champ de contact n’a été sélectionné";
-
-/* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Ouvrir dans Maps";
-
-/* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Envoyer un courriel";
-
-/* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Contact sans nom";
-
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette suppression ne peut pas être annulée.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
-
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Aucune correspondance";
-
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 correspondance";
-
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d sur %dcorrespondances";
-
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de la conversation";
-
-/* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Ajouter à un contact existant";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquer ce groupe";
-
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquer cet utilisateur";
-
-/* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "À propos du contact";
-
-/* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Couleur de la conversation";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Renseignements du groupe";
-
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Sourdine";
-
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Sourdine";
-
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Désactivée";
-
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Sourdine pendant 1 jour";
-
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Sourdine pendant 1 heure";
-
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Sourdine pendant 1 minute";
-
 /* Label for button to mute a thread for a week. */
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Sourdine pendant 1 semaine";
-
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Sourdine pendant 1 an";
-
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "jusqu’à %@";
-
-/* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Créer un nouveau contact";
-
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Chercher dans la conversation";
-
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toucher pour modifier";
-
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Rétablir les notifications";
-
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ce groupe peut voir votre profil.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Cet utilisateur peut voir votre profil.";
-
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Partager le profil";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Partager votre profil";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Partager votre profil";
-
-/* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Ajouter aux contacts";
-
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Partagez votre profil avec cet utilisateur.";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Cet utilisateur n’est pas dans vos contacts.";
-
-/* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Chargement de plus de messages…";
-
-/* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Touchez pour plus de renseignements";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloquer cet utilisateur";
-
-/* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "La réinitialisation de votre session vous permettra de recevoir les futurs messages de %@, mais elle ne récupérera pas les messages déjà corrompus.";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Sélectionner l’indicatif de pays";
-
-/* Accessibility label for the create group new group button */
-"CREATE_NEW_GROUP" = "Créez un nouveau groupe";
-
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Déplacer et mettre à l’échelle";
-
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Cela peut prendre quelques minutes.";
-
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimisation de la base de données";
-
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "Il y a %@ h";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "Il y a %@ min";
-
 /* The present; the current time. */
 "DATE_NOW" = "À l’instant";
-
 /* The current day. */
 "DATE_TODAY" = "Aujourd’hui";
-
 /* The day before today. */
 "DATE_YESTERDAY" = "Hier";
-
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Impossible de copier les journaux.";
-
-/* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Impossible de compresser les journaux.";
-
-/* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Impossible de téléverser les journaux.";
-
-/* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Que voulez-vous faire avec le lien vers votre journal de débogage ?";
-
-/* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Aucun journal n’a été trouvé.";
-
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Ouvrir un rapport de bogue";
-
-/* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copier le lien";
-
-/* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Envoyer un courriel à l’assistance";
-
-/* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Envoyer au dernier fil";
-
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Envoyer à soi-même";
-
-/* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Partager";
-
-/* Title of the alert shown for failures while uploading debug logs.
-   Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "Plus qu’une étape";
-
-/* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Impossible d’ouvrir l’appli de courriel";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Le lien gist a été copié dans votre presse-papiers. Vous êtes sur le point d’être redirigé vers la liste des problèmes de GitHub.";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirection vers GitHub";
-
-/* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Inscrire ce numéro de téléphone de nouveau";
-
-/* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "L’appareil n’est plus inscrit. Votre numéro de téléphone est peut-être inscrit à Session sur un appareil différent. Touchez pour vous inscrire de nouveau.";
-
-/* {{Short Date}} when device last communicated with Session Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité : %@";
-
-/* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Relié : %@";
-
-/* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Échec de mise à jour de la liste des appareils";
-
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Messages éphémères";
-
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Les messages de cette conversation disparaîtront dans %@.";
-
-/* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si cette option est activée, les messages envoyés et reçus de cette conversation disparaîtront après avoir été lus.";
-
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %@";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Paramètres des messages éphémères";
-
-/* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Fermer";
-
-/* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
-
-/* Alert body for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Session a besoin d’accéder aux contacts pour modifier les renseignements des contacts";
-
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Modifier le groupe";
-
-/* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
-
-/* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Modifier le groupe";
-
-/* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Ajouter…";
-
-/* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Membres";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Ajouté";
-
-/* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Mise à jour";
-
-/* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous enregistrer les changements apportées à ce groupe ?";
-
-/* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
-
-/* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copier";
-
-/* No comment provided by engineer. */
-"EDIT_TXT" = "Modifier";
-
-/* body of email sent to contacts when inviting to install Session. Embeds {{link to install Session}} and {{link to the Session home page}} */
-"EMAIL_INVITE_BODY" = "Bonjour,\n\nDernièrement, j’ai utilisé Session pour assurer la confidentialité des conversations sur mon iPhone. J’aimerais que vous l’installiez aussi afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSession est proposée pour iPhone et Android. Obtenez-le ici : %@\n\nSession fonctionne comme votre appli de messagerie existante. Nous pouvons envoyer des photos et des vidéos, effectuer des appels et lancer des conversations de groupe. Le grand intérêt est que personne d’autre ne peut rien voir de tout cela, pas même les créateurs de Session !\n\nVous pouvez en savoir davantage sur « Open Whisper Systems », les personnes derrière Session, ici : %@.";
-
-/* subject of email sent to contacts when inviting to install Session */
-"EMAIL_INVITE_SUBJECT" = "Passons à Session";
-
-/* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Aucun de vos contacts n’utilise Session.";
-
-/* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Pourquoi ne pas inviter quelqu’un ?";
-
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirmez votre NIP";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Impossible de désactiver le blocage de l’inscription";
-
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Impossible d’activer le blocage de l’inscription";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Désactiver";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Activer";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Suivant";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Le NIP ne correspond pas.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Saisissez un NIP de blocage de l’inscription. Il vous sera demandé de saisir ce NIP la prochaine fois que vous inscrirez ce numéro de téléphone à Session.";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Pour une sécurité accrue, définissez un NIP de blocage de l’inscription qui sera exigé afin de réinscrire ce numéro de téléphone à Session.";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Le blocage de l’inscription est activé. Vous devrez saisir votre NIP pour réinscrire votre numéro de téléphone à Session.";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Blocage de l’inscription";
-
-/* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Occupé";
-
-/* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Échec d’appel";
-
-/* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossible d’accéder aux contacts";
-
-/* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec d’envoi du message.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible d’envoyer en raison de données de confidentialité périmées.";
-
-/* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Échec d’envoi du message, car vous avez bloqué cet utilisateur.";
-
-/* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Échec d’écriture et d’envoi du fichier joint.";
-
-/* Generic error used whenever Session can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Session n’a pas pu se connecter à Internet. Veuillez ressayer ultérieurement.";
-
-/* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Échec d’envoi du message en raison d’absence de destinataires valides.";
-
-/* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Échec de la requête réseau";
-
-/* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "La demande réseau est arrivée au bout de son délai.";
-
-/* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Réponse invalide du service";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Cet appareil n’est plus inscrit avec votre numéro de téléphone. Veuillez réinstaller Session.";
-
-/* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez ressayer ultérieurement.";
-
-/* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n’est pas un utilisateur de Session.";
-
-/* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec de fichier joint : demandez à ce contact de renvoyer son message après avoir mis Session à jour vers la dernière version.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d’un message en double.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clé du destinataire est invalide.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Le message reçu était désynchronisé";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Réception d’un message incompatible avec cette version.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Aucune session pour ce contact.";
-
-/* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Le numéro de sécurité a changé.";
-
-/* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Votre numéro de sécurité avec %@ a changé.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
-
-/* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Le numéro de sécurité a changé.";
-
-/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Utilisateur non inscrit : %@";
-
-/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Pas maintenant";
-
-/* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop d’échecs avec ce contact. Veuillez ressayer ultérieurement.";
-
-/* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Votre numéro de sécurité avec %@ a changé récemment. Vous devriez peut-être le vérifier avant de le renvoyer.";
-
-/* alert title */
-"FAILED_VERIFICATION_TITLE" = "Échec de vérification du numéro de sécurité !";
-
-/* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marquer comme vérifié";
-
-/* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Réinitialiser la session.";
-
-/* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Achever la création du groupe";
-
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Vous n’avez aucun média dans cette conversation.";
-
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Chargement des médias plus récents…";
-
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Chargement des médias plus anciens…";
-
-/* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Fichier joint";
-
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Échec de récupération du GIF demandé. Veuillez vérifier que vous êtes bien en ligne.";
-
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Une erreur inconnue est survenue.";
-
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Impossible de choisir le GIF";
-
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Veuillez saisir votre recherche.";
-
-/* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "Recherche de GIF";
-
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Erreur. Touchez pour ressayer.";
-
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Il n’y a aucun résultat.";
-
-/* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Saisir votre recherche";
-
-/* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "L’avatar a été modifié.";
-
-/* No comment provided by engineer. */
-"GROUP_CREATED" = "Le groupe a été créé.";
-
-/* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Les membres n’ont pas tous pu être ajoutés au groupe. Touchez pour ressayer.";
-
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Gestion du groupe";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ s’est joint au groupe.";
-
-/* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ a quitté le groupe.";
-
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ a été retiré du groupe. ";
-
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ ont été retirés du groupe. ";
-
 /* No comment provided by engineer. */
 "YOU_WERE_REMOVED" = " Vous avez été retiré du groupe. ";
-
-/* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Ajouter un contact";
-
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Appeler";
-
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Effacer les vérifications pour tous";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Cela annulera la vérification de tous les membres du groupe dont les numéros de sécurité ont changé depuis la dernière vérification.";
-
-/* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membres";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "N’est plus marqué comme vérifié";
-
-/* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Envoyer un message";
-
-/* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "À propos du contact";
-
-/* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Le titre est maintenant « %@ ».";
-
-/* No comment provided by engineer. */
-"GROUP_UPDATED" = "Le groupe a été mis à jour.";
-
-/* No comment provided by engineer. */
-"GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
-
-/* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversations archivées";
-
-/* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Bloquée";
-
-/* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Rechercher";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Session contact.  Embeds {{The name of 1 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Certains de vos contacts sont déjà sur Session, dont %@.";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Session contacts.  Embeds {{The names of 2 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Certains de vos contacts sont déjà sur Session, dont %@ et %@.";
-
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Session contacts.  Embeds {{The names of 3 of your Session contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Certains de vos contacts sont déjà sur Session, dont %@, %@ et %@.";
-
-/* A label offering to start a new conversation with your contacts, if you have no Session contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Lancez votre première conversation ici.";
-
-/* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Aucun résultat n’a été trouvé pour « %@ ».";
-
-/* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archives";
-
-/* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Session";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Vous ne pouvez pas partager plus de %@ éléments.";
-
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Échec de sélection du fichier joint.";
-
-/* Call setup status label */
-"IN_CALL_CONNECTING" = "Connexion…";
-
-/* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnexion…";
-
-/* Call setup status label */
-"IN_CALL_RINGING" = "Sonnerie…";
-
-/* Call setup status label */
-"IN_CALL_SECURING" = "Pris. Sécurisation…";
-
-/* Call setup status label */
-"IN_CALL_TERMINATED" = "Appel terminé";
-
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ces conversations sont archivées et n’apparaîtront dans la boîte de réception que si de nouveaux messages sont reçus.";
-
-/* Message shown in the home view when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Donnez à votre boîte de réception quelque chose à raconter. Commencez en envoyant un message à un ami.";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir le nom des contacts dans votre liste de conversations de Session.";
-
-/* info message text in conversation view */
-"INCOMING_CALL" = "Appel entrant";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "Vous avez refusé un appel";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "Appel entrant";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "L’appel a été manqué, car le numéro de sécurité de l’appelant a changé.";
-
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Le fichier audio est invalide";
-
-/* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour inviter vos amis à se joindre à Session.";
-
-/* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
-
-/* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Inviter des amis à Session";
-
-/* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Chercher";
-
-/* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Inviter des amis";
-
-/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "L’invitation simultanée de plusieurs utilisateurs enverra un message de groupe dont les destinataires se verront les uns les autres.";
-
-/* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Les messages disparaîtront après %@.";
-
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Les messages ne disparaîtront pas.";
-
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Quitter";
-
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Quitter le groupe ";
-
-/* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veuillez vous assurer de balayer le code QR affiché sur l’appareil que vous souhaitez relier.";
-
-/* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de liaison de l’appareil";
-
-/* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupes et contacts, accéder à vos conversations et envoyer des messages en votre nom.";
-
-/* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Relier cet appareil ?";
-
-/* attempt another linking */
-"LINK_DEVICE_RESTART" = "Ressayer";
-
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Balayez le code QR affiché sur l’appareil que vous souhaitez relier.";
-
-/* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Balayer le code QR";
-
-/* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Relier un nouvel appareil";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Aperçu de lien";
-
-/* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Appareils reliés";
-
-/* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Échec de liaison de l’appareil";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Membres du groupe";
-
-/* No comment provided by engineer. */
-"LOGGING_SECTION" = "Journalisation";
-
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Message";
-
-/* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tous les médias";
-
-/* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Appareil photo";
-
-/* action sheet button title when choosing attachment type */
-"MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Document";
-
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photothèque";
-
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Supprimer %d messages";
-
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Supprimer le message";
-
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
 "MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ le %@";
-
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
-
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Vous";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ce mois-ci";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copier le média";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copier le texto";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Supprimer ce message";
-
-/* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Il ne sera supprimé que sur cet appareil.";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "Plus d’infos";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Répondre à ce message";
-
-/* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Enregistrer le média";
-
-/* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
-
-/* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "À :";
-
-/* No comment provided by engineer. */
-"MESSAGE_COMPOSEVIEW_TITLE" = "Nouveau message";
-
-/* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Taille du fichier";
-
-/* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Type MIME";
-
-/* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Distribué";
-
-/* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Échec";
-
-/* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lu";
-
-/* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Envoi";
-
-/* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Envoyé";
-
-/* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ignorés";
-
-/* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Téléversement";
-
-/* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Le message n’a ni contenu ni fichier joint";
-
-/* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Reçu";
-
-/* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Expéditeur";
-
-/* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Envoyé";
-
-/* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nom du fichier";
-
-/* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message";
-
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Distribué";
-
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Échec d’envoi.";
-
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "En échec";
-
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Lu";
-
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ignoré";
-
-/* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Échec d’envoi";
-
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Envoi…";
-
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Envoyé";
-
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Téléversement…";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nouveau message";
-
-/* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ n’est plus marqué comme vérifié. Touchez pour plus d’options.";
-
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Vous avez bloqué cet utilisateur";
-
-/* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ n’est plus marqué comme vérifié. Touchez pour plus d’options.";
-
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Vous avez bloqué un membre de ce groupe";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "Vous avez bloqué ce groupe";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Vous avez bloqué %@ membres de ce groupe";
-
-/* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Partager votre profil avec ce groupe ?";
-
-/* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Plus d’un membre de ce groupe n’est plus marqué comme vérifié. Touchez pour plus d’options.";
-
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Touchez ici pour les paramètres";
-
-/* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Nouveaux messages";
-
-/* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Il y a d’autres messages non lus";
-
-/* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Il y a d’autres messages non lus (dont des changements de numéro de sécurité)";
-
-/* info message text in conversation view */
-"MISSED_CALL" = "Appel manqué";
-
-/* Alert body
-   Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès à l’appareil photo dans l’appli Réglages d’iOS pour passer des appels vidéo avec Session.";
-
-/* Alert title
-   Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Session a besoin d’accéder à votre appareil photo.";
-
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
-
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session doit accéder à vos photos pour cette option.";
-
-/* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible de relier d’autres appareils.";
-
-/* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Vous avez atteint le nombre maximal d’appareils que vous pouvez relier actuellement à votre compte. Veuillez supprimer un appareil et ressayer.";
-
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Vous ne recevrez pas de notifications pour les conversations en sourdine.";
-
-/* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
-
-/* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Veuillez vous assurer d’être en ligne et ressayer.";
-
-/* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Contournement de la censure : Activé";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTED" = "Connecté";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "Connexion en cours";
-
-/* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "L’appareil n’est plus inscrit";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "État du réseau";
-
-/* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "Hors ligne";
-
-/* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Trouver par numéro de téléphone";
-
-/* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Ajouter par numéro de téléphone";
-
-/* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Définir la photo du groupe";
-
-/* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Créer";
-
-/* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
-
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Membre";
-
-/* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ à %@";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nommer cette conversation de groupe";
-
-/* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autres utilisateurs";
-
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous abandonner ces changements ?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
-
-/* No comment provided by engineer. */
-"new_message" = "Nouveau message";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Chercher";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Trouver un utilisateur";
-
-/* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
-
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note à mon intention";
-
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Vous avez peut-être reçu des messages alors que votre %@ redémarrait.";
-
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "En raison de bogues connus dans le cadre d’applications du pousser d’Apple, les prévisualisations de messages ne seront affichées que si le message est récupéré dans les 30 secondes après envoi. Le macaron de l’application pourrait ainsi être inexact.";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ni nom ni contenu";
-
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Jouer pendant que l’appli est ouverte";
-
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom et contenu";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Nom seulement";
-
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Afficher";
-
 /* No comment provided by engineer. */
 "OK" = "Valider";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "Un NIP de blocage de l’inscription est activé pour ce numéro de téléphone. Veuillez saisir le NIP de blocage de l’inscription.";
-
-/* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Votre NIP de blocage de l’inscription est différent du code automatisé de vérification qui a été envoyé à votre téléphone dans la dernière étape.";
-
-/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "J’ai oubli mon NIP";
-
-/* Title of the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_TITLE" = "Blocage de l’inscription";
-
-/* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Ajoutez une touche d’humanité à vos messages";
-
-/* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Accorder les autorisations";
-
-/* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Les renseignements de vos contacts sont toujours transmises de façon sécurisée.";
-
-/* Label for the 'not now' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Pas maintenant";
-
-/* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Session peut vous prévenir de la réception d’un message (et vous indiquer son expéditeur)";
-
-/* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Saisissez votre numéro de téléphone pour commencer";
-
-/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro est invalide";
-
-/* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Les profils de Session sont chiffrés de bout en bout et le service Session n’a jamais accès à ces renseignements.";
-
-/* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Votre nom";
-
-/* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Configurez votre profil";
-
-/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Conditions générales d’utilisation et politique de confidentialité";
-
-/* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "La confidentialité dans votre poche.\nPour que chaque message reflète qui vous êtes.";
-
-/* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "Mauvais numéro ?";
-
-/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Je n’ai pas reçu de code (disponible dans %@)";
-
-/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "Ce code est erroné";
-
-/* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Je n’ai pas reçu de code";
-
-/* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Assurez-vous que le service de téléphonie mobile est actif et que vous pouvez recevoir des textos.";
-
-/* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Aucun code reçu ?";
-
-/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Renvoyer le code";
-
-/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Appelez-moi plutôt";
-
-/* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Toujours pas de code ?";
-
-/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Saisir le code envoyé au %@";
-
-/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Nous venons de renvoyer un code au %@";
-
-/* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Paramètres";
-
-/* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ a désactivé les messages éphémères.";
-
-/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ a défini l’expiration des messages éphémères à %@.";
-
-/* Label warning the user that the Session service may be down. */
-"OUTAGE_WARNING" = "Session éprouve des difficultés techniques. Nous mettons tout en œuvre pour restaurer le service aussi rapidement que possible.";
-
-/* info message text in conversation view */
-"OUTGOING_CALL" = "Appel sortant";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "Appel sortant";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Appel sortant sans réponse";
-
-/* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
-
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple : %@";
-
-/* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
-
-/* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Domicile";
-
-/* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Télécopieur domicile";
-
-/* Label for 'iPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
-
-/* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "Principal";
-
-/* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
-
-/* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "Autre";
-
-/* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "Autre télécopieur";
-
-/* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "Téléavertisseur ";
-
-/* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "Inconnu";
-
-/* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Travail";
-
-/* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Télécopieur travail";
-
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "Impossible de capturer l’image.";
-
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Impossible de capturer l’image.";
-
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Échec de configuration de l’appareil photo";
-
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album sans nom";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouez le contenu multimédia";
-
-/* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Vous n’avez pas marqué %@ comme vérifié.";
-
-/* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Vérifié";
-
-/* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ est vérifié";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "En apprendre davantage";
-
-/* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Toucher pour balayer";
-
-/* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Annuler la vérification";
-
-/* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Cela ne semble pas être votre numéro de sécurité avec %@. Vérifiez-vous le bon contact ?";
-
-/* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Le numéro dans votre presse-papiers ne semble pas être le bon numéro de sécurité pour cette conversation.";
-
-/* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Session n’a pas pu trouver de numéro de sécurité dans votre presse-papiers. L’avez-vous copié correctement ?";
-
-/* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Chaque paire d’utilisateurs de Session partage un numéro de sécurité distinct. Revérifiez que %@ affiche *votre* numéro de sécurité particulier.";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Vous utilisez une ancienne version de Session. Vous devez la mettre à jour avant de pouvoir vérifier les numéros de sécurité. ";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Votre partenaire utilise une ancienne version de Session. Il doit la mettre à jour avant que vous puissiez vérifier son numéro de sécurité. ";
-
-/* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code balayé ne semble pas être un numéro de sécurité. Utilisez-vous tous les deux une version à jour de Session ?";
-
-/* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous souhaitez vérifier la sécurité du chiffrement de bout en bout avec %@, comparez les numéros ci-dessus avec ceux sur son appareil.\n\nVous pouvez aussi balayer le code sur son appareil ou lui demander de balayer le vôtre.";
-
-/* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Vérifier le numéro de sécurité";
-
-/* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Marquer comme vérifié";
-
-/* No comment provided by engineer. */
-"PROCEED_BUTTON" = "Continuer";
-
-/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
-"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
-
-/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
-"PROFILE_NAME_LABEL_FORMAT" = " ~%@";
-
-/* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Définir un avatar de profil";
-
-/* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Supprimer l’avatar";
-
-/* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Votre nom de profil est trop long.";
-
-/* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Échec de mise à jour du profil";
-
-/* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Saisir votre nom";
-
-/* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
-
-/* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil Session sera visible pour vos contacts, quand vous lancez de nouvelles conversations et quand vous le partagez avec d’autres utilisateurs et groupes.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Touchez ici pour en savoir davantage.";
-
-/* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nom de profil";
-
-/* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Enregistrer";
-
-/* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profil";
-
-/* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Marquer comme lu";
-
-/* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Répondre";
-
-/* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Les notifications poussées ont été réactivées avec succès.";
-
-/* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Notifications poussées";
-
-/* No comment provided by engineer. */
-"QUESTIONMARK_PUNCTUATION" = " ?";
-
-/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Réponse à %@";
-
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Vous répond";
-
-/* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Réponse à vous-même";
-
-/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Le message original est introuvable.";
-
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Le message original n’est plus accessible";
-
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Le message original est introuvable.";
-
-/* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Fichier joint";
-
-/* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
-
-/* Indicates this message is a quoted reply to animated GIF file. */
-"QUOTED_REPLY_TYPE_GIF" = "GIF";
-
-/* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Image";
-
-/* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "Vidéo";
-
-/* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "J’ai oublié mon code NIP.";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "L’inscription de ce numéro de téléphone sera possible sans votre NIP de blocage de l’inscription 7 jours après la dernière activité de ce numéro de téléphone sur Session";
-
-/* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Envoyer";
-
-/* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
-
-/* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Ressayer";
-
-/* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Trop de tentatives. Veuillez attendre une minute avant de ressayer.";
-
-/* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Trop de tentatives. Veuillez patienter une minute avant de ressayer.";
-
-/* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Échec de réactivation des notifications poussées";
-
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Code de pays";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Saisir le numéro";
-
-/* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "Erreur d’enregistrement";
-
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n’aurez pas vérifié le code que nous vous avons envoyé.";
-
-/* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "En vous inscrivant maintenant, Session ne sera plus inscrit avec ce numéro de téléphone sur aucun autre appareil.";
-
-/* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Inscrire cet iPad";
-
-/* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Avez-vous déjà un compte Session ?";
-
-/* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Ce format de numéro de téléphone n’est pas pris en charge, veuillez contacter l’assistance.";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "Numéro de téléphone";
-
-/* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Vous devez d’abord vous inscrire avant de pouvoir envoyer un message.";
-
-/* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Échec de vérification";
-
-/* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Les numéros que vous avez envoyés ne correspondent pas à ce que nous avons envoyé. Voulez-vous les vérifier ?";
-
-/* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Le NIP de blocage de l’inscription est erroné.";
-
-/* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Veuillez saisir un numéro de téléphone valide pour vous inscrire.";
-
-/* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Le numéro de téléphone est invalide";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Veuillez saisir un numéro de téléphone pour vous inscrire.";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Aucun numéro de téléphone";
-
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "Refuser";
-
-/* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Le numéro de téléphone que vous essayez d’inscrire l’a déjà été sur un autre serveur. Veuillez le désinscrire de ce serveur et ressayer.";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Le blocage de l’inscription est activé pour votre numéro de téléphone. Pour vous aider à mémoriser votre NIP de blocage de l’inscription, Session vous demandera de le confirmer régulièrement.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Rappel :";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Le blocage de l’inscription aide à protéger votre numéro de téléphone contre les tentatives d’inscription non autorisées. Cette fonction peut être désactivée en tout temps dans vos paramètres de confidentialité de Session";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Saisissez votre NIP de blocage de l’inscription";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Vous pouvez définir un nouveau NIP dans vos paramètres de confidentialité.";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Ce n’est pas le bon NIP.";
-
-/* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Réactiver les notifications poussées";
-
-/* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Ressayer";
-
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Ajouter quand même au groupe";
-
-/* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Appeler quand même";
-
-/* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Envoyer quand même";
-
-/* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Notre numéro de sécurité Session :\n%@";
-
-/* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Votre numéro de sécurité avec %@ a changé. Vous devriez peut-être le vérifier.";
-
-/* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Balayez le code QR sur l’appareil de votre contact.";
-
-/* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Balayer le code QR";
-
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instantané";
-
-/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Impossible d’accéder à l’authentification";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Échec d’authentification";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Trop d’échecs de tentatives d’authentification. Veuillez ressayer ultérieurement.";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrouillage de l’écran.";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrouillage de l’écran.";
-
-/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Vous devez activer un code dans vos réglages iOS pour utiliser le verrouillage de l’écran.";
-
-/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authentifiez-vous pour ouvrir Session.";
-
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Échec d’authentification";
-
-/* Label for button on lock screen that lets users unlock Session. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Déverrouiller Session";
-
-/* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Recherche par nom ou numéro";
-
-/* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Autres contacts";
-
-/* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
-
-/* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
-
-/* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "La session sécurisée a été réinitialisée.";
-
-/* Label for 'select GIF to attach' action sheet button */
-"SELECT_GIF_BUTTON" = "GIF";
-
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Autres contacts";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Conversations récentes";
-
-/* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Envoyer de nouveau";
-
-/* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "Envoyer";
-
-/* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "L’envoi de votre message a échoué.";
-
-/* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez ressayer ultérieurement.";
-
-/* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Session !";
-
-/* Text for button to send a Session invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par texto : %@";
-
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
-
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
-
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
-
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
-
-/* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Inviter un ami par texto non sécurisé ?";
-
-/* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Souhaitez-vous inviter le numéro suivant à Session :";
-
-/* Navbar title */
-"SETTINGS_ABOUT" = "À propos de Session";
-
-/* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Bloquer le contact";
-
-/* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Bloquer ce numéro de téléphone";
-
-/* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bloquer";
-
-/* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Contournement de la censure";
-
-/* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Lieu : %@";
-
-/* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Si cette option est activée, Session tentera de contourner la censure. N’activez cette fonction que si vous êtes situé en un lieu où Session est censuré.";
-
-/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Le contournement de la censure a été activé d’après le numéro de téléphone de votre compte.";
-
-/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
-
-/* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Le contournement de la censure ne peut être activé qu’une fois connecté à Internet.";
-
-/* Table footer for the 'censorship circumvention' section shown when the app is connected to the Session service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Le contournement de la censure n’est pas nécessaire ; vous êtes déjà connecté au service Session.";
-
-/* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Contournement de la censure";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Activer le journal de débogage";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Envoyer le journal de débogage";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "Avancés";
-
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (par défaut)";
-
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "Sauvegarde";
-
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "Sauvegarder maintenant";
-
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Annuler la sauvegarde";
-
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "La sauvegarde est activée";
-
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "État iCloud";
-
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Échec de restauration de la sauvegarde";
-
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "La restauration de sauvegardes est inactive";
-
 /* Indicates that app is restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "La restauration de la sauvegarde est en cours";
-
 /* Indicates that the last backup restore succeeded. */
 "SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "La restauration de la sauvegarde a réussi";
-
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Phase";
-
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Progression";
-
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "État";
-
 /* Indicates that the last backup failed. */
 "SETTINGS_BACKUP_STATUS_FAILED" = "Échec de sauvegarde";
-
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Attente";
-
 /* Indicates that app is backing up. */
 "SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Sauvegarde en cours";
-
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "La sauvegarde est terminée avec succès";
-
-/* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Ajouter un utilisateur bloqué";
-
-/* A label that indicates the user has no Session contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Vous n’avez aucun contact sur Session.";
-
-/* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Aucun résultat n’a été trouvé";
-
-/* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Bloqués";
-
-/* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Toujours relayer les appels";
-
-/* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayez tous les appels par un serveur Session pour éviter de divulguer votre adresse IP à votre contact. L’activation de cette option réduira la qualité des appels.";
-
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Effacer l’historique des conversations";
-
-/* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Tous droits réservés Session Messenger\nSous licence GPLv3";
-
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
-
-/* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Supprimer toutes les données";
-
-/* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
-
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
-
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Aide ";
-
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Effacer l’historique des conversations";
-
-/* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "Renseignements";
-
-/* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invitez vos amis";
-
-/* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Vous pouvez me joindre en utilisant @signalapp. Obtenez-le maintenant : https://signal.org/download/";
-
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
-
-/* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et politique de confidentialité";
-
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Envoyer des aperçus de liens.";
-
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Les aperçus sont pris en charge pour les liens Imgur, Instagram, Pinterest, Reddit et YouTube.";
-
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Aperçus de liens";
-
-/* Title for settings activity */
-"SETTINGS_NAV_BAR_TITLE" = "Paramètres";
-
-/* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appels et de messages peuvent apparaître lorsque votre téléphone est verrouillé. Vous souhaiterez peut-être limiter ce qui est indiqué dans ces notifications.";
-
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
-
-/* No comment provided by engineer. */
-"SETTINGS_NOTIFICATIONS" = "Notifications";
-
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Afficher le nom et le numéro de l’appelant";
-
-/* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Afficher les appels dans la liste « Récents » de l’appli iOS Téléphone.";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Afficher les appels dans Récents";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Intégration des appels dans iOS";
-
-/* Settings table view cell label */
-"SETTINGS_PRIVACY_TITLE" = "Confidentialité";
-
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "Accusés de lecture";
-
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Voyez et faites savoir que les messages ont été lus. Ce paramètre est facultatif et s’applique à toutes les conversations.";
-
-/* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "S’inscrire de nouveau";
-
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai de verrouillage de l’écran";
-
-/* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Déverrouillez l’écran Session en utilisant Touch ID, Face ID ou le code de votre appareil iOS. Vous pouvez toujours répondre aux appels entrants et recevoir des notifications de messages quand le verrouillage de l’écran est activé. Les paramètres de notification de Session vous permettent de personnaliser les renseignements qui sont affichés.";
-
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Verrouillage de l’écran";
-
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrouillage de l’écran";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Activer la sécurité de l’écran";
-
-/* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les aperçus de Session d’apparaître dans le sélecteur d’applis.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "L’intégration des appels dans iOS affiche les appels Session sur votre écran de verrouillage et dans l’historique des appels du système. Une option vous permet d’afficher les nom et numéro de votre contact. Si iCloud est activé, cet historique des appels sera partagé avec Apple.";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
-
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";
-
-/* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Appel en cours";
-
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Sécurité de l’écran";
-
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Assistance";
-
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Désactivé";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Activé";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Blocage de l’inscription";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocage de l’inscription";
-
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicateurs de saisie";
-
-/* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Voyez et faites savoir que des messages sont en cours de saisie. Ce paramètre est facultatif et s’applique à toutes les conversations.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "En savoir plus";
-
-/* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Expéditeur scellé";
-
-/* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Afficher les indicateurs";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Afficher une icône d’état quand vous sélectionnez « Plus d’infos » pour les messages qui ont été distribués avec l’option « expéditeur scellé ».";
-
-/* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Autoriser de tous";
-
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activer l’option « expéditeur scellé » pour les messages entrants provenant d’expéditeurs qui ne sont pas dans vos contacts et de personnes avec qui vous n’avez pas partagé votre profil.";
-
-/* No comment provided by engineer. */
-"SETTINGS_VERSION" = "Version";
-
-/* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
-
-/* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
-
-/* action sheet item */
-"SHARE_ACTION_TWEET" = "Twitter";
-
-/* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Votre numéro de sécurité avec %@ a changé récemment. Vous devriez peut-être le vérifier dans l’appli principale avant d’effectuer de nouveaux envois.";
-
-/* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Chargement…";
-
-/* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Lancez l’appli Session pour vous inscrire.";
-
-/* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Non inscrit";
-
-/* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Lancez l’appli Session pour mettre à jour ou vous inscrire.";
-
-/* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Pas prête";
-
-/* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Impossible d’envoyer le fichier joint";
-
-/* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Téléversement…";
-
-/* Shown when trying to share content to a Session user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Impossible de préparer le fichier joint";
-
-/* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Partager vers Session";
-
-/* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Afficher le numéro de sécurité";
-
-/* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Afficher la conversation";
-
-/* body sent to contacts when inviting to Install Session */
-"SMS_INVITE_BODY" = "Je vous invite à installer Session ! Voici le lien :";
-
-/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "Aucun";
-
-/* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ correspond. Vous pouvez marquer ce contact comme vérifié.";
-
-/* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Le numéro de sécurité correspond !";
-
-/* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Vérifier le numéro de sécurité";
-
-/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ jours";
-
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ j";
-
-/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ heures";
-
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ h";
-
-/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
-
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ m";
-
-/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ secondes";
-
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ s";
-
-/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ jour";
-
-/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ heure";
-
-/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
-
-/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ semaine";
-
-/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ semaines";
-
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ sem";
-
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Annuler";
-
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Supprimer";
-
-/* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "Désarchiver";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Voulez-vous bloquer cet utilisateur ?";
-
-/* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Contact inconnu";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Pays inconnu";
-
-/* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Inconnue";
-
-/* button title for unlinking a device */
-"UNLINK_ACTION" = "Annuler le lien";
-
-/* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Cet appareil ne pourra plus envoyer ni recevoir de messages s’il n’est plus relié.";
-
-/* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Annuler le lien avec « %@ » ?";
-
-/* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Session n’a pas pu annuler le lien avec votre appareil.";
-
-/* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Appareil sans nom";
-
-/* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Échec de désinscription de Session.";
-
-/* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Un type de fichier joint non pris en charge a été reçu.";
-
-/* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne prend pas cette fonction en charge";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Vous ne pouvez pas supprimer les membres d’un groupe. Il devra quitter le groupe. Vous pouvez aussi créer un nouveau groupe sans ce membre.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "La fonction n’est pas prise en charge";
-
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Il est facile de répondre aux appels à partir de votre écran de verrouillage grâce à l’intégration des appels dans iOS. Par défaut, nous anonymisons l’appelant, donc ce renseignement est aussi confidentiel.";
-
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Apprenez-en plus dans vos paramètres de confidentialité.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Balayez juste pour répondre";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activer les indicateurs de saisie";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Les aperçus facultatifs de liens sont maintenant pris en charge pour certains des sites les plus populaires d’Internet.";
-
-/* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Vous pouvez désactiver ou activer cette fonction en tout temps dans vos paramètres de Session (Confidentialité > Envoyer des aperçus de liens).";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Aperçus de liens";
-
-/* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Vous pouvez maintenant choisir des sons de notification par défaut ou par conversation, et les appels utiliseront la sonnerie que vous avez choisie pour chaque contact du système.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Révisez les paramètres de notification";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Les sons des appels et des messages ont été mis à jour";
-
-/* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Configurez votre profil";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Vous pouvez maintenant partager sur Session une photo et un nom de profil avec vos amis.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Prêt pour votre gros plan ?";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Vous avez maintenant la possibilité de voir et de partager si les messages ont été lus.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Activez les accusés de lecture dans vos paramètres de confidentialité.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Les accusés de lecture sont arrivés";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Vous pouvez maintenant voir et faire savoir que des messages sont en cours de saisie.";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Les indicateurs de saisie sont arrivés";
-
-/* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Session prend maintenant en charge les appels vidéo sécurisés. Il suffit de commencer un appel normal, de toucher le bouton de l’appareil photo et de dire bonjour.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bienvenue aux appels vidéo sécurisés !";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Bientôt, Session exigera iOS 10 ou ultérieure. Veuillez effectuer une mise à niveau dans l’appli Réglage >> Général >> Mise à jour logicielle";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Mettez iOS à niveau";
-
-/* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Vous avez marqué %@ comme non vérifié.";
-
-/* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Vous avez marqué %@ comme non vérifié sur un autre appareil.";
-
-/* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Vous avez marqué %@ comme vérifié.";
-
-/* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Vous avez marqué %@ comme vérifié sur un autre périphérique.";
-
-/* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "L’état de vérification a changé.";
-
-/* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Afficher le numéro de sécurité";
-
-/* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Examiner les numéros de sécurité";
-
-/* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Faire glisser pour annuler";
-
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Message vocal";
-
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Touchez et maintenez pour enregistrer un message vocal";
-
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Message vocal";
-
-/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Terminez la configuration sur Session pour ordinateur";
-
-/* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Vous avez désactivé les messages éphémères.";
-
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Vous avez défini l’expiration des messages éphémères à %@.";
-
-
-
 // MARK: - Session
 "continue_2" = "Continuer";
 "copy" = "Copier";
 "invalid_url" = "URL non valide";
-"copied_to_clipboard" = "Copié dans le presse-papier";
-"device_linking_failed" = "Impossible de relier l'appareil.";
 "next" = "Suivant";
 "share" = "Partager";
 "invalid_session_id" = "Session ID non valide";
 "cancel" = "Annuler";
 "your_session_id" = "Votre Session ID";
-
 "vc_landing_title_2" = "Votre Session débute ici...";
 "vc_landing_register_button_title" = "Créer un Session ID";
 "vc_landing_restore_button_title" = "Continuez votre Session";
 "vc_landing_link_button_title" = "Relier à un compte existant";
-"vc_landing_device_unlinked_modal_title" = "Votre appareil a été déconnecté avec succès";
-
 "view_fake_chat_bubble_1" = "Qu'est-ce que Session ?";
 "view_fake_chat_bubble_2" = "C'est une application de messagerie décentralisée et cryptée";
 "view_fake_chat_bubble_3" = "Elle ne recueille donc pas mes informations personnelles ou mes métadonnées de conversations ? Comment ça marche ?";
 "view_fake_chat_bubble_4" = "En utilisant une combinaison de technologies avancées de routage anonyme et de chiffrement de bout en bout.";
 "view_fake_chat_bubble_5" = "Les vrais amis ne laissent pas leurs amis utiliser des outils de messagerie compromis. De rien.";
-
 "vc_register_title" = "Dites bonjour à votre Session ID";
 "vc_register_explanation" = "Votre Session ID est l'identifiant unique que les gens utilisent pour vous contacter dans Session. Sans lien avec votre identité réelle, votre Session ID est complètement anonyme et privé.";
-"vc_register_public_key_copied_message" = "Copié dans le presse-papier";
-
 "vc_restore_title" = "Restaurez votre compte";
 "vc_restore_explanation" = "Pour restaurer votre compte, veuillez entrer la phrase de récupération qui vous a été fournie lors de la création de votre compte.";
-
 "vc_restore_seed_text_field_hint" = "Saisissez votre phrase de récupération";
-
 "vc_link_device_title" = "Relier un appareil";
-"vc_link_device_enter_session_id_tab_title" = "Saisir un Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Scanner un code QR";
-"vc_link_device_scan_qr_code_explanation" = "Rendez-vous dans Paramètres > Appareils reliés > Relier un appareil sur votre autre appareil, puis scannez le code QR affiché pour démarrer le processus de liaison.";
-
-"vc_enter_session_id_title" = "Reliez votre appareil";
-"vc_enter_session_id_explanation" = "Rendez-vous dans Paramètres > Appareils reliés > Relier un appareil sur votre autre appareil, puis saisissez votre Session ID pour démarrer le processus de liaison.";
-"vc_enter_session_id_text_field_hint" = "Saisissez votre Session ID";
-
 "vc_display_name_title_2" = "Choisissez votre nom d'utilisateur";
 "vc_display_name_explanation" = "Ce sera votre nom lorsque vous utiliserez Session. Il peut s'agir de votre vrai nom, d'un pseudo ou de ce que vous voulez.";
 "vc_display_name_text_field_hint" = "Saisissez un nom d'utilisateur";
 "vc_display_name_display_name_missing_error" = "Veuillez choisir un nom d'utilisateur";
-"vc_display_name_display_name_invalid_error" = "Veuillez choisir un nom d'utilisateur composé uniquement de caractères a-z, A-Z, 0-9 et _";
 "vc_display_name_display_name_too_long_error" = "Veuillez choisir un nom d'utilisateur plus court";
-
 "vc_pn_mode_recommended_option_tag" = "Recommandé";
 "vc_pn_mode_no_option_picked_modal_title" = "Veuillez choisir une option";
-
 "vc_home_empty_state_message" = "Vous n'avez pas encore de contacts";
 "vc_home_empty_state_button_title" = "Démarrez une Session";
-"vc_home_leave_group_modal_message" = "Voulez-vous vraiment quitter ce groupe ?";
-"vc_home_leaving_group_failed_message" = "Impossible de quitter le groupe";
-"vc_home_delete_conversation_modal_message" = "Voulez-vous vraiment supprimer cette conversation ?";
-"vc_home_conversation_deleted_message" = "Conversation supprimée";
-
 "vc_seed_title" = "Votre phrase de récupération";
 "vc_seed_title_2" = "Voici votre phrase de récupération";
 "vc_seed_explanation" = "Votre phrase de récupération est la clé principale de votre Session ID - vous pouvez l'utiliser pour restaurer votre Session ID si vous perdez l'accès à votre appareil. Conservez la dans un endroit sûr et ne la donnez à personne.";
 "vc_seed_reveal_button_title" = "Appuyer pour révéler";
-
 "view_seed_reminder_subtitle_1" = "Sécurisez votre compte en sauvegardant votre phrase de récupération";
 "view_seed_reminder_subtitle_2" = "Appuyez et maintenez les mots masqués pour révéler votre phrase de récupération, puis stockez-la en toute sécurité pour sécuriser votre Session ID.";
 "view_seed_reminder_subtitle_3" = "Assurez-vous de conserver votre phrase de récupération dans un endroit sûr";
-
 "vc_path_title" = "Chemin";
 "vc_path_explanation" = "Session occulte votre adresse IP en envoyant vos messages via plusieurs nœuds de service dans le réseau décentralisé de Session. Voici les pays par le biais desquels votre connexion est actuellement envoyée :";
 "vc_path_device_row_title" = "Vous";
@@ -2629,103 +365,42 @@
 "vc_path_service_node_row_title" = "Noeud de service";
 "vc_path_destination_row_title" = "Destination";
 "vc_path_learn_more_button_title" = "En savoir plus";
-
 "vc_create_private_chat_title" = "Nouvelle Session";
 "vc_create_private_chat_enter_session_id_tab_title" = "Saisir un Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scanner un Code QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scannez le code QR d'un utilisateur pour démarrer une session. Les codes QR peuvent se trouver en appuyant sur l'icône du code QR dans les paramètres du compte.";
-
-"vc_enter_public_key_text_field_hint" = "Saisissez le Session ID du destinataire";
 "vc_enter_public_key_explanation" = "Les utilisateurs peuvent partager leur Session ID depuis les paramètres du compte ou en utilisant le code QR.";
-
 "vc_scan_qr_code_camera_access_explanation" = "Session a besoin d'accéder à l'appareil photo pour scanner les codes QR";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Autoriser l'accès";
-
 "vc_create_closed_group_title" = "Nouveau groupe privé";
 "vc_create_closed_group_text_field_hint" = "Saisissez un nom de groupe";
-"vc_create_closed_group_explanation" = "Les groupes privés prennent en charge jusqu'à 10 membres et offrent le même niveau de confidentialité que les sessions individuelles.";
 "vc_create_closed_group_empty_state_message" = "Vous n'avez pas encore de contacts";
 "vc_create_closed_group_empty_state_button_title" = "Démarrer une session";
 "vc_create_closed_group_group_name_missing_error" = "Veuillez saisir un nom de groupe";
 "vc_create_closed_group_group_name_too_long_error" = "Veuillez saisir un nom de groupe plus court";
 "vc_create_closed_group_too_many_group_members_error" = "Un groupe privé ne peut pas avoir plus de 100 membres";
-"vc_create_closed_group_invalid_session_id_error" = "Un des membres de votre groupe a un Session ID non valide";
-
 "vc_join_public_chat_title" = "Joindre un groupe public";
-"vc_join_public_chat_error" = "Impossible de rejoindre le groupe";
 "vc_join_public_chat_enter_group_url_tab_title" = "URL du groupe public";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Scannez le code QR";
 "vc_join_public_chat_scan_qr_code_explanation" = "Scannez le code QR du groupe public que vous souhaitez rejoindre";
-
 "vc_enter_chat_url_text_field_hint" = "Saisissez une URL de groupe public";
-
 "vc_settings_title" = "Paramètres";
 "vc_settings_display_name_text_field_hint" = "Saisissez un nom d'utilisateur";
 "vc_settings_display_name_missing_error" = "Veuillez choisir un nom d'utilisateur";
-"vc_settings_invalid_display_name_error" = "Veuillez choisir un nom d'utilisateur composé uniquement de caractères a-z, A-Z, 0-9 et _";
 "vc_settings_display_name_too_long_error" = "Veuillez choisir un nom d'utilisateur plus court";
 "vc_settings_privacy_button_title" = "Confidientalité ";
 "vc_settings_notifications_button_title" = "Notifications";
-"vc_settings_chats_button_title" = "Chats";
-"vc_settings_devices_button_title" = "Appareils reliés";
 "vc_settings_recovery_phrase_button_title" = "Phrase de récupération";
 "vc_settings_clear_all_data_button_title" = "Effacer les données";
-
 "vc_notification_settings_title" = "Notifications";
-"vc_notification_settings_style_section_title" = "Style de notification";
-"vc_notification_settings_content_section_title" = "Contenu de notification";
-
 "vc_privacy_settings_title" = "Confidientalité";
-
-"vc_chat_settings_title" = "Chats";
-
-"vc_linked_devices_title" = "Appareils reliés";
-"vc_linked_devices_multi_device_limit_reached_modal_title" = "Limite d'appareils atteinte";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Il n'est actuellement pas possible de relier plus d'un appareil.";
-"vc_linked_devices_unlinking_failed_message" = "Impossible de déconnecter l'appareil.";
-"vc_linked_devices_unlinking_successful_message" = "Votre appareil a été déconnecté avec succès";
-"vc_linked_devices_linking_failed_message" = "Impossible de relier l'appareil.";
-"vc_linked_devices_empty_state_message" = "Vous n'avez encore relié aucun appareil";
-"vc_linked_devices_empty_state_button_title" = "Relier un appareil";
-
 "preferences_notifications_strategy_category_title" = "Stratégie de notification";
-
-"modal_link_device_slave_mode_title_1" = "En attente d'autorisation";
-"modal_link_device_slave_mode_title_2" = "Liaison de l'appareil autorisée";
-"modal_link_device_slave_mode_explanation_1" = "Veuillez vérifier que les mots ci-dessous correspondent à ceux affichés sur votre autre appareil.";
-"modal_link_device_slave_mode_explanation_2" = "Votre appareil a été connecté avec succès";
-
-"modal_link_device_master_mode_title_1" = "En attente d'une demande de liaison";
-"modal_link_device_master_mode_title_2" = "Demande de liaison reçue";
-"modal_link_device_master_mode_title_3" = "Autorisation de la liaison de l'appareil";
-"modal_link_device_master_mode_explanation_1" = "Téléchargez Session sur votre autre appareil, puis cliquez sur \"Relier à un compte existant\" en bas de l'écran de d’accueil. Si vous possédez déjà un compte sur votre autre appareil, vous devrez d'abord le supprimer.";
-"modal_link_device_master_mode_explanation_2" = "Veuillez vérifier que les mots ci-dessous correspondent à ceux affichés sur votre autre appareil.";
-"modal_link_device_master_mode_explanation_3" = "Veuillez patienter pendant la création de la liaison. Cela peut prendre jusqu'à une minute.";
-"modal_link_device_master_mode_authorize_button_title" = "Autoriser";
-
-"vc_device_list_bottom_sheet_change_name_button_title" = "Modifier le nom";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "Déconnecter l'appareil";
-
-"modal_edit_device_name_text_field_hint" = "Saisissez un nom";
-
 "modal_seed_title" = "Votre phrase de récupération";
 "modal_seed_explanation" = "Ceci est votre phrase de récupération. Elle vous permet de restaurer ou migrer votre Session ID vers un nouvel appareil.";
-
 "modal_clear_all_data_title" = "Effacer toutes les données";
 "modal_clear_all_data_explanation" = "Cela supprimera définitivement vos messages, vos sessions et vos contacts.";
-
 "vc_qr_code_title" = "Code QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Afficher mon code QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Scanner le code QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "Scannez le code QR d'un autre utilisateur pour démarrer une session";
-
 "vc_view_my_qr_code_explanation" = "Ceci est votre code QR. Les autres utilisateurs peuvent le scanner pour démarrer une session avec vous.";
-"vc_view_my_qr_code_share_title" = "Partager le code QR";
-
-"session_reset_banner_message" = "Voulez-vous restaurer votre session avec %@ ?";
-"session_reset_banner_dismiss_button_title" = "Fermer";
-"session_reset_banner_restore_button_title" = "Restaurer";
-
-"vc_contact_selection_contacts_title" = "Contacts";
-"vc_contact_selection_closed_groups_title" = "Groupes privés";
-"vc_contact_selection_open_groups_title" = "Groupes publics";
