@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -39,6 +39,10 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
     // Group Calls
     OWSStandardSound_GroupCallJoin,
     OWSStandardSound_GroupCallLeave,
+
+    // Audio Playback
+    OWSStandardSound_BeginNextTrack,
+    OWSStandardSound_EndLastTrack,
 
     // Other
     OWSStandardSound_MessageSent,

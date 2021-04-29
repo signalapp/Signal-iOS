@@ -1039,7 +1039,7 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing attachment.")
         }
 
-        if attachment.isAudio, let audioAttachment = AudioAttachment(attachment: attachment) {
+        if attachment.isAudio, let audioAttachment = AudioAttachment(attachment: attachment, owningMessage: interaction as? TSMessage) {
             self.audioAttachment = audioAttachment
             return
         }

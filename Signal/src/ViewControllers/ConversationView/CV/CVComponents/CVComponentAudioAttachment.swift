@@ -9,12 +9,14 @@ import SignalMessaging
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     private let audioAttachment: AudioAttachment
+    private let nextAudioAttachment: AudioAttachment?
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
     private let footerOverlay: CVComponent?
 
-    init(itemModel: CVItemModel, audioAttachment: AudioAttachment, footerOverlay: CVComponent?) {
+    init(itemModel: CVItemModel, audioAttachment: AudioAttachment, nextAudioAttachment: AudioAttachment?, footerOverlay: CVComponent?) {
         self.audioAttachment = audioAttachment
+        self.nextAudioAttachment = nextAudioAttachment
         self.footerOverlay = footerOverlay
 
         super.init(itemModel: itemModel)
@@ -75,6 +77,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                             cellMeasurement: cellMeasurement,
                             measurementKey: Self.measurementKey_stackView,
                             subviews: [ audioMessageView ])
+
+        // Listen for when our audio attachment finishes playing, so we can
+        // start playing the next attachment.
+        cvAudioPlayer.addListener(self)
     }
 
     private var stackViewConfig: CVStackViewConfig {
@@ -130,6 +136,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
         if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) == .playing {
             // If we just started playing, mark the message as viewed.
+            componentView.audioMessageView?.setViewed(true, animated: true)
             if let incomingMessage = interaction as? TSIncomingMessage, !incomingMessage.wasViewed {
                 databaseStorage.asyncWrite { [thread] transaction in
                     let circumstance: OWSReceiptCircumstance =
@@ -142,8 +149,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                         circumstance: circumstance,
                         transaction: transaction
                     )
-                } completion: {
-                    componentView.audioMessageView?.setViewed(true, animated: true)
                 }
             }
         }
@@ -260,6 +265,31 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
             footerOverlayView?.reset()
             footerOverlayView = nil
+        }
+    }
+}
+
+extension CVComponentAudioAttachment: CVAudioPlayerListener {
+    func audioPlayerStateDidChange(attachmentId: String) {}
+
+    func audioPlayerDidFinish(attachmentId: String) {
+        guard attachmentId == audioAttachment.attachment.uniqueId else { return }
+        cvAudioPlayer.autoplayNextAttachmentStream(nextAudioAttachment?.attachmentStream)
+
+        // Mark the autoplaying message as viewed if necessary.
+        if let nextMessage = nextAudioAttachment?.owningMessage as? TSIncomingMessage, !nextMessage.wasViewed {
+            databaseStorage.asyncWrite { [thread] transaction in
+                let circumstance: OWSReceiptCircumstance =
+                    thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+                    ? .onThisDeviceWhilePendingMessageRequest
+                    : .onThisDevice
+                nextMessage.markAsViewed(
+                    atTimestamp: Date.ows_millisecondTimestamp(),
+                    thread: thread,
+                    circumstance: circumstance,
+                    transaction: transaction
+                )
+            }
         }
     }
 }

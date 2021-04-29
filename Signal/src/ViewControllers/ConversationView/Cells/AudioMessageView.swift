@@ -512,7 +512,13 @@ class AudioMessageView: ManualStackView {
 // MARK: -
 
 extension AudioMessageView: CVAudioPlayerListener {
-    func audioPlayerStateDidChange() {
+    func audioPlayerStateDidChange(attachmentId: String) {
+        AssertIsOnMainThread()
+
+        updateContents(animated: true)
+    }
+
+    func audioPlayerDidFinish(attachmentId: String) {
         AssertIsOnMainThread()
 
         updateContents(animated: true)

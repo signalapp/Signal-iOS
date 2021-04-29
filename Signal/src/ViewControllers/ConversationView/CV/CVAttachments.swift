@@ -44,6 +44,9 @@ public class AudioAttachment: NSObject {
     }
 
     @objc
+    public let owningMessage: TSMessage?
+
+    @objc
     public var durationSeconds: TimeInterval {
         switch state {
         case .attachmentStream(_, let audioDurationSeconds):
@@ -54,7 +57,7 @@ public class AudioAttachment: NSObject {
     }
 
     @objc
-    public required init?(attachment: TSAttachment) {
+    public required init?(attachment: TSAttachment, owningMessage: TSMessage?) {
         if let attachmentStream = attachment as? TSAttachmentStream {
             let audioDurationSeconds = attachmentStream.audioDurationSeconds()
             guard audioDurationSeconds > 0 else {
@@ -67,5 +70,7 @@ public class AudioAttachment: NSObject {
             owsFailDebug("Invalid attachment.")
             return nil
         }
+
+        self.owningMessage = owningMessage
     }
 }

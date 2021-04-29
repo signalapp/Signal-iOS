@@ -219,6 +219,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             self.audioAttachment = CVComponentAudioAttachment(
                 itemModel: itemModel,
                 audioAttachment: audioAttachmentState,
+                nextAudioAttachment: itemViewState.nextAudioAttachment,
                 footerOverlay: footerOverlay
             )
         }
