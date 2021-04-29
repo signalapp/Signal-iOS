@@ -404,6 +404,10 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "Scan someone's QR code to start a conversation with them";
 "vc_view_my_qr_code_explanation" = "This is your QR code. Other users can scan it to start a session with you.";
 // MARK: - Not Yet Translated
+"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
+"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
+"vc_pn_mode_title" = "Message Notifications";
+"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
 "vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
 "vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
