@@ -109,12 +109,10 @@ public class CVAudioPlayer: NSObject {
                                     forAttachmentStream attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
-        guard let audioPlayback = ensurePlayback(forAttachmentStream: attachmentStream) else {
-            owsFailDebug("Could not play audio attachment.")
-            return
-        }
         progressCache[attachmentStream.uniqueId] = progress
-        audioPlayback.setProgress(progress)
+        if let audioPlayback = audioPlayback, audioPlayback.attachmentId == attachmentStream.uniqueId {
+            audioPlayback.setProgress(progress)
+        }
     }
 
     @objc
