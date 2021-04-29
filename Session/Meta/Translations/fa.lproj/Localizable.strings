@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "شناسه‌ی Session را ایجاد کنید";
 "vc_landing_restore_button_title" = "Session خود را ادامه دهید";
 "vc_landing_link_button_title" = "پیوند به یک حساب کاربری موجود";
-"vc_landing_device_unlinked_modal_title" = "اتصال دستگاه شما با موفقیت قطع شد";
 
 "view_fake_chat_bubble_1" = "Session چیست؟";
 "view_fake_chat_bubble_2" = "Session یک برنامه پیام‌رسان غیرمتمرکز و رمزگذاری شده است.";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "عبارت بازیابی خود را وارد کنید";
 
 "vc_link_device_title" = "اتصال دستگاه";
-"vc_link_device_enter_session_id_tab_title" = "شناسه‌ی Session را وارد کنید";
 "vc_link_device_scan_qr_code_tab_title" = "کد QR را اسکن کنید";
-"vc_link_device_scan_qr_code_explanation" = "در دستگاه دیگر خود به \"تنظیمات\" بروید، و بعد دستگاه‌ها و سپس اتصال دستگاه را انتخاب کنید. سپس کد QR را برای اتصال دستگاه، اسکن کنید.";
-
-"vc_enter_session_id_title" = "دستگاه خود را متصل کنید";
-"vc_enter_session_id_explanation" = "در دستگاه دیگر خود به \"تنظیمات\" بروید، و بعد دستگاه‌ها و سپس اتصال دستگاه را انتخاب کنید. سپس شناسه‌ی Session خود را در اینجا وارد کنید تا کار اتصال شروع شود.";
-"vc_enter_session_id_text_field_hint" = "شناسه‌ی Session خود را وارد کنید";
 
 "vc_display_name_title_2" = "نام خود را برای نمایش انتخاب کنید";
 "vc_display_name_explanation" = "این نام شما هنگام استفاده از Session خواهد بود. این نام می‌تواند نام واقعی شما، نام مستعار یا هر چیز دیگری که دوست دارید، باشد.";

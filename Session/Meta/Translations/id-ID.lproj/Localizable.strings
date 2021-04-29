@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Buat Session ID";
 "vc_landing_restore_button_title" = "Lanjutkan Session";
 "vc_landing_link_button_title" = "Tautkan dengan akun";
-"vc_landing_device_unlinked_modal_title" = "Sukses memutus koneksi perangkat";
 
 "view_fake_chat_bubble_1" = "Apa itu Session?";
 "view_fake_chat_bubble_2" = "Session adalah aplikasi pesan terenkripsi yang terdesentralisasi";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "masukan kata pemulihan";
 
 "vc_link_device_title" = "Tautkan perangkat";
-"vc_link_device_enter_session_id_tab_title" = "Masuk ke Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Pindai kode QR";
-"vc_link_device_scan_qr_code_explanation" = "\"Tautkan Perangkat\" di perangkat anda, kemudian pindai QR code yang muncul untuk mulai proses menautkan";
-
-"vc_enter_session_id_title" = "Tautkan perangkat";
-"vc_enter_session_id_explanation" = "\"Tautkan perangkat\" di perangkat lain dan masuk ke Session ID anda untuk memulai proses menautkan";
-"vc_enter_session_id_text_field_hint" = "Masuk ke Session ID";
 
 "vc_display_name_title_2" = "Pilih nama yang ditampilkan";
 "vc_display_name_explanation" = "Ini akan menjadi nama anda ketika menggunakan Session. Bisa merupakan nama asli, alias, atau apapun yang anda suka";

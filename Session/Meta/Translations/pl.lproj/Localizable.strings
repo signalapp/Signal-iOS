@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Utwórz identyfikator Session";
 "vc_landing_restore_button_title" = "Kontynuuj swoją sesję";
 "vc_landing_link_button_title" = "Połącz z istniejącym kontem";
-"vc_landing_device_unlinked_modal_title" = "Twoje urządzenie zostało rozłączone pomyślnie";
 
 "view_fake_chat_bubble_1" = "Jaka jest Session";
 "view_fake_chat_bubble_2" = "To zdecentralizowana, szyfrowana aplikacja do przesyłania wiadomości";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "Wpisz swoją frazę odzyskiwania";
 
 "vc_link_device_title" = "Połącz urządzenie";
-"vc_link_device_enter_session_id_tab_title" = "Wpisz identyfikator Session";
 "vc_link_device_scan_qr_code_tab_title" = "Skanowania QR code";
-"vc_link_device_scan_qr_code_explanation" = "Przejdź do Ustawienia > Urządzenia > Połącz urządzenie na drugim urządzeniu, a następnie zeskanuj kod QR, który się pojawi, aby rozpocząć proces łączenia.";
-
-"vc_enter_session_id_title" = "Połącz swoje urządzenie";
-"vc_enter_session_id_explanation" = "Przejdź do Ustawienia > Urządzenia > Połącz urządzenie na drugim urządzeniu, a następnie wprowadź tutaj identyfikator Session, aby rozpocząć proces łączenia.";
-"vc_enter_session_id_text_field_hint" = "Wpisz swój identyfikator Session";
 
 "vc_display_name_title_2" = "Wybierz swoją nazwę wyświetlaną";
 "vc_display_name_explanation" = "To będzie twoje imię, kiedy będziesz używać Sesji. Może to być twoje prawdziwe imię, alias lub cokolwiek innego, co lubisz.";

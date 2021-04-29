@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Создать Session ID";
 "vc_landing_restore_button_title" = "Восстановить Session ID";
 "vc_landing_link_button_title" = "Привязать к существующему аккаунту";
-"vc_landing_device_unlinked_modal_title" = "Ваше устройство успешно отвязано";
 
 "view_fake_chat_bubble_1" = "Что такое Session?";
 "view_fake_chat_bubble_2" = "Это децентрализованное, зашифрованное приложение для обмена сообщениями";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "Введите секретную фразу";
 
 "vc_link_device_title" = "Привязать устройство";
-"vc_link_device_enter_session_id_tab_title" = "Введите Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Сканировать QR-код";
-"vc_link_device_scan_qr_code_explanation" = "Перейдите в «Настройки» > «Устройства» > «Привязать устройство» на другом устройстве, а затем отсканируйте появившийся QR-код, чтобы начать процесс привязки.";
-
-"vc_enter_session_id_title" = "Привяжите свое устройство";
-"vc_enter_session_id_explanation" = "Перейдите в «Настройки» > «Устройства» > «Привязать устройство» на другом устройстве и введите сюда свой Session ID, чтобы начать процесс привязки.";
-"vc_enter_session_id_text_field_hint" = "Введите свой Session ID";
 
 "vc_display_name_title_2" = "Выберите ваше отображаемое имя";
 "vc_display_name_explanation" = "Это имя будет отображаться, когда вы используете Session. Это может быть ваше настоящее имя, псевдоним или что угодно по вашему выбору.";

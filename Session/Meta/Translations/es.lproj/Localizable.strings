@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Crear ID de Session";
 "vc_landing_restore_button_title" = "Continúa tu Session";
 "vc_landing_link_button_title" = "Vincular a una cuenta existente";
-"vc_landing_device_unlinked_modal_title" = "Tu dispositivo se ha desvinculado correctamente";
 
 "view_fake_chat_bubble_1" = "¿Qué es Session?";
 "view_fake_chat_bubble_2" = "Es una aplicación de mensajería descentralizada y cifrada";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "Ingresa tu frase de recuperación";
 
 "vc_link_device_title" = "Vincular dispositivo";
-"vc_link_device_enter_session_id_tab_title" = "Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Escanear código QR";
-"vc_link_device_scan_qr_code_explanation" = "Ve a Ajustes > Dispositivos > Vincular un dispositivo en tu otro dispositivo y después escanea el código QR que aparece para iniciar el proceso de vinculación.";
-
-"vc_enter_session_id_title" = "Vincula tu dispositivo";
-"vc_enter_session_id_explanation" = "Ve a Ajustes > Dispositivos > Vincular un dispositivo en tu otro dispositivo y después ingresa tu ID de Session aquí para iniciar el proceso de vinculación.";
-"vc_enter_session_id_text_field_hint" = "Ingresa tu ID de Session";
 
 "vc_display_name_title_2" = "Elige tu nombre";
 "vc_display_name_explanation" = "Este será tu nombre al usar Session. Puede ser tu nombre real, un alias, o lo que prefieras.";

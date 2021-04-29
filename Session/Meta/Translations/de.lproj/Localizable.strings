@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Session ID erstellen";
 "vc_landing_restore_button_title" = "Ihre Session fortsetzen";
 "vc_landing_link_button_title" = "Mit einem bestehenden Konto verlinken";
-"vc_landing_device_unlinked_modal_title" = "Ihr Gerät wurde erfolgreich getrennt.";
 
 "view_fake_chat_bubble_1" = "Was ist Session?";
 "view_fake_chat_bubble_2" = "Es ist eine dezentrale, verschlüsselte Messaging-App.";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "Ihr Wiederherstellungssatz";
 
 "vc_link_device_title" = "Gerät verbinden";
-"vc_link_device_enter_session_id_tab_title" = "Session ID eingeben";
 "vc_link_device_scan_qr_code_tab_title" = "QR-Code scannen";
-"vc_link_device_scan_qr_code_explanation" = "Navigieren Sie zu \"Einstellungen\" > \"Geräte\" > \"Ihr Gerät verknüpfen\" und scannen Sie den angezeigten QR-Code, um den Verknüpfungsprozess zu starten.";
-
-"vc_enter_session_id_title" = "Ihr Gerät verknüpfen";
-"vc_enter_session_id_explanation" = "Navigieren Sie zu \"Einstellungen\" > \"Geräte\" > \"Ihr Gerät verknüpfen\" und geben Sie Ihre Session ID hier ein, um den Verknüpfungsprozess zu starten.";
-"vc_enter_session_id_text_field_hint" = "Geben Sie Ihre Session ID ein.";
 
 "vc_display_name_title_2" = "Wählen Sie Ihren Anzeigenamen";
 "vc_display_name_explanation" = "Dies ist Ihr Name, wenn Sie Session verwenden. Es kann Ihr richtiger Name, ein Alias oder etwas andere sein.";

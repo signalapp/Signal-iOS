@@ -52,7 +52,7 @@ final class LandingVC : BaseVC {
         let bottomSpacer = UIView.vStretchingSpacer()
         // Link button
         let linkButton = UIButton()
-        linkButton.setTitle("Link a Device", for: UIControl.State.normal)
+        linkButton.setTitle(NSLocalizedString("vc_landing_link_button_title", comment: ""), for: UIControl.State.normal)
         linkButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         linkButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         linkButton.addTarget(self, action: #selector(link), for: UIControl.Event.touchUpInside)

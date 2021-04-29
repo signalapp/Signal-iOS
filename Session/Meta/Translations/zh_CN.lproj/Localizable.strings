@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "创建Session ID";
 "vc_landing_restore_button_title" = "继续使用您的Session ID";
 "vc_landing_link_button_title" = "关联现有帐号";
-"vc_landing_device_unlinked_modal_title" = "您的设备已成功取消关联";
 
 "view_fake_chat_bubble_1" = "什么是Session？";
 "view_fake_chat_bubble_2" = "Session是一个去中心化的加密消息应用。";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "输入您的恢复口令";
 
 "vc_link_device_title" = "关联设备";
-"vc_link_device_enter_session_id_tab_title" = "输入Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "扫描二维码";
-"vc_link_device_scan_qr_code_explanation" = "在您的设备上导航到“设置”>“设备”>“链接设备”，然后扫描出现的二维码以开始关联。";
-
-"vc_enter_session_id_title" = "关联您的设备";
-"vc_enter_session_id_explanation" = "在您的另一个设备上导航到“设置”>“设备” >“链接设备”，然后在此处输入Session ID以开始关联。";
-"vc_enter_session_id_text_field_hint" = "输入Session ID";
 
 "vc_display_name_title_2" = "选择您想显示的名称";
 "vc_display_name_explanation" = "这就是您在使用Session时的名字。它可以是您的真实姓名，别名或您喜欢的其他任何名称。";

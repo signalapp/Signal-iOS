@@ -2561,7 +2561,6 @@
 "vc_landing_register_button_title" = "Session ID を作成する";
 "vc_landing_restore_button_title" = "Session を続ける";
 "vc_landing_link_button_title" = "既存のアカウントにリンクする";
-"vc_landing_device_unlinked_modal_title" = "端末は正常にリンク解除されました";
 
 "view_fake_chat_bubble_1" = "Session とは？";
 "view_fake_chat_bubble_2" = "分散型の暗号化されたメッセージングアプリです";
@@ -2578,13 +2577,7 @@
 "vc_restore_seed_text_field_hint" = "リカバリーフレーズを入力してください";
 
 "vc_link_device_title" = "端末をリンクする";
-"vc_link_device_enter_session_id_tab_title" = "Session ID を入力してください";
 "vc_link_device_scan_qr_code_tab_title" = "QR コードをスキャンする";
-"vc_link_device_scan_qr_code_explanation" = "他の端末で「設定」 > 「端末」 > 「端末をリンクする」に移動し、表示される QR コードをスキャンして、リンクプロセスを開始します。";
-
-"vc_enter_session_id_title" = "端末をリンクする";
-"vc_enter_session_id_explanation" = "「設定」 > 「端末」 > 「端末をリンクする」に移動し、Session ID を入力して、リンクプロセスを開始します。";
-"vc_enter_session_id_text_field_hint" = "Session ID を入力してください";
 
 "vc_display_name_title_2" = "表示名を選択してください";
 "vc_display_name_explanation" = "これは、Session を使用するときの名前になります。あなたの本当の名前、エイリアス、またはあなたが好きな他のものに設定することができます。";

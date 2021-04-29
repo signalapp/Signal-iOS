@@ -2569,8 +2569,7 @@
 "vc_landing_title_2" = "Your Session begins here...";
 "vc_landing_register_button_title" = "Create Session ID";
 "vc_landing_restore_button_title" = "Continue Your Session";
-"vc_landing_link_button_title" = "Link to an existing account";
-"vc_landing_device_unlinked_modal_title" = "Your device was unlinked successfully";
+"vc_landing_link_button_title" = "Link a Device";
 
 "view_fake_chat_bubble_1" = "What's Session?";
 "view_fake_chat_bubble_2" = "It's a decentralized, encrypted messaging app";
@@ -2586,14 +2585,8 @@
 "vc_restore_explanation" = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
 "vc_restore_seed_text_field_hint" = "Enter your recovery phrase";
 
-"vc_link_device_title" = "Link Device";
-"vc_link_device_enter_session_id_tab_title" = "Enter Session ID";
+"vc_link_device_title" = "Link a Device";
 "vc_link_device_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then scan the QR code that comes up to start the linking process.";
-
-"vc_enter_session_id_title" = "Link your device";
-"vc_enter_session_id_explanation" = "Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then enter your Session ID here to start the linking process.";
-"vc_enter_session_id_text_field_hint" = "Enter your Session ID";
 
 "vc_display_name_title_2" = "Pick your display name";
 "vc_display_name_explanation" = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like.";
@@ -2728,3 +2721,10 @@
 "vc_contact_selection_contacts_title" = "Contacts";
 "vc_contact_selection_closed_groups_title" = "Closed Groups";
 "vc_contact_selection_open_groups_title" = "Open Groups";
+
+// MARK: - Not Yet Translated
+"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
+"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code."
+
+"vc_enter_recovery_phrase_title" = "Recovery Phrase";
+"vc_enter_recovery_phrase_explanation" = "Recovery Phrase";

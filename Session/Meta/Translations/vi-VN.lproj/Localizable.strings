@@ -2570,7 +2570,6 @@
 "vc_landing_register_button_title" = "Tạo Session ID";
 "vc_landing_restore_button_title" = "Tiếp tục Session của bạn";
 "vc_landing_link_button_title" = "Liên kết với một tài khoản đã tồn tại";
-"vc_landing_device_unlinked_modal_title" = "Thiết bị của bạn đã được ngắt liên kết thành công";
 
 "view_fake_chat_bubble_1" = "Session là gì?";
 "view_fake_chat_bubble_2" = "Đây là một ứng dụng nhắn tin phân cấp và mã hoá";
@@ -2587,13 +2586,7 @@
 "vc_restore_seed_text_field_hint" = "Nhập cụm từ khôi phục của bạn.";
 
 "vc_link_device_title" = "Liên kết Thiết bị";
-"vc_link_device_enter_session_id_tab_title" = "Nhập Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Quét mã QR";
-"vc_link_device_scan_qr_code_explanation" = "Đi đến mục \"Cài đặt\" > \"Thiết bị\" > \"Liên kết với một Thiết bị\" trên thiết bị khác của bạn và quét mã QR hiện lên để bắt đầu quá trình liên kết.";
-
-"vc_enter_session_id_title" = "Liên kết thiết bị của bạn";
-"vc_enter_session_id_explanation" = " Đi đến mục \"Cài đặt\" > \"Thiết bị\" > \"Liên kết với một Thiết bị\" trên thiết bị khác của bạn và quét mã QR hiện lên để bắt đầu quá trình liên kết.";
-"vc_enter_session_id_text_field_hint" = "Nhập Session ID của bạn";
 
 "vc_display_name_title_2" = "Chọn tên hiển thị của bạn";
 "vc_display_name_explanation" = "Đây là tên của bạn khi sử dụng Session. Nó có thể là tên thật, tên gọi khác của bạn hoặc bất kì tên nào bạn thích.";
