@@ -77,8 +77,18 @@ public final class OpenGroupAPIV2 : NSObject {
     public struct CompactPollResponseBody {
         let room: String
         let messages: [OpenGroupMessageV2]
-        let deletions: [Int64]
+        let deletions: [Deletion]
         let moderators: [String]
+    }
+    
+    public struct Deletion {
+        let id: Int64
+        let deletedMessageID: Int64
+        
+        public static func from(_ json: JSON) -> Deletion? {
+            guard let id = json["id"] as? Int64, let deletedMessageID = json["deleted_message_id"] as? Int64 else { return nil }
+            return Deletion(id: id, deletedMessageID: deletedMessageID)
+        }
     }
 
     // MARK: Convenience
@@ -164,7 +174,7 @@ public final class OpenGroupAPIV2 : NSObject {
                         }
                         return nil
                     }
-                    let deletions = json["deletions"] as? [Int64] ?? []
+                    let deletions = given(json["deletions"] as? [JSON]) { $0.compactMap { Deletion.from($0) } } ?? []
                     let moderators = json["moderators"] as? [String] ?? []
                     return try? parseMessages(from: json, for: room, on: server).map { messages in
                         return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
@@ -331,21 +341,20 @@ public final class OpenGroupAPIV2 : NSObject {
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "deleted_messages", queryParameters: queryParameters)
         return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Int64]> in
-            guard let deletions = json["ids"] as? [JSON] else { throw Error.parsingFailed }
-            let deletedMessageIDs = deletions.compactMap { $0["deleted_message_id"] as? Int64 }
-            let serverIDs = deletions.compactMap { $0["id"] as? Int64 }
-            let serverID = serverIDs.max() ?? 0
+            guard let rawDeletions = json["ids"] as? [JSON] else { throw Error.parsingFailed }
+            let deletions = rawDeletions.compactMap { Deletion.from($0) }
+            let serverID = deletions.map { $0.id }.max() ?? 0
             let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) ?? 0
             if serverID > lastDeletionServerID {
                 let (promise, seal) = Promise<[Int64]>.pending()
                 storage.write(with: { transaction in
                     storage.setLastDeletionServerID(for: room, on: server, to: serverID, using: transaction)
                 }, completion: {
-                    seal.fulfill(deletedMessageIDs)
+                    seal.fulfill(deletions.map { $0.deletedMessageID })
                 })
                 return promise
             } else {
-                return Promise.value(deletedMessageIDs)
+                return Promise.value(deletions.map { $0.deletedMessageID })
             }
         }
     }

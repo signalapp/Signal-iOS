@@ -85,7 +85,7 @@ public final class OpenGroupPollerV2 : NSObject {
             }
         }
         // - Deletions
-        let messageIDs = body.deletions.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0)) }
+        let messageIDs = body.deletions.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0.deletedMessageID)) }
         SNMessagingKitConfiguration.shared.storage.write { transaction in
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             messageIDs.forEach { messageID in
