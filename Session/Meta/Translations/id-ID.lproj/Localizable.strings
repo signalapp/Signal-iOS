@@ -211,6 +211,12 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Tampilkan";
 /* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nama dan Isi";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "Nama Saja";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "Tanpa Nama atau Isi";
+/* No comment provided by engineer. */
 "OK" = "OK";
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";

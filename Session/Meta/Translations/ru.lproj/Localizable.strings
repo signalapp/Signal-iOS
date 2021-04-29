@@ -209,6 +209,12 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Звуки";
 /* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Имя и содержимое";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "Только имя";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "Ни имени, ни содержимого";
+/* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Показывать";
 /* No comment provided by engineer. */
 "OK" = "Ок";

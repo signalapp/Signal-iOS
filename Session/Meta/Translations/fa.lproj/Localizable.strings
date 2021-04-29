@@ -209,7 +209,13 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "صداها";
 /* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "نام و محتوا";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "فقط نام";
+/* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "نمایش";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "هیچ نام و یا محتوایی وجود ندارد";
 /* No comment provided by engineer. */
 "OK" = "باشه";
 /* alert title, generic error preventing user from capturing a photo */

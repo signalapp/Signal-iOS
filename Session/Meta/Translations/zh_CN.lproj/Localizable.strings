@@ -209,6 +209,12 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
 /* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字和内容";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "没有名字或者内容";
+/* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "显示";
 /* No comment provided by engineer. */
 "OK" = "好";
