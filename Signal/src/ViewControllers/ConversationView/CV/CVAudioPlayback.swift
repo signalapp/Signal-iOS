@@ -99,21 +99,24 @@ public class CVAudioPlayer: NSObject {
     }
 
     @objc
-    public func togglePlayState(forAttachmentStream attachmentStream: TSAttachmentStream) {
+    public func togglePlayState(forAudioAttachment audioAttachment: AudioAttachment) {
         AssertIsOnMainThread()
+
+        guard let attachmentStream = audioAttachment.attachmentStream else { return }
 
         guard let audioPlayback = ensurePlayback(forAttachmentStream: attachmentStream) else {
             owsFailDebug("Could not play audio attachment.")
             return
         }
+        audioAttachment.markOwningMessageAsViewed()
         audioPlayback.togglePlayState()
     }
 
     @objc
-    public func autoplayNextAttachmentStream(_ attachmentStream: TSAttachmentStream?) {
+    public func autoplayNextAudioAttachment(_ audioAttachment: AudioAttachment?) {
         AssertIsOnMainThread()
 
-        guard let attachmentStream = attachmentStream else {
+        guard let audioAttachment = audioAttachment, let attachmentStream = audioAttachment.attachmentStream else {
             if audioPlayback?.attachmentId == autoplayAttachmentId {
                 // Play a tone indicating the last track completed.
                 let systemSound = OWSSounds.systemSoundID(forSound: OWSStandardSound.endLastTrack.rawValue, quiet: false)
@@ -135,6 +138,7 @@ public class CVAudioPlayer: NSObject {
                 guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
                 guard audioPlayback.audioPlaybackState != .playing else { return }
 
+                audioAttachment.markOwningMessageAsViewed()
                 audioPlayback.setProgress(0)
                 audioPlayback.togglePlayState()
             }

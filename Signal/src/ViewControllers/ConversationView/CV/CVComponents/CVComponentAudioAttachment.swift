@@ -130,28 +130,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             owsFailDebug("Unexpected componentView.")
             return false
         }
-        guard let attachmentStream = attachmentStream else {
-            return false
-        }
-        cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
-        if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) == .playing {
-            // If we just started playing, mark the message as viewed.
-            componentView.audioMessageView?.setViewed(true, animated: true)
-            if let incomingMessage = interaction as? TSIncomingMessage, !incomingMessage.wasViewed {
-                databaseStorage.asyncWrite { [thread] transaction in
-                    let circumstance: OWSReceiptCircumstance =
-                        thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
-                        ? .onThisDeviceWhilePendingMessageRequest
-                        : .onThisDevice
-                    incomingMessage.markAsViewed(
-                        atTimestamp: Date.ows_millisecondTimestamp(),
-                        thread: thread,
-                        circumstance: circumstance,
-                        transaction: transaction
-                    )
-                }
-            }
-        }
+        cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
         return true
     }
 
@@ -274,23 +253,7 @@ extension CVComponentAudioAttachment: CVAudioPlayerListener {
 
     func audioPlayerDidFinish(attachmentId: String) {
         guard attachmentId == audioAttachment.attachment.uniqueId else { return }
-        cvAudioPlayer.autoplayNextAttachmentStream(nextAudioAttachment?.attachmentStream)
-
-        // Mark the autoplaying message as viewed if necessary.
-        if let nextMessage = nextAudioAttachment?.owningMessage as? TSIncomingMessage, !nextMessage.wasViewed {
-            databaseStorage.asyncWrite { [thread] transaction in
-                let circumstance: OWSReceiptCircumstance =
-                    thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
-                    ? .onThisDeviceWhilePendingMessageRequest
-                    : .onThisDevice
-                nextMessage.markAsViewed(
-                    atTimestamp: Date.ows_millisecondTimestamp(),
-                    thread: thread,
-                    circumstance: circumstance,
-                    transaction: transaction
-                )
-            }
-        }
+        cvAudioPlayer.autoplayNextAudioAttachment(nextAudioAttachment)
     }
 }
 

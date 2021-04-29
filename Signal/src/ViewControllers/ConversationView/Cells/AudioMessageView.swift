@@ -62,6 +62,15 @@ class AudioMessageView: ManualStackView {
         self.isIncoming = isIncoming
 
         super.init(name: "AudioMessageView")
+
+        if let owningMessage = audioAttachment.owningMessage as? TSIncomingMessage {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(viewedStateChanged),
+                name: NSNotification.Name.incomingMessageMarkedAsViewed,
+                object: owningMessage
+            )
+        }
     }
 
     public func configureForRendering(cellMeasurement: CVCellMeasurement,
@@ -454,6 +463,12 @@ class AudioMessageView: ManualStackView {
         } else {
             playPauseAnimation.currentProgress = destination
         }
+    }
+
+    @objc
+    private func viewedStateChanged() {
+        guard let incomingMessage = audioAttachment.owningMessage as? TSIncomingMessage else { return }
+        setViewed(incomingMessage.wasViewed, animated: true)
     }
 
     private func updateViewedState(animated: Bool = true) {

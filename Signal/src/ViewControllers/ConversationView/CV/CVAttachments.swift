@@ -73,4 +73,22 @@ public class AudioAttachment: NSObject {
 
         self.owningMessage = owningMessage
     }
+
+    @objc
+    public func markOwningMessageAsViewed() {
+        guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return }
+        databaseStorage.asyncWrite { transaction in
+            let thread = incomingMessage.thread(transaction: transaction)
+            let circumstance: OWSReceiptCircumstance =
+                thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+                ? .onThisDeviceWhilePendingMessageRequest
+                : .onThisDevice
+            incomingMessage.markAsViewed(
+                atTimestamp: Date.ows_millisecondTimestamp(),
+                thread: thread,
+                circumstance: circumstance,
+                transaction: transaction
+            )
+        }
+    }
 }
