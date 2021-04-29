@@ -780,22 +780,6 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
         cell.isCellVisible = false
         delegate?.updateScrollingContent()
     }
-
-    // We use this hook to ensure scroll state continuity.  As the collection
-    // view's content size changes, we want to keep the same cells in view.
-    public func collectionView(_ collectionView: UICollectionView,
-                               targetContentOffsetForProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-
-        guard let delegate = self.delegate else {
-            owsFailDebug("Missing delegate.")
-            return proposedContentOffset
-        }
-        let targetContentOffset = delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-        Logger.verbose("---- lc isUserScrolling: \(delegate.isUserScrolling), hasScrollingAnimation: \(viewState.hasScrollingAnimation), proposedContentOffset: \(proposedContentOffset), targetContentOffset: \(targetContentOffset), ")
-//        return targetContentOffset
-        return proposedContentOffset
-//       return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-    }
 }
 
 // MARK: -

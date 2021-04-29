@@ -538,7 +538,7 @@ extension ConversationViewController {
         if let contentOffset = targetContentOffsetForUpdate() {
             if !DebugFlags.reduceLogChatter {
                 Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
-//            }
+            }
             return contentOffset
         }
 
