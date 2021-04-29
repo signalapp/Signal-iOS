@@ -449,6 +449,14 @@ public extension NSObject {
     static var paymentsCurrencies: PaymentsCurrencies {
         SSKEnvironment.shared.paymentsCurrenciesRef
     }
+
+    var spamChallengeResolver: SpamChallengeResolver {
+        SSKEnvironment.shared.spamChallengeResolverRef
+    }
+
+    static var spamChallengeResolver: SpamChallengeResolver {
+        SSKEnvironment.shared.spamChallengeResolverRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -889,6 +897,14 @@ public extension Dependencies {
 
     static var paymentsCurrencies: PaymentsCurrencies {
         SSKEnvironment.shared.paymentsCurrenciesRef
+    }
+
+    var spamChallengeResolver: SpamChallengeResolver {
+        SSKEnvironment.shared.spamChallengeResolverRef
+    }
+
+    static var spamChallengeResolver: SpamChallengeResolver {
+        SSKEnvironment.shared.spamChallengeResolverRef
     }
 }
 

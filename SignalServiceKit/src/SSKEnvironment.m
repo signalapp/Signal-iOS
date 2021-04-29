@@ -52,6 +52,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) AppExpiry *appExpiryRef;
 @property (nonatomic) id<Payments> paymentsRef;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
+@property (nonatomic) OWSSpamChallengeResolver *spamChallengeResolverRef;
 
 @end
 
@@ -109,6 +110,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        messageProcessor:(MessageProcessor *)messageProcessor
                                payments:(id<Payments>)payments
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
+                  spamChallengeResolver:(OWSSpamChallengeResolver *)spamResolver
 {
     self = [super init];
     if (!self) {
@@ -162,6 +164,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageProcessorRef = messageProcessor;
     _paymentsRef = payments;
     _paymentsCurrenciesRef = paymentsCurrencies;
+    _spamChallengeResolverRef = spamResolver;
 
     return self;
 }

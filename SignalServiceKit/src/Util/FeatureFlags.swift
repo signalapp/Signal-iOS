@@ -172,6 +172,9 @@ public class FeatureFlags: BaseFlags {
     public static let paymentsScrubDetails = false
 
     @objc
+    public static let spamChallenges = false
+
+    @objc
     public static let universalDisappearingMessages = build.includes(.qa)
 
     public static func buildFlagMap() -> [String: Any] {

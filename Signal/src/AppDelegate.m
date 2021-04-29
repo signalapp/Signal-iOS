@@ -979,16 +979,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark Push Notifications Delegate Methods
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    OWSAssertIsOnMainThread();
-
-    if (SSKDebugFlags.verboseNotificationLogging) {
-        OWSLogInfo(@"didReceiveRemoteNotification w/o. completion.");
-    }
-
-    [self processRemoteNotification:userInfo completion:nil];
-}
-
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -1021,6 +1011,12 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        NSString *_Nullable spamChallengeToken = userInfo[@"rate_limit_challenge"];
+        if (spamChallengeToken) {
+            OWSSpamChallengeResolver *spamResolver = self.spamChallengeResolver;
+            [spamResolver didReceiveIncomingPushChallengeWithToken:spamChallengeToken];
+        }
+
         [self.messageFetcherJob runObjc];
 
         if (completion != nil) {
@@ -1193,7 +1189,6 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-    __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     OWSLogInfo(@"");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
@@ -1213,24 +1208,12 @@ void uncaughtExceptionHandler(NSException *exception)
 // returns from application:didFinishLaunchingWithOptions:.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
-             withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
-                                       __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
+             withCompletionHandler:(void (^)(void))completionHandler
 {
     OWSLogInfo(@"");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
     });
-}
-
-// The method will be called on the delegate when the application is launched in response to the user's request to view
-// in-app notification settings. Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in
-// requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the
-// notification settings view in Settings. The notification will be nil when opened from Settings.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
-                                    __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
-{
-    OWSLogInfo(@"");
 }
 
 - (void)setupNSEInteroperation

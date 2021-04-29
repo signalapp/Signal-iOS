@@ -62,4 +62,20 @@ public extension Date {
         owsAssertDebug(millis == result.ows_millisecondsSince1970)
         return result
     }
+
+    func isBefore(_ date: Date) -> Bool {
+        (self as NSDate).is(before: date)
+    }
+
+    var isBeforeNow: Bool {
+        (self as NSDate).isBeforeNow()
+    }
+
+    func isAfter(_ date: Date) -> Bool {
+        (self as NSDate).is(after: date)
+    }
+
+    var isAfterNow: Bool {
+        (self as NSDate).isAfterNow()
+    }
 }

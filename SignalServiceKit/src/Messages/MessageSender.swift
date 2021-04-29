@@ -14,6 +14,7 @@ public enum MessageSenderError: Int, Error {
     case missingDevice
     case blockedContactRecipient
     case threadMissing
+    case spamChallengeRequired
 }
 
 // MARK: -
@@ -42,6 +43,15 @@ public extension MessageSender {
     class func isMissingDeviceError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.missingDevice:
+            return true
+        default:
+            return false
+        }
+    }
+
+    class func isSpamChallengeRequiredError(_ error: Error) -> Bool {
+        switch error {
+        case MessageSenderError.spamChallengeRequired:
             return true
         default:
             return false
@@ -273,6 +283,16 @@ public extension MessageSender {
                     return failure(MessageSenderError.missingDevice)
                 } else if httpStatusCode == 413 {
                     return failure(MessageSenderError.prekeyRateLimit)
+                } else if httpStatusCode == 428, FeatureFlags.spamChallenges {
+                    let userInfo = (error as NSError).userInfo
+                    let responseData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
+
+                    if let responseData = responseData {
+                        spamChallengeResolver.serverFlaggedRequestAsPotentialSpam(responseBody: responseData)
+                    } else {
+                        owsFailDebug("No response body for spam challenge")
+                    }
+                    return failure(MessageSenderError.spamChallengeRequired)
                 }
             }
             failure(error)
@@ -989,6 +1009,22 @@ public extension MessageSender {
             }
 
             retrySend()
+        case 428:
+            Logger.warn("Server requested user complete spam challenge.")
+            if let data = responseData {
+                spamChallengeResolver.serverFlaggedRequestAsPotentialSpam(responseBody: data)
+            } else {
+                owsFailDebug("Expected response body from server")
+            }
+
+            let errorDescription = NSLocalizedString("FAILED_SENDING_BECAUSE_RATE_LIMIT", comment: "action sheet header when re-sending message which failed because of too many attempts")
+            let error = OWSErrorWithCodeDescription(.signalServiceRateLimited, errorDescription) as NSError
+
+            error.isRetryable = false
+            error.isFatal = true
+            messageSend.failure(error)
+            return
+
         default:
             retrySend()
         }

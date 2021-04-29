@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     MessageProcessor *messageProcessor = [MessageProcessor new];
     id<Payments> payments = [MockPayments new];
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
+    OWSSpamChallengeResolver *spamChallengeResolver = [OWSSpamChallengeResolver new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -138,7 +139,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 appExpiry:appExpiry
                          messageProcessor:messageProcessor
                                  payments:payments
-                       paymentsCurrencies:paymentsCurrencies];
+                       paymentsCurrencies:paymentsCurrencies
+                    spamChallengeResolver:spamChallengeResolver];
 
     if (!self) {
         return nil;

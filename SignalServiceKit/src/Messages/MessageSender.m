@@ -1349,6 +1349,12 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:@{ NSUnderlyingErrorKey : error }];
+            } else if ([MessageSender isSpamChallengeRequiredError:error]) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:MessageSenderRateLimitedException
+                                                    reason:@"Spam challenge required"
+                                                  userInfo:@ { NSUnderlyingErrorKey : error }];
+
             } else if ([MessageSender isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
