@@ -6,7 +6,7 @@ class CaptchaChallenge: SpamChallenge {
 
     let token: String
     var captchaToken: String?
-    var failureCount = 0
+    var failureCount: UInt = 0
     let kMaxFailures = 15
 
     init(tokenIn: String, expiry: Date) {
@@ -83,8 +83,8 @@ class CaptchaChallenge: SpamChallenge {
     }
 
     private var fallbackRetryAfter: Date {
-        let delay = pow(2, Double(failureCount)) * 0.1
-        return Date(timeIntervalSinceNow: delay)
+        let interval = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount)
+        return Date(timeIntervalSinceNow: interval)
     }
 
     // MARK: - <Codable>
@@ -95,10 +95,19 @@ class CaptchaChallenge: SpamChallenge {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        token = try container.decode(String.self, forKey: .token)
-        captchaToken = try container.decode(String?.self, forKey: .captchaToken)
-        failureCount = try container.decode(Int.self, forKey: .failureCount)
+        let decodedToken = try container.decodeIfPresent(String.self, forKey: .token)
+        let decodedCaptchaToken = try container.decodeIfPresent(String.self, forKey: .captchaToken)
+        let decodedFailureCount = try container.decodeIfPresent(UInt.self, forKey: .failureCount)
+
+        token = decodedToken ?? "invalid"
+        captchaToken = decodedCaptchaToken
+        failureCount = decodedFailureCount ?? 0
         try super.init(from: container.superDecoder())
+
+        if decodedToken == nil {
+            owsFailDebug("Invalid decoding")
+            state = .complete
+        }
     }
 
     override func encode(to encoder: Encoder) throws {

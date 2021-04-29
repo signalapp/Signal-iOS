@@ -5,7 +5,7 @@
 class PushChallenge: SpamChallenge {
 
     private let token: String
-    private var failureCount = 0
+    private var failureCount: UInt = 0
     private let kMaxFailures = 15
 
     init(tokenIn: String) {
@@ -50,8 +50,8 @@ class PushChallenge: SpamChallenge {
     }
 
     private var fallbackRetryAfter: Date {
-        let delay = pow(2, Double(failureCount)) * 0.1
-        return Date(timeIntervalSinceNow: delay)
+        let interval = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount)
+        return Date(timeIntervalSinceNow: interval)
     }
 
     // MARK: - <Codable>
@@ -62,9 +62,17 @@ class PushChallenge: SpamChallenge {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        token = try container.decode(String.self, forKey: .token)
-        failureCount = try container.decode(Int.self, forKey: .failureCount)
+        let decodedToken = try container.decodeIfPresent(String.self, forKey: .token)
+        let decodedFailureCount = try container.decodeIfPresent(UInt.self, forKey: .token)
+
+        token = decodedToken ?? "invalid"
+        failureCount = decodedFailureCount ?? 0
         try super.init(from: container.superDecoder())
+
+        if decodedToken == nil {
+            owsFailDebug("Invalid decoding")
+            state = .complete
+        }
     }
 
     override func encode(to encoder: Encoder) throws {

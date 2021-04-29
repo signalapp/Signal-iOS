@@ -71,13 +71,14 @@ class SpamChallenge: Codable {
 
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        creationDate = try values.decode(Date.self, forKey: .creationDate)
-        expirationDate = try values.decode(Date.self, forKey: .expirationDate)
+        let decodedCreationDate = try values.decodeIfPresent(Date.self, forKey: .creationDate)
+        let decodedExpirationDate = try values.decodeIfPresent(Date.self, forKey: .expirationDate)
+        let decodedIsComplete = try values.decodeIfPresent(Bool.self, forKey: .isComplete)
+        let decodedDeferralDate = try values.decodeIfPresent(Date.self, forKey: .deferralDate)
 
-        let isComplete = try values.decode(Bool.self, forKey: .isComplete)
-        let deferralDate = try values.decode(Date?.self, forKey: .deferralDate)
-
-        switch (isComplete, deferralDate) {
+        creationDate = decodedCreationDate ?? Date()
+        expirationDate = decodedExpirationDate ?? Date()
+        switch (decodedIsComplete, decodedDeferralDate) {
         case let (_, date?):
             state = .deferred(date)
         case (true, _):

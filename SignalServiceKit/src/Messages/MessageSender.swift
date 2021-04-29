@@ -1023,7 +1023,6 @@ public extension MessageSender {
             error.isRetryable = false
             error.isFatal = true
             messageSend.failure(error)
-            return
 
         default:
             retrySend()

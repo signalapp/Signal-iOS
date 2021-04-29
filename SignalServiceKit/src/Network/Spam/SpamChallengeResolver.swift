@@ -55,27 +55,44 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         }
         guard FeatureFlags.spamChallenges else { return }
 
-        guard let rawJSON = try? JSONSerialization.jsonObject(with: responseBody, options: []),
-              let json = rawJSON as? [String: Any],
-              let requirement = json["required"] as? String,
-              let token = json["token"] as? String,
-              let options = json["options"] as? [String],
-              let retryAfterTimestamp = json["retry-after"] as? UInt64 else {
+        struct ServerChallengePayload: Decodable {
+            let required: Requirement
+            let token: String
+            let options: [Options]
+            let expiry: Date
+
+            private enum CodingKeys: String, CodingKey {
+                case required, token, options
+                case expiry = "retry-after"
+            }
+
+            enum Requirement: String, Codable {
+                case human
+            }
+
+            enum Options: String, Codable {
+                case recaptcha
+            }
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .millisecondsSince1970
+
+        guard let payload = try? decoder.decode(ServerChallengePayload.self, from: responseBody) else {
             owsFailDebug("Invalid server spam request response body: \(responseBody)")
             return
         }
 
-        guard requirement == "human" else {
+        guard payload.required == .human else {
             owsFailDebug("Unrecognized server challenge request")
             return
         }
 
-        let expiry = Date(millisecondsSince1970: retryAfterTimestamp)
         let challenge: SpamChallenge
-        if options.contains("recaptcha") {
-            challenge = CaptchaChallenge(tokenIn: token, expiry: expiry)
+        if payload.options.contains(.recaptcha) {
+            challenge = CaptchaChallenge(tokenIn: payload.token, expiry: payload.expiry)
         } else {
-            challenge = TimeElapsedChallenge(expiry: expiry)
+            challenge = TimeElapsedChallenge(expiry: payload.expiry)
         }
         challenge.schedulingDelegate = self
 
