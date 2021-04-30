@@ -144,8 +144,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         if hasDownloadButton {
-            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                             tintColor: UIColor.ows_white)
+            let iconView = CVImageView()
+            iconView.setTemplateImageName("arrow-down-24", tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {
                 let downloadStackConfig = ManualStackView.Config(axis: .horizontal,
                                                                  alignment: .center,
@@ -162,7 +162,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addArrangedSubview(iconView)
                 subviewInfos.append(CGSize.square(20).asManualSubviewInfo(hasFixedSize: true))
 
-                let downloadLabel = UILabel()
+                let downloadLabel = CVLabel()
                 let downloadFormat = (areAllItemsImages
                                         ? NSLocalizedString("MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT",
                                         comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
@@ -216,7 +216,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     let downloadSizeLabelConfig = CVLabelConfig(text: downloadSizeText.joined(separator: " • "),
                                                                 font: .ows_dynamicTypeCaption1,
                                                                 textColor: .ows_white)
-                    let downloadSizeLabel = UILabel()
+                    let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
                     let downloadSizeLabelSize = CVText.measureLabel(config: downloadSizeLabelConfig,
                                                                     maxWidth: .greatestFiniteMagnitude)

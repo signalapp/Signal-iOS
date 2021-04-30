@@ -1101,9 +1101,6 @@ fileprivate extension CVComponentState.Builder {
                 return attachmentStream
             }()
 
-            //            self.linkPreview = LinkPreview(linkPreview: linkPreview,
-            //                                           linkPreviewAttachment: linkPreviewAttachment,
-            //                                           groupInviteLinkViewModel: nil)
             let state = LinkPreviewSent(linkPreview: linkPreview,
                                         imageAttachment: linkPreviewAttachment,
                                         conversationStyle: conversationStyle)
