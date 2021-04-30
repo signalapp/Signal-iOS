@@ -502,9 +502,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                     OWSFailDebug(@"thread was unexpectedly nil");
                     continue;
                 }
-                NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - viewedTimestamp / 1000;
+                NSTimeInterval secondsSinceViewed = [NSDate new].timeIntervalSince1970 - viewedTimestamp / 1000;
                 OWSAssertDebug([message isKindOfClass:[TSMessage class]]);
-                OWSLogDebug(@"viewed on linked device %f seconds ago", secondsSinceRead);
+                OWSLogDebug(@"viewed on linked device %f seconds ago", secondsSinceViewed);
                 [self markAsViewedOnLinkedDevice:message
                                           thread:thread
                                  viewedTimestamp:viewedTimestamp

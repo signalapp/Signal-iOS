@@ -4530,6 +4530,11 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (maximumDuration > 0.5) {
+        OWSFailDebug(@"Animation is too long, skipping.");
+        return ^{};
+    }
+
     NSUUID *identifier = [NSUUID new];
     [self.viewState beginCellAnimationWithIdentifier:identifier];
 

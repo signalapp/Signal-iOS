@@ -51,9 +51,9 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                                 cellMeasurement: cellMeasurement,
                                                 componentDelegate: componentDelegate)
             let footerRootView = footerView.rootView
-            stackView.addSubview(footerRootView)
+
             let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
-            stackView.addLayoutBlock { view in
+            stackView.addSubview(footerRootView) { view in
                 var footerFrame = view.bounds
                 footerFrame.height = min(view.bounds.height, footerSize.height)
                 footerFrame.y = view.bounds.height - footerSize.height

@@ -143,6 +143,7 @@ public class CVAudioPlayer: NSObject {
             DispatchQueue.main.async {
                 // Make sure the user didn't start another attachment while the tone was playing.
                 guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
+                guard self?.audioPlayback?.attachmentId == attachmentStream.uniqueId else { return }
                 guard audioPlayback.audioPlaybackState != .playing else { return }
 
                 if audioAttachment.markOwningMessageAsViewed() {
@@ -197,6 +198,7 @@ extension CVAudioPlayer: CVAudioPlaybackDelegate {
 
         switch audioPlayback.audioPlaybackState {
         case .playing:
+            if audioPlayback != self.audioPlayback { audioPlayback.togglePlayState() }
             progressCache[audioPlayback.attachmentId] = audioPlayback.progress
         case .stopped:
             progressCache[audioPlayback.attachmentId] = 0

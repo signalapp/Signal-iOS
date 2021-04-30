@@ -31,13 +31,13 @@ class AudioMessageView: ManualStackView {
     private weak var componentDelegate: CVComponentDelegate!
 
     private let playedDotAnimation = AnimationView(name: "audio-played-dot")
-    private let playedDotContainer = OWSLayerView()
+    private let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
-    private let playPauseContainer = OWSLayerView()
+    private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
     private let playbackTimeLabel = CVLabel()
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
-    private let waveformContainer = OWSLayerView()
+    private let waveformContainer = ManualLayoutView(name: "waveformContainer")
 
     private var audioPlaybackState: AudioPlaybackState {
         cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
@@ -82,19 +82,14 @@ class AudioMessageView: ManualStackView {
         waveformProgress.playedColor = playedColor
         waveformProgress.unplayedColor = unplayedColor
         waveformProgress.thumbColor = thumbColor
-        waveformContainer.addSubview(waveformProgress)
+        waveformContainer.addSubviewToFillSuperviewEdges(waveformProgress)
 
         progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.asTintedImage(color: thumbColor), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: playedColor), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: unplayedColor), for: .normal)
-        waveformContainer.addSubview(progressSlider)
         progressSlider.isEnabled = isDownloaded
 
-        let waveformProgress = self.waveformProgress
-        let progressSlider = self.progressSlider
-        waveformContainer.layoutCallback = { view in
-            waveformProgress.frame = view.bounds
-
+        waveformContainer.addSubview(progressSlider) { [progressSlider] view in
             var sliderFrame = view.bounds
             sliderFrame.height = 12
             sliderFrame.y = (view.bounds.height - sliderFrame.height) * 0.5
@@ -137,24 +132,9 @@ class AudioMessageView: ManualStackView {
             playPauseContainer.backgroundColor = isIncoming
                 ? (Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_whiteAlpha80)
                 : .ows_whiteAlpha20
-            playPauseContainer.addSubview(playPauseAnimation)
-            playPauseContainer.layoutCallback = { view in
-                view.layer.cornerRadius = view.height / 2
-                playPauseAnimation.frame.size = CGSize(square: 24)
-                playPauseAnimation.frame.origin = CGPoint(
-                    x: (view.width / 2) - (playPauseAnimation.width / 2),
-                    y: (view.height / 2) - (playPauseAnimation.height / 2)
-                )
-            }
+            playPauseContainer.addSubviewToCenterOnSuperview(playPauseAnimation, size: CGSize(square: 24))
 
-            playedDotContainer.addSubview(playedDotAnimation)
-            playedDotContainer.layoutCallback = { view in
-                playedDotAnimation.frame.size = CGSize(square: 16)
-                playedDotAnimation.frame.origin = CGPoint(
-                    x: (view.width / 2) - (playedDotAnimation.width / 2),
-                    y: (view.height / 2) - (playedDotAnimation.height / 2)
-                )
-            }
+            playedDotContainer.addSubviewToCenterOnSuperview(playedDotAnimation, size: CGSize(square: 16))
 
             leftView = playPauseContainer
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
@@ -523,11 +503,15 @@ extension AudioMessageView: CVAudioPlayerListener {
     func audioPlayerStateDidChange(attachmentId: String) {
         AssertIsOnMainThread()
 
+        guard attachmentId == attachment.uniqueId else { return }
+
         updateContents(animated: true)
     }
 
     func audioPlayerDidFinish(attachmentId: String) {
         AssertIsOnMainThread()
+
+        guard attachmentId == attachment.uniqueId else { return }
 
         updateContents(animated: true)
     }

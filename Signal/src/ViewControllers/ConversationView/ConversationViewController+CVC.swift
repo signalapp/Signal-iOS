@@ -67,7 +67,7 @@ extension ConversationViewController {
 
     @objc
     public var areCellsAnimating: Bool {
-        !viewState.activeCellAnimations.isEmpty
+        viewState.activeCellAnimations.count > 0
     }
 }
 
