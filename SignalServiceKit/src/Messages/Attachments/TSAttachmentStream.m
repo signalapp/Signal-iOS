@@ -970,6 +970,17 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return loadedThumbnail.image;
 }
 
+- (nullable UIImage *)thumbnailImageMediumSync
+{
+    OWSLoadedThumbnail *_Nullable loadedThumbnail =
+        [self loadedThumbnailSyncWithDimensionPoints:kThumbnailDimensionPointsMedium];
+    if (!loadedThumbnail) {
+        OWSLogInfo(@"Couldn't load medium thumbnail sync.");
+        return nil;
+    }
+    return loadedThumbnail.image;
+}
+
 - (nullable UIImage *)thumbnailImageLargeSync
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSyncWithDimensionPoints:ThumbnailDimensionPointsLarge()];
