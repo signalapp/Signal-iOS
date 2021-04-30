@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
             case StickerTypeGif: {
                 NSError *_Nullable error;
                 thumbnailImage = [OWSMediaUtils thumbnailForImageAtPath:stickerMetadata.stickerDataUrl.path
-                                                           maxDimension:kMaxThumbnailSizePixels
+                                                     maxDimensionPixels:kMaxThumbnailSizePixels
                                                                   error:&error];
                 if (error != nil || thumbnailImage == nil) {
                     OWSFailDebug(@"Error: %@", error);

@@ -183,14 +183,17 @@ public class OWSThumbnailService: NSObject {
         guard let originalFilePath = attachment.originalFilePath else {
             throw OWSThumbnailError.failure(description: "Missing original file path.")
         }
-        let maxDimension = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
+        let maxDimensionPoints = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
         let thumbnailImage: UIImage
         if isWebp {
-            thumbnailImage = try OWSMediaUtils.thumbnail(forWebpAtPath: originalFilePath, maxDimension: maxDimension)
+            thumbnailImage = try OWSMediaUtils.thumbnail(forWebpAtPath: originalFilePath,
+                                                         maxDimensionPoints: maxDimensionPoints)
         } else if attachment.isImage || attachment.isAnimated {
-            thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath, maxDimension: maxDimension)
+            thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath,
+                                                         maxDimensionPoints: maxDimensionPoints)
         } else if attachment.isVideo {
-            thumbnailImage = try OWSMediaUtils.thumbnail(forVideoAtPath: originalFilePath, maxDimension: maxDimension)
+            thumbnailImage = try OWSMediaUtils.thumbnail(forVideoAtPath: originalFilePath,
+                                                         maxDimensionPoints: maxDimensionPoints)
         } else {
             throw OWSThumbnailError.assertionFailure(description: "Invalid attachment type.")
         }

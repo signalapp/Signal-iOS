@@ -207,4 +207,17 @@ extension UIImage {
         }
         return UIImage(cgImage: outputCGImage)
     }
+
+    var withNativeScale: UIImage {
+        let scale = UIScreen.main.scale
+        if self.scale == scale {
+            return self
+        } else {
+            guard let cgImage = cgImage else {
+                owsFailDebug("Missing cgImage.")
+                return self
+            }
+            return UIImage(cgImage: cgImage, scale: scale, orientation: self.imageOrientation)
+        }
+    }
 }

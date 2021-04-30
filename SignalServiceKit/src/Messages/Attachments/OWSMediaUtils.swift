@@ -16,8 +16,31 @@ public class OWSMediaUtils: NSObject {
     private override init() {
     }
 
+    private class func thumbnail(forImage image: UIImage, maxDimensionPixels: CGFloat) throws -> UIImage {
+        let scale = UIScreen.main.scale
+        if image.pixelSize().width <= maxDimensionPixels,
+           image.pixelSize().height <= maxDimensionPixels {
+            let result = image.withNativeScale
+            return result
+        }
+        guard let thumbnailImage = image.resized(withMaxDimensionPixels: maxDimensionPixels) else {
+            throw OWSMediaError.failure(description: "Could not thumbnail image.")
+        }
+        guard let cgImage = thumbnailImage.cgImage else {
+            throw OWSMediaError.failure(description: "Missing cgImage.")
+        }
+        let result = thumbnailImage.withNativeScale
+        return result
+    }
+
+    private class func thumbnail(forImage image: UIImage, maxDimensionPoints: CGFloat) throws -> UIImage {
+        let scale = UIScreen.main.scale
+        let maxDimensionPixels = maxDimensionPoints * scale
+        return try thumbnail(forImage: image, maxDimensionPixels: maxDimensionPixels)
+    }
+
     @objc
-    public class func thumbnail(forImageAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+    public class func thumbnail(forImageAtPath path: String, maxDimensionPixels: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing image: \(path)")
 
         guard FileManager.default.fileExists(atPath: path) else {
@@ -29,14 +52,26 @@ public class OWSMediaUtils: NSObject {
         guard let originalImage = UIImage(contentsOfFile: path) else {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
-        guard let thumbnailImage = originalImage.resized(withMaxDimensionPoints: maxDimension) else {
-            throw OWSMediaError.failure(description: "Could not thumbnail image.")
-        }
-        return thumbnailImage
+        return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
     }
 
     @objc
-    public class func thumbnail(forImageData imageData: Data, maxDimension: CGFloat) throws -> UIImage {
+    public class func thumbnail(forImageAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
+
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw OWSMediaError.failure(description: "Media file missing.")
+        }
+        guard NSData.ows_isValidImage(atPath: path) else {
+            throw OWSMediaError.failure(description: "Invalid image.")
+        }
+        guard let originalImage = UIImage(contentsOfFile: path) else {
+            throw OWSMediaError.failure(description: "Could not load original image.")
+        }
+        return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
+    }
+
+    @objc
+    public class func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing image data.")
 
         guard (imageData as NSData).ows_isValidImage() else {
@@ -45,14 +80,11 @@ public class OWSMediaUtils: NSObject {
         guard let originalImage = UIImage(data: imageData) else {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
-        guard let thumbnailImage = originalImage.resized(withMaxDimensionPoints: maxDimension) else {
-            throw OWSMediaError.failure(description: "Could not thumbnail image.")
-        }
-        return thumbnailImage
+        return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
     }
 
     @objc
-    public class func thumbnail(forWebpAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+    public class func thumbnail(forWebpAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing image: \(path)")
 
         guard FileManager.default.fileExists(atPath: path) else {
@@ -65,21 +97,20 @@ public class OWSMediaUtils: NSObject {
         guard let stillImage = data.stillForWebpData() else {
             throw OWSMediaError.failure(description: "Could not generate still.")
         }
-        guard let thumbnailImage = stillImage.resized(withMaxDimensionPoints: maxDimension) else {
-            throw OWSMediaError.failure(description: "Could not thumbnail image.")
-        }
-        return thumbnailImage
+        return try thumbnail(forImage: stillImage, maxDimensionPoints: maxDimensionPoints)
     }
 
     @objc
-    public class func thumbnail(forVideoAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+    public class func thumbnail(forVideoAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing video: \(path)")
 
         guard isVideoOfValidContentTypeAndSize(path: path) else {
             throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
         }
 
-        let maxSize = CGSize(width: maxDimension, height: maxDimension)
+        let scale = UIScreen.main.scale
+        let maxDimensionPixels = maxDimensionPoints * scale
+        let maxSizePixels = CGSize(width: maxDimensionPixels, height: maxDimensionPixels)
         let url = URL(fileURLWithPath: path)
         let asset = AVURLAsset(url: url, options: nil)
         guard isValidVideo(asset: asset) else {
@@ -87,11 +118,11 @@ public class OWSMediaUtils: NSObject {
         }
 
         let generator = AVAssetImageGenerator(asset: asset)
-        generator.maximumSize = maxSize
+        generator.maximumSize = maxSizePixels
         generator.appliesPreferredTrackTransform = true
         let time: CMTime = CMTimeMake(value: 1, timescale: 60)
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-        let image = UIImage(cgImage: cgImage)
+        let image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
         return image
     }
 

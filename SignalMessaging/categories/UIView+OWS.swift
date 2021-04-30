@@ -560,6 +560,10 @@ public extension CGSize {
         min(width, height)
     }
 
+    var isNonEmpty: Bool {
+        width > 0 && height > 0
+    }
+
     init(square: CGFloat) {
         self.init(width: square, height: square)
     }

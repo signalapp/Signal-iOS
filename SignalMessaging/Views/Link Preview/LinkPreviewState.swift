@@ -353,7 +353,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
-        let result = attachmentStream.imageSize()
+        let result = attachmentStream.imageSizePixels
         imagePixelSizeCache.set(result)
         return result
     }
