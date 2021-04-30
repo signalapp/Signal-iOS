@@ -25,20 +25,10 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             return @"Small";
         case AttachmentThumbnailQuality_Medium:
             return @"Medium";
+        case AttachmentThumbnailQuality_MediumLarge:
+            return @"MediumLarge";
         case AttachmentThumbnailQuality_Large:
             return @"Large";
-    }
-}
-
-NSUInteger ThumbnailDimensionPointsForAttachmentThumbnailQuality(AttachmentThumbnailQuality value)
-{
-    switch (value) {
-        case AttachmentThumbnailQuality_Small:
-            return TSAttachmentStream.thumbnailDimensionPointsSmall;
-        case AttachmentThumbnailQuality_Medium:
-            return TSAttachmentStream.thumbnailDimensionPointsMedium;
-        case AttachmentThumbnailQuality_Large:
-            return [TSAttachmentStream thumbnailDimensionPointsLarge];
     }
 }
 
@@ -865,7 +855,7 @@ NSUInteger ThumbnailDimensionPointsForAttachmentThumbnailQuality(AttachmentThumb
                           success:(OWSThumbnailSuccess)success
                           failure:(OWSThumbnailFailure)failure
 {
-    NSUInteger thumbnailDimensionPoints = ThumbnailDimensionPointsForAttachmentThumbnailQuality(quality);
+    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
@@ -971,7 +961,7 @@ NSUInteger ThumbnailDimensionPointsForAttachmentThumbnailQuality(AttachmentThumb
 
 - (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
 {
-    NSUInteger thumbnailDimensionPoints = ThumbnailDimensionPointsForAttachmentThumbnailQuality(quality);
+    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     OWSLoadedThumbnail *_Nullable loadedThumbnail =
         [self loadedThumbnailSyncWithDimensionPoints:thumbnailDimensionPoints];
     if (!loadedThumbnail) {

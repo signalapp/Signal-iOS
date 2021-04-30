@@ -42,11 +42,26 @@ public extension TSAttachmentStream {
 
     static let thumbnailDimensionPointsSmall: CGFloat = 200
     static let thumbnailDimensionPointsMedium: CGFloat = 450
+    static let thumbnailDimensionPointsMediumLarge: CGFloat = 600
 
     // This size is large enough to render full screen.
     static func thumbnailDimensionPointsLarge() -> CGFloat {
         let screenSizePoints = UIScreen.main.bounds.size
         return max(screenSizePoints.width, screenSizePoints.height)
+    }
+
+    // This size is large enough to render full screen.
+    static func thumbnailDimensionPoints(forThumbnailQuality thumbnailQuality: AttachmentThumbnailQuality) -> CGFloat {
+        switch thumbnailQuality {
+        case .small:
+            return thumbnailDimensionPointsSmall
+        case .medium:
+            return thumbnailDimensionPointsMedium
+        case .mediumLarge:
+            return thumbnailDimensionPointsMediumLarge
+        case .large:
+            return thumbnailDimensionPointsLarge()
+        }
     }
 
     func thumbnailImageSmall(success: @escaping OWSThumbnailSuccess, failure: @escaping OWSThumbnailFailure) {
@@ -55,6 +70,10 @@ public extension TSAttachmentStream {
 
     func thumbnailImageMedium(success: @escaping OWSThumbnailSuccess, failure: @escaping OWSThumbnailFailure) {
         thumbnailImage(quality: .medium, success: success, failure: failure)
+    }
+
+    func thumbnailImageMediumLarge(success: @escaping OWSThumbnailSuccess, failure: @escaping OWSThumbnailFailure) {
+        thumbnailImage(quality: .mediumLarge, success: success, failure: failure)
     }
 
     func thumbnailImageLarge(success: @escaping OWSThumbnailSuccess, failure: @escaping OWSThumbnailFailure) {
@@ -67,6 +86,10 @@ public extension TSAttachmentStream {
 
     func thumbnailImageMediumSync() -> UIImage? {
         thumbnailImageSync(quality: .medium)
+    }
+
+    func thumbnailImageMediumLargeSync() -> UIImage? {
+        thumbnailImageSync(quality: .mediumLarge)
     }
 
     func thumbnailImageLargeSync() -> UIImage? {

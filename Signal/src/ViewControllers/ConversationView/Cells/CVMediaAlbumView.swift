@@ -532,9 +532,11 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                                     : renderSizeByHeight)
         let renderDimensionPoints = renderSizePoints.largerAxis
         let quality: AttachmentThumbnailQuality = {
+            // Find the smallest quality of acceptable size.
             let qualities: [AttachmentThumbnailQuality] = [
                 .small,
-                .medium
+                .medium,
+                .mediumLarge
                 // Skip .large
             ]
             for quality in qualities {
@@ -544,7 +546,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 // so falling over to the next largest size is expensive. Therefore
                 // we include a small measure of slack in our calculation.
                 let sizeTolerance: CGFloat = 1.25
-                let thumbnailDimensionPoints = ThumbnailDimensionPointsForAttachmentThumbnailQuality(quality)
+                let thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: quality)
                 if renderDimensionPoints <= CGFloat(thumbnailDimensionPoints) * sizeTolerance {
                     return quality
                 }

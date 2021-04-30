@@ -22,10 +22,10 @@ typedef void (^OWSThumbnailFailure)(void);
 typedef NS_CLOSED_ENUM(NSUInteger, AttachmentThumbnailQuality) {
     AttachmentThumbnailQuality_Small,
     AttachmentThumbnailQuality_Medium,
+    AttachmentThumbnailQuality_MediumLarge,
     AttachmentThumbnailQuality_Large
 };
 NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value);
-NSUInteger ThumbnailDimensionPointsForAttachmentThumbnailQuality(AttachmentThumbnailQuality value);
 
 @interface TSAttachmentStream : TSAttachment
 
