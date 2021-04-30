@@ -52,6 +52,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
+    private lazy var logoImageView: UIImageView = {
+        let result = UIImageView()
+        result.set(.height, to: 24)
+        result.contentMode = .scaleAspectFit
+        return result
+    }()
+    
     // MARK: Settings
     private static let buttonHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
     
@@ -130,18 +137,27 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
         let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
         versionLabel.text = "Version \(version) (\(buildNumber))"
+        // Invite button
         let inviteButton = UIButton()
         inviteButton.setTitle("Invite a Friend", for: UIControl.State.normal)
         inviteButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         inviteButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         inviteButton.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
+        // Help translate button
         let helpTranslateButton = UIButton()
         helpTranslateButton.setTitle("Help us Translate Session", for: UIControl.State.normal)
         helpTranslateButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         helpTranslateButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         helpTranslateButton.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
+        // Oxen logo
+        updateLogo()
+        let logoContainer = UIView()
+        logoContainer.addSubview(logoImageView)
+        logoImageView.pin(.top, to: .top, of: logoContainer)
+        logoContainer.pin(.bottom, to: .bottom, of: logoImageView)
+        logoImageView.center(in: logoContainer)
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, helpTranslateButton, versionLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, helpTranslateButton, logoContainer, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
@@ -354,6 +370,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         getSettingButtons().forEach { settingButtonOrSeparator in
             settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator) // Re-do the setting buttons
         }
+        updateLogo()
+    }
+    
+    private func updateLogo() {
+        let logoName = isLightMode ? "OxenLightMode" : "OxenDarkMode"
+        logoImageView.image = UIImage(named: logoName)!
     }
     
     // MARK: Interaction
