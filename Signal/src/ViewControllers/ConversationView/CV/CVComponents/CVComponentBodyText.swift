@@ -653,9 +653,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }()
         let textInfo = textSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
-                                                        measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_stackView,
-                                                        subviewInfos: [ textInfo ])
+                                                       measurementBuilder: measurementBuilder,
+                                                       measurementKey: Self.measurementKey_stackView,
+                                                       subviewInfos: [ textInfo ])
         return stackMeasurement.measuredSize
     }
 

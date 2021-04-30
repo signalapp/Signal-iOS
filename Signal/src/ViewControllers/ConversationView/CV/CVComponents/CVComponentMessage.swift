@@ -768,6 +768,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let contentStackSize = measureContentStack(maxWidth: contentMaxWidth,
                                                    measurementBuilder: measurementBuilder)
+        owsAssertDebug(contentStackSize.width <= contentMaxWidth)
 
         var hInnerStackSubviewInfos = [ManualStackSubviewInfo]()
         if hasSenderAvatarLayout,
