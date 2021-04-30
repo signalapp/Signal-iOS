@@ -69,9 +69,10 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    private let thumbImageView = UIImageView(
+    private let thumbImageView = CVImageView(
         image: UIImage(named: "audio_message_thumb")?.withRenderingMode(.alwaysTemplate)
     )
+    private let thumbImageSize = CGSize.square(12)
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
     private let loadingAnimation = AnimationView(name: "waveformLoading")
@@ -166,7 +167,11 @@ class AudioWaveformProgressView: UIView {
         let progress = self.value
         var thumbXPos = width * progress
         if CurrentAppContext().isRTL { thumbXPos = width - thumbXPos }
-        thumbImageView.center = CGPoint(x: thumbXPos, y: layer.frame.center.y)
+
+        var thumbImageViewFrame = CGRect(origin: .zero, size: thumbImageSize)
+        let thumbImageCenter = CGPoint(x: thumbXPos, y: layer.frame.center.y)
+        thumbImageViewFrame.origin = thumbImageCenter - (thumbImageSize.asPoint * 0.5)
+        thumbImageView.frame = thumbImageViewFrame
 
         defer {
             playedShapeLayer.path = playedBezierPath.cgPath

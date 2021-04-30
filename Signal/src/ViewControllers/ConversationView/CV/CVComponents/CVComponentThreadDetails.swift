@@ -81,8 +81,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerViews.append(avatarWrapper)
 
             var unblurAvatarSubviewInfos = [ManualStackSubviewInfo]()
-            let unblurAvatarIconView = UIImageView.withTemplateImageName("tap-outline-24",
-                                                                         tintColor: .ows_white)
+            let unblurAvatarIconView = CVImageView()
+            unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .ows_white)
             unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
             let unblurAvatarLabelConfig = CVLabelConfig(text: NSLocalizedString("THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
@@ -91,7 +91,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                         textColor: .ows_white)
             let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: avatarDiameter - 12)
             unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
-            let unblurAvatarLabel = UILabel()
+            let unblurAvatarLabel = CVLabel()
             unblurAvatarLabelConfig.applyForRendering(label: unblurAvatarLabel)
             let unblurAvatarStackConfig = ManualStackView.Config(axis: .vertical,
                                                                  alignment: .center,
