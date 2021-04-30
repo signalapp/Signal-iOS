@@ -1334,7 +1334,7 @@ private class LinkPreviewImageView: CVImageView {
         self.isHero = isHero
         let configurationId = Self.configurationIdCounter.increment()
         self.configurationId = configurationId
-        state.imageAsync(thumbnailQuality: isHero ? .mediumLarge : .medium) { [weak self] image in
+        state.imageAsync(thumbnailQuality: isHero ? .medium : .small) { [weak self] image in
             DispatchMainThreadSafe {
                 guard let self = self else { return }
                 guard self.configurationId == configurationId else { return }

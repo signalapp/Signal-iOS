@@ -775,7 +775,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
-        if hasBodyMedia {
+        let shouldUseNarrowMaxWidth = (bodyMedia != nil ||
+                                        linkPreview != nil)
+        if shouldUseNarrowMaxWidth {
             contentMaxWidth = max(0, min(conversationStyle.maxMediaMessageWidth, contentMaxWidth))
         } else {
             contentMaxWidth = max(0, min(conversationStyle.maxMessageWidth, contentMaxWidth))

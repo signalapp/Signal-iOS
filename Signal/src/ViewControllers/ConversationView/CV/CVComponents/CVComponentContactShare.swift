@@ -40,7 +40,6 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let maxWidth = min(maxWidth, conversationStyle.maxMediaMessageWidth)
         return CVContactShareView.measure(maxWidth: maxWidth,
                                           measurementBuilder: measurementBuilder,
                                           state: contactShareState.state)
