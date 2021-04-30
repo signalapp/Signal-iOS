@@ -4,87 +4,148 @@
 
 import YYImage
 import AVKit
+import PromiseKit
 
 /// Model object for a looping video asset
 /// Any LoopingVideoViews playing this instance will all be kept in sync
 @objc
 public class LoopingVideo: NSObject {
-    fileprivate let asset: AVAsset
-    fileprivate let playerItem: AVPlayerItem
-    fileprivate let player: AVPlayer
+    fileprivate let playerItemPromise: Guarantee<AVPlayerItem?>
+    fileprivate var playerItem: AVPlayerItem? { playerItemPromise.value.flatMap { $0 } }
+    fileprivate var asset: AVAsset? { playerItem?.asset }
 
     @objc
-    public convenience init?(url: URL) {
-        guard OWSMediaUtils.isValidVideo(path: url.path) else { return nil }
-
-        self.init(asset: AVAsset(url: url))
+    public init?(url: URL) {
+        guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
+            return nil
+        }
+        playerItemPromise = firstly(on: .global(qos: .userInitiated)) {
+            let asset = AVAsset(url: url)
+            let item = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
+            return OWSMediaUtils.isValidVideo(asset: asset) ? item : nil
+        }
+        super.init()
     }
 
-    private init(asset: AVAsset) {
-        self.asset = asset
-        playerItem = AVPlayerItem(asset: asset)
-        player = AVPlayer(playerItem: playerItem)
+    deinit {
+        playerItem?.cancelPendingSeeks()
+        asset?.cancelLoading()
+    }
+}
+
+// TODO: Multicast for syncing up two views?
+private class LoopingVideoPlayer: AVPlayer {
+
+    override init() {
         super.init()
+        sharedInit()
+    }
 
-        player.isMuted = true
-        player.allowsExternalPlayback = false
-        player.automaticallyWaitsToMinimizeStalling = false
+    override init(url: URL) {
+        super.init(url: url)
+        sharedInit()
 
-        if #available(iOS 12, *) {
-            player.preventsDisplaySleepDuringVideoPlayback = false
+    }
+
+    override init(playerItem item: AVPlayerItem?) {
+        super.init(playerItem: item)
+        sharedInit()
+    }
+
+    private func sharedInit() {
+        if let item = currentItem {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.playerItemDidPlayToCompletion(_:)),
+                name: .AVPlayerItemDidPlayToEndTime,
+                object: item)
         }
+
+        isMuted = true
+        allowsExternalPlayback = true
+        if #available(iOS 12, *) {
+            preventsDisplaySleepDuringVideoPlayback = false
+        }
+    }
+
+    override func replaceCurrentItem(with newItem: AVPlayerItem?) {
+        readyStatusObserver = nil
+
+        if let oldItem = currentItem {
+            NotificationCenter.default.removeObserver(
+                self,
+                name: .AVPlayerItemDidPlayToEndTime,
+                object: oldItem)
+            oldItem.cancelPendingSeeks()
+        }
+
+        super.replaceCurrentItem(with: newItem)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerItemDidPlayToCompletion),
+            selector: #selector(self.playerItemDidPlayToCompletion(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: playerItem)
+            object: newItem)
     }
 
-    /// Creates a copy of this object with an independent play lifecycle
-    public func createIndependentCopy() -> LoopingVideo {
-        LoopingVideo(asset: asset)
+    @objc private func playerItemDidPlayToCompletion(_ notification: NSNotification) {
+        guard (notification.object as AnyObject) === currentItem else { return }
+        seek(to: .zero)
+        play()
     }
 
-    @objc private func playerItemDidPlayToCompletion() {
-        player.seek(to: .zero)
-        player.play()
-    }
+    private var readyStatusObserver: NSKeyValueObservation?
+    override public func play() {
+        // Don't bother if we're already playing, or we don't have an item
+        guard let item = currentItem, rate == 0 else { return }
 
-    // MARK: - Player count
-
-    private var playerRefcount = AtomicUInt(0)
-
-    fileprivate func incrementPlayerCount() {
-        if playerRefcount.get() == 0 {
-            player.seek(to: .zero)
-            player.play()
+        if item.status == .readyToPlay {
+            readyStatusObserver = nil
+            super.play()
+        } else if readyStatusObserver == nil {
+            // We're not ready to play, set up an observer to play when ready
+            readyStatusObserver = item.observe(\.status) { [weak self] _, _  in
+                guard let self = self, item === self.currentItem else { return }
+                if item.status == .readyToPlay {
+                    self.play()
+                }
+            }
         }
-        playerRefcount.increment()
-    }
-
-    fileprivate func decrementPlayerCount() {
-        playerRefcount.decrementOrZero()
     }
 }
 
 @objc
 public class LoopingVideoView: UIView {
+    private let player = LoopingVideoPlayer()
 
     @objc
     public var video: LoopingVideo? {
         didSet {
             guard video !== oldValue else { return }
-            playerLayer.player = video?.player
+            player.replaceCurrentItem(with: nil)
 
-            oldValue?.decrementPlayerCount()
-            video?.incrementPlayerCount()
-            kvoObserver = nil
+            if let itemPromise = video?.playerItemPromise {
+                itemPromise.done(on: .global(qos: .userInitiated)) { item in
+                    guard item === self.video?.playerItem else { return }
+
+                    if let item = item {
+                        self.player.replaceCurrentItem(with: item)
+                        self.player.play()
+                    }
+                }
+            }
+            displayReadyObserver = nil
+            invalidateIntrinsicContentSize()
         }
     }
 
-    deinit {
-        video?.decrementPlayerCount()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        playerLayer.player = player
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override public static var layerClass: AnyClass { AVPlayerLayer.self }
@@ -107,16 +168,22 @@ public class LoopingVideoView: UIView {
     }
 
     override public var intrinsicContentSize: CGSize {
-        guard let allVideoTracks = video?.asset.tracks(withMediaType: .video) else {
+        guard let asset = video?.asset else {
+            // If we have an outstanding promise, invalidate the size once it's complete
+            // If there isn't, -noIntrinsicMetric is valid
+            if video?.playerItemPromise.isPending == true {
+                video?.playerItemPromise.done { _ in self.invalidateIntrinsicContentSize() }
+            }
             return CGSize(square: UIView.noIntrinsicMetric)
         }
 
-        return allVideoTracks
+        // Tracks will always be loaded by LoopingVideo
+        return asset.tracks(withMediaType: .video)
             .map { $0.naturalSize }
             .reduce(.zero) {
                 CGSize(width: max($0.width, $1.width),
                        height: max($0.height, $1.height))
-        }
+            }
     }
 
     // MARK: - Placeholder Images
@@ -127,7 +194,7 @@ public class LoopingVideoView: UIView {
     public var placeholderProvider: (() -> UIImage?)?
 
     private var placeholderView: UIImageView?
-    private var kvoObserver: NSKeyValueObservation?
+    private var displayReadyObserver: NSKeyValueObservation?
 
     override public func draw(_ rect: CGRect) {
         defer { super.draw(rect) }
@@ -141,7 +208,7 @@ public class LoopingVideoView: UIView {
            let placeholderProvider = placeholderProvider {
 
             // First, set up our observer so we are notified once we can drop the placeholder
-            kvoObserver = playerLayer.observe(
+            displayReadyObserver = playerLayer.observe(
                 \.isReadyForDisplay,
                 options: .new
             ) { [weak self] (_, change) in
@@ -161,7 +228,7 @@ public class LoopingVideoView: UIView {
 
         } else if playerLayer.isReadyForDisplay {
             // Cleanup. The video is ready to go.
-            kvoObserver = nil
+            displayReadyObserver = nil
             placeholderView?.removeFromSuperview()
             placeholderView = nil
         }

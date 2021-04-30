@@ -10,13 +10,73 @@ import YYImage
 
 class GifPickerCell: UICollectionViewCell {
 
-    // MARK: Properties
+    private let imageView = YYAnimatedImageView()
+    private let mp4View = LoopingVideoView()
+    private let activityIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .gray)
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        view.autoSetDimension(.width, toSize: 30)
+        view.autoSetDimension(.height, toSize: 30)
+        view.layer.cornerRadius = 3
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(square: 1)
+        view.layer.shadowOpacity = 0.7
+        view.layer.shadowRadius = 1.0
+        view.hidesWhenStopped = true
+        return view
+    }()
+
+    private var previewAsset: ProxiedContentAsset?
+    private var previewAssetRequest: ProxiedContentAssetRequest? {
+        didSet { oldValue?.cancel() }
+    }
+
+    // MARK: - Lifecycle
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        [imageView, mp4View, activityIndicator].forEach {
+            contentView.addSubview($0)
+        }
+        imageView.isHidden = true
+        mp4View.isHidden = true
+
+        imageView.autoPinEdgesToSuperviewEdges()
+        mp4View.autoPinEdgesToSuperviewEdges()
+        activityIndicator.autoCenterInSuperview()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applyTheme),
+            name: .ThemeDidChange,
+            object: nil)
+
+        applyTheme()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        previewAssetRequest?.cancel()
+    }
+
+    // MARK: Public
+
+    public func ensureCellState() {
+        ensureLoadState()
+        ensureViewState()
+    }
 
     var imageInfo: GiphyImageInfo? {
         didSet {
             AssertIsOnMainThread()
-            owsAssertDebug(imageInfo?.isValidImage != false)
-
+            if imageInfo?.isValidImage == false {
+                owsFailDebug("Invalid image info set on cell")
+                imageInfo = nil
+            }
             ensureCellState()
         }
     }
@@ -26,19 +86,9 @@ class GifPickerCell: UICollectionViewCell {
     var isCellVisible = false {
         didSet {
             AssertIsOnMainThread()
-
             ensureCellState()
         }
     }
-
-    // We do "progressive" loading by loading stills (jpg or gif) and "animated" gifs.
-    // This is critical on cellular connections.
-    var stillAssetRequest: ProxiedContentAssetRequest?
-    var stillAsset: ProxiedContentAsset?
-    var animatedAssetRequest: ProxiedContentAssetRequest?
-    var animatedAsset: ProxiedContentAsset?
-    var previewView: UIView?
-    var activityIndicator: UIActivityIndicatorView?
 
     override var isSelected: Bool {
         didSet {
@@ -47,221 +97,15 @@ class GifPickerCell: UICollectionViewCell {
         }
     }
 
-    // As another bandwidth saving measure, we only fetch the full sized GIF when the user selects it.
-    private var gifAssetForSending: GiphyAsset?
-
-    // MARK: Initializers
-
-    deinit {
-        stillAssetRequest?.cancel()
-        animatedAssetRequest?.cancel()
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-
-        imageInfo = nil
-        isCellVisible = false
-        stillAsset = nil
-        stillAssetRequest?.cancel()
-        stillAssetRequest = nil
-        animatedAsset = nil
-        animatedAssetRequest?.cancel()
-        animatedAssetRequest = nil
-        previewView?.removeFromSuperview()
-        previewView = nil
-        activityIndicator = nil
-        isSelected = false
-    }
-
-    private func clearStillAssetRequest() {
-        stillAssetRequest?.cancel()
-        stillAssetRequest = nil
-    }
-
-    private func clearAnimatedAssetRequest() {
-        animatedAssetRequest?.cancel()
-        animatedAssetRequest = nil
-    }
-
-    private func clearAssetRequests() {
-        clearStillAssetRequest()
-        clearAnimatedAssetRequest()
-    }
-
-    public func ensureCellState() {
-        ensureLoadState()
-        ensureViewState()
-    }
-
-    public func ensureLoadState() {
-        guard isCellVisible else {
-            // Don't load if cell is not visible.
-            clearAssetRequests()
-            return
-        }
-        guard let imageInfo = imageInfo else {
-            // Don't load if cell is not configured.
-            clearAssetRequests()
-            return
-        }
-        guard self.animatedAsset == nil else {
-            // Don't load if cell is already loaded.
-            clearAssetRequests()
-            return
-        }
-
-        guard let fullSizeAssetDescription = imageInfo.fullSizeAsset,
-              let previewAssetDescription = imageInfo.animatedPreviewAsset,
-              let stillAssetDescription = imageInfo.stillPreviewAsset else {
-            Logger.warn("could not pick gif rendition: \(imageInfo.giphyId)")
-            clearAssetRequests()
-            return
-        }
-
-        self.gifAssetForSending = fullSizeAssetDescription
-
-        // Start still asset request if necessary.
-        if stillAsset != nil || animatedAsset != nil {
-            clearStillAssetRequest()
-        } else if stillAssetRequest == nil {
-            stillAssetRequest = GiphyDownloader.giphyDownloader.requestAsset(
-                assetDescription: stillAssetDescription,
-                priority: .high,
-                success: { [weak self] assetRequest, asset in
-                    guard let strongSelf = self else { return }
-                    if assetRequest != nil && assetRequest != strongSelf.stillAssetRequest {
-                        owsFailDebug("Obsolete request callback.")
-                        return
-                    }
-                    strongSelf.clearStillAssetRequest()
-                    strongSelf.stillAsset = asset
-                    strongSelf.ensureViewState()
-                },
-                failure: { [weak self] assetRequest in
-                    guard let strongSelf = self else { return }
-                    if assetRequest != strongSelf.stillAssetRequest {
-                        owsFailDebug("Obsolete request callback.")
-                        return
-                    }
-                    strongSelf.clearStillAssetRequest()
-                })
-        }
-
-        // Start animated asset request if necessary.
-        if animatedAsset != nil {
-            clearAnimatedAssetRequest()
-        } else if animatedAssetRequest == nil {
-            animatedAssetRequest = GiphyDownloader.giphyDownloader.requestAsset(
-                assetDescription: previewAssetDescription,
-                priority: .low,
-                success: { [weak self] assetRequest, asset in
-                    guard let strongSelf = self else { return }
-                    if assetRequest != nil && assetRequest != strongSelf.animatedAssetRequest {
-                        owsFailDebug("Obsolete request callback.")
-                        return
-                    }
-                    // If we have the animated asset, we don't need the still asset.
-                    strongSelf.clearAssetRequests()
-                    strongSelf.animatedAsset = asset
-                    strongSelf.ensureViewState()
-                },
-                failure: { [weak self] assetRequest in
-                    guard let strongSelf = self else { return }
-                    if assetRequest != strongSelf.animatedAssetRequest {
-                        owsFailDebug("Obsolete request callback.")
-                        return
-                    }
-                    strongSelf.clearAnimatedAssetRequest()
-            })
-        }
-    }
-
-    private func ensureViewState() {
-        guard isCellVisible else {
-            // Clear image view so we don't animate offscreen GIFs.
-            clearViewState()
-            return
-        }
-        guard let asset = pickBestAsset() else {
-            clearViewState()
-            return
-        }
-
-        let isValidGIF = NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageGif)
-        let isValidJPEG = NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageJpeg)
-
-        if asset.assetDescription.fileExtension == "mp4",
-           let video = LoopingVideo(url: URL(fileURLWithPath: asset.filePath)) {
-
-            // The underlying asset is an mp4. Set up the corresponding preview view if necessary
-            let mp4View = (self.previewView as? LoopingVideoView) ?? {
-                let newView = LoopingVideoView()
-                contentView.addSubview(newView)
-                newView.autoPinEdgesToSuperviewEdges()
-
-                self.previewView?.removeFromSuperview()
-                self.previewView = newView
-                return newView
-            }()
-            mp4View.video = video
-            mp4View.placeholderProvider = { [weak self] in
-                guard let stillPath = self?.stillAsset?.filePath else { return nil }
-                guard NSData.ows_isValidImage(atPath: stillPath) else { return nil }
-                return UIImage(contentsOfFile: stillPath)
-            }
-
-        } else if (isValidGIF || isValidJPEG),
-                  let image = YYImage(contentsOfFile: asset.filePath) {
-
-            // The underlying asset is not a video. Set up the corresponding preview view if necessary
-            let gifView = (self.previewView as? YYAnimatedImageView) ?? {
-                let newView = YYAnimatedImageView()
-                contentView.addSubview(newView)
-                newView.autoPinEdgesToSuperviewEdges()
-
-                self.previewView?.removeFromSuperview()
-                self.previewView = newView
-                return newView
-            }()
-            gifView.image = image
-
-        } else {
-            owsFailDebug("could not load asset.")
-            clearViewState()
-            return
-        }
-
-        self.backgroundColor = nil
-
-        if isSelected, activityIndicator == nil {
-            let activityIndicator = UIActivityIndicatorView(style: .gray)
-            self.activityIndicator = activityIndicator
-            addSubview(activityIndicator)
-            activityIndicator.autoCenterInSuperview()
-            activityIndicator.startAnimating()
-
-            // Render activityIndicator on a white tile to ensure it's visible on
-            // when overlayed on a variety of potential gifs.
-            activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-            activityIndicator.autoSetDimension(.width, toSize: 30)
-            activityIndicator.autoSetDimension(.height, toSize: 30)
-            activityIndicator.layer.cornerRadius = 3
-            activityIndicator.layer.shadowColor = UIColor.black.cgColor
-            activityIndicator.layer.shadowOffset = CGSize(square: 1)
-            activityIndicator.layer.shadowOpacity = 0.7
-            activityIndicator.layer.shadowRadius = 1.0
-        } else if !isSelected, let activityIndicator = self.activityIndicator {
-            activityIndicator.stopAnimating()
-            activityIndicator.removeFromSuperview()
-            self.activityIndicator = nil
-        }
+    public var isDisplayingPreview: Bool {
+        (previewAsset != nil) && (mp4View.video != nil || imageView.image != nil)
     }
 
     public func requestRenditionForSending() -> Promise<ProxiedContentAsset> {
-        guard let gifAssetForSending = self.gifAssetForSending else {
-            owsFailDebug("renditionForSending was unexpectedly nil")
-            return Promise(error: GiphyError.assertionError(description: "renditionForSending was unexpectedly nil"))
+        guard let imageInfo = imageInfo,
+              let fullSizeAsset = imageInfo.fullSizeAsset else {
+            owsFailDebug("fullSizeAsset was unexpectedly nil")
+            return Promise(error: GiphyError.assertionError(description: "fullSizeAsset was unexpectedly nil"))
         }
 
         let (promise, resolver) = Promise<ProxiedContentAsset>.pending()
@@ -269,7 +113,7 @@ class GifPickerCell: UICollectionViewCell {
         // We don't retain a handle on the asset request, since there will only ever
         // be one selected asset, and we never want to cancel it.
         _ = GiphyDownloader.giphyDownloader.requestAsset(
-            assetDescription: gifAssetForSending,
+            assetDescription: fullSizeAsset,
             priority: .high,
             success: { _, asset in
                 resolver.fulfill(asset)
@@ -284,18 +128,98 @@ class GifPickerCell: UICollectionViewCell {
         return promise
     }
 
-    private func clearViewState() {
-        (previewView as? LoopingVideoView)?.video = nil
-        (previewView as? UIImageView)?.image = nil
-        self.backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor(white: 0.25, alpha: 1.0)
-            : UIColor(white: 0.95, alpha: 1.0))
-        self.activityIndicator?.stopAnimating()
-        activityIndicator?.removeFromSuperview()
-        self.activityIndicator = nil
+    // MARK: UICollectionViewCell
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageInfo = nil
+        isCellVisible = false
+        isSelected = false
+        previewAssetRequest = nil
+        previewAsset = nil
+        clearViewState()
     }
 
-    private func pickBestAsset() -> ProxiedContentAsset? {
-        return animatedAsset ?? stillAsset
+    // MARK: - Private
+
+    @objc
+    private func applyTheme() {
+        backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray05
+    }
+
+    private func ensureLoadState() {
+        guard isCellVisible, let imageInfo = imageInfo else {
+            // Nothing to load. We don't load non-visible cell content
+            previewAssetRequest = nil
+            return
+        }
+        guard previewAssetRequest == nil, previewAsset == nil else {
+            // We already have a load in progress, or we've already loaded the asset
+            return
+        }
+        guard let previewAssetDescription = imageInfo.animatedPreviewAsset else {
+            Logger.warn("could not pick gif rendition: \(imageInfo.giphyId)")
+            return
+        }
+
+        previewAssetRequest = GiphyDownloader.giphyDownloader.requestAsset(
+            assetDescription: previewAssetDescription,
+            priority: .low,
+            success: { [weak self] assetRequest, asset in
+                guard let self = self else { return }
+                guard assetRequest == self.previewAssetRequest else {
+                    owsFailDebug("Obsolete request callback.")
+                    return
+                }
+                self.previewAssetRequest = nil
+                self.previewAsset = asset
+                self.ensureViewState()
+            },
+            failure: { [weak self] assetRequest in
+                guard let self = self else { return }
+                guard assetRequest == self.previewAssetRequest else {
+                    owsFailDebug("Obsolete request callback.")
+                    return
+                }
+                self.previewAssetRequest = nil
+            }
+        )
+    }
+
+    private func ensureViewState() {
+        guard isCellVisible, let asset = previewAsset else {
+            // Nothing to show,
+            clearViewState()
+            return
+        }
+        if isSelected {
+            activityIndicator.startAnimating()
+        }
+
+        if asset.assetDescription.fileExtension == "mp4",
+           let video = LoopingVideo(url: URL(fileURLWithPath: asset.filePath)) {
+            mp4View.video = video
+            mp4View.isHidden = false
+        } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageGif),
+                  let image = YYImage(contentsOfFile: asset.filePath) {
+            imageView.image = image
+            imageView.isHidden = false
+        } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageJpeg),
+                  let image = UIImage(contentsOfFile: asset.filePath) {
+            imageView.image = image
+            imageView.isHidden = false
+        } else {
+            owsFailDebug("could not load asset.")
+            clearViewState()
+            return
+        }
+    }
+
+    private func clearViewState() {
+        imageView.image = nil
+        imageView.isHidden = true
+        mp4View.video = nil
+        mp4View.isHidden = true
+        activityIndicator.stopAnimating()
     }
 }
