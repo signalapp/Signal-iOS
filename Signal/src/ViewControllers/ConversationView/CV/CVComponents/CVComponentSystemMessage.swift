@@ -263,7 +263,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     }
 
     private var buttonContentEdgeInsets: UIEdgeInsets {
-        UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
+        UIEdgeInsets(hMargin: 12, vMargin: 6)
     }
 
     private static var titleLabelFont: UIFont {
