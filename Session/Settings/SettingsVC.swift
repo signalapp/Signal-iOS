@@ -61,19 +61,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         setUpGradientBackground()
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
-        // Set up navigation bar buttons
+        // Navigation bar buttons
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
-        // Set up profile picture view
+        // Profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
         profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)
         profilePictureView.publicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
-        // Set up display name label
+        // Display name label
         displayNameLabel.text = Storage.shared.getUser()?.name
-        // Set up display name container
+        // Display name container
         let displayNameContainer = UIView()
         displayNameContainer.accessibilityLabel = "Edit display name text field"
         displayNameContainer.isAccessibilityElement = true
@@ -85,14 +85,14 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         displayNameTextField.alpha = 0
         let displayNameContainerTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditDisplayNameUI))
         displayNameContainer.addGestureRecognizer(displayNameContainerTapGestureRecognizer)
-        // Set up header view
+        // Header view
         let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameContainer ])
         headerStackView.axis = .vertical
         headerStackView.spacing = Values.smallSpacing
         headerStackView.alignment = .center
-        // Set up separator
+        // Separator
         let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
-        // Set up public key label
+        // Public key label
         let publicKeyLabel = UILabel()
         publicKeyLabel.textColor = Colors.text
         publicKeyLabel.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : Values.largeFontSize)
@@ -100,27 +100,27 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         publicKeyLabel.textAlignment = .center
         publicKeyLabel.lineBreakMode = .byCharWrapping
         publicKeyLabel.text = getUserHexEncodedPublicKey()
-        // Set up share button
+        // Share button
         let shareButton = Button(style: .regular, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
-        // Set up button container
+        // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
         buttonContainer.axis = .horizontal
         buttonContainer.spacing = Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
-        // Set up top stack view
+        // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
         topStackView.axis = .vertical
         topStackView.spacing = Values.largeSpacing
         topStackView.alignment = .fill
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
-        // Set up setting buttons stack view
+        // Setting buttons stack view
         getSettingButtons().forEach { settingButtonOrSeparator in
             settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
         }
-        // Set up version label
+        // Version label
         let versionLabel = UILabel()
         versionLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         versionLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
@@ -130,15 +130,25 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
         let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
         versionLabel.text = "Version \(version) (\(buildNumber))"
-        // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, versionLabel ])
+        let inviteButton = UIButton()
+        inviteButton.setTitle("Invite a Friend", for: UIControl.State.normal)
+        inviteButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        inviteButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        inviteButton.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
+        let helpTranslateButton = UIButton()
+        helpTranslateButton.setTitle("Help us Translate Session", for: UIControl.State.normal)
+        helpTranslateButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        helpTranslateButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        helpTranslateButton.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
+        // Main stack view
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, helpTranslateButton, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: 0, bottom: Values.mediumSpacing, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.set(.width, to: UIScreen.main.bounds.width)
-        // Set up scroll view
+        // Scroll view
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         scrollView.addSubview(stackView)
@@ -183,8 +193,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
-            getSeparator(),
-            getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation)),
             getSeparator()
         ]
         if !KeyPairUtilities.hasV2KeyPair() {
@@ -421,6 +429,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey())!"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func helpTranslate() {
+        let url = URL(string: "https://crowdin.com/project/session-ios")!
+        UIApplication.shared.open(url)
     }
     
     @objc private func upgradeSessionID() {

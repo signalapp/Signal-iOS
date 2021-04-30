@@ -449,4 +449,4 @@
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
 "vc_enter_recovery_phrase_explanation" = "Recovery Phrase";
 "vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages"
+"vc_home_title" = "Messages";
