@@ -155,7 +155,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         logoContainer.addSubview(logoImageView)
         logoImageView.pin(.top, to: .top, of: logoContainer)
         logoContainer.pin(.bottom, to: .bottom, of: logoImageView)
-        logoImageView.center(in: logoContainer)
+        logoImageView.centerXAnchor.constraint(equalTo: logoContainer.centerXAnchor, constant: -2).isActive = true
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, helpTranslateButton, logoContainer, versionLabel ])
         stackView.axis = .vertical
