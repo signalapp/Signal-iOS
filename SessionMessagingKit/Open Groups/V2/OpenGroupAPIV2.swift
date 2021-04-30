@@ -400,6 +400,9 @@ public final class OpenGroupAPIV2 : NSObject {
             let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { items in
                 items.forEach { getGroupImage(for: $0.id, on: defaultServer).retainUntilComplete() }
             }
+            promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                OpenGroupAPIV2.defaultRoomsPromise = nil
+            }
             defaultRoomsPromise = promise
         })
     }

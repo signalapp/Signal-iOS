@@ -59,6 +59,9 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         spinner.startAnimating()
         heightConstraint = set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
+        if OpenGroupAPIV2.defaultRoomsPromise == nil {
+            OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+        }
         let _ = OpenGroupAPIV2.defaultRoomsPromise?.done { [weak self] rooms in
             self?.rooms = rooms
         }
@@ -163,7 +166,7 @@ extension OpenGroupSuggestionGrid {
             snContentView.layer.shadowPath = newPath
             snContentView.layer.shadowColor = UIColor.black.cgColor
             snContentView.layer.shadowOffset = CGSize.zero
-            snContentView.layer.shadowOpacity = 0.2
+            snContentView.layer.shadowOpacity = isLightMode ? 0.2 : 0.6
             snContentView.layer.shadowRadius = 2
         }
         
