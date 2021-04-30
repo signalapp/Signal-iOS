@@ -23,6 +23,14 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var isScrollNearTopOfLoadWindow: Bool { get }
 
     var isScrollNearBottomOfLoadWindow: Bool { get }
+
+    var isUserScrolling: Bool { get }
+
+    var hasScrollingAnimation: Bool { get }
+
+    var scrollContinuity: ScrollContinuity { get }
+
+    var isLayoutApplyingUpdate: Bool { get }
 }
 
 // MARK: -
@@ -531,31 +539,8 @@ public class CVLoadCoordinator: NSObject {
 
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
-        let viewState = self.viewState
         func canLandLoad() -> Bool {
-            // Ensure isUserScrolling is a substate of hasScrollingAnimation.
-            if viewState.isUserScrolling {
-                owsAssertDebug(viewState.hasScrollingAnimation)
-            }
-            guard viewState.hasScrollingAnimation else {
-                // If no scroll gesture or animation is in progress,
-                // we can land the load.
-                return true
-            }
-            if let delegate = self.delegate {
-                if update.loadType == .loadOlder,
-                   delegate.isScrollNearTopOfLoadWindow {
-                    // If a scroll animation is progress, but we're very
-                    // close to the edge of the load window, land the load.
-                    return true
-                } else if update.loadType == .loadNewer,
-                          delegate.isScrollNearBottomOfLoadWindow {
-                    // If a scroll animation is progress, but we're very
-                    // close to the edge of the load window, land the load.
-                    return true
-                }
-            }
-            return false
+            return !delegate.isLayoutApplyingUpdate
         }
 
         func tryToResolve() {
@@ -792,18 +777,6 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
         cell.isCellVisible = false
         delegate?.updateScrollingContent()
     }
-
-    // We use this hook to ensure scroll state continuity.  As the collection
-    // view's content size changes, we want to keep the same cells in view.
-    public func collectionView(_ collectionView: UICollectionView,
-                               targetContentOffsetForProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-
-        guard let delegate = self.delegate else {
-            owsFailDebug("Missing delegate.")
-            return proposedContentOffset
-        }
-        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-    }
 }
 
 // MARK: -
@@ -843,6 +816,30 @@ extension CVLoadCoordinator: ConversationViewLayoutDelegate {
             return proposedContentOffset
         }
         return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
+    }
+
+    public var isUserScrolling: Bool {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return false
+        }
+        return delegate.isUserScrolling
+    }
+
+    public var hasScrollingAnimation: Bool {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return false
+        }
+        return delegate.hasScrollingAnimation
+    }
+
+    public var scrollContinuity: ScrollContinuity {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return .bottom
+        }
+        return delegate.scrollContinuity
     }
 }
 

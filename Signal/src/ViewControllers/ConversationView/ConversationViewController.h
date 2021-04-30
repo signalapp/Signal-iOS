@@ -94,7 +94,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 - (void)ensureBannerState;
 
 // TODO: Remove or rework method.
-- (void)reloadCollectionView;
+- (void)reloadCollectionViewForReset;
 
 - (void)updateNavigationBarSubtitleLabel;
 - (void)dismissMessageActionsIfNecessary;
@@ -106,7 +106,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 - (void)performBatchUpdates:(void (^_Nonnull)(void))batchUpdates
                  completion:(void (^_Nonnull)(BOOL))completion
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock
-       shouldAnimateUpdates:(BOOL)shouldAnimateUpdates;
+       shouldAnimateUpdates:(BOOL)shouldAnimateUpdates
+             isLoadAdjacent:(BOOL)isLoadAdjacent;
 - (BOOL)autoLoadMoreIfNecessary;
 
 #pragma mark - Search

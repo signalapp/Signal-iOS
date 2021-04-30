@@ -928,7 +928,7 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
-    if (self.layout.isPerformingBatchUpdates) {
+    if (self.layout.isUpdating) {
         return;
     }
     [self markVisibleMessagesAsRead];
@@ -2982,14 +2982,16 @@ typedef enum : NSUInteger {
     [self dismissReactionsDetailSheetAnimated:NO];
 }
 
-- (void)reloadCollectionView
+- (void)reloadCollectionViewForReset
 {
     if (!self.hasAppearedAndHasAppliedFirstLoad) {
         return;
     }
     @try {
+        [self.layout willReloadData];
         [self.collectionView reloadData];
         [self.layout invalidateLayout];
+        [self.layout didReloadData];
     } @catch (NSException *exception) {
         OWSLogWarn(@"currentRenderStateDebugDescription: %@", self.currentRenderStateDebugDescription);
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
@@ -3118,6 +3120,7 @@ typedef enum : NSUInteger {
     }
 
     OWSLogVerbose(@"");
+    [self.scrollUpdateTimer invalidate];
 
     // We need to manually schedule this timer using NSRunLoopCommonModes
     // or it won't fire during scrolling.
@@ -3793,25 +3796,20 @@ typedef enum : NSUInteger {
                  completion:(void (^_Nonnull)(BOOL))completion
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock
        shouldAnimateUpdates:(BOOL)shouldAnimateUpdates
+             isLoadAdjacent:(BOOL)isLoadAdjacent
 {
     @try {
         void (^updateBlock)(void) = ^{
-            [self.layout willPerformBatchUpdates];
-            [self.collectionView performBatchUpdates:batchUpdates completion:completion];
-            [self.layout didPerformBatchUpdates];
+            ConversationViewLayout *layout = self.layout;
+            [layout willPerformBatchUpdatesWithAnimated:shouldAnimateUpdates isLoadAdjacent:isLoadAdjacent];
+            [self.collectionView performBatchUpdates:batchUpdates
+                                          completion:^(BOOL finished) {
+                                              [layout didCompleteBatchUpdates];
 
-            // AFAIK the collection view layout should reflect the old layout
-            // until performBatchUpdates(), then we need to invalidate and prepare
-            // the (new) layout just _after_ performBatchUpdates.
-            //
-            // Moreover it's important that the (old) layout is prepared when
-            // performBatchUpdates() is called.  We ensure this in
-            // willUpdateWithNewRenderState().
-            //
-            // Otherwise UICollectionView can throw (crashing) exceptions like this:
-            //
-            // UICollectionView received layout attributes for a cell with an index path that does not exist...
-            [self.layout invalidateLayout];
+                                              completion(finished);
+                                          }];
+            [layout didPerformBatchUpdatesWithAnimated:shouldAnimateUpdates];
+
             [BenchManager completeEventWithEventId:@"message-send"];
         };
 

@@ -59,6 +59,11 @@ extension ConversationViewController {
     public var currentRenderStateDebugDescription: String {
         renderState.debugDescription
     }
+
+    @objc
+    public var isLayoutApplyingUpdate: Bool {
+        layout.isApplyingUpdate
+    }
 }
 
 // MARK: -
@@ -87,13 +92,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         //       view items before they are updated.
         collectionView.layoutIfNeeded()
         // ENDHACK to work around radar #28167779
-
-        // This will get cleared by updateViewToReflectLoad().
-        owsAssertDebug(viewState.scrollContinuityMap == nil)
-        if hasViewWillAppearEverBegun,
-           !renderState.isFirstLoad {
-            viewState.scrollContinuityMap = buildScrollContinuityMap(forRenderState: renderState)
-        }
 
         return CVUpdateToken(isScrolledToBottom: self.isScrolledToBottom,
                              lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId)
@@ -237,13 +235,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     private func loadDidLand() {
-        // Discard scrollContinuityMap after the load is complete.
-        //
-        // Do not discard scrollContinuityMap if it corresponds to a
-        // subsequent load. Animated and non-animated loads might
-        // land in any order and thus complete out of order.
-        self.viewState.scrollContinuityMap = nil
-
         self.loadCoordinator.loadDidLand()
     }
 
@@ -325,10 +316,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // completes first, we need to update the collection view
         // to reflect its contents.
         if reloadIfClearingFlag, hasRenderState {
-            UIView.performWithoutAnimation {
-                self.collectionView.reloadData()
-                self.layout.invalidateLayout()
-            }
+            reloadCollectionViewImmediately()
 
             scrollToInitialPosition(animated: false)
 
@@ -338,6 +326,17 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             setHasAppliedFirstLoadIfNecessary()
         }
+    }
+
+    private func reloadCollectionViewImmediately() {
+        AssertIsOnMainThread()
+
+        layout.willReloadData()
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+            self.layout.invalidateLayout()
+        }
+        layout.didReloadData()
     }
 
     private func updateForMinorUpdate(scrollAction: CVScrollAction) {
@@ -370,10 +369,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         benchSteps.step("1")
 
-        UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
-            self.layout.invalidateLayout()
-        }
+        reloadCollectionViewImmediately()
 
         benchSteps.step("2")
 
@@ -416,10 +412,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         Logger.verbose("")
 
-        UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
-            self.layout.invalidateLayout()
-        }
+        reloadCollectionViewImmediately()
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -442,7 +435,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         scrollContinuity = .bottom
 
-        reloadCollectionView()
+        reloadCollectionViewForReset()
 
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         updateLastKnownDistanceFromBottom()
@@ -465,15 +458,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let viewState = self.viewState
 
         var scrollAction = scrollActionParam
-
-        scrollContinuity = isScrolledToBottom ? .bottom : .top
-        if let loadType = renderState.loadType {
-            if loadType == .loadOlder {
-                scrollContinuity = .bottom
-            }
-        } else {
-            owsFailDebug("Missing loadType.")
-        }
 
         // Update scroll action to auto-scroll if necessary.
         if scrollAction.action == .none, !self.isUserScrolling {
@@ -527,6 +511,23 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     break
                 }
             }
+        }
+
+        scrollContinuity = isScrolledToBottom ? .bottom : .top
+        var isLoadAdjacent = false
+        if let loadType = renderState.loadType {
+            switch loadType {
+            case .loadOlder:
+                scrollContinuity = .bottom
+                scrollAction = .none
+                isLoadAdjacent = true
+            case .loadNewer, .loadNewest:
+                isLoadAdjacent = true
+            default:
+                break
+            }
+        } else {
+            owsFailDebug("Missing loadType.")
         }
 
         viewState.scrollActionForUpdate = scrollAction
@@ -615,7 +616,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         self.performBatchUpdates(batchUpdatesBlock,
                                  completion: completion,
                                  logFailureBlock: logFailureBlock,
-                                 shouldAnimateUpdates: shouldAnimateUpdate)
+                                 shouldAnimateUpdates: shouldAnimateUpdate,
+                                 isLoadAdjacent: isLoadAdjacent)
     }
 
     private var scrolledToEdgeTolerancePoints: CGFloat {

@@ -542,13 +542,6 @@ extension ConversationViewController {
             return contentOffset
         }
 
-        if let contentOffset = targetContentOffsetForScrollContinuityMap() {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- targetContentOffsetForScrollContinuityMap: \(contentOffset)")
-            }
-            return contentOffset
-        }
-
         if scrollContinuity == .bottom,
            let contentOffset = targetContentOffsetForBottom() {
             if !DebugFlags.reduceLogChatter {
@@ -572,57 +565,6 @@ extension ConversationViewController {
         return contentOffset
     }
 
-    func buildScrollContinuityMap(forRenderState renderState: CVRenderState) -> CVScrollContinuityMap {
-        AssertIsOnMainThread()
-
-        // We don't need to worry about scroll continuity when landing
-        // the first load or if we're not yet displaying the collection
-        // view content.
-        if renderState.isFirstLoad || loadCoordinator.shouldHideCollectionViewContent {
-            return CVScrollContinuityMap(renderStateId: renderState.renderStateId,
-                                         items: [])
-        }
-
-        let contentOffset = collectionView.contentOffset
-
-        var sortIdToIndexPathMap = [UInt64: IndexPath]()
-        for (index, renderItem) in renderItems.enumerated() {
-            let indexPath = IndexPath(row: index, section: Self.messageSection)
-            let sortId = renderItem.interaction.sortId
-            sortIdToIndexPathMap[sortId] = indexPath
-        }
-
-        var items = [CVScrollContinuityMap.Item]()
-        for cell in collectionView.visibleCells {
-            guard let cell = cell as? CVCell else {
-                owsFailDebug("Invalid cell.")
-                continue
-            }
-            guard let renderItem = cell.renderItem else {
-                owsFailDebug("Missing renderItem.")
-                continue
-            }
-            guard canInteractionBeUsedForScrollContinuity(renderItem.interaction) else {
-                continue
-            }
-            let sortId = renderItem.interaction.sortId
-            guard let indexPath = sortIdToIndexPathMap[sortId] else {
-                owsFailDebug("Missing indexPath.")
-                continue
-            }
-            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
-                owsFailDebug("Missing layoutAttributes.")
-                continue
-            }
-            let distanceY = layoutAttributes.frame.topLeft.y - contentOffset.y
-
-            items.append(CVScrollContinuityMap.Item(sortId: sortId,
-                                                    distanceY: distanceY))
-        }
-        return CVScrollContinuityMap(renderStateId: renderState.renderStateId,
-                                     items: items)
-    }
-
     private func canInteractionBeUsedForScrollContinuity(_ interaction: TSInteraction) -> Bool {
         guard !interaction.isDynamicInteraction() else {
             return false
@@ -634,51 +576,6 @@ extension ConversationViewController {
         case .incomingMessage, .outgoingMessage, .error, .call, .info, .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return true
         }
-    }
-
-    // We use this hook to ensure scroll state continuity.  As the collection
-    // view's content size changes, we want to keep the same cells in view.
-    private func targetContentOffsetForScrollContinuityMap() -> CGPoint? {
-        guard let scrollContinuityMap = viewState.scrollContinuityMap else {
-            return nil
-        }
-
-        var sortIdToIndexPathMap = [UInt64: IndexPath]()
-        for (index, renderItem) in renderItems.enumerated() {
-            let indexPath = IndexPath(row: index, section: Self.messageSection)
-            let sortId = renderItem.interaction.sortId
-            sortIdToIndexPathMap[sortId] = indexPath
-        }
-
-        // Honor the scroll continuity bias.
-        //
-        // If we prefer continuity with regard to the bottom
-        // of the conversation, start with the last items.
-        let items = (scrollContinuity == .bottom
-                        ? scrollContinuityMap.items.reversed()
-                        : scrollContinuityMap.items)
-
-        for item in items {
-            let sortId = item.sortId
-            let oldDistanceY = item.distanceY
-
-            guard let indexPath = sortIdToIndexPathMap[sortId] else {
-                continue
-            }
-            guard let latestFrame = layout.latestFrame(forIndexPath: indexPath) else {
-                owsFailDebug("Missing layoutAttributes.")
-                continue
-            }
-
-            let newLocation = latestFrame.topLeft
-            let contentOffsetY = newLocation.y - oldDistanceY
-            let contentOffset = CGPoint(x: 0, y: contentOffsetY)
-            return contentOffset
-        }
-
-        Logger.verbose("No continuity match.")
-
-        return nil
     }
 
     private func targetContentOffsetForSizeTransition() -> CGPoint? {
