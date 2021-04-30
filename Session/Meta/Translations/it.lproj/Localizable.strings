@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "Errore. Tocca per riprovare.";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Nessun risultato.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Gruppo creato.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ è entrato nel gruppo.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ ha lasciato il gruppo.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Il nuovo titolo è '%@'";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Gruppo aggiornato.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Hai lasciato il gruppo.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Non puoi condividere più di %@ elementi.";
 /* alert title */

@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "Błąd. Dotknij by ponowić.";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Brak wyników";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Grupa została stworzona.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ dołączył(a) do grupy.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ opuścił(a) grupę.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Nowy tytuł to '%@'. ";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Zaktualizowano grupę.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Opuściłeś(aś) grupę.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nie można udostępnić więcej niż %@ multimediów.";
 /* alert title */

@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "错误。点击重试。";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "无结果。";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "组群已成功创建。";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ 加入了群组。";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ 已退出群组。";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "群组名称已改为 '%@'。";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "群组更新完成。";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "您退出了这个群。";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "您最多分享%@项。";
 /* alert title */

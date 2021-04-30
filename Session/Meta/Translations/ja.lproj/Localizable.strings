@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "エラーです。タップして再試行してください。";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "該当なし";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "グループが作成されました";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@がグループに加わりました";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@がグループを離れました";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "グループを更新しました";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "グループを離れました";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "画像の共有は%@点までです。";
 /* alert title */

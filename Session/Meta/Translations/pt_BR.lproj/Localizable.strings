@@ -164,6 +164,24 @@
 "GIF_VIEW_SEARCH_ERROR" = "Falha. Toque para tentar novamente.";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Nenhum Resultado.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Grupo criado.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = "%@ entrou no grupo.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = "%@ saiu do grupo.";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "O título agora é '%@'.";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Grupo atualizado.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Você saiu do grupo.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Você não pode compartilhar mais de %@ itens.";
 /* alert title */
