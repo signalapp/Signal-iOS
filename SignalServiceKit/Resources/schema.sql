@@ -113,6 +113,7 @@ CREATE
             ,"paymentCancellation" BLOB
             ,"paymentNotification" BLOB
             ,"paymentRequest" BLOB
+            ,"viewed" BOOLEAN
         )
 ;
 
@@ -1059,5 +1060,22 @@ CREATE
     UNIQUE INDEX "index_model_TSGroupMember_on_phoneNumber_and_groupThreadId"
         ON "model_TSGroupMember"("phoneNumber"
     ,"groupThreadId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "pending_viewed_receipts" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"threadId" INTEGER NOT NULL
+            ,"messageTimestamp" INTEGER NOT NULL
+            ,"authorPhoneNumber" TEXT
+            ,"authorUuid" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_pending_viewed_receipts_on_threadId"
+        ON "pending_viewed_receipts"("threadId"
 )
 ;
