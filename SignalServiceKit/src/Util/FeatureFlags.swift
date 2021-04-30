@@ -119,7 +119,7 @@ public class FeatureFlags: BaseFlags {
             owsAssertDebug(!paymentsExternalBeta)
             return false
         } else {
-            return false
+            return true
         }
     }
 
