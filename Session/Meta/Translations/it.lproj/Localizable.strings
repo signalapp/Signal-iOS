@@ -234,6 +234,8 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session necessita dell'accesso alla tua libreria multimediale per questa funzione.";
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Non riceverai alcuna notifica dalle conversazioni silenziose.";
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ su %@";
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note personali";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
