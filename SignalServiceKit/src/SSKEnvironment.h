@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageManager;
 @class OWSMessagePipelineSupervisor;
 @class OWSOutgoingReceiptManager;
-@class OWSReadReceiptManager;
+@class OWSReceiptManager;
 @class SDSDatabaseStorage;
 @class SSKPreKeyStore;
 @class SSKPreferences;
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol StorageServiceManagerProtocol;
 @protocol GroupsV2;
 @protocol GroupV2Updates;
-@protocol PendingReadReceiptRecorder;
+@protocol PendingReceiptRecorder;
 @protocol VersionedProfiles;
 @protocol Payments;
 @protocol PaymentsCurrencies;
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
-             pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
+                 pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
-                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                         receiptManager:(OWSReceiptManager *)receiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<SyncManagerProtocol>)syncManager
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManagerRef;
 @property (nonatomic, readonly) MessageSender *messageSenderRef;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueueRef;
-@property (nonatomic, readonly) id<PendingReadReceiptRecorder> pendingReadReceiptRecorderRef;
+@property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReceiptRecorderRef;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic, readonly) TSNetworkManager *networkManagerRef;
 @property (nonatomic, readonly) OWSMessageManager *messageManagerRef;
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic, readonly) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJobRef;
-@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManagerRef;
+@property (nonatomic, readonly) OWSReceiptManager *receiptManagerRef;
 @property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManagerRef;
 @property (nonatomic, readonly) id<SyncManagerProtocol> syncManagerRef;
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManagerRef;

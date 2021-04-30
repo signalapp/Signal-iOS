@@ -9,11 +9,15 @@ import SignalMessaging
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     private let audioAttachment: AudioAttachment
+    private let nextAudioAttachment: AudioAttachment?
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
+    private let footerOverlay: CVComponent?
 
-    init(itemModel: CVItemModel, audioAttachment: AudioAttachment) {
+    init(itemModel: CVItemModel, audioAttachment: AudioAttachment, nextAudioAttachment: AudioAttachment?, footerOverlay: CVComponent?) {
         self.audioAttachment = audioAttachment
+        self.nextAudioAttachment = nextAudioAttachment
+        self.footerOverlay = footerOverlay
 
         super.init(itemModel: itemModel)
     }
@@ -32,11 +36,41 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         }
 
         let stackView = componentView.stackView
+        let conversationStyle = self.conversationStyle
+
+        if let footerOverlay = self.footerOverlay {
+            let footerView: CVComponentView
+            if let footerOverlayView = componentView.footerOverlayView {
+                footerView = footerOverlayView
+            } else {
+                let footerOverlayView = CVComponentFooter.CVComponentViewFooter()
+                componentView.footerOverlayView = footerOverlayView
+                footerView = footerOverlayView
+            }
+            footerOverlay.configureForRendering(componentView: footerView,
+                                                cellMeasurement: cellMeasurement,
+                                                componentDelegate: componentDelegate)
+            let footerRootView = footerView.rootView
+
+            let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
+            stackView.addSubview(footerRootView) { view in
+                var footerFrame = view.bounds
+                footerFrame.height = min(view.bounds.height, footerSize.height)
+                footerFrame.y = view.bounds.height - footerSize.height
+                footerRootView.frame = footerFrame
+            }
+        }
 
         owsAssertDebug(attachment.isAudio)
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
         let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
-                                                isIncoming: isIncoming)
+                                                isIncoming: isIncoming,
+                                                componentDelegate: componentDelegate)
+        if let incomingMessage = interaction as? TSIncomingMessage {
+            audioMessageView.setViewed(incomingMessage.wasViewed, animated: false)
+        } else if let outgoingMessage = interaction as? TSOutgoingMessage {
+            audioMessageView.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
+        }
         audioMessageView.configureForRendering(cellMeasurement: cellMeasurement,
                                                conversationStyle: conversationStyle)
         componentView.audioMessageView = audioMessageView
@@ -44,6 +78,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                             cellMeasurement: cellMeasurement,
                             measurementKey: Self.measurementKey_stackView,
                             subviews: [ audioMessageView ])
+
+        // Listen for when our audio attachment finishes playing, so we can
+        // start playing the next attachment.
+        cvAudioPlayer.addListener(self)
     }
 
     private var stackViewConfig: CVStackViewConfig {
@@ -54,9 +92,19 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     }
 
     private static let measurementKey_stackView = "CVComponentAudioAttachment.measurementKey_stackView"
+    private static let measurementKey_footerSize = "CVComponentAudioAttachment.measurementKey_footerSize"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
+
+        let maxWidth = min(maxWidth, conversationStyle.maxAudioMessageWidth)
+
+        if let footerOverlay = self.footerOverlay {
+            let maxFooterWidth = max(0, maxWidth - conversationStyle.textInsets.totalWidth)
+            let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
+                                                   measurementBuilder: measurementBuilder)
+            measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
+        }
 
         let audioSize = AudioMessageView.measure(maxWidth: maxWidth,
                                                  audioAttachment: audioAttachment,
@@ -79,11 +127,11 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
-
-        guard let attachmentStream = attachmentStream else {
+        guard let componentView = componentView as? CVComponentViewAudioAttachment else {
+            owsFailDebug("Unexpected componentView.")
             return false
         }
-        cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
+        cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
         return true
     }
 
@@ -159,11 +207,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             // we still call `scrubToLocation` above in order to update the slider.
             audioMessageView.clearOverrideProgress(animated: false)
             let scrubbedTime = audioMessageView.scrubToLocation(location)
-            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime,
-                                            forAttachmentStream: attachmentStream)
-            if cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) != .playing {
-                cvAudioPlayer.togglePlayState(forAttachmentStream: attachmentStream)
-            }
+            cvAudioPlayer.setPlaybackProgress(progress: scrubbedTime, forAttachmentStream: attachmentStream)
         case .possible, .began, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
         @unknown default:
@@ -183,6 +227,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         fileprivate var audioMessageView: AudioMessageView?
 
+        fileprivate var footerOverlayView: CVComponentView?
+
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
@@ -196,8 +242,22 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
             audioMessageView?.removeFromSuperview()
             audioMessageView = nil
+
+            footerOverlayView?.reset()
+            footerOverlayView = nil
         }
     }
+}
+
+extension CVComponentAudioAttachment: CVAudioPlayerListener {
+    func audioPlayerStateDidChange(attachmentId: String) {}
+
+    func audioPlayerDidFinish(attachmentId: String) {
+        guard attachmentId == audioAttachment.attachment.uniqueId else { return }
+        cvAudioPlayer.autoplayNextAudioAttachment(nextAudioAttachment)
+    }
+
+    func audioPlayerDidMarkViewed(attachmentId: String) {}
 }
 
 // MARK: -

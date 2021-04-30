@@ -56,7 +56,7 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -2750,7 +2750,7 @@ typedef enum : NSUInteger {
 
         [BenchManager benchAsyncWithTitle:@"marking as read"
                                     block:^(void (^_Nonnull benchCompletion)(void)) {
-                                        [[OWSReadReceiptManager shared]
+                                        [[OWSReceiptManager shared]
                                             markAsReadLocallyBeforeSortId:lastVisibleSortId
                                                                    thread:self.thread
                                                  hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
@@ -4524,6 +4524,36 @@ typedef enum : NSUInteger {
 - (void)cvc_prepareMessageDetailForInteractivePresentation:(CVItemViewModelImpl *)itemViewModel
 {
     [self prepareDetailViewForInteractivePresentation:itemViewModel];
+}
+
+- (void (^)(void))cvc_beginCellAnimationWithMaximumDuration:(NSTimeInterval)maximumDuration
+{
+    OWSAssertIsOnMainThread();
+
+    if (maximumDuration > 0.5) {
+        OWSFailDebug(@"Animation is too long, skipping.");
+        return ^{};
+    }
+
+    NSUUID *identifier = [NSUUID new];
+    [self.viewState beginCellAnimationWithIdentifier:identifier];
+
+    __block NSTimer *_Nullable timer;
+    __weak ConversationViewController *weakSelf = self;
+    void (^endAnimation)(void) = ^{
+        OWSAssertIsOnMainThread();
+        [timer invalidate];
+        [weakSelf.viewState endCellAnimationWithIdentifier:identifier];
+        [weakSelf.loadCoordinator enqueueReload];
+    };
+
+    // Automatically unblock loads once the max duration is reached, even
+    // if the cell didn't tell us it finished.
+    timer = [NSTimer scheduledTimerWithTimeInterval:maximumDuration
+                                            repeats:NO
+                                              block:^(NSTimer *timer) { endAnimation(); }];
+
+    return endAnimation;
 }
 
 - (BOOL)isConversationPreview

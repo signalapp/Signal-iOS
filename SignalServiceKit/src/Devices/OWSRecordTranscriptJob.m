@@ -6,7 +6,7 @@
 #import "FunctionalUtil.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSReadReceiptManager.h"
+#import "OWSReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"

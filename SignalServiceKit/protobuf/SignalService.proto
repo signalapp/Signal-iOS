@@ -381,6 +381,7 @@ message ReceiptMessage {
   enum Type {
     DELIVERY = 0;
     READ     = 1;
+    VIEWED   = 2;
   }
 
   optional Type   type      = 1;
@@ -453,6 +454,13 @@ message SyncMessage {
     optional string senderUuid = 3;
     // @required
     optional uint64 timestamp = 2;
+  }
+
+  message Viewed {
+    optional string senderE164 = 1;
+    optional string senderUuid = 3;
+    // @required
+    optional uint64 timestamp  = 2;
   }
 
   message Configuration {
@@ -548,6 +556,7 @@ message SyncMessage {
   optional Keys                   keys                   = 13;
   optional MessageRequestResponse messageRequestResponse = 14;
   optional OutgoingPayment        outgoingPayment        = 15;
+  repeated Viewed                 viewed                 = 16;
 }
 
 message AttachmentPointer {

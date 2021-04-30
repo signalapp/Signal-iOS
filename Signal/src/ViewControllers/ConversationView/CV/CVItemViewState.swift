@@ -26,6 +26,7 @@ public struct CVItemViewState: Equatable {
     let footerState: CVComponentFooter.State?
     let dateHeaderState: CVComponentDateHeader.State?
     let bodyTextState: CVComponentBodyText.State?
+    let nextAudioAttachment: AudioAttachment?
 
     let isShowingSelectionUI: Bool
 
@@ -40,6 +41,7 @@ public struct CVItemViewState: Equatable {
         var footerState: CVComponentFooter.State?
         var dateHeaderState: CVComponentDateHeader.State?
         var bodyTextState: CVComponentBodyText.State?
+        var nextAudioAttachment: AudioAttachment?
         var isShowingSelectionUI = false
 
         func build() -> CVItemViewState {
@@ -53,6 +55,7 @@ public struct CVItemViewState: Equatable {
                             footerState: footerState,
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
+                            nextAudioAttachment: nextAudioAttachment,
                             isShowingSelectionUI: isShowingSelectionUI)
         }
     }
@@ -423,6 +426,13 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         let collapseCutoffTimestamp = NSDate.ows_millisecondsSince1970(for: viewStateSnapshot.collapseCutoffDate)
         if interaction.receivedAtTimestamp > collapseCutoffTimestamp {
             itemViewState.shouldHideFooter = false
+        }
+
+        if let nextMessage = nextItem?.interaction as? TSMessage,
+           let attachment = nextMessage.mediaAttachments(with: transaction.unwrapGrdbRead).first,
+           attachment.isAudio {
+
+            itemViewState.nextAudioAttachment = AudioAttachment(attachment: attachment, owningMessage: nextMessage)
         }
     }
 

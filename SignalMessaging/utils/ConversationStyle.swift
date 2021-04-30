@@ -93,6 +93,8 @@ public class ConversationStyle: NSObject {
     public let maxMessageWidth: CGFloat
     @objc
     public let maxMediaMessageWidth: CGFloat
+    @objc
+    public let maxAudioMessageWidth: CGFloat
 
     @objc
     public let textInsetTop: CGFloat
@@ -185,6 +187,9 @@ public class ConversationStyle: NSObject {
         // It limits body media size in landscape.
         let kMaxBodyMediaSize: CGFloat = 350
         maxMediaMessageWidth = floor(min(maxMessageWidth, kMaxBodyMediaSize))
+
+        let kMaxAudioMessageWidth: CGFloat = 244
+        maxAudioMessageWidth = floor(min(maxMessageWidth, kMaxAudioMessageWidth))
 
         super.init()
     }

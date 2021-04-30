@@ -23,7 +23,7 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSReadReceiptManager.h"
+#import "OWSReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
@@ -905,10 +905,17 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
-            earlyTimestamps = [OWSReadReceiptManager.shared processReadReceiptsFromRecipient:envelope.sourceAddress
-                                                                              sentTimestamps:sentTimestamps
-                                                                               readTimestamp:envelope.timestamp
-                                                                                 transaction:transaction];
+            earlyTimestamps = [OWSReceiptManager.shared processReadReceiptsFromRecipient:envelope.sourceAddress
+                                                                          sentTimestamps:sentTimestamps
+                                                                           readTimestamp:envelope.timestamp
+                                                                             transaction:transaction];
+            break;
+        case SSKProtoReceiptMessageTypeViewed:
+            OWSLogVerbose(@"Processing receipt message with viewed receipts.");
+            earlyTimestamps = [OWSReceiptManager.shared processViewedReceiptsFromRecipient:envelope.sourceAddress
+                                                                            sentTimestamps:sentTimestamps
+                                                                           viewedTimestamp:envelope.timestamp
+                                                                               transaction:transaction];
             break;
         default:
             OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
@@ -1662,14 +1669,26 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
         NSArray<SSKProtoSyncMessageRead *> *earlyReceipts =
-            [OWSReadReceiptManager.shared processReadReceiptsFromLinkedDevice:syncMessage.read
-                                                                readTimestamp:envelope.timestamp
-                                                                  transaction:transaction];
+            [OWSReceiptManager.shared processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                            readTimestamp:envelope.timestamp
+                                                              transaction:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
             [self.earlyMessageManager
                 recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                          associatedMessageTimestamp:readReceiptProto.timestamp
                                             associatedMessageAuthor:readReceiptProto.senderAddress];
+        }
+    } else if (syncMessage.viewed.count > 0) {
+        OWSLogInfo(@"Received %lu viewed receipt(s)", (unsigned long)syncMessage.viewed.count);
+        NSArray<SSKProtoSyncMessageViewed *> *earlyReceipts =
+            [OWSReceiptManager.shared processViewedReceiptsFromLinkedDevice:syncMessage.viewed
+                                                            viewedTimestamp:envelope.timestamp
+                                                                transaction:transaction];
+        for (SSKProtoSyncMessageViewed *viewedReceiptProto in earlyReceipts) {
+            [self.earlyMessageManager
+                recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
+                                           associatedMessageTimestamp:viewedReceiptProto.timestamp
+                                              associatedMessageAuthor:viewedReceiptProto.senderAddress];
         }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
@@ -2177,8 +2196,8 @@ NS_ASSUME_NONNULL_BEGIN
         [message markAsReadAtTimestamp:envelope.timestamp
                                 thread:thread
                           circumstance:hasPendingMessageRequest
-                              ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
-                              : OWSReadCircumstanceReadOnLinkedDevice
+                              ? OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest
+                              : OWSReceiptCircumstanceOnLinkedDevice
                            transaction:transaction];
     }
 

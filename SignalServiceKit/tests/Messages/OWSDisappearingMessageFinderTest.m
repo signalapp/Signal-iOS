@@ -96,12 +96,12 @@ NS_ASSUME_NONNULL_BEGIN
         if (expireStartedAt > 0) {
             [message markAsReadAtTimestamp:expireStartedAt
                                     thread:thread
-                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                              circumstance:OWSReceiptCircumstanceOnLinkedDevice
                                transaction:transaction];
         } else if (markAsRead) {
             [message markAsReadAtTimestamp:self.now - 1000
                                     thread:thread
-                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                              circumstance:OWSReceiptCircumstanceOnLinkedDevice
                                transaction:transaction];
         }
     }];

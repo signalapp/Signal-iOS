@@ -16,7 +16,7 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         MessageSender *messageSender = [MessageSender new];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-        id<PendingReadReceiptRecorder> pendingReadReceiptRecorder = [MessageRequestReadReceipts new];
+        id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [OWSBlockingManager new];
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
-        OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
+        OWSReceiptManager *receiptManager = [OWSReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
         id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender
                                                             messageSenderJobQueue:messageSenderJobQueue
-                                                       pendingReadReceiptRecorder:pendingReadReceiptRecorder
+                                                           pendingReceiptRecorder:pendingReceiptRecorder
                                                                    profileManager:profileManager
                                                                    networkManager:networkManager
                                                                    messageManager:messageManager
@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
-                                                               readReceiptManager:readReceiptManager
+                                                                   receiptManager:receiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager

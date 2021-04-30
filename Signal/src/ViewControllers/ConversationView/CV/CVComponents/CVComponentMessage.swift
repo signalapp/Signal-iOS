@@ -125,10 +125,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
-    private var canFooterOverlayMedia: Bool {
-        hasBodyMedia && !isBorderless
-    }
-
     private var hasBodyMedia: Bool {
         bodyMedia != nil
     }
@@ -189,10 +185,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let viewOnceState = componentState.viewOnce {
             self.viewOnce = CVComponentViewOnce(itemModel: itemModel, viewOnce: viewOnceState)
         }
-        if let audioAttachmentState = componentState.audioAttachment {
-            self.audioAttachment = CVComponentAudioAttachment(itemModel: itemModel,
-                                                              audioAttachment: audioAttachmentState)
-        }
         if let genericAttachmentState = componentState.genericAttachment {
             self.genericAttachment = CVComponentGenericAttachment(itemModel: itemModel,
                                                                   genericAttachment: genericAttachmentState)
@@ -210,9 +202,32 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         var footerOverlay: CVComponentFooter?
+
+        if let audioAttachmentState = componentState.audioAttachment {
+            let shouldFooterOverlayAudio = (bodyText == nil && !itemViewState.shouldHideFooter && !hasTapForMore)
+            if shouldFooterOverlayAudio {
+                if let footerState = itemViewState.footerState {
+                    footerOverlay = CVComponentFooter(itemModel: itemModel,
+                                                      footerState: footerState,
+                                                      isOverlayingMedia: false,
+                                                      isOutsideBubble: false)
+                } else {
+                    owsFailDebug("Missing footerState.")
+                }
+            }
+
+            self.audioAttachment = CVComponentAudioAttachment(
+                itemModel: itemModel,
+                audioAttachment: audioAttachmentState,
+                nextAudioAttachment: itemViewState.nextAudioAttachment,
+                footerOverlay: footerOverlay
+            )
+        }
+
         if let bodyMediaState = componentState.bodyMedia {
             let shouldFooterOverlayMedia = (bodyText == nil && !isBorderless && !itemViewState.shouldHideFooter && !hasTapForMore)
             if shouldFooterOverlayMedia {
+                owsAssertDebug(footerOverlay == nil)
                 if let footerState = itemViewState.footerState {
                     footerOverlay = CVComponentFooter(itemModel: itemModel,
                                                       footerState: footerState,

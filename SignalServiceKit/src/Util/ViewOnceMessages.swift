@@ -141,6 +141,19 @@ public class ViewOnceMessages: NSObject {
                                                                  messageIdTimestamp: messageIdTimestamp,
                                                                  readTimestamp: readTimestamp)
         messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+
+        if let incomingMessage = message as? TSIncomingMessage {
+            let circumstance: OWSReceiptCircumstance =
+                thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+                ? .onThisDeviceWhilePendingMessageRequest
+                : .onThisDevice
+            incomingMessage.markAsViewed(
+                atTimestamp: readTimestamp,
+                thread: thread,
+                circumstance: circumstance,
+                transaction: transaction
+            )
+        }
     }
 
     @objc(OWSViewOnceSyncMessageProcessingResult)

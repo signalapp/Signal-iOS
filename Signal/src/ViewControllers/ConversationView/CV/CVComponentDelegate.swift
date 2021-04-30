@@ -103,6 +103,9 @@ public protocol CVComponentDelegate {
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)
 
+    typealias EndCellAnimation = () -> Void
+    func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
+
     @objc
     var view: UIView { get }
 

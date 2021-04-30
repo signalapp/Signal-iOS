@@ -44,6 +44,9 @@ public class AudioAttachment: NSObject {
     }
 
     @objc
+    public let owningMessage: TSMessage?
+
+    @objc
     public var durationSeconds: TimeInterval {
         switch state {
         case .attachmentStream(_, let audioDurationSeconds):
@@ -54,7 +57,7 @@ public class AudioAttachment: NSObject {
     }
 
     @objc
-    public required init?(attachment: TSAttachment) {
+    public required init?(attachment: TSAttachment, owningMessage: TSMessage?) {
         if let attachmentStream = attachment as? TSAttachmentStream {
             let audioDurationSeconds = attachmentStream.audioDurationSeconds()
             guard audioDurationSeconds > 0 else {
@@ -67,5 +70,27 @@ public class AudioAttachment: NSObject {
             owsFailDebug("Invalid attachment.")
             return nil
         }
+
+        self.owningMessage = owningMessage
+    }
+
+    @objc
+    public func markOwningMessageAsViewed() -> Bool {
+        AssertIsOnMainThread()
+        guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return false }
+        databaseStorage.asyncWrite { transaction in
+            let thread = incomingMessage.thread(transaction: transaction)
+            let circumstance: OWSReceiptCircumstance =
+                thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+                ? .onThisDeviceWhilePendingMessageRequest
+                : .onThisDevice
+            incomingMessage.markAsViewed(
+                atTimestamp: Date.ows_millisecondTimestamp(),
+                thread: thread,
+                circumstance: circumstance,
+                transaction: transaction
+            )
+        }
+        return true
     }
 }

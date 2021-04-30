@@ -6,7 +6,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSReadReceiptManager.h"
+#import "OWSReceiptManager.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage ()
 
 @property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, getter=wasViewed) BOOL viewed;
 
 @property (nonatomic, nullable) NSNumber *serverTimestamp;
 @property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
@@ -103,6 +104,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
+                          viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
@@ -136,6 +138,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
+    _viewed = viewed;
     _wasReceivedByUD = wasReceivedByUD;
 
     return self;
@@ -178,13 +181,13 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                          thread:[self threadWithTransaction:transaction]
-                   circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                   circumstance:OWSReceiptCircumstanceOnLinkedDevice
                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
-                 circumstance:(OWSReadCircumstance)circumstance
+                 circumstance:(OWSReceiptCircumstance)circumstance
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -211,12 +214,38 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                   expirationStartedAt:readTimestamp
                                                           transaction:transaction];
 
-    [OWSReadReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
+    [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
     [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                                                                  object:self];
     }];
+}
+
+- (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp
+                         thread:(TSThread *)thread
+                   circumstance:(OWSReceiptCircumstance)circumstance
+                    transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (self.viewed) {
+        return;
+    }
+
+    NSTimeInterval secondsAgoViewed
+        = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)viewedTimestamp) / 1000;
+    if (!SSKDebugFlags.reduceLogChatter) {
+        OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as viewed: %f seconds ago",
+            self.uniqueId,
+            self.timestamp,
+            secondsAgoViewed);
+    }
+
+    [self anyUpdateIncomingMessageWithTransaction:transaction
+                                            block:^(TSIncomingMessage *message) { message.viewed = YES; }];
+
+    [OWSReceiptManager.shared messageWasViewed:self thread:thread circumstance:circumstance transaction:transaction];
 }
 
 - (SignalServiceAddress *)authorAddress

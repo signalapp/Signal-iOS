@@ -31,6 +31,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var scrollContinuity: ScrollContinuity { get }
 
     var isLayoutApplyingUpdate: Bool { get }
+
+    var areCellsAnimating: Bool { get }
 }
 
 // MARK: -
@@ -540,7 +542,7 @@ public class CVLoadCoordinator: NSObject {
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
         func canLandLoad() -> Bool {
-            return !delegate.isLayoutApplyingUpdate
+            return !delegate.isLayoutApplyingUpdate && !delegate.areCellsAnimating
         }
 
         func tryToResolve() {

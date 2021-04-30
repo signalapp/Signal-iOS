@@ -12,6 +12,7 @@ import SignalMessaging
     case sent
     case delivered
     case read
+    case viewed
     case failed
     case skipped
 }
@@ -75,6 +76,12 @@ public class MessageRecipientStatusUtils: NSObject {
                 return (status:.sending, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
             }
         case .sent:
+            if let viewedTimestamp = recipientState.viewedTimestamp {
+                let timestampString = DateUtil.formatPastTimestampRelativeToNow(viewedTimestamp.uint64Value)
+                let shortStatusMessage = timestampString
+                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
+                return (status:.viewed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
+            }
             if let readTimestamp = recipientState.readTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
@@ -117,6 +124,9 @@ public class MessageRecipientStatusUtils: NSObject {
                                          comment: "message status while message is sending."))
             }
         case .sent:
+            if outgoingMessage.viewedRecipientAddresses().count > 0 {
+                return (.viewed, NSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages"))
+            }
             if outgoingMessage.readRecipientAddresses().count > 0 {
                 return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
@@ -152,6 +162,8 @@ public class MessageRecipientStatusUtils: NSObject {
         switch value {
         case .read:
             return "read"
+        case .viewed:
+            return "viewed"
         case .uploading:
             return "uploading"
         case .delivered:

@@ -523,7 +523,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setNoteToSelfMarkedUnread(thread.isMarkedUnread)
         }
 
-        let readReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
+        let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         builder.setReadReceipts(readReceiptsEnabled)
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
@@ -653,9 +653,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             }
         }
 
-        let localReadReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
+        let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         if readReceipts != localReadReceiptsEnabled {
-            readReceiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
+            receiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
         }
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)

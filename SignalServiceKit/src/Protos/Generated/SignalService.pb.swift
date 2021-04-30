@@ -2138,6 +2138,7 @@ struct SignalServiceProtos_ReceiptMessage {
     typealias RawValue = Int
     case delivery // = 0
     case read // = 1
+    case viewed // = 2
 
     init() {
       self = .delivery
@@ -2147,6 +2148,7 @@ struct SignalServiceProtos_ReceiptMessage {
       switch rawValue {
       case 0: self = .delivery
       case 1: self = .read
+      case 2: self = .viewed
       default: return nil
       }
     }
@@ -2155,6 +2157,7 @@ struct SignalServiceProtos_ReceiptMessage {
       switch self {
       case .delivery: return 0
       case .read: return 1
+      case .viewed: return 2
       }
     }
 
@@ -2403,6 +2406,11 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `outgoingPayment`. Subsequent reads from it will return its default value.
   mutating func clearOutgoingPayment() {_uniqueStorage()._outgoingPayment = nil}
 
+  var viewed: [SignalServiceProtos_SyncMessage.Viewed] {
+    get {return _storage._viewed}
+    set {_uniqueStorage()._viewed = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent {
@@ -2649,6 +2657,48 @@ struct SignalServiceProtos_SyncMessage {
   }
 
   struct Read {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var senderE164: String {
+      get {return _senderE164 ?? String()}
+      set {_senderE164 = newValue}
+    }
+    /// Returns true if `senderE164` has been explicitly set.
+    var hasSenderE164: Bool {return self._senderE164 != nil}
+    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
+    mutating func clearSenderE164() {self._senderE164 = nil}
+
+    var senderUuid: String {
+      get {return _senderUuid ?? String()}
+      set {_senderUuid = newValue}
+    }
+    /// Returns true if `senderUuid` has been explicitly set.
+    var hasSenderUuid: Bool {return self._senderUuid != nil}
+    /// Clears the value of `senderUuid`. Subsequent reads from it will return its default value.
+    mutating func clearSenderUuid() {self._senderUuid = nil}
+
+    /// @required
+    var timestamp: UInt64 {
+      get {return _timestamp ?? 0}
+      set {_timestamp = newValue}
+    }
+    /// Returns true if `timestamp` has been explicitly set.
+    var hasTimestamp: Bool {return self._timestamp != nil}
+    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTimestamp() {self._timestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _senderE164: String?
+    fileprivate var _senderUuid: String?
+    fileprivate var _timestamp: UInt64?
+  }
+
+  struct Viewed {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -6117,7 +6167,8 @@ extension SignalServiceProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtob
 extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DELIVERY"),
-    1: .same(proto: "READ")
+    1: .same(proto: "READ"),
+    2: .same(proto: "VIEWED")
   ]
 }
 
@@ -6202,7 +6253,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     12: .same(proto: "fetchLatest"),
     13: .same(proto: "keys"),
     14: .same(proto: "messageRequestResponse"),
-    15: .same(proto: "outgoingPayment")
+    15: .same(proto: "outgoingPayment"),
+    16: .same(proto: "viewed")
   ]
 
   fileprivate class _StorageClass {
@@ -6221,6 +6273,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _keys: SignalServiceProtos_SyncMessage.Keys?
     var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse?
     var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment?
+    var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -6242,6 +6295,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _keys = source._keys
       _messageRequestResponse = source._messageRequestResponse
       _outgoingPayment = source._outgoingPayment
+      _viewed = source._viewed
     }
   }
 
@@ -6275,6 +6329,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 13: try { try decoder.decodeSingularMessageField(value: &_storage._keys) }()
         case 14: try { try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse) }()
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._outgoingPayment) }()
+        case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
         default: break
         }
       }
@@ -6328,6 +6383,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._outgoingPayment {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
       }
+      if !_storage._viewed.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._viewed, fieldNumber: 16)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6352,6 +6410,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._keys != rhs_storage._keys {return false}
         if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
         if _storage._outgoingPayment != rhs_storage._outgoingPayment {return false}
+        if _storage._viewed != rhs_storage._viewed {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6666,6 +6725,50 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Read, rhs: SignalServiceProtos_SyncMessage.Read) -> Bool {
+    if lhs._senderE164 != rhs._senderE164 {return false}
+    if lhs._senderUuid != rhs._senderUuid {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Viewed"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "senderE164"),
+    3: .same(proto: "senderUuid"),
+    2: .same(proto: "timestamp")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._senderE164) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._senderUuid) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._senderE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    }
+    if let v = self._senderUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.Viewed, rhs: SignalServiceProtos_SyncMessage.Viewed) -> Bool {
     if lhs._senderE164 != rhs._senderE164 {return false}
     if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}

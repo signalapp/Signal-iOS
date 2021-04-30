@@ -102,6 +102,8 @@ public class GRDBSchemaMigrator: NSObject {
         case addPaymentModels40
         case fixPaymentModels
         case addGroupMember
+        case createPendingViewedReceipts
+        case addViewedToInteractions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -141,7 +143,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 23
+    public static let grdbSchemaVersionLatest: UInt = 24
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1059,6 +1061,35 @@ public class GRDBSchemaMigrator: NSObject {
                               on: "model_TSGroupMember",
                               columns: ["phoneNumber", "groupThreadId"],
                               unique: true)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.createPendingViewedReceipts.rawValue) { db in
+            do {
+                try db.create(table: "pending_viewed_receipts") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                    table.column("threadId", .integer).notNull()
+                    table.column("messageTimestamp", .integer).notNull()
+                    table.column("authorPhoneNumber", .text)
+                    table.column("authorUuid", .text)
+                }
+                try db.create(index: "index_pending_viewed_receipts_on_threadId",
+                              on: "pending_viewed_receipts",
+                              columns: ["threadId"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addViewedToInteractions.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "viewed", .boolean)
+                }
+
+                try db.execute(sql: "UPDATE model_TSInteraction SET viewed = 0")
             } catch {
                 owsFail("Error: \(error)")
             }

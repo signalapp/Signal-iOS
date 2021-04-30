@@ -214,6 +214,12 @@ const NSUInteger OWSCustomSoundShift = 16;
                 @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
                 @"etc.");
 
+        // Audio Playback
+        case OWSStandardSound_BeginNextTrack:
+            return @"Begin Next Track";
+        case OWSStandardSound_EndLastTrack:
+            return @"End Last Track";
+
         // Custom Sounds
         default:
             return [OWSSounds displayNameForCustomSound:sound];
@@ -283,6 +289,12 @@ const NSUInteger OWSCustomSoundShift = 16;
             return @"group_call_join.aiff";
         case OWSStandardSound_GroupCallLeave:
             return @"group_call_leave.aiff";
+
+        // Audio Playback
+        case OWSStandardSound_BeginNextTrack:
+            return @"state-change_confirm-down.caf";
+        case OWSStandardSound_EndLastTrack:
+            return @"state-change_confirm-up.caf";
 
             // Other
         case OWSStandardSound_None:

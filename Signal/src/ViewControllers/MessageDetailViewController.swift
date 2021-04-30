@@ -283,6 +283,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         var sections = [OWSTableSection]()
 
         let orderedStatusGroups: [MessageReceiptStatus] = [
+            .viewed,
             .read,
             .delivered,
             .sent,
@@ -409,7 +410,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             return "message_status_sent"
         case .delivered:
             return "message_status_delivered"
-        case .read:
+        case .read, .viewed:
             return "message_status_read"
         case .failed, .skipped:
             return nil
@@ -439,6 +440,9 @@ class MessageDetailViewController: OWSTableViewController2 {
         case .skipped:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
                                      comment: "Status label for messages which were skipped.")
+        case .viewed:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED",
+                              comment: "Status label for messages which are viewed.")
         }
     }
 
@@ -733,7 +737,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
                 var bucket = result[status] ?? []
 
                 switch status {
-                case .delivered, .read, .sent:
+                case .delivered, .read, .sent, .viewed:
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: statusMessage,
@@ -897,6 +901,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
+        return {}
+    }
 
     var isConversationPreview: Bool { true }
 

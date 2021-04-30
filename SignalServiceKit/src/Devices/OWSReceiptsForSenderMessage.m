@@ -37,6 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
 }
 
++ (OWSReceiptsForSenderMessage *)viewedReceiptsForSenderMessageWithThread:(TSThread *)thread
+                                                        messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+{
+    return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
+                                             messageTimestamps:messageTimestamps
+                                                   receiptType:SSKProtoReceiptMessageTypeViewed];
+}
+
 - (instancetype)initWithThread:(TSThread *)thread
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
                    receiptType:(SSKProtoReceiptMessageType)receiptType

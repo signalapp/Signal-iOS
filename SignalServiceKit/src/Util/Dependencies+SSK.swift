@@ -144,11 +144,11 @@ public extension NSObject {
         .shared
     }
 
-    final var readReceiptManager: OWSReadReceiptManager {
+    final var receiptManager: OWSReceiptManager {
         .shared
     }
 
-    static var readReceiptManager: OWSReadReceiptManager {
+    static var receiptManager: OWSReceiptManager {
         .shared
     }
 
@@ -410,12 +410,12 @@ public extension NSObject {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
-    final var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    final var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
-    static var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    static var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
     final var outageDetection: OutageDetection {
@@ -585,11 +585,11 @@ public extension Dependencies {
         .shared
     }
 
-    var readReceiptManager: OWSReadReceiptManager {
+    var receiptManager: OWSReceiptManager {
         .shared
     }
 
-    static var readReceiptManager: OWSReadReceiptManager {
+    static var receiptManager: OWSReceiptManager {
         .shared
     }
 
@@ -851,12 +851,12 @@ public extension Dependencies {
         SSKEnvironment.shared.callMessageHandlerRef
     }
 
-    var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
-    static var pendingReadReceiptRecorder: PendingReadReceiptRecorder {
-        SSKEnvironment.shared.pendingReadReceiptRecorderRef
+    static var pendingReceiptRecorder: PendingReceiptRecorder {
+        SSKEnvironment.shared.pendingReceiptRecorderRef
     }
 
     var outageDetection: OutageDetection {
@@ -1012,9 +1012,9 @@ public extension OWS2FAManager {
 // MARK: -
 
 @objc
-public extension OWSReadReceiptManager {
-    static var shared: OWSReadReceiptManager {
-        SSKEnvironment.shared.readReceiptManagerRef
+public extension OWSReceiptManager {
+    static var shared: OWSReceiptManager {
+        SSKEnvironment.shared.receiptManagerRef
     }
 }
 

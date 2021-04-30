@@ -29,7 +29,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJobRef;
-@property (nonatomic) OWSReadReceiptManager *readReceiptManagerRef;
+@property (nonatomic) OWSReceiptManager *receiptManagerRef;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManagerRef;
 @property (nonatomic) id<SyncManagerProtocol> syncManagerRef;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManagerRef;
@@ -66,7 +66,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
-             pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
+                 pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -83,7 +83,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
-                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                         receiptManager:(OWSReceiptManager *)receiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<SyncManagerProtocol>)syncManager
@@ -119,7 +119,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _linkPreviewManagerRef = linkPreviewManager;
     _messageSenderRef = messageSender;
     _messageSenderJobQueueRef = messageSenderJobQueue;
-    _pendingReadReceiptRecorderRef = pendingReadReceiptRecorder;
+    _pendingReceiptRecorderRef = pendingReceiptRecorder;
     _profileManagerRef = profileManager;
     _networkManagerRef = networkManager;
     _messageManagerRef = messageManager;
@@ -136,7 +136,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _tsAccountManagerRef = tsAccountManager;
     _ows2FAManagerRef = ows2FAManager;
     _disappearingMessagesJobRef = disappearingMessagesJob;
-    _readReceiptManagerRef = readReceiptManager;
+    _receiptManagerRef = receiptManager;
     _outgoingReceiptManagerRef = outgoingReceiptManager;
     _syncManagerRef = syncManager;
     _reachabilityManagerRef = reachabilityManager;
@@ -244,7 +244,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.udManager warmCaches];
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
-    [self.readReceiptManager prepareCachedValues];
+    [self.receiptManager prepareCachedValues];
     [OWSKeyBackupService warmCaches];
     [PinnedThreadManager warmCaches];
     [self.typingIndicatorsImpl warmCaches];

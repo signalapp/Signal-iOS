@@ -7,7 +7,7 @@
 #import "OWSContactsManager.h"
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
-#import "OWSReadReceiptManager.h"
+#import "OWSReceiptManager.h"
 #import <Contacts/Contacts.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -163,7 +163,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
+    BOOL areReadReceiptsEnabled = SSKEnvironment.shared.receiptManager.areReadReceiptsEnabled;
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicatorsImpl.areTypingIndicatorsEnabled;
 
@@ -190,8 +190,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (syncMessage.hasReadReceipts) {
-        [SSKEnvironment.shared.readReceiptManager setAreReadReceiptsEnabled:syncMessage.readReceipts
-                                                                transaction:transaction];
+        [SSKEnvironment.shared.receiptManager setAreReadReceiptsEnabled:syncMessage.readReceipts
+                                                            transaction:transaction];
     }
     if (syncMessage.hasUnidentifiedDeliveryIndicators) {
         BOOL updatedValue = syncMessage.unidentifiedDeliveryIndicators;

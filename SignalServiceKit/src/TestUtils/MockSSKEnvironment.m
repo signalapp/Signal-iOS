@@ -13,7 +13,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSReadReceiptManager.h"
+#import "OWSReceiptManager.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "StorageCoordinator.h"
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSAccountManager *tsAccountManager = [TSAccountManager new];
     OWS2FAManager *ows2FAManager = [OWS2FAManager new];
     OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
-    OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
+    OWSReceiptManager *receiptManager = [OWSReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
     id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
                     messageSenderJobQueue:messageSenderJobQueue
-               pendingReadReceiptRecorder:[NoopPendingReadReceiptRecorder new]
+                   pendingReceiptRecorder:[NoopPendingReceiptRecorder new]
                            profileManager:[OWSFakeProfileManager new]
                            networkManager:networkManager
                            messageManager:messageManager
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
                          tsAccountManager:tsAccountManager
                             ows2FAManager:ows2FAManager
                   disappearingMessagesJob:disappearingMessagesJob
-                       readReceiptManager:readReceiptManager
+                           receiptManager:receiptManager
                    outgoingReceiptManager:outgoingReceiptManager
                       reachabilityManager:reachabilityManager
                               syncManager:syncManager
