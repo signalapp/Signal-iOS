@@ -771,7 +771,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if contentStackSize.width > contentMaxWidth {
             owsFailDebug("contentStackSize: \(contentStackSize) > contentMaxWidth: \(contentMaxWidth)")
         }
-        owsAssertDebug(contentStackSize.width <= contentMaxWidth)
 
         var hInnerStackSubviewInfos = [ManualStackSubviewInfo]()
         if hasSenderAvatarLayout,
