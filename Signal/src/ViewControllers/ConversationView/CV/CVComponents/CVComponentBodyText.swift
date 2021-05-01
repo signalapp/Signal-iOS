@@ -79,6 +79,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         checkingTypes.insert(.address)
         checkingTypes.insert(.phoneNumber)
+        checkingTypes.insert(.date)
+        checkingTypes.insert(.transitInformation)
 
         do {
             return try NSDataDetector(types: checkingTypes.rawValue)
@@ -108,6 +110,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             case link
             case address
             case phoneNumber
+            case date
+            case transitInformation
 
             // MARK: - CustomStringConvertible
 
@@ -119,9 +123,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     return ".address"
                 case .phoneNumber:
                     return ".phoneNumber"
-                @unknown default:
-                    owsFailDebug("unexpected DataItem.DataType: \(self.rawValue)")
-                    return "unknown"
+                case .date:
+                    return ".date"
+                case .transitInformation:
+                    return ".transitInformation"
                 }
             }
         }
@@ -129,7 +134,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let dataType: DataType
         let range: NSRange
         let snippet: String
-        let matchUrl: URL?
+        let url: URL
     }
 
     private static func detectDataItems(text: String,
@@ -158,7 +163,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 }
 
+                let matchUrl = match.url
+
                 let dataType: DataItem.DataType
+                var customUrl: URL?
                 let resultType: NSTextCheckingResult.CheckingType = match.resultType
                 if resultType.contains(.orthography) {
                     Logger.verbose("orthography")
@@ -170,11 +178,46 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     Logger.verbose("grammar")
                     continue
                 } else if resultType.contains(.date) {
-                    Logger.verbose("date")
-                    continue
+                    dataType = .date
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // NSTextCheckingResult.date is in GMT.
+                    guard let gmtDate = match.date else {
+                        owsFailDebug("Missing date.")
+                        continue
+                    }
+                    // "calshow:" URLs expect GMT.
+                    let timeInterval = gmtDate.timeIntervalSinceReferenceDate
+                    guard let calendarUrl = URL(string: "calshow:\(timeInterval)") else {
+                        owsFailDebug("Couldn't build calendarUrl.")
+                        continue
+                    }
+                    customUrl = calendarUrl
                 } else if resultType.contains(.address) {
                     Logger.verbose("address")
+
                     dataType = .address
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
+                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
+                        owsFailDebug("Could not URL encode address.")
+                        continue
+                    }
+                    let urlString = "https://maps.apple.com/?q=" + urlEncodedAddress
+                    guard let mapUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build mapUrl.")
+                        continue
+                    }
+                    customUrl = mapUrl
                 } else if resultType.contains(.link) {
                     Logger.verbose("link")
                     dataType = .link
@@ -195,10 +238,53 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 } else if resultType.contains(.phoneNumber) {
                     Logger.verbose("phoneNumber")
+
                     dataType = .phoneNumber
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
+                    let characterSet = CharacterSet(charactersIn: "+0123456789")
+                    guard let phoneNumber = snippet.components(separatedBy: characterSet.inverted).joined().nilIfEmpty else {
+                        owsFailDebug("Invalid phoneNumber.")
+                        continue
+                    }
+                    let urlString = "tel:" + phoneNumber
+                    guard let phoneNumberUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build phoneNumberUrl.")
+                        continue
+                    }
+                    customUrl = phoneNumberUrl
                 } else if resultType.contains(.transitInformation) {
                     Logger.verbose("transitInformation")
-                    continue
+
+                    dataType = .transitInformation
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    guard let components = match.components,
+                          let airline = components[.airline]?.nilIfEmpty,
+                          let flight = components[.flight]?.nilIfEmpty else {
+                        Logger.warn("Missing components.")
+                        continue
+                    }
+                    let query = airline + " " + flight
+                    guard let urlEncodedQuery = query.encodeURIComponent else {
+                        owsFailDebug("Could not URL encode query.")
+                        continue
+                    }
+                    let urlString = "https://www.google.com/?q=" + urlEncodedQuery
+                    guard let transitUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build transitUrl.")
+                        continue
+                    }
+                    customUrl = transitUrl
                 } else {
                     let snippet = (text as NSString).substring(with: match.range)
                     Logger.verbose("snippet: '\(snippet)'")
@@ -206,12 +292,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 }
 
-                let matchUrl = match.url
+                guard let url = customUrl ?? matchUrl else {
+                    owsFailDebug("Missing url: \(dataType).")
+                    continue
+                }
 
                 dataItems.append(DataItem(dataType: dataType,
                                           range: match.range,
                                           snippet: snippet,
-                                          matchUrl: matchUrl))
+                                          url: url))
             }
             return dataItems
         }
@@ -538,7 +627,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         var lastIndex: Int = 0
         for dataItem in dataItems {
-            let snippet = dataItem.snippet
             let range = dataItem.range
 
             guard range.location >= lastIndex else {
@@ -549,28 +637,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 Logger.warn("Not link-ifying range: \(range)")
                 continue
             }
-
-            func buildLink() -> String? {
-                if let url = dataItem.matchUrl,
-                   let urlString = url.absoluteString.nilIfEmpty {
-                    return urlString
-                }
-                switch dataItem.dataType {
-                case .link:
-                    return snippet
-                case .address:
-                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
-                        owsFailDebug("Could not URL encode address.")
-                        return nil
-                    }
-                    return "https://maps.apple.com/?q=" + urlEncodedAddress
-                case .phoneNumber:
-                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-                    return "tel:" + snippet
-                }
-            }
-            guard let link = buildLink() else {
+            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
                 owsFailDebug("Could not build data link.")
                 continue
             }
