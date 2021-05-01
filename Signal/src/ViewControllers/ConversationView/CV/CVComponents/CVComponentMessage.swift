@@ -1564,6 +1564,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         self.swipeActionProgress = progress
 
         let swipeToReplyIconView = componentView.swipeToReplyIconView
+        let swipeToReplyIconWrapper = componentView.swipeToReplyIconSwipeToReplyWrapper
 
         let previousActiveDirection = panHandler.activeDirection
         let activeDirection: CVPanHandler.ActiveDirection
@@ -1624,7 +1625,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 transform = .identity
                 tintColor = .ows_gray45
             }
-            swipeToReplyIconView.layer.removeAllAnimations()
+            swipeToReplyIconWrapper.layer.removeAllAnimations()
             swipeToReplyIconView.tintColor = tintColor
             if shouldAnimate {
                 UIView.animate(
@@ -1634,12 +1635,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     initialSpringVelocity: 0.8,
                     options: [.curveEaseInOut, .beginFromCurrentState],
                     animations: {
-                        swipeToReplyIconView.transform = transform
+                        swipeToReplyIconWrapper.transform = transform
                     },
                     completion: nil
                 )
             } else {
-                swipeToReplyIconView.transform = transform
+                swipeToReplyIconWrapper.transform = transform
             }
         }
 
