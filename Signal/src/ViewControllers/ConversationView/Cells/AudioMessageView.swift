@@ -180,7 +180,8 @@ class AudioMessageView: ManualStackView {
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos)
+                                                            subviewInfos: outerSubviewInfos,
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

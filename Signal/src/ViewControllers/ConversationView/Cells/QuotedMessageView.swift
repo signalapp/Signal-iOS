@@ -590,7 +590,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                             measurementKey: Self.measurementKey_outerStack,
                                                             subviewInfos: [
                                                                 outerVStackMeasurement.measuredSize.asManualSubviewInfo
-                                                            ])
+                                                            ],
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

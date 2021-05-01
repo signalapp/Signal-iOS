@@ -151,14 +151,15 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
         let strokeInfo = strokeSize.asManualSubviewInfo(hasFixedHeight: true)
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true)
+        let vStackSubviewInfos = [
+            strokeInfo,
+            innerStackInfo
+        ]
         let vStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_outerStack,
-        subviewInfos: [
-            strokeInfo,
-            innerStackInfo
-                                                        ])
-
+                                                        subviewInfos: vStackSubviewInfos,
+                                                        maxWidth: maxWidth)
         return vStackMeasurement.measuredSize
     }
 

@@ -293,7 +293,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ albumInfo ])
+                                                       subviewInfos: [ albumInfo ],
+                                                       maxWidth: maxWidth)
         return stackMeasurement.measuredSize
     }
 

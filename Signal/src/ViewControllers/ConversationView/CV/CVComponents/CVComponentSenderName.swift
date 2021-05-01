@@ -106,7 +106,8 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_outerStack,
-                                                       subviewInfos: [ innerStackInfo ])
+                                                       subviewInfos: [ innerStackInfo ],
+                                                       maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

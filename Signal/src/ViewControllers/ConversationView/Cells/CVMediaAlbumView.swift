@@ -269,7 +269,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         let outerStackMeasurement = ManualStackView.measure(config: imageArrangement.outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: groupInfos)
+                                                            subviewInfos: groupInfos,
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

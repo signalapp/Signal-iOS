@@ -140,11 +140,22 @@ public extension ManualStackView {
                         measurementBuilder: CVCellMeasurement.Builder,
                         measurementKey: String,
                         subviewInfos: [ManualStackSubviewInfo],
+                        maxWidth: CGFloat? = nil,
                         verboseLogging: Bool = false) -> Measurement {
         let measurement = Self.measure(config: config,
                                        subviewInfos: subviewInfos,
                                        verboseLogging: verboseLogging)
         measurementBuilder.setMeasurement(key: measurementKey, value: measurement)
+        if let maxWidth = maxWidth,
+           measurement.measuredSize.width > maxWidth {
+            #if DEBUG
+            Logger.verbose("config: \(config)")
+            for subviewInfo in subviewInfos {
+                Logger.verbose("subviewInfo: \(subviewInfo.measuredSize)")
+            }
+            #endif
+            owsFailDebug("\(measurementKey): measuredSize \(measurement.measuredSize) > maxWidth: \(maxWidth).")
+        }
         return measurement
     }
 }

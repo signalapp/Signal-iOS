@@ -67,7 +67,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ audioInfo ])
+                                                       subviewInfos: [ audioInfo ],
+                                                       maxWidth: maxWidth)
         var measuredSize = stackMeasurement.measuredSize
         measuredSize.width = maxWidth
         return measuredSize
