@@ -135,52 +135,6 @@ public final class SnodeAPI : NSObject {
         return getSnodePool().map2 { $0.randomElement()! }
     }
     
-    private static func getSnodePool() -> Promise<Set<Snode>> {
-        loadSnodePoolIfNeeded()
-        let now = Date()
-        let hasSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
-        let snodePool = SnodeAPI.snodePool
-        let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
-        if hasInsufficientSnodes || hasSnodePoolExpired {
-            if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
-            let promise: Promise<Set<Snode>>
-            if snodePool.count < minSnodePoolCount {
-                promise = getSnodePoolFromSeedNode()
-            } else {
-                promise = getSnodePoolFromSnode().recover2 { _ in
-                    getSnodePoolFromSeedNode()
-                }
-            }
-            getSnodePoolPromise = promise
-            promise.map2 { snodePool -> Set<Snode> in
-                if snodePool.isEmpty {
-                    throw Error.snodePoolUpdatingFailed
-                } else {
-                    return snodePool
-                }
-            }
-            promise.then2 { snodePool -> Promise<Set<Snode>> in
-                let (promise, seal) = Promise<Set<Snode>>.pending()
-                SNSnodeKitConfiguration.shared.storage.write(with: { transaction in
-                    Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
-                    setSnodePool(to: snodePool, using: transaction)
-                }, completion: {
-                    seal.fulfill(snodePool)
-                })
-                return promise
-            }
-            promise.done2 { _ in
-                getSnodePoolPromise = nil
-            }
-            promise.catch2 { _ in
-                getSnodePoolPromise = nil
-            }
-            return promise
-        } else {
-            return Promise.value(snodePool)
-        }
-    }
-    
     private static func getSnodePoolFromSeedNode() -> Promise<Set<Snode>> {
         let target = seedNodePool.randomElement()!
         let url = "\(target)/json_rpc"
@@ -269,6 +223,57 @@ public final class SnodeAPI : NSObject {
     }
 
     // MARK: Public API
+    @objc(getSnodePool)
+    public static func objc_getSnodePool() -> AnyPromise {
+        AnyPromise.from(getSnodePool())
+    }
+    
+    public static func getSnodePool() -> Promise<Set<Snode>> {
+        loadSnodePoolIfNeeded()
+        let now = Date()
+        let hasSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
+        let snodePool = SnodeAPI.snodePool
+        let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
+        if hasInsufficientSnodes || hasSnodePoolExpired {
+            if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
+            let promise: Promise<Set<Snode>>
+            if snodePool.count < minSnodePoolCount {
+                promise = getSnodePoolFromSeedNode()
+            } else {
+                promise = getSnodePoolFromSnode().recover2 { _ in
+                    getSnodePoolFromSeedNode()
+                }
+            }
+            getSnodePoolPromise = promise
+            promise.map2 { snodePool -> Set<Snode> in
+                if snodePool.isEmpty {
+                    throw Error.snodePoolUpdatingFailed
+                } else {
+                    return snodePool
+                }
+            }
+            promise.then2 { snodePool -> Promise<Set<Snode>> in
+                let (promise, seal) = Promise<Set<Snode>>.pending()
+                SNSnodeKitConfiguration.shared.storage.write(with: { transaction in
+                    Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
+                    setSnodePool(to: snodePool, using: transaction)
+                }, completion: {
+                    seal.fulfill(snodePool)
+                })
+                return promise
+            }
+            promise.done2 { _ in
+                getSnodePoolPromise = nil
+            }
+            promise.catch2 { _ in
+                getSnodePoolPromise = nil
+            }
+            return promise
+        } else {
+            return Promise.value(snodePool)
+        }
+    }
+    
     public static func getSessionID(for onsName: String) -> Promise<String> {
         let sodium = Sodium()
         let validationCount = 3

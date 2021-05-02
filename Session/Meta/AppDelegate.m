@@ -414,6 +414,8 @@ static NSTimeInterval launchStartedAt;
             if (CurrentAppContext().isMainApp && SNFeatures.useV2OpenGroups) {
                 [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
+            
+            [[SNSnodeAPI getSnodePool] retainUntilComplete];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying remote notification registration since user hasn't registered yet.");

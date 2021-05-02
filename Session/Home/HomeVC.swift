@@ -149,6 +149,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                 appDelegate.syncConfigurationIfNeeded()
             }
         }
+        // Re-populate snode pool if needed
+        SnodeAPI.getSnodePool().retainUntilComplete()
         // Onion request path countries cache
         DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
