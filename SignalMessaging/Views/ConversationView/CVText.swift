@@ -126,7 +126,11 @@ public struct CVLabelConfig {
     }
 
     public func measure(maxWidth: CGFloat) -> CGSize {
-        CVText.measureLabel(config: self, maxWidth: maxWidth)
+        let size = CVText.measureLabel(config: self, maxWidth: maxWidth)
+        if size.width > maxWidth {
+            owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
+        }
+        return size
     }
 
     public var stringValue: String {
@@ -212,7 +216,11 @@ public struct CVTextViewConfig {
     }
 
     public func measure(maxWidth: CGFloat) -> CGSize {
-        CVText.measureTextView(config: self, maxWidth: maxWidth)
+        let size = CVText.measureTextView(config: self, maxWidth: maxWidth)
+        if size.width > maxWidth {
+            owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
+        }
+        return size
     }
 
     public var stringValue: String {

@@ -332,7 +332,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_outerHStack,
-                                                             subviewInfos: outerHStackSubviewInfos)
+                                                             subviewInfos: outerHStackSubviewInfos,
+                                                             maxWidth: maxWidth)
         return outerHStackMeasurement.measuredSize
     }
 

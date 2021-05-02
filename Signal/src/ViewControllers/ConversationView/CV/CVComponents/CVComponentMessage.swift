@@ -768,6 +768,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let contentStackSize = measureContentStack(maxWidth: contentMaxWidth,
                                                    measurementBuilder: measurementBuilder)
+        if contentStackSize.width > contentMaxWidth {
+            owsFailDebug("contentStackSize: \(contentStackSize) > contentMaxWidth: \(contentMaxWidth)")
+        }
 
         var hInnerStackSubviewInfos = [ManualStackSubviewInfo]()
         if hasSenderAvatarLayout,
@@ -808,7 +811,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let hOuterStackMeasurement = ManualStackView.measure(config: hOuterStackConfig,
                                                              measurementBuilder: measurementBuilder,
                                                              measurementKey: Self.measurementKey_hOuterStack,
-                                                             subviewInfos: hOuterStackSubviewInfos)
+                                                             subviewInfos: hOuterStackSubviewInfos,
+                                                             maxWidth: maxWidth)
 
         if let reactionsSubcomponent = subcomponent(forKey: .reactions) {
             let reactionsSize = reactionsSubcomponent.measure(maxWidth: maxWidth,
@@ -834,6 +838,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
                 let subviewSize = subcomponent.measure(maxWidth: maxWidth,
                                                        measurementBuilder: measurementBuilder)
+                if subviewSize.width > maxWidth {
+                    owsFailDebug("key: \(key), subviewSize: \(subviewSize) > maxWidth: \(maxWidth)")
+                }
                 subviewSizes.append(subviewSize)
             }
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
@@ -868,9 +875,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             if !topFullWidthSubcomponents.isEmpty {
                 let stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
-                subviewSizes.append(measure(stackConfig: stackConfig,
-                                            measurementKey: Self.measurementKey_topFullWidthStackView,
-                                            componentKeys: topFullWidthCVComponentKeys))
+                let stackSize = measure(stackConfig: stackConfig,
+                                        measurementKey: Self.measurementKey_topFullWidthStackView,
+                                        componentKeys: topFullWidthCVComponentKeys)
+                subviewSizes.append(stackSize)
             }
             if !topNestedSubcomponents.isEmpty {
                 let hasNeighborsAbove = !topFullWidthSubcomponents.isEmpty
@@ -879,9 +887,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                             nil != bottomButtons)
                 let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
                                                          hasNeighborsBelow: hasNeighborsBelow)
-                subviewSizes.append(measure(stackConfig: stackConfig,
-                                            measurementKey: Self.measurementKey_topNestedStackView,
-                                            componentKeys: topNestedCVComponentKeys))
+                let stackSize = measure(stackConfig: stackConfig,
+                                        measurementKey: Self.measurementKey_topNestedStackView,
+                                        componentKeys: topNestedCVComponentKeys)
+                subviewSizes.append(stackSize)
             }
             if !bottomFullWidthSubcomponents.isEmpty {
                 // If a quoted reply is the top-most subcomponent,
@@ -890,9 +899,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                         topNestedSubcomponents.isEmpty &&
                                                         quotedReply != nil)
                 let stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
-                subviewSizes.append(measure(stackConfig: stackConfig,
-                                            measurementKey: Self.measurementKey_bottomFullWidthStackView,
-                                            componentKeys: bottomFullWidthCVComponentKeys))
+                let stackSize = measure(stackConfig: stackConfig,
+                                        measurementKey: Self.measurementKey_bottomFullWidthStackView,
+                                        componentKeys: bottomFullWidthCVComponentKeys)
+                subviewSizes.append(stackSize)
             }
             if !bottomNestedSubcomponents.isEmpty {
                 let hasNeighborsAbove = (!topFullWidthSubcomponents.isEmpty ||
@@ -901,9 +911,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 let hasNeighborsBelow = (nil != bottomButtons)
                 let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
                                                          hasNeighborsBelow: hasNeighborsBelow)
-                subviewSizes.append(measure(stackConfig: stackConfig,
-                                            measurementKey: Self.measurementKey_bottomNestedStackView,
-                                            componentKeys: bottomNestedCVComponentKeys))
+                let stackSize = measure(stackConfig: stackConfig,
+                                        measurementKey: Self.measurementKey_bottomNestedStackView,
+                                        componentKeys: bottomNestedCVComponentKeys)
+                subviewSizes.append(stackSize)
             }
             if let bottomButtons = bottomButtons {
                 let subviewSize = bottomButtons.measure(maxWidth: contentMaxWidth,
