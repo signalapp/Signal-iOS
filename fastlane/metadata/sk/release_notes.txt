@@ -1,5 +1,6 @@
-• Zamilujte sa do niekoľkých vylepšení zážitku z nahrávania a sťahovania médií. Môže sa zdať, že sa všetko deje naozaj rýchlo, najmä keď odosielate naraz viac fotografií a videí, ale láska je niekedy taká. Je v poriadku, že sa začnete cítiť viac pripútaní k odosielaniu ďalších príloh.
-• Láska a strata sú neoddeliteľne spojené, preto sme sa rozišli aj s chybou, ktorá znemožňovala zdieľanie dlhých videí z iných aplikácií (napríklad aplikácie iOS Fotky).
-• V rámci nášho neustáleho úsilia o redizajn a vylepšenie aplikácie sme aktualizovali obrazovku nastavení konverzácií, aby sme uľahčili hľadanie bežných akcií a aby sme vám pomohli nájsť spoločnú reč v konverzáciach typu jeden na jedného zobrazením skupín, ktoré máte spoločné.
+• Pracujeme stále na ďalších vylepšeniach, a vylepšenie posúvania konverzácie v tomto vydaní spôsobí, že sa budete cítiť ako taký „Smooth Operator“ ktorý predvádza neoficiálny obal hitovej piesne Sade z roku 1984.
+• Mnohé chyby vo vyhľadávaní v konverzácií zmizli bez stopy a výsledky vyhľadávania sú lepšie usporiadané, tak aby sa veci dali ľahšie nájsť. Ak hľadáte skupinu s názvom „Ahoj“, už sa nebude prehrabávať každou jednou správou, kde niekto len pozdravuje.
+• Opravili sme chybu, ktorá znemožnila nájsť výsledky pre jeden čínsky znak v novej konverzácií.
+• Animované výsledky vyhľadávania GIF sa teraz zobrazia v stotine.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

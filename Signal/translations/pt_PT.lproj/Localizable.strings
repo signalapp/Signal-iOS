@@ -5294,7 +5294,7 @@
 "SETTINGS_SECTION_SOUNDS" = "Sons";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "A ligar";
+"SETTINGS_SECTION_TITLE_CALLING" = "Chamadas";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL" = "Utilize o Touch ID, Face ID, ou a palavra-passe do seu dispositivo iOS para desbloquear o Sigal.";
@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Sem grupos em comum. Reveja os pedidos com cuidado.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Sem membros de grupo em comum. Reveja os pedidos com cuidado.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Sem contactos neste grupo. Reveja os pedidos com cuidado.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Esta mensagem foi eliminada.";

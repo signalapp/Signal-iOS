@@ -131,7 +131,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Er zijn geen leden met wie je al een gesprek voert in deze groep. Overweeg zorgvuldig of je dit gespreksverzoek wilt accepteren om ongewenste berichten te vermijden.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Over gespreksverzoeken";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Over gespreksverzoeken en groepsuitnodigingen";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Beantwoorden";
@@ -983,7 +983,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Persoon deblokkeren";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet meer dempen";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Wil je de wijzigingen die je aan dit gesprek gemaakt hebt opslaan?";
@@ -2891,19 +2891,19 @@
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Je contactpersoon";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Evalueer de contactpersonen hieronder en onderneem actie als je niet zeker bent van wie het verzoek afkomstig is.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Vergelijk als je niet zeker bent van wie het lidmaatschapsverzoek afkomstig is de personen hieronder  en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Verzoek";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Verzoek evalueren";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Lidmaatschapsverzoeken vergelijken";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Contactpersoon bijwerken";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Verzoek evalueren";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Verzoeken vergelijken";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
@@ -5540,10 +5540,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiëren";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Geen gemeenschappelijke groepen: overweeg deze uitnodiging zorgvuldig.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Je hebt met deze persoon geen gemeenschappelijke groep: overweeg dit gespreksverzoek zorgvuldig.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Geen lid met wie je al een gesprek voert: overweeg deze uitnodiging zorgvuldig.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Er is in deze groep geen lid met wie je al een gesprek voert: overweeg deze uitnodiging zorgvuldig.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Dit bericht is gewist.";

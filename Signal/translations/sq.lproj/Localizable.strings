@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Pa grupe të përbashkët. Shqyrtojini me kujdes kërkesat.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Pa anëtarë grupesh të përbashkët. Shqyrtojini me kujdes kërkesat.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Pa kontakte në këtë grup. Shqyrtojini me kujdes kërkesat.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Ky mesazh u fshi.";

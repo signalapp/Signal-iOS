@@ -1,5 +1,6 @@
-• Zamilujte se do několika vylepšení zážitku z nahrávání a stahování médií. Může se zdát, že se všechno děje opravdu rychle, zvláště když posíláte více fotografií a videí najednou, ale láska je někdy taková. Je úplně OK, když začnete cítit více náklonnosti k odesílání dalších příloh.
-• Láska a ztráta jsou neoddělitelně spojeny, takže jsme se také rozešli s chybou, která znemožňovala sdílení dlouhých videí z jiných aplikací (například iOS Photos).
-• V rámci našeho neustálého úsilí o redesign a vylepšení aplikace jsme aktualizovali obrazovku nastavení chatu, aby bylo snazší najít běžné akce a abychom vám pomohli najít společnou řeč v chatech jeden na jednoho zobrazením skupin, které oba máte společné.
+• Stále máme více vylepšení na práci, ale vylepšení posouvání chatu v tomto vydání vám způsobí, že se budete cítit jako takový „Smooth Operator“, že v zásadě provádíte neoficiální cover hitu Sade z roku 1984.
+• Mnoho chyb při hledání v chatu zmizelo beze stopy a výsledky vyhledávání jsou lépe organizovány, aby bylo hledání jednodušší. Pokud hledáte skupinu s názvem „Ahoj“, už nebude pohřbena každou zprávou, kde někdo pozdravil.
+• Opravili jsme chybu, která znemožnila najít výsledky pro jeden čínský znak na nové obrazovce chatu.
+• Animované výsledky hledání GIF se nyní zobrazují rychle.
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

@@ -1,5 +1,6 @@
-• Zakochaj się w kilku ulepszeniach doświadczenia wysyłania i pobierania multimediów. Może się zdawać, że wszystko dzieje się naprawdę szybko, zwłaszcza gdy wysyłasz na raz kilka zdjęć i filmów, ale czasem taka właśnie jest miłość. To nic złego, jeśli zaczniesz odczuwać pociąg do wysyłania większej ilości załączników.
-• Miłość i strata są ze sobą nierozerwalnie związane, więc zerwaliśmy z błędem, który uniemożliwiał udostępnianie długich filmów z innych aplikacji (np. iOS Photos).
-• W ramach naszych, trwających wysiłków, by przeprojektować i ulepszyć aplikację, zaktualizowaliśmy ekran ustawień rozmowy, aby najpopularniejsze funkcje stały się łatwiejsze do znalezienia i by pomóc Wam znaleźć wspólny język w rozmowach indywidualnych, pokazując grupy, do których razem należycie.
+• Wciąż pracujemy nad kolejnymi ulepszeniami, Poprawki przewijania rozmowy, wprowadzone w tej wersji, sprawią, że ta czynność będzie działać równie gładko, jak w przebojowej piosence zespołu Sade, "Smooth Operator", z 1984 r.
+• Liczne błędy w wyszukiwaniu rozmów zniknęły bez śladu. Wyniki wyszukiwania są lepiej zorganizowane, aby ułatwić Ci znalezienie tego, czego szukasz. Jeśli szukasz grupy o nazwie "Cześć", to nie będzie już ukryta pod każdą wiadomością, w której ktoś chciał się przywitać.
+• Naprawiliśmy błąd, który uniemożliwiał wyświetlenie wyników, dla pojedynczego, chińskiego znaku, na ekranie nowej rozmowy.
+• Wyniki wyszukiwania animowanych GIF-ów pojawiają się teraz w mgnieniu oka.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

@@ -1,5 +1,6 @@
-• Innamorati di numerosi miglioramenti all'esperienza di caricamento e download dei media. Può sembrare che tutto stia accadendo molto velocemente, specialmente quando invii più foto e video contemporaneamente, ma l'amore a volte è così. Va bene iniziare a sentirsi più attaccati all'invio di più allegati.
-• L'amore e la perdita sono inestricabilmente connessi, quindi abbiamo anche rotto con un bug che rendeva impossibile condividere lunghi video da altre app (come l'app Foto di iOS).
-• Nell'ambito dei nostri continui sforzi per riprogettare e migliorare l'app, abbiamo aggiornato la schermata delle impostazioni della chat per rendere le azioni comuni più facili da trovare e per aiutarti a trovare un terreno comune nelle chat individuali visualizzando i gruppi in comune.
+• Abbiamo ancora altri miglioramenti in cantiere, ma i miglioramenti allo scorrimento della chat in questa versione ti faranno sentire un tale "Smooth Operator" che stai praticamente eseguendo una cover non ufficiale della canzone di successo di Sade del 1984.
+• Numerosi bug nella ricerca della chat sono spariti senza lasciare traccia, e i risultati della ricerca sono organizzati meglio per rendere le cose più facili da trovare. Se state cercando un gruppo chiamato "Ciao" non sarà più sepolto da ogni singolo messaggio in cui qualcuno ha detto ciao.
+• Abbiamo corretto un bug che rendeva impossibile trovare risultati per un singolo carattere cinese nella nuova schermata della chat.
+• I risultati di ricerca delle GIF animate ora vengono visualizzati in un batter d'occhio (si pronuncia gif o ghif?).
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Interessato ad aiutare a migliorare Signal? Stiamo assumendo. Visita https://signal.org/workworkwork per saperne di più.

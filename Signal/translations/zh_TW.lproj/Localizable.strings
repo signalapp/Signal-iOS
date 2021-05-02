@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "沒有共同的群組。 請仔細檢查請求。";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "沒有共同的群組成員。 請仔細檢查請求。";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "這個群組中沒有聯絡人。請仔細檢查請求。";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "這個訊息已經被刪除。";

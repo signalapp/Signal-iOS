@@ -3848,7 +3848,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Vi minner deg igjen om noen dager.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Bekreft Signal PIN-kode";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Bekreft Signal-PIN-kode";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Vi minner deg igjen i morgen.";
@@ -3863,7 +3863,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "Ugyldig PIN-kode, prøv igjen.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Skriv inn Signal PIN";
+"PIN_REMINDER_TITLE" = "Skriv inn Signal-PIN";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden må være minst 4 sifre.";
@@ -4625,10 +4625,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på feilsøkingslogging";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avanserte PIN-kode instillinger";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avanserte PIN-kode-instillinger";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Avanserte PIN-kode instillinger";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Avanserte PIN-kode-instillinger";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Deaktiver PIN-kode";
@@ -4793,7 +4793,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder dempede samtaler";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Antall skilt";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Antall-merke";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Varsler om meldinger og innkommende samtaler kan vises mens telefonen er låst.";
@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ingen felles grupper. Gjennomgå forespørsler nøye.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Ingen gruppemedlemmer felles. Gjennomgå forespørsler nøye.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Ingen kontakter i denne gruppen. Gjennomgå forespørsler nøye.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Denne meldingen ble slettet.";

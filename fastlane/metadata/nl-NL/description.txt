@@ -1,26 +1,26 @@
-Miljoenen mensen gebruiken Signal elke dag voor gratis en onmiddellijke communicatie, overal ter wereld. Verzend en ontvang berichten met hoge betrouwbaarheid, neem deel aan audio- en videogesprekken in HD en ontdek een groeiende reeks nieuwe functies die zorgen dat jij verbonden blijft. De geavanceerde technologie voor privacybescherming van Signal is altijd actief. Zo kun jij belangrijke momenten delen met de mensen die belangrijk zijn voor jou.
+Miljoenen mensen gebruiken Signal elke dag voor gratis en onmiddellijke communicatie, overal ter wereld. Verzend en ontvang berichten met hoge betrouwbaarheid, neem deel aan audio- en video-oproepen in HD en ontdek een groeiende reeks nieuwe functionaliteiten waarmee jij met je kennissen kunt communiceren. Signal's geavanceerde privacybescherming is altijd ingeschakeld. Zo kun jij momenten die er toe doen delen met de mensen die er voor jou toe doen.
 
-• Zeg wat je maar wilt: geavanceerde end-to-end versleuteling (mogelijk gemaakt door het opensource Signal Protocol™) houdt je gesprekken veilig. Privacy is niet optioneel: het is gewoon hoe Signal werkt. Elk bericht, elke oproep, elke keer.
+• Zeg wat je maar wilt: geavanceerde eind-tot-eind-versleuteling (mogelijk gemaakt door het openbroncode Signal Protocol™) houdt je gesprekken veilig. Privacy is niet optioneel: het is gewoon hoe Signal altijd werkt. Elk bericht, elke oproep, elke keer.
 
-• Ongeëvenaarde snelheid: berichten worden snel en betrouwbaar geleverd, zelfs op trage netwerken. Signal is geoptimaliseerd voor werking in de meest beperkte omgevingen.
+• Ongeëvenaarde snelheid: berichten worden snel en betrouwbaar afgeleverd, zelfs op trage netwerken. Signal is geoptimaliseerd om te blijven werken in de meest beperkte omgevingen.
 
-• Voel je vrij: Signal is een volledig onafhankelijke 501c3-non-profit. Ontwikkeling wordt ondersteund door gebruikers zoals jij. Geen reclame. Geen trackers. Geen geintje.
+• Voel je vrij: Signal is een volledig onafhankelijke 501c3-organisatie zonder winstoogmerk. Ontwikkeling wordt ondersteund door gebruikers zoals jij. Geen reclame. Geen volgers. Geen grapje.
 
-• Wees jezelf: gebruik je bestaande telefoonnummer en adresboek om veilig met je vrienden te communiceren.
+• Wees jezelf: je kunt je bestaande telefoonnummer en adresboek gebruiken om veilig met je vrienden te communiceren.
 
-• Laat je horen: of je vrienden en familie nou aan de andere kant van de stad of aan de andere kant van de wereld wonen, met de hoogwaardige audio- en videokwaliteit van SIgnal lijken ze altijd dichtbij.
+• Laat je horen: of je vrienden en familie nou aan de andere kant van de stad of aan de andere kant van de wereld wonen, met de hoogwaardige audio- en videokwaliteit van Signal lijken ze altijd dichtbij.
 
-• Ook in het donker: schakel het donkere thema in als je het licht liever niet ziet.
+• Fluister vanuit het duister: schakel het donkere thema in als je weigert het licht te zien.
 
-• Steeds herkenbaar: kies aangepaste waarschuwingen voor ieder contact of schakel geluiden volledig uit. Simon & Garfunkel schreven er in 1964 een nummer over, en jij kunt de 'sound of silence' wanneer je maar wilt ervaren door 'Geen' te kiezen als je beltoon voor meldingen.
+• Je contacten klinken bekend: kies aangepaste meldingen voor iedere contactpersoon of schakel geluiden volledig uit. Simon & Garfunkel schreven er in 1964 een nummer over, en jij kunt de ‘sound of silence’ wanneer je maar wilt ervaren door ‘Geen’ te kiezen als je geluid voor meldingen.
 
-• Droombeelden: gebruik ingebouwde beeldbewerkingsfuncties zoals tekenen, bijsnijden en omkeren. Er is zelfs een teksttool waarmee je nog meer woorden kunt toevoegen dan de duizend woorden die je foto al waard is.
+• Laat je verbeelding spreken: gebruik ingebouwde beeldbewerkingsfuncties zoals tekenen, bijsnijden en spiegelen. Er is zelfs een tekstgereedschap waarmee je nog meer woorden kunt toevoegen aan de duizend woorden die je foto al waard is.
 
 
-Voor hulp, vragen of meer informatie ga je naar:
+Voor hulp, vragen of meer informatie ga naar:
 https://support.signal.org
 
 Broncode:
 https://github.com/signalapp
 
-Volg ons op Twitter (@signalapp) en Instagram (@signal_app) voor de nieuwste updates en aankondigingen.
+Volg ons op Twitter (@signalapp) en Instagram (@signal_app) voor nieuws en aankondigingen.

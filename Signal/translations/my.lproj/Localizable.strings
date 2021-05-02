@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "သိမ်းသည် ";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "၎င်းပုဂ္ဂိုလ်နှင့်  သင့်ထံ တူညီသော အဖွဲ့များ မရှိပါ။ အလိုမရှိသော မက်ဆေ့ချ်များကို မလက်ခံမီ တောင်းခံမှုများကို သေချာစွာ သုံးသပ်ပါ။";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "၎င်းအဖွဲ့နှင့် သင့်ထံ တူညီသော အဖွဲ့ဝင်များ မရှိပါ။ အလိုမရှိသော မက်ဆေ့ချ်များကို မလက်ခံမီ တောင်းခံမှုများကို သေချာစွာ သုံးသပ်ပါ။";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "မက်ဆေ့ခ်ျတောင်းဆိုမှုများ အကြောင်း";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "အဖြေ ";
@@ -1037,22 +1037,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@ နာရီ";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "လွန်ခဲ့သော %@ နာရီ";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@မိနစ်";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "လွန်ခဲ့သော %@ မိနစ်";
 
 /* The present; the current time. */
 "DATE_NOW" = "ယခု";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+"DATE_ONE_HOUR_AGO_LONG" = "လွန်ခဲ့သော ၁ နာရီ";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+"DATE_ONE_MINUTE_AGO_LONG" = "လွန်ခဲ့သော ၁ မိနစ်";
 
 /* The current day. */
 "DATE_TODAY" = "ယနေ့";
@@ -1481,7 +1481,7 @@
 "EXPIRATION_WARNING_SOON" = "မိမိ၏ Signal ဗားရှင်းမှာ %d အတွင်း သက်တမ်းကုန်ဆုံးတော့မှာ ဖြစ်ပါတယ်။ နှိပ်၍ နောက်ဆုံးဗားရှင်းအားသို့ အပ်ဒိတ်ပြုလုပ်ပါ။";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "သင့်ရဲ့ Signal ဗားရှင်းက ဒီနေ့ သက်တမ်းကုန်ပါလိမ့်မယ်။ နောက်ဆုံးဗားရှင်းကို ရရန် နှိပ်ပါ။";
+"EXPIRATION_WARNING_TODAY" = "သင်၏ Signal ဗားရှင်းက ဒီနေ့ သက်တမ်းကုန်ပါလိမ့်မယ်။ နောက်ဆုံးဗားရှင်းကို ရရန် နှိပ်ပါ။";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "၎င်း အဆက်အသွယ်နှင့် ပျက်ကွက်မှုများ နေပါသည်။ နောက်မှ ပြန်စမ်းကြည့်ပေးပါ။";
@@ -4112,7 +4112,7 @@
 "REACTIONS_DETAIL_YOU" = "သင်";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "ဖတ်ရန်";
+"READ_ACTION" = "ဖတ်ပြီး";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "သုံးသူအား ရွေးချယ်၍မရပါ";
@@ -4124,31 +4124,31 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "အကူအညီ လိုအပ်ပါသလား?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "သင်၏ PIN နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် (သို့) အက္ခရာနံပါတ် ဖြစ်နိုင်သည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက ၇ ရက်စောင့်၍ သင့်အကောင့်ကို ပြန်ပြီး မှတ်ပုံစာရင်သွင်းရပါမည်။";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "သင်၏ PIN နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် (သို့) အက္ခရာနံပါတ် ဖြစ်နိုင်သည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက ၇ ရက်စောင့်၍ သင့်အကောင့်ကို ပြန်ပြီး မှတ်ပုံစာရင်းသွင်းရပါမည်။";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "သင်၏ PIN နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် (သို့) အက္ခရာနံပါတ် ဖြစ်နိုင်သည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက အသစ်တစ်ခု ပြန်ဖန်တီးနိုင်ပါသည်။ သင်မှတ်ပုံတင်ပြီး အကောင့်သုံးနိုင်ပါမည်၊ သို့သော် အချို့သိမ်းဆည်းထားသော အပြင်အဆင်များ (ဥပမာ သင်၏ ပရိုဖိုင်း အချက််အလက်) ဆုံးရှူံပါမည်။";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "သင်၏ ပင်နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် (သို့) အက္ခရာနံပါတ် ဖြစ်နိုင်သည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက အသစ်တစ်ခု ပြန်ဖန်တီးနိုင်ပါသည်။ သင်မှတ်ပုံတင်ပြီး အကောင့်သုံးနိုင်ပါမည်၊ သို့သော် အချို့သိမ်းဆည်းထားသော အပြင်အဆင်များ (ဥပမာ သင်၏ ပရိုဖိုင်း အချက််အလက်) ဆုံးရှူံပါမည်။";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "သင်၏ PIN နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် ဖြစ်ပါသည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက ၇ ရက်စောင့်၍ သင့်အကောင့်ကို ပြန်ပြီး မှတ်ပုံစာရင်သွင်းရပါမည်။";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "သင်၏ ပင်နံပါတ်သည် သင်ဖန်တီးထားသောဂဏန်း ၄ ခုအထက် ပါဝင်သော ကုဒ်နံပါတ် ဖြစ်ပါသည်။ သင်၏ပင်နံပါတ်ကို သင်မမှတ်မိပါက ၇ ရက်စောင့်၍ သင့်အကောင့်ကို ပြန်ပြီး မှတ်ပုံစာရင်းသွင်းရပါမည်။";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "သင့်တွင် ကြိုးစားရန် %lu ကြိမ်ကျန်ရှိပါသည်။ ကြိုးစားနိုင်ရန်အကြိမ် မရှိတော့လျှင် ပင်နံပါတ်အသစ်တစ်ခု ဖန်တီးနိုင်ပါသည်။ မှတ်ပုံစာရင်းသွင်း၍ သင့်အကောင့်ကို ပြန်သုံးနိုင်ပါသည်၊ သို့သော် သိမ်းဆည်းထားသော အချို့သောအပြင်အဆင်များ (ဥပမာ သင့်ပရိုဖိုင်း အချက်အလက်များ) ဆုံရှုံးပါမည်။";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "သင့်တွင် ကြိုးစားရန် %lu ကြိမ်ကျန်ရှိပါသည်။ ကြိုးစားနိုင်ရန်အကြိမ် မရှိတော့လျှင် သင့်အကောင့်ကို လော့ခတ်လိုက်ပါမည်။ လှုပ်ရှားမှုမရှိဘဲ ၇ ရက်အကြာတွင် သင်သည် ပင်နံပါတ်မပါဘဲ ပြန်မှတ်ပုံစာသွင်းနိုင်ပါမည်။ သင့်အကောင့်နှင့် သက်ဆိုင်သော အရာများအားလုံးကို ဖျက်သိမ်းလိုက်ပါမည်။";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "သင့်တွင် ကြိုးစားရန် %lu ကြိမ်ကျန်ရှိပါသည်။ ကြိုးစားနိုင်ရန်အကြိမ် မရှိတော့လျှင် သင့်အကောင့်ကို လော့ခတ်လိုက်ပါမည်။ လှုပ်ရှားမှုမရှိဘဲ ၇ ရက်အကြာတွင် သင်သည် ပင်နံပါတ်မပါဘဲ ပြန်မှတ်ပုံစာရင်းသွင်းနိုင်ပါမည်။ သင့်အကောင့်နှင့် သက်ဆိုင်သော အရာများအားလုံးကို ဖျက်သိမ်းလိုက်ပါမည်။";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "သင့်တွင် ကြိုးစားရန် ၁ ကြိမ်သာ ကျန်ရှိပါတော့သည်။ ကြိုးစားနိုင်မှုအကြိမ် မရှိတော့လျှင် သင့်အကောင့်ကို လော့ခတ်လိုက်ပါမည်။ လှုပ်ရှားမှုမရှိဘဲ ၇ ရက်အကြာတွင် သင်သည် ပင်နံပါတ်မပါဘဲ ပြန်မှတ်ပုံစာသွင်းနိုင်ပါမည်။ သင့်အကောင့်နှင့် သက်ဆိုင်သော အရာများအားလုံးကို ဖျက်သိမ်းလိုက်ပါမည်။ ";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "သင့်တွင် ကြိုးစားရန် ၁ ကြိမ်သာ ကျန်ရှိပါတော့သည်။ ကြိုးစားနိုင်မှုအကြိမ် မရှိတော့လျှင် သင့်အကောင့်ကို လော့ခတ်လိုက်ပါမည်။ လှုပ်ရှားမှုမရှိဘဲ ၇ ရက်အကြာတွင် သင်သည် ပင်နံပါတ်မပါဘဲ ပြန်မှတ်ပုံစာရင်းသွင်းနိုင်ပါမည်။ သင့်အကောင့်နှင့် သက်ဆိုင်သော အရာများအားလုံးကို ဖျက်သိမ်းလိုက်ပါမည်။";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "သင့်တွင် ကြိုးစားရန် ၁ ကြိမ်သာ ကျန်ရှိပါတော့သည်။ ကြိုးစားနိုင်ရန်အကြိမ် မရှိတော့လျှင် ပင်နံပါတ်အသစ်တစ်ခု ဖန်တီးနိုင်ပါသည်။ မှတ်ပုံစာရင်းသွင်း၍ သင့်အကောင့်ကို ပြန်သုံးနိုင်ပါသည်၊ သို့သော် သိမ်းဆည်းထားသော အချို့သောအပြင်အဆင်များ (ဥပမာ သင့်ပရိုဖိုင်း အချက်အလက်များ) ဆုံရှုံးပါမည်။";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN နံပါတ်မှားနေသည်";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ပင်နံပါတ်မှားနေသည်";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "ပင်နံပါတ်ကို အတည်ပြုပါ";
+"REGISTER_2FA_PIN_PROGRESS" = "ပင်နံပါတ်ကို အတည်ပြုနေပါသည်...";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "တင်မည်";
@@ -4214,7 +4214,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "ဖုန်းနံပါတ် ဗလာ ";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "၎င်းနံပါတ်သို့ အတည်ပြုကုဒ် ပို့လိုက်ပါမည်။ အပေါ်ရှီ သင့်ဖုန်းနံပါတ်သည် မှန်ကန်ပါသလား?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "၎င်းနံပါတ်သို့ အတည်ပြုကုဒ် ပို့လိုက်ပါမည်။ အပေါ်ရှိ ဖုန်းနံပါတ်သည် သင့်ဟာ မှန်ကန်ပါသလား?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "အတည်ပြုမည့် ဖုန်းနံပါတ် - %@";
@@ -4274,7 +4274,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ပို့သာ ပို့လိုက်ပါ";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "အောက်ပါပုဂ္ဂိုလ်များသည် စက်ပစ္စည်းအား ပြန်လည်တပ်ဆင်ခြင့် သို့မဟုတ် ပြောင်းလဲခြင်း ပြုလုပ်ခဲ့နိုင်သည်။ ပုဂ္ဂိုလ်ရေး လုံခြုံစေရန် သင့်လုံခြုံရေးနံပါတ်ကို ၎င်းပုဂ္ဂိုလ်များဖြင့် အတည်ပြုပေးပါ။";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "အောက်ပါပုဂ္ဂိုလ်များသည် စက်ပစ္စည်းအား ပြန်လည်တပ်ဆင်ခြင်း သို့မဟုတ် ပြောင်းလဲခြင်း ပြုလုပ်ခဲ့နိုင်သည်။ ပုဂ္ဂိုလ်ရေး လုံခြုံစေရန် သင့်လုံခြုံရေးနံပါတ်ကို ၎င်းပုဂ္ဂိုလ်များဖြင့် အတည်ပြုပေးပါ။";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "ယခင် အတည်ပြုပြီး";
@@ -4580,7 +4580,7 @@
 "SEND_SMS_INVITE_TITLE" = "အဆိုပါနံပါတ်ကို Signal ကို ဖိတ်ချင်ပါသလား";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal သည်အစမှအဆုံးထိ ကုဒ်ဖြင့် ပြောင်းလဲဝှက်ထား၍ သင်၏ စကားပြောဆိုမှု အချိန်ကာလကို တစ်ခါတစ်ရံ ပြန်တင်ဆက် ရပါလိမ့်မည်။ ၎င်းလုပ်ခြင်းသည် သင့်စကားပြောဆိုမှု၏ လုံခြုံရေးကို မထိခိုက်စေပါ၊ သို့သော် သင်သည် ဤအဆက်အသွယ်မှ မက်ဆေ့ခ်ျတစ်ခုကို လွဲချော်ပြီး ၎င်းတို့အား ပြန်လည်ပေးပို့ရန် တောင်းဆိုနိုင်သည်။";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal သည်အစမှအဆုံးထိ ကုဒ်ဖြင့် ပြောင်းလဲဝှက်ထား၍ သင်၏ စကားပြောဆိုမှုပိုင်းများကို တစ်ခါတစ်ရံ ပြန်တင်ဆက် ရပါလိမ့်မည်။ ၎င်းလုပ်ခြင်းသည် သင့်စကားပြောဆိုမှု၏ လုံခြုံရေးကို မထိခိုက်စေပါ၊ သို့သော် သင်သည် ဤအဆက်အသွယ်မှ မက်ဆေ့ခ်ျတစ်ခုကို လွဲချော်ပြီး ၎င်းတို့အား ပြန်လည်ပေးပို့ရန် တောင်းဆိုနိုင်သည်။";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "စကားပြောဆိုမှု အချိန်ပိုင်း ပြန်စတင်သွားပါပြီ";
@@ -4715,7 +4715,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "မလွှဲပြောင်းပါ";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "သင်သည် လက်ကျန်ငွေ %@ ရှိပါသည်။ သင့်အကောင့်ကို မဖျက်သိမ်းမီ အခြား ပိုက်ဆံအိတ် wallet လိပ်စာသို့ သင့်ငွေကို မလွှဲပြောင်းပါက ၎င်းငွေကိုထ ဆုံးရှူံးပါမည်။";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "သင်သည် လက်ကျန်ငွေ %@ ရှိပါသည်။ သင့်အကောင့်ကို မဖျက်သိမ်းမီ အခြား ပိုက်ဆံအိတ် wallet လိပ်စာသို့ သင့်ငွေကို မလွှဲပြောင်းပါက ၎င်းငွေကို ထာဝရ ဆုံးရှူံးပါမည်။";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "ငွေပေးချေမှု လက်ကျန်ငွေကို လွှဲပြောင်းမည်လား?";
@@ -4826,7 +4826,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "ငွေဖြည့်မယ်";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ငွေဖြည့်ရန် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာသို့ MobileCoin ပို့ပါ။ သင့် အကောင့်မှ MobileCoin ပံ့ပိုးသော လွှဲပြောင်းမှုနှင့် ငွေပေးငွေယူမှုတစ်ကြောင်းလုပ်ဆောင်ပါ၊ ပြီးလျှင် QR ကုဒ်စကင်ဖတ်ပါ သို့မဟုတ် သင့် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာ ကော်ပီကူးပါ။";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ငွေဖြည့်ရန် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာသို့ MobileCoin ပို့ပါ။ သင့် အကောင့်မှ MobileCoin ပံ့ပိုးသော လွှဲပြောင်းမှုနှင့် ငွေပေးငွေယူမှုတစ်ကြောင်းလုပ်ဆောင်ပါ၊ ပြီးလျှင် QR ကုဒ်စကင်ဖတ်ပါ သို့မဟုတ် သင့် ပိုက်ဆံအိတ် Wallet လိပ်စာ ကော်ပီကူးပါ။";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ပိုက်ဆံအိတ် Wallet လိပ်စာကို ကော်ပီကူးယူပြီး";
@@ -4916,10 +4916,10 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ငွေထုတ်ယူခြင်း";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN နံပါတ်ကိုအသစ်ပြောင်းပါ";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "ပင်နံပါတ်ကိုအသစ်ပြောင်းပါ";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "လက်ကျန်ငွေများလျှင် သင့်အကောင့်ကို ပိုမိုလုံခြုံမှုရှိစေရန် အက္ခရာနံပါတ်ပါသော ပင်နံပါတ်ဖြင့် သင့်အကောင့်ကို ကာကွယ်နိုင်ပါသည်။";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "လက်ကျန်ငွေများလျှင် သင့်အကောင့်ကို ပိုမိုလုံခြုံမှုရှိစေရန် အက္ခရာနံပါတ်ပါသော ပင်နံပါတ်ဖြင့် သင့်အကောင့်ကို ကာကွယ်နိုင်ပါသည်။";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "သင့် ပင်နံပါတ်ကို အပ်ဒိတ်ပြုလုပ်မယ်";
@@ -4967,7 +4967,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "ငွေပေးချေမှုများ (စမ်းသပ်သည့် Beta ဗားရှင်း) မိတ်ဆက်ပါသည်";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Signal ပြန်တင်သွင်းသည့်အချိန်တွင် သင်မှသင့် Signal ပင်နံပါတ်ကို အတည်ပြုခဲ့လျှင် သင့် လက်ကျန်ငွေကို အလိုအလျောက်ပြန်လည် ရရှိပါမည်။ ပြန်လည်ရယူရန် စာပုဒ်တိုဖြင်းလည်း သင့်လက်ကျန်ငွေကို ပြန်ရယူနိုင်ပါသည်။ ၎င်းသည် သင့်အတွက်သာ ထူးခြားသော စကားလုံး ၂၄ လုံးရှိသော စာပုဒ်တိုဖြစ်ပါသည်။ ရေးသားမှတ်ထားပြီး လုံခြုံသောတစ်နေရာတွင် ဝှက်ထားပါ။";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Signal ပြန်တင်သွင်းသည့်အချိန်တွင် သင်မှသင့် Signal ပင်နံပါတ်ကို အတည်ပြုခဲ့လျှင် သင့် လက်ကျန်ငွေကို အလိုအလျောက်ပြန်လည် ရရှိပါမည်။ ပြန်လည်ရယူရန် စာပုဒ်တိုဖြင့်လည်း သင့်လက်ကျန်ငွေကို ပြန်ရယူနိုင်ပါသည်။ ၎င်းသည် သင့်အတွက်သာ ထူးခြားသော စာလုံး ၂၄ လုံးရှိသော စာပုဒ်တိုဖြစ်ပါသည်။ ရေးသားမှတ်ထားပြီး လုံခြုံသောတစ်နေရာတွင် ဝှက်ထားပါ။";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "ငွေဖြည့်မယ်";
@@ -5003,13 +5003,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "အခြေအနေ";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ငွေပေးချေမှု ငွေပမာဏ နှင့် လုပ်ဆောင်သည့်အချိန် အပါအဝင် ငွေပေးငွေယူသည့် အသေးစိတ်အချက်အလက်များသည်  MobileCoin စာအုပ်စာရင်း၏ အစိတ်အပိုင်းတစ်ခု ဖြစ်ပါသည်။";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ငွေပေးချေမှု ငွေပမာဏ နှင့် လုပ်ဆောင်သည့်အချိန် စသဖြင့် ရောင်းဝယ်မှု၏ အသေးစိတ်အချက်အလက်များသည် MobileCoin စာအုပ်စာရင်း၏ အစိတ်အပိုင်းတစ်ခု ဖြစ်ပါသည်။";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "ငွေပေးချေမှု လုပ်ဆောင်ရန် သင့်လက်ထဲတွင်ရှိသော အကြွေစေ့များကိုပေါင်းစပ်သော်လည်း မလုံလောက်မှုဖြစ်ခဲ့လျှင် \"အကြွေစေ့ရှင်းရေးအခကြေး\" ကို ကိုက်ခံယူပါမည်။ ရှင်းခြင်းဖြင့် ငွေပေးချေမှုများ ဆက်လက် ပေးပို့နိုင်ပါမည်။";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "ငွေပေးချေမှု လုပ်ဆောင်ရန် သင့်လက်ထဲတွင်ရှိသော အကြွေစေ့များကိုပေါင်းစပ်သော်လည်း လုံလောက်မှုမရှိခဲ့လျှင် \"အကြွေစေ့ရှင်းရေးအခကြေး\" ကို ကောက်ခံယူပါမည်။ ရှင်းခြင်းဖြင့် ငွေပေးချေမှုများ ဆက်လက် ပေးပို့နိုင်ပါမည်။";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "သင့်တွင် ငွေပေးချေမှုအတွက် MOB လုံလောက်မှုမရှိပါ။ သင့် လက်ရှိလက်ကျန်ငွေသည် %@ ဖြစ်ပါသည်။";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "သင့်တွင် ငွေပေးချေမှုအတွက် MOB လုံလောက်မှုမရှိပါ။ သင်၏ လက်ရှိလက်ကျန်ငွေသည် %@ ဖြစ်ပါသည်။";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "လက်ကျန်ငွေ မလုံလောက်ပါ";
@@ -5024,7 +5024,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ငွေပေးချေမှုများ ပိတ်ပြီး";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "တက်ရောက်သူအားလုံး";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "အားလုံး";
 
 /* Label for the 'incoming payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "လက်ခံရရှိပြီး";
@@ -5036,7 +5036,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "လတ်တလော ငွေပေးချေမှုများ";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "သင့် ပင်နံပါတ်ကို မပိတ်မီ သင်ငွေပေးချေမှုလုပ်သည့် အကောင့်ကို ပြန်ရယူရန် သင်ငွေပေးချေမှု ပြန်လည်တင်သည့် စာတိုကို မှတ်ထားရပါမည်။";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "သင့် ပင်နံပါတ်ကို မပိတ်မီ သင်ငွေပေးချေမှုလုပ်သည့် အကောင့်ကို ပြန်ရယူရန် သင် ငွေပေးချေမှု လုပ်ဆောင်သည့် ပြန်လည်ရယူရန် စာပုဒ်တိုကို မှတ်ထားရပါမည်။";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို မှတ်ထားပါ";
@@ -5084,13 +5084,13 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို ကူးရေးမယ်";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "သင့် ပြန်လည်ရယူရန် စာပုဒ်တိုသည် သင့်အတွက်သာ ထူးခြားသော စကားလုံး ၁၂ လုံး ရှိသော စာပုဒ်တိုဖြစ်ပါသည်။ ၎င်းစာတိုသုံး၍ သင့်ငွေပေးချေမှု အကောင့်ကို ပြန်ရယူလိုက်ပါ။";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "သင်၏ ပြန်လည်ရယူရန် စာပုဒ်တိုသည် သင့်အတွက်သာ ထူးခြားသော စကားလုံး ၁၂ လုံး ရှိသော စာပုဒ်တိုဖြစ်ပါသည်။ ၎င်းစာတိုသုံး၍ သင့်ငွေပေးချေမှု အကောင့်ကို ပြန်ရယူလိုက်ပါ။";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို ရိုက်ထည့်ပါ";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တို";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "%@ စကားလုံး ရိုက်ထည့်ပါ";
@@ -5114,7 +5114,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "မမှန်ကန်သော URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR ကုတ်ကို စကန်ဖတ်ပါ";
+"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR ကုဒ်ကို စကင်ဖတ်ပါ";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "ငွေပေးချေမှု ပေးပို့မယ်";
@@ -5135,7 +5135,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "သင်မှ MobileCoin လွှဲရန် ငွေလဲလှယ်မှုတစ်ခုမှ ပေးသော ပိုက်ဆံအိတ် wallet လိပ်စာသို့ လွှဲပြောင်းမှုတစ်ခု ပြီးစီးစေလိုပါသည်။ ပိုက်ဆံအိတ် wallet လိပ်စာသည် QR ကုဒ်အောက်တွင် ပုံမှန်အားဖြင့်တွေ့နိုင်သော နံပါတ်များနှင့် အက္ခရာများဖြစ်ပါသည်။";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "သင်လွှဲပြောင်းရန် ကြိုးစားနေသည့် ပိုက်ဆံအိတ် wallet လိပ်စာ ကိုစစ်ပြီး ပြန်စမ်းကြည့်ပေးပါ။";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "သင်လွှဲပြောင်းရန် ကြိုးစားနေသည့် ပိုက်ဆံအိတ် wallet လိပ်စာကိုစစ်ပြီး ပြန်စမ်းကြည့်ပေးပါ။";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "မမှန်ကန်သော လိပ်စာ";
@@ -5156,7 +5156,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "အတည်ပြုသည် ";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "သင့် ပြန်လည်ရယူရန် စာပုဒ်တိုမှ %1$@ နှင့် %2$@ စာလုံးများ ရိုက်ထည့်ပါ";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "သင့် ပြန်လည်ရယူရန် စာပုဒ်တိုမှ %1$@ နှင့် %2$@ စာလုံးများ ရိုက်ထည့်ပါ။";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "စာလုံးတစ်လုံး မှားယွင်းနေသည်၊ ပြန်စမ်းကြည့်ပေးပါ။";
@@ -5189,7 +5189,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို ကြည့်မယ်";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တို";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "အောက်ပါ စာလုံး ၂၄ လုံးကို အစီအစဥ်လိုက်တိုင်း ပြန်ရေးပေးပါ။ ၎င်းစာရင်းကို လုံခြုံသောနေရာတွင် သိမ်းဆည်းပေးပါ။";
@@ -5198,7 +5198,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "စကင်ရှော့မရိုက်ပါနှင့် သို့မဟုတ် အီးမေးလ် မပို့ပါနှင့်။";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "ပြန်လည်ရယူရန် စာပုဒ်တို";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "ငွေပေးချေမှုများ (စမ်းသပ်သည့် Beta ဗားရှင်း)";
@@ -5267,7 +5267,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "ဖွင့်မယ်";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "အကယ်၍ သင်၏ Signal PIN ကို နောက်တစ်ကြိမ် မှတ်ပုံတင်သည့်အခါတွင် မေ့နေပါက သင်၏ အကောင့်ကို ၇ ရက် အသုံးပြုနိုင်မည်မဟုတ်ပါ";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "အကယ်၍ သင်၏ Signal ပင်နံပါတ် ကို နောက်တစ်ကြိမ် မှတ်ပုံတင်သည့်အခါတွင် မေ့နေပါက သင်၏ အကောင့်ကို ၇ ရက် အသုံးပြုနိုင်မည်မဟုတ်ပါ။";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "မှတ်ပုံတင်ခြင်းသော့ ကို ဖွင့်ထားမည်လား?";
@@ -5396,10 +5396,10 @@
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "မျှဝေခြင်းကို ပိုမိုလွယ်ကူစေသည်";
 
 /* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "မလုပ်ဆောင်သော ";
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "ပိတ်မယ်";
 
 /* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "လုပ်ဆောင်သည်";
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "ဖွင့်မယ်";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "လုံခြုံရေးနံပါတ်ကို ပြပါ";
@@ -5489,7 +5489,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "ကျွန်ုပ်တို့အား ကိစ္စအကြောင်း ပြောပြပေးပါ -";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "သင်၏ ပံ့ပိုးရန် တောင်းဆိုချက်ကို support@signal.org သို့ အီးမေးလ် ပို့ပေးပါ";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "သင်၏ လိုအပ်သောပံ့ပိုးမှု တောင်းဆိုချက်ကို support@signal.org သို့ အီးမေးလ် ပို့ပေးပါ";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "စီစစ်ခြင်း - %@";
@@ -5540,10 +5540,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "စစ်ဆေးအတည်ပြုသည်";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "တူညီသော အဖွဲ့များ မရှိပါ။ တောင်းခံမှုများကို သေချာစွာ သုံးသပ်ပါ။";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No group members in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "၎င်းအဖွဲ့ထဲတွင် အဆက်အသွယ်များ မရှိပါ။ တောင်းခံမှုများကို သေချာစွာ သုံးသပ်ပါ။";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ဤမက်ဆေ့အား ဖျက်ပြီးပါပြီ";
@@ -5564,7 +5564,7 @@
 "THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@၊ %@၊ နှင့် %@ အဖွဲ့များတို့၏ အဖွဲ့ဝင်";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ နှင့် %@ အဖွဲ့တို့၏ အဖွဲ့ဝင်";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ နှင့် %@ အဖွဲ့များတို့၏ အဖွဲ့ဝင်";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ နေ့";
@@ -5618,7 +5618,7 @@
 "TIME_AMOUNT_YEARS_FORMAT" = "%@ နှစ်";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "၀ စက္ကန့်";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 စက္ကန့်";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "မလုပ်တော့ပါ";
@@ -5660,7 +5660,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "သင်သည် Signal ၏ နောက်ဆုံးဗားရှင်းကို သုံးနေပြီဖြစ်၍ ပေးပို့သူကို ဤမက်ဆေ့ချ်ကိုပြန်ပို့ပေးရန် သင်တောင်းဆိုနိုင်ပါပြီ။";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "မသိ";
+"UNKNOWN_USER" = "မသိရှိသော";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "မက်ဆေ့ချ်များ ပျောက်ကွယ်ခြင်းကို ပိတ်ထားပါသည်";
@@ -5864,13 +5864,13 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "နောက်ခံပုံ ရှင်းမည်လား? ၎င်းလုပ်ခြင်းကြောင့် သင့်စကားပြောဆိုမှုများအတွက် စိတ်ကြိုက်တပ်ထားသော နောက်ခံပုံများ မဖယ်ရှင်းပါ။";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "အနက်ရောင် ဆောင်ပုဒ်သည် နောက်ခံကို မှိန်စေပါသည်";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "အနက်ရောင် အပြင်အဆင်သည် နောက်ခံကို မှိန်စေပါသည်";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "နောက်ခံပုံကို ဖယ်ရှင်း၍ မရပါ၊ နောက်မှပြန်စမ်းကြည့်ပါ သို့မဟုတ် ပြဿနာဆက်လက်ဖြစ်ပါက ပံ့ပိုးမှုအသင်းကို ဆက်သွယ်ပါ။";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "နောက်ခံပုံကို ဖယ်ရှင်း၍ မရပါ၊ နောက်မှပြန်စမ်းကြည့်ပါ သို့မဟုတ် ပြဿနာဆက်လက်ဖြစ်ပါက ပံ့ပိုးမှုအသင်းသို့ ဆက်သွယ်ပါ။";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "နောက်ခံပုံများအားလုံးကို ပြန်တပ်ဆင်ပြောင်းလဲ၍ မရပါ၊ နောက်မှပြန်စမ်းကြည့်ပါ သို့မဟုတ် ပြဿနာဆက်လက်ဖြစ်ပါက ပံ့ပိုးမှုအသင်းကို ဆက်သွယ်ပါ။";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "နောက်ခံပုံများအားလုံးကို ပြန်တပ်ဆင်ပြောင်းလဲ၍ မရပါ၊ နောက်မှပြန်စမ်းကြည့်ပါ သို့မဟုတ် ပြဿနာဆက်လက်ဖြစ်ပါက ပံ့ပိုးမှုအသင်းသို့ ဆက်သွယ်ပါ။";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "ကြိုတင်ကြည့်မယ်";

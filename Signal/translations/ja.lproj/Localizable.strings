@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "共通のグループはありません。慎重に申請を確認してください。";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "この人と共通のグループがありません。受け入れは慎重に。";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "このグループに連絡先の人はいません。慎重に申請を確認してください。";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "このメッセージは削除されました。";

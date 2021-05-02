@@ -1,6 +1,6 @@
-• We still have more improvements in the works, but the conversation scrolling enhancements in this release will make you feel like such a "Smooth Operator" that you're basically performing an unofficial cover of Sade's hit song from 1984.
-• Numerous bugs in conversation search have vanished without a trace, including one that made it impossible to find results for single Chinese characters.
-• Search results are better organized to make things easier to find. If you are looking for a group named "Hi" it will no longer get buried by every single message where someone said hello.
-• Animated GIF search results now show up in a jiffy (even though that isn't how GIF is pronounced).
+• Vi har fortfarande fler förbättringar på gång, men chattrullningsförbättringarna i denna utgåva kommer att få dig att känna dig som en "Smooth Operator" så att du i princip utför en inofficiell cover av Sades hitlåt från 1984.
+• Många fel i chattsökningen har försvunnit spårlöst och sökresultaten är bättre organiserade för att göra det lättare att hitta. Om du letar efter en grupp som heter "Hej", kommer den inte längre att begravas av varje enskilt meddelande där någon sa hej.
+• Vi åtgärdade ett fel som gjorde det omöjligt att hitta resultat för ett enda kinesiskt tecken i den nya chattskärmen.
+• Animerade GIF-sökresultat visas nu snabbt (även om det inte är så GIF uttalas).
 
 Intresserad av att förbättra Signal? Vi anställer. Besök https://signal.org/workworkwork för att läsa mera.

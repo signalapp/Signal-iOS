@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Žiadne spoločné skupiny. Žiadosť starostlivo skontrolujte.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Žiadni spoloční členovia v skupine. Žiadosti starostlivo skontrolujte.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "V tejto skupine nie sú žiadne kontakty. Žiadosti starostlivo skontrolujte.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Táto správa bola zmazaná.";

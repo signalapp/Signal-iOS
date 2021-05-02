@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "Speichern";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Du hast keine gemeinsamen Gruppen mit dieser Person. Prüfe Unterhaltungsanfragen vor dem Annehmen sorgfältig, um ungewollte Nachrichten zu vermeiden.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Du hast keine gemeinsamen Gruppen mit dieser Person. Prüfe Anfragen vor dem Annehmen sorgfältig, um ungewollte Nachrichten zu vermeiden.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Keine bekannten Personen in dieser Gruppe. Prüfe Anfragen vor dem Annehmen sorgfältig, um ungewollte Nachrichten zu vermeiden.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Mehr über Unterhaltungsanfragen";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Mehr zu Unterhaltungsanfragen";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Annehmen";
@@ -1037,22 +1037,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@h";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "vor %@ Stunden";
+"DATE_HOURS_AGO_LONG_FORMAT" = "Vor %@ Stunden";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@min";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "vor %@ Minuten";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "Vor %@ Minuten";
 
 /* The present; the current time. */
 "DATE_NOW" = "Jetzt";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "vor 1 Stunde";
+"DATE_ONE_HOUR_AGO_LONG" = "Vor 1 Stunde";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "vor 1 Minute";
+"DATE_ONE_MINUTE_AGO_LONG" = "Vor 1 Minute";
 
 /* The current day. */
 "DATE_TODAY" = "Heute";
@@ -5138,7 +5138,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Überprüfe die Wallet-Adresse, an die du überweisen möchtest, und versuche es erneut. ";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Falsche Adresse";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Ungültige Adresse";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "An: Wallet-Adresse scannen oder eingeben";
@@ -5540,10 +5540,10 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifizieren";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Unterhaltungsanfragen sorgfältig.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Anfragen sorgfältig.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No group members in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Keine Kontakte in dieser Gruppe. Prüfe Anfragen sorgfältig.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Diese Nachricht wurde gelöscht.";
