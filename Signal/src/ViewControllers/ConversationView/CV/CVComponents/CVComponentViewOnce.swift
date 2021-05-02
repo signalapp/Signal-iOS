@@ -146,7 +146,8 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: subviewInfos)
+                                                       subviewInfos: subviewInfos,
+                                                       maxWidth: maxWidth)
         var result = stackMeasurement.measuredSize
         // We use this "min width" to reduce/avoid "flutter"
         // in the bubble's size as the message changes states.

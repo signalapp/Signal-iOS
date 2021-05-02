@@ -301,23 +301,24 @@ public extension UIView {
         )
     }
 
-    func autoPinHeight(toHeightOf otherView: UIView) {
-        translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint(item: self, attribute: .height, relatedBy: .equal, toItem: otherView, attribute: .height, multiplier: 1, constant: 0).autoInstall()
+    @discardableResult
+    func autoPinHeight(toHeightOf otherView: UIView) -> NSLayoutConstraint {
+        return autoMatch(.height, to: .height, of: otherView)
     }
 
-    func autoPinWidth(toWidthOf otherView: UIView) {
-        translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint(item: self, attribute: .width, relatedBy: .equal, toItem: otherView, attribute: .width, multiplier: 1, constant: 0).autoInstall()
+    @discardableResult
+    func autoPinWidth(toWidthOf otherView: UIView) -> NSLayoutConstraint {
+        return autoMatch(.width, to: .width, of: otherView)
     }
 
-    func autoPinEdgesToSuperviewEdges(withInsets insets: UIEdgeInsets) {
-        autoPinEdge(toSuperviewEdge: .top, withInset: insets.top)
-        autoPinEdge(toSuperviewEdge: .bottom, withInset: insets.bottom)
-        autoPinEdge(toSuperviewEdge: .left, withInset: insets.left)
-        autoPinEdge(toSuperviewEdge: .right, withInset: insets.right)
+    @discardableResult
+    func autoPinEdgesToSuperviewEdges(withInsets insets: UIEdgeInsets) -> [NSLayoutConstraint] {
+        [
+            autoPinEdge(toSuperviewEdge: .top, withInset: insets.top),
+            autoPinEdge(toSuperviewEdge: .bottom, withInset: insets.bottom),
+            autoPinEdge(toSuperviewEdge: .left, withInset: insets.left),
+            autoPinEdge(toSuperviewEdge: .right, withInset: insets.right)
+        ]
     }
 
     func removeAllSubviews() {

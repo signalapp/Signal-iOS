@@ -87,23 +87,40 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.wallpaperBlurView?.removeFromSuperview()
             componentView.wallpaperBlurView = nil
 
-            if hasWallpaper {
-                let wallpaperBlurView = componentView.ensureWallpaperBlurView()
-                configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
-                                           maskCornerRadius: 8,
-                                           componentDelegate: componentDelegate)
-                innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
-            }
+            let contentView: UIView = {
+                if hasWallpaper,
+                   componentDelegate.isConversationPreview {
 
-            innerStack.configure(config: innerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_innerStack,
-                                 subviews: [ titleLabel ])
+                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
+                    let blurView = buildBlurView(conversationStyle: conversationStyle)
+                    blurView.clipsToBounds = true
+                    blurView.layer.cornerRadius = 8
+                    blurView.contentView.addSubview(titleLabel)
+                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
+                    titleLabel.setContentHuggingLow()
+
+                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
+                } else {
+                    if hasWallpaper {
+                        let wallpaperBlurView = componentView.ensureWallpaperBlurView()
+                        configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                                   maskCornerRadius: 8,
+                                                   componentDelegate: componentDelegate)
+                        innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+                    }
+                    innerStack.configure(config: innerStackConfig,
+                                         cellMeasurement: cellMeasurement,
+                                         measurementKey: Self.measurementKey_innerStack,
+                                         subviews: [ titleLabel ])
+
+                    return innerStack
+                }
+            }()
 
             outerStack.configure(config: outerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_outerStack,
-                                 subviews: [ innerStack ])
+                                 subviews: [ contentView ])
         }
 
         componentView.rootView.accessibilityLabel = titleLabelConfig.stringValue
@@ -162,7 +179,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                         measurementBuilder: measurementBuilder,
                                                         measurementKey: Self.measurementKey_outerStack,
-                                                        subviewInfos: [ innerStackInfo ])
+                                                        subviewInfos: [ innerStackInfo ],
+                                                        maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

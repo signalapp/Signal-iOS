@@ -1,26 +1,26 @@
-Millions of people use Signal every day for free and instantaneous communication anywhere in the world. Send and receive high-fidelity messages, participate in HD voice/video calls, and explore a growing set of new features that help you stay connected. Signal’s advanced privacy-preserving technology is always enabled, so you can focus on sharing the moments that matter with the people who matter to you.
+يستخدم ملايين الأشخاص Signal يوميا للتواصل الفوري المجاني في أي مكان من العالم. يمكنكم إرسال واستقبال الرسائل بدقة عالية، والمشاركة في مكالمات بالصوت والصورة بدرجة عالية من الوضوح، واستكشاف مجموعة مُتجدِّدة من الميزات التي تساعدكم على البقاء على اتصال. إن تقنية Signal للحفاظ على الخصوصية مُفعَّلة طوال الوقت، لتمكِّنكم من التركيز على مشاركة اللحظات المهمة مع الأشخاص المهمين في حياتكم.
 
-• Say anything – State-of-the-art end-to-end encryption (powered by the open source Signal Protocol™) keeps your conversations secure. Privacy isn’t an optional mode — it’s just the way that Signal works. Every message, every call, every time.
+• قولوا ما تشاؤون – إن أحدث تقنيات التعمية من طرف لطرف (المبنية على البروتوكول المفتوح المصدر Signal Protocol™) تحافظ على أمان محادثاتكم. فالخصوصية ليست وضعا اختياريا – إنها طريقة اشتغال Signal، وذلك في كل رسالة، وكل مكالمة، وطوال الوقت.
 
-• Go fast – Messages are delivered quickly and reliably, even on slow networks. Signal is optimized to operate in the most constrained environment possible.
+• تمتعوا بسرعة الأداء – يتم توصيل الرسائل بسرعة و بموثوقية، حتى في الشبكات البطيئة. إن Signal مُحسَّن للعمل في أكثر البيئات تقييدا. 
 
-• Feel free – Signal is a completely independent 501c3 nonprofit. Development is supported by users like you. No advertisements. No trackers. No kidding.
+• تمتعوا بالحرية – إن Signal مؤسسة غير ربحية ومستقلة تندرج تحت الفقرة 501c3 (بالقانون الأمريكي). ويدعم تطويرها مستخدمون مثلكم. لا إعلانات. ولا أدوات تتبُّع. يمكنكم الثقة بذلك.
 
-• Be yourself – You can use your existing phone number and address book to securely communicate with your friends.
+• تصرفوا على طبيعتكم – يمكنك استخدام رقم هاتفكم الحالي ودفتر عناوينكم للتواصل الآمن مع أصدقائكم. 
 
-• Speak up – Whether they live across town or across the ocean, Signal’s enhanced audio and video quality will make your friends and family feel closer.
+• ارفعوا أصواتكم – إن ما يميز Signal هو المستوى المُحسَّن لجودة الصوت والفيديو، إذ سيمنح أصدقاءكم وأفراد عائلتكم شعورا بالقرب منكم، سواء كانوا في الجانب الآخر من المدينة أو في الجهة الأخرى من المحيط.
 
-• Whisper in the shadows – Switch to the dark theme if you refuse to see the light.
+• اهمسوا بهدوء – يمكنكم جعل مظهر التطبيق مُعتِما إن كنتم من محبّي السهر.
 
-• Sound familiar – Choose custom alerts for each contact, or disable noises completely. Simon & Garfunkel wrote a hit song about it in 1964, and you can experience the sound of silence whenever you want by choosing “None” as your notification ringtone.
+• تصرفوا بأُلفة – يمكنكم تخصيص التنبيهات لكل جهة من جهات الاتصال، أو تعطيل الضجيج تماما. عام 1964، كتب الفريق الغنائي Simon & Garfunkel عن ذلك في أغنية حققت نجاحا كبيرا. يمكنكم أيضا أن تعيشوا روحانية الإنصات للصمت متى شئتم، وذلك بجعل "لا شيء" رنة لإشعاراتكم.
 
-• Picture this – Use the built-in image editing features to sketch, crop, and flip your outgoing photos. There’s even a text tool so that you can add more words to the 1,000 that your picture is already worth.
+• تصوروا هذا – استخدموا الميزات المُدمجَة الخاصة بتعديل الصور، وذلك عن طريق رسم أو قص أو تدوير الصور الصادرة من جهازكم. هناك أيضا أداة نصية تُمكِّنكم من إضافة عدة كلمات لجعل صوركم أكثر تعبيرا مما هي عليه.
 
 
-For support, questions, or more information, please visit:
+لطلب الدعم، أو طرح الأسئلة، أو المزيد من المعلومات، يُرجى زيارة :
 https://support.signal.org
 
-Source code:
+للاطلاع على الكود المصدري :
 https://github.com/signalapp
 
-Follow us on Twitter (@signalapp) and Instagram (@signal_app) for all of the latest updates and announcements.
+تابعونا على تويتر (‎@signalapp) و أنستاغرام ( (‎@signal_app) لمعرفة آخر مستجدات التحديثات والتصريحات.

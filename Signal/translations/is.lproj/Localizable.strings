@@ -1409,7 +1409,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Netbeiðni mistókst.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Netbeiðni %1 rann út á tíma";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Netbeiðni rann út á tíma";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ógilt svar frá þjónustu.";
@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Engir sameiginlegir hópar. Yfirfarðu beiðnir vandlega.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Engir sameiginlegir hópmeðlimir. Yfirfarðu beiðnir vandlega.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Engir tengiliðir í þessum hópi. Yfirfarðu beiðnir vandlega.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Þessum skilaboðum var eytt.";

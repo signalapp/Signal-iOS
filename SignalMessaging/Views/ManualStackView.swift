@@ -268,10 +268,27 @@ open class ManualStackView: ManualLayoutView {
             return Arrangement(items: [])
         }
 
+        let isRTL: Bool
+        switch semanticContentAttribute {
+        case .forceLeftToRight, .spatial, .playback:
+            isRTL = false
+        case .forceRightToLeft:
+            isRTL = true
+        case .unspecified:
+            isRTL = CurrentAppContext().isRTL
+        @unknown default:
+            isRTL = CurrentAppContext().isRTL
+        }
+
         let isHorizontal = axis == .horizontal
+
+        // If we're horizontal *and* RTL, we want to reverse the order
+        // of the layout items so they layout from RTL instead of LTR.
+        var layoutItems = layoutItems
+        if isRTL, isHorizontal { layoutItems = layoutItems.reversed() }
+
         let layoutMargins = self.layoutMargins
         let layoutSize = (bounds.size - layoutMargins.totalSize).max(.zero)
-        let isRTL = CurrentAppContext().isRTL
 
         let onAxisMaxSize: CGFloat
         let offAxisMaxSize: CGFloat

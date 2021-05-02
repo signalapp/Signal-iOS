@@ -1070,6 +1070,9 @@ typedef enum : NSUInteger {
 
     self.isUserScrolling = NO;
     self.isWaitingForDeceleration = NO;
+
+    [self.scrollingAnimationCompletionTimer invalidate];
+    self.scrollingAnimationCompletionTimer = nil;
 }
 
 - (void)viewDidLayoutSubviews

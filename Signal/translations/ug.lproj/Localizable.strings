@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ھېچقانداق ئورتاق گۇرۇپپا يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "ھېچقانداق ئورتاق گۇرۇپپا ئەزاسى يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "بۇ گۇرۇپپىدا ھېچقانداق ئەزا يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "بۇ ئۇچۇر ئۆچۈرۈلگەن";

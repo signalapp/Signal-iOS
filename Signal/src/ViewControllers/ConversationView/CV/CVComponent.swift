@@ -253,6 +253,19 @@ extension CVComponentBase: CVNode {
 
 // MARK: -
 
+extension CVComponentBase {
+    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        let blurOverlay = UIView()
+        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
+        blurView.contentView.addSubview(blurOverlay)
+        blurOverlay.autoPinEdgesToSuperviewEdges()
+        return blurView
+    }
+}
+
+// MARK: -
+
 // Used for rendering some portion of an Conversation View item.
 // It could be the entire item or some part thereof.
 @objc

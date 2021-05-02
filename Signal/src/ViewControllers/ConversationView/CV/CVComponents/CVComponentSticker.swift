@@ -128,7 +128,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
                                                        measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ stickerInfo ])
+                                                       subviewInfos: [ stickerInfo ],
+                                                       maxWidth: maxWidth)
         return stackMeasurement.measuredSize
     }
 

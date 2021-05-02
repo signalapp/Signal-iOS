@@ -1,4 +1,0 @@
-• Δώσε στις ειδοποιήσεις σε οποιαδήποτε συνομιλία μία παύση (καθώς αναπαύεσαι) με τη νέα ρύθμιση 8-ωρης αποσιώπησης. Ή επίλεξε "Πάντα" αντί για ένα χρόνο και αποχαιρέτησε την ετήσια παράδοση ανανέωσης της ενός λεπτού σιγής.
-• Swipe left on any message to quickly see message details. Whether you're wondering when the message was sent (exit stage left) or when they saw the message and didn't reply (left you on read), nothing is left to the imagination with the new left-swipe shortcut.
-
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

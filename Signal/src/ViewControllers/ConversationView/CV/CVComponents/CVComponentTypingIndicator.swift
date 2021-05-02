@@ -135,7 +135,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         let outerStackMeasurement = ManualStackView.measure(config: outerStackViewConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos)
+                                                            subviewInfos: outerSubviewInfos,
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 

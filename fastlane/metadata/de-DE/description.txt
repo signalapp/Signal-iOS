@@ -1,20 +1,20 @@
-Millionen von Menschen nutzen Signal täglich für kostenlose und verzögerungsfreie Kommunikation überall auf der Welt. Versende und empfange klangtreue Nachrichten, nimm an HD-Sprach- und Videoanrufen teil und erkunde eine wachsende Anzahl von neuen Features, die dir dabei helfen, mit deinen Freunden verbunden zu bleiben. Signals fortschrittliche, deine Privatsphäre bewahrende Technologie ist dabei immer aktiv, sodass du dich darauf konzentrieren kannst, bedeutende Momente zu teilen mit Menschen, die dir etwas bedeuteten.
+Millionen von Menschen auf der Welt nutzen Signal täglich für kostenlose und schnelle Kommunikation. Versende und empfange Nachrichten, nimm an Sprach- und Videoanrufen in bester Qualität teil und freue dich auf eine wachsende Anzahl von neuen Features, die dir helfen, mit deinen Freunden verbunden zu bleiben. Signals fortschrittliche Technologie wahrt deine Privatssphäre und ist immer aktiviert. So kannst du dich darauf konzentrieren, bedeutende Momente zu teilen mit Menschen, die dir etwas bedeuten.
 
-• Sag alles – Fortschrittlichste Ende-zu-Ende-Verschlüsselung (auf Basis des quelloffenen Signal Protocol™) hält deine Unterhaltungen sicher. Vertraulichkeit ist kein optionaler Modus — es ist vielmehr Signals grundlegende Arbeitsweise. Jede Nachricht, jeden Anruf, jederzeit.
+• Sag, was immer du willst – Fortschrittlichste Ende-zu-Ende-Verschlüsselung (auf Basis des quelloffenen Signal Protocol™) macht deine Unterhaltungen sicher. Vertraulichkeit ist kein optionaler Modus — sie ist ausnahmslos in alle Funktionen von Signal integriert. Für jede Nachricht, jeden Anruf, jederzeit.
 
-• Sei schnell – Nachrichten werden schnell und zuverlässig ausgeliefert, auch in langsamen Netzen. Signal ist darauf optimiert, selbst in den eingeschränktesten Umgebungen zu funktionieren.
+• Sei schnell – Nachrichten werden auch bei langsamer Verbindung schnell und zuverlässig zugestellt. Signal ist darauf optimiert, selbst in den eingeschränktesten Umgebungen zu funktionieren.
 
-• Fühl dich frei – Signal ist eine vollständig unabhängige, gemeinnützige Organisation (»501c3«). Die Entwicklung wird von Nutzern wie dir unterstützt. Keine Werbung. Keine Tracker. Kein Scherz.
+• Fühl dich frei – Signal ist eine vollständig unabhängige, gemeinnützige Organisation. Die Entwicklung wird von Nutzern wie dir unterstützt. Keine Werbung. Kein Tracking. Kein Scherz.
 
 • Sei du selbst – Du kannst deine bestehende Rufnummer und dein Adressbuch verwenden, um sicher mit deinen Freunden zu kommunizieren.
 
-• Sprich klar – Ob sie am anderen Ende der Stadt oder am anderen Ende der Welt leben: Mit Signals erhöhter Ton- und Videoqualität wirst du dich deinen Freunden und deiner Familie näher fühlen.
+• Lass von dir hören – Ob am anderen Ende der Stadt oder auf der anderen Seite der Welt: Mit Signals verbesserter Ton- und Videoqualität wirst du dich deinen Freunden und deiner Familie näher fühlen.
 
-• Flüster im Schatten – Wechsle zur dunklen Darstellung, falls du das Licht nicht sehen willst.
+• Flüster im Dunkeln – Wechsle zum Dunkelmodus, falls du das Licht scheust.
 
 • Kling vertraut – Wähle individuelle Benachrichtigungstöne für jeden Kontakt oder verzichte auf jegliche Geräusche. Simon & Garfunkel schrieben 1964 darüber einen Hit: Erlebe den »Sound of Silence« wann immer du willst, indem du Benachrichtigungstöne einfach abschaltest.
 
-• Mach dir ein Bild – Verwende die eingebauten Bildbearbeitungsfunktionen, um deine ausgehenden Fotos zu  entwerfen, zuzuschneiden und zu drehen. Auch existiert ein Textwerkzeug, mit dem du zu jenen 1.000 Wörtern, die dein Bild bereits wert ist, noch weitere hinzufügen kannst.
+• Mach dir ein Bild – Verwende die eingebaute Bildbearbeitung, um deine ausgehenden Fotos zu bearbeiten, zuzuschneiden und zu drehen. Es gibt auch ein Textwerkzeug, damit du zu jenen 1000 Worten, die dein Bild bereits wert ist, noch weitere hinzufügen kannst.
 
 
 Für Hilfe, Fragen oder weitere Informationen besuche bitte:

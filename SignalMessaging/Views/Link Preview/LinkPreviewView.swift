@@ -56,7 +56,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         super.init(name: "LinkPreviewView")
 
         if let draftDelegate = draftDelegate,
-            draftDelegate.linkPreviewCanCancel() {
+           draftDelegate.linkPreviewCanCancel() {
             self.isUserInteractionEnabled = true
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
         }
@@ -232,8 +232,8 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
         Theme.isDarkThemeEnabled
-        ? .white
-        : .gray
+            ? .white
+            : .gray
     }
 
     // MARK: Events
@@ -258,9 +258,13 @@ public class LinkPreviewView: ManualStackViewWithLayer {
                                state: LinkPreviewState,
                                isDraft: Bool) -> CGSize {
         let adapter = Self.adapter(forState: state, isDraft: isDraft)
-        return adapter.measure(maxWidth: maxWidth,
-                               measurementBuilder: measurementBuilder,
-                               state: state)
+        let size = adapter.measure(maxWidth: maxWidth,
+                                   measurementBuilder: measurementBuilder,
+                                   state: state)
+        if size.width > maxWidth {
+            owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
+        }
+        return size
     }
 
     @objc
@@ -655,15 +659,16 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         rightStackSubviewInfos.append(CGSize.square(cancelSize).asManualSubviewInfo(hasFixedWidth: true))
 
         let rightStackMeasurement = ManualStackView.measure(config: rightStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rightStack,
-                                                           subviewInfos: rightStackSubviewInfos)
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_rightStack,
+                                                            subviewInfos: rightStackSubviewInfos)
         rootStackSubviewInfos.append(rightStackMeasurement.measuredSize.asManualSubviewInfo)
 
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos)
+                                                           subviewInfos: rootStackSubviewInfos,
+                                                           maxWidth: maxWidth)
         var rootStackSize = rootStackMeasurement.measuredSize
         rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
                                     LinkPreviewViewAdapterDraft.draftMarginTop)
@@ -717,9 +722,10 @@ private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
                  state: LinkPreviewState) -> CGSize {
 
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                  measurementBuilder: measurementBuilder,
-                                                  measurementKey: Self.measurementKey_rootStack,
-                                                  subviewInfos: [])
+                                                           measurementBuilder: measurementBuilder,
+                                                           measurementKey: Self.measurementKey_rootStack,
+                                                           subviewInfos: [],
+                                                           maxWidth: maxWidth)
         var rootStackSize = rootStackMeasurement.measuredSize
         rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
                                     LinkPreviewViewAdapterDraft.draftMarginTop)
@@ -827,7 +833,8 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos)
+                                                           subviewInfos: rootStackSubviewInfos,
+                                                           maxWidth: maxWidth)
         return rootStackMeasurement.measuredSize
     }
 }
@@ -917,7 +924,8 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos)
+                                                           subviewInfos: rootStackSubviewInfos,
+                                                           maxWidth: maxWidth)
         return rootStackMeasurement.measuredSize
     }
 
@@ -1020,7 +1028,8 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos)
+                                                           subviewInfos: rootStackSubviewInfos,
+                                                           maxWidth: maxWidth)
         return rootStackMeasurement.measuredSize
     }
 }
@@ -1082,9 +1091,9 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
 
         let titleStack = linkPreviewView.titleStack
         titleStack.configure(config: titleStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_titleStack,
-                            subviews: titleStackSubviews)
+                             cellMeasurement: cellMeasurement,
+                             measurementKey: Self.measurementKey_titleStack,
+                             subviews: titleStackSubviews)
         rootStackSubviews.append(titleStack)
 
         if let descriptionLabel = sentDescriptionLabel(state: state) {
@@ -1117,7 +1126,7 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         if state.hasLoadedImage {
             let imageSize = LinkPreviewView.sentNonHeroImageSize
             titleStackSubviewInfos.append(CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true))
-            maxTitleLabelWidth -= imageSize + rootStackConfig.spacing
+            maxTitleLabelWidth -= imageSize + titleStackConfig.spacing
         }
 
         maxTitleLabelWidth = max(0, maxTitleLabelWidth)
@@ -1132,9 +1141,9 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
 
         let titleStackMeasurement = ManualStackView.measure(config: titleStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_titleStack,
-                                                           subviewInfos: titleStackSubviewInfos)
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_titleStack,
+                                                            subviewInfos: titleStackSubviewInfos)
         rootStackSubviewInfos.append(titleStackMeasurement.measuredSize.asManualSubviewInfo)
 
         if let labelConfig = sentDescriptionLabelConfig(state: state) {
@@ -1153,7 +1162,8 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos)
+                                                           subviewInfos: rootStackSubviewInfos,
+                                                           maxWidth: maxWidth)
         return rootStackMeasurement.measuredSize
     }
 }

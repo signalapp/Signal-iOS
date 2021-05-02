@@ -1,4 +1,6 @@
-• Az értesítések pihentetése bármelyik beszélgetésben (amíg pihensz) az új 8 órás némítás beállítással. Vagy válaszd a "Mindig" opciót helyette, és mondj búcsút annak az évenkénti hagyománynak, hogy meghosszabbítod a csendet.
-• Húzz balra bármelyik üzeneten, hogy gyorsan megnézd a részleteit. akár arra vagy kíváncsi, mikor ment el az üzenet, akár arra, hogy mikor látták és nem válaszoltak, semmi nem marad a képzelet számára az új balra húzás funkcióval.
+• További fejlesztéseken dolgozunk most is, de a csevegés gördítés bővítések ebben a kiadásban olyan "Smooth Operator"-rá tesznek, mintha te játszanád a Sade toplistás dalát 1984-ből.
+• Számtalan hiba a csevegés keresésben nyom nélkül eltünt és a keresési eredmények is jobban rendezettek, hogy könnyebben megtaláld a dolgokat. Ha egy csoportot keresel "Hi" névvel, többé nem leszel elárasztva az összes olyan üzenettel, ahol valaki köszönt egyet.
+• Javítottunk egy hibát, ami lehetetlenné tette, hogy eredményeket kapj egy darab kínai karakter keresésére a csevegés képernyőn.
+• Az animált GIF keresés eredmény most már egy jiffy-ben jelenik meg (még akkor is, ha tudjuk, hogy nem ez a GIF helyes kiejtése).
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Érdeklődsz a Signal javítása iránt? Munkatársakat keresünk. Látogasd meg a https://signal.org/workworkwork oldalt a részletekért.

@@ -5543,7 +5543,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Brak wspólnych grup. Uważnie przeglądaj wszystkie prośby o kontakt.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Brak wspólnych członków grup. Uważnie sprawdzaj wszystkie prośby o kontakt.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Brak kontaktów w tej grupie. Uważnie sprawdzaj wszystkie prośby o kontakt.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Ta wiadomość została usunięta.";

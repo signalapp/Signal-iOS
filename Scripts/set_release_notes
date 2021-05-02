@@ -9,5 +9,8 @@ METADATA_ROOT="$BASE_DIR/fastlane/metadata"
 # Open the editor for entering the changelog
 "${VISUAL:-"${EDITOR:-vi}"}" "${METADATA_ROOT}/en-US/release_notes.txt"
 
+# Delete all existing release note translations
+find "${METADATA_ROOT}" -type d -path "${METADATA_ROOT}/en-US" -prune -false -o -type f -name 'release_notes.txt' | xargs rm
+
 ${BASE_DIR}/Scripts/translation/push-metadata-source
 ${BASE_DIR}/Scripts/translation/pull-metadata-translations

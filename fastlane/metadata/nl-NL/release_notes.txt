@@ -1,4 +1,6 @@
-• Give notifications in any conversation a rest (while you rest) with the new 8-hour mute setting. Or choose "Always" instead of one year, and say goodbye to the annual tradition of renewing a moment of silence.
-• Swipe left on any message to quickly see message details. Whether you're wondering when the message was sent (exit stage left) or when they saw the message and didn't reply (left you on read), nothing is left to the imagination with the new left-swipe shortcut.
+• We werken nog aan meer verbeteringen maar vanaf nu zul je makkelijker door een gesprek kunnen scrollen
+• Verscheidene problemen met de zoekfunctie ben je vanaf nu voor eeuwig kwijt. Daarnaast zijn zoekresultaten beter geordend waardoor het makkelijker wordt om iets snel te vinden. Als je zoekt naar een groep genaamd  “Hoi” dan zal die niet langer ergens onderaan de lijst met resultaten tussen alle berichten met de tekst “Hoi” terecht komen.
+• We hebben een fout waardoor het niet mogelijk was om een enkele Chinese karakter te zoeken opgelost.
+• Geanimeerde GIFs laden vanaf nu sneller.
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Ben je geïnteresseerd in helpen om Signal te verbeteren? We huren mensen. Bezoek https://signal.org/workworkwork om hier meer over te lezen.

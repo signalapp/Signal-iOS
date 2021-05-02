@@ -1,5 +1,6 @@
-• Enamoreu-vos de diverses millores en l'experiència de càrrega i baixada de mitjans. Pot semblar que tot està passant molt ràpid, sobretot quan s'envien diverses fotos i vídeos alhora, però l’amor és així de vegades. Està bé començar a sentir-se més propens a enviar més fitxers adjunts.
-• L’amor i la pèrdua estan indissolublement connectats, de manera que també vam trencar amb un error que feia impossible compartir vídeos llargs d’altres aplicacions (com ara l’aplicació iOS Photos).
-• Com a part dels nostres esforços continus per redissenyar i millorar l'aplicació, hem actualitzat la pantalla de configuració de les converses per facilitar l'accés a les accions habituals i ajudar-vos a trobar un punt de coincidència a les individuals, mostrant els grups que teniu en comú.
+• Encara tenim més millores en camí, però les millores en el desplaçament de les converses en aquesta versió us faran sentir com un "operador suau" que bàsicament interpreta una portada no oficial de la cançó d'èxit de Sade del 1984.
+• Nombrosos errors en la cerca de les converses han desaparegut sense deixar rastre, i els resultats de la cerca s’organitzen millor per facilitar-la. Si cerqueu un grup anomenat Hola, ja no quedarà enterrat per cada missatge on algú digui hola.
+• Hem corregit un error que feia impossible trobar resultats per a un sol caràcter xinès a la nova pantalla de conversa.
+• Ara els resultats de la cerca GIF animats es mostren en un tres i no res.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

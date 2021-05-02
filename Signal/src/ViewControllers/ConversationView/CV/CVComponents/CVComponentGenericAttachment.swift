@@ -270,7 +270,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_hStack,
-                                                            subviewInfos: hSubviewInfos)
+                                                            subviewInfos: hSubviewInfos,
+                                                            maxWidth: maxWidth)
         return hStackMeasurement.measuredSize
     }
 

@@ -1,5 +1,6 @@
-• Bliv forelsket i flere forbedringer af medieupload og overførsel-oplevelsen. Det kan virke som om alt sker rigtig hurtigt, især når du sender flere fotos og videoer på én gang, men kærlighed er sådan sommetider. Det er OK at begynde at føle sig mere knyttet til at sende flere vedhæftede filer.
-• Kærlighed og tab er uløseligt forbundet, så vi brød også op med en fejl, der gjorde det umuligt at dele lange videoer fra andre apps (som iOS Photos-appen).
-• Som en del af vores løbende bestræbelser på at redesigne og forbedre appen, opdaterede vi skærmbilledet for chatindstillinger for at gøre fælles handlinger lettere at finde og hjælpe dig med at finde fælles grund i en-til-en-chats ved at vise de grupper, som begge har til fælles.
+• Vi har stadig flere forbedringer i værkerne, men forbedringerne af chat-rulning i denne udgivelse får dig til at føle dig som en sådan "Smooth Operator", at du dybest set udfører et uofficielt cover til Sades hitsang fra 1984.
+• Talrige fejl i chatsøgning er forsvundet sporløst, og søgeresultaterne er bedre organiseret for at gøre tingene lettere at finde. Hvis du leder efter en gruppe med navnet "Hej", vil det ikke længere blive begravet af hver enkelt besked, hvor nogen sagde hej.
+• Vi rettede en fejl, der gjorde det umuligt at finde resultater for et enkelt kinesisk tegn i den nye chat-skærm.
+• Animeret GIF søgeresultater viser nu op i et snuptag (selvom det er ikke sådan GIF udtales).
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

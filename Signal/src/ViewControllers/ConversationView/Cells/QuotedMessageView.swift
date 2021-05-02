@@ -356,9 +356,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         innerVStackSubviews.append(quotedTextLabel)
 
         innerVStack.configure(config: configurator.innerVStackConfig,
-                         cellMeasurement: cellMeasurement,
-                         measurementKey: Self.measurementKey_innerVStack,
-                         subviews: innerVStackSubviews)
+                              cellMeasurement: cellMeasurement,
+                              measurementKey: Self.measurementKey_innerVStack,
+                              subviews: innerVStackSubviews)
         hStackSubviews.append(innerVStack)
 
         let trailingView: UIView = {
@@ -513,7 +513,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                             hStackConfig.spacing * 2 +
                                             hStackConfig.layoutMargins.totalWidth +
                                             innerVStackConfig.layoutMargins.totalWidth +
-                                            outerVStackConfig.layoutMargins.totalWidth))
+                                            outerVStackConfig.layoutMargins.totalWidth +
+                                            outerStackConfig.layoutMargins.totalWidth))
         if hasQuotedAttachment {
             maxLabelWidth -= quotedAttachmentSize
         }
@@ -532,9 +533,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         innerVStackSubviewInfos.append(quotedTextSize.asManualSubviewInfo)
 
         let innerVStackMeasurement = ManualStackView.measure(config: innerVStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerVStack,
-                                                            subviewInfos: innerVStackSubviewInfos)
+                                                             measurementBuilder: measurementBuilder,
+                                                             measurementKey: Self.measurementKey_innerVStack,
+                                                             subviewInfos: innerVStackSubviewInfos)
 
         var hStackSubviewInfos = [ManualStackSubviewInfo]()
 
@@ -585,11 +586,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                              subviewInfos: outerVStackSubviewInfos)
 
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                        measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_outerStack,
-                                                        subviewInfos: [
-                                                            outerVStackMeasurement.measuredSize.asManualSubviewInfo
-                                                        ])
+                                                            measurementBuilder: measurementBuilder,
+                                                            measurementKey: Self.measurementKey_outerStack,
+                                                            subviewInfos: [
+                                                                outerVStackMeasurement.measuredSize.asManualSubviewInfo
+                                                            ],
+                                                            maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
 
