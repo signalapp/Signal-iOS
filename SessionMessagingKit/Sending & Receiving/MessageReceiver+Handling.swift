@@ -316,7 +316,7 @@ extension MessageReceiver {
             : OWSUserProfile.fetch(uniqueId: publicKey, transaction: transaction) // Old API
         let contact = Storage.shared.getContact(with: publicKey) ?? Contact(sessionID: publicKey) // New API
         // Name
-        if let name = name, name != owsProfile?.profileName {
+        if let name = name, (name != owsProfile?.profileName || contact.name != owsProfile?.profileName) {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
@@ -335,7 +335,7 @@ extension MessageReceiver {
         }
         // Profile picture & profile key
         if let profileKey = profileKey, let profilePictureURL = profilePictureURL, profileKey.keyData.count == kAES256_KeyByteLength,
-            profileKey != owsProfile?.profileKey {
+            (profileKey != owsProfile?.profileKey || contact.profilePictureEncryptionKey != owsProfile?.profileKey) {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
