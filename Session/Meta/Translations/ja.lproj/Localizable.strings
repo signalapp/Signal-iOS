@@ -74,6 +74,8 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ブロックする";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除する";
+/* Label for generic done button. */
+"BUTTON_DONE" = "完了";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "選択";
 /* The label for the 'do not restore backup' button. */

@@ -74,6 +74,8 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Block";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+/* Label for generic done button. */
+"BUTTON_DONE" = "Done";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 /* The label for the 'do not restore backup' button. */

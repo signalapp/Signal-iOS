@@ -74,6 +74,8 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "加入黑名单";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "从黑名单中移除";
+/* Label for generic done button. */
+"BUTTON_DONE" = "完成";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "选择";
 /* The label for the 'do not restore backup' button. */
